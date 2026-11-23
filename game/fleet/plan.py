@@ -596,11 +596,46 @@ def one_line(text):
     return ""
 
 
-def ships_named(words, crew):
-    """The ships a word names: names with commas, a range (miner-1..10), a role, or all. (ships, the words not known)."""
+def _match_attr(term, ship, role, row, detail_fn):
+    """Match a declarative selector term: empire:X, hull:X, cargo>=N, cargo<N, piloting>=N, piloting<N, role:X."""
+    m = re.match(r"^(empire|hull|role):(.+)$", term, flags=re.I)
+    if m:
+        k, v = m.group(1).lower(), m.group(2).strip().lower()
+        if k == "role":
+            return role.lower() == v
+        if k == "empire":
+            emp = str(row.get("empire") or detail_fn(ship).get("empire") or "").lower()
+            return emp == v
+        if k == "hull":
+            h = str(row.get("class") or detail_fn(ship).get("class") or "").lower()
+            return h == v or v in h
+    m2 = re.match(r"^(cargo|piloting)(>=|<=|>|<|==|=)(\d+)$", term, flags=re.I)
+    if m2:
+        k, op, val = m2.group(1).lower(), m2.group(2), int(m2.group(3))
+        if k == "cargo":
+            cur = int(row.get("cargo_capacity") or detail_fn(ship).get("cargo_capacity") or 0)
+        else:
+            sk = detail_fn(ship).get("skills") or {}
+            pv = sk.get("piloting") if isinstance(sk, dict) else 0
+            cur = int((pv.get("level") if isinstance(pv, dict) else pv) or row.get("piloting") or 0)
+        if op == ">=": return cur >= val
+        if op == "<=": return cur <= val
+        if op == ">":  return cur > val
+        if op == "<":  return cur < val
+        return cur == val
+    return None
+
+
+def ships_named(words, crew, data=None):
+    """The ships a word names: names, ranges (miner-1..10), role, all, or declarative selectors (empire:nebula, cargo>=100, piloting>=10, hull:Prayer, joined by + for AND)."""
     known, by_role, out, unknown = [ship for ship, _role, _row in crew], {}, [], []
     for ship, role, _row in crew:
         by_role.setdefault(role, []).append(ship)
+    cache = {}
+    def _detail(ship):
+        if ship not in cache:
+            cache[ship] = dispatch.read_json(Path(data) / "fleet" / "ships" / dispatch.ship_file(ship), {}) if data else {}
+        return cache[ship] if isinstance(cache[ship], dict) else {}
     for word in [w.strip() for w in str(words).split(",") if w.strip()]:
         span = re.match(r"^([a-z]+)-(\d+)\.\.(?:[a-z]+-)?(\d+)$", word)
         if word == "all":
@@ -613,6 +648,29 @@ def ships_named(words, crew):
             unknown += [ship for ship in found if ship not in known]
         elif word in known:
             out.append(word)
+        elif any(ch in word for ch in (":", ">", "<", "=")):
+            parts = [p.strip() for p in word.split("+") if p.strip()]
+            valid = True
+            matched = []
+            for ship, role, row in crew:
+                ok = True
+                for p in parts:
+                    res = _match_attr(p, ship, role, row, _detail)
+                    if res is None:
+                        valid = False
+                        ok = False
+                        break
+                    if not res:
+                        ok = False
+                        break
+                if not valid:
+                    break
+                if ok:
+                    matched.append(ship)
+            if valid:
+                out += matched
+            else:
+                unknown.append(word)
         else:
             unknown.append(word)
     return unique(out), unknown

@@ -1036,6 +1036,26 @@ class RouteGateTests(Tree):
         self.assertIsNone(mine.ore_of({"stats": {}}))
 
 
+    def test_requires_capability_matchers_cargo_empire_piloting_hull(self):
+        state = {"orders": {}, "done": {}, "tries": {}, "booked": set(), "now": 1000, "rest": {}, "pair_rest": {}, "losing": set(), "lately_losing": set(), "rest_book": {}, "routes": {}, "data": "", "rows": [], "census": {}, "pirates": {}, "stock": {}}
+        freight_route = {"id": "freight-rim-100", "kind": "circuit", "stops": [{"at": "s", "refuel": True}],
+                         "requires": {"min_cargo": 100, "empire": "outerrim", "min_piloting": 0}}
+        t2_upg = {"id": "fit-t2-upgrade", "kind": "circuit", "stops": [{"at": "s", "fit": ["x"]}],
+                  "requires": {"min_piloting": 10, "without_hull": ["Resonance Miner"]}}
+        small_rim = {"name": "hauler-41", "role": "hauler", "credits": 5000, "docked": True, "empire": "outerrim", "hull": "Cobble", "cargo_capacity": 75, "skills": {"piloting": 4}}
+        big_rim = {"name": "hauler-42", "role": "hauler", "credits": 5000, "docked": True, "empire": "outerrim", "hull": "Prayer", "cargo_capacity": 540, "skills": {"piloting": 4}}
+        big_neb = {"name": "hauler-43", "role": "hauler", "credits": 5000, "docked": True, "empire": "nebula", "hull": "Ledger", "cargo_capacity": 480, "skills": {"piloting": 4}}
+        self.assertIn("min_cargo", self.dispatch.why_not(small_rim, "freight-rim-100", freight_route, state)[0])
+        self.assertIsNone(self.dispatch.why_not(big_rim, "freight-rim-100", freight_route, state)[0])
+        self.assertIn("outerrim", self.dispatch.why_not(big_neb, "freight-rim-100", freight_route, state)[0])
+        p9 = {"name": "miner-1", "role": "miner", "credits": 5000, "docked": True, "hull": "Threshold", "skills": {"piloting": 9}}
+        p10 = {"name": "miner-2", "role": "miner", "credits": 5000, "docked": True, "hull": "Threshold", "skills": {"piloting": 10}}
+        p10_done = {"name": "miner-3", "role": "miner", "credits": 5000, "docked": True, "hull": "Resonance Miner", "skills": {"piloting": 10}}
+        self.assertIn("piloting", self.dispatch.why_not(p9, "fit-t2-upgrade", t2_upg, state)[0])
+        self.assertIsNone(self.dispatch.why_not(p10, "fit-t2-upgrade", t2_upg, state)[0])
+        self.assertIn("hull", self.dispatch.why_not(p10_done, "fit-t2-upgrade", t2_upg, state)[0])
+
+
 if __name__ == "__main__":
     unittest.main()
 

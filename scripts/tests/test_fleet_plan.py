@@ -425,5 +425,19 @@ class TemplateTests(Tree):
         self.assertFalse((self.root / "routes" / "templates").exists())                          # the folder made for the commit is taken away again
 
 
+    def test_ships_named_supports_declarative_attribute_selectors(self):
+        crew = [
+            ("hauler-1", "hauler", {"empire": "voidborn", "class": "Threshold", "cargo_capacity": 65, "piloting": 9}),
+            ("hauler-2", "hauler", {"empire": "outerrim", "class": "Prayer", "cargo_capacity": 540, "piloting": 10}),
+            ("hauler-3", "hauler", {"empire": "nebula", "class": "Ledger", "cargo_capacity": 480, "piloting": 4}),
+        ]
+        s1, u1 = self.plan.ships_named("cargo>=100", crew)
+        self.assertEqual((s1, u1), (["hauler-2", "hauler-3"], []))
+        s2, u2 = self.plan.ships_named("empire:outerrim+piloting>=10", crew)
+        self.assertEqual((s2, u2), (["hauler-2"], []))
+        s3, u3 = self.plan.ships_named("hull:Ledger", crew)
+        self.assertEqual((s3, u3), (["hauler-3"], []))
+
+
 if __name__ == "__main__":
     unittest.main()

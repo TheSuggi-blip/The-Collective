@@ -3885,8 +3885,15 @@ async function renderMetrics(panel, live) {
       const scHead = el('div', 'sc-head');
       const wScore = se.weighted_score !== undefined ? Number(se.weighted_score) : null;
       const wCls = wScore === null ? '' : (wScore >= 80 ? 'good' : wScore >= 60 ? 'warn' : 'bad');
+      const pMap = {
+        WAR_ALERT: ['bad', 'WAR ALERT (40% War Wt)'],
+        CASHFLOW_RECOVERY: ['warn', 'CASHFLOW RECOVERY'],
+        PEACETIME_GROWTH: ['good', 'PEACETIME GROWTH'],
+      };
+      const [pCls, pLbl] = pMap[se.posture] || ['warn', se.posture || 'AUTO'];
       scHead.append(
         el('h3', null, 'Enterprise momentum & weighted triage'),
+        el('span', 'pill ' + pCls, pLbl),
         el('span', 'pill ' + vCls, vLbl),
         wScore !== null ? el('span', 'pill ' + wCls, 'Score ' + wScore.toFixed(1) + '/100') : null
       );

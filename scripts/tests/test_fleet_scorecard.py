@@ -192,5 +192,24 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertLess(m_idx["DIV_IDLE"], m_idx["PLAYBOOK_CAP"])
 
 
+    def test_war_alert_posture_auto_shifts_weights_and_pins_p0_war_top(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            (data / "empire").mkdir(parents=True, exist_ok=True)
+            (data / "empire" / "empire.json").write_text(
+                json.dumps({"faction": {"at_war": True}, "relations": {"wars": ["ENDL"], "enemies": ["ENDL"]}}),
+                encoding="ascii",
+            )
+            sc = scorecard.compute_scorecard(root, data, now=1795410000)
+            ent = sc["enterprise"]
+            self.assertEqual(ent["posture"], "WAR_ALERT")
+            self.assertTrue(ent["war"]["at_war"])
+            self.assertEqual(ent["weights"]["war_readiness"], 40)
+            self.assertEqual(ent["triage"][0]["code"], "ACTIVE_WAR")
+            self.assertEqual(ent["triage"][0]["tier"], "P0")
+            self.assertEqual(ent["triage"][0]["score"], 100)
+            self.assertEqual(sc["divisions"]["Military"]["triage"][0]["code"], "ACTIVE_WAR")
+
+
 if __name__ == "__main__":
     unittest.main()

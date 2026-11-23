@@ -908,6 +908,33 @@ def why_not(pilot, rid, route, state):
     mods_below = req.get("modules_below")
     if isinstance(mods_below, dict) and mods_below and all(p_mods.count(m_id) >= want_n for m_id, want_n in mods_below.items()):
         return "has target modules already", None
+    min_cargo = req.get("min_cargo")
+    if isinstance(min_cargo, (int, float)) and min_cargo > 0:
+        cap = int(pilot.get("cargo_capacity") or 0)
+        if cap < int(min_cargo):
+            return "cargo %d below min_cargo %d" % (cap, int(min_cargo)), None
+    min_pil = req.get("min_piloting")
+    if isinstance(min_pil, (int, float)) and min_pil > 0:
+        p_pil = int((pilot.get("skills") or {}).get("piloting") or 0)
+        if p_pil < int(min_pil):
+            return "piloting %d below %d" % (p_pil, int(min_pil)), None
+    max_pil = req.get("max_piloting")
+    if isinstance(max_pil, (int, float)) and max_pil >= 0:
+        p_pil = int((pilot.get("skills") or {}).get("piloting") or 0)
+        if p_pil > int(max_pil):
+            return "piloting %d above %d" % (p_pil, int(max_pil)), None
+    req_hull = req.get("hull")
+    if req_hull:
+        p_hull = str(pilot.get("hull") or "").lower()
+        want_h = [str(x).lower() for x in (req_hull if isinstance(req_hull, (list, tuple)) else [req_hull]) if x]
+        if want_h and p_hull not in want_h:
+            return "hull %s not in %s" % (p_hull or "?", ",".join(want_h)), None
+    wo_hull = req.get("without_hull")
+    if wo_hull:
+        p_hull = str(pilot.get("hull") or "").lower()
+        no_h = [str(x).lower() for x in (wo_hull if isinstance(wo_hull, (list, tuple)) else [wo_hull]) if x]
+        if p_hull and p_hull in no_h:
+            return "hull %s excluded" % p_hull, None
     any_mod = req.get("any_module")
     if isinstance(any_mod, list) and any_mod and not any(m_id in p_mods for m_id in any_mod):
         return "no target module to strip", None
@@ -963,6 +990,8 @@ def pilot_of(ship, named, data, ammo):
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
     return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
             "empire": ship.get("empire") or detail.get("empire"), "system": ship.get("system") or detail.get("system"),
+            "hull": ship.get("class") or detail.get("class") or detail.get("ship_class") or "",
+            "cargo_capacity": int(ship.get("cargo_capacity") or detail.get("cargo_capacity") or 0),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
             "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)
                        for k, v in (detail.get("skills") or {}).items() if isinstance(v, (dict, int))} if isinstance(detail.get("skills"), dict) else {},

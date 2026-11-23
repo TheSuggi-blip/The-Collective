@@ -138,7 +138,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 
 | What it answers | MCP | Shell |
 |---|---|---|
-| live 3-horizon strategic progression rungs (Days/Weeks/Months), verified milestones & weekly/monthly... | fleet view=progression | hive.py progression |
+| live 3-horizon strategic progression rungs, milestones & ledgers. | fleet view=progression | hive.py progression |
 | what founding one takes, down to the ore: credits, parts, the facility that makes the part, what we... | base_plan kind=<kind> | hive.py base <kind> |
 | what we hold: the faction with its members and limit, our bases, our offices at other stations and... | hive verb=empire | hive.py empire |
 
@@ -242,3 +242,12 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | every table and view of the store with what a row is and its columns; with a table's name its columns... | sql | hive.py schema |
 | one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement, a... | sql query=<query> | hive.py sql <query> |
+
+### Other
+
+| What it answers | MCP | Shell |
+|---|---|---|
+| rival faction sedcards & live Outsupply/Outsource/Undercut board. | fleet view=rivals | rivals.py all |
+| MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. | fleet view=scorecard | scorecard.py --who all |
+| live spacemolt_shipping freight contracts. | fleet view=shipping | shipping.py list |
+| empire-specialized T1/T2 parallel batch upgrade sheet. | fleet view=upgrade_plan | upgrades.py all |

@@ -73,14 +73,31 @@ TIER_RANK = {"P0": 0, "P1": 1, "P2": 2, "P3": 3}
 TARGET_COMPLETION_PCT = 80.0
 HYSTERESIS_PCT = 5.0
 
-# Transparent MAUT Composite Weights (sum to 100)
-ENTERPRISE_WEIGHTS = {
-    "cashflow_eff": 30,
-    "employment": 25,
-    "upgrades": 20,
-    "roadmap": 15,
-    "seating_reqs": 10,
+# Dynamic Context-Adaptive MAUT Weights (auto-selected live by enterprise posture; sum to 100)
+POSTURE_WEIGHTS = {
+    "PEACETIME_GROWTH": {
+        "cashflow_eff": 25,
+        "employment": 20,
+        "upgrades": 25,
+        "roadmap": 20,
+        "seating_reqs": 10,
+    },
+    "CASHFLOW_RECOVERY": {
+        "cashflow_eff": 35,
+        "employment": 25,
+        "upgrades": 18,
+        "roadmap": 12,
+        "seating_reqs": 10,
+    },
+    "WAR_ALERT": {
+        "war_readiness": 40,
+        "cashflow_eff": 20,
+        "employment": 15,
+        "upgrades": 15,
+        "seating_reqs": 10,
+    },
 }
+ENTERPRISE_WEIGHTS = dict(POSTURE_WEIGHTS["CASHFLOW_RECOVERY"])
 DIVISION_WEIGHTS = {
     "employment": 30,
     "role_kpi": 30,
@@ -264,6 +281,65 @@ def _load_json(path, default):
         return default
 
 
+def _detect_war_state(conn, tables, data_dir, now):
+    """Auto-detect live War / Active Hostilities from empire.json, read.db faction/public_battles, and diplomacy.json."""
+    at_war = False
+    active_wars = []
+    hostile_tags = []
+    recent_cltv_battles = 0
+
+    emp = _load_json(Path(data_dir) / "empire" / "empire.json", {})
+    if isinstance(emp, dict):
+        fac = emp.get("faction") if isinstance(emp.get("faction"), dict) else {}
+        if fac.get("at_war"):
+            at_war = True
+        rel = emp.get("relations") if isinstance(emp.get("relations"), dict) else {}
+        for w in (rel.get("wars") or []):
+            tag = str(w.get("tag") or w.get("faction") or w) if isinstance(w, dict) else str(w)
+            if tag and tag not in active_wars:
+                active_wars.append(tag)
+        for en in (rel.get("enemies") or []):
+            tag = str(en.get("tag") or en.get("faction") or en) if isinstance(en, dict) else str(en)
+            if tag and tag not in hostile_tags:
+                hostile_tags.append(tag)
+
+    dip = _load_json(Path(data_dir) / "comms" / "diplomacy.json", {})
+    for tag, rec in ((dip.get("factions") or {}).items() if isinstance(dip, dict) else []):
+        if isinstance(rec, dict) and str(rec.get("status") or "").lower() in ("war", "at_war"):
+            if str(tag) not in active_wars:
+                active_wars.append(str(tag))
+
+    if conn is not None:
+        if "faction" in tables:
+            try:
+                cols = {r[1] for r in conn.execute("PRAGMA table_info(faction)")}
+                if "at_war" in cols:
+                    row = conn.execute("SELECT at_war FROM faction LIMIT 1").fetchone()
+                    if row and int(_num(row[0])):
+                        at_war = True
+            except Exception:
+                pass
+        if "public_battles" in tables:
+            try:
+                row = conn.execute(
+                    "SELECT COUNT(*) FROM public_battles WHERE UPPER(COALESCE(tags,'')) LIKE '%CLTV%' AND (? - COALESCE(t,0)) <= 21600",
+                    (int(now),),
+                ).fetchone()
+                if row:
+                    recent_cltv_battles = int(_num(row[0]))
+            except Exception:
+                pass
+
+    if active_wars or recent_cltv_battles > 0:
+        at_war = True
+    return {
+        "at_war": bool(at_war),
+        "active_wars": active_wars,
+        "hostile_tags": hostile_tags,
+        "recent_cltv_battles": recent_cltv_battles,
+    }
+
+
 def _load_diplomacy_pending(data_dir):
     doc = _load_json(Path(data_dir) / "comms" / "diplomacy.json", {})
     factions = doc.get("factions") if isinstance(doc, dict) else {}
@@ -378,6 +454,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
     neutral_cnt, diplo_pending = _load_diplomacy_pending(data_dir)
     open_req_items = _parse_open_requests(repo_root)
     open_reqs = len(open_req_items)
+    war_state = _detect_war_state(conn, tables, data_dir, now)
 
     # Progression snapshot (roadmap %, milestones, seating)
     prog = {}
@@ -668,8 +745,26 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
         if mhist and isinstance(mhist[-1], dict):
             latest_ms = str(mhist[-1].get("title") or "")
 
+    # Dynamic Posture Auto-Selection (WAR_ALERT > CASHFLOW_RECOVERY > PEACETIME_GROWTH)
+    if war_state["at_war"]:
+        posture = "WAR_ALERT"
+    elif steady_24h <= 0:
+        posture = "CASHFLOW_RECOVERY"
+    else:
+        posture = "PEACETIME_GROWTH"
+    active_ent_weights = dict(POSTURE_WEIGHTS[posture])
+
     # Enterprise-level triggers (actionable only)
     ent_triggers = []
+    if war_state["at_war"]:
+        w_tags = ", ".join(war_state["active_wars"][:4]) or "hostile contact"
+        ent_triggers.append({
+            "severity": "ALARM", "code": "ACTIVE_WAR", "metric": "ACTIVE WAR POSTURE",
+            "actual": f"wars=[{w_tags}], recent CLTV battles={war_state['recent_cltv_battles']}",
+            "target": "war victory / 0 unescorted losses", "direction": "WORSENING",
+            "action": "Shift fleet to war footing: escort all hauls, surge combat hulls/fits (Military), hold sub-1h hostile intel (Intel), stock repair/fuel bunkers (Logistics)",
+            "tier": "P0", "weight": 100, "effort": 1, "score": 100, "source": "WAR",
+        })
     if steady_24h <= 0:
         sev = "ALARM" if (cf_dir_24h == "WORSENING" or steady_24h < -20000) else "WARN"
         ent_triggers.append({
@@ -727,7 +822,12 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
         "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
     }
     for _t in ent_triggers:
+        if _t.get("code") == "ACTIVE_WAR":
+            continue
         _annotate_trigger(_t, gap_ratio=_ent_gaps.get(_t["code"], 0.5))
+        if posture == "WAR_ALERT" and _t.get("code") in ("HULL_UPGRADE_LAG", "MODULE_FIT_SATURATION"):
+            _t["tier"] = "P0" if _t.get("severity") == "ALARM" else "P1"
+            _t["score"] = min(100, int(_t.get("score", 50)) + 15)
     ent_triggers.sort(key=_triage_sort_key)
 
     # -----------------------------------------------------------------------
@@ -963,6 +1063,29 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
         }
         for _t in triggers:
             _annotate_trigger(_t, gap_ratio=_div_gaps.get(_t["code"], 0.5))
+            if posture == "WAR_ALERT":
+                if div in ("Military", "Intel") and _t["code"] in ("MILITARY_PERF", "DIV_HULL_UPGRADE", "DIV_MODULE_FIT", "INTEL_FRESHNESS"):
+                    _t["tier"] = "P0"
+                    _t["score"] = min(100, int(_t["score"]) + 20)
+                elif div == "Logistics" and _t["code"] == "SUPPLY_CHAINS":
+                    _t["tier"] = "P0"
+                    _t["score"] = min(100, int(_t["score"]) + 18)
+                elif _t["code"] == "PLAYBOOK_CAP":
+                    _t["score"] = max(1, int(_t["score"]) - 12)
+        if posture == "WAR_ALERT" and div in ("Command", "Military", "Intel", "Logistics"):
+            w_tags = ", ".join(war_state["active_wars"][:3]) or "active hostilities"
+            war_act = {
+                "Military": "Mobilize warships & Royal Guard; escort convoys, hunt hostiles, keep 0 unescorted losses",
+                "Intel": "Hold <1h scout surveillance on enemy systems, fleet movements & pirate staging hubs",
+                "Logistics": "Keep war-front fuel/repair bunkers at 100%; route convoys only with Military escort",
+                "Command": "Direct fleet war budget, authorize combat hull/module surge & coordinate alliance defense",
+            }[div]
+            triggers.insert(0, {
+                "severity": "ALARM", "tier": "P0", "weight": 100, "effort": 1, "score": 100, "source": "WAR",
+                "code": "ACTIVE_WAR", "metric": "WAR FOOTING ACTIVE",
+                "actual": f"posture=WAR_ALERT ({w_tags})", "target": "war priority", "direction": "WORSENING",
+                "action": war_act,
+            })
         triggers.sort(key=_triage_sort_key)
         div_status = triggers[0]["severity"] if triggers else "OK"
 
@@ -1128,17 +1251,25 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
     else:
         verdict = "GROWING_WITH_DRAG"
 
-    # Weighted Enterprise Readiness Score (0..100)
+    # Dynamic Context-Adaptive Enterprise Readiness Score (0..100)
     _cf_sub = 100.0 if steady_24h > 0 else (65.0 if (cf_dir_24h == "IMPROVING" or steady_1h > 0) else max(0.0, 50.0 + steady_24h / 2000.0))
     _cf_eff_score = 0.55 * _cf_sub + 0.45 * min(100.0, prod_pct)
     _upg_ent_score = 0.60 * min(100.0, fleet_hull_elig_pct) + 0.40 * min(100.0, fleet_slot_pct)
     _seat_req_score = max(0.0, min(100.0, seat_cap_pct) - open_reqs * 6.0)
+    _mil_h = divisions_out.get("Military", {}).get("health_score", 50.0)
+    _int_h = divisions_out.get("Intel", {}).get("health_score", 50.0)
+    _log_c = _num(divisions_out.get("Logistics", {}).get("role_kpi", {}).get("pct", 50.0))
+    _war_readiness = round(0.55 * _mil_h + 0.25 * _int_h + 0.20 * _log_c, 1)
+    _subs = {
+        "war_readiness": _war_readiness,
+        "cashflow_eff": _cf_eff_score,
+        "employment": min(100.0, eff_emp_pct),
+        "upgrades": _upg_ent_score,
+        "roadmap": min(100.0, roadmap_avg),
+        "seating_reqs": _seat_req_score,
+    }
     ent_weighted_score = round(
-        0.30 * _cf_eff_score
-        + 0.25 * min(100.0, eff_emp_pct)
-        + 0.20 * _upg_ent_score
-        + 0.15 * min(100.0, roadmap_avg)
-        + 0.10 * _seat_req_score,
+        sum((wt / 100.0) * _subs.get(k, 0.0) for k, wt in active_ent_weights.items()),
         1,
     )
 
@@ -1250,8 +1381,11 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None):
             "open_requests": open_reqs,
             "neutral_partners": neutral_cnt,
             "diplo_pending": diplo_pending,
+            "posture": posture,
+            "war": war_state,
+            "war_readiness": _war_readiness,
             "weighted_score": ent_weighted_score,
-            "weights": dict(ENTERPRISE_WEIGHTS),
+            "weights": active_ent_weights,
             "triggers": ent_triggers,
             "triage": ent_triage[:10],
             "alarm_count": ent_alarms,
@@ -1268,7 +1402,7 @@ def render_briefing(sc, who="all"):
     p_delta = f" | 6h purse {_fmt_cr(e['purse_delta_6h'])}" if e["purse_delta_6h"] is not None else ""
     p10_d = f" (+{e['p10_delta_6h']} P10+)" if (e["p10_delta_6h"] or 0) > 0 else ""
     lines.append(
-        f"  ENTERPRISE | {e['verdict']} | Score {e['weighted_score']:.1f}/100 | steady cashflow {e['cashflow_sign']} "
+        f"  ENTERPRISE | {e['verdict']} | Posture {e.get('posture','CASHFLOW_RECOVERY')} | Score {e['weighted_score']:.1f}/100 | steady cashflow {e['cashflow_sign']} "
         f"({_fmt_cr(e['steady_24h'])}/h 24h, {_fmt_cr(e['steady_6h'])}/h 6h, 24h {e['cashflow_trend_24h']}, 6h {e['cashflow_trend_6h']}){p_delta}"
     )
     lines.append(
