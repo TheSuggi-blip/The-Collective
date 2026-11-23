@@ -175,7 +175,18 @@
     "hunt-trappist-1-gas-pocket-drift-ray",
     "hunt-trappist-1-frost-ring-rime-grazer",
     "hunt-trappist-1-banked-coal-reef-belt-grazer",
-    "hunt-windmere-emission-nebula-drift-ray"
+    "hunt-windmere-emission-nebula-drift-ray",
+    "hunt-stillwater-belt-cinder-urchin",
+    "hunt-iron-reach-the-motherlode-belt-grazer",
+    "hunt-albireo-ice-fields-rime-grazer",
+    "hunt-albireo-missed-veins-belt-grazer",
+    "hunt-albireo-fading-ember-belt-grazer",
+    "hunt-fumalsamakah-sleeping-caldera-belt-grazer",
+    "hunt-fumalsamakah-belt-belt-grazer",
+    "hunt-ross-614-tortoise-roads-belt-grazer",
+    "hunt-bd20-2457-slowcool-cluster-patina-grazer",
+    "hunt-bd20-2457-ice-fields-rime-grazer",
+    "hunt-kornephoros-frost-ring-rime-grazer"
    ],
    "trains": [
     "gunnery",
