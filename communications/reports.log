@@ -400,3 +400,12 @@ Failed: fill gate HALT, last line at 05:00 UTC "FLEET | 130 ships: 111 at work, 
 Requests: requests.log ENT-422.
 Suggestions: count a docked newborn with no class work in its region as operating (ENT-420 to ENT-422); no rest for a once route whose loss was a runner fault.
 Report: newborn-home-hunts-moving-stations-followed-step-rule-fixed.
+
+## [ENT-141] | 2026-11-23 05:17 UTC | Oracle | session | ref: reports/2026-11-23_oracle_phase-two-replies-sent-census-cut-far-ends-fixed.md | see: orders.log ENT-076
+Session: scheduled run turn-oracle -- Phase-2 replies sent to [HEXC] and [IRLC], the census cut made, a far census end fixed in the runner.
+Did: preflight PASS; O10 Phase-2 replies to HexCogitoAI (490 chars) and ILC Comptroller (499 chars) at 05:03:11 UTC via diplomacy.py (audit-text, dry run first); census-roads 480 to 960 min and 10 to 4 ships, census-far-1 to 5 720 to 1440 min, 4 worked systems to census-worked-far, new once test mission-scraping-by-frontier (a0240025); two more frontier readers first (plan check PASS 05:08:34 UTC); census.py end_stop (5ae15927, 97 test files OK); guidebook Standing Plan and lesson (d37a131f); 13 pirate lines filed, 0 raids; queue ENT-256.
+Worked: fill.py check PASS at 05:11:57 and 05:15:31 UTC (last line: 4 docked scouts on watch, F8 exception); 50 of 50 scouts at work, none lost; intel gate Errors 0; guide check PASS.
+Failed: readings over target at 05:03 UTC (frontier 425 min against 170, watch gap 185 against 60, north 5 and south 4 systems over 180); cause of 11 `fuel 1 short` rows of one scout not found (the log keeps the last run only); Haven Prospectus hand-in not done (route reads `not offered` in its last 12 runs).
+Requests: none.
+Suggestions: a board check or requires.booked on the Prospectus route; a HOME per origin empire in census.py (Oracle can build it, Unity's word first).
+Report: phase-two-replies-sent-census-cut-far-ends-fixed.
