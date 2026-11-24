@@ -107,7 +107,7 @@ Status: proven. Updated: 2026-11-21. Evidence: requests.log ENT-310; admirals.lo
   question about the past goes to these records first, the census after.
 
 ### Calls that surprise
-Status: proven. Updated: 2026-11-24. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17); game/fleet/route_run.py (lines 1172, 1339); dispatch.py (requires.max_jumps); table runs (strip route, 09:30 to 11:15 UTC).
+Status: proven. Updated: 2026-11-24. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17); game/fleet/route_run.py (lines 1172, 1339); dispatch.py (requires.max_jumps); table runs (strip route, 09:30 to 11:20 UTC).
 
 - gate.py cuts an answer at 3,000 characters: read long answers with
   FULL=1. get_empire_info takes `empire_id`. get_system answers the
@@ -121,8 +121,8 @@ Status: proven. Updated: 2026-11-24. Evidence: game/fleet/gate.py; the game's he
 - route_run.py works a stop's `gift` before its `unfit` and `store`: a
   stripped module is given by a second route (errors.log ENT-178).
 - `requires.in_system` waits for chance: a once-per-pilot chore at one
-  station took 1 of 18 scouts in 105 minutes. A chore gets
-  `max_jumps` (a short detour); in_system is for the docked watch.
+  station took 1 of 18 scouts from 09:30 to 11:05 UTC, then 3 in five
+  minutes on `max_jumps` 2. in_system is for the docked watch.
 
 ### A gate on a fresh read is open on an old one
 Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-central (its runs); data/wildlife/gsc_0041.json; admirals.log ENT-095.
