@@ -121,15 +121,7 @@
       "mix": [
         [
           "ore",
-          65
-        ],
-        [
-          "ice",
-          20
-        ],
-        [
-          "gas",
-          15
+          100
         ]
       ],
       "detect_by_hull": {
@@ -285,7 +277,8 @@
             "shield_booster_ii"
           ]
         }
-      }
+      },
+      "_zero_note": "2026-11-24 23:49 UTC (Zero): mix [[\"ore\", 65], [\"ice\", 20], [\"gas\", 15]] -> ore 100. Laser-only miners are no longer refitted to ice or gas: every ice and gas good the bids take is held already (water ice 47,139 against a best bid 56 cr 834 deep; nitrogen ice 63,842 at 2 cr; argon, neon, nebula, ion, krypton, xenon bid 2 cr; hydrogen, plasma, chlorine bids >= 10 cr take 2,545 units against 6,549 held), while iron, the short chain, needs lasers; 147 miner fit-network runs in 6 h cost -352,388 cr steady and -248,391 cr once. Ships already fitted with a harvester keep their specialty (detect_by_module)."
     },
     "Military": {
       "mix": [
