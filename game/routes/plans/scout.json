@@ -83,7 +83,6 @@
   "hunt-intercrus-ice-fields-hollow-pilgrim",
   "census-worked",
   "census-frontier",
-  "hunt-pleione-ice-fields-hollow-pilgrim",
   "hunt-alnilam-frozen-drift-hollow-pilgrim",
   "hunt-gsc-0021-ice-fields-hollow-pilgrim",
   "hunt-birchwood-vapor-fields-cinder-sylph",
@@ -92,6 +91,7 @@
   "census-north",
   "census-east",
   "census-south",
+  "hunt-pleione-ice-fields-hollow-pilgrim",
   "watch-book-central-nexus",
   "watch-book-ramens-rest",
   "watch-book-unknown-edge",
@@ -107,6 +107,7 @@
   "watch-book-hex-star",
   "watch-book-crescent-moon",
   "watch-book-carnegie-hall",
+  "watch-book-treasure-cache",
   "park"
  ],
  "planned": [
@@ -212,7 +213,6 @@
   "hunt-intercrus-ice-fields-hollow-pilgrim": 1,
   "census-worked": 20,
   "census-frontier": 30,
-  "hunt-pleione-ice-fields-hollow-pilgrim": 1,
   "hunt-alnilam-frozen-drift-hollow-pilgrim": 1,
   "hunt-gsc-0021-ice-fields-hollow-pilgrim": 1,
   "hunt-birchwood-vapor-fields-cinder-sylph": 1,
@@ -221,6 +221,7 @@
   "census-north": 42,
   "census-east": 42,
   "census-south": 30,
+  "hunt-pleione-ice-fields-hollow-pilgrim": 1,
   "watch-book-central-nexus": 50,
   "watch-book-ramens-rest": 50,
   "watch-book-unknown-edge": 50,
@@ -236,6 +237,7 @@
   "watch-book-hex-star": 50,
   "watch-book-crescent-moon": 50,
   "watch-book-carnegie-hall": 50,
+  "watch-book-treasure-cache": 50,
   "park": 50
  },
  "of": 50,
