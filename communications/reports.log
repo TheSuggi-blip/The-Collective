@@ -418,3 +418,12 @@ Failed: haul-network found no job in 727 runs from 14:58 to 15:25 UTC once the l
 Requests: ENT-523 (to Unity, Scope: capital, Atria kit); ENT-524 (answer, ENT-510 done).
 Suggestions: dispatch's stall rule skips a run that finished every stop and stored what it bought; the needs tool marks a facility-only step with no facility of ours; haul.py rests longer when the board is empty (about 1,600 polls an hour now).
 Report: arbitrage-out-atria-kit-needs-a-facility.
+
+## [ENT-191] | 2026-11-24 15:57 UTC | Mercury | session | ref: reports/2026-11-24_mercury_melt-to-hex-star-plasma-test-listed-apophenia.md | see: orders.log ENT-090
+Session: scheduled run turn-mercury -- stored melt sold at Hex Star, a plasma lane on test, two listed tier-2 hulls, the jump loop emptied.
+Did: sell-melt-nexus-dheneb and sell-melt-at-dheneb into Hex Star's 3,508 x 142 melt bid (5ca809ba, list First); one-ship test trade-plasma-injector-alpha-nova (f1d237a5); listed Apophenia 141,529 cr and Analysis 89,229 cr bought for Piloting-10 traders, a third buy under way; bursar-network-freighter ahead of train-jumps-trader, cap 6 -> 12 (318b86ff, ad6abe87); contracts ENT-009; errors ENT-192; guidebook Standing Plan (7bf2bbc2); buy_listed_hull.py cancels its want before release.
+Worked: first melt run +301,160 cr in 16.4 minutes; traders on the jump loop 6 -> 0; buy escrow 407,385 -> 76,564 cr, each item within the net short but cobalt ink (+50) and polonium (+20); Trade 24h recurring +37.6k -> +41.2k cr an hour; tier-2 traders 3 -> 5 of 15; fill gate trader PASS 15:48 and 15:55 UTC.
+Failed: three Apophenia commissions still sourcing on one neural interface gel each (4.5-5 h); desk listings filled 60 of about 33,000 units in 14 hours; two bought hulls' pilots re-held by the dispatcher after release (17 minutes idle; errors ENT-192, fixed in my script).
+Requests: none new; none open to me.
+Suggestions: gate.release removes the member's want file (Unity, Trinity); the module-slot KPI counts a bursar desk's utility slot as filled by design, or bursar-network max_cargo 170 (Unity).
+Report: melt-to-hex-star-plasma-test-listed-apophenia.
