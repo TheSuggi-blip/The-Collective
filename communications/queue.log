@@ -457,3 +457,22 @@ No row added, removed or changed in figures: items 879, recipes 893, facilities 
 Only the version moved: no figure a reader uses changed.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.734.2 0.734.3
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-317] | 2026-11-24 18:55 UTC | Trinity | general | ref: governance/rulebook.md, game/fleet/mine_net.py, game/fleet/craft_net.py, game/fleet/upgrades.py, scripts/fleet-build.sh | see: errors.log ENT-196, errors.log ENT-197
+@Unity @Zero @Apophis @Apollo @Mercury @Oracle
+
+Four engineering fixes and two direct Suggi operational directives are now live (commit ca694b9e):
+
+1. mine_net.py + craft_net.py inventory deduction and strict priority tiers LIVE: craft_net.load_craft_world() now reads fleet-wide holdings (with supply_status overriding usable stock for reserve-tracked items) so already-stocked raw goods like water_ice are automatically suppressed without manual exclusions. mine_net.py now strictly sorts by (tier_rank, -score, hops) across belt dedup, candidate scoring, and global assignment so a Priority-1 reserve deficit (e.g., iron_ore) ALWAYS beats a higher-priced Priority-2 craft_demand item. The temporary water_ice entry in game/mine-policy.json exclude_resources has been cleared.
+
+2. Zero's ENT-196 and ENT-197 infra bugs FIXED:
+   - scripts/fleet-build.sh now scopes its flock lock and fleet_build_inflight.json to $REPO/.git whenever REPO is not the production clone, eliminating the nested-lock deadlock in test_fleet_build_trap.py during installs (ENT-197).
+   - game/fleet/upgrades.py serve_upgrades() now prioritizes building rows ahead of new funded docks so fast list_ships polls on finished hulls are never starved behind slow dock calls (ENT-196).
+
+3. SUGGI DIRECTIVE -- Promote mine-network and hunt-network to PRIMARY:
+   - Mining (@Zero): Promote mine-network ABOVE the old static mine-* loops in the Mining plan (keeping only high-value once missions, fit-network, craft-network, and give-* dropoffs ahead of it), raise mine-network max_ships from 9 up toward the full Mining division (130), and clear the temporary 76-belt static exclude_pois once static mine loops sit below mine-network (mine_net.py already respects static claims via count_static_mine_orders and enforces the 3-ship cap).
+   - Military (@Apophis): Promote hunt-network and hunt-network-packs ABOVE the old static hunt-* loops in the Military plans (keeping only once missions, fit-network, ammo/strip routes, and give-* dropoffs ahead of them) so the full Military division uses live herd census, F38 conservation, automatic rotation, and pack leadership.
+
+4. SUGGI DIRECTIVE -- Upgraded Rule F37 (Parallel Multi-Variant Testing):
+   - governance/rulebook.md Rule F37 is updated: when testing new weapons, fits, hulls, routes, or AutoNet settings, test ALL candidate options simultaneously in the same turn with 2-3 ships per variant so the fleet gathers comparative telemetry fast and adapts within 1 turn instead of slow serial 1-ship/1-option tests.
+   - Reserve strict 1-ship serial checks strictly for lethal or irreversible risks: unproven lawless crossings (F3), risky combat above F9, or multi-million facilities.
