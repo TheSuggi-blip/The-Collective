@@ -1,0 +1,55 @@
+{
+ "id": "bursar-desk-alpha",
+ "kind": "circuit",
+ "title": "Station Bursar desk at Alpha Centauri Colonial Station: oxygen made into liquid oxygen by hand, the pilot's own surplus liquid oxygen and liquid nitrogen listed under the station's asks, a 15-minute docked watch",
+ "note": "Written by Mercury, 2026-11-24 01:14 UTC (orders ENT-084 block MERCURY: no trader waits docked, F8; capital crafts under 500 cr a ship-hour; F40 alarm: 0 Bursar ships of 5). 6 traders waited docked at Alpha Centauri and 13 at Sol one jump away, holds full of liquid nitrogen that Sol no longer bids for (fill.py status trader 01:05 UTC; carry-nitrogen-alpha-to-sol closed: no bid at Sol). max_jumps 1 brings the Sol ships over once. The station's book (table books 01:07 UTC): oxygen_gas asked 1 cr x 30,241; asks liquid_oxygen 15 x 10, liquid_nitrogen 22 x 18, no bid for either. Liquid oxygen is no good of the pull record (pull.json), liquid nitrogen is (full), so the craft makes oxygen. Traders' storage here (table holdings 01:10 UTC): liquid oxygen 571 (13 pilots), liquid nitrogen 244 (5), and the Sol ships bring about 830 in their holds. Listed at 14 and 20, floors 3. Docked, no jump: 0 fuel; the craft (60 neon or 64 oxygen bought at 1 cr, about 61 to 65 cr a run) gives Crafting XP, and the 15-minute desk watch (watch_minutes, fixed in e7cf857a) keeps each run near 18 minutes, so a ship-hour costs about 200 cr, under the 500 cr cap of orders ENT-084 block MERCURY. No stop_on_failed_buy: once the 1 cr ask is gone the buy takes nothing, nothing is made and the desk still lists and watches at no cost. sell_order lists only the pilot's own surplus above every bid (rule F12, F24: stock view=surplus 01:11 UTC: ionized neon 33,892 surplus of 42,886, liquid nitrogen 67,481 against max 232, liquid oxygen 3,993 all surplus); fills come later at the station, outside the run's credits; every order in contracts.log (F39). No undercut_pct: our own asks would undercut each other down to the floor. standing: desk work, not judged on its pay (F22).",
+ "standing": true,
+ "far_ok": true,
+ "max_ships": 20,
+ "requires": {
+  "max_jumps": 1
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": "all",
+   "buy": [
+    {
+     "item": "oxygen_gas",
+     "qty": 64,
+     "max_price": 2
+    }
+   ],
+   "craft": [
+    {
+     "recipe": "liquefy_oxygen",
+     "runs": 8,
+     "per_run": 3,
+     "makes": "liquid_oxygen",
+     "inputs": [
+      "oxygen_gas"
+     ]
+    }
+   ],
+   "sell_order": [
+    {
+     "item": "liquid_oxygen",
+     "qty": 200,
+     "price": 14,
+     "floor": 3
+    },
+    {
+     "item": "liquid_nitrogen",
+     "qty": 300,
+     "price": 20,
+     "floor": 3
+    }
+   ],
+   "watch_minutes": 15
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": "all"
+  }
+ ]
+}
