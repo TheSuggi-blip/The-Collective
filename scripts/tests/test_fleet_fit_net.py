@@ -61,7 +61,18 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertEqual(b_plan["unfit"], ["mining_laser_i"])
             self.assertEqual(b_plan["buy_fit"], [])
 
-    def test_auto_enqueue_respects_treasury_floor_bursar_exclusion_and_mix(self):
+    def test_royal_guard_sentinel_fit_split_and_slots(self):
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        specs = {fit_net.resolve_specialty(f"sentinel-{n}", "Military", [], pol) for n in range(1, 36)}
+        self.assertEqual(specs, {"royal_guard_escort", "royal_guard_support"})
+        # Verify slot classification of support modules (remote_armor_repairer_ii -> utility, em_disruptor_i -> weapon)
+        self.assertEqual(fit_net._module_slot_type("remote_armor_repairer_ii"), "utility")
+        self.assertEqual(fit_net._module_slot_type("sensor_dampener"), "utility")
+        self.assertEqual(fit_net._module_slot_type("cloaking_device_i"), "utility")
+        self.assertEqual(fit_net._module_slot_type("em_disruptor_i"), "weapon")
+        self.assertEqual(fit_net._module_slot_type("shield_recharger_ii"), "defense")
+
+    def test_auto_enqueue_schema_duplicates_bursar_reserve_and_royal_guard(self):
         with tempfile.TemporaryDirectory() as tmp:
             data = Path(tmp) / "data"
             repo = Path(tmp) / "repo"
@@ -81,26 +92,65 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 INSERT INTO faction VALUES (10000000);
                 INSERT INTO systems VALUES ('s1', 'crimson', 0);
                 INSERT INTO places VALUES ('s1', 'p1', 'crimson_hub');
-                INSERT INTO hulls VALUES ('t0_hull', 'Starter', 0), ('broadaxe', 'Broadaxe', 2), ('prayer', 'Prayer', 1);
-                INSERT INTO ships VALUES ('drone-1', 'Military', 'crimson', 't0_hull'),
-                                         ('trader-1', 'Trade', 'voidborn', 't0_hull'),
-                                         ('trader-2', 'Trade', 'voidborn', 't0_hull');
-                INSERT INTO ship_skills VALUES ('drone-1', 'piloting', 12), ('trader-1', 'piloting', 5), ('trader-2', 'piloting', 5);
-                INSERT INTO ship_listings VALUES ('broadaxe', 'crimson_hub', 95000, 1795500000),
-                                                 ('prayer', 'crimson_hub', 30000, 1795500000);
+                INSERT INTO hulls VALUES
+                    ('t0_hull', 'Starter', 0),
+                    ('broadaxe', 'Broadaxe', 2),
+                    ('dualism', 'Dualism', 2),
+                    ('prayer', 'Prayer', 1);
+                INSERT INTO ships VALUES
+                    ('drone-1', 'Military', 'crimson', 't0_hull'),
+                    ('sentinel-1', 'Military', 'voidborn', 't0_hull'),
+                    ('trader-1', 'Trade', 'voidborn', 't0_hull'),
+                    ('trader-2', 'Trade', 'voidborn', 't0_hull'),
+                    ('trader-3', 'Trade', 'voidborn', 't0_hull');
+                INSERT INTO ship_skills VALUES
+                    ('drone-1', 'piloting', 12),
+                    ('sentinel-1', 'piloting', 11),
+                    ('trader-1', 'piloting', 5),
+                    ('trader-2', 'piloting', 5),
+                    ('trader-3', 'piloting', 5);
+                INSERT INTO ship_listings VALUES
+                    ('broadaxe', 'crimson_hub', 95000, 1795500000),
+                    ('dualism', 'crimson_hub', 66920, 1795500000),
+                    ('prayer', 'crimson_hub', 30000, 1795500000);
             """)
             con.commit()
             con.close()
-            # trader-1 is a Bursar desk (must be EXCLUDED); trader-2 is mobile Trade (eligible!)
+            # trader-1 is a Bursar desk (excluded), trader-3 is already state="building" (must NOT duplicate!)
             (data / "fleet" / "bursar_claims.json").write_text(json.dumps({"crimson_hub": {"pilot": "trader-1"}}), encoding="ascii")
+            (data / "fleet" / "upgrade_queue.json").write_text(json.dumps([
+                {"id": "u-1", "pilot": "trader-3", "division": "Trade", "hull": "apophenia",
+                 "station": "s1:p1:crimson_hub", "max_price": 200000, "state": "building", "created_at": 1795400000}
+            ]), encoding="ascii")
             pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
+            # Lower Trade min_t0_bursar_reserve to 1 for this 3-trader unit fixture so trader-2 is eligible, then test reserve=2 blocks it
+            pol["divisions"]["Trade"]["min_t0_bursar_reserve"] = 1
             (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
 
             res = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500100)
             pilots_added = {a["pilot"]: a["hull"] for a in res["added"]}
             self.assertEqual(pilots_added.get("drone-1"), "broadaxe")
+            self.assertEqual(pilots_added.get("sentinel-1"), "dualism")
             self.assertEqual(pilots_added.get("trader-2"), "prayer")
             self.assertNotIn("trader-1", pilots_added)
+            self.assertNotIn("trader-3", pilots_added)
+
+            # Verify exact serve_upgrades() schema on disk: state="queued", 3-part station, no "status" key
+            q_disk = json.loads((data / "fleet" / "upgrade_queue.json").read_text(encoding="ascii"))
+            auto_rows = [r for r in q_disk if r.get("source") == "auto_policy"]
+            self.assertEqual(len(auto_rows), 3)
+            for r in auto_rows:
+                self.assertEqual(r.get("state"), "queued")
+                self.assertNotIn("status", r)
+                self.assertEqual(r.get("station"), "s1:p1:crimson_hub")
+                self.assertIn("batch_id", r)
+
+            # Verify min_t0_bursar_reserve blocks Trade T0 upgrades when reserve reached
+            (data / "fleet" / "upgrade_queue.json").write_text("[]", encoding="ascii")
+            pol["divisions"]["Trade"]["min_t0_bursar_reserve"] = 3
+            (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
+            res_res = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500150)
+            self.assertNotIn("trader-2", {a["pilot"] for a in res_res["added"]})
 
             # Drop treasury below floor (8.5M) -> must refuse all auto-enqueues!
             con = sqlite3.connect(str(data / "store" / "read.db"))

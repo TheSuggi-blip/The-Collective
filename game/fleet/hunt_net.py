@@ -1374,11 +1374,14 @@ def main(argv=None):
                 print('%s %s hunt_net: WAR WING lane 0 -> %s (%s:%s)' % (utc_now(), pilot, wjob['key'], wjob['system'], wjob['poi']), flush=True)
                 return subprocess.run(wcmd, check=False).returncode
 
-        # --- LANE 1: ON-DEMAND ESCORT & PROTECTION ---
+        # --- LANE 1: ON-DEMAND ESCORT & PROTECTION (Royal Guard sentinels get priority slots) ---
         ecfg = policy.get("escort") or {}
+        is_sentinel = str(pilot).startswith("sentinel-")
         escort_active = sum(1 for r in claims.values() if r.get("lane") == "escort")
-        escort_cap = min(int(ecfg.get("max_ships") or 12), max(1, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
-        if ecfg.get("enabled", True) and escort_active < escort_cap and spow["power"] >= float(ecfg.get("min_power") or 350.0):
+        base_cap = min(int(ecfg.get("max_ships") or 12), max(1, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
+        escort_cap = base_cap + (4 if is_sentinel else 0)
+        min_esc_pow = min(200.0, float(ecfg.get("min_power") or 350.0)) if is_sentinel else float(ecfg.get("min_power") or 350.0)
+        if ecfg.get("enabled", True) and escort_active < escort_cap and spow["power"] >= min_esc_pow:
             demands = detect_escort_demands(DATA, world, policy, claims)
             p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 10))
             for dem in demands:

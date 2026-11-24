@@ -113,7 +113,7 @@
     },
     "Military": {
       "enabled": true,
-      "max_active": 5,
+      "max_active": 7,
       "cohorts": [
         {
           "empire": "crimson",
@@ -138,7 +138,8 @@
               "min_piloting": 20,
               "max_price": 240000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "crimson",
@@ -163,7 +164,8 @@
               "min_piloting": 20,
               "max_price": 220000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "crimson",
@@ -176,7 +178,8 @@
               "min_piloting": 10,
               "max_price": 180000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "voidborn",
@@ -195,7 +198,8 @@
               "min_piloting": 10,
               "max_price": 235000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "voidborn",
@@ -220,7 +224,8 @@
               "min_piloting": 20,
               "max_price": 240000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "solarian",
@@ -239,7 +244,8 @@
               "min_piloting": 20,
               "max_price": 350000
             }
-          ]
+          ],
+          "exclude_prefix": "sentinel-"
         },
         {
           "empire": "solarian",
@@ -257,6 +263,149 @@
               "tier": 2,
               "min_piloting": 10,
               "max_price": 235000
+            }
+          ],
+          "exclude_prefix": "sentinel-"
+        },
+        {
+          "empire": "any",
+          "pilot_prefix": "sentinel-",
+          "specialty": "royal_guard_escort",
+          "share": 0.6,
+          "ladder": [
+            {
+              "hull": "axiom",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 25000
+            },
+            {
+              "hull": "paradox",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 25000
+            },
+            {
+              "hull": "lone_star",
+              "tier": 2,
+              "min_piloting": 0,
+              "max_price": 180000
+            },
+            {
+              "hull": "dualism",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 110000
+            },
+            {
+              "hull": "junkyard_dog",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "recursion",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 235000
+            },
+            {
+              "hull": "theorem",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "bad_idea",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "collateral",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 150000
+            },
+            {
+              "hull": "quorum",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 220000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "pilot_prefix": "sentinel-",
+          "specialty": "royal_guard_support",
+          "share": 0.4,
+          "ladder": [
+            {
+              "hull": "last_warning",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 20000
+            },
+            {
+              "hull": "apeiron",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 28000
+            },
+            {
+              "hull": "lone_star",
+              "tier": 2,
+              "min_piloting": 0,
+              "max_price": 180000
+            },
+            {
+              "hull": "franchise",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 65000
+            },
+            {
+              "hull": "scrutiny",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 90000
+            },
+            {
+              "hull": "census",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "syllogism",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 160000
+            },
+            {
+              "hull": "penumbra",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 300000
+            },
+            {
+              "hull": "trebuchet",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "concordance",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 230000
+            },
+            {
+              "hull": "gestalt",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 310000
             }
           ]
         }
@@ -371,11 +520,12 @@
             }
           ]
         }
-      ]
+      ],
+      "min_t0_bursar_reserve": 65
     },
     "Intel": {
       "enabled": false,
-      "max_active": 2,
+      "max_active": 3,
       "cohorts": [
         {
           "empire": "any",
@@ -383,16 +533,34 @@
           "share": 1.0,
           "ladder": [
             {
-              "hull": "qualia",
+              "hull": "crimson_stiletto",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 45000
+              "max_price": 25000
             },
             {
-              "hull": "peer_review",
+              "hull": "venture",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 25000
+            },
+            {
+              "hull": "prospectus",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "survey_vessel",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 110000
+              "max_price": 600000
+            },
+            {
+              "hull": "perigee",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 720000
             }
           ]
         }

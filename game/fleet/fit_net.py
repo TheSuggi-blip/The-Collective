@@ -63,7 +63,7 @@ def ship_file_name(pilot):
 def _pilot_bucket(pilot):
     m = re.search(r"(\d+)$", str(pilot))
     if m:
-        return int(m.group(1)) % 100
+        return (int(m.group(1)) * 37) % 100
     h = 0
     for ch in str(pilot):
         h = (h * 31 + ord(ch)) % 100
@@ -79,7 +79,10 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False):
     for spec_name, mod_list in (dspec.get("detect_by_module") or {}).items():
         if fset & {str(x).lower() for x in (mod_list or [])}:
             return str(spec_name)
-    mix = dspec.get("mix") or []
+    if str(pilot).startswith("sentinel-") and dspec.get("sentinel_mix"):
+        mix = dspec.get("sentinel_mix") or []
+    else:
+        mix = dspec.get("mix") or []
     if not mix:
         return "default"
     b = _pilot_bucket(pilot)
@@ -115,6 +118,7 @@ def load_fit_world(data_dir, policy):
     stations = {}       # base_id -> (system, poi, base_id, policed)
     hulls = {}          # id_or_name_lower -> {weapon, defense, utility, tier}
     asks = {}           # item_id -> [(ask_price, base_id, qty)]
+    item_slots = {}     # item_id_lower -> weapon | defense | utility
     bursar_pilots = set()
     bc = Path(data_dir) / "fleet" / "bursar_claims.json"
     if bc.is_file():
@@ -159,16 +163,24 @@ def load_fit_world(data_dir, policy):
                         asks.setdefault(str(iid), []).append((int(round(float(ask))), str(base_id), int(aqty or 1)))
                 for iid in asks:
                     asks[iid].sort()
+            if "items" in tbls:
+                for iid, sl in con.execute("SELECT id, LOWER(COALESCE(slot, '')) FROM items WHERE slot IS NOT NULL AND slot != ''"):
+                    if sl in ("weapon", "defense", "utility"):
+                        item_slots[str(iid).lower()] = str(sl)
         finally:
             con.close()
-    return {"adj": adj, "stations": stations, "hulls": hulls, "asks": asks, "bursar_pilots": bursar_pilots}
+    return {"adj": adj, "stations": stations, "hulls": hulls, "asks": asks, "item_slots": item_slots, "bursar_pilots": bursar_pilots}
 
 
-def _module_slot_type(mod_id):
+def _module_slot_type(mod_id, item_slots=None):
     m = str(mod_id or "").lower()
-    if any(k in m for k in ("pulse_laser", "beam_laser", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon")):
+    if item_slots and m in item_slots:
+        return item_slots[m]
+    if any(k in m for k in ("repair", "hospital", "dampener", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "cargo_expander", "cabin")):
+        return "utility"
+    if any(k in m for k in ("pulse_laser", "beam_laser", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "em_disruptor")):
         return "weapon"
-    if any(k in m for k in ("shield", "armor", "hull_plate", "ecm", "cloak", "point_defense")):
+    if any(k in m for k in ("shield", "armor", "hull_plate", "ecm", "point_defense")):
         return "defense"
     return "utility"
 
@@ -204,7 +216,7 @@ def plan_ship_fit(ship_doc, world, policy):
     kept = [m for m in fitted if m not in off_set]
     used_slots = {"weapon": 0, "defense": 0, "utility": 0}
     for m in kept:
-        st = _module_slot_type(m)
+        st = _module_slot_type(m, world.get('item_slots'))
         used_slots[st] = used_slots.get(st, 0) + 1
 
     loadout = (((policy.get("specialties") or {}).get(division) or {}).get("loadouts") or {}).get(specialty) or {}

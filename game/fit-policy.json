@@ -52,7 +52,14 @@
     "armor_plate_iii": 3500,
     "survey_scanner_ii": 18000,
     "economy_passenger_cabin": 5000,
-    "business_passenger_cabin": 10000
+    "business_passenger_cabin": 10000,
+    "expanded_fuel_tank": 2000,
+    "afterburner_ii": 4000,
+    "remote_armor_repairer_ii": 7000,
+    "em_disruptor_i": 5000,
+    "sensor_dampener": 3000,
+    "warp_disruptor": 3000,
+    "shield_recharger_ii": 8000
   },
   "specialties": {
     "Mining": {
@@ -172,8 +179,53 @@
             "shield_booster_ii",
             "armor_plate_iii"
           ]
+        },
+        "royal_guard_escort": {
+          "weapon": [
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "expanded_fuel_tank",
+            "afterburner_ii",
+            "warp_disruptor"
+          ]
+        },
+        "royal_guard_support": {
+          "weapon": [
+            "em_disruptor_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "remote_armor_repairer_ii",
+            "sensor_dampener",
+            "expanded_fuel_tank",
+            "afterburner_ii"
+          ]
         }
-      }
+      },
+      "sentinel_mix": [
+        [
+          "royal_guard_escort",
+          60
+        ],
+        [
+          "royal_guard_support",
+          40
+        ]
+      ]
     },
     "Logistics": {
       "mix": [
