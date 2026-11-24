@@ -1,0 +1,18 @@
+{
+ "id": "gather-gsc-0012-flicker-fray",
+ "kind": "mine",
+ "title": "Standing work, a test: iron at GSC-0012 Flicker Fray (beyond the border, 3 jumps from Synchrony Hub) into storage there",
+ "note": "Written by Zero, 2026-11-24 15:48 UTC (orders ENT-087 block ZERO: gather what the reserve lacks, the iron fallback for the laser-only veterans; rules F3, F23: a class whose work at home is saturated takes it further). Iron reads short (supply iron-ore against keep 60,000; Unity's ENT-516); every policed iron belt near our give stations is worked at the 3-a-belt cap (queue ENT-297) or under its floor, and the five far gathers written at 15:31 UTC filled at once while six miners still waited at 15:47 UTC (fill.py check). The field read iron_ore 100,000 of 100,000 (richness 33), copper_ore 100,000 of 100,000 (richness 33), null_matter 675 of 675 (richness 10) (table fields, 2026-11-24 13:27 UTC); no pirate line in the system in 24 h (sightings.jsonl). Stores into the pilot's storage at Synchrony Hub, where give-miner-stores-* hands it to the hauler receivers (P5). Hold empty, lift_to 3; the floor keeps 20,000 iron so the field grows back; the pull rule closes it when iron stands at its max.",
+ "belt": "gsc_0012:flicker_fray",
+ "station": "synchrony:synchrony_hub:synchrony_hub",
+ "minutes": 45,
+ "max_ships": 3,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 3
+}
