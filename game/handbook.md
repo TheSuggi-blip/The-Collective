@@ -121,7 +121,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | credits, Net Purse/h (steady + paid once), matched Recurring Cash/h, and transfer-priced IAS2 Accrual... | fleet view=money | hive.py fleet |
 | credits hour by hour per division. | fleet view=history | hive.py history |
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
-| Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up... | fund | wallet.py fund --show |
+| Draw credits from the shared faction treasury for one or more pilots of your division (rule F12... | fund | wallet.py fund --show |
 
 ### Markets
 

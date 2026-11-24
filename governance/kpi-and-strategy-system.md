@@ -121,7 +121,7 @@ Shared faction KPIs couple all six divisions into one closed loop:
    - Surplus pilot cash above role floors (`50k` Trade/Command, `30k` working roles) sweeps
      automatically into the treasury (`wallet.py sweep`).
    - Admirals fund their own division's hulls/modules autonomously (`wallet.py fund`,
-     `<=400k`/pilot, `<=750k`/24h, preserving `>=500k` treasury floor) and Logistics builds
+     uncapped per pilot/day, preserving `>=500k` treasury floor) and Logistics builds
      routine facilities (`build.py <=500k` above `500k` floor) without blocking on Unity.
 4. **12-Rung Enterprise Progression Roadmap (`game/fleet/progression.py`):**
    - Tracks 12 live gauges (`0..100%`) across Immediate (`Days`), Mid-Term (`1-3 Weeks`),

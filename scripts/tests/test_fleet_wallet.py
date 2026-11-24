@@ -367,8 +367,8 @@ class TreasuryTopupTests(FundTests):
 
 
 class AdmiralSelfFundingTests(FundTests):
-    """Autonomous division treasury access (Suggi, 2026-11-23; rule F12): Admirals fund own division up to
-    400k/pilot and 750k/24h keeping 500k floor; serve_funds batches up to FUND_BATCH and uses docked Officers."""
+    """Autonomous division treasury access (Suggi, 2026-11-24; rule F12): Admirals fund own division uncapped
+    per pilot/day keeping 500k floor; serve_funds batches up to FUND_BATCH and uses docked Officers."""
 
     def put_empire(self, treasury=1800000, officer=None):
         (self.data / "empire").mkdir(exist_ok=True)
@@ -397,18 +397,20 @@ class AdmiralSelfFundingTests(FundTests):
             ships.extend(extra)
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
 
-    def test_admiral_funds_own_division_within_caps_and_rejects_foreign_or_over_cap(self):
+    def test_admiral_funds_own_division_uncapped_and_rejects_foreign_or_below_floor(self):
         w, now = self.wallet, time.time()
-        self.put_empire(treasury=1800000)
+        self.put_empire(treasury=2200000)
         self.put_fleet()
-        self.assertEqual(w.add_fund(str(self.data), "miner-1", 300000, "Resonance Miner", 6, now, who="Zero"), 0)
-        self.assertEqual(w.add_fund(str(self.data), "miner-2", 300000, "Resonance Miner", 6, now, who="Zero"), 0)
+        self.assertIsNone(w.ADMIRAL_MAX_SINGLE)
+        self.assertIsNone(w.ADMIRAL_DAY_CAP)
+        self.assertEqual(w.add_fund(str(self.data), "miner-1", 600000, "Tier 2 Miner", 6, now, who="Zero"), 0)
+        self.assertEqual(w.add_fund(str(self.data), "miner-2", 600000, "Tier 2 Miner", 6, now, who="Zero"), 0)
         self.assertEqual(w.add_fund(str(self.data), "trader-1", 100000, "wrong div", 6, now, who="Zero"), 1)
-        self.assertEqual(w.add_fund(str(self.data), "miner-3", 450000, "too large", 6, now, who="Zero"), 1)
-        self.assertEqual(w.add_fund(str(self.data), "miner-3", 200000, "over 24h cap", 6, now, who="Zero"), 1)
-        self.assertEqual(w.add_fund(str(self.data), "miner-3", 150000, "fits cap", 6, now, who="Zero"), 0)
-        self.put_empire(treasury=1300000)
+        self.assertEqual(w.add_fund(str(self.data), "miner-3", 450000, "large uncapped", 6, now, who="Zero"), 0)
+        # 2,200,000 - 1,650,000 open = 550,000 left; asking 100,000 breaks 500,000 FUND_FLOOR
         self.assertEqual(w.add_fund(str(self.data), "trader-1", 100000, "floor test", 6, now, who="Mercury"), 1)
+        # fund --show must format cleanly when caps are None
+        self.assertEqual(w.main(["fund", "--show", "--data", str(self.data)]), 0)
 
     def test_serve_funds_batches_open_rows_and_uses_docked_officer_when_leader_undocked(self):
         w, now = self.wallet, time.time()

@@ -469,8 +469,8 @@ TOOLS = {
         "plan": errand_plan,
     },
     "fund": {
-        "text": "Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up to 400,000 cr/pilot and 750,000 cr/division per 24h, "
-                "keeping 500,000 cr treasury floor; uncapped for Unity), served every 5 minutes. Use show=true to view open funds and 24h division budgets.",
+        "text": "Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: uncapped per pilot and per 24h for own division, "
+                "keeping 500,000 cr treasury floor; any pilot for Unity), served every 5 minutes. Use show=true to view open funds and 24h division funding totals.",
         "args": {"pilot": arg(S, "pilot name or comma-separated pilot names in your division"),
                  "credits": arg(I, "credits to fund each pilot"),
                  "why": arg(S, "short reason (e.g. hull upgrade, fittings, working capital)"),

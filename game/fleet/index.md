@@ -1087,8 +1087,8 @@ wallet.py [check]            every wallet against the floors; HALT for a pilot u
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
 wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
 wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]
-                             the treasury pays one or more pilots for a buy (own division for Admirals, up to 400k/pilot
-                             and 750k/24h keeping 500k treasury floor; any pilot for Unity); served every 5 min
+                             the treasury pays one or more pilots for a buy (own division for Admirals, uncapped above
+                             500k treasury floor; any pilot for Unity); served every 5 min
 wallet.py fund --show        the funds on record, their state, and rolling 24h division autonomous budgets
 --data <dir>                 the unit's data folder (default: the fleet's)
 ```

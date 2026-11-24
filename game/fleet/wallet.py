@@ -48,8 +48,8 @@ RULES:
     faction treasury for a pilot's buy (hull, fit, working capital):
       * Unity (Fleet Admiral) may fund any pilot, uncapped above FUND_FLOOR.
       * Division Admirals (Zero, Mercury, Apollo, Apophis, Oracle) may autonomously fund pilots of their own
-        division up to ADMIRAL_MAX_SINGLE (400,000 cr) per pilot and ADMIRAL_DAY_CAP (750,000 cr) per division
-        per rolling 24 hours, always keeping treasury >= FUND_FLOOR (500,000 cr) -- no waiting on Unity.
+        division uncapped per pilot and per 24 hours (rule F12, Suggi 2026-11-24), always keeping treasury
+        >= FUND_FLOOR (500,000 cr) -- upgrade hulls and fits as fast as cash allows with no waiting on Unity.
       * Served at the start of every 5-minute sweep pass, up to FUND_BATCH (10) open funds in one batched
         withdrawal while the leader (or any Officer/treasurer role docked at an active Faction Lockbox) stands
         docked. The first fund ever withdraws 1 cr first and reads the treasury (rule F12). The withdrawal is
@@ -68,8 +68,8 @@ USAGE:
   wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
   wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
   wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]
-                               the treasury pays one or more pilots for a buy (own division for Admirals, up to 400k/pilot
-                               and 750k/24h keeping 500k treasury floor; any pilot for Unity); served every 5 min
+                               the treasury pays one or more pilots for a buy (own division for Admirals, uncapped above
+                               500k treasury floor; any pilot for Unity); served every 5 min
   wallet.py fund --show        the funds on record, their state, and rolling 24h division autonomous budgets
   --data <dir>                 the unit's data folder (default: the fleet's)
 
@@ -124,8 +124,8 @@ FUND_HOURS = 6                 # a funded pilot keeps its fund this long from th
 FUND_WAIT = 24                 # hours an open fund waits for a docked leader before it ends by itself
 FUND_READ = 12                 # seconds between a withdrawal's call and the treasury's read after it (about one tick)
 FUND_TITLE = "Treasury fund: credits withdrawn from the faction treasury for a buy"   # never begins with routes.TREASURY
-ADMIRAL_MAX_SINGLE = 400000    # rule F12 (Suggi, 2026-11-23): max single autonomous fund per pilot by a Division Admiral
-ADMIRAL_DAY_CAP = 750000       # rule F12: max rolling 24h autonomous treasury draw per Division Admiral
+ADMIRAL_MAX_SINGLE = None      # rule F12 (Suggi, 2026-11-24): per-pilot cap removed (None = unlimited above FUND_FLOOR)
+ADMIRAL_DAY_CAP = None         # rule F12 (Suggi, 2026-11-24): rolling 24h cap removed (None = unlimited above FUND_FLOOR)
 FUND_BATCH = 10                # max open funds withdrawn in a single batched pass
 FUND_BUDGET = 100              # seconds of a sweep pass fund gifts may take; any remaining withdrawn rows go next pass
 # The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
@@ -1102,12 +1102,12 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
         if owner != who:
             print("REFUSED: %s belongs to %s, not %s (rule F12: own division only)" % (pilot, owner, who))
             return 1
-        if credits > ADMIRAL_MAX_SINGLE:
+        if ADMIRAL_MAX_SINGLE and credits > ADMIRAL_MAX_SINGLE:
             print("REFUSED: %s cr exceeds autonomous single-pilot cap of %s cr (rule F12); escalate to Unity (Scope: capital)"
                   % (format(credits, ","), format(ADMIRAL_MAX_SINGLE, ",")))
             return 1
         spent = division_fund_spent(data, who, now)
-        if spent + credits > ADMIRAL_DAY_CAP:
+        if ADMIRAL_DAY_CAP and spent + credits > ADMIRAL_DAY_CAP:
             print("REFUSED: %s autonomous 24h treasury budget exceeded (%s + %s > %s cr, rule F12); escalate to Unity (Scope: capital)"
                   % (who, format(spent, ","), format(credits, ","), format(ADMIRAL_DAY_CAP, ",")))
             return 1
@@ -1573,13 +1573,18 @@ def main(argv=None):
         if "--show" in args:
             emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
             tr_now = (emp.get("faction") or {}).get("treasury") if isinstance(emp, dict) else None
-            print("TREASURY | balance: %s cr | floor: %s cr | Admiral cap: %s cr/pilot, %s cr/24h"
+            cap_txt = (("%s cr/pilot, %s cr/24h" % (format(ADMIRAL_MAX_SINGLE, ","), format(ADMIRAL_DAY_CAP, ",")))
+                       if (ADMIRAL_MAX_SINGLE or ADMIRAL_DAY_CAP) else "unlimited (own division)")
+            print("TREASURY | balance: %s cr | floor: %s cr | Admiral cap: %s"
                   % (format(int(tr_now), ",") if isinstance(tr_now, (int, float)) else "?",
-                     format(FUND_FLOOR, ","), format(ADMIRAL_MAX_SINGLE, ","), format(ADMIRAL_DAY_CAP, ",")))
+                     format(FUND_FLOOR, ","), cap_txt))
             for m in ("Zero", "Mercury", "Apollo", "Apophis", "Oracle"):
                 used = division_fund_spent(data, m, now)
                 if used:
-                    print("  24h budget %-8s: %s / %s cr used" % (m, format(used, ","), format(ADMIRAL_DAY_CAP, ",")))
+                    if ADMIRAL_DAY_CAP:
+                        print("  24h budget %-8s: %s / %s cr used" % (m, format(used, ","), format(ADMIRAL_DAY_CAP, ",")))
+                    else:
+                        print("  24h funded %-8s: %s cr (uncapped)" % (m, format(used, ",")))
             for r in funds(data):
                 by_s = (" | by " + str(r["by"])) if r.get("by") else ""
                 print("FUND %s %s cr | %s%s | %s | opened %s UTC%s"
