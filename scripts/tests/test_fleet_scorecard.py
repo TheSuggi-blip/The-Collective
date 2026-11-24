@@ -347,5 +347,83 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertIn("Gaps->0", txt_z)
             self.assertIn("Field Saturation", txt_z)
 
+
+    def test_responsibility_centers_trade_hub_saturation_and_optional_playbook_menu(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                DROP TABLE IF EXISTS places;
+                CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, base TEXT, t INT);
+                CREATE TABLE IF NOT EXISTS systems (id TEXT, name TEXT, empire TEXT);
+                CREATE TABLE IF NOT EXISTS books (base TEXT, system TEXT, item TEXT, bid REAL, bid_qty REAL, ask REAL, ask_qty REAL);
+                CREATE TABLE IF NOT EXISTS stations (name TEXT, kind TEXT, system TEXT);
+                INSERT INTO systems VALUES ('krynn', 'Krynn', 'crimson'), ('haven', 'Haven', 'nebula'), ('sol', 'Sol', 'solarian');
+                INSERT INTO places VALUES ('krynn', 'p1', 'station', 'Krynn', 'crimson_war_citadel', 1795409000),
+                                          ('haven', 'p2', 'station', 'Grand Exchange', 'grand_exchange_station', 1795409000),
+                                          ('sol', 'p3', 'station', 'Sol', 'confederacy_central_command', 1795409000);
+                INSERT INTO books VALUES ('crimson_war_citadel', 'krynn', 'ore', 10, 100, 12, 100),
+                                         ('grand_exchange_station', 'haven', 'ore', 100, 5000, 110, 500),
+                                         ('confederacy_central_command', 'sol', 'ore', 90, 4000, 100, 400);
+                INSERT INTO stations VALUES ('Krynn', 'station', 'krynn'), ('Grand Exchange', 'station', 'haven'), ('Sol', 'station', 'sol');
+            """)
+            con.commit()
+            con.close()
+
+            rdir = Path(root) / "game" / "routes"
+            rdir.mkdir(parents=True, exist_ok=True)
+            (rdir / "bursar-desk-krynn.json").write_text(json.dumps({
+                "id": "bursar-desk-krynn", "kind": "circuit", "max_ships": 20,
+                "requires": {"docked_at": "crimson_war_citadel"},
+                "stops": [{"at": "krynn:p1:crimson_war_citadel", "sell_order": [{"item": "ore", "qty": 10, "price": 12}], "watch_minutes": 15}],
+            }), encoding="ascii")
+            odir = Path(data) / "fleet" / "orders"
+            odir.mkdir(parents=True, exist_ok=True)
+            for i in range(1, 13):
+                (odir / f"trader-{i}.json").write_text(json.dumps({"pilot": f"trader-{i}", "what": "circuit bursar-desk-krynn"}), encoding="ascii")
+
+            rv_mock = {
+                "strategy_playbooks": [{
+                    "id": "pve_combat", "name": "8. PvE & Escort", "short_name": "PvE & Escort",
+                    "divisions": ["Military"], "status_code": "GAP", "readiness_pct": 25.0,
+                    "matched_count": 1, "total_count": 4, "empires": [{"name": "Crimson", "ships": 41}],
+                    "effort": 2, "posture_weights": {"WAR_ALERT": 100, "CASHFLOW_RECOVERY": 70, "PEACETIME_GROWTH": 80},
+                    "how_to_copy": "Field T2 combat hulls", "blocker": "T2 warships",
+                    "kpis": [{"name": "T2 warships", "owner": "Military", "current": "0", "target": ">=5", "matched": False, "source": "read.db:ships"}],
+                }]
+            }
+            sc = scorecard.compute_scorecard(root, data, now=1795410000, rivals_doc=rv_mock)
+            # 1. Responsibility center metadata attached to every division
+            self.assertEqual(sc["divisions"]["Mining"]["responsibility_center"]["short"], "Production")
+            self.assertEqual(sc["divisions"]["Trade"]["responsibility_center"]["short"], "Profit Ctr")
+            self.assertEqual(sc["divisions"]["Intel"]["responsibility_center"]["short"], "Cost Ctr")
+            self.assertEqual(sc["divisions"]["Logistics"]["responsibility_center"]["short"], "Service/Infra")
+            # 2. Trade Hub Saturation detects 12 Bursars stacked on Krynn with 2/3 policed hubs uncovered
+            tsat = sc["divisions"]["Trade"]["saturation"]
+            self.assertEqual(tsat["total_policed_hubs"], 3)
+            self.assertEqual(tsat["covered_hubs"], 1)
+            self.assertEqual(tsat["uncovered_hubs"], 2)
+            self.assertEqual(tsat["max_per_poi"], 12)
+            self.assertEqual(tsat["status"], "ALARM")
+            self.assertIn("HUB_CONGESTION", {t["code"] for t in sc["divisions"]["Trade"]["triggers"]})
+            self.assertIn("HUB_CONGESTION", {t["code"] for t in sc["enterprise"]["triggers"]})
+            self.assertTrue(any("grand_exchange_station" in x for x in tsat["top_unserved"]))
+            # 3. Military is 100% employed (0 idle) -> optional Playbook demotes to P3 MENU (not P1 WARN)
+            mil_pb = [x for x in sc["divisions"]["Military"]["triage"] if x["code"].startswith("STRAT_pve_combat_")]
+            self.assertEqual(len(mil_pb), 1)
+            self.assertEqual(mil_pb[0]["tier"], "P3")
+            self.assertEqual(mil_pb[0]["source"], "MENU")
+            self.assertTrue(mil_pb[0]["optional"])
+            # 4. routes.concentration_warnings catches Bursar max_ships > 3 and mine max_ships > 10
+            import routes as _rt
+            cw = _rt.concentration_warnings({
+                "bursar-desk-krynn": {"kind": "circuit", "max_ships": 20, "requires": {"docked_at": "crimson_war_citadel"}, "stops": [{"at": "k:p:b", "sell_order": []}]},
+                "bursar-ok": {"kind": "circuit", "max_ships": 2, "requires": {"docked_at": "sol"}, "stops": [{"at": "s:p:b", "sell_order": []}]},
+                "mine-big": {"kind": "mine", "belt": "hamal:b", "max_ships": 40},
+                "mine-ok": {"kind": "mine", "belt": "subra:b", "max_ships": 8},
+            })
+            cids = [rid for rid, _w in cw]
+            self.assertEqual(cids, ["bursar-desk-krynn", "mine-big"])
+
 if __name__ == "__main__":
     unittest.main()

@@ -98,6 +98,23 @@ POSTURE_WEIGHTS = {
     },
 }
 ENTERPRISE_WEIGHTS = dict(POSTURE_WEIGHTS["CASHFLOW_RECOVERY"])
+# Responsibility Center Accounting model (Anthony & Govindarajan): each division is judged on what it controls.
+# CapEx (hulls/modules/fit-fuel) is excluded from operating accrual; internal handovers are transfer-priced at IAS 2 NRV.
+RESPONSIBILITY_CENTERS = {
+    "Command": {"type": "Investment Center", "short": "Investment",
+                "focus": "Fleetwide Net Worth, Consolidated Cash & Accrual, Seating, Roadmaps, CapEx Governance"},
+    "Trade": {"type": "Profit Center", "short": "Profit Ctr",
+              "focus": "Recurring Cash & Accrual Margin (net of handovers), Dynamic Market Hub Coverage"},
+    "Mining": {"type": "Production Center", "short": "Production",
+               "focus": "IAS 2 Accrual Value-Add (handovers + vault), Ore/ship-h, Belt Spread"},
+    "Military": {"type": "Combat & Security Center", "short": "Combat/Sec",
+                 "focus": "0 Losses, Combat XP & Kills, IAS 2 Loot Value-Add, Herd Spread"},
+    "Logistics": {"type": "Service & Infra Center", "short": "Service/Infra",
+                  "focus": "Supply Chains at Keep, Outpost Kits, Freight/Shipping, Zero Idle"},
+    "Intel": {"type": "Recon Cost Center", "short": "Cost Ctr",
+              "focus": "<3h Market/Place Freshness (enables Trade), 0 Losses, Diplomatic Comms SLA"},
+}
+
 DIVISION_WEIGHTS = {
     "employment": 30,
     "role_kpi": 30,
@@ -120,6 +137,7 @@ TRIAGE_SPECS = {
     "SURPLUS_BACKLOG": ("P1", "P1", 82, 76, 1),
     "MINING_YIELD": ("P1", "P1", 82, 72, 2),
     "FIELD_CONGESTION": ("P1", "P2", 80, 64, 1),
+    "HUB_CONGESTION": ("P1", "P2", 78, 62, 1),
     "DIV_HULL_UPGRADE": ("P1", "P1", 80, 70, 2),
     "HULL_UPGRADE_LAG": ("P1", "P1", 80, 70, 2),
     "OPEN_SEATS": ("P1", "P1", 76, 68, 1),
@@ -496,8 +514,9 @@ def _load_watchdog_deltas(data_dir):
 
 
 def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
-    """Compute USE-method saturation (ship concentration on depleting mine belts & hunt POIs).
-    Never penalizes non-depleting work (craft, bursar desks, shipping, one-time missions, census)."""
+    """Compute USE-method saturation for Mining belts, Military hunt POIs, and Trade Bursar hub coverage.
+    Dynamic station/hub counts are derived live from read.db (books/places/systems/stations) -- never hardcoded.
+    Never penalizes non-depleting Logistics hauling/shipping/crafting or one-time missions."""
     from collections import Counter, defaultdict
     out = {}
     for div in ("Mining", "Military"):
@@ -505,6 +524,12 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             "active_depleting": 0, "distinct_pois": 0, "max_per_poi": 0,
             "top_poi": "", "depleted_on_top": [], "crowded_pois": 0, "status": "OK",
         }
+    out["Trade"] = {
+        "active_depleting": 0, "distinct_pois": 0, "max_per_poi": 0,
+        "top_poi": "", "depleted_on_top": [], "crowded_pois": 0, "status": "OK",
+        "total_policed_hubs": 0, "total_book_hubs": 0, "total_public_stations": 0,
+        "covered_hubs": 0, "uncovered_hubs": 0, "top_unserved": [],
+    }
     odir = Path(data_dir) / "fleet" / "orders"
     rdir = Path(repo_root) / "game" / "routes"
     if not odir.is_dir() or not rdir.is_dir():
@@ -520,10 +545,10 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
     if not orders:
         return out
     route_cache = {}
-    def _route_poi(kind, rid):
+    def _route_meta(kind, rid):
         key = (kind, rid)
         if key not in route_cache:
-            poi = ""
+            poi, is_bursar = "", False
             rf = rdir / (rid + ".json")
             if rf.is_file():
                 try:
@@ -532,12 +557,21 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
                         poi = str(rd.get("belt") or "")
                     elif kind == "hunt":
                         poi = str(rd.get("place") or "")
+                    elif kind == "circuit":
+                        stops = rd.get("stops") or []
+                        has_ord = any(isinstance(s, dict) and (s.get("sell_order") or s.get("buy_order")) for s in stops)
+                        req = rd.get("requires") if isinstance(rd.get("requires"), dict) else {}
+                        is_docked_desk = bool(req.get("docked_at")) or any(isinstance(s, dict) and s.get("watch_minutes") for s in stops)
+                        if has_ord and (is_docked_desk or "bursar" in rid):
+                            is_bursar = True
+                            at0 = str(stops[0].get("at") or "") if stops and isinstance(stops[0], dict) else ""
+                            poi = at0.split(":")[-1] if ":" in at0 else str(req.get("docked_at") or "")
                 except Exception:
-                    poi = ""
-            route_cache[key] = poi
+                    poi, is_bursar = "", False
+            route_cache[key] = (poi, is_bursar)
         return route_cache[key]
 
-    by_div = {"Mining": Counter(), "Military": Counter()}
+    by_div = {"Mining": Counter(), "Military": Counter(), "Trade": Counter()}
     sdivs = ship_divs or {}
     for pilot, what in orders.items():
         parts = what.split(" ", 1)
@@ -545,19 +579,22 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             continue
         kind, rid = parts[0], parts[1]
         if kind == "mine":
-            poi = _route_poi("mine", rid)
-            if poi:
-                div = sdivs.get(pilot, "Mining")
-                if div in by_div:
-                    by_div[div][poi] += 1
+            poi, _ = _route_meta("mine", rid)
+            if poi and sdivs.get(pilot, "Mining") == "Mining":
+                by_div["Mining"][poi] += 1
         elif kind == "hunt":
-            poi = _route_poi("hunt", rid)
-            if poi:
-                div = sdivs.get(pilot, "Military")
-                if div in by_div:
-                    by_div[div][poi] += 1
+            poi, _ = _route_meta("hunt", rid)
+            if poi and sdivs.get(pilot, "Military") == "Military":
+                by_div["Military"][poi] += 1
+        elif kind == "circuit":
+            poi, is_bursar = _route_meta("circuit", rid)
+            if is_bursar and poi and sdivs.get(pilot, "Trade") == "Trade":
+                by_div["Trade"][poi] += 1
 
     depleted_by_poi = defaultdict(list)
+    policed_hubs = []
+    total_book_hubs = 0
+    total_public_stations = 0
     if conn is not None:
         try:
             tbls = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
@@ -567,6 +604,23 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
                 ).fetchall():
                     if mx and int(mx) > 0 and int(rem or 0) <= 0 and res not in ("iron_ore", "copper_ore"):
                         depleted_by_poi[f"{sys_id}:{poi_id}"].append(f"{res} 0/{int(mx)}")
+            if "books" in tbls:
+                total_book_hubs = int(_num(conn.execute("SELECT COUNT(DISTINCT base) FROM books").fetchone()[0]))
+                if "places" in tbls and "systems" in tbls:
+                    for b_id, emp, depth in conn.execute("""
+                        SELECT b.base, COALESCE(s.empire, ''),
+                               ROUND(SUM(COALESCE(b.bid,0) * COALESCE(b.bid_qty,0))) AS depth
+                        FROM books b
+                        LEFT JOIN places p ON p.base = b.base
+                        LEFT JOIN systems s ON s.id = p.system
+                        WHERE COALESCE(s.empire, '') != ''
+                        GROUP BY b.base
+                        ORDER BY depth DESC, b.base ASC
+                    """).fetchall():
+                        if b_id:
+                            policed_hubs.append((str(b_id), str(emp), int(_num(depth))))
+            if "stations" in tbls:
+                total_public_stations = int(_num(conn.execute("SELECT COUNT(*) FROM stations").fetchone()[0]))
         except Exception:
             pass
 
@@ -593,6 +647,42 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             "crowded_pois": crowded,
             "status": st,
         }
+
+    # Dynamic Trade Hub Saturation (1,000 orders/pilot cap -> 1-3 Bursars/hub; spread extras to unserved policed hubs)
+    tc = by_div["Trade"]
+    t_tot = sum(tc.values())
+    pol_ids = [h[0] for h in policed_hubs]
+    pol_set = set(pol_ids)
+    cov_pol = sum(1 for b in tc if (not pol_set or b in pol_set))
+    tot_pol = len(pol_ids)
+    uncov = max(0, tot_pol - cov_pol)
+    top_unserved = [
+        f"{b} ({_fmt_cr(d)})" if d >= 100000 else b
+        for b, _e, d in policed_hubs if b not in tc
+    ][:4]
+    t_top, t_max = tc.most_common(1)[0] if tc else ("", 0)
+    t_crowded = sum(1 for _b, n in tc.items() if n >= 4)
+    if t_max >= 10 and (uncov > 0 or tot_pol == 0):
+        t_st = "ALARM"
+    elif t_max >= 4 and (uncov > 0 or tot_pol == 0):
+        t_st = "WARN"
+    else:
+        t_st = "OK"
+    out["Trade"] = {
+        "active_depleting": t_tot,
+        "distinct_pois": len(tc),
+        "max_per_poi": t_max,
+        "top_poi": t_top,
+        "depleted_on_top": [],
+        "crowded_pois": t_crowded,
+        "status": t_st,
+        "total_policed_hubs": tot_pol,
+        "total_book_hubs": total_book_hubs,
+        "total_public_stations": total_public_stations,
+        "covered_hubs": cov_pol,
+        "uncovered_hubs": uncov,
+        "top_unserved": top_unserved,
+    }
     return out
 
 
@@ -1031,6 +1121,17 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
                 "action": f"Spread {_sdiv} ships across unsaturated scarce POIs & use jettison_gangue on scarce belts",
             })
+    _tsat = field_sat.get("Trade") or {}
+    if _tsat.get("status") == "ALARM":
+        _un_s = ("; top unserved: " + ", ".join(_tsat["top_unserved"][:3])) if _tsat.get("top_unserved") else ""
+        _hub_tot = _tsat.get("total_policed_hubs") or _tsat.get("distinct_pois")
+        ent_triggers.append({
+            "severity": "ALARM", "code": "HUB_CONGESTION",
+            "metric": "Trade Hub Saturation",
+            "actual": f"{_tsat['max_per_poi']} Bursars on {_tsat['top_poi']} ({_tsat['covered_hubs']}/{_hub_tot} policed hubs covered, {_tsat['uncovered_hubs']} uncovered{_un_s})",
+            "target": "1-3 Bursars/hub, max hub coverage", "direction": "FLAT",
+            "action": "Keep 1-3 Bursars per hub (1,000 order cap/pilot) and spread excess traders across unserved high-liquidity hubs",
+        })
     _ent_gaps = {
         "CASHFLOW_NEGATIVE": min(1.0, abs(recurring_cash_24h) / 100000.0) if recurring_cash_24h < 0 else 0.3,
         "PRODUCTIVE_EFFICIENCY": max(0.0, (TARGET_COMPLETION_PCT - prod_pct) / TARGET_COMPLETION_PCT),
@@ -1039,6 +1140,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         "HULL_UPGRADE_LAG": max(0.0, (TARGET_COMPLETION_PCT - fleet_hull_elig_pct) / TARGET_COMPLETION_PCT),
         "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
         "FIELD_CONGESTION": 0.85,
+        "HUB_CONGESTION": 0.80,
     }
     for _t in ent_triggers:
         if _t.get("code") == "ACTIVE_WAR":
@@ -1095,14 +1197,30 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         off_role_pct = round(100.0 * md["off_role_ships"] / max(1, tot), 1)
         mod_sev = "ALARM" if (slot_pct < 60.0 or off_role_pct > 25.0) else ("WARN" if (slot_pct < 80.0 or md["off_role_ships"] > 0) else "OK")
 
-        # Division cashflow trend & GAAP/IFRS transfer-priced accrual
+        # Division Responsibility-Center trend & GAAP/IFRS transfer-priced accrual
         d_net24 = dm.get("net_24h", 0.0)
         d_prev24 = dm.get("net_prev24h")
         d_net6 = dm.get("net_6h", 0.0)
-        d_trend, d_delta24 = _classify_trend(d_net24, d_prev24, min_abs=1500.0)
+        raw_trend, d_delta24 = _classify_trend(d_net24, d_prev24, min_abs=1500.0)
         _d_acc = ((acc_24 or {}).get("by_division") or {}).get(div) or {}
         d_rec24 = float(_d_acc.get("recurring_cash_h", d_net24)) if _d_acc else d_net24
         d_acc24 = float(_d_acc.get("accrual_op_h", d_rec24)) if _d_acc else d_rec24
+        # Only Trade (Profit Center) uses raw/recurring cash trend; Production/Service/Cost Centers use Accrual or SLA!
+        if div == "Trade":
+            d_trend = "IMPROVING" if (d_rec24 > 0 and d_acc24 > 0 and raw_trend != "WORSENING") else raw_trend
+        elif div == "Mining":
+            d_trend = "IMPROVING" if (has_accrual_24h and d_acc24 > 10000) else ("FLAT" if (not has_accrual_24h or d_acc24 >= 0) else "WORSENING")
+        elif div == "Military":
+            _mlost = int(_num(contrib_24h.get(("Military", "ships_lost"))))
+            d_trend = "WORSENING" if (_mlost > 0 or (has_accrual_24h and d_acc24 < -25000)) else ("IMPROVING" if (has_accrual_24h and d_acc24 >= 0) else "FLAT")
+        elif div == "Logistics":
+            d_trend = "IMPROVING" if (supply_tot > 0 and supply_ok >= supply_tot and idl == 0) else ("WORSENING" if (supply_tot > 0 and supply_ok < supply_tot * 0.6) else "FLAT")
+        elif div == "Intel":
+            _ilost = int(_num(contrib_24h.get(("Intel", "ships_lost"))))
+            _ifresh = round(100.0 * places_fresh / max(1, places_tot), 1) if places_tot else round(_num(contrib_24h.get(("Intel", "place_fresh_share"))) * 100.0, 1)
+            d_trend = "WORSENING" if (_ilost > 0 or _ifresh < 60.0) else ("IMPROVING" if (_ifresh >= 80.0 and _ilost == 0) else "FLAT")
+        else:  # Command (Investment Center)
+            d_trend = "IMPROVING" if (accrual_op_24h > 0 and cf_dir_6h == "IMPROVING") else ("WORSENING" if (accrual_op_24h <= 0 and cf_dir_24h == "WORSENING") else "FLAT")
 
         # Playbook cap check
         pb_pct = _num(pb.get("max_chapter_pct"))
@@ -1144,13 +1262,23 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             })
         div_sat = field_sat.get(div)
         if div_sat and div_sat.get("status") != "OK":
-            _d_dep = ("; depleted: " + ", ".join(div_sat["depleted_on_top"])) if div_sat.get("depleted_on_top") else ""
-            triggers.append({
-                "severity": div_sat["status"], "code": "FIELD_CONGESTION", "metric": "Field Saturation",
-                "actual": f"{div_sat['max_per_poi']} ships on {div_sat['top_poi']} ({div_sat['distinct_pois']} POIs for {div_sat['active_depleting']} active{_d_dep})",
-                "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
-                "action": "Spread ships across unsaturated scarce POIs (max ~6-8/belt) and use jettison_gangue on scarce veins",
-            })
+            if div == "Trade":
+                _un_s = ("; top unserved: " + ", ".join(div_sat["top_unserved"][:3])) if div_sat.get("top_unserved") else ""
+                _ht = div_sat.get("total_policed_hubs") or div_sat.get("distinct_pois")
+                triggers.append({
+                    "severity": div_sat["status"], "code": "HUB_CONGESTION", "metric": "Market Hub Saturation",
+                    "actual": f"{div_sat['max_per_poi']} Bursars on {div_sat['top_poi']} ({div_sat['covered_hubs']}/{_ht} policed hubs, {div_sat['uncovered_hubs']} uncovered{_un_s})",
+                    "target": "1-3 Bursars/hub (1,000 order cap/pilot)", "direction": "FLAT",
+                    "action": "Keep 1-3 Bursars per station (1,000 order limit/pilot) and spread excess traders across unserved high-liquidity hubs",
+                })
+            else:
+                _d_dep = ("; depleted: " + ", ".join(div_sat["depleted_on_top"])) if div_sat.get("depleted_on_top") else ""
+                triggers.append({
+                    "severity": div_sat["status"], "code": "FIELD_CONGESTION", "metric": "Field Saturation",
+                    "actual": f"{div_sat['max_per_poi']} ships on {div_sat['top_poi']} ({div_sat['distinct_pois']} POIs for {div_sat['active_depleting']} active{_d_dep})",
+                    "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
+                    "action": "Spread ships across unsaturated scarce POIs (max ~6-8/belt) and use jettison_gangue on scarce veins",
+                })
 
         # Division-matched Role Success KPI
         if div == "Mining":
@@ -1292,6 +1420,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "DIV_MODULE_FIT": max(0.0, (TARGET_COMPLETION_PCT - slot_pct) / TARGET_COMPLETION_PCT),
             "MINING_YIELD": max(0.0, (100.0 - _num(role_kpi.get("pct"))) / 100.0),
             "FIELD_CONGESTION": min(1.0, ((div_sat or {}).get("max_per_poi", 0)) / 30.0),
+            "HUB_CONGESTION": min(1.0, ((div_sat or {}).get("max_per_poi", 0)) / 25.0),
             "TRADE_NET": 0.9 if d_net24 <= 0 else 0.4,
             "SURPLUS_BACKLOG": min(1.0, surplus_worth / 1000000.0),
             "SUPPLY_CHAINS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
@@ -1422,6 +1551,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         divisions_out[div] = {
             "division": div,
             "admiral": adm,
+            "responsibility_center": dict(RESPONSIBILITY_CENTERS.get(div, {})),
             "status": div_status,
             "trend_24h": d_trend,
             "cashflow_24h": round(d_net24, 1),
@@ -1546,15 +1676,20 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     if any(x.get("code") == code for x in t_list):
                         continue
                     is_sup = str(k.get("source") or "") == "read.db:supply"
+                    _o_emp = divisions_out[owner]["employment"]
+                    _o_busy = (_o_emp["pct"] >= 85.0 and _o_emp["idle"] < 5)
+                    _o_needs_cash = (owner == "Trade" and divisions_out[owner]["accounting_24h"]["recurring_cash_h"] <= 0)
+                    _is_optional = (not is_sup) and _o_busy and (not _o_needs_cash) and (posture != "WAR_ALERT" or base_wt < 80)
                     t_list.append({
-                        "severity": "WARN" if (p_tier == "P1" or is_sup) else "OK",
-                        "tier": "P1" if is_sup else p_tier,
-                        "weight": min(95, base_wt + (8 if is_sup else 0)),
+                        "severity": "OK" if _is_optional else ("WARN" if (p_tier == "P1" or is_sup) else "OK"),
+                        "tier": "P3" if _is_optional else ("P1" if is_sup else p_tier),
+                        "weight": min(40, base_wt) if _is_optional else min(95, base_wt + (8 if is_sup else 0)),
                         "effort": 1 if is_sup else eff,
-                        "score": min(100, dyn_score + (6 if is_sup else 0)),
-                        "source": "SUPPLY" if is_sup else "STRATEGY",
+                        "score": min(35, dyn_score) if _is_optional else min(100, dyn_score + (6 if is_sup else 0)),
+                        "source": "MENU" if _is_optional else ("SUPPLY" if is_sup else "STRATEGY"),
+                        "optional": _is_optional,
                         "code": code,
-                        "metric": f"Strategy ({p.get('short_name') or p.get('name')}): {k.get('name')}",
+                        "metric": f"{'Optional Playbook' if _is_optional else 'Strategy'} ({p.get('short_name') or p.get('name')}): {k.get('name')}",
                         "actual": f"{k.get('current')} (vs {k.get('target')}; {p.get('matched_count', 0)}/{p.get('total_count', 4)} matched)",
                         "target": str(k.get("target") or "matched"), "direction": "FLAT",
                         "action": str(p.get("how_to_copy") or p.get("blocker") or "")[:115],
@@ -1799,7 +1934,13 @@ def render_briefing(sc, who="all"):
             f"Accrual Op {_fmt_cr(e.get('accrual_operating_24h', 0))}/h | Seed {_fmt_cr(e.get('seed_net_24h', 0))}/h | CapEx {_fmt_cr(e.get('capex_net_24h', 0))}/h"
         )
     _sat_m = (e.get("saturation") or {}).get("Mining") or {}
-    _sat_s = f" | mining spread {_sat_m['distinct_pois']} belts (max {_sat_m['max_per_poi']}/belt)" if _sat_m.get("active_depleting") else ""
+    _sat_t = (e.get("saturation") or {}).get("Trade") or {}
+    _sat_bits = []
+    if _sat_m.get("active_depleting"):
+        _sat_bits.append(f"mining {_sat_m['distinct_pois']} belts (max {_sat_m['max_per_poi']}/belt)")
+    if _sat_t.get("total_policed_hubs") or _sat_t.get("active_depleting"):
+        _sat_bits.append(f"trade hubs {_sat_t.get('covered_hubs',0)}/{_sat_t.get('total_policed_hubs',0)} (max {_sat_t.get('max_per_poi',0)}/hub)")
+    _sat_s = (" | spread: " + ", ".join(_sat_bits)) if _sat_bits else ""
     lines.append(
         f"  GAPS->0    | idle {e.get('idle_ships', e['total_ships'] - e['working_ships'])} ({e['effective_employment_pct']:.1f}% work) | "
         f"unseated {e.get('unseated_ships', max(0, e['total_ships'] - e['seated_ships']))} ({e.get('open_seats', 0)} open in cap {e['seat_cap']}, {e['seat_fleet_pct']:.1f}% fleet) | "
@@ -1820,12 +1961,18 @@ def render_briefing(sc, who="all"):
         d_purse = da.get("purse_h", d.get("purse_24h", d["cashflow_24h"]))
         d_recur = da.get("recurring_cash_h", d["cashflow_24h"])
         d_accop = da.get("accrual_op_h", d_recur)
+        _rc_s = (d.get("responsibility_center") or {}).get("short") or "Center"
         lines.append(
-            f"  MY DIVISION ({d['division']} / {d['admiral']}) | Score {d['health_score']:.1f}/100 | state={d['status']} | "
-            f"24h Purse {_fmt_cr(d_purse)}/h | Recur {_fmt_cr(d_recur)}/h ({d['trend_24h']}) | Accrual {_fmt_cr(d_accop)}/h"
+            f"  MY DIVISION ({d['division']} / {d['admiral']}) [{_rc_s}] | Score {d['health_score']:.1f}/100 | state={d['status']} ({d['trend_24h']}) | "
+            f"24h Purse {_fmt_cr(d_purse)}/h | Recur {_fmt_cr(d_recur)}/h | Accrual {_fmt_cr(d_accop)}/h"
         )
         _dsat = d.get("saturation") or {}
-        _dsat_s = f" | spread {_dsat['distinct_pois']} POIs (max {_dsat['max_per_poi']}/POI [{_dsat['status']}])" if _dsat.get("active_depleting") else ""
+        if d["division"] == "Trade" and (_dsat.get("total_policed_hubs") or _dsat.get("active_depleting")):
+            _dsat_s = f" | hubs {_dsat.get('covered_hubs',0)}/{_dsat.get('total_policed_hubs',0)} covered (max {_dsat.get('max_per_poi',0)}/hub [{_dsat.get('status','OK')}])"
+        elif _dsat.get("active_depleting"):
+            _dsat_s = f" | spread {_dsat['distinct_pois']} POIs (max {_dsat['max_per_poi']}/POI [{_dsat['status']}])"
+        else:
+            _dsat_s = ""
         lines.append(
             f"    Gaps->0  : idle {d['employment']['idle']} ({d['employment']['pct']:.1f}% work) | "
             f"hulls {d['hulls']['label']} | "

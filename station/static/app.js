@@ -3971,9 +3971,10 @@ async function renderMetrics(panel, live) {
   if (div.Unassigned || dw.Unassigned) order.push(['Unassigned', '']);
   const divRows = order.map(([d, adm]) => {
     const x = div[d] || {}, y = dw[d] || {}, da = dAcc[d] || null;
-    const name = el('span', null, d);
+    const RC_SHORT = { Command: 'Invest', Mining: 'Prod', Trade: 'Profit', Logistics: 'Service', Military: 'Combat', Intel: 'Cost' };
+    const name = el('span', null, d + (RC_SHORT[d] ? ' (' + RC_SHORT[d] + ')' : ''));
     name.style.color = DIV[d] || DIV.Unassigned;
-    const tipBits = [adm ? 'Admiral ' + adm : d];
+    const tipBits = [(adm ? 'Admiral ' + adm : d) + (RC_SHORT[d] ? ' -- ' + RC_SHORT[d] + ' Center (CapEx excluded from operating accrual)' : '')];
     if (w) tipBits.push('Raw cash ' + signed(y.cph || 0) + '/h (inc ' + fmt(y.income_per_hour || 0) + ', cost ' + fmt(y.costs_per_hour || 0) + ') | Seed & CapEx ' + signed(y.one_time_per_hour || 0) + '/h');
     if (da) tipBits.push('Once-route fuel/salvage carved out: ' + signed(da.once_direct_h || 0) + '/h | Handovers Out +' + fmt(da.tx_out_h || 0) + '/h, In -' + fmt(da.tx_in_h || 0) + '/h');
     name.title = tipBits.join('\n');
@@ -4125,11 +4126,17 @@ async function renderMetrics(panel, live) {
 
         const dSc = d.health_score !== undefined ? Number(d.health_score) : 0;
         const dScCls = dSc >= 80 ? 'good' : dSc >= 60 ? 'warn' : 'bad';
+        const rcInfo = d.responsibility_center || {};
         const head = el('div', 'sc-dhead');
         const titleWrap = el('div', 'sc-dtitle');
         const nm = el('b', null, dn);
         nm.style.color = col;
         titleWrap.append(nm, el('span', 'sc-dadm', d.admiral));
+        if (rcInfo.short) {
+          const rcPill = el('span', 'pill', rcInfo.short);
+          rcPill.title = (rcInfo.type || rcInfo.short) + ': ' + (rcInfo.focus || '') + ' (CapEx excluded from operating score)';
+          titleWrap.append(rcPill);
+        }
         const badges = el('div', 'sc-dbadges');
         badges.append(
           el('span', 'pill ' + dScCls, 'Score ' + dSc.toFixed(0)),
@@ -4143,11 +4150,35 @@ async function renderMetrics(panel, live) {
         const da24 = d.accounting_24h || null;
         const accVal = da24 ? Math.round(da24.accrual_op_h || 0) : Math.round(d.cashflow_24h || 0);
         const recVal = da24 ? Math.round(da24.recurring_cash_h || 0) : Math.round(d.cashflow_24h || 0);
-        const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < 0 ? 'neg' : '', 'Accrual ' + signed(accVal) + '/h (24h)');
-        cfRow.append(
-          cfSpan,
-          el('span', 'sc-dmeta-sub', 'Recur cash ' + signed(recVal) + '/h | Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%')
-        );
+        const txOut = da24 ? Math.round(da24.tx_out_h || 0) : 0;
+        const txIn = da24 ? Math.round(da24.tx_in_h || 0) : 0;
+        const invVal = da24 ? Math.round(da24.inv_accrual_h || 0) : 0;
+        const pbTxt = 'Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%';
+        if (dn === 'Logistics' || dn === 'Intel') {
+          const lbl = dn === 'Intel' ? 'Recon cost ' : 'Service cost ';
+          cfRow.append(
+            el('span', 'dim', lbl + signed(recVal) + '/h (SLA-scored)'),
+            el('span', 'sc-dmeta-sub', (dn === 'Logistics' && txIn ? 'Handled +' + fmtCompact(txIn) + '/h | ' : '') + pbTxt)
+          );
+        } else if (dn === 'Mining' || dn === 'Military') {
+          const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < -25000 ? 'neg' : 'dim', 'Value-add ' + signed(accVal) + '/h');
+          cfRow.append(
+            cfSpan,
+            el('span', 'sc-dmeta-sub', 'Handovers +' + fmtCompact(txOut) + '/h' + (invVal ? ' | Vault ' + signed(invVal) + '/h' : '') + ' | ' + pbTxt)
+          );
+        } else if (dn === 'Trade') {
+          const cfSpan = el('span', recVal > 0 ? 'pos' : 'neg', 'Recur ' + signed(recVal) + '/h');
+          cfRow.append(
+            cfSpan,
+            el('span', 'sc-dmeta-sub', 'Accrual ' + signed(accVal) + '/h (after -' + fmtCompact(txIn) + '/h in) | ' + pbTxt)
+          );
+        } else {
+          const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < 0 ? 'neg' : '', 'Accrual ' + signed(accVal) + '/h (24h)');
+          cfRow.append(
+            cfSpan,
+            el('span', 'sc-dmeta-sub', 'Recur ' + signed(recVal) + '/h | ' + pbTxt)
+          );
+        }
         card.append(cfRow);
 
         const empIdle = d.employment.idle !== undefined ? d.employment.idle : Math.max(0, (d.employment.total || 0) - (d.employment.effective_working || 0));
@@ -4164,24 +4195,33 @@ async function renderMetrics(panel, live) {
           meterRow('Hull gap', d.hulls.pct, hullSub, d.hulls.status),
           meterRow('Slot gap', d.modules.slot_pct, modSub, d.modules.status)
         );
+        if (d.role_kpi) {
+          meters.append(meterRow(d.role_kpi.name || 'Role KPI', Number(d.role_kpi.pct || 0), d.role_kpi.value || '--', d.role_kpi.status || 'OK'));
+        }
         card.append(meters);
-        if (d.saturation && d.saturation.active_depleting > 0) {
+        if (d.saturation && (d.saturation.active_depleting > 0 || (dn === 'Trade' && d.saturation.total_policed_hubs > 0))) {
           const sat = d.saturation;
           const sRow = el('div', 'sc-drkpi');
-          sRow.append(
-            el('span', 'sc-drkpi-k', 'Field spread: '),
-            el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
-            el('span', 'sc-drkpi-v', ' ' + fmt(sat.distinct_pois) + ' POIs, max ' + fmt(sat.max_per_poi) + '/POI (' + (sat.top_poi || '').split(':').pop() + ')')
-          );
+          if (dn === 'Trade') {
+            const ht = sat.total_policed_hubs || sat.distinct_pois || 0;
+            const sTxt = ' ' + fmt(sat.covered_hubs || 0) + '/' + fmt(ht) + ' policed hubs (' + fmt(sat.uncovered_hubs || 0) + ' uncovered), max ' + fmt(sat.max_per_poi || 0) + '/hub' + (sat.top_poi ? ' (' + sat.top_poi + ')' : '');
+            sRow.append(
+              el('span', 'sc-drkpi-k', 'Hub coverage: '),
+              el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
+              el('span', 'sc-drkpi-v', sTxt)
+            );
+            if (sat.top_unserved && sat.top_unserved.length) {
+              sRow.title = 'Top unserved policed market hubs (live read.db:books): ' + sat.top_unserved.join(', ') + ' | Total book hubs: ' + fmt(sat.total_book_hubs || 0) + ' | Public stations: ' + fmt(sat.total_public_stations || 0);
+            }
+          } else {
+            sRow.append(
+              el('span', 'sc-drkpi-k', 'Field spread: '),
+              el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
+              el('span', 'sc-drkpi-v', ' ' + fmt(sat.distinct_pois) + ' POIs, max ' + fmt(sat.max_per_poi) + '/POI (' + (sat.top_poi || '').split(':').pop() + ')')
+            );
+          }
           card.append(sRow);
         }
-
-        const rk = el('div', 'sc-drkpi');
-        rk.append(
-          el('span', 'sc-drkpi-k', ((d.role_kpi && d.role_kpi.name) || 'Role KPI') + ': '),
-          el('span', 'sc-drkpi-v', (d.role_kpi && d.role_kpi.value) || '--')
-        );
-        card.append(rk);
         if (d.playbooks && d.playbooks.length) {
           const pwrap = el('div', 'sc-dpbs');
           pwrap.append(el('span', 'sc-drkpi-k', 'Playbook KPIs: '));
@@ -4215,7 +4255,7 @@ async function renderMetrics(panel, live) {
         dgrid.append(card);
       }
       panel.append(dgrid);
-      panel.append(el('p', 'sub', '* = 0 pilots at Piloting 10+ yet (bar tracks avg Piloting progress toward T2 unlock). Weighted Health = 30% Working + 30% Role KPI + 25% Upgrades + 15% Trend/Hygiene; mirrored in hive.py briefing.'));
+      panel.append(el('p', 'sub', '* = 0 P10+ pilots yet (tracks avg Piloting toward T2). Responsibility-Center scoring: CapEx excluded from operating accrual; handovers credited at IAS 2 NRV; Service/Cost centers (Logistics, Intel) are SLA-scored, not cash-penalized; Playbooks auto-demote to optional P3 MENU when busy (>=85% working).'));
 
       // Sleek MAUT+WSJF weighted enterprise triage queue (KPI + REQ + NEED + ROADMAP)
       const activeT = ((se.triage && se.triage.length) ? se.triage : (se.triggers || [])).slice(0, 8);
@@ -4293,14 +4333,16 @@ async function renderMetrics(panel, live) {
         : (topMods || 'no T2+ modules fitted yet'),
       fs && (fs.ships_unfitted > 0 || fs.empty_slots > 0) ? 'warn' : (mods.length ? 'pos' : 'warn'));
     const entSat = sc && sc.enterprise && sc.enterprise.saturation ? sc.enterprise.saturation : null;
-    if (entSat && (entSat.Mining || entSat.Military)) {
-      const sm = entSat.Mining || {}, sml = entSat.Military || {};
-      const satWorst = (sm.status === 'ALARM' || sml.status === 'ALARM') ? 'neg' : ((sm.status === 'WARN' || sml.status === 'WARN') ? 'warn' : 'pos');
-      rkpi('Field spread (saturation)',
-        'Mining max ' + fmt(sm.max_per_poi || 0) + '/belt | Mil max ' + fmt(sml.max_per_poi || 0) + '/POI',
-        'Mining: ' + fmt(sm.distinct_pois || 0) + ' belts for ' + fmt(sm.active_depleting || 0) + ' miners'
-        + (sm.top_poi ? ' (top: ' + sm.top_poi.split(':').pop() + ')' : '')
-        + ' | Military: ' + fmt(sml.distinct_pois || 0) + ' POIs for ' + fmt(sml.active_depleting || 0) + ' hunters',
+    if (entSat && (entSat.Mining || entSat.Military || entSat.Trade)) {
+      const sm = entSat.Mining || {}, sml = entSat.Military || {}, st = entSat.Trade || {};
+      const sts = [sm.status, sml.status, st.status];
+      const satWorst = sts.includes('ALARM') ? 'neg' : (sts.includes('WARN') ? 'warn' : 'pos');
+      const tHub = st.total_policed_hubs ? (fmt(st.covered_hubs || 0) + '/' + fmt(st.total_policed_hubs) + ' hubs, max ' + fmt(st.max_per_poi || 0)) : ('max ' + fmt(st.max_per_poi || 0) + '/hub');
+      rkpi('Field & hub spread (saturation)',
+        'Mine ' + fmt(sm.max_per_poi || 0) + '/belt | Trade ' + tHub + ' | Mil ' + fmt(sml.max_per_poi || 0) + '/POI',
+        'Mining: ' + fmt(sm.distinct_pois || 0) + ' belts (' + fmt(sm.active_depleting || 0) + ' miners' + (sm.top_poi ? ', top ' + sm.top_poi.split(':').pop() : '') + ') | '
+        + 'Trade: ' + fmt(st.uncovered_hubs || 0) + ' policed hubs uncovered (' + fmt(st.total_book_hubs || 0) + ' total books / ' + fmt(st.total_public_stations || 0) + ' public stations) | '
+        + 'Military: ' + fmt(sml.distinct_pois || 0) + ' POIs',
         satWorst);
     }
     const eff = ops.efficiency || null;

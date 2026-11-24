@@ -546,6 +546,30 @@ def buy_limit_warnings(routes):
     return out
 
 
+
+def concentration_warnings(routes):
+    """[(route id, reason)] for active routes that over-stack one depleting belt (mine max_ships > 10) or
+    one docked Bursar desk (sell_order/buy_order desk max_ships > 3; SpaceMolt allows 1,000 orders/pilot)."""
+    out = []
+    for rid, route in sorted(routes.items()):
+        if not isinstance(route, dict) or route.get("status") == "off":
+            continue
+        ms = route.get("max_ships")
+        if not (isinstance(ms, int) and not isinstance(ms, bool)):
+            continue
+        if route.get("kind") == "mine" and ms > 10:
+            out.append((rid, "mine route sets max_ships=%d on belt `%s` (>10 risks depleting scarce veins; spread <=8-10/belt across unsaturated fields)"
+                        % (ms, route.get("belt") or "?")))
+        elif route.get("kind") == "circuit" and ms > 3:
+            stops = route.get("stops") or []
+            has_ord = any(isinstance(s, dict) and ("sell_order" in s or "buy_order" in s) for s in stops)
+            req = route.get("requires") if isinstance(route.get("requires"), dict) else {}
+            is_desk = bool(req.get("docked_at")) or any(isinstance(s, dict) and s.get("watch_minutes") for s in stops)
+            if has_ord and (is_desk or "bursar" in rid):
+                out.append((rid, "docked Bursar desk sets max_ships=%d (1,000 order cap/pilot; keep 1-3/station and spread excess traders across unserved empire market hubs)"
+                            % ms))
+    return out
+
 def sale_warnings(routes):
     """[(route id, its strict class, the roles it is closed to)] of the routes that sell outside Trade's class: with
     data/fleet/strict-classes-on the dispatcher refuses them to every pilot that is not a trader (workclass.sales)."""
@@ -1411,7 +1435,10 @@ def main():
         for rid, n, item, gate, limit in limits:
             print("WARNING game/routes/%s.json: stop %d buys %s at a max_price of %s, under the `requires.ask` gate of %s x %.2f (the runner's tax): "
                   "the gate opens on an ask the buy refuses; set max_price to %d or more" % (rid, n, item, limit, gate, BUY_TAX, -(-gate * BUY_TAX // 1)))
-        print("Errors: %d | Warnings: %d" % (len(errors), (len(warned) if workclass.strict_on() else min(len(warned), 1)) + len(gated) + len(limits)))
+        crowded = concentration_warnings(routes_of(args.root)[0])
+        for rid, why_c in crowded:
+            print("WARNING game/routes/%s.json: %s" % (rid, why_c))
+        print("Errors: %d | Warnings: %d" % (len(errors), (len(warned) if workclass.strict_on() else min(len(warned), 1)) + len(gated) + len(limits) + len(crowded)))
         return 1 if errors else 0
     if args.command == "idle":
         for line in idle(args.root, args.data):
