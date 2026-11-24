@@ -2,8 +2,8 @@
  "id": "hunt-gsc-0012-gas-plume-drift-ray",
  "kind": "hunt",
  "title": "drift_ray at gsc_0012_gas_plume, one hunter, loot to a trader receiver at synchrony_hub",
- "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 13 drift_ray at rustpoint:rustpoint_belt (table herds, census 2026-11-24 00:44 UTC), 2 jumps from pherkad where a parked ship stands; hull 45, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at synchrony_hub, 3 jumps (P5). One ship; standing work.",
- "place": "rustpoint:rustpoint_belt",
+ "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 13 drift_ray at rustpoint:rustpoint_belt (table herds, census 2026-11-24 00:44 UTC), 2 jumps from pherkad where a parked ship stands; hull 45, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at synchrony_hub, 3 jumps (P5). One ship; standing work. 2026-11-24 00:58 UTC (Apophis): place corrected from rustpoint:rustpoint_belt (a generator bug wrote one place into every file; 11 ships set out there and were stopped) to gsc_0012:gsc_0012_gas_plume.",
+ "place": "gsc_0012:gsc_0012_gas_plume",
  "species": [
   "drift_ray"
  ],

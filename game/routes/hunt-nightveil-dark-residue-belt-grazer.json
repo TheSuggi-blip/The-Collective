@@ -2,8 +2,8 @@
  "id": "hunt-nightveil-dark-residue-belt-grazer",
  "kind": "hunt",
  "title": "belt_grazer at nightveil_dark_residue, one hunter, loot to a trader receiver at node_beta_industrial_station",
- "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 14 belt_grazer at rustpoint:rustpoint_belt (table herds, census 2026-11-23 22:30 UTC), 4 jumps from node_beta where a parked ship stands; hull 60, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at node_beta_industrial_station, 4 jumps (P5). One ship; standing work.",
- "place": "rustpoint:rustpoint_belt",
+ "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 14 belt_grazer at rustpoint:rustpoint_belt (table herds, census 2026-11-23 22:30 UTC), 4 jumps from node_beta where a parked ship stands; hull 60, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at node_beta_industrial_station, 4 jumps (P5). One ship; standing work. 2026-11-24 00:58 UTC (Apophis): place corrected from rustpoint:rustpoint_belt (a generator bug wrote one place into every file; 11 ships set out there and were stopped) to nightveil:nightveil_dark_residue.",
+ "place": "nightveil:nightveil_dark_residue",
  "species": [
   "belt_grazer"
  ],
