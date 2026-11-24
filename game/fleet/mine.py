@@ -141,7 +141,11 @@ def sell_at_station(call, say, quoted, station, wanted, notes, target="self"):
     stashed = {}
     for item, units in hold().items():                   # the rest goes into storage here: the hold is free for the next work
         if units and item not in ammo:
-            if "error" not in raw("deposit", {"item_id": item, "quantity": units, "target": target, "source": "cargo"}, "spacemolt_storage"):
+            res = raw("deposit", {"item_id": item, "quantity": units, "target": target, "source": "cargo"}, "spacemolt_storage")
+            if "error" in res and target == "faction":
+                time.sleep(11)
+                res = raw("deposit", {"item_id": item, "quantity": units, "target": "self", "source": "cargo"}, "spacemolt_storage")
+            if "error" not in res:
                 stashed[item] = units
             time.sleep(11)
     if stashed:

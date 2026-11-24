@@ -1,18 +1,12 @@
 {
  "id": "mine-gliese-876-belt",
  "kind": "mine",
- "title": "Gliese 876 Belt: iron_ore, carbon_ore, nickel_ore; sold at Nova Terra Central",
+ "title": "Gliese 876 Belt: iron_ore, carbon_ore, nickel_ore; stored at Nova Terra Central",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 804 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 18:13 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "gliese_876:gliese_876_belt",
  "station": "nova_terra:nova_terra_central:nova_terra_central",
  "minutes": 90,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "nickel_ore",
-   "min_price": 63
-  }
- ],
  "requires": {
   "empty_hold": true
  }

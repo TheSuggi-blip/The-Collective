@@ -1,26 +1,12 @@
 {
  "id": "mine-marfik-emission-nebula",
  "kind": "mine",
- "title": "Marfik Emission Nebula: hydrogen_gas, argon_gas, plasma_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station",
+ "title": "Marfik Emission Nebula: hydrogen_gas, argon_gas, plasma_gas, nebula_gas, neon_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1895 cr per ship-hour, not a measurement. A test: one ship. 2026-11-16 13:05 UTC (Mercury): a test with one trader that carries a Gas Harvester I. It sells hydrogen into the same Node Beta bid as mine-the-experiment-haze (55 at 34 cr, fill.py status 13:04 UTC) and plasma into Node Beta's plasma bid: its first RESULT line is read beside the haze route's.",
  "belt": "marfik:marfik_emission_nebula",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 67,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "hydrogen_gas",
-   "min_price": 27
-  },
-  {
-   "item": "argon_gas",
-   "min_price": 1
-  },
-  {
-   "item": "plasma_gas",
-   "min_price": 80
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true

@@ -1,18 +1,12 @@
 {
  "id": "mine-okab-haze",
  "kind": "mine",
- "title": "Okab Haze: hydrogen_gas, argon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station",
+ "title": "Okab Haze: hydrogen_gas, argon_gas, nebula_gas, neon_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1082 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 15:07 UTC (Apollo): one ship until its first RESULT line is read. 2026-11-16 15:08 UTC (Apollo): requires.bid on the Node Beta hydrogen bid it sells into (orders.log ENT-014, EVERY ADMIRAL (a)): 34 cr x 40 at 14:59 UTC; closed while a book read within the hour shows fewer than 20 units at 27 cr or more. Two hydrogen tests into this bid sold nothing when it read 1 unit (13:12 to 14:25 UTC).",
  "belt": "okab:okab_haze",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 54,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "hydrogen_gas",
-   "min_price": 27
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true,

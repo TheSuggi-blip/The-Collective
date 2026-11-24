@@ -1,18 +1,12 @@
 {
  "id": "mine-the-experiment-haze",
  "kind": "mine",
- "title": "The Experiment Haze: hydrogen_gas, neon_gas; sold at Node Beta Industrial Station",
+ "title": "The Experiment Haze: hydrogen_gas, neon_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py (estimate 1,637 cr per ship-hour); added as a test by fill.py on 2026-11-16 08:36 UTC (Mercury). Runs (data/routes/runs.jsonl): 08:36 UTC +3,008 cr in 77.5 minutes, 104 hydrogen sold at 34 cr; 09:59 UTC +4,129 cr in 77.5 minutes, 136 hydrogen sold; 11:17 UTC -5,346 cr in 79.5 minutes, nothing sold (the Node Beta hydrogen bid read 0 at the sale) and 4,818 cr of it the weekly tax assessed at 12:27 UTC (errors.log ENT-056), so about -528 cr from the run; the gas was stored at Node Beta for a later sale. 2026-11-16 12:41 UTC: names its bid (orders ENT-014 (a)): hydrogen at Node Beta, 26 cr or more for 20 units or more; the hydrogen bids of our stations come and go within the hour at 30 to 35 cr for 36 to 136 units (the tool market, 11:24 to 12:31 UTC). Neon is not sold: its bids stand at a few cr. One ship; a sister test sells the same field at Synchrony Hub (mine-the-experiment-haze-synchrony).",
  "belt": "the_experiment:the_experiment_haze",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 73,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "hydrogen_gas",
-   "min_price": 26
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "bid": {

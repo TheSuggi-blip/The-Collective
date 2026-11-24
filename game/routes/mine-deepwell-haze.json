@@ -1,18 +1,12 @@
 {
  "id": "mine-deepwell-haze",
  "kind": "mine",
- "title": "Deepwell Haze: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, neon_gas; sold at Nova Terra Central",
+ "title": "Deepwell Haze: hydrogen_gas, argon_gas, plasma_gas, xenon_gas, neon_gas; stored at Nova Terra Central",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 752 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 14:46 UTC (Apollo): one ship until its first RESULT line is read.",
  "belt": "deepwell:deepwell_haze",
  "station": "nova_terra:nova_terra_central:nova_terra_central",
  "minutes": 59,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "plasma_gas",
-   "min_price": 70
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true

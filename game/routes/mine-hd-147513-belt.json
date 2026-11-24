@@ -1,26 +1,12 @@
 {
  "id": "mine-hd-147513-belt",
  "kind": "mine",
- "title": "HD 147513 Belt: iron_ore, copper_ore, titanium_ore, gold_ore; sold at The Experiment Research Station",
+ "title": "HD 147513 Belt: iron_ore, copper_ore, titanium_ore, gold_ore; stored at The Experiment Research Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 511 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 10:52 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "hd_147513:hd_147513_belt",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 78,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "copper_ore",
-   "min_price": 1
-  },
-  {
-   "item": "titanium_ore",
-   "min_price": 143
-  },
-  {
-   "item": "gold_ore",
-   "min_price": 1
-  }
- ],
  "requires": {
   "empty_hold": true
  }

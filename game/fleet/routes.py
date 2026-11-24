@@ -77,7 +77,7 @@ import workclass                                  # noqa: E402  r22: whose work 
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
 EMPIRES = frozenset(("voidborn", "nebula", "solarian", "outerrim", "crimson"))   # the five empires of the game (requires.empire)
-KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station")}
+KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station"), "bursar": (), "haul": ()}
 PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one place, and the field that names it: what a guard keeps
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
 MASTER = "master-index.md"
@@ -670,7 +670,7 @@ def standing(route):
     earns nothing and keeps another route's ship company (requests ENT-070)."""
     need = route.get("requires") or {}
     return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell"))
-                or route.get("kind") == "guard" or gives(route))
+                or route.get("kind") in ("guard", "bursar", "haul") or gives(route))
 
 
 def guarded_place(guard, guarded):

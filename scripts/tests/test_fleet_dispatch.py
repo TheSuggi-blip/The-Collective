@@ -1416,5 +1416,34 @@ class PostedAndRoleTests(Tree):
             self.assertTrue(any("game/routes/steel.json" in e and "requires.role" in e for e in errors), (wrong, errors))
 
 
+    def test_hard_mine_belt_cap_and_bursar_station_cap(self):
+        routes = {
+            "big-mine": {"id": "big-mine", "kind": "mine", "title": "t", "belt": "far:belt", "station": "home:core:base", "max_ships": 25},
+            "big-bursar": {"id": "big-bursar", "kind": "circuit", "title": "t", "max_ships": 50,
+                           "requires": {"docked_at": "krynn_base"}, "stops": [{"at": "krynn:p:krynn_base", "sell_order": []}]},
+            "net-bursar": {"id": "net-bursar", "kind": "bursar", "title": "t", "minutes": 30, "max_ships": 65},
+            "net-haul": {"id": "net-haul", "kind": "haul", "title": "t", "minutes": 45, "max_ships": 60},
+        }
+        pilot_m = {"name": "miner-9", "role": "miner", "credits": 20000, "modules": [], "docked": True}
+        pilot_t = {"name": "trader-9", "role": "trader", "credits": 20000, "modules": [], "docked": True, "base": "krynn_base", "poi": "krynn_base"}
+        # 3 miners already on far:belt -> 4th blocked despite max_ships=25
+        orders3 = {"miner-1": "mine big-mine", "miner-2": "mine big-mine", "miner-3": "mine big-mine"}
+        mpc, bsc = self.dispatch._build_crowding_counts(orders3, routes)
+        st = self.state(orders=orders3)
+        st["_mine_poi_counts"] = mpc
+        st["_bursar_station_counts"] = bsc
+        self.assertIn("belt cap 3", self.dispatch.why_not(pilot_m, "big-mine", routes["big-mine"], st)[0])
+        # 1 trader already on big-bursar -> 2nd blocked despite max_ships=50
+        orders1 = {"trader-1": "circuit big-bursar"}
+        mpc1, bsc1 = self.dispatch._build_crowding_counts(orders1, routes)
+        st1 = self.state(orders=orders1)
+        st1["_mine_poi_counts"] = mpc1
+        st1["_bursar_station_counts"] = bsc1
+        self.assertIn("bursar cap 1", self.dispatch.why_not(pilot_t, "big-bursar", routes["big-bursar"], st1)[0])
+        # Dynamic bursar & haul command generation works cleanly
+        self.assertIn("bursar.py", " ".join(self.dispatch.command(routes["net-bursar"], "trader-9", None, self.root)))
+        self.assertIn("haul.py", " ".join(self.dispatch.command(routes["net-haul"], "hauler-9", None, self.root)))
+
+
 if __name__ == "__main__":
     unittest.main()

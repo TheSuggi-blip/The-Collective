@@ -157,7 +157,9 @@ def work_class(route, rid=None, strict=None):
         return "once"
     if kind == "mine":
         return "gather"
-    if kind in ("hunt", "guard", "census"):
+    if kind == "bursar":
+        return "trade"
+    if kind in ("hunt", "guard", "census", "haul"):
         return kind
     stops = _stops(route)
     keys = set()

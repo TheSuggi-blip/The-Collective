@@ -1,18 +1,12 @@
 {
  "id": "mine-gsc-0050-gas-plume",
  "kind": "mine",
- "title": "GSC-0050 Gas Plume: plasma_gas, xenon_gas, neon_gas, chlorine_gas; sold at Node Beta Industrial Station",
+ "title": "GSC-0050 Gas Plume: plasma_gas, xenon_gas, neon_gas, chlorine_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings (2026-11-15 23:12 UTC): an estimate of 1,740 cr per ship-hour, not a measurement. A test: one ship. What it rests on: the station bid for plasma gas at Node Beta, which read 90 x 5 (20:45 UTC), 94 x 21 (21:02), 98 x 25 (21:49) and 102 x 5 (23:16) with no sale of ours: a bid of a few units that grows back, a one-time price under orders F12 until the runs show it refill. Xenon, neon and chlorine gas find no bid of depth in our books (2 cr or none) and stay in storage at Node Beta. GSC-0050 is lawless: hold empty on the way out (orders F13). The gas harvester sits beside the mining laser (catalog: cpu 4, power 6).",
  "belt": "gsc_0050:gsc_0050_gas_plume",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 53,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "plasma_gas",
-   "min_price": 78
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true

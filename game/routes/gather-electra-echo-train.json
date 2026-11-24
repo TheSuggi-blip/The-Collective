@@ -6,7 +6,7 @@
  "belt": "electra:main_belt_echo",
  "station": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
  "minutes": 40,
- "max_ships": 6,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
@@ -15,7 +15,7 @@
   "empty_hold": true,
   "empire": "solarian"
  },
- "lift_to": 6,
+ "lift_to": 3,
  "measured": {
   "date": "2026-11-23",
   "runs": 50,

@@ -1,18 +1,12 @@
 {
  "id": "mine-the-experiment-haze-synchrony",
  "kind": "mine",
- "title": "The Experiment Haze: hydrogen_gas; sold at Synchrony Hub",
+ "title": "The Experiment Haze: hydrogen_gas; stored at Synchrony Hub",
  "note": "Written by routemaker.py from the field's and the book's readings (estimate +2,400 cr per ship-hour, not a measurement); the same field as mine-the-experiment-haze, sold into another station's bid so that the two tests do not measure each other. Synchrony Hub bid 35 cr for 136 hydrogen at 12:19 UTC (the tool market). The field read hydrogen 2,864 and neon 8,813 left (routemaker). 2026-11-16 12:41 UTC: a test with one ship, a trader that carries a Gas Harvester I (Mercury).",
  "belt": "the_experiment:the_experiment_haze",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 57,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "hydrogen_gas",
-   "min_price": 28
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "bid": {

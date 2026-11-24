@@ -1,18 +1,12 @@
 {
  "id": "mine-almach-stray-facets",
  "kind": "mine",
- "title": "Almach Stray Facets: iron_ore, copper_ore, trade_crystal; sold at The Core",
+ "title": "Almach Stray Facets: iron_ore, copper_ore, trade_crystal; stored at The Core",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2389 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 15:06 UTC (Zero): one ship until its first RESULT line is read.",
  "belt": "almach:almach_stray_facets",
  "station": "nexus_prime:the_core:central_nexus",
  "minutes": 90,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "trade_crystal",
-   "min_price": 287
-  }
- ],
  "requires": {
   "empty_hold": true
  }

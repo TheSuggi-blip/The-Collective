@@ -392,6 +392,17 @@ def drone(name, guns=("pulse_laser_i",), levels=(4, 2, 3), hull=75, shield=130):
             "skills": {k: {"level": v} for k, v in zip(("gunnery", "weapons", "tactics"), levels)}}
 
 
+    def test_strict_classes_mine_candidates_omit_sell_and_cap_three(self):
+        (self.data / "fleet" / "strict-classes-on").write_text("", encoding="ascii")
+        self.addCleanup(lambda: (self.data / "fleet" / "strict-classes-on").unlink(missing_ok=True))
+        mine = self.one(self.build(), "mine-mid-belt")
+        self.assertNotIn("sell", mine["route"])
+        self.assertEqual(mine["route"]["max_ships"], 3)
+        self.assertEqual(mine["route"]["lift_to"], 3)
+        self.assertGreater(mine["per_ship_hour"], 0)
+        (self.root / "routes" / (mine["route"]["id"] + ".json")).write_text(json.dumps(mine["route"]), encoding="ascii")
+        self.assertEqual([e for e in routes.check(str(self.root))[0] if "index.md" not in e], [])
+
 class GaugeTests(Tree):
     """Rule F9: a herd is hunted by the gauges of the ships that would fly it, never by a fixed 100 hull."""
 
@@ -466,6 +477,7 @@ class GaugeTests(Tree):
         self.assertEqual(calm["route"]["stops"][0]["hunt"][0]["species"], ["calm_ray"])
         slag = self.one(book, "mission-slag-hunt-home")                              # 90 hull: no herd one ship can take
         self.assertEqual((slag.get("needs"), "route" in slag), ("a herd of four or more for: Hunt 3 Slag Tortoises", False))
+
 
 
 if __name__ == "__main__":

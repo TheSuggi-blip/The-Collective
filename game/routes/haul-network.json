@@ -1,0 +1,10 @@
+{
+  "id": "haul-network",
+  "kind": "haul",
+  "title": "Dynamic Logistics Hauler network: auto-picks safe Freight Board contracts, verified cross-station arbitrage, and internal empire supply",
+  "note": "Policy-driven autonomous hauler runner governed by game/haul-policy.json (Apollo/Mercury/Unity). Resumes active freight first, then picks the best unclaimed safe Freight Board contract (spacemolt_shipping, Neutral partners prioritized), verified cross-station Exchange arbitrage (re-checking live book before buying), or internal needs.tsv supply haul.",
+  "policy": "game/haul-policy.json",
+  "minutes": 45,
+  "max_ships": 60,
+  "standing": true
+}

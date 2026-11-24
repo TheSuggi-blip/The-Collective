@@ -719,6 +719,8 @@ def spare(seen, got, served=(), room=None):
         if rid not in room:
             deep = carries(seen, route)
             room[rid] = max(0, ((deep["ships"] or 0) + deep["extra"] if deep else 0) - cap)
+            if route.get("kind") == "mine" and not route.get("allow_crowd"):
+                room[rid] = min(room[rid], max(0, dispatch.MINE_POI_CAP - cap))
             if limit is not None:
                 room[rid] = min(room[rid], max(0, limit - cap))
         places = min(need, closed, room[rid])

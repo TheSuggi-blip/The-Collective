@@ -1,18 +1,12 @@
 {
  "id": "mine-atlas-gas-pocket",
  "kind": "mine",
- "title": "Atlas Gas Pocket: plasma_gas, xenon_gas, nebula_gas, neon_gas; sold at Node Beta Industrial Station",
+ "title": "Atlas Gas Pocket: plasma_gas, xenon_gas, nebula_gas, neon_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1918 cr per ship-hour, not a measurement. A test: one ship. Added as a test by Apollo on 2026-11-16 13:40 UTC (orders.log ENT-014, block APOLLO: the gas routes Trade has not taken, one hauler each), with requires.bid on the Node Beta plasma bid it sells into (ENT-014, EVERY ADMIRAL (a)): closed while a book read within the hour shows fewer than 17 units at 72 cr or more. sell-plasma-node-beta stands before it in the hauler plan: the stored plasma goes into that bid first.",
  "belt": "atlas:atlas_gas_pocket",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 83,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "plasma_gas",
-   "min_price": 72
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true,

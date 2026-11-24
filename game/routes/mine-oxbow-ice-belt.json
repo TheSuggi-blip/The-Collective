@@ -1,22 +1,12 @@
 {
  "id": "mine-oxbow-ice-belt",
  "kind": "mine",
- "title": "Oxbow Ice Belt: water_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station",
+ "title": "Oxbow Ice Belt: water_ice, deuterium_ice, helium_ice; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 956 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 01:45 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "oxbow:oxbow_ice_belt",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 90,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 20
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 161
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true

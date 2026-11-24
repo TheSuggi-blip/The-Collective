@@ -6,7 +6,7 @@
  "belt": "acubens:acubens_shadow_pocket",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 18,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 10000,

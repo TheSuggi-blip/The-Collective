@@ -1,22 +1,12 @@
 {
  "id": "mine-keid-ice-shelf",
  "kind": "mine",
- "title": "Keid Ice Shelf: water_ice, deuterium_ice; sold at Node Alpha Processing Station",
+ "title": "Keid Ice Shelf: water_ice, deuterium_ice; stored at Node Alpha Processing Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2742 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 53 of 53 units for 1338 cr (depth at the best price)\", \"deuterium_ice 6 of 11 units for 1248 cr (depth at the best price)\"], \"field\": \"keid:keid_ice_shelf\", \"jumps\": 5, \"left\": {\"deuterium_ice\": 4303, \"water_ice\": 1959}, \"richness\": {\"deuterium_ice\": 12, \"water_ice\": 56}, \"sold_at\": \"node_alpha_processing_station\"}. Uncertain: deuterium_ice: the bids take 6 of 11 units a load; deuterium_ice: the bids take 6 of the 14 units an hour brings; lawless space: no police at keid; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 03:15 UTC, Zero (orders.log ENT-011, block ZERO (1)): max_ships 1 -> 2 on its measured runs (2 runs, 2990 cr per ship-hour) and its field 2,712 water ice (census 02:09 UTC), sold at Node Alpha (28 cr x 5,867 at the best price, 02:46 UTC; 823 units an hour regained, hive.py refill). 2026-11-16 12:22 UTC, Zero: requires.bid water ice at node_alpha_processing_station, 25 cr for 300 units at the best price (orders.log ENT-014 (a), queue.log ENT-097: each ice route names its bid): the route closes while a book read within the hour shows less, and opens by itself when one shows it back. At 12:00 UTC the water-ice bids of Node Alpha, The Experiment and Synchrony read 0.",
  "belt": "keid:keid_ice_shelf",
  "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
  "minutes": 90,
  "max_ships": 2,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 20
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 166
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true,

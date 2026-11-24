@@ -579,7 +579,20 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             route_cache[key] = (poi, is_bursar)
         return route_cache[key]
 
+    bursar_claims = {}
+    bc_path = Path(data_dir) / "fleet" / "bursar_claims.json"
+    if bc_path.is_file():
+        try:
+            bc_raw = json.loads(bc_path.read_text(encoding="utf-8"))
+            if isinstance(bc_raw, dict):
+                for base_id, rec in bc_raw.items():
+                    if isinstance(rec, dict) and rec.get("pilot"):
+                        bursar_claims[str(rec["pilot"])] = str(base_id)
+        except Exception:
+            pass
+
     by_div = {"Mining": Counter(), "Military": Counter(), "Trade": Counter()}
+    haul_active = 0
     sdivs = ship_divs or {}
     for pilot, what in orders.items():
         parts = what.split(" ", 1)
@@ -594,10 +607,18 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             poi, _ = _route_meta("hunt", rid)
             if poi and sdivs.get(pilot, "Military") == "Military":
                 by_div["Military"][poi] += 1
+        elif kind == "bursar":
+            base_id = bursar_claims.get(pilot) or ""
+            if base_id and sdivs.get(pilot, "Trade") == "Trade":
+                by_div["Trade"][base_id] += 1
+        elif kind == "haul":
+            haul_active += 1
         elif kind == "circuit":
             poi, is_bursar = _route_meta("circuit", rid)
             if is_bursar and poi and sdivs.get(pilot, "Trade") == "Trade":
                 by_div["Trade"][poi] += 1
+            elif sdivs.get(pilot) == "Logistics" and (rid.startswith(("supply-", "freight-", "carry-", "outpost-")) or "shipping" in rid):
+                haul_active += 1
 
     depleted_by_poi = defaultdict(list)
     policed_hubs = []
@@ -632,7 +653,7 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
         except Exception:
             pass
 
-    for div, warn_cap, alarm_cap in (("Mining", 10, 20), ("Military", 6, 10)):
+    for div, warn_cap, alarm_cap in (("Mining", 4, 6), ("Military", 4, 8)):
         c = by_div[div]
         tot = sum(c.values())
         if not tot:
@@ -669,10 +690,10 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
         for b, _e, d in policed_hubs if b not in tc
     ][:4]
     t_top, t_max = tc.most_common(1)[0] if tc else ("", 0)
-    t_crowded = sum(1 for _b, n in tc.items() if n >= 4)
-    if t_max >= 10 and (uncov > 0 or tot_pol == 0):
+    t_crowded = sum(1 for _b, n in tc.items() if n >= 2)
+    if t_max >= 4 and (uncov > 0 or tot_pol == 0):
         t_st = "ALARM"
-    elif t_max >= 4 and (uncov > 0 or tot_pol == 0):
+    elif t_max >= 2 and (uncov > 0 or tot_pol == 0):
         t_st = "WARN"
     else:
         t_st = "OK"
@@ -690,6 +711,11 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
         "covered_hubs": cov_pol,
         "uncovered_hubs": uncov,
         "top_unserved": top_unserved,
+    }
+    out["Logistics"] = {
+        "active_depleting": 0, "distinct_pois": 0, "max_per_poi": 0,
+        "top_poi": "", "depleted_on_top": [], "crowded_pois": 0,
+        "active_haul": haul_active, "status": "OK",
     }
     return out
 
@@ -1284,16 +1310,16 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 triggers.append({
                     "severity": div_sat["status"], "code": "HUB_CONGESTION", "metric": "Market Hub Saturation",
                     "actual": f"{div_sat['max_per_poi']} Bursars on {div_sat['top_poi']} ({div_sat['covered_hubs']}/{_ht} policed hubs, {div_sat['uncovered_hubs']} uncovered{_un_s})",
-                    "target": "1-3 Bursars/hub (1,000 order cap/pilot)", "direction": "FLAT",
-                    "action": "Keep 1-3 Bursars per station (1,000 order limit/pilot) and spread excess traders across unserved high-liquidity hubs",
+                    "target": "1 Bursar/hub (spread across all policed books)", "direction": "FLAT",
+                    "action": "Keep 1 Bursar per station (bursar-network + game/bursar-policy.json) and spread excess traders across unserved high-liquidity hubs",
                 })
             else:
                 _d_dep = ("; depleted: " + ", ".join(div_sat["depleted_on_top"])) if div_sat.get("depleted_on_top") else ""
                 triggers.append({
                     "severity": div_sat["status"], "code": "FIELD_CONGESTION", "metric": "Field Saturation",
                     "actual": f"{div_sat['max_per_poi']} ships on {div_sat['top_poi']} ({div_sat['distinct_pois']} POIs for {div_sat['active_depleting']} active{_d_dep})",
-                    "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
-                    "action": "Spread ships across unsaturated scarce POIs (max ~6-8/belt) and use jettison_gangue on scarce veins",
+                    "target": "spread <=3/belt (<=2/herd)", "direction": "FLAT",
+                    "action": "Spread miners across unsaturated rich belts (hard cap 3/belt; routemaker F23 gather routes + keep_items)",
                 })
 
         # Division-matched Role Success KPI

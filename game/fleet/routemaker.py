@@ -214,8 +214,19 @@ class Chart:
 def load_world(data, root, now):
     """Everything the candidates are made from, as plain dicts."""
     data = Path(data)
+    open_needs = set()
+    needs_tsv = Path(root) / "needs.tsv"
+    if needs_tsv.is_file():
+        try:
+            for ln in needs_tsv.read_text(encoding="ascii", errors="replace").splitlines()[1:]:
+                cols = ln.split("\t")
+                if len(cols) >= 6 and cols[5].strip().lower() == "open":
+                    open_needs.add(cols[3].strip())
+        except OSError:
+            pass
     world = {"now": now, "fields": [], "stations": {}, "books": {}, "boards": {}, "herds": [], "chart": Chart(load_chart(root)),
-             "ladders": read_json(data / "market" / "ladders.json", {}), "wanted": {}, "skipped": []}
+             "ladders": read_json(data / "market" / "ladders.json", {}), "wanted": {}, "skipped": [],
+             "strict": (data / "fleet" / "strict-classes-on").exists(), "open_needs": open_needs}
     for path in sorted((data / "scouting").glob("*.json")) if (data / "scouting").is_dir() else []:
         try:
             scout = read_json(path, {})
@@ -631,10 +642,26 @@ def mine_candidates(world):
             warnings.append("needs the module %s%s, not the mining laser; the rate is measured with the laser on ore" % (tool, " (base value %d cr)" % price if price else ""))
         rid = existing(world, "mine", belt="%s:%s" % (field["system"], field["poi"]), station=station["at"])
         cid = "mine-%s" % field["poi"].replace("_", "-")
-        route = {"id": cid, "kind": "mine", "title": "%s: %s; sold at %s" % (field["name"], ", ".join(r["id"] for r in live), station["name"]),
-                 "note": "Written by routemaker.py from the field's and the book's readings; an estimate of %d cr per ship-hour, not a measurement. A test: one ship."
-                         % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1,
-                 "sell": floors}
+        if world.get("strict"):
+            # Rule F23 (strict-classes-on): miners gather & store (never sell), capped at 3/belt to prevent crowding
+            route = {"id": cid, "kind": "mine",
+                     "title": "%s: %s; stored at %s (F23 gather)" % (field["name"], ", ".join(r["id"] for r in live), station["name"]),
+                     "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value %d cr per ship-hour."
+                             % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"],
+                     "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 3, "lift_to": 3}
+            # Auto-set keep_items whitelist if field mixes common gangue with higher-value target ores
+            _gangue = {"iron_ore", "copper_ore"}
+            _open_needs = world.get("open_needs") or set()
+            _res_ids = [r["id"] for r in live]
+            _rare = [item for item, _u, _h, _s, _g, _how, lv, _b in sales
+                     if item not in _gangue and ((lv and lv[0][0] >= 15) or item in _open_needs)]
+            if _rare and any(x in _gangue and x not in _open_needs for x in _res_ids):
+                route["keep_items"] = sorted(set(_rare))
+        else:
+            route = {"id": cid, "kind": "mine", "title": "%s: %s; sold at %s" % (field["name"], ", ".join(r["id"] for r in live), station["name"]),
+                     "note": "Written by routemaker.py from the field's and the book's readings; an estimate of %d cr per ship-hour, not a measurement. A test: one ship."
+                             % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1,
+                     "sell": floors}
         if tool:
             route["requires"] = {"module": tool}
         if lawless(world, field["system"]):

@@ -7,7 +7,7 @@
  "station": "gsc_0044:da9de8c360c46ffee15dee4e7d1b8476:443f0c5b2a1fbbcea95d13b76a797fe9",
  "deposit": "faction",
  "minutes": 45,
- "max_ships": 10,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
@@ -15,7 +15,7 @@
  "requires": {
   "empty_hold": true
  },
- "lift_to": 10,
+ "lift_to": 3,
  "measured": {
   "date": "2026-11-22",
   "runs": 136,

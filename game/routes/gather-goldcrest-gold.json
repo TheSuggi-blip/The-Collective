@@ -6,7 +6,7 @@
  "belt": "goldcrest:the_gold_crest",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 90,
- "max_ships": 6,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "gold_ore": 500

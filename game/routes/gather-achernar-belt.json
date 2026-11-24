@@ -6,8 +6,8 @@
  "belt": "achernar:achernar_belt",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 16,
- "lift_to": 16,
+ "max_ships": 3,
+ "lift_to": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000

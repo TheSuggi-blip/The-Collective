@@ -6,7 +6,7 @@
  "belt": "node_gamma:node_gamma_ice_belt",
  "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
  "minutes": 60,
- "max_ships": 20,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "nitrogen_ice": 30000

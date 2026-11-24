@@ -6,7 +6,7 @@
  "belt": "lacaille_9352:lacaille_9352_deep_vein",
  "station": "nova_terra:nova_terra_central:nova_terra_central",
  "minutes": 30,
- "max_ships": 6,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "copper_ore": 10000
@@ -15,7 +15,7 @@
   "empty_hold": true,
   "empire": "solarian"
  },
- "lift_to": 6,
+ "lift_to": 3,
  "measured": {
   "date": "2026-11-24",
   "runs": 12,

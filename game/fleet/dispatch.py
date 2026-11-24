@@ -129,7 +129,9 @@ SPAWN_MOST = 30              # runners running as processes of their own at once
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py"}
+MINE_POI_CAP = 3             # hard cap: max concurrent miners on any single belt/POI (spread miners across belts like hunters)
+BURSAR_STATION_CAP = 1       # hard cap: max concurrent static Bursar desks at any single station (spread across 61+ books)
 
 
 def read_json(path, default):
@@ -874,6 +876,50 @@ def route_hops(pilot, route):
     return jumps_between(LANES_CACHE["lanes"], cur, place)
 
 
+def _bursar_desk_station(rid, route):
+    """Station base_id if route is a static Bursar desk circuit (sell_order/buy_order desk), else ''."""
+    if not isinstance(route, dict) or route.get("kind") != "circuit":
+        return ""
+    stops = route.get("stops") or []
+    has_ord = any(isinstance(s, dict) and ("sell_order" in s or "buy_order" in s) for s in stops)
+    if not has_ord:
+        return ""
+    req = route.get("requires") if isinstance(route.get("requires"), dict) else {}
+    is_desk = bool(req.get("docked_at")) or any(isinstance(s, dict) and s.get("watch_minutes") for s in stops) or ("bursar" in str(rid))
+    if not is_desk:
+        return ""
+    at0 = str(stops[0].get("at") or "") if stops and isinstance(stops[0], dict) else ""
+    return at0.split(":")[-1] if ":" in at0 else str(req.get("docked_at") or "")
+
+
+def _build_crowding_counts(orders, routes, data=None):
+    """Build live per-belt mine counts and per-station bursar counts across active orders and bursar_claims.json."""
+    from collections import Counter as _C
+    mine_pois, bursar_bases = _C(), _C()
+    if isinstance(orders, dict) and isinstance(routes, dict):
+        for _pilot, what in orders.items():
+            if not isinstance(what, str) or " " not in what:
+                continue
+            k, r_id = what.split(" ", 1)
+            rt = routes.get(r_id)
+            if not isinstance(rt, dict):
+                continue
+            if k == "mine" and rt.get("belt"):
+                mine_pois[str(rt["belt"])] += 1
+            elif k == "circuit":
+                b_id = _bursar_desk_station(r_id, rt)
+                if b_id:
+                    bursar_bases[b_id] += 1
+    if data:
+        claims = read_json(Path(data) / "fleet" / "bursar_claims.json", {})
+        if isinstance(claims, dict):
+            for b_id, rec in claims.items():
+                if isinstance(rec, dict) and rec.get("pilot") and str(rec["pilot"]) in (orders or {}):
+                    if str((orders or {}).get(str(rec["pilot"])) or "").startswith("bursar "):
+                        bursar_bases[str(b_id)] += 1
+    return mine_pois, bursar_bases
+
+
 def why_not(pilot, rid, route, state):
     """(why the route is closed to the pilot now, or None when it is open; for an open census the system to read).
     The one rule: pick() and fill.py both use it."""
@@ -966,6 +1012,20 @@ def why_not(pilot, rid, route, state):
     else:
         flying = sum(1 for what in state["orders"].values() if what == mark)
     limit = route.get("max_ships", 1 if route["kind"] == "guard" else 10 ** 6)     # one guard to a place unless its file says more
+    if route["kind"] == "mine" and not route.get("allow_crowd"):
+        if "max_ships" in route:
+            limit = min(limit, MINE_POI_CAP)
+        belt_id = str(route.get("belt") or "")
+        mpc = state.get("_mine_poi_counts")
+        if belt_id and mpc is not None and mpc.get(belt_id, 0) >= MINE_POI_CAP:
+            return "belt cap %d reached at %s" % (MINE_POI_CAP, belt_id), None
+    bursar_base = _bursar_desk_station(rid, route)
+    if bursar_base:
+        hub_cap = max(1, min(2, int(route.get("hub_cap") or BURSAR_STATION_CAP)))
+        limit = min(limit, hub_cap)
+        bsc = state.get("_bursar_station_counts")
+        if bsc is not None and bsc.get(bursar_base, 0) >= hub_cap:
+            return "bursar cap %d reached at %s" % (hub_cap, bursar_base), None
     if flying >= limit:
         return "max_ships %s reached" % limit, None
     place = None
@@ -1221,6 +1281,13 @@ def command(route, pilot, argument, root):
                 + (["--gift", json.dumps(route["gift"], sort_keys=True)] if route.get("gift") else [])     # r22: the hand-over (handover.py)
                 + (["--jettison-gangue", ",".join(route["jettison_gangue"])] if route.get("jettison_gangue") else [])
                 + (["--keep-items", ",".join(route["keep_items"])] if route.get("keep_items") else []))
+    if route["kind"] == "bursar":
+        return (base + ["--minutes", str(route.get("minutes", 30)), "--route", route["id"]]
+                + (["--policy", str(route["policy"])] if route.get("policy") else [])
+                + (["--station", str(route["station"])] if route.get("station") else []))
+    if route["kind"] == "haul":
+        return (base + ["--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
+                + (["--policy", str(route["policy"])] if route.get("policy") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
         follow = argument.get("follow") if isinstance(argument, dict) else None
         spot = argument.get("place") if isinstance(argument, dict) else argument
@@ -1875,9 +1942,11 @@ def one_pass(root, data, dry_run, children):
                             pass
         except OSError:
             pass
+    _mpc, _bsc = _build_crowding_counts(_orders, routes, data=data)
     state = {"now": now, "data": data, "rows": rows, "orders": _orders, "rest": resting(routes, rows, now), "booked": booked(data),
              "loss": _loss, "late": _late, "root": root, "pirates": pirates(data, now),
-             "_order_counts": _oc, "_census_counts": _cc, "_census_busy": _cb, "_scouting_mtimes": _sc_mt}
+             "_order_counts": _oc, "_census_counts": _cc, "_census_busy": _cb, "_scouting_mtimes": _sc_mt,
+             "_mine_poi_counts": _mpc, "_bursar_station_counts": _bsc}
     named = flagships(data)
     ammo = set(read_json(Path(data) / "catalog" / "ammo.json", []) or [])      # written by routemaker.py from the game's catalog
     lines = []
@@ -1966,6 +2035,11 @@ def one_pass(root, data, dry_run, children):
         what = ("census " + argument) if route["kind"] == "census" else route["kind"] + " " + route["id"]
         state["orders"][name] = what
         _oc[what] += 1
+        if route["kind"] == "mine" and route.get("belt"):
+            _mpc[str(route["belt"])] += 1
+        _bb = _bursar_desk_station(route["id"], route)
+        if _bb:
+            _bsc[_bb] += 1
         if what.startswith("census "):
             _cs = what.split(" ", 1)[1]
             _cc[_cs] += 1

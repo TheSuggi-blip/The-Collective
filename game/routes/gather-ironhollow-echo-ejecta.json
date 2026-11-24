@@ -6,7 +6,7 @@
  "belt": "ironhollow:echo_ejecta",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 35,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
@@ -14,5 +14,5 @@
  "requires": {
   "empty_hold": true
  },
- "lift_to": 35
+ "lift_to": 3
 }

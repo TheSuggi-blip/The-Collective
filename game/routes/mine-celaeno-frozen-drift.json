@@ -1,22 +1,12 @@
 {
  "id": "mine-celaeno-frozen-drift",
  "kind": "mine",
- "title": "Celaeno Frozen Drift: water_ice, deuterium_ice, tritium_ice, helium_ice; sold at Sirius Observatory Station",
+ "title": "Celaeno Frozen Drift: water_ice, deuterium_ice, tritium_ice, helium_ice; stored at Sirius Observatory Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1384 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 05:20 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "celaeno:celaeno_frozen_drift",
  "station": "sirius:sirius_observatory_station:sirius_observatory_station",
  "minutes": 77,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 26
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 92
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true

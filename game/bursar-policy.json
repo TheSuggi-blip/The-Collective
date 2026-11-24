@@ -1,0 +1,28 @@
+{
+  "max_per_station": 1,
+  "policed_only": true,
+  "stay_in_empire_first": true,
+  "cycle_minutes": 30,
+  "poll_interval_s": 120,
+  "min_cash_keep": 20000,
+  "buy": {
+    "enabled": true,
+    "max_escrow_per_station": 30000,
+    "max_orders_per_station": 4,
+    "max_units_per_order": 200,
+    "max_unit_price_ratio": 0.90,
+    "outbid_cr": 1,
+    "use_needs_tsv": true,
+    "extra_items": []
+  },
+  "sell": {
+    "enabled": true,
+    "max_orders_per_station": 8,
+    "undercut_cr": 1,
+    "min_price_ratio": 0.75,
+    "instant_hit_bid_ratio": 0.85,
+    "respect_reserve": true
+  },
+  "exclude_stations": [],
+  "priority_stations": []
+}

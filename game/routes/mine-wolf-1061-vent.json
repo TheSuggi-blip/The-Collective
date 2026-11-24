@@ -1,26 +1,12 @@
 {
  "id": "mine-wolf-1061-vent",
  "kind": "mine",
- "title": "Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, sold at Synchrony",
+ "title": "Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, stored at Synchrony",
  "note": "Test of the Nitrogen Vent (catalog: the harvester never targets nitrogen ice; every cycle re-targets another deposit at the field). Only a miner that carries one is sent; it carries the Ice Harvester I and no mining laser (fitted by hand at Central Nexus 2026-11-15 23:32 UTC: the one vent in our six books, 1,500 cr and 15 cr tax). Compare with run 1 at this field without the vent (by hand, 2026-11-15 22:31 to 23:01 UTC, game/routes/guidebook/mining/tests.md, migrated from section 6): 126 units in 25 minutes, 77 water, 40 nitrogen, 5 methane, 4 deuterium ice; +2,688 cr in 30.1 minutes after fuel at Synchrony. Bids at Synchrony: water ice 34 x 12,988 at the best price (22:55 UTC), methane ice 47 x 1,000 (20:33 UTC); no bid for deuterium ice there, so it stays in storage unless one of 166 cr or more stands. Wolf 1061 is lawless: hold empty on the way out (orders F13). 2026-11-16 00:30 UTC, Zero: first RESULT line +6,730 cr in 55.1 min: 241 units, 201 water ice sold at Synchrony for 7,059 (83% water, against 59% on the same field without the vent: game/routes/mine-wolf-1061-frozen-drift.json, 162 of 275). Methane ice min_price 40 -> 34: our stations bid 36 x 1,000 since 23:32 UTC (queue.log ENT-050, errors.log ENT-025). 2026-11-16 12:11 UTC, Zero: requires.bid water ice at synchrony_hub, 25 cr for 300 units at the best price (orders.log ENT-014 (a)): the route closes while a book read within the hour shows less, and opens when one shows it back. 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice, methane_ice, deuterium_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes.",
  "belt": "wolf_1061:wolf_1061_frozen_drift",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 50,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 30
-  },
-  {
-   "item": "methane_ice",
-   "min_price": 34
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 166
-  }
- ],
  "requires": {
   "module": "nitrogen_vent",
   "empty_hold": true,

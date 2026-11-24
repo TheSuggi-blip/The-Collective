@@ -198,11 +198,11 @@ Kept by Mercury. Routes: 185. Ships: 85.
 | 176 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | [Fitting](index-fitting.md) | beyond the border, 11 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
 | 177 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
 | 178 | [mission-workshop-production-run-grand](mission-workshop-production-run-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 3,200 cr, born nebula, while grand_exchange_station asks 3 cr or less for argon_gas | all 85 |
-| 179 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 50 ships, standing work | all 85 |
-| 180 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 20 ships, standing work | all 85 |
-| 181 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 16 ships, standing work | all 85 |
-| 182 | [bursar-desk-grand](bursar-desk-grand.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 14 ships, standing work | all 85 |
-| 183 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 2 ships, standing work | all 85 |
+| 179 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 1 ships, standing work | all 85 |
+| 180 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, standing work | all 85 |
+| 181 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, standing work | all 85 |
+| 182 | [bursar-desk-grand](bursar-desk-grand.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 85 |
+| 183 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, standing work | all 85 |
 | 184 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 85 |
 | 185 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 85 |
 

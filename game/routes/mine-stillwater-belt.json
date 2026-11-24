@@ -1,16 +1,10 @@
 {
  "id": "mine-stillwater-belt",
  "kind": "mine",
- "title": "Stillwater Belt: carbon_ore, platinum_ore, iridium_ore, lead_ore; sold at The Crucible Garrison",
+ "title": "Stillwater Belt: carbon_ore, platinum_ore, iridium_ore, lead_ore; stored at The Crucible Garrison",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 717 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 13:50 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "stillwater:stillwater_belt",
  "station": "the_crucible:the_crucible_garrison:the_crucible_garrison",
  "minutes": 55,
- "max_ships": 1,
- "sell": [
-  {
-   "item": "lead_ore",
-   "min_price": 118
-  }
- ]
+ "max_ships": 1
 }

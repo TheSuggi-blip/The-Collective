@@ -6,7 +6,7 @@
  "belt": "alrakis:alrakis_commerce_vein",
  "station": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
  "minutes": 30,
- "max_ships": 14,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 15000
@@ -16,7 +16,7 @@
   "empire": "nebula",
   "max_jumps": 20
  },
- "lift_to": 6,
+ "lift_to": 3,
  "gift": {
   "to": "hauler",
   "items": [

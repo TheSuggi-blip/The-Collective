@@ -1,26 +1,12 @@
 {
  "id": "mine-alrescha-ice-fields",
  "kind": "mine",
- "title": "Alrescha Ice Fields: water_ice, nitrogen_ice, helium_ice; sold at Factory Belt Manufacturing Hub",
+ "title": "Alrescha Ice Fields: water_ice, nitrogen_ice, helium_ice; stored at Factory Belt Manufacturing Hub",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2546 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-22 07:12 UTC (Zero): up to 3 ships, one result each, until 3 runs are read (rule F37).",
  "belt": "alrescha:alrescha_ice_fields",
  "station": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
  "minutes": 65,
  "max_ships": 3,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 34
-  },
-  {
-   "item": "nitrogen_ice",
-   "min_price": 1
-  },
-  {
-   "item": "helium_ice",
-   "min_price": 1
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true

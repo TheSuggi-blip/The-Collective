@@ -6,8 +6,8 @@
  "belt": "okab:okab_belt",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 25,
- "lift_to": 8,
+ "max_ships": 3,
+ "lift_to": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000

@@ -1,22 +1,12 @@
 {
  "id": "mine-node-beta-frozen-drift",
  "kind": "mine",
- "title": "Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; sold at Node Alpha Processing Station",
+ "title": "Node Beta Frozen Drift: water_ice, nitrogen_ice, deuterium_ice; stored at Node Alpha Processing Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 3254 cr per ship-hour, not a measurement. A test: one ship. Estimate of 2026-11-15 23:10 UTC from: {\"a_load\": [\"water_ice 30 of 30 units for 760 cr (depth at the best price)\", \"deuterium_ice 6 of 6 units for 1248 cr (depth at the best price)\"], \"field\": \"node_beta:node_beta_frozen_drift\", \"jumps\": 1, \"left\": {\"deuterium_ice\": 567, \"nitrogen_ice\": 1271, \"water_ice\": 1276}, \"richness\": {\"deuterium_ice\": 13, \"nitrogen_ice\": 54, \"water_ice\": 59}, \"sold_at\": \"node_alpha_processing_station\"}. Uncertain: deuterium_ice: the bids take 6 of 6 units a load; deuterium_ice: the bids take 6 of the 19 units an hour brings; needs the module ice_harvester_i (base value 1000 cr), not the mining laser; the rate is measured with the laser on ore. In no plan: its Admiral adds it. 2026-11-16 12:22 UTC, Zero: requires.bid water ice at node_alpha_processing_station, 25 cr for 300 units at the best price (orders.log ENT-014 (a), queue.log ENT-097: each ice route names its bid): the route closes while a book read within the hour shows less, and opens by itself when one shows it back. At 12:00 UTC the water-ice bids of Node Alpha, The Experiment and Synchrony read 0.",
  "belt": "node_beta:node_beta_frozen_drift",
  "station": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
  "minutes": 41,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 20
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 166
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "bid": {

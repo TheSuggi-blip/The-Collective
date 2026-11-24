@@ -1,0 +1,24 @@
+{
+  "policed_only": true,
+  "max_jumps_pickup": 18,
+  "max_jumps_delivery": 25,
+  "min_cr_per_jump": 50,
+  "min_total_profit": 400,
+  "max_collateral": 15000,
+  "fuel_reserve_cr": 6000,
+  "max_book_age_minutes": 180,
+  "max_buy_spend_cr": 35000,
+  "min_margin_pct": 0.2,
+  "partners_first": true,
+  "lanes": [
+    "active_freight",
+    "public_freight",
+    "arbitrage",
+    "internal_supply"
+  ],
+  "home_bases": [
+    "node_beta_industrial_station",
+    "central_nexus",
+    "the_experiment_research_station"
+  ]
+}

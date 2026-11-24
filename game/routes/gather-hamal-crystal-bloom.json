@@ -6,13 +6,13 @@
  "belt": "hamal:hamal_crystal_bloom",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 30,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000,
   "copper_ore": 20000
  },
- "lift_to": 11,
+ "lift_to": 3,
  "requires": {
   "empty_hold": true
  },

@@ -1,26 +1,12 @@
 {
  "id": "mine-alnair-ice-fields-nexus",
  "kind": "mine",
- "title": "Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; sold at Central Nexus",
+ "title": "Alnair Ice Fields: water_ice, nitrogen_ice, deuterium_ice; stored at Central Nexus",
  "note": "A test, one ship (orders F8): the field of mine-alnair-ice-fields (47,732 of 50,000 water ice, richness 67, census 01:55 UTC; the richest water-ice field we read), sold at Central Nexus instead of Node Alpha, whose bid holds 2,016 units at 31 cr at its best price and is shared by six routes (data/market/node_alpha_processing_station.json, 03:52 UTC). Central Nexus bid 24 cr for 48,298 water ice at its best price (data/market/central_nexus.json, 04:00 UTC). Alnair is 5 jumps from home. For the miners fitted at Ironlight Crossroads this turn. Read the RESULT line, then lift. Written by Zero, 2026-11-16 04:08 UTC (orders.log ENT-011, block ZERO (1)). 2026-11-16 08:10 UTC, Zero: max_ships 1 -> 6. Central Nexus is the one deep water-ice bid: 28 x 732 at its best price and 44,128 in all levels at 07:58 UTC (27 cr for about 43,000), regains about 1,250 an hour at its best price (hive.py refill). Run: +3,670 cr in 77 minutes (about 2,870 cr per ship-hour), one \"not docked for the sale\" before the dock fix; field 47,439 water ice (census 08:01 UTC), five jumps. 2026-11-16 09:07 UTC (fill.py, Zero): max_ships 6 -> 8. 2026-11-16 12:11 UTC, Zero: requires.bid water ice at central_nexus, 25 cr for 300 units at the best price (orders.log ENT-014 (a)): the route closes while a book read within the hour shows less, and opens when one shows it back. max_ships 8 -> 1: the Central Nexus bid read 32 cr x 563 in all levels at 12:01 UTC and regains about 1,197 an hour (about ten ships' ice); the stored ice is carried and drained first.",
  "belt": "alnair:alnair_ice_fields",
  "station": "nexus_prime:the_core:central_nexus",
  "minutes": 70,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "water_ice",
-   "min_price": 20
-  },
-  {
-   "item": "nitrogen_ice",
-   "min_price": 1
-  },
-  {
-   "item": "deuterium_ice",
-   "min_price": 166
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true,

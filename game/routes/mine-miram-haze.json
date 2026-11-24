@@ -1,18 +1,12 @@
 {
  "id": "mine-miram-haze",
  "kind": "mine",
- "title": "Miram Haze: hydrogen_gas, nebula_gas, ion_gas; sold at Node Beta Industrial Station",
+ "title": "Miram Haze: hydrogen_gas, nebula_gas, ion_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1639 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 13:12 UTC (Apollo): one ship until its first RESULT line is read. 2026-11-16 13:15 UTC (Apollo): requires.bid on the Node Beta hydrogen bid it sells into (orders.log ENT-014, EVERY ADMIRAL (a)): 34 cr x 135 in the 12:50 UTC book; closed while a book read within the hour shows fewer than 30 units at 27 cr or more.",
  "belt": "miram:miram_haze",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 65,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "hydrogen_gas",
-   "min_price": 27
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true,

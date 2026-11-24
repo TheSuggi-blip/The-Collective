@@ -1,20 +1,10 @@
 {
  "id": "mine-veil-nebula",
  "kind": "mine",
- "title": "Veil Nebula: quantum_fragments, phase_crystal, energy_crystal; sold at Trader's Rest Resort Station",
+ "title": "Veil Nebula: quantum_fragments, phase_crystal, energy_crystal; stored at Trader's Rest Resort Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 7394 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 17:43 UTC (Unity): one ship until its first RESULT line is read.",
  "belt": "frontier:veil_nebula",
  "station": "traders_rest:traders_rest_resort_station:traders_rest_resort_station",
  "minutes": 90,
- "max_ships": 1,
- "sell": [
-  {
-   "item": "phase_crystal",
-   "min_price": 2
-  },
-  {
-   "item": "energy_crystal",
-   "min_price": 248
-  }
- ]
+ "max_ships": 1
 }

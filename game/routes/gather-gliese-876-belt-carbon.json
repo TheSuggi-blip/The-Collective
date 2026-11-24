@@ -6,7 +6,7 @@
  "belt": "gliese_876:gliese_876_belt",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 150,
- "max_ships": 4,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "carbon_ore": 1000

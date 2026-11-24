@@ -6,8 +6,8 @@
  "belt": "ruchbah:broken_glass_veil",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 6,
- "lift_to": 6,
+ "max_ships": 3,
+ "lift_to": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000

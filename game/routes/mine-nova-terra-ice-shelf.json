@@ -1,18 +1,12 @@
 {
  "id": "mine-nova-terra-ice-shelf",
  "kind": "mine",
- "title": "Nova Terra Ice Shelf: water_ice, deuterium_ice, helium_ice; sold at Node Beta Industrial Station",
+ "title": "Nova Terra Ice Shelf: water_ice, deuterium_ice, helium_ice; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 899 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 12:32 UTC (Zero): one ship until its first RESULT line is read. 2026-11-16 12:32 UTC, Zero: a test of one ship (orders F8), with requires.bid on the one good it sells (water_ice at central_nexus, 25 cr for 300 units): it does not start into an empty bid. Central Nexus water ice read 0 at 12:30 UTC and regains about 1,197 an hour; what the route does not sell it stores. 2026-11-21 19:49 UTC (Zero): requires.bid min_qty 300 -> 3000: miners store about 18,500 water ice (stock_hour 18:00 UTC) and the drains and carries sell stored ice first; the Central Nexus bid read 28 cr x 371 at 19:48 UTC, so new ice is mined only on a deep order. 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (deuterium_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes.",
  "belt": "nova_terra:nova_terra_ice_shelf",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 90,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "deuterium_ice",
-   "min_price": 156
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "bid": {

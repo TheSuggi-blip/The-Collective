@@ -1,18 +1,12 @@
 {
  "id": "mine-felis-frost-ring",
  "kind": "mine",
- "title": "Felis Frost Ring: water_ice, nitrogen_ice, deuterium_ice; sold at Node Beta Industrial Station",
+ "title": "Felis Frost Ring: water_ice, nitrogen_ice, deuterium_ice; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 901 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-16 12:32 UTC (Zero): one ship until its first RESULT line is read. 2026-11-16 12:32 UTC, Zero: a test of one ship (orders F8), with requires.bid on the one good it sells (deuterium_ice at node_beta_industrial_station, 156 cr for 6 units): it does not start into an empty bid. Central Nexus water ice read 0 at 12:30 UTC and regains about 1,197 an hour; what the route does not sell it stores.",
  "belt": "felis:felis_frost_ring",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 88,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "deuterium_ice",
-   "min_price": 156
-  }
- ],
  "requires": {
   "module": "ice_harvester_i",
   "empty_hold": true,

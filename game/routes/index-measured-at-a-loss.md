@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 9.
+Routes: 6.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -22,6 +22,3 @@ Routes: 9.
 | [mission-83d4aab496f36cd12fbed259b3f534bf-central](mission-83d4aab496f36cd12fbed259b3f534bf-central.json) | circuit | home space | Wreck Recovery: Congregation in GSC-0041: 984 cr, +50 XP at The Core | up to 3 ships | 29 | 4 | -110 | -720 | 2026-11-24 |
 | [carry-melt-first-step-to-experiment](carry-melt-first-step-to-experiment.json) | circuit | beyond the border, 18 jumps | Stored crystal_melt carried from first_step_memorial_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 20 crystal_melt stored at first_step_memorial_station, while the_experiment_research_station bids 1000 cr for crystal_melt | 1 | 26 | -220 | -510 | 2026-11-24 |
 | [need-ember-gland-krynn](need-ember-gland-krynn.json) | circuit | beyond the border, 20 jumps | Station Need: Ember Gland at the War Citadel (Krynn) filled from the pilot's own glands stored there, about 8,100 cr a gland | up to 1 ships, with 3 ember_gland stored at crimson_war_citadel | 14 | 1 | -20 | -810 | 2026-11-24 |
-| [mine-dheneb-cryobelt](mine-dheneb-cryobelt.json) | mine | beyond the border, 11 jumps | Dheneb Cryobelt: water_ice, nitrogen_ice, helium_ice, methane_ice; sold at Hex Star | up to 3 ships, needs ice_harvester_i, empty hold | 19 | 41 | -170 | -260 | 2026-11-24 |
-| [mine-epsilon-eridani-ice-fields](mine-epsilon-eridani-ice-fields.json) | mine | beyond the border, 9 jumps | Epsilon Eridani Ice Fields: water_ice, nitrogen_ice; sold at Sirius Observatory Station | up to 1 ships, needs ice_harvester_i, empty hold | 4 | 49 | -360 | -450 | 2026-11-23 |
-| [mine-hd-20794-ice-fields](mine-hd-20794-ice-fields.json) | mine | beyond the border, 21 jumps | HD 20794 Ice Fields: water_ice, nitrogen_ice, carbon_dioxide_ice; sold at The Anvil Arsenal | up to 1 ships, needs ice_harvester_i, empty hold | 7 | 50 | -350 | -500 | 2026-11-24 |

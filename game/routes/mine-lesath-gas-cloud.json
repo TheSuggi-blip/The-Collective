@@ -1,18 +1,12 @@
 {
  "id": "mine-lesath-gas-cloud",
  "kind": "mine",
- "title": "Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; sold at Node Beta Industrial Station",
+ "title": "Lesath Gas Cloud: hydrogen_gas, plasma_gas, xenon_gas, neon_gas, ion_gas; stored at Node Beta Industrial Station",
  "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 1442 cr per ship-hour, not a measurement. A test: one ship. Taken as a Trade test on 2026-11-16 (orders.log ENT-011, block MERCURY: the gas routes, one trader each): one trader fitted with a Gas Harvester I by hand at Node Beta (1,202 cr ask). The sale rests on two thin bids at Node Beta: plasma gas 102 x 17 and 98 x 20, both the station's own (view_market 03:16 UTC), which the plasma bought at Ironlight Crossroads also sells into; hydrogen 32 x 32 (03:05 UTC). Lawless, four jumps: hold empty on the way out (orders F13). The mine runner left the sale undone on 14 runs of other routes ('not docked for the sale', runs.jsonl): a run that sold nothing is that fault first.",
  "belt": "lesath:lesath_gas_cloud",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 58,
  "max_ships": 1,
- "sell": [
-  {
-   "item": "plasma_gas",
-   "min_price": 81
-  }
- ],
  "requires": {
   "module": "gas_harvester_i",
   "empty_hold": true

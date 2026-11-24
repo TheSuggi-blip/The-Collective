@@ -6,7 +6,7 @@
  "belt": "khambalia:khambalia_crystal_market",
  "station": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
  "minutes": 30,
- "max_ships": 18,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 10000
@@ -16,7 +16,7 @@
   "empire": "nebula",
   "max_jumps": 20
  },
- "lift_to": 18,
+ "lift_to": 3,
  "measured": {
   "date": "2026-11-23",
   "runs": 227,
