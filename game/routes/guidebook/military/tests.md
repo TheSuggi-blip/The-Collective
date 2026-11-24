@@ -1,29 +1,27 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-24. Evidence: table runs (lowest_hull_pct, goods); hive.py herds; routes hunt-kit-*, hunt-network, hunt-network-packs; game/hunt-policy.json; commit dd490e79.
+Status: test. Updated: 2026-11-24. Evidence: table runs (kills, lowest_hull_pct); data/fleet/hunt_packs.json; game/hunt-policy-packs.json and route hunt-network-packs; route strip-missile-launcher-central-nexus; requests.log ENT-523.
 
 - Whale hunts alone with a Shield Booster II hold at the siphon and Antares
-  herds (lowest hull 52 to 100 percent); two other herds took ships to 4
-  and 14 percent and are off (F9). The proven way stays three Laser III.
-- hunt-network (hunt_net.py, first flight 2026-11-24): it found 0 herds
-  until dd490e79 (a store query on columns `stations` lacks, swallowed);
-  now F9 by gauges.py gates solo and packs, guns without rounds count 0.
-  Test: one pack of 3 at a time, Laser III or better, wildlife only, one
-  tier-2 escort (game/hunt-policy.json); three Laser III drones on it.
-  Read `RESULT ... hunt_net pack` lines, kills and fuel before lifting.
-- Atria kit parts: a silica-borer kill drops 1 silica_lens and 1 carapace
-  (one run). Of the five species only one herd stands above the two F38
-  keeps (hive.py herds: silica-borers at Zubenelhakrabi, lawless):
-  hunt-kit-zubenelhakrabi-* tests it with one ship (F3). Cauldronback,
-  magnet-barnacle, mirror-skate and inkwyrm herds read 0 to 2: wild herds
-  cannot fill the kit.
+  herds; two other herds took ships to 4 and 14 percent and are off (F9).
+  The proven way stays three Laser III in one fleet (`group_hunt.py`).
+- Pack lane (route `hunt-network-packs`, policy
+  `game/hunt-policy-packs.json`): no pack launched in its first five hours.
+  `pack_try_join_or_create` caps pack pilots at max(3, active x
+  `target_share`) and a joiner must stand within `rally_max_jumps` of the
+  target: at 0.02 three singletons filled the quota at three far places.
+  Retuned: share 0.07, pack and escort reach 6 jumps. Read three
+  `hunt_net pack` RESULT lines before any lift.
+- Cleavers and Broadaxes: strip the empty launcher or railgun, then three
+  hunts read kills (`strip-missile-launcher-central-nexus`).
+- Atria kit parts: the kit is assembled only in a facility we do not own
+  (requests.log ENT-523); the kit hunts stay off the tier-2 rows until
+  the Fleet Admiral decides how the kit is got.
 - Armor Plate II on a Shard or Theoria: armor +10, speed stays 1; lifted.
-- Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks.
-- Pirate formations (F27): `group_hunt.py --pirate --systems a,b` takes
-  three Laser III ships into one game fleet, visits each POI, attacks only
-  a lone pirate of tier scout (weight 2 x hull within the side's gauges)
-  and flees all when a second foe joins. First run 2026-11-24.
+- Pirate formations (F27): `group_hunt.py --pirate` after three wildlife
+  packs hold; lone scouts only, never at a pack's POI.
+
 ### Group hunts
 Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 

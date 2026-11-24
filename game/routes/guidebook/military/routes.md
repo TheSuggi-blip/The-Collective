@@ -1,26 +1,26 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the tool plan (show, templates); hive.py briefing (column carries); the tool fill (check); dispatch.judged; table herds; runs.jsonl joined with stats_pilot_hour (cost per XP).
+Status: proven. Updated: 2026-11-24. Evidence: the tool plan (show, templates, 18:50 UTC); hive.py briefing (column carries); the tool fill (check); dispatch.judged; table herds; runs.jsonl joined with stats_pilot_hour (cost per XP).
 
 What the division flies between two turns (orders ENT-084, P1, P3, P5,
 P6 and block APOPHIS): hunts at the least fuel per XP, fits, a group that
-kills; no sale, carry or craft of its own (P5). No guard in the first
-ring (F33). One hunter to a herd (column carries).
+kills; no sale, carry or craft (P5). No guard in the first ring (F33).
+One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
 | First | `buy-autocannon-rounds-*` (home asks first, The Anvil for Crimson-born); `rearm-pulse-laser-*` (a hunter without a weapon); the once line; `recursion-parts-*` (the yard's bids, once); the Laser III, Shield Booster II and Armor Plate II fits (F17); `strip-mining-laser-*`; plasma loaders; `give-drone-stores-*`; the Atria kit hunts (`hunt-kit-*`) | each under its limit | F35; F17; P3; P5 |
 | Own | a cheap near hunt first; far herds; the filler's tests; three Laser III drones fly `hunt-network` first (its first packs) | 1 each | P1; tests; P7 |
-| Tier-2 rows | `hunt-network-packs` only (packs, escorts, else docked): Recursions, Broadaxes | 7 | P1; F9 |
+| Tier-2 rows | `strip-missile-launcher-central-nexus` (empty launcher), `hunt-network-packs` | 7 | P1; F9 |
+| Cleaver rows | the same strip, then the newborn rows | 3 | F37 |
 | `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps of where they stand, a few `far_ok` 7 to 9 jumps out | 1 each | P6; F38 |
 | `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), then every hunt by credits a combat-and-piloting XP over 24 hours, cheapest first; at its end herds 2 to 6 jumps out; no hunt at a partner ranch (F2, F4) | 1 each | combat XP; F23 |
 | Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once, `far_ok`, `standing` (a positioning trip is not judged for pay), one trip to Central Nexus | 6 each | P6, O5 |
 | Then | the guard posts beyond the border (not GSC-0044: first ring), `hunt-network`, then `park` | 1 each | F8, F33 |
 
-Every hunt carries `gift_to`. What changes it: a herd read back
-(table herds), a pirate at a place (`pirate_places.py`), a reserve good
-short (the tool stock, view=reserve), more laser ships.
+Every hunt carries `gift_to`. What changes it: a herd read back (table
+herds), a pirate at a place (`pirate_places.py`), a reserve good short.
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
 
