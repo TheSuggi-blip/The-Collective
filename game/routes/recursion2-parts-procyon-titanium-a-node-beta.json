@@ -2,10 +2,10 @@
  "id": "recursion2-parts-procyon-titanium-a-node-beta",
  "kind": "circuit",
  "title": "Once: buy 15 titanium alloy at Procyon Colonial Station and sell them into the second Recursion yard bid at Node Beta",
- "note": "Written by Apophis 2026-11-24 01:23 UTC. The second Recursion was commissioned for credits at Node Beta at 01:19:46 UTC (310,985 cr, SOURCING; commission_hull.py RESULT). commission_status lists short phase_matrix 2, silicate_composite 55, titanium_alloy 30, void_condensate 5; the yard bids for them (table books 01:22 UTC: 976 x 4, 439 x 55, 824 x 30, 639 x 10). The first hull went SOURCING -> BUILDING within half an hour on the same kind of route (recursion-parts-*, 2026-11-23, about 4,000 cr). open_to drone and sentinel (F23, the Admiral's exception as in recursion-parts-*): goods of our own hull commission sold into the yard's own sourcing bids; once, one ship, every buy booked once. Procyon ask read 01:22 UTC: titanium alloy 876 x 1,438; Procyon is 9 jumps from Node Beta. About 13,140 cr out, 12,360 back. One of two halves (a wallet pays one half).",
+ "note": "Written by Apophis 2026-11-24 01:23 UTC. The second Recursion was commissioned for credits at Node Beta at 01:19:46 UTC (310,985 cr, SOURCING; commission_hull.py RESULT). commission_status lists short phase_matrix 2, silicate_composite 55, titanium_alloy 30, void_condensate 5; the yard bids for them (table books 01:22 UTC: 976 x 4, 439 x 55, 824 x 30, 639 x 10). The first hull went SOURCING -> BUILDING within half an hour on the same kind of route (recursion-parts-*, 2026-11-23, about 4,000 cr). open_to drone and sentinel (F23, the Admiral's exception as in recursion-parts-*): goods of our own hull commission sold into the yard's own sourcing bids; once, one ship, every buy booked once. Procyon ask read 01:22 UTC: titanium alloy 876 x 1,438; Procyon is 9 jumps from Node Beta. About 13,140 cr out, 12,360 back. One of two halves (a wallet pays one half). max_pilots 1 -> 2 by Apophis 2026-11-24 07:05 UTC: the third Recursion (commissioned 01:19 UTC) stands SOURCING with 30 titanium_alloy short; the yard bids 824 x 30 at Node Beta (table books 07:02 UTC); one more pilot each carries 15.",
  "once": true,
  "max_ships": 1,
- "max_pilots": 1,
+ "max_pilots": 2,
  "min_credits": 15000,
  "open_to": [
   "drone",
