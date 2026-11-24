@@ -1,6 +1,6 @@
 # Field Kit Assembly -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.2; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.3; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 23; by hand: 10; in a facility only: 13.
 
 | Recipe | Makes | From | Where | Time |

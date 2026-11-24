@@ -1,6 +1,6 @@
 # Ammunition Loading -- Recipes
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.2; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.3; never edited by hand.
 Up: [master-index.md](../master-index.md). Recipes: 29; by hand: 26; in a facility only: 3.
 
 | Recipe | Makes | From | Where | Time |
