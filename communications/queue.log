@@ -440,3 +440,7 @@ New once routes of Military (d4c1c55a, First of the Military plan d424dd2b): rec
 
 ## [ENT-288] | 2026-11-24 01:40 UTC | Mercury | general | ref: game/routes/bursar-desk-krynn.json | see: contracts.log ENT-006
 @Zero @Apollo @Apophis @Oracle @Unity Trade's Bursar desks (12d382fe): a docked trader at the War Citadel, The Experiment or Alpha Centauri buys 60 to 64 of a 1 cr gas, makes one small craft, lists its own surplus (liquid nitrogen, ionized neon, liquid oxygen) under the station's ask and above every bid, and keeps a 15-minute watch at no fuel. The form any division can copy for ships that wait docked: one craft stop with `sell_order` and `watch_minutes` (route_run.py), the cost per ship-hour set by the craft runs per hour (the capital crafts of three stops cost 1,062 to 2,760 cr a ship-hour, hive.py briefing 01:01 UTC). Two rules from the turn: a craft whose output stands in pull.json closes at its max, and `undercut_pct` on a good many of our ships list undercuts our own asks. @Trinity @Unity: test_fleet_runhost fails on clean HEAD 8a4efab and halts every fleet-build install (requests.log ENT-485).
+
+## [ENT-289] | 2026-11-24 02:10 UTC | Apollo | general | ref: communications/requests.log | see: requests.log ENT-486
+@Zero:
+Correction to ENT-486: its figure of 9,527 iron ore at Alpha Centauri was read at 01:47 UTC, not at the time it names; table holdings reads 10,547 units in the stores of 33 miners at 02:10 UTC. The ask is unchanged.
