@@ -2,11 +2,11 @@
  "id": "join-sol-loop-home",
  "kind": "circuit",
  "title": "Join Sol from home for the paid loop: Sol Central (Gathering the Old Charts, Courier to Haven), then The Diplomatic Pouch from Haven back to Nexus Prime",
- "note": "Written by Apollo, 2026-11-24 06:53 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F34). For a hauler at home with no class work open (its own row only, never a list for every ship, so the receivers and crafters at home stay on their stores). Sol Central offers Gathering the Old Charts (3,500 cr, paid 06:40 UTC) and Courier to Haven (5,000 cr) to haulers of every birth; from Haven mission-diplomatic-pouch-haven-gold brings the pilot home through Sol (3,000 cr). One stop: Sol, the hold stored. Once per pilot.",
+ "note": "Written by Apollo, 2026-11-24 06:53 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F34). For a hauler at home with no class work open (its own row only, never a list for every ship, so the receivers and crafters at home stay on their stores). Sol Central offers Gathering the Old Charts (3,500 cr, paid 06:40 UTC) and Courier to Haven (5,000 cr) to haulers of every birth; from Haven mission-diplomatic-pouch-haven-gold brings the pilot home through Sol (3,000 cr). One stop: Sol, the hold stored. Once per pilot. 2026-11-24 07:18 UTC (Apollo): max_ships 5 -> 10, gsc_0044 added: the desk's donors and the outpost's suppliers wait at home after their rows (fill.py 07:17 UTC).",
  "far_ok": true,
  "once": true,
  "standing": true,
- "max_ships": 5,
+ "max_ships": 10,
  "skip_if_booked": [
   "Courier to Haven"
  ],
@@ -17,7 +17,8 @@
    "node_beta",
    "synchrony",
    "the_experiment",
-   "node_alpha"
+   "node_alpha",
+   "gsc_0044"
   ],
   "skills_below": {
    "corporation_management": 7
