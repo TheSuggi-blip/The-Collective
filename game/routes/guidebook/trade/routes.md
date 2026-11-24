@@ -1,35 +1,33 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 15:39 UTC; orders_scan.py of 85 traders 15:20 UTC (escrow 76,564 cr, 39 buys); table books 15:27 UTC; route bursar-network-freighter runs 13:47-15:02 UTC; commission_status 15:08 UTC.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py check 19:40 UTC; fill.py check trader; orders_scan.py 19:15 UTC (escrow 71,009 cr, 33 buys); route carry-sac-beta-to-hex-star run 19:21 UTC; commission_status 19:10 UTC; upgrades.py auto_enqueue dry run 19:12 UTC.
 
-The plan file as applied on 2026-11-24 at 15:34 UTC (orders ENT-090,
+The plan file as applied on 2026-11-24 at 19:40 UTC (orders ENT-090,
 block MERCURY):
 
-- First, every ship: the once line of every board; the Station Needs
-  (`need-*`, gated by `requires.stored` and `requires.posted`); the far
-  bids for stored loot and melt (`sell-ember-*-dheneb`,
-  `sell-melt-*-dheneb`, each gated by `requires.stored` and
-  `requires.bid`).
+- First, every ship: `fit-network` (tier-0 hulls detect as bursar
+  desks in game/fit-policy.json: no fit); the once line of every
+  board; the Station Needs (`need-*`, gated by `requires.stored` and
+  `requires.posted`); the far bids for stored goods at Hex Star
+  (`sell-ember-*`, `sell-melt-*`, `carry-sac-beta-to-hex-star`, each
+  gated by `requires.stored` and `requires.bid`).
 - Own rows: a `finish-*` route only for the holders of its mission;
-  a one-ship trade test at the head of its tier-2 ship's row; the
-  join corridors, the capitals' lines, `@trade-sell > @trade-craft`.
+  `craft-network` at the head of three test rows (P7, F37); the join
+  corridors, the capitals' lines, `@trade-sell > @trade-craft`.
 - Then, gated to where each ship stands: starters stripped once, the
   five Bursar desks, `bursar-network` (tier 0, cargo 150 or less),
-  `bursar-network-freighter` (cargo over 150, docked, zero fuel)
-  before steel crafts, `train-trading-*` and `train-jumps-trader`
-  (a jump loop is the last work before park), park.
+  `bursar-network-freighter` (cargo over 150, docked) before steel
+  crafts, `train-trading-*`, `train-jumps-trader`, park.
 
-Hulls: a listed hull before a commission (`buy_listed_hull.py`).
-Prayer (540 cargo) for starters; a listed tier-2 (Apophenia, Analysis,
-Meridian) for Piloting 10. A tier-2 hold earns only where a lane uses
-it: a deep bid far off for stored goods, or a spread sized to the
-wallet. After the script's RESULT read the ship's order: the
-dispatcher can hold it again as `hand Mercury`; release it by hand.
+Hulls: the upgrade service buys listed hulls by the Trade ladder of
+game/upgrade-policy.json (Prayer, Ledger; Baling Wire, Meridian
+Freighter, Bulk Terms, Apophenia for Piloting 10; max_active 7).
+A commission stuck in sourcing is finished by its owner with
+`supply_commission` (owner only), the good bought where its ask stands.
 
-What would change it: the plasma lane's three runs; the melt bid at
-Hex Star gone; the commissions at The Experiment sourced (each waits
-on one neural interface gel).
+What would change it: craft-network's first runs; the bids at Hex Star
+gone; the Meridian buys delivered.
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
