@@ -23,7 +23,10 @@ with the member limit read before and after; assemble the kit as parts arrive.
 - After the turn's plan: `fill.py check` hauler 06:28 UTC 14 waiting, 06:42 UTC 21 (HALT), 06:51 UTC 1, 06:59:40 UTC
   `PASS: no ship of hauler waits`, with a cliff warning of 60 ships on once-only routes without a repeating fallback;
   the last check, 07:19:35 UTC: `PASS: no ship of hauler waits | CLIFF WARNING: 90 ship(s) on once-only routes lack
-  repeating standing fallback (market_prime 20, nexus_prime 10, factory_belt 8, maplevale 7)`.
+  repeating standing fallback (market_prime 20, nexus_prime 10, factory_belt 8, maplevale 7)`. The loop's end
+  emptied into Nexus Prime from 07:25 UTC (11 to 13 waiting); after the steel route of Activities 6 the last check,
+  07:46:48 UTC: `PASS: no ship of hauler waits | CLIFF WARNING: 54 ship(s) on once-only routes lack repeating
+  standing fallback (pherkad 18, sirius 5, alfirk 3, haven 2)`.
 - Credits: table division_pnl_24h at 07:01 UTC, Logistics: steady -28,091, once 191,625, purse 163,534 over 24 hours;
   purse 215,320 over 6 hours. Hauler runs started from 06:20 UTC (table runs, 06:59 UTC): 159 runs, 110,777 cr paid
   once, -25,657 cr steady (fuel).
@@ -55,6 +58,11 @@ with the member limit read before and after; assemble the kit as parts arrive.
    Nothing was spent. Requests.log ENT-496 asks Unity for 200,000 cr in the builder's wallet.
 5. Admirals.log ENT-117 tells Mercury of two crystal melt station needs at Frontier Station that Trade's own melt
    could fill.
+6. Repeating work at the loop's end. A docked buy of steel plate was refused to haulers (`class: trade is traders'
+   work`); a circuit that buys and crafts is craft work. craft-steel-bought-iron-central-nexus buys five holds of
+   iron ore at the 1 cr ask (24,400 x 1, depth 132,696, table books 07:31 UTC) and smelts it by hand: the first three
+   runs made 32 plate each in 5 minutes for 325 cr (RESULT lines 07:37 to 07:39 UTC), then max_ships 3 -> 35 and an
+   ask gate of 2 cr; 18 runs by 07:47 UTC, -5,850 cr (table runs). The reserve is short of 36,466 plate.
 
 ## Problems
 
@@ -62,9 +70,10 @@ with the member limit read before and after; assemble the kit as parts arrive.
   (0 minutes each). Cause: the missions table is one pilot's view. The route is off and out of the list First.
 - 21 Rim-born haulers waited at Sol at 06:42 UTC: my Courier route still carried `requires.empire nebula`. A hauler's
   own board offered the courier to every birth; the limit is gone and the cap raised.
-- The fill gate's cliff warning: 90 ships (07:19 UTC) fly once-only routes with no repeating work behind them. The
-  loop ends at Nexus Prime, where docked crafts open only on stored inputs and the training loop is capped at 8 by the
-  orders: ships may wait there before my next turn.
+- The fill gate's cliff warning: 90 ships (07:19 UTC) flew once-only routes with no repeating work behind them; 13
+  waited at Nexus Prime by 07:30 UTC. Cause: docked crafts open only on stored inputs and the training loop is capped
+  at 8 by the orders. Fixed in part by the bought-iron steel route; 54 ships stand on once routes at 07:46 UTC, and
+  the 1 to 2 cr iron book (132,696 units) ends that work when it is bought out.
 - Atria kit blocked: the four hunted parts have no source but Military's hunts (orders ENT-085, block APOPHIS); the
   kit assembler costs 600,000 cr. Requests.log ENT-451 (Recursion materials) waits behind the kit.
 - The third office did not stand: a Lockbox's fee comes from the builder's wallet, not the treasury (07:09 UTC). My
@@ -78,8 +87,8 @@ with the member limit read before and after; assemble the kit as parts arrive.
 - On Unity's answer to ENT-494: one hauler on craft-steel-faction-gsc-0044, one run, its RESULT line read, then lift
   (F37); a hand craft at an outpost is untested.
 - On Zero's answer to ENT-495: the Alpha Centauri receivers take their steel route from Sol.
-- Close the cliff: a repeating home route for the loop's end at Nexus Prime (docked steel on given iron, or the
-  training loop of @train-hauler), sized by what Nexus Prime carries.
+- Read the bought-iron steel route's runs and the iron book; when the 2 cr ask is gone, a second station's iron
+  (Node Beta, The Experiment ask 6 cr) or docked steel on the miners' given iron for the ships that return.
 - Drop the finish routes once their holders are paid; read `mission_list` every turn for new half-done missions.
 - Choices made alone: the finish routes and the Sol loop; the third office at Central Nexus (a Lockbox, then the
   ladder's 75,000 and 300,000 cr from the treasury), inside the 500,000 cr Admiral build cap of build.py.
@@ -115,6 +124,9 @@ with the member limit read before and after; assemble the kit as parts arrive.
   Record: build3.log 07:09 UTC. Change: a wallet check before a Lockbox. Kept in: knowledge/faction-builds.md.
 - Lesson: a `deliver_item` objective takes goods bought for it (boards for the Old Charts); The Diplomatic Pouch hands
   no gold on accept, Courier to Haven hands its silver. Record: the route log 06:33 to 06:40 UTC and the hand accept.
+- Lesson: under strict classes a circuit that buys without crafting is trade (traders only); one that buys and crafts
+  is craft, open to haulers. Record: why_closed.py 07:31 UTC; workclass.py work_class. Change: reserve buys go with a
+  craft step. Kept in: guidebook lessons.
 - Fleet takeaway: before a corridor or a hull, read what the waiting ships already hold.
 - Guidebook: lessons entry "Missions held half done, and boards per pilot"; Standing Plan rewritten (99a67f60).
 - Skill: logistics-stock changed -- steps 35 (finish routes from mission_list) and 36 (an office where no faction
