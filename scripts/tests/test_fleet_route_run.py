@@ -1002,7 +1002,7 @@ class ShippingStepTests(unittest.TestCase):
 
 
 class OrderHeartbeatTests(unittest.TestCase):
-    def test_a_long_goal_keeps_the_order_file_fresh_and_a_gone_file_is_not_made_again(self):
+    def test_a_long_goal_keeps_the_order_file_fresh_and_stops_on_unlink_without_leaking(self):
         import os
         import time
         space = functions("heartbeat")
@@ -1011,16 +1011,53 @@ class OrderHeartbeatTests(unittest.TestCase):
             path.write_text("{}", encoding="ascii")
             old = time.time() - 3600
             os.utime(path, (old, old))
-            space["heartbeat"](path, every=0.05)
-            time.sleep(0.3)
-            self.assertGreater(path.stat().st_mtime, old + 3000)
-            path.unlink()
-            time.sleep(0.2)
-            self.assertFalse(path.exists())
+            worker = space["heartbeat"](path, every=0.05)
+            try:
+                time.sleep(0.25)
+                self.assertGreater(path.stat().st_mtime, old + 3000)
+                path.unlink()
+                worker.join(timeout=1.0)
+                self.assertFalse(worker.is_alive(), "heartbeat thread leaked after order file unlink")
+                self.assertFalse(path.exists())
+            finally:
+                worker.stop()
+                worker.join(timeout=1.0)
 
-    def test_the_run_starts_the_heartbeat_after_its_order(self):
+    def test_heartbeat_stops_on_stop_call_and_never_touches_replaced_order_file(self):
+        import os
+        import time
+        space = functions("heartbeat")
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "pilot.json"
+            path.write_text('{"what":"run1"}', encoding="ascii")
+            w1 = space["heartbeat"](path, every=0.05)
+            try:
+                w1.stop()
+                w1.join(timeout=1.0)
+                self.assertFalse(w1.is_alive(), "heartbeat thread did not exit on stop()")
+            finally:
+                w1.stop()
+
+            # Simulate a later run or hand hold atomically replacing orders/<pilot>.json (new inode)
+            path.write_text('{"what":"run1"}', encoding="ascii")
+            w2 = space["heartbeat"](path, every=0.05)
+            try:
+                tmp = Path(d) / "pilot.json.new"
+                tmp.write_text('{"what":"hand Unity"}', encoding="ascii")
+                old = time.time() - 3600
+                os.utime(tmp, (old, old))
+                os.replace(tmp, path)
+                w2.join(timeout=1.0)
+                self.assertFalse(w2.is_alive(), "heartbeat thread kept running after inode replacement")
+                self.assertLess(path.stat().st_mtime, old + 60, "old heartbeat refreshed replaced order file")
+            finally:
+                w2.stop()
+                w2.join(timeout=1.0)
+
+    def test_the_run_starts_and_stores_heartbeat_for_order_done_cleanup(self):
         source = (FLEET / "route_run.py").read_text(encoding="ascii")
-        self.assertIn("order('circuit ' + ROUTE['id'])\nheartbeat(ORDER)\n", source)
+        self.assertIn("order('circuit ' + ROUTE['id'])\n_HEARTBEAT[0] = heartbeat(ORDER)\n", source)
+        self.assertIn("hb.stop()", source)
 
 if __name__ == "__main__":
     unittest.main()

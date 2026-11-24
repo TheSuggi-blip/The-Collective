@@ -119,27 +119,48 @@ def order(what):
     os.replace(tmp, ORDER)
 
 
+_HEARTBEAT = [None]
+
+
 def heartbeat(path, every=60):
     """Keep the run's order file fresh while a long goal blocks the run: the engine's goal call returns only at the end
     of a leg, and a leg of more than 20 minutes without a word left the file untouched, so division.order_of and the
     dispatcher read the pilot as free while this run still flew it (2026-11-24: a 22-jump leg, a catch took the pilot
-    in flight). A daemon thread touches the file every `every` seconds; it never creates the file, and dies with the run."""
+    in flight). A daemon thread touches the file every `every` seconds; it stops cleanly on `worker.stop()`, never
+    creates the file, and exits on its own if the file is removed or replaced (new inode) so a long-lived runhost
+    worker never leaks threads or touches a later run's or hold's order file."""
     import os as _os
     import threading
     tick = threading.Event()                          # its wait keeps real time, apart from any clock a test sets
+    try:
+        origin_ino = _os.stat(path).st_ino
+    except OSError:
+        origin_ino = None
 
     def beat():
         while not tick.wait(every):
             try:
+                st = _os.stat(path)
+                if origin_ino is not None and st.st_ino != origin_ino:
+                    break                             # replaced by a later run or hand hold: stop immediately
                 _os.utime(path)
             except OSError:
-                pass
+                break                                 # file removed when run ended: stop immediately, never leak
+
     worker = threading.Thread(target=beat, name='order-heartbeat', daemon=True)
+    worker.stop = tick.set
     worker.start()
     return worker
 
 
 def order_done():
+    hb = _HEARTBEAT[0]
+    _HEARTBEAT[0] = None
+    if hb is not None and hasattr(hb, 'stop'):
+        try:
+            hb.stop()
+        except Exception:
+            pass
     try:
         ORDER.unlink()
     except OSError:
@@ -747,7 +768,7 @@ done, onetime, notes, reached = [], [0], [], 0
 skipped = 0                                          # stops passed over because none of their missions is held
 first = int(sys.argv[sys.argv.index('--from') + 1]) - 1 if '--from' in sys.argv else 0
 order('circuit ' + ROUTE['id'])
-heartbeat(ORDER)
+_HEARTBEAT[0] = heartbeat(ORDER)
 atexit.register(order_done)
 CRASH, FINISHED = [], []
 

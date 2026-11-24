@@ -333,7 +333,7 @@ class DrainFreeHandoverTests(Shelf):
         go1 = str(Path(self.temp.name) / "go1")
         go2 = str(Path(self.temp.name) / "go2")
         self.addCleanup(lambda: [Path(g).write_text("") for g in (go1, go2)])
-        env = dict(os.environ, FLEET_MEMBER="runhost", FLEET_HOST_EVERY="0.1")
+        env = dict(os.environ, FLEET_MEMBER="runhost", FLEET_HOST_EVERY="0.1", FLEET_HOST_DEBOUNCE="0.2")
         for key in ("HERMES_SESSION_PROFILE", "HERMES_HOME", "HERMES_SCRATCH_DIR", "TMPDIR"):    # division.member() reads a member's
             env.pop(key, None)                    # name from any of them (a member's TMPDIR is its profile's scratch): the host refuses
         proc = subprocess.Popen(
@@ -411,6 +411,49 @@ class DrainFreeHandoverTests(Shelf):
         proc.terminate()
         rc = proc.wait(timeout=12)
         self.assertEqual(rc, 0)
+
+    def test_managed_worker_keeps_accepting_until_supervisor_confirms_handover(self):
+        # ENT-174 regression: when supervisor refuses handover (cap/RSS full), worker keeps accepting runs
+        # instead of leaving 0 accepting workers; only SIGUSR2 (request_retire) flips it to retired.
+        host = self.runhost.Host(self.fleet, self.data, say=lambda _line: None, managed=True, debounce=0.0)
+        self.runner("quick.py", "print('ok')")
+        # Trigger drain file while managed -> requests handover.json, stays accepting!
+        (self.home / "drain").write_text("", encoding="ascii")
+        self.assertTrue(host.step(now=100.0))
+        self.assertFalse(host.retired)
+        self.assertTrue((self.home / "handover.json").exists())
+        st = self.runhost.read_json(self.home / "state.json", {})
+        self.assertTrue(st.get("accepting"), "managed worker stopped accepting before supervisor confirmation")
+        # Can still accept a new job while handover waits for supervisor capacity
+        self.submit("miner-1", "quick.py")
+        self.assertTrue(host.step(now=101.0))
+        limit = time.time() + 5
+        while time.time() < limit and not (self.log("miner-1").exists() and "ok" in self.log("miner-1").read_text()):
+            time.sleep(0.02)
+        self.assertIn("ok", self.log("miner-1").read_text())
+        # Once supervisor confirms replacement via SIGUSR2 -> worker retires and exits when idle
+        host.request_retire("parent handover")
+        self.assertFalse(host.step(now=102.0))
+        self.assertTrue(host.retired)
+
+    def test_multi_file_install_debounces_into_one_handover(self):
+        # ENT-174 regression: rapid multi-file changes settle into one handover after debounce quiet window.
+        mod = self.fleet / "debounce_helper.py"
+        mod.write_text("X = 1\n", encoding="ascii")
+        if str(self.fleet) not in sys.path:
+            sys.path.insert(0, str(self.fleet))
+        import debounce_helper  # noqa: F401
+        self.addCleanup(lambda: sys.modules.pop("debounce_helper", None))
+        host = self.runhost.Host(self.fleet, self.data, say=lambda _line: None, managed=True, debounce=0.5)
+        self.assertEqual(host.changed(now=10.0), "")
+        mod.write_text("X = 2\n", encoding="ascii")
+        self.assertEqual(host.changed(now=10.1), "")      # change recorded, waiting quiet window
+        self.assertEqual(host.changed(now=10.4), "")      # only 0.3s quiet
+        mod.write_text("X = 33\n", encoding="ascii")      # 2nd file write resets quiet timer
+        self.assertEqual(host.changed(now=10.5), "")
+        self.assertEqual(host.changed(now=10.8), "")      # only 0.3s since 2nd write
+        self.assertEqual(host.changed(now=11.1), "debounce_helper.py")  # 0.6s quiet -> single handover
+        self.assertEqual(host.changed(now=12.0), "")      # no duplicate trigger
 
 if __name__ == "__main__":
     unittest.main()

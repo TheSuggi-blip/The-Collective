@@ -194,6 +194,18 @@
           "tier": "anchor"
         }
       ]
+    },
+    {
+      "id": "stlr",
+      "name": "Stellar Alliance (Single-Faction)",
+      "targets": [
+        {
+          "tag": "STLR",
+          "faction": "Stellar Alliance",
+          "leader": "CyberSpock",
+          "tier": "anchor"
+        }
+      ]
     }
   ]
 }

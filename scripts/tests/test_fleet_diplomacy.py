@@ -95,11 +95,11 @@ class DiplomacyAirlockTests(unittest.TestCase):
         os.environ["HERMES_SESSION_PROFILE"] = profile
         os.environ["HERMES_HOME"] = f"/opt/data/profiles/{profile}"
 
-    def test_targets_roster_covers_top_ten_blocs_twenty_two_leaders(self):
+    def test_targets_roster_covers_approved_blocs_and_leaders(self):
         snap = diplomacy.build_roster_snapshot(str(self.data), str(ROOT))
         self.assertEqual(snap["policy"], "neutrality_max")
-        self.assertEqual(snap["blocs_total"], 10)
-        self.assertEqual(snap["targets_total"], 22)
+        self.assertEqual(snap["blocs_total"], 11)
+        self.assertEqual(snap["targets_total"], 23)
         self.assertEqual(snap["cap_24h"], 48)
         tags = {r["tag"] for r in snap["rows"]}
         expected = {
@@ -109,7 +109,7 @@ class DiplomacyAirlockTests(unittest.TestCase):
             "HIVE", "OLSV", "VEIL",
             "MIN9", "WEXL",
             "CRFT", "DB", "YSMT", "HELP", "XPLR",
-            "STRG",
+            "STRG", "STLR",
         }
         self.assertEqual(tags, expected)
         for hail in (

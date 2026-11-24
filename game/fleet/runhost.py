@@ -64,6 +64,7 @@ MAX_RUNS = 600               # runs in flight at most
 MAX_RSS_MB = 2048            # above this the host drains and starts fresh
 MAX_RETIRING = 3             # retiring worker generations allowed in flight during drain-free handover
 TOTAL_RSS_MB = 2600          # cap total RSS across active + retiring workers before pausing new handovers
+DEBOUNCE = 5.0               # seconds watched files stay quiet before requesting a single handover
 SCRIPT = re.compile(r"^[a-z][a-z0-9_]*\.py$")
 NUMBERS = itertools.count(1000001)   # what a run reads as its process id: its own, and above every real one (files named by os.getpid())
 STOPPED = "stopped by the host's stop file"
@@ -283,10 +284,14 @@ def rss_mb():
 
 
 class Host:
-    def __init__(self, fleet, data, say=print, max_runs=MAX_RUNS, max_rss_mb=MAX_RSS_MB, managed=False):
+    def __init__(self, fleet, data, say=print, max_runs=MAX_RUNS, max_rss_mb=MAX_RSS_MB, managed=False, debounce=None):
         self.fleet, self.data, self.say = Path(os.path.realpath(fleet)), data, say
         self.max_runs, self.max_rss_mb = max_runs, max_rss_mb
         self.managed = bool(managed)
+        if debounce is None:
+            self.debounce = float(os.environ.get("FLEET_HOST_DEBOUNCE") or DEBOUNCE) if self.managed else 0.0
+        else:
+            self.debounce = max(0.0, float(debounce))
         self.folder = folder(data)
         for part in ("inbox", "running", "stop"):
             (self.folder / part).mkdir(parents=True, exist_ok=True)
@@ -296,9 +301,11 @@ class Host:
         self.runs = {}                   # job file name -> (thread, its stop event, the job)
         self.codes = {}                  # script -> (what its file looked like, its compiled text)
         self.seen = {}                   # watched file -> what it looked like when first seen
+        self.pending_change = ("", 0.0)  # (filename, last_changed_epoch) waiting for debounce quiet window
         self.draining = ""               # why the host takes no new run and ends when the last one has ended
         self.retired = False             # managed worker handed over inbox/state to replacement; finishes in-flight runs only
-        self.retire_requested = ""       # external retire request from parent (SIGUSR2)
+        self.retire_requested = ""       # external retire request from parent (SIGUSR2 after replacement confirmed)
+        self.handover_requested = ""     # handover queued with parent; worker keeps accepting until SIGUSR2 arrives
         self.wrote = (None, None, 0.0)   # the state last written: accepting, runs, when
         self.retire_wrote = (None, 0.0)  # retiring marker last written: runs, when
         self.flown = 0
@@ -321,22 +328,37 @@ class Host:
         order = read_json(Path(self.data) / "fleet" / "orders" / (str(job.get("pilot")) + ".json"), {})
         return isinstance(order, dict) and bool(job.get("what")) and order.get("what") == job.get("what")
 
-    def changed(self):
-        """The name of a watched file that is no longer what the host loaded, or ''."""
+    def changed(self, now=None):
+        """The name of a watched file that changed on disk once quiet for `self.debounce` seconds, or ''."""
+        ts = time.time() if now is None else float(now)
         watched = {os.path.realpath(__file__)}
         prefix = str(self.fleet) + os.sep
         for module in list(sys.modules.values()):
             path = getattr(module, "__file__", None)
             if isinstance(path, str) and path.startswith(prefix) and os.sep not in path[len(prefix):]:
                 watched.add(path)
+        changed_name = ""
         for path in sorted(watched):
             try:
                 found = os.stat(path)
-                now = (found.st_mtime_ns, found.st_size)
+                sig = (found.st_mtime_ns, found.st_size)
             except OSError:
-                now = None
-            if self.seen.setdefault(path, now) != now:
-                return os.path.basename(path)
+                sig = None
+            prev = self.seen.setdefault(path, sig)
+            if prev != sig:
+                self.seen[path] = sig
+                if not changed_name:
+                    changed_name = os.path.basename(path)
+        if changed_name:
+            if self.debounce <= 0.0:
+                self.pending_change = ("", 0.0)
+                return changed_name
+            self.pending_change = (changed_name, ts)
+            return ""
+        if self.pending_change[0] and (ts - self.pending_change[1]) >= self.debounce:
+            ready = self.pending_change[0]
+            self.pending_change = ("", 0.0)
+            return ready
         return ""
 
     def code(self, script):
@@ -464,29 +486,34 @@ class Host:
                         pass
         if not self.draining:
             if self.retire_requested:
-                self.draining = self.retire_requested
-            else:
-                found = self.changed()
-                if found:
-                    self.draining = "%s changed on disk" % found
-                elif (self.folder / "drain").exists():
-                    self.draining = "the drain file"
-                elif self.max_rss_mb and rss_mb() > self.max_rss_mb:
-                    self.draining = "memory above %d MB" % self.max_rss_mb
-            if self.draining:
+                self.draining = self.handover_requested or self.retire_requested
+                self.handover_requested = ""
                 if self.managed:
                     self.retired = True
-                    try:
-                        write_json(self.folder / "handover.json", {"pid": os.getpid(), "reason": self.draining, "at": now})
-                    except OSError:
-                        pass
-                    try:
-                        (self.folder / "drain").unlink()
-                    except OSError:
-                        pass
                     self.say("retiring for drain-free handover (%s): %d run(s) finish cleanly while replacement accepts" % (self.draining, len(self.runs)))
                 else:
                     self.say("draining (%s): %d run(s) in flight end first, no new run is taken" % (self.draining, len(self.runs)))
+            else:
+                want = ""
+                found = self.changed(now)
+                if found:
+                    want = "%s changed on disk" % found
+                elif (self.folder / "drain").exists():
+                    want = "the drain file"
+                elif self.max_rss_mb and rss_mb() > self.max_rss_mb:
+                    want = "memory above %d MB" % self.max_rss_mb
+                if want:
+                    if self.managed:
+                        if not self.handover_requested or not (self.folder / "handover.json").exists():
+                            self.handover_requested = want
+                            try:
+                                write_json(self.folder / "handover.json", {"pid": os.getpid(), "reason": want, "at": now})
+                            except OSError:
+                                pass
+                            self.say("requesting drain-free handover (%s): continuing to accept until replacement is confirmed" % want)
+                    else:
+                        self.draining = want
+                        self.say("draining (%s): %d run(s) in flight end first, no new run is taken" % (self.draining, len(self.runs)))
         if self.draining and not self.runs:
             if self.retired:
                 try:
@@ -628,6 +655,8 @@ def _run_parent(args, say):
     signal.signal(signal.SIGTERM, lambda number, frame: leaving.append(number))
     script = os.path.realpath(__file__)
     script_sig = _file_sig(script)
+    script_changed_at = 0.0
+    debounce = max(0.0, float(os.environ.get("FLEET_HOST_DEBOUNCE") or DEBOUNCE))
     max_retiring = int(os.environ.get("FLEET_HOST_MAX_RETIRING") or MAX_RETIRING)
     total_rss_cap = int(os.environ.get("FLEET_HOST_TOTAL_MB") or TOTAL_RSS_MB)
     cmd = [sys.executable, "-I", "-B", script, "--worker", "--fleet", args.fleet, "--data", args.data]
@@ -677,6 +706,9 @@ def _run_parent(args, say):
                 now_sig = _file_sig(script)
                 if now_sig != script_sig:
                     script_sig = now_sig
+                    script_changed_at = time.time()
+                if script_changed_at and (time.time() - script_changed_at) >= debounce:
+                    script_changed_at = 0.0
                     reason = "runhost.py changed on disk"
 
             if reason:
