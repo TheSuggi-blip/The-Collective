@@ -17,7 +17,9 @@ block MERCURY of ENT-086):
   five Bursar desks, `bursar-network` (one trader an Exchange
   station; its buy lane capped fleet-wide in `bursar_buys.json`
   since 11:51 UTC, Trinity with Suggi's approval, excess orders
-  unwound where a bursar docks), steel from own iron, `train-jumps-trader`, park.
+  unwound where a bursar docks), steel from own iron, `train-jumps-trader`,
+  `bursar-network-freighter` (the same docked duty for cargo over 150
+  while no mobile work is open), park.
 
 Hulls: a listed hull before a commission (`browse_ships` with
 `can_fly`, the skill's `buy_listed_hull.py`): Prayer (540 cargo,
