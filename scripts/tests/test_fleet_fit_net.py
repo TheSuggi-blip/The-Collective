@@ -113,9 +113,9 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         # 1. Sentinels 60/40 split: royal_guard_escort + royal_guard_utility
         specs = {fit_net.resolve_specialty(f"sentinel-{n}", "Military", [], pol) for n in range(1, 36)}
         self.assertEqual(specs, {"royal_guard_escort", "royal_guard_utility"})
-        # 2. Frontline drones cover all 4 archetypes including 10% organic combat_support
+        # 2. Frontline drones stay 100% pure firepower (brawler / ewar / flak_tank)
         d_specs = {fit_net.resolve_specialty(f"drone-{n}", "Military", [], pol) for n in range(1, 96)}
-        self.assertEqual(d_specs, {"brawler", "ewar", "flak_tank", "combat_support"})
+        self.assertEqual(d_specs, {"brawler", "ewar", "flak_tank"})
         # 3. Command Flagships: Prime Directive -> command_ewar_tac, 4 regional flagships -> command_stealth_ewar, core 6 hulls -> 4 support roles
         self.assertEqual(fit_net.resolve_specialty("Prime Directive", "Command", [], pol), "command_ewar_tac")
         self.assertEqual(fit_net.resolve_specialty("Crimson Aegis", "Command", [], pol), "command_stealth_ewar")
@@ -209,6 +209,24 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 self.assertNotIn("status", r)
                 self.assertEqual(r.get("station"), "s1:p1:crimson_hub")
                 self.assertIn("batch_id", r)
+
+            # Verify max_auto_tier=3 refuses T4 hulls even when affordable & listed
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.execute("INSERT INTO hulls VALUES ('panacea', 'Panacea', 4)")
+            con.execute("INSERT INTO ships VALUES ('Zero Point', 'Command', 'voidborn', 't0_hull')")
+            con.execute("INSERT INTO ship_skills VALUES ('Zero Point', 'piloting', 35)")
+            con.execute("INSERT INTO ship_listings VALUES ('panacea', 'crimson_hub', 400000, 1795500000)")
+            con.commit()
+            con.close()
+            pol_t4 = json.loads((repo / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
+            pol_t4["divisions"]["Command"] = {
+                "enabled": True, "max_active": 2,
+                "cohorts": [{"empire": "any", "specialty": "t4_test", "share": 1.0,
+                             "ladder": [{"hull": "panacea", "tier": 4, "min_piloting": 30, "max_price": 500000}]}]
+            }
+            (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol_t4), encoding="ascii")
+            res_t4 = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500120)
+            self.assertNotIn("Zero Point", {a["pilot"] for a in res_t4["added"]})
 
             # Verify min_t0_bursar_reserve blocks Trade T0 upgrades when reserve reached
             (data / "fleet" / "upgrade_queue.json").write_text("[]", encoding="ascii")

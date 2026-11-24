@@ -1087,6 +1087,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
     bursar_desks = _load_bursar_desk_pilots(data_dir) if policy.get("exclude_bursar_desks", True) else set()
     max_new = max(1, int(policy.get("max_new_per_pass") or 4))
     default_div_cap = int(policy.get("max_active_per_div") or 6)
+    max_auto_tier = int(policy.get("max_auto_tier") or 3)
     div_cfgs = policy.get("divisions") or {}
     added = []
     used_listings = set()
@@ -1147,7 +1148,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 rtier = int(rung.get("tier") or 1)
                 rpil = int(rung.get("min_piloting") or 0)
                 rmax = int(rung.get("max_price") or 0)
-                if not hid or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
+                if not hid or rtier > max_auto_tier or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
                     continue
                 # Find eligible 3-part station listing if listed_only
                 l_station = None

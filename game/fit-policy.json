@@ -164,19 +164,15 @@
       "mix": [
         [
           "brawler",
-          45
+          50
         ],
         [
           "ewar",
-          25
+          30
         ],
         [
           "flak_tank",
           20
-        ],
-        [
-          "combat_support",
-          10
         ]
       ],
       "sentinel_mix": [
@@ -189,22 +185,7 @@
           40
         ]
       ],
-      "detect_by_hull": {
-        "combat_support": [
-          "franchise",
-          "scrutiny",
-          "census",
-          "remedy",
-          "anvil",
-          "triage"
-        ]
-      },
-      "detect_by_module": {
-        "combat_support": [
-          "remote_armor_repairer_ii",
-          "remote_armor_repairer_i"
-        ]
-      },
+      "detect_by_module": {},
       "loadouts": {
         "brawler": {
           "weapon": [
@@ -261,27 +242,6 @@
             "warp_disruptor",
             "expanded_fuel_tank",
             "afterburner_ii"
-          ]
-        },
-        "combat_support": {
-          "weapon": [
-            "em_disruptor_i",
-            "flak_cannon_i",
-            "pulse_laser_iii",
-            "pulse_laser_ii"
-          ],
-          "defense": [
-            "shield_booster_iv",
-            "shield_recharger_ii",
-            "shield_booster_ii"
-          ],
-          "utility": [
-            "remote_armor_repairer_ii",
-            "remote_armor_repairer_i",
-            "target_painter_ii",
-            "target_painter_i",
-            "sensor_dampener",
-            "expanded_fuel_tank"
           ]
         },
         "royal_guard_escort": {

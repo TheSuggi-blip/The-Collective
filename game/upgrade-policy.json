@@ -1,6 +1,6 @@
 {
   "_owner": "Unity & All 5 Admirals",
-  "_doc": "Policy for automated multi-empire, multi-specialty hull upgrading (upgrades.py auto_enqueue_upgrades). Respects hard treasury_floor_cr, 24h CapEx pacing, Bursar desk exclusion, listed-first bargains, and balanced specialty shares per division/empire.",
+  "_doc": "Policy for automated multi-empire, multi-specialty hull upgrading (upgrades.py auto_enqueue_upgrades). Hard-capped at T3 (max_auto_tier: 3) so T4/T5 capitals remain custom player-designed builds. Respects hard treasury_floor_cr, 24h CapEx pacing, Trade min_t0_bursar_reserve, listed-first bargains, and specialty shares.",
   "enabled": true,
   "treasury_floor_cr": 8500000,
   "max_spend_24h_cr": 1200000,
@@ -118,7 +118,7 @@
         {
           "empire": "crimson",
           "specialty": "brawler",
-          "share": 0.45,
+          "share": 0.5,
           "ladder": [
             {
               "hull": "cleaver",
@@ -144,7 +144,7 @@
         {
           "empire": "crimson",
           "specialty": "assault",
-          "share": 0.3,
+          "share": 0.35,
           "ladder": [
             {
               "hull": "cleaver",
@@ -184,7 +184,7 @@
         {
           "empire": "voidborn",
           "specialty": "ewar_shield",
-          "share": 0.55,
+          "share": 0.65,
           "ladder": [
             {
               "hull": "paradox",
@@ -230,7 +230,7 @@
         {
           "empire": "solarian",
           "specialty": "gunship",
-          "share": 0.5,
+          "share": 0.6,
           "ladder": [
             {
               "hull": "axiom",
@@ -266,56 +266,6 @@
             }
           ],
           "exclude_prefix": "sentinel-"
-        },
-        {
-          "empire": "any",
-          "exclude_prefix": "sentinel-",
-          "specialty": "combat_support",
-          "share": 0.1,
-          "ladder": [
-            {
-              "hull": "last_warning",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 18000
-            },
-            {
-              "hull": "apeiron",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 28000
-            },
-            {
-              "hull": "franchise",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 65000
-            },
-            {
-              "hull": "scrutiny",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 85000
-            },
-            {
-              "hull": "census",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 140000
-            },
-            {
-              "hull": "remedy",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 190000
-            },
-            {
-              "hull": "anvil",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 210000
-            }
-          ]
         },
         {
           "empire": "any",
@@ -678,18 +628,6 @@
               "tier": 3,
               "min_piloting": 0,
               "max_price": 550000
-            },
-            {
-              "hull": "consensus",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 900000
-            },
-            {
-              "hull": "magnate",
-              "tier": 4,
-              "min_piloting": 0,
-              "max_price": 1200000
             }
           ]
         },
@@ -741,12 +679,6 @@
               "tier": 3,
               "min_piloting": 0,
               "max_price": 500000
-            },
-            {
-              "hull": "good_enough",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 600000
             }
           ]
         },
@@ -792,12 +724,6 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 550000
-            },
-            {
-              "hull": "panacea",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 900000
             }
           ]
         },
@@ -843,12 +769,6 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 320000
-            },
-            {
-              "hull": "superposition",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 900000
             }
           ]
         },
@@ -904,16 +824,11 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 380000
-            },
-            {
-              "hull": "palimpsest",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 900000
             }
           ]
         }
       ]
     }
-  }
+  },
+  "max_auto_tier": 3
 }
