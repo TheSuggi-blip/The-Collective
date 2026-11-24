@@ -37,13 +37,13 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 91 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
-| [drone](plan-drone.md) | Apophis | 352 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 95 |
-| [hauler](plan-hauler.md) | Apollo | 97 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
+| [command](plan-command.md) | Unity | 92 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
+| [drone](plan-drone.md) | Apophis | 356 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 95 |
+| [hauler](plan-hauler.md) | Apollo | 109 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 5 | 95 |
 | [miner](plan-miner.md) | Zero | 124 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 5 | 130 |
 | [scout](plan-scout.md) | Oracle | 98 | store-hold-central-nexus > store-hold-frontier-station-near > give-scout-stores-node-beta | 5 | 50 |
-| [sentinel](plan-sentinel.md) | Apophis | 353 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 36 |
-| [trader](plan-trader.md) | Mercury | 179 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
+| [sentinel](plan-sentinel.md) | Apophis | 356 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 36 |
+| [trader](plan-trader.md) | Mercury | 185 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 3 | 85 |
 
 ## Templates by Division
 

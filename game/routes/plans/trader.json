@@ -51,10 +51,15 @@
   "mission-filed-in-triplicate-nova",
   "mission-blood-forge-requisition-krynn",
   "need-ember-gland-krynn",
+  "need-ember-gland-crucible",
+  "sell-ember-first-step-dheneb",
+  "sell-ember-synchrony-dheneb",
   "carry-ember-crucible-to-krynn",
   "mission-request-for-records-confederacy",
   "join-krynn-bloodforge",
   "mission-frontier-wayfinder-circuit-frontier",
+  "mission-workshop-production-run-krynn",
+  "fit-cargo-expander-ii-krynn",
   "give-miner-stores-synchrony",
   "carry-lead-beta-to-sirius",
   "join-sol-trader",
@@ -180,13 +185,22 @@
   "bursar-desk-alpha",
   "bursar-desk-experiment",
   "bursar-desk-grand",
+  "bursar-desk-nova-terra",
   "train-trading-weapon-housing-node-alpha",
   "park"
  ],
  "planned": [
   {
-   "what": "read the Solarian corridor's results (Endorsements, Audit, TA-1, Pouch, Courier test, Workshop); chain the next corridor's once missions for the traders it leaves at Alpha and Sol; test Exotic Crystal Synthesis (8,000) at Central Nexus from stored exotic matter next turn",
-   "when": "--"
+   "what": "read the Hex Star gland carries and the bid's refill; lift or rest them",
+   "when": "next turn"
+  },
+  {
+   "what": "test whether a HEXC supply contract at Krynn counts a part delivery (levity bladder 750, fusion pearl 274): one ship, one accept",
+   "when": "next turn"
+  },
+  {
+   "what": "follow the Apophenia queue (five Piloting-10 traders) and the Cargo Expander II batch at Krynn; next module batch at the Grand Exchange",
+   "when": "next turn"
   }
  ],
  "ships": {
@@ -238,10 +252,15 @@
   "mission-filed-in-triplicate-nova": 85,
   "mission-blood-forge-requisition-krynn": 85,
   "need-ember-gland-krynn": 85,
+  "need-ember-gland-crucible": 85,
+  "sell-ember-first-step-dheneb": 85,
+  "sell-ember-synchrony-dheneb": 85,
   "carry-ember-crucible-to-krynn": 85,
   "mission-request-for-records-confederacy": 85,
   "join-krynn-bloodforge": 85,
   "mission-frontier-wayfinder-circuit-frontier": 85,
+  "mission-workshop-production-run-krynn": 85,
+  "fit-cargo-expander-ii-krynn": 85,
   "give-miner-stores-synchrony": 4,
   "carry-lead-beta-to-sirius": 3,
   "join-sol-trader": 70,
@@ -367,6 +386,7 @@
   "bursar-desk-alpha": 85,
   "bursar-desk-experiment": 85,
   "bursar-desk-grand": 85,
+  "bursar-desk-nova-terra": 85,
   "train-trading-weapon-housing-node-alpha": 85,
   "park": 85
  },
