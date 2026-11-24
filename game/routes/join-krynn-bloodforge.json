@@ -25,9 +25,9 @@
  "retry_minutes": 15,
  "measured": {
   "date": "2026-11-24",
-  "runs": 13,
-  "minutes": 24,
-  "credits_per_run": 1730,
-  "cph_per_ship": 5040
+  "runs": 197,
+  "minutes": 26,
+  "credits_per_run": -140,
+  "cph_per_ship": -340
  }
 }
