@@ -123,9 +123,46 @@ install)
   [ $script -eq 1 ] && [ $test -eq 0 ] && { echo "HALT: a changed script under game/fleet/ comes with its test: name a path under scripts/tests/ too"; exit 1; }
   cd "$R" || exit 1
   LIMIT=${FLEET_BUILD_LIMIT:-1500}                   # seconds the install may take from its copy on: its own timeout (ENT-115)
-  trap 'echo "HALT: stopped before anything was copied: nothing to put back"; exit 1' INT TERM HUP
-  n=0; while [ -n "$(git status --short)" ] && [ $n -lt 48 ]; do sleep 5; n=$((n + 1)); done
-  [ -z "$(git status --short)" ] || { echo "HALT: the clone was not clean in four minutes: [$(git status --short | head -3 | tr '\n' ';')]"; exit 1; }
+  LOCKDIR="/srv/collective/data/fleet"
+  [ -d "$LOCKDIR" ] || LOCKDIR="${TMPDIR:-/tmp}"
+  LOCKF="$LOCKDIR/git_commit.lock"
+  INFLIGHT="$LOCKDIR/fleet_build_inflight.json"
+  exec 9>"$LOCKF"
+  flock -w 240 9 || { echo "HALT: another fleet-build install held the commit lock for 240s"; exit 1; }
+  # Recover orphaned dirty files left behind if a previous install was killed with SIGKILL (ENT-193)
+  if [ -f "$INFLIGHT" ]; then
+    python3 - "$INFLIGHT" "$R" <<'RECOVER_PY' || true
+import json, os, subprocess, sys
+from pathlib import Path
+mf, repo = Path(sys.argv[1]), sys.argv[2]
+try:
+    d = json.loads(mf.read_text(encoding="utf-8"))
+    pid = int(d.get("pid") or 0)
+    paths = [str(x) for x in (d.get("paths") or []) if x]
+    alive = False
+    if pid > 1:
+        try:
+            os.kill(pid, 0)
+            alive = True
+        except OSError:
+            alive = False
+    if not alive and paths:
+        subprocess.run(["git", "-C", repo, "reset", "-q", "--"] + paths, check=False)
+        for rp in paths:
+            chk = subprocess.run(["git", "-C", repo, "cat-file", "-e", "HEAD:" + rp], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if chk.returncode == 0:
+                subprocess.run(["git", "-C", repo, "checkout", "-q", "HEAD", "--", rp], check=False)
+            else:
+                (Path(repo) / rp).unlink(missing_ok=True)
+        mf.unlink(missing_ok=True)
+        print("RECOVERED orphaned fleet-build install from dead pid %d (%d paths)" % (pid, len(paths)))
+except Exception:
+    pass
+RECOVER_PY
+  fi
+  trap 'rm -f "$INFLIGHT"; echo "HALT: stopped before anything was copied: nothing to put back"; exit 1' INT TERM HUP
+  n=0; while [ -n "$(git status --short -- "${PATHS[@]}")" ] && [ $n -lt 24 ]; do sleep 5; n=$((n + 1)); done
+  [ -z "$(git status --short -- "${PATHS[@]}")" ] || { echo "HALT: target path(s) remained dirty in two minutes: [$(git status --short -- "${PATHS[@]}" | head -3 | tr '\n' ';')]"; exit 1; }
   for p in "${PATHS[@]}"; do
     git diff --quiet "$BASE" HEAD -- "$p" 2>/dev/null || { echo "HALT: $p changed in the repository since your copy was made ($(git log -1 --format='%h %an' -- "$p")): make a new copy and carry your change over"; exit 1; }
   done
@@ -138,11 +175,17 @@ install)
     echo "HALT: $1 -- putting the paths back"
     gitr reset -q -- "${PATHS[@]}" 2>/dev/null
     for p in "${PATHS[@]}"; do if git cat-file -e "HEAD:$p" 2>/dev/null; then gitr checkout -q HEAD -- "$p" || echo "HALT: $p could not be put back: git checkout HEAD -- $p"; else rm -f -- "$p"; fi; done
+    rm -f "$INFLIGHT"
     echo "status after: [$(git status --short)]"; exit 1
   }
   trap 'undo "stopped (INT)"' INT; trap 'undo "stopped (TERM)"' TERM; trap 'undo "stopped (HUP)"' HUP
   ( trap 'kill "$s" 2>/dev/null; exit 0' TERM; sleep "$LIMIT" & s=$!; wait "$s"; echo "HALT: the install ran past its limit of $LIMIT s (FLEET_BUILD_LIMIT)"; kill -TERM $$ ) &
   WATCH=$!
+  python3 - "$INFLIGHT" "$$" "${PATHS[@]}" <<'MARK_PY' || true
+import json, sys
+from pathlib import Path
+Path(sys.argv[1]).write_text(json.dumps({"pid": int(sys.argv[2]), "paths": sys.argv[3:]}) + "\n", encoding="ascii")
+MARK_PY
   for p in "${PATHS[@]}"; do mkdir -p "$(dirname "$p")" && cp "$T/$p" "$p" || undo "copy $p"; done
   if LC_ALL=C grep -nP '[^\x00-\x7F]' "${PATHS[@]}" | head -3 | grep .; then undo "non-ASCII"; fi
   gates "" & GATES=$!                                # in the background: a signal is taken at once, not after the suite
@@ -150,6 +193,7 @@ install)
   GATES=
   gitr add -- "${PATHS[@]}" || undo "git add"
   gitr -c user.name="$NAME" -c user.email="$(printf '%s' "$NAME" | tr 'A-Z' 'a-z')@suggi-workspace.dev" commit -q -m "$MSG" -- "${PATHS[@]}" || undo "git commit"
+  rm -f "$INFLIGHT"
   trap - INT TERM HUP; kill -TERM "$WATCH" 2>/dev/null   # committed: nothing to put back any more
   git log -1 --format='committed %h %an %s' | cut -c1-120
   echo "status after: [$(git status --short)] | now one line in queue.log: what changed, for whom, and its test"

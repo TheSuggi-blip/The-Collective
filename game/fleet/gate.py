@@ -144,6 +144,15 @@ def release(pilot):
     what = division.order_of(pilot)
     if what.startswith('hand ') and (what == division.hand_mark() or name == 'Unity'):
         os.remove(hold_file(pilot))
+        # Clear any leftover want token owned by this member so dispatch.py never re-holds the pilot (ENT-192)
+        wf = os.path.join(division.DATA, 'fleet', 'want', division.file_name(pilot))
+        try:
+            if os.path.isfile(wf):
+                wd = json.loads(open(wf, encoding='utf-8').read())
+                if not isinstance(wd, dict) or wd.get('by') == name or name == 'Unity':
+                    os.remove(wf)
+        except (OSError, ValueError):
+            pass
         return 'released: %s' % pilot
     return '%s carries no hand hold of yours (%s)' % (pilot, what or 'no order file')
 

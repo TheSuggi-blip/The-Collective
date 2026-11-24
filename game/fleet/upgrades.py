@@ -1115,6 +1115,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
             inc_pre = str(coh.get("pilot_prefix") or "")
             exc_pre = str(coh.get("exclude_prefix") or "")
             inc_set = set(str(x) for x in (coh.get("include_pilots") or []))
+            exc_set = set(str(x) for x in (coh.get("exclude_pilots") or []))
             share = float(coh.get("share") or 1.0)
             ladder = list(coh.get("ladder") or [])
             if not ladder:
@@ -1125,6 +1126,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 and (not inc_pre or s["pilot"].startswith(inc_pre))
                 and (not exc_pre or not s["pilot"].startswith(exc_pre))
                 and (not inc_set or s["pilot"] in inc_set)
+                and (not exc_set or s["pilot"] not in exc_set)
             ]
             if not cohort_ships:
                 continue

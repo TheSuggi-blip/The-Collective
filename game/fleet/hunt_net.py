@@ -173,7 +173,7 @@ def load_command_flagships(data_dir):
     fg = read_json(Path(data_dir) / "fleet" / "flagships.json", {})
     if not isinstance(fg, dict):
         return set()
-    return {str(k) for k, v in fg.items() if isinstance(v, dict) and str(v.get("division") or "") == "Command"}
+    return {str(k) for k, v in fg.items() if isinstance(v, dict)}
 
 
 def deep_merge(base, override):

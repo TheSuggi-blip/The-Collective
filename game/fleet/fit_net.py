@@ -99,18 +99,25 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, 
     if pinned:
         return str(pinned)
     is_sent = str(pilot).startswith("sentinel-")
-    # For non-sentinel ships, match hull class to specialized role (e.g. Triage -> command_medical)
+    fg_set = set(str(x) for x in (dspec.get("flagship_pilots") or []))
+    is_fg = str(pilot) in fg_set
     cls_l = str(ship_class or "").lower().replace(" ", "_")
-    if cls_l and not is_sent:
+    if is_fg and cls_l:
+        for spec_name, hull_list in (dspec.get("flagship_detect_by_hull") or {}).items():
+            if cls_l in {str(x).lower() for x in (hull_list or [])}:
+                return str(spec_name)
+    if cls_l and not is_sent and not is_fg:
         for spec_name, hull_list in (dspec.get("detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
                 return str(spec_name)
     fset = {str(m).lower() for m in (fitted_modules or [])}
-    if not is_sent:
+    if not is_sent and not is_fg:
         for spec_name, mod_list in (dspec.get("detect_by_module") or {}).items():
             if fset & {str(x).lower() for x in (mod_list or [])}:
                 return str(spec_name)
-    if is_sent and dspec.get("sentinel_mix"):
+    if is_fg and dspec.get("flagship_mix"):
+        mix = dspec.get("flagship_mix") or []
+    elif is_sent and dspec.get("sentinel_mix"):
         mix = dspec.get("sentinel_mix") or []
     else:
         mix = dspec.get("mix") or []

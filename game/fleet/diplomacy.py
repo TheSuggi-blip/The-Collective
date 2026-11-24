@@ -218,10 +218,12 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer
     ships = [s for s in (fleet.get("ships") or []) if isinstance(s, dict) and s.get("name")]
     connected = {s["name"]: s for s in ships if s.get("status") == "connected"}
 
+    flagship_set = set(division.flagships(str(data)).keys()) | {"Prime Directive"}
+
     def is_allowed_pilot(pilot):
         if pilot.startswith("scout-") and division.owner(pilot, str(data)) == "Oracle":
             return True, ""
-        if member_name == "Unity" and division.owner(pilot, str(data)) == "Unity":
+        if member_name == "Unity" and (pilot in flagship_set or division.owner(pilot, str(data)) == "Unity"):
             return True, ""
         return False, "diplomatic envoys must be Oracle scout- ships (or Unity flagship when invoked by Unity); got %s" % pilot
 
@@ -234,9 +236,9 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer
         return requested, ""
 
     if prefer_flagship and member_name == "Unity":
-        if "Prime Directive" in connected and division.owner("Prime Directive", str(data)) == "Unity":
+        if "Prime Directive" in connected:
             return "Prime Directive", ""
-        flagships = sorted(n for n in connected if not n.startswith("scout-") and division.owner(n, str(data)) == "Unity")
+        flagships = sorted(n for n in connected if n in flagship_set)
         if flagships:
             return flagships[0], ""
 

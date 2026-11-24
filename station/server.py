@@ -67,12 +67,12 @@ TOKEN = secrets.token_urlsafe(24)                       # new at every start; th
 LOCAL = urllib.request.build_opener(urllib.request.ProxyHandler({}))    # for addresses inside the unit
 # Who is who (ROSTER.md). The order is the order on the page.
 ROSTER = [
-    {"id": "unity", "name": "Unity", "rank": "Fleet Admiral", "division": "Command"},
+    {"id": "apophis", "name": "Apophis", "rank": "Admiral", "division": "Military"},
     {"id": "zero", "name": "Zero", "rank": "Admiral", "division": "Mining"},
     {"id": "mercury", "name": "Mercury", "rank": "Admiral", "division": "Trade"},
     {"id": "apollo", "name": "Apollo", "rank": "Admiral", "division": "Logistics"},
-    {"id": "apophis", "name": "Apophis", "rank": "Admiral", "division": "Military"},
     {"id": "oracle", "name": "Oracle", "rank": "Admiral", "division": "Intel"},
+    {"id": "unity", "name": "Unity", "rank": "Fleet Admiral", "division": "Command"},
 ]
 STATIC_TYPES = {
     ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8",

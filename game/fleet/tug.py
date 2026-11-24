@@ -43,7 +43,11 @@ def stranded(ship, order, lanes, stations, below=BELOW, mark=""):
     """The reason the ship should be towed, or None. `order` is what its fresh order file says ('' for none);
     `mark` is this shell's hand mark: a ship held by this hand may be towed, one held by any other may not."""
     fuel = ship.get("fuel")
-    if not isinstance(fuel, (int, float)) or fuel >= below:
+    max_fuel = ship.get("max_fuel")
+    per_jump = max(fuelplan.PER_JUMP, round(float(max_fuel) / 55.0, 1)) if isinstance(max_fuel, (int, float)) and max_fuel > 0 else fuelplan.PER_JUMP
+    dock_way = max(DOCK_WAY, int(round(per_jump)))
+    eff_below = max(below, int(round(per_jump * 6 + dock_way)))
+    if not isinstance(fuel, (int, float)) or fuel >= eff_below:
         return None
     if ship.get("docked") or ship.get("docked_at") or ship.get("in_transit") or ship.get("jumping"):
         return None
@@ -58,7 +62,7 @@ def stranded(ship, order, lanes, stations, below=BELOW, mark=""):
     near = fuelplan.nearest_fuel(lanes, here, stations) if here else None
     if near is None:
         return "fuel %s at %s, no station with fuel in reach" % (fuel, here)
-    if fuel < fuelplan.PER_JUMP * near[0] + DOCK_WAY:
+    if fuel < per_jump * near[0] + dock_way:
         return "fuel %s at %s, %d jumps from fuel at %s" % (fuel, here, near[0], near[3])
     return None
 

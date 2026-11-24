@@ -282,8 +282,216 @@
             "expanded_fuel_tank",
             "afterburner_ii"
           ]
+        },
+        "command_ewar_tac": {
+          "weapon": [
+            "emp_missile_launcher",
+            "em_disruptor_i",
+            "system_disabler",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "target_painter_ii",
+            "target_painter_i",
+            "ecm_jammer",
+            "sensor_dampener",
+            "ship_scanner_iii",
+            "ship_scanner_ii",
+            "cloaking_device_i",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_logi_rep": {
+          "weapon": [
+            "flak_cannon_ii",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "remote_armor_repairer_ii",
+            "repair_arm",
+            "refueling_pump",
+            "ship_maintenance_bay",
+            "ecm_jammer",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_medical": {
+          "weapon": [
+            "em_disruptor_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "fleet_hospital",
+            "remote_armor_repairer_ii",
+            "shipboard_sickbay",
+            "ecm_jammer",
+            "cloaking_device_i",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_carrier_screen": {
+          "weapon": [
+            "flak_cannon_ii",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "combat_drone_bay",
+            "light_drone_bay",
+            "target_painter_ii",
+            "target_painter_i",
+            "crew_armory",
+            "ecm_jammer",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_stealth_ewar": {
+          "weapon": [
+            "emp_missile_launcher",
+            "em_disruptor_i",
+            "system_disabler",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "phase_cloaking_device",
+            "cloaking_device_i",
+            "ecm_jammer",
+            "sensor_dampener",
+            "target_painter_ii",
+            "target_painter_i",
+            "ship_scanner_iii",
+            "warp_disruptor",
+            "expanded_fuel_tank"
+          ]
         }
-      }
+      },
+      "flagship_pilots": [
+        "Prime Directive",
+        "Zero Point",
+        "Golden Chariot",
+        "Mercurys Ledger",
+        "Hades",
+        "Vision",
+        "Crimson Aegis",
+        "Nebula Charter",
+        "Rimward Pact",
+        "Solar Mandate"
+      ],
+      "pin_pilots": {
+        "Prime Directive": "command_ewar_tac",
+        "Crimson Aegis": "command_stealth_ewar",
+        "Nebula Charter": "command_stealth_ewar",
+        "Rimward Pact": "command_stealth_ewar",
+        "Solar Mandate": "command_stealth_ewar"
+      },
+      "flagship_detect_by_hull": {
+        "command_stealth_ewar": [
+          "dirk",
+          "arbitrage",
+          "dust_devil",
+          "interstice",
+          "parallax",
+          "silent_tide",
+          "catharsis",
+          "palimpsest",
+          "insider",
+          "need_to_know"
+        ],
+        "command_medical": [
+          "apeiron",
+          "triage",
+          "anamnesis",
+          "homeward",
+          "continuity",
+          "panacea",
+          "cauterizer"
+        ],
+        "command_ewar_tac": [
+          "precept",
+          "census",
+          "syllogism",
+          "bad_influence",
+          "penumbra",
+          "concordance",
+          "polymath",
+          "palinode",
+          "consensus",
+          "magnate"
+        ],
+        "command_logi_rep": [
+          "vigil",
+          "scrutiny",
+          "lone_star",
+          "remedy",
+          "anvil",
+          "palisade",
+          "good_enough",
+          "repatriator"
+        ],
+        "command_carrier_screen": [
+          "overhead",
+          "franchise",
+          "postulate",
+          "cudgel",
+          "tariff",
+          "gestalt",
+          "superposition",
+          "pantheon"
+        ]
+      },
+      "flagship_mix": [
+        [
+          "command_ewar_tac",
+          34
+        ],
+        [
+          "command_logi_rep",
+          33
+        ],
+        [
+          "command_medical",
+          17
+        ],
+        [
+          "command_carrier_screen",
+          16
+        ]
+      ]
     },
     "Logistics": {
       "mix": [

@@ -117,12 +117,12 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         d_specs = {fit_net.resolve_specialty(f"drone-{n}", "Military", [], pol) for n in range(1, 96)}
         self.assertEqual(d_specs, {"brawler", "ewar", "flak_tank"})
         # 3. Command Flagships: Prime Directive -> command_ewar_tac, 4 regional flagships -> command_stealth_ewar, core 6 hulls -> 4 support roles
-        self.assertEqual(fit_net.resolve_specialty("Prime Directive", "Command", [], pol), "command_ewar_tac")
-        self.assertEqual(fit_net.resolve_specialty("Crimson Aegis", "Command", [], pol), "command_stealth_ewar")
-        self.assertEqual(fit_net.resolve_specialty("Solar Mandate", "Command", [], pol), "command_stealth_ewar")
-        self.assertEqual(fit_net.resolve_specialty("Zero Point", "Command", [], pol, ship_class="triage"), "command_medical")
-        self.assertEqual(fit_net.resolve_specialty("Golden Chariot", "Command", [], pol, ship_class="anvil"), "command_logi_rep")
-        self.assertEqual(fit_net.resolve_specialty("Hades", "Command", [], pol, ship_class="gestalt"), "command_carrier_screen")
+        self.assertEqual(fit_net.resolve_specialty("Prime Directive", "Military", [], pol), "command_ewar_tac")
+        self.assertEqual(fit_net.resolve_specialty("Crimson Aegis", "Military", [], pol), "command_stealth_ewar")
+        self.assertEqual(fit_net.resolve_specialty("Solar Mandate", "Military", [], pol), "command_stealth_ewar")
+        self.assertEqual(fit_net.resolve_specialty("Zero Point", "Military", [], pol, ship_class="triage"), "command_medical")
+        self.assertEqual(fit_net.resolve_specialty("Golden Chariot", "Military", [], pol, ship_class="anvil"), "command_logi_rep")
+        self.assertEqual(fit_net.resolve_specialty("Hades", "Military", [], pol, ship_class="gestalt"), "command_carrier_screen")
         # 4. Verify slot classification of all support/tactical/medical/jammer/flak modules
         self.assertEqual(fit_net._module_slot_type("fleet_hospital"), "utility")
         self.assertEqual(fit_net._module_slot_type("ecm_jammer"), "utility")

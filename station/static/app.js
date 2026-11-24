@@ -113,7 +113,7 @@ const SHAPES = {
   Intel: [[[0, -10], [2, 2.5], [4.6, 8.5], [0, 6.2], [-4.6, 8.5], [-2, 2.5]], { ring: [0, -1.5, 7.6] }],
   Unassigned: [[[0, -8], [6, 7], [-6, 7]]],
 };
-const KINDS = ['Command', 'Mining', 'Trade', 'Logistics', 'Military', 'Intel', 'Unassigned'];
+const KINDS = ['Military', 'Mining', 'Trade', 'Logistics', 'Intel', 'Command', 'Unassigned'];
 const kindLabel = (kind) => (kind === 'Command' ? 'the command group' : kind === 'All' ? 'ours' : kind);
 function rgba(hex, a) {
   const n = parseInt(hex.slice(1), 16);
@@ -1646,7 +1646,7 @@ function renderMembers() {                       // the top bar: dual purse (Liq
 
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   const grid = el('div', 'members-grid');
-  for (const a of (S ? S.roster : [])) {
+  for (const a of (S ? S.roster : []).filter((x) => x.division !== 'Command')) {
     const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
     const working = list.filter(isWorking).length, who = el('div', 'who');
     b.type = 'button';
@@ -1765,15 +1765,51 @@ function shipMatches(r) {
   }
   return true;
 }
+const STARTER_HULLS = new Set(['threshold', 'prospect', 'theoria', 'cobble', 'shard']);
+function shipSubgroup(r) {
+  const nm = String(r.name || '');
+  const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
+  const what = String(r.order || r.route || '').toLowerCase();
+  if (r.division === 'Military') {
+    if (r.flagship || !nm.includes('-')) return [0, 'Command Flagships'];
+    if (nm.startsWith('sentinel-')) return [1, 'Royal Guard Sentinels'];
+    return [2, 'Frontline Drones'];
+  }
+  if (r.division === 'Trade') {
+    if (what.includes('bursar')) return [1, 'Bursar Desks'];
+    return [0, 'Mobile Traders'];
+  }
+  if (r.division === 'Logistics') {
+    if (['futures', 'runner', 'consortium', 'omnibus'].includes(cls) || what.includes('passenger')) return [0, 'Express / Passenger'];
+    return [1, 'Bulk Freighters'];
+  }
+  if (r.division === 'Mining') {
+    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Upgraded Miners'];
+    return [1, 'Starter Miners'];
+  }
+  if (r.division === 'Intel') {
+    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Upgraded Scouts'];
+    return [1, 'Recon Scouts'];
+  }
+  return [0, 'Ships'];
+}
+function naturalShipCmp(a, b) {
+  const pa = String(a.name || ''), pb = String(b.name || '');
+  const ma = pa.match(/^([a-z-]+?)(\d+)$/i), mb = pb.match(/^([a-z-]+?)(\d+)$/i);
+  if (ma && mb && ma[1].toLowerCase() === mb[1].toLowerCase()) return Number(ma[2]) - Number(mb[2]);
+  return pa.localeCompare(pb);
+}
 function sortShips(list) {
   const out = list.slice();
   if (rosterSort === 'health') {
     const score = (r) => Math.min(r.max_hull > 0 ? r.hull / r.max_hull : 1, r.max_fuel > 0 ? r.fuel / r.max_fuel : 1) + (shipAlert(r) ? -1 : 0);
-    out.sort((a, b) => score(a) - score(b) || a.name.localeCompare(b.name));
+    out.sort((a, b) => score(a) - score(b) || naturalShipCmp(a, b));
   } else if (rosterSort === 'credits') {
-    out.sort((a, b) => (a.credits || 0) - (b.credits || 0) || a.name.localeCompare(b.name));
+    out.sort((a, b) => (a.credits || 0) - (b.credits || 0) || naturalShipCmp(a, b));
   } else if (rosterSort === 'piloting') {
-    out.sort((a, b) => (b.piloting || 0) - (a.piloting || 0) || a.name.localeCompare(b.name));
+    out.sort((a, b) => (b.piloting || 0) - (a.piloting || 0) || naturalShipCmp(a, b));
+  } else {
+    out.sort((a, b) => (shipSubgroup(a)[0] - shipSubgroup(b)[0]) || naturalShipCmp(a, b));
   }
   return out;
 }
@@ -1813,7 +1849,7 @@ function ensureDivStrip(divisions) {
     const b = el('button', 'divchip' + (rosterDiv === key ? ' on' : ''), lbl);
     b.type = 'button';
     b.style.setProperty('--c', col);
-    b.title = key === 'all' ? 'Show all 6 divisions' : 'Focus ' + key + ' division';
+    b.title = key === 'all' ? 'Show all 5 divisions' : 'Focus ' + key + ' division';
     b.addEventListener('click', () => { rosterDiv = rosterDiv === key && key !== 'all' ? 'all' : key; renderRoster(); });
     strip.append(b);
   }
@@ -1911,7 +1947,22 @@ function renderRoster() {
     block.append(card);
 
     if (!raw.length) block.append(el('div', 'noships', 'No ships assigned'));
-    if (!folded) list.forEach((r) => block.append(shipRow(r)));
+    if (!folded) {
+      const grpCounts = new Map();
+      if (rosterSort === 'name') list.forEach((r) => { const g = shipSubgroup(r)[1]; grpCounts.set(g, (grpCounts.get(g) || 0) + 1); });
+      const showHeaders = rosterSort === 'name' && grpCounts.size > 1;
+      let lastGrp = '';
+      list.forEach((r) => {
+        if (showHeaders) {
+          const g = shipSubgroup(r)[1];
+          if (g !== lastGrp) {
+            lastGrp = g;
+            block.append(el('div', 'subgrp', g + ' (' + grpCounts.get(g) + ')'));
+          }
+        }
+        block.append(shipRow(r));
+      });
+    }
     box.append(block);
   }
   const meta = $('roster-meta');
