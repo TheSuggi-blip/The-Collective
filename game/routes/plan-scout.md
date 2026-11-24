@@ -137,3 +137,7 @@ Planned:
 | What | When |
 |---|---|
 | Read the strip and give runs of the scouts' Mining Laser I (open within 2 jumps of Central Nexus since this turn) and the lasers Mining's receivers got (data/stock/handover.jsonl) | next turn |
+| Read the Survey Scanner II scout's survey of Bnki (census-kit-herds, a faint signature at power 32): power 81 resolves it or not; resolved -> to Mining in queue.log; not -> a probe step by fleet-build | next turn |
+| Weigh a tier-2 scout hull only by fuel a read against the Threshold (the tier-1 Qualia read 2.4 times the fuel a read on census-region-sol, 4 h runs) | once a T2 hull's fuel a jump is on record |
+| Read the envoy's replies through diplomacy.py threads; Hail 2/3 to the eleven goes out by itself from 2026-11-25 09:27 UTC; replies to Unity as data | every turn |
+| Judge census-south, census-north and census-frontier from four hours of reads: five, one and three systems stood 181 to 193 min against 180 (dispatch lag with every Voidborn scout busy); still over -> cadence 150 on that list | next turn |
