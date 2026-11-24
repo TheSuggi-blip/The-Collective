@@ -79,7 +79,7 @@
   "newborn-nebula": {
    "title": "Nebula-born haulers: the once missions of Grand Exchange, their home board (orders ENT-068 P6)",
    "routes": [
-    "mission-first-links-store-grand",
+    "mission-first-links-nickel-grand",
     "mission-market-participation-grand",
     "mission-federation-trade-route-prospectus-grand"
    ],
@@ -87,7 +87,7 @@
     "piloting",
     "exploration"
    ],
-   "note": "2026-11-24 12:33 UTC (Apollo): First Links (Trade's route, 25 paid runs, 4,000 cr once, requires.empire nebula) put first: 10 Nebula-born haulers waited in Nebula space with their home lines booked (fill.py status 12:31 UTC)."
+   "note": "2026-11-24 12:47 UTC (Apollo): First Links now bought at Grand Exchange (mission-first-links-nickel-grand): Market Prime asked 170 cr for nickel over the 130 limit at 12:43 UTC and six runs ended on the failed buy; the six holders finish it by finish-first-links-grand in their own rows."
   }
  }
 }
