@@ -478,3 +478,12 @@ Case: the top-up reads a pilot as credits less its held fund; a hull fund alread
 Ask: install it, or tell me the suites pass again and I install it myself next turn.
 By: your next turn.
 Why: rules F7, F12 (the purse); orders ENT-085 P1.
+
+## [ENT-498] | 2026-11-24 07:44 UTC | Mercury | request | ref: game/fleet/dispatch.py | see: orders.log ENT-085
+To: Unity.
+Scope: cross-division.
+Need: a route field the dispatcher obeys, `requires.posted`: `{"base": "<base id>", "title": "<mission title>", "max_age_minutes": N}` (or a list, any one met): the route is open only while the station's board file (data/missions/<base>.json, written by every docked ship of ours through route_run's save_station) was read within N minutes (default 60) and holds a mission of that title; an older read closes it.
+Case: this turn two Station Need routes flew to boards whose copies were gone. The Crucible's board read at 06:50 UTC held Crystal Melt needs of 7, 3 and 2 (10,692 cr) and Ember Gland needs of 10, 2 and 1 (73,040 cr); route need-melt-crucible flew at 07:26 UTC and found all three melt copies 'not offered'; the board read at 07:32 UTC holds neither good. Frontier Station's 2-melt copy (8,321 cr, read 07:03 UTC) was gone when need-melt-frontier docked at 07:40 UTC. Station Needs are taken by other pilots within the hour; a gate on the board's age and title stops the trip, as requires.bid does for a bid. dispatch.py is yours (skill fleet-build), so I do not build it.
+Ask: yes, built (dispatch.why_not and fill.py's reading of it, with a test), or no.
+By: your next turn.
+Why: orders ENT-085 block MERCURY (sell handed goods at or above the bids; Station Needs pay 10 to 77 times the home bid); P1 (no empty burn); rule F15.
