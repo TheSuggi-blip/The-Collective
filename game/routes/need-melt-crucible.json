@@ -2,7 +2,7 @@
  "id": "need-melt-crucible",
  "kind": "circuit",
  "title": "Station Need: Crystal Melt at The Crucible Garrison filled from the pilot's melt stored there, about 890 cr a melt",
- "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). The Crucible Garrison posts Station Need: Crystal Melt for 7 melt (6,206 cr), 3 (2,718) and 2 (1,768) (board read 06:50 UTC), 12 melt for 10,692 cr; it bids 54 for melt. A trader's own storage there holds 36 melt and that trader stands docked at Krynn, 2 jumps away (storage book 07:06 UTC). Three accept-and-redock pairs, largest need first (need-ember-gland-krynn form); what is left is stored there, the pilot ends at Krynn. One ship.",
+ "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). The Crucible Garrison posts Station Need: Crystal Melt for 7 melt (6,206 cr), 3 (2,718) and 2 (1,768) (board read 06:50 UTC), 12 melt for 10,692 cr; it bids 54 for melt. A trader's own storage there holds 36 melt and that trader stands docked at Krynn, 2 jumps away (storage book 07:06 UTC). Three accept-and-redock pairs, largest need first (need-ember-gland-krynn form); what is left is stored there, the pilot ends at Krynn. One ship. Set off 07:46 UTC: its first run (07:26 UTC) found none of the three copies on the board ('not offered'); the board read at 07:32 UTC holds no Crystal Melt need: other pilots took them between our 06:50 read and the run. No gate reads the board before a ship is sent; wakes when one does or by hand on a fresh read.",
  "max_ships": 1,
  "far_ok": true,
  "requires": {
@@ -76,5 +76,6 @@
    "at": "krynn:war_citadel:crimson_war_citadel",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }
