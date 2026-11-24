@@ -195,8 +195,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read gather-node-gamma-nitrogen-ice: credits per ship-hour against Hamal's -391 and whether ice gives Mining XP; lift, keep or drop | next turn |
-| read the silicon share of a load on the six silicon gathers now that iron and copper go overboard (jettison_gangue) | next turn |
-| one Nebula miner tests a second Mining Laser I in place of its Cargo Expander, three runs, once the scouts' lasers stand in the receivers' storage at Central Nexus | next turn |
-| give-miner-stores-alpha-centauri on when Logistics names its hauler receiver there (requests ENT-491) | when named |
-| Hamal and Schedar close by their iron floors within hours: read Okab's load (trainees) and the census of all three before any lift | next turn |
+| read gather-sarin-whitesun-carbon: carbon a run, minutes and fuel against Yildun's 390 ore for -1,016 cr; lift to the laser-only wing or drop | next turn |
