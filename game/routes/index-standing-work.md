@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 671.
+Routes: 672.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -234,6 +234,7 @@ Routes: 671.
 | [mission-courier-to-haven-sol-hauler](mission-courier-to-haven-sol-hauler.json) | circuit | beyond the border, 21 jumps | Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange at Haven (haulers of every birth) | once per pilot, up to 45 ships, empty hold, under corporation_management 7, standing work | 60 | 18 | -400 | one-time | 2026-11-24 |
 | [mission-diplomatic-pouch-haven-gold](mission-diplomatic-pouch-haven-gold.json) | circuit | beyond the border, 21 jumps | The Diplomatic Pouch: 3,000 cr once from Sol Central, 5 gold ore bought at Haven, accepted at Sol and delivered to Central Nexus (a paid way home from Haven) | once per pilot, up to 70 ships, from 5,000 cr, under corporation_management 7, standing work | 66 | 34 | 2,120 | one-time | 2026-11-24 |
 | [mission-old-charts-sol](mission-old-charts-sol.json) | circuit | beyond the border, 11 jumps | Gathering the Old Charts: 3,500 cr once at Sol Central: the charts collected at Alpha Centauri, 5 circuit boards bought at Sol delivered to Sirius Observatory | once per pilot, up to 8 ships, empty hold, from 5,000 cr, under corporation_management 7, standing work | 54 | 6 | 1,100 | one-time | 2026-11-24 |
+| [resonance-parts-procyon-titanium-node-beta](resonance-parts-procyon-titanium-node-beta.json) | circuit | beyond the border, 9 jumps | Once: buy 15 titanium alloy at Procyon Colonial Station and sell them into the Resonance Miner yard bids at Node Beta | once per pilot, up to 3 ships, 6 pilots in all, empty hold, from 15,000 cr, while node_beta_industrial_station bids 800 cr for titanium_alloy, while procyon_colonial_station asks 900 cr or less for titanium_alloy, standing work | 4 | 24 | -1,060 | one-time | 2026-11-24 |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 17 | 14 | -20 | -120 | 2026-11-24 |
 | [store-hold-frontier-station-near](store-hold-frontier-station-near.json) | circuit | beyond the border, 17 jumps | A scout of any empire near the Mobile Capital with goods aboard docks at Frontier Station and stores its hold | up to 12 ships, goods aboard, standing work | 14 | 2 | 0 | 0 | 2026-11-24 |
 | [store-hold-grand-exchange](store-hold-grand-exchange.json) | circuit | beyond the border, 21 jumps | A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold | up to 35 ships, goods aboard, born nebula, standing work | 18 | 6 | -250 | -2,400 | 2026-11-24 |

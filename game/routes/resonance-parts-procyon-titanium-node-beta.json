@@ -2,7 +2,7 @@
  "id": "resonance-parts-procyon-titanium-node-beta",
  "kind": "circuit",
  "title": "Once: buy 15 titanium alloy at Procyon Colonial Station and sell them into the Resonance Miner yard bids at Node Beta",
- "note": "Written by Zero 2026-11-24 14:38 UTC. The three Resonance Miners commissioned for credits at Node Beta (upgrade queue u-6, u-7, u-8; 277,481 to 279,064 cr each) stand SOURCING: each lacks 30 titanium_alloy (commission_status 14:3x UTC), and the yard bids 850 x 90 at Node Beta (book 14:35 UTC) while the station asks 1,334 x 3. Procyon asks 876 x 1,346 (book 14:34 UTC), 9 jumps from Node Beta. Copied from Military's recursion2-parts-procyon-titanium-* (Apophis, 2026-11-24), which took its hulls SOURCING -> BUILDING. open_to miner (F23, the Admiral's exception): goods of our own hull commission sold into the yard's own sourcing bids; once per pilot, every buy booked once (a once route keeps its sale, workclass.sale_refused). 15 a pilot (13,400 cr out with the fee, 12,750 back), 6 pilots for the 90 units; requires.bid closes it when the yards hold their units.",
+ "note": "Written by Zero 2026-11-24 14:38 UTC. The three Resonance Miners commissioned for credits at Node Beta (upgrade queue u-6, u-7, u-8; 277,481 to 279,064 cr each) stand SOURCING: each lacks 30 titanium_alloy (commission_status 14:3x UTC), and the yard bids 850 x 90 at Node Beta (book 14:35 UTC) while the station asks 1,334 x 3. Procyon asks 876 x 1,346 (book 14:34 UTC), 9 jumps from Node Beta. Copied from Military's recursion2-parts-procyon-titanium-* (Apophis, 2026-11-24), which took its hulls SOURCING -> BUILDING. open_to miner (F23, the Admiral's exception): goods of our own hull commission sold into the yard's own sourcing bids; once per pilot, every buy booked once (a once route keeps its sale, workclass.sale_refused). 15 a pilot (13,400 cr out with the fee, 12,750 back), 6 pilots for the 90 units; requires.bid closes it when the yards hold their units. 2026-11-24 17:47 UTC (Zero): standing true (rule F22: build work never rests for its pay): the loss stop closed it for six hours after four runs (each buys at 876 and sells into the yard's 850 bid, about 1,000 cr a run), while the third commission (u-8) still lacks 30 titanium alloy (commission_status 17:3x UTC) and the yard bids 850 x 30 (book 17:39 UTC). Two pilots of six remain, 15 units each; requires.bid closes it when the yard holds its units.",
  "once": true,
  "max_ships": 3,
  "max_pilots": 6,
@@ -56,5 +56,6 @@
   "minutes": 24,
   "credits_per_run": -1060,
   "cph_per_ship": -2960
- }
+ },
+ "standing": true
 }
