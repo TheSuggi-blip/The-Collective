@@ -414,6 +414,10 @@ gate.py post <path> '<json body>'
 gate.py patch|delete <path> ['<json body>']
 gate.py hold <pilot>
 gate.py release <pilot>
+gate.py want <pilot> ["<why>"]      the pilot is held for you (`hand <Member>`) when its run ends, so a hand script takes it
+                                  (commission, hull switch, group hunt); the want dies after 6 hours, the hold 20 minutes
+                                  after its last command (requests ENT-484)
+gate.py want <pilot> --cancel
 gate.py book_onetime <pilot> "<title>" <credits>
                                   one row of data/fleet/onetime.json by hand, no game call: a reward paid once (+) or a
                                   hull or tool bought once (-) of a pilot of your own division (Mercury, Q75 (6))

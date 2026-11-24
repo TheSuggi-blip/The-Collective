@@ -334,7 +334,8 @@ class DrainFreeHandoverTests(Shelf):
         go2 = str(Path(self.temp.name) / "go2")
         self.addCleanup(lambda: [Path(g).write_text("") for g in (go1, go2)])
         env = dict(os.environ, FLEET_MEMBER="runhost", FLEET_HOST_EVERY="0.1")
-        env.pop("HERMES_SESSION_PROFILE", None)
+        for key in ("HERMES_SESSION_PROFILE", "HERMES_HOME", "HERMES_SCRATCH_DIR", "TMPDIR"):    # division.member() reads a member's
+            env.pop(key, None)                    # name from any of them (a member's TMPDIR is its profile's scratch): the host refuses
         proc = subprocess.Popen(
             [sys.executable, "-I", "-B", str(FLEET / "runhost.py"), "--fleet", str(self.fleet), "--data", str(self.data)],
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env,

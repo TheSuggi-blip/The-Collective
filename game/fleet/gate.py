@@ -22,6 +22,10 @@ Usage:
   gate.py patch|delete <path> ['<json body>']
   gate.py hold <pilot>
   gate.py release <pilot>
+  gate.py want <pilot> ["<why>"]      the pilot is held for you (`hand <Member>`) when its run ends, so a hand script takes it
+                                    (commission, hull switch, group hunt); the want dies after 6 hours, the hold 20 minutes
+                                    after its last command (requests ENT-484)
+  gate.py want <pilot> --cancel
   gate.py book_onetime <pilot> "<title>" <credits>
                                     one row of data/fleet/onetime.json by hand, no game call: a reward paid once (+) or a
                                     hull or tool bought once (-) of a pilot of your own division (Mercury, Q75 (6))
@@ -112,6 +116,27 @@ def take(pilot, group='', action=''):
         with open(path, 'w', encoding='utf-8') as handle:
             json.dump({'pilot': pilot, 'what': mark, 'since': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}, handle)
         print('held by hand: %s (%s); `gate.py release %s` when done' % (pilot, mark, pilot), file=sys.stderr)
+
+
+def want(pilot, why=''):
+    """Ask the dispatcher to hold a pilot of your own for your hand script when its run ends (requests ENT-484)."""
+    kind, name = division.member()
+    if kind != 'member':
+        sys.exit('REFUSED: a want file is a member\'s, for a pilot it commands')
+    if name != 'Unity' and division.owner(pilot) != name:
+        sys.exit('REFUSED: %s is commanded by %s, not by %s (orders F1)' % (pilot, division.owner(pilot), name))
+    path = division.want_path(pilot)
+    if why == '--cancel':
+        try:
+            os.remove(path)
+            return 'want cancelled: %s' % pilot
+        except OSError:
+            return '%s carries no want file' % pilot
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, 'w', encoding='utf-8') as handle:
+        json.dump({'pilot': pilot, 'by': name, 'why': str(why)[:200], 'since': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}, handle)
+    return ('wanted: %s for %s; when its run ends the dispatcher holds it as `hand %s` (%d minutes after the last command); '
+            'the want dies after %d hours' % (pilot, name, name, division.ORDER_FRESH // 60, division.WANT_FRESH // 3600))
 
 
 def release(pilot):
@@ -229,6 +254,9 @@ def main():
         return
     elif verb == 'release' and len(args) == 2:
         print(release(args[1]))
+        return
+    elif verb == 'want' and len(args) in (2, 3):
+        print(want(args[1], args[2] if len(args) == 3 else ''))
         return
     else:
         sys.exit(__doc__)

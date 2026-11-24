@@ -135,5 +135,21 @@ class LeaderErrandQueueTests(unittest.TestCase):
         self.assertIsNone(act4)
 
 
+class SweepStepErrorTests(LeaderErrandQueueTests):
+    def test_an_upgrade_step_that_raises_is_printed_and_fails_the_pass(self):
+        # errors.log ENT-171: wallet.sweep wrapped serve_upgrades in `except Exception: pass`, so a TypeError on every
+        # pass stood unseen for hours; now the step's error is a HALT line and the pass reports a failure
+        import io
+        import contextlib
+        import upgrades
+        self._write_fleet(docked="")
+        out = io.StringIO()
+        with mock.patch.object(upgrades, "serve_upgrades", side_effect=TypeError("missing a required argument: 'hours'")), \
+                contextlib.redirect_stdout(out):
+            rc = wallet.sweep(str(self.data), 1795480000, True)
+        self.assertIn("HALT: the upgrade queue's step failed: TypeError", out.getvalue())
+        self.assertEqual(rc, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

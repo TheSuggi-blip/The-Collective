@@ -588,8 +588,10 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=3, bu
                 if dry:
                     print("would fund upgrade %s: %s +%s cr for %s" % (r["id"], pilot, _fmt_num(short), hull))
                     continue
+                # wallet.add_fund(data, pilot, credits, why, hours, now, who): `hours` has no default; without it the call
+                # raised TypeError, which wallet.sweep's try/except swallowed, so no queued upgrade was ever funded.
                 rc = wallet_mod.add_fund(data_dir, pilot, short, "upgrade %s (%s)" % (hull, r.get("batch_id") or r["id"]),
-                                         now=now, who=r.get("by") or "Unity")
+                                         hours=UPGRADE_FUND_TIMEOUT / 3600.0, now=now, who=r.get("by") or "Unity")
                 if rc == 0:
                     r["state"], r["updated_at"], r["note"] = "funding", int(now), "requested +%s cr" % _fmt_num(short)
                     changed = True

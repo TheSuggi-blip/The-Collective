@@ -1382,8 +1382,9 @@ def sweep(data, now, dry):
         import upgrades as _upg
         _upg.serve_upgrades(data, now=now, dry=dry)
         _upg_skip = _upg.protected_pilots(data)
-    except Exception:
-        pass
+    except Exception as error:                  # errors.log ENT-171: a step that fails on every pass is printed, never swallowed
+        print("HALT: the upgrade queue's step failed: %s: %s" % (type(error).__name__, str(error)[:200]))
+        failed = 1
     log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]

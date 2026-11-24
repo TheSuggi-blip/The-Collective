@@ -117,6 +117,26 @@ def order_of(pilot, data=DATA, now=None):
         return ""
 
 
+WANT_FRESH = 6 * 3600        # a want file older than this asks for nothing (requests ENT-484)
+
+
+def want_path(pilot, data=DATA):
+    return Path(data) / "fleet" / "want" / (pilot + ".json")
+
+
+def want_of(pilot, data=DATA, now=None):
+    """The member whose fresh want file (`gate.py want`) asks for the pilot when its run ends, else '': the pilot's own
+    Admiral or the Fleet Admiral only (requests ENT-484). The dispatcher then holds it as `hand <Member>` for a hand script."""
+    path = want_path(pilot, data)
+    try:
+        if (time.time() if now is None else now) - path.stat().st_mtime > WANT_FRESH:
+            return ""
+        by = str(json.loads(path.read_text(encoding="utf-8")).get("by") or "")
+    except (OSError, ValueError, AttributeError):
+        return ""
+    return by if by and (by == "Unity" or by == owner(pilot, data)) else ""
+
+
 def hand_hold(pilot, data=DATA, now=None):
     """The hand mark of the pilot's order file (`hand <Member>`, written by gate.py) while that file is fresh (younger
     than ORDER_FRESH), else '': a pilot taken by hand that no runner may write over (requests ENT-289)."""

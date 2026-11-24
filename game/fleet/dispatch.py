@@ -1869,6 +1869,22 @@ def one_pass(root, data, dry_run, children):
                 lines.append("%s held back: its last %d runs ended `stop 1 not reached`; it gets a route again %d minutes after the last of them" % (name, STUCK, STUCK_REST // 60))
             continue
         HELD_BACK.discard(name)
+        wanted = division.want_of(name, data, now)       # requests ENT-484: a member's want file takes the pilot at its run's end
+        if wanted:
+            what = "hand " + wanted
+            state["orders"][name] = what
+            lines.append("%s -> %s: held for a hand script by its want file (`gate.py want`); the hold ends %d minutes after its last command"
+                         % (name, what, division.ORDER_FRESH // 60))
+            if not dry_run:
+                orders = Path(data) / "fleet" / "orders"
+                orders.mkdir(parents=True, exist_ok=True)
+                (orders / (name + ".json")).write_text(json.dumps({"pilot": name, "what": what, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}),
+                                                       encoding="utf-8")
+                try:
+                    division.want_path(name, data).unlink()
+                except OSError:
+                    pass
+            continue
         f_act, f_obj = leader_fund_action(name, ship, data, now, routes)
         if f_act == "hold":
             fkey = (name, int(f_obj.get("at") or 0))

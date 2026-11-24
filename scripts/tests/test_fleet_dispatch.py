@@ -569,6 +569,43 @@ class PassTests(Tree):
         self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["STOP file present: nothing started"])
 
 
+class WantTests(PassTests):
+    """requests ENT-484 (Apophis): a member's want file holds a pilot for its hand script when the pilot's run ends."""
+
+    def want(self, pilot, by, age=0):
+        folder = self.data / "fleet" / "want"
+        folder.mkdir(parents=True, exist_ok=True)
+        path = folder / (pilot + ".json")
+        path.write_text(json.dumps({"pilot": pilot, "by": by, "why": "commission a hull"}))
+        if age:
+            os.utime(path, (self.now - age, self.now - age))
+        return path
+
+    def test_a_fresh_want_of_the_pilot_s_own_admiral_holds_it_by_hand_and_gives_no_route(self):
+        self.fleet([{"name": "miner-1", "status": "connected", "credits": 9000, "activity": {"kind": "idle"}}])
+        path = self.want("miner-1", "Zero")
+        lines = self.dispatch.one_pass(str(self.root), str(self.data), True, [])
+        self.assertEqual(len(lines), 1)
+        self.assertTrue(lines[0].startswith("miner-1 -> hand Zero: held for a hand script"), lines)
+        self.assertTrue(path.exists())                                                        # a dry pass changes nothing
+        self.assertFalse((self.data / "fleet" / "orders" / "miner-1.json").exists())
+        self.dispatch.spawn = lambda argv, log, env: self.fail("no runner starts for a wanted pilot")
+        self.dispatch.one_pass(str(self.root), str(self.data), False, [])
+        order = json.loads((self.data / "fleet" / "orders" / "miner-1.json").read_text())
+        self.assertEqual(order["what"], "hand Zero")                                          # division.may lets Zero's script drive it
+        self.assertFalse(path.exists())                                                       # the want is used once
+        self.assertEqual(self.dispatch.division.hand_hold("miner-1", str(self.data)), "hand Zero")
+
+    def test_a_want_of_another_member_or_an_old_one_asks_for_nothing(self):
+        self.fleet([{"name": "miner-1", "status": "connected", "credits": 9000, "activity": {"kind": "idle"}}])
+        self.want("miner-1", "Apophis")                                                       # not its Admiral: orders F1
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["miner-1 -> mine mine"])
+        self.want("miner-1", "Zero", age=7 * 3600)                                            # older than WANT_FRESH
+        self.assertEqual(self.dispatch.one_pass(str(self.root), str(self.data), True, []), ["miner-1 -> mine mine"])
+        self.want("miner-1", "Unity")                                                         # the Fleet Admiral may want any ship
+        self.assertTrue(self.dispatch.one_pass(str(self.root), str(self.data), True, [])[0].startswith("miner-1 -> hand Unity"))
+
+
 class Flying:
     """A runner process that has not ended, as the dispatcher's reaping sees it."""
 

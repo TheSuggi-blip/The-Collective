@@ -49,9 +49,23 @@ class FakeWallet:
     def __init__(self):
         self.funds = []
 
-    def add_fund(self, data, pilot, credits, why, now=None, who="Unity"):
+    def add_fund(self, data, pilot, credits, why, hours=None, now=None, who="Unity"):
         self.funds.append((pilot, credits, why, who))
         return 0
+
+
+class RealSignatureWallet(FakeWallet):
+    """add_fund bound to the real wallet.add_fund's signature first: a call the real one refuses (TypeError) fails here
+    too. FakeWallet accepted a call without `hours`, so a missing argument passed every test while wallet.sweep's
+    try/except swallowed the TypeError and no queued upgrade was ever funded."""
+
+    def add_fund(self, *args, **kwargs):
+        import inspect
+        import wallet
+        bound = inspect.signature(wallet.add_fund).bind(*args, **kwargs)
+        bound.apply_defaults()
+        a = bound.arguments
+        return FakeWallet.add_fund(self, a["data"], a["pilot"], a["credits"], a["why"], now=a["now"], who=a["who"])
 
 
 class FakeDivision:
@@ -123,6 +137,17 @@ class UpgradeQueueTests(unittest.TestCase):
         rc_c2, _ = upgrades.queue_cancel(self.data, "Apophis", "drone-2", now=2010)
         self.assertEqual(rc_c2, 1)
         self.assertEqual(upgrades.protected_pilots(self.data), set())
+
+    def test_a_short_wallet_is_funded_through_the_real_add_fund_signature(self):
+        rc, lines = upgrades.queue_add(self.data, "Apophis", "recursion", "node_beta:poi:node_beta_base", 370000,
+                                       pilots="drone-1", now=1000)
+        self.assertEqual(rc, 0, lines)
+        gate, wal, div = FakeGate(), RealSignatureWallet(), FakeDivision()
+        upgrades.serve_upgrades(self.data, now=1010, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        rows = {r["pilot"]: r for r in upgrades.load_queue(self.data)}
+        self.assertEqual(rows["drone-1"]["state"], "funding")
+        self.assertEqual([f[0] for f in wal.funds], ["drone-1"])
+        self.assertEqual(wal.funds[0][1], 370000 + upgrades.UPGRADE_FLOOR - 50000)
 
     def test_stop_file_halts_serve(self):
         upgrades.queue_add(self.data, "Apophis", "recursion", "node_beta:poi:node_beta_base", 370000, pilots="drone-2", now=1000)
