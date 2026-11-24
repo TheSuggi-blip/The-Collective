@@ -107,7 +107,7 @@ Status: proven. Updated: 2026-11-21. Evidence: requests.log ENT-310; admirals.lo
   question about the past goes to these records first, the census after.
 
 ### Calls that surprise
-Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17).
+Status: proven. Updated: 2026-11-24. Evidence: game/fleet/gate.py; the game's help (2026-11-15 to 2026-11-17); game/fleet/route_run.py (lines 1172, 1339).
 
 - gate.py cuts an answer at 3,000 characters: read long answers with
   FULL=1. get_empire_info takes `empire_id`. get_system answers the
@@ -118,6 +118,8 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/gate.py; the game's he
   it, or every empty-hold route stays closed to the scout (HOLDS line).
 - fleet-build.sh install: run it in the background and poll it to its
   last line (errors.log ENT-115; seven minutes on 2026-11-23).
+- route_run.py works a stop's `gift` before its `unfit` and `store`: a
+  stripped module is given by a second route (errors.log ENT-178).
 
 ### A gate on a fresh read is open on an old one
 Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-central (its runs); data/wildlife/gsc_0041.json; admirals.log ENT-095.
