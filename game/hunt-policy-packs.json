@@ -27,13 +27,13 @@
     "auto_protect_lawless_civilians": true,
     "protect_pilots": [],
     "protect_places": [],
-    "max_jumps": 10,
+    "max_jumps": 6,
     "min_power": 1500.0,
     "minutes": 45
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.02,
+    "target_share": 0.07,
     "sizes": [
       3
     ],
@@ -52,7 +52,7 @@
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 12,
+    "max_jumps": 6,
     "priority_species": [
       "pilot_whale",
       "bullionaut",
@@ -86,5 +86,5 @@
     "max_jumps": 6
   },
   "rest_seconds_when_empty": 120,
-  "_tune": "Apophis 2026-11-24 15:38 UTC: the four Recursions flew 46 hunts in 6 hours on starter prey, 2.63 kills a run, -127,062 cr, -7,950 cr a ship-hour (runs.jsonl 09:36 to 15:36 UTC); a starter's T0 hunts read -918 cr a ship-hour. Packs and escorts as hunt-network's first flight. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5)."
+  "_tune": "Apophis 2026-11-24 15:38 UTC: the four Recursions flew 46 hunts in 6 hours on starter prey, 2.63 kills a run, -127,062 cr, -7,950 cr a ship-hour (runs.jsonl 09:36 to 15:36 UTC); a starter's T0 hunts read -918 cr a ship-hour. Packs and escorts as hunt-network's first flight. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5). 2026-11-24 18:47 UTC: no pack launched from 16:26 to 18:45 UTC (hunt_packs.json: three packs forming, one member each, at Alkaid, Adhafera and Harborlight; no RESULT pack line). Two causes in pack_try_join_or_create: the quota max(3, round(active x target_share)) = 3 at 0.02, filled by three singletons; and a creator picks a target up to packs.max_jumps 12 while a joiner must stand within rally_max_jumps 8 of it. target_share 0.07 (quota about 9), packs.max_jumps 6 (inside the rally reach of a ship beside the creator). Escort max_jumps 10 -> 6: a Recursion on the escort lane stood at Revati (lawless, 15 jumps) with 10 of 360 fuel at 18:40 UTC."
 }

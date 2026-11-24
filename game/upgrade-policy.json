@@ -21,12 +21,6 @@
           "share": 0.5,
           "ladder": [
             {
-              "hull": "cleaver",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 35000
-            },
-            {
               "hull": "broadaxe",
               "tier": 2,
               "min_piloting": 10,
@@ -58,12 +52,6 @@
           "specialty": "assault",
           "share": 0.35,
           "ladder": [
-            {
-              "hull": "cleaver",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 35000
-            },
             {
               "hull": "halberd",
               "tier": 2,
@@ -154,12 +142,6 @@
           "specialty": "striker",
           "share": 0.35,
           "ladder": [
-            {
-              "hull": "cleaver",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 35000
-            },
             {
               "hull": "broadaxe",
               "tier": 2,
@@ -650,7 +632,8 @@
             }
           ]
         }
-      ]
+      ],
+      "_tune_apophis": "2026-11-24 18:47 UTC: cleaver rungs out of the crimson brawler, crimson assault and voidborn striker ladders: three listed Cleavers flew 26 hunts since 12:00 UTC with 0 kills (runs table): their Missile Launcher I (reach 6, no missiles) keeps hunt.py at distance 6, the autocannons reach 2. Back when a Cleaver stripped of its launcher (strip-missile-launcher-central-nexus) reads kills in three hunts. Queue entry u-25 cancelled."
     },
     "Mining": {
       "enabled": true,
