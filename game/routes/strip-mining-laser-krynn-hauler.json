@@ -30,7 +30,7 @@
  "note": "Written by Apollo, 2026-11-24 01:57 UTC (rules F17 and F23: gathering is the miners' alone, stripping off-role starters deploys at once; the scorecard's slot trigger: 77 of 95 haulers carry off-role starter modules, briefing 01:39 UTC). A copy of Military's strip-mining-laser-krynn (122 runs, 1 minute each, measured 2026-11-23), whose max_pilots 130 is spent on Military ships: one docked stop, unfit then store all, gated by in_system so only a hauler already at Krynn takes it. The pulse laser stays: a hauler flees, and its one weapon is its only answer to a grazer. The stored lasers and harvesters are Mining's to ask for (Zero's strip route buys a Mining Laser I at about 1,616 cr). In the list First.",
  "measured": {
   "date": "2026-11-24",
-  "runs": 4,
+  "runs": 9,
   "minutes": 2,
   "credits_per_run": 0,
   "cph_per_ship": 0
