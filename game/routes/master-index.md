@@ -40,7 +40,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 111 | finish-five-capitals-sol > voidborn-first-steps-board > voidborn-collective-provides | 0 | 9 |
 | [drone](plan-drone.md) | Apophis | 359 | buy-autocannon-rounds-the-anvil > rearm-pulse-laser-central-nexus > voidborn-signal-fragments | 2 | 95 |
-| [hauler](plan-hauler.md) | Apollo | 115 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 1 | 95 |
+| [hauler](plan-hauler.md) | Apollo | 115 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 2 | 95 |
 | [miner](plan-miner.md) | Zero | 167 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 4 | 130 |
 | [scout](plan-scout.md) | Oracle | 105 | store-hold-central-nexus > store-hold-frontier-station-near > give-mining-laser-scout-central-nexus | 5 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 359 | buy-autocannon-rounds-the-anvil > rearm-pulse-laser-central-nexus > voidborn-signal-fragments | 2 | 36 |

@@ -152,3 +152,4 @@ Planned:
 | What | When |
 |---|---|
 | read Unity's answer to requests ENT-523 (Atria kit: Arneb, our own kit line, or wait) and write its buy routes and build row the same turn | next turn |
+| read haul-network without its arbitrage lane: runs with a freight or supply job against runs that found none; size it to what freight and supply carry | next turn |
