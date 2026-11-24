@@ -151,8 +151,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read the Desk at Central Nexus (Lockbox, Hiring Board, Desk upgrade by the builder's driver) and the member limit after it (250 before) | next turn |
-| on Unity's answer to requests ENT-494 (a role with manage_treasury on haulers): one ship on craft-steel-faction-gsc-0044, its RESULT read, then lift | next turn |
-| haulers home at Nexus Prime after the Courier and Pouch loop: steel where the miners' iron lies, the Alpha Centauri receivers near Sol once Zero's give route runs (ENT-495) | next turn |
-| found Atria when the kit stands: bought kit at Ironlight, or the assembler facility if the Fleet Admiral funds it (600,000 cr, Scope: capital) | when stocked |
-| close the fill gate's cliff: a repeating home route for the loop's end at Nexus Prime (90 ships on once-only routes at 07:19 UTC), sized by what home carries | next turn |
+| read the answer to requests ENT-513 (the outpost's faction iron out of the iron chain and the pull rule) and Mining's iron gathers after it | next turn |
