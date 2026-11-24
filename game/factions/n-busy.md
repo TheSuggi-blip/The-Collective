@@ -14,8 +14,8 @@ updated: 2026-11-24
 
 # Busy Being Dead [BUSY]
 
-A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 5.
+A player faction with 7 base(s) in 7 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
+Pilots of it in our space in the last 24 hours: 54.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 496 | Public event stream |
+| Pilots carrying the tag on the public event stream | 497 | Public event stream |
 
 ## Bases
 
@@ -38,6 +38,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | thriving |
 | Plasma Echo Station | station | GSC-0010 (`gsc_0010`) | lawless | 17 | thriving |
 | To The Dark Moon | outpost | Tiaki (`tiaki`) | lawless | 17 | thriving |
+| To Stellar Leap | outpost | Mile Mark (`mile_mark`) | lawless | no lane found | thriving |
 
 ## Pilots in Our Space
 
@@ -45,11 +46,38 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 015 | Pherkad (`pherkad`) | 0 | opus_magna |
-| Combat Drone 150 | Node Gamma (`node_gamma`) | 0 | dialectic |
-| Combat Drone 170 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 208 | Hamal (`hamal`) | 0 | dialectic |
-| Mining Drone 229 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Combat Drone 013 | Node Gamma (`node_gamma`) | 0 | opus_magna |
+| Combat Drone 133 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 194 | Node Beta (`node_beta`) | 0 | dialectic |
+| Mining Drone 027 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 029 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 031 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 038 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 046 | Node Gamma (`node_gamma`) | 0 | floor_price |
+| Mining Drone 048 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 049 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 051 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 055 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 064 | Hamal (`hamal`) | 0 | floor_price |
+| Mining Drone 074 | Hamal (`hamal`) | 0 | floor_price |
+| Mining Drone 089 | Hamal (`hamal`) | 0 | floor_price |
+| Mining Drone 099 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 119 | Hamal (`hamal`) | 0 | threshold |
+| Mining Drone 121 | Hamal (`hamal`) | 0 | prospect |
+| Mining Drone 125 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 126 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 127 | Hamal (`hamal`) | 0 | floor_price |
+| Mining Drone 129 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 130 | Acubens (`acubens`) | 0 | floor_price |
+| Mining Drone 132 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 133 | Node Gamma (`node_gamma`) | 0 | floor_price |
+| Mining Drone 142 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 143 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 149 | Acubens (`acubens`) | 0 | floor_price |
+| Mining Drone 151 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 154 | Synchrony (`synchrony`) | 0 | floor_price |
+
+And 24 more.
 
 ## Standing History
 

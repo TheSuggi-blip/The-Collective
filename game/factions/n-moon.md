@@ -9,12 +9,12 @@ faction: Rise and Fall of Goldcrest Moon
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Rise and Fall of Goldcrest Moon [MOON]
 
-A player faction with 4 base(s) in 4 system(s); the nearest to Nexus Prime is 11 jump(s) away, in Mebsuta (`mebsuta`).
+A player faction with 5 base(s) in 5 system(s); the nearest to Nexus Prime is 11 jump(s) away, in Mebsuta (`mebsuta`).
 Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
@@ -36,6 +36,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Goldcrest Moon | station | Diphda (`diphda`) | lawless | 16 | thriving, mobile |
 | The Half Moon | station | Ross 248 (`ross_248`) | lawless | 16 | thriving |
 | The Full Moon | station | Wealth Lane (`wealth_lane`) | lawless | 19 | thriving |
+| The Dark Moon | station | Spindown (`spindown`) | lawless | no lane found | thriving |
 
 ## Pilots in Our Space
 
