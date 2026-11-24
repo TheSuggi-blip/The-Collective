@@ -154,3 +154,4 @@ Planned:
 | read Unity's answer to requests ENT-523 (Atria kit: Arneb, our own kit line, or wait) and write its buy routes and build row the same turn | next turn |
 | read haul-network without its arbitrage lane: runs with a freight or supply job against runs that found none; size it to what freight and supply carry | next turn |
 | read the carbon buy's three-cycle runs (no stall rest) against its gate of 50,000 and the overshoot after one storage-book interval | next turn |
+| read finish-first-links-grand and mission-first-links-nickel-grand paid runs; test one ship on Grand Exchange's Nebula missions with no route yet for Nebula Attunement (F35) | next turn |

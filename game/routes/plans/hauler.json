@@ -131,6 +131,10 @@
   {
    "what": "read the carbon buy's three-cycle runs (no stall rest) against its gate of 50,000 and the overshoot after one storage-book interval",
    "when": "next turn"
+  },
+  {
+   "what": "read finish-first-links-grand and mission-first-links-nickel-grand paid runs; test one ship on Grand Exchange's Nebula missions with no route yet for Nebula Attunement (F35)",
+   "when": "next turn"
   }
  ],
  "ships": {
