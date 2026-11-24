@@ -1,0 +1,33 @@
+{
+ "id": "mission-the-colonies-crimson",
+ "kind": "circuit",
+ "title": "The Colonies: 5000 cr, +290 XP at War Citadel",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 5000 cr, sale 0 cr, +290 XP. Test with one ship first. Added as a test by fill.py on 2026-11-24 10:05 UTC (Apollo): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "accept": [
+    "the_colonies"
+   ]
+  },
+  {
+   "at": "iron_reach:iron_reach_mining_colony:iron_reach_mining_colony",
+   "redock": true
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "redock": true
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "The Colonies"
+ ],
+ "skip_if_booked": [
+  "The Colonies"
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 92.
+Routes: 93.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -79,6 +79,7 @@ Routes: 92.
 | [mission-scraping-by-frontier](mission-scraping-by-frontier.json) | circuit | beyond the border, 17 jumps | Scraping By: 1,000 cr once and Outer Rim Survival XP; accept at Frontier Station, mine 15 copper ore at The Telescope (one jump), hand in at Frontier Station | once per pilot, up to 1 ships, empty hold, born outerrim | 62 | 3 | 220 | one-time | 2026-11-23 |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 30 ships | 317 | 31 | 2,460 | one-time | 2026-11-23 |
 | [mission-structural-reinforcement-alpha](mission-structural-reinforcement-alpha.json) | circuit | beyond the border, 11 jumps | Structural Reinforcement: 3,000 cr once at Alpha Centauri, pre-fabricated materials picked up at Nova Terra and delivered back (a test) | once per pilot, up to 20 ships, empty hold | 222 | 12 | 2,780 | one-time | 2026-11-23 |
+| [mission-the-colonies-crimson](mission-the-colonies-crimson.json) | circuit | beyond the border, 21 jumps | The Colonies: 5000 cr, +290 XP at War Citadel | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-the-expeditionary-mandate-first](mission-the-expeditionary-mandate-first.json) | circuit | beyond the border, 18 jumps | The Expeditionary Mandate: 10000 cr, +360 XP at First Step Memorial Station | once per pilot, up to 3 ships | 3 | 38 | -690 | one-time | 2026-11-23 |
 | [mission-the-memorial-frontier](mission-the-memorial-frontier.json) | circuit | beyond the border, 18 jumps | The Memorial: 8000 cr at Mobile Capital (Altais), a visit to First Step | once per pilot, up to 15 ships | 260 | 11 | 7,340 | one-time | 2026-11-23 |
 | [mission-the-objection-deep](mission-the-objection-deep.json) | circuit | beyond the border, 19 jumps | The Objection: 600 cr, +75 XP at Deep Range Outpost | once per pilot, up to 3 ships | 79 | 5 | 50 | one-time | 2026-11-24 |
