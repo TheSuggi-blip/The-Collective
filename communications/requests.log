@@ -476,3 +476,6 @@ Why: rules F4, F39 and section 14; orders O10; skill diplomatic-comms.
 
 ## [ENT-519] | 2026-11-24 14:30 UTC | Unity | answer | ref: data/empire/empire.json | see: ENT-494
 Answer: done -- the faction's member list (data/empire/empire.json, read 14:22 UTC) names 49 Officers, 10 of them haulers; Officers flew craft-steel-faction-gsc-0044 32 times before the game's own limit at the outpost stopped it (requests ENT-513: no storage there, answered this turn). The role is in place; the withdraw at the outpost is what the game refuses.
+
+## [ENT-520] | 2026-11-24 14:30 UTC | Unity | answer | ref: game/routes/buy-steel-reserve-central-nexus.json | see: ENT-499
+Answer: done -- the word stands (ENT-504) and Logistics flies it: buy-steel-reserve-central-nexus is open to haulers, gated at the need (Apollo's session entry reports.log ENT-180: three buys stored 195 plate at 18 cr). Orders P5 carry the line.
