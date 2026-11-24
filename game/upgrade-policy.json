@@ -1,7 +1,8 @@
 {
   "_owner": "Unity & All 5 Admirals",
-  "_doc": "Policy for automated multi-empire, multi-specialty hull upgrading (upgrades.py auto_enqueue_upgrades). Hard-capped at T3 (max_auto_tier: 3) so T4/T5 capitals remain custom player-designed builds. Respects hard treasury_floor_cr, 24h CapEx pacing, Trade min_t0_bursar_reserve, listed-first bargains, and specialty shares.",
+  "_doc": "Division specialty/class-split hull upgrade policy across T1-T5 (interchangeable cross-empire discount hulls allowed within each division's agreed class split so every pilot keeps its birth-empire passive bonus while grabbing the best bargain hull for its class). Intel enabled after Oracle's scout test. T4/T5 ladders are fully planned and gated by max_auto_tier, Piloting 30/50, treasury_floor_cr, and 24h CapEx cap.",
   "enabled": true,
+  "max_auto_tier": 3,
   "treasury_floor_cr": 8500000,
   "max_spend_24h_cr": 1200000,
   "max_new_per_pass": 5,
@@ -16,145 +17,83 @@
       "max_active": 10,
       "cohorts": [
         {
-          "empire": "crimson",
-          "specialty": "brawler",
+          "empire": "any",
+          "specialty": "strike_brawler_siege",
           "share": 0.5,
+          "exclude_prefix": "sentinel-",
+          "exclude_pilots": [
+            "Prime Directive",
+            "Zero Point",
+            "Golden Chariot",
+            "Mercurys Ledger",
+            "Hades",
+            "Vision",
+            "Crimson Aegis",
+            "Nebula Charter",
+            "Rimward Pact",
+            "Solar Mandate"
+          ],
           "ladder": [
+            {
+              "hull": "cleaver",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 40000
+            },
             {
               "hull": "broadaxe",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 140000
-            },
-            {
-              "hull": "warmaul",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 240000
-            }
-          ],
-          "exclude_prefix": "sentinel-",
-          "exclude_pilots": [
-            "Prime Directive",
-            "Zero Point",
-            "Golden Chariot",
-            "Mercurys Ledger",
-            "Hades",
-            "Vision",
-            "Crimson Aegis",
-            "Nebula Charter",
-            "Rimward Pact",
-            "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "crimson",
-          "specialty": "assault",
-          "share": 0.35,
-          "ladder": [
-            {
-              "hull": "halberd",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 170000
-            },
-            {
-              "hull": "partisan",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 220000
-            }
-          ],
-          "exclude_prefix": "sentinel-",
-          "exclude_pilots": [
-            "Prime Directive",
-            "Zero Point",
-            "Golden Chariot",
-            "Mercurys Ledger",
-            "Hades",
-            "Vision",
-            "Crimson Aegis",
-            "Nebula Charter",
-            "Rimward Pact",
-            "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "crimson",
-          "specialty": "tank",
-          "share": 0.15,
-          "ladder": [
-            {
-              "hull": "stockade",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 180000
-            }
-          ],
-          "exclude_prefix": "sentinel-",
-          "exclude_pilots": [
-            "Prime Directive",
-            "Zero Point",
-            "Golden Chariot",
-            "Mercurys Ledger",
-            "Hades",
-            "Vision",
-            "Crimson Aegis",
-            "Nebula Charter",
-            "Rimward Pact",
-            "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "voidborn",
-          "specialty": "ewar_shield",
-          "share": 0.65,
-          "ladder": [
-            {
-              "hull": "paradox",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 40000
+              "max_price": 160000
             },
             {
               "hull": "recursion",
               "tier": 2,
               "min_piloting": 10,
               "max_price": 235000
-            }
-          ],
-          "exclude_prefix": "sentinel-",
-          "exclude_pilots": [
-            "Prime Directive",
-            "Zero Point",
-            "Golden Chariot",
-            "Mercurys Ledger",
-            "Hades",
-            "Vision",
-            "Crimson Aegis",
-            "Nebula Charter",
-            "Rimward Pact",
-            "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "voidborn",
-          "specialty": "striker",
-          "share": 0.35,
-          "ladder": [
-            {
-              "hull": "broadaxe",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 140000
             },
             {
               "hull": "warmaul",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 240000
+              "max_price": 320000
+            },
+            {
+              "hull": "annihilation",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "crimson_devastator",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "voidborn_event_horizon",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "annihilator",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
+            },
+            {
+              "hull": "apotheosis",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
-          ],
+          ]
+        },
+        {
+          "empire": "any",
+          "specialty": "strike_ewar_gunship",
+          "share": 0.3,
           "exclude_prefix": "sentinel-",
           "exclude_pilots": [
             "Prime Directive",
@@ -167,13 +106,14 @@
             "Nebula Charter",
             "Rimward Pact",
             "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "solarian",
-          "specialty": "gunship",
-          "share": 0.6,
+          ],
           "ladder": [
+            {
+              "hull": "paradox",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
             {
               "hull": "axiom",
               "tier": 1,
@@ -181,44 +121,53 @@
               "max_price": 45000
             },
             {
-              "hull": "dialectic",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 350000
-            }
-          ],
-          "exclude_prefix": "sentinel-",
-          "exclude_pilots": [
-            "Prime Directive",
-            "Zero Point",
-            "Golden Chariot",
-            "Mercurys Ledger",
-            "Hades",
-            "Vision",
-            "Crimson Aegis",
-            "Nebula Charter",
-            "Rimward Pact",
-            "Solar Mandate"
-          ]
-        },
-        {
-          "empire": "solarian",
-          "specialty": "striker",
-          "share": 0.4,
-          "ladder": [
-            {
-              "hull": "broadaxe",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 140000
-            },
-            {
-              "hull": "recursion",
+              "hull": "dualism",
               "tier": 2,
               "min_piloting": 10,
               "max_price": 235000
+            },
+            {
+              "hull": "theorem",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "dialectic",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 380000
+            },
+            {
+              "hull": "quorum",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 400000
+            },
+            {
+              "hull": "voidborn_singularity",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "axiomata",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "opus_magna",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
             }
-          ],
+          ]
+        },
+        {
+          "empire": "any",
+          "specialty": "strike_assault_flak_tank",
+          "share": 0.2,
           "exclude_prefix": "sentinel-",
           "exclude_pilots": [
             "Prime Directive",
@@ -231,6 +180,44 @@
             "Nebula Charter",
             "Rimward Pact",
             "Solar Mandate"
+          ],
+          "ladder": [
+            {
+              "hull": "pike",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 40000
+            },
+            {
+              "hull": "halberd",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "stockade",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
+            },
+            {
+              "hull": "partisan",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 320000
+            },
+            {
+              "hull": "juggernaut",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "armageddon",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
+            }
           ]
         },
         {
@@ -243,13 +230,19 @@
               "hull": "axiom",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 35000
             },
             {
               "hull": "paradox",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 35000
+            },
+            {
+              "hull": "buckler",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 35000
             },
             {
               "hull": "lone_star",
@@ -261,13 +254,19 @@
               "hull": "dualism",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 110000
+              "max_price": 200000
             },
             {
               "hull": "junkyard_dog",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 180000
+              "max_price": 200000
+            },
+            {
+              "hull": "stockade",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
             },
             {
               "hull": "recursion",
@@ -282,22 +281,70 @@
               "max_price": 220000
             },
             {
-              "hull": "bad_idea",
+              "hull": "trebuchet",
               "tier": 2,
               "min_piloting": 10,
               "max_price": 220000
             },
             {
+              "hull": "bad_idea",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
+            },
+            {
+              "hull": "aporia",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "bastille",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 400000
+            },
+            {
               "hull": "collateral",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 150000
+              "max_price": 400000
             },
             {
               "hull": "quorum",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 220000
+              "max_price": 400000
+            },
+            {
+              "hull": "portcullis",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "consensus",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "paradox_engine",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "subjugator",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
+            },
+            {
+              "hull": "pleroma",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         },
@@ -311,19 +358,25 @@
               "hull": "last_warning",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 20000
+              "max_price": 40000
             },
             {
               "hull": "precept",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 40000
             },
             {
               "hull": "apeiron",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 28000
+              "max_price": 40000
+            },
+            {
+              "hull": "vigil",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 40000
             },
             {
               "hull": "lone_star",
@@ -335,49 +388,103 @@
               "hull": "franchise",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 65000
+              "max_price": 200000
             },
             {
               "hull": "scrutiny",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 90000
+              "max_price": 220000
             },
             {
               "hull": "census",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 140000
+              "max_price": 240000
             },
             {
               "hull": "syllogism",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 160000
+              "max_price": 220000
             },
             {
-              "hull": "penumbra",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 300000
-            },
-            {
-              "hull": "trebuchet",
+              "hull": "triage",
               "tier": 2,
               "min_piloting": 10,
               "max_price": 220000
             },
             {
+              "hull": "penumbra",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "warrant",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
               "hull": "concordance",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 230000
+              "max_price": 420000
+            },
+            {
+              "hull": "remedy",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "anvil",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
             },
             {
               "hull": "gestalt",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 310000
+              "max_price": 450000
+            },
+            {
+              "hull": "panacea",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "overlord",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "superposition",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "fundament",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "overmind",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "symposium",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
             }
           ]
         },
@@ -391,10 +498,6 @@
             "Hades",
             "Vision"
           ],
-          "prefer_pilots": [
-            "Prime Directive",
-            "Hades"
-          ],
           "specialty": "command_ewar_tac",
           "share": 0.34,
           "ladder": [
@@ -402,37 +505,55 @@
               "hull": "precept",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 45000
             },
             {
               "hull": "census",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 140000
+              "max_price": 240000
             },
             {
               "hull": "syllogism",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 160000
+              "max_price": 220000
             },
             {
               "hull": "bad_influence",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 235000
+              "max_price": 200000
             },
             {
               "hull": "concordance",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 230000
+              "max_price": 420000
             },
             {
               "hull": "polymath",
               "tier": 3,
               "min_piloting": 0,
-              "max_price": 550000
+              "max_price": 480000
+            },
+            {
+              "hull": "pantheon",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 2000000
+            },
+            {
+              "hull": "consensus",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 2000000
+            },
+            {
+              "hull": "symposium",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
             }
           ]
         },
@@ -453,13 +574,13 @@
               "hull": "vigil",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 75000
+              "max_price": 45000
             },
             {
               "hull": "scrutiny",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 85000
+              "max_price": 220000
             },
             {
               "hull": "lone_star",
@@ -471,19 +592,31 @@
               "hull": "remedy",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 190000
+              "max_price": 420000
             },
             {
               "hull": "anvil",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 210000
+              "max_price": 420000
             },
             {
               "hull": "palisade",
               "tier": 3,
               "min_piloting": 0,
-              "max_price": 500000
+              "max_price": 450000
+            },
+            {
+              "hull": "overlord",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 2000000
+            },
+            {
+              "hull": "fundament",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         },
@@ -504,19 +637,19 @@
               "hull": "apeiron",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 28000
+              "max_price": 45000
             },
             {
               "hull": "triage",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 135000
+              "max_price": 220000
             },
             {
               "hull": "anamnesis",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 275000
+              "max_price": 240000
             },
             {
               "hull": "homeward",
@@ -528,7 +661,19 @@
               "hull": "continuity",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 550000
+              "max_price": 450000
+            },
+            {
+              "hull": "panacea",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 2000000
+            },
+            {
+              "hull": "emanation",
+              "tier": 5,
+              "min_piloting": 0,
+              "max_price": 8000000
             }
           ]
         },
@@ -543,37 +688,49 @@
             "Vision"
           ],
           "specialty": "command_carrier_screen",
-          "share": 0.17,
+          "share": 0.16,
           "ladder": [
             {
               "hull": "overhead",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 32000
+              "max_price": 45000
             },
             {
               "hull": "franchise",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 65000
+              "max_price": 200000
             },
             {
               "hull": "postulate",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 180000
+              "max_price": 220000
             },
             {
               "hull": "tariff",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 260000
+              "max_price": 420000
             },
             {
               "hull": "gestalt",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 320000
+              "max_price": 450000
+            },
+            {
+              "hull": "paramount",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 2000000
+            },
+            {
+              "hull": "ascendancy",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 6000000
             }
           ]
         },
@@ -592,104 +749,95 @@
               "hull": "dirk",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 22000
+              "max_price": 45000
             },
             {
               "hull": "arbitrage",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 140000
+              "max_price": 200000
             },
             {
               "hull": "dust_devil",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 170000
+              "max_price": 180000
             },
             {
               "hull": "interstice",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 200000
+              "max_price": 220000
             },
             {
               "hull": "parallax",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 215000
+              "max_price": 220000
             },
             {
               "hull": "silent_tide",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 350000
+              "max_price": 450000
             },
             {
               "hull": "catharsis",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 380000
+              "max_price": 480000
+            },
+            {
+              "hull": "vanguard",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "plausible_deniability",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "palimpsest",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "controlled_chaos",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         }
-      ],
-      "_tune_apophis": "2026-11-24 18:47 UTC: cleaver rungs out of the crimson brawler, crimson assault and voidborn striker ladders: three listed Cleavers flew 26 hunts since 12:00 UTC with 0 kills (runs table): their Missile Launcher I (reach 6, no missiles) keeps hunt.py at distance 6, the autocannons reach 2. Back when a Cleaver stripped of its launcher (strip-missile-launcher-central-nexus) reads kills in three hunts. Queue entry u-25 cancelled."
+      ]
     },
     "Mining": {
       "enabled": true,
       "max_active": 5,
       "cohorts": [
         {
-          "empire": "voidborn",
+          "empire": "any",
           "specialty": "ore_miner",
           "share": 0.65,
           "ladder": [
             {
-              "hull": "liminal",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 45000
-            },
-            {
-              "hull": "resonance_miner",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 240000
-            },
-            {
-              "hull": "substrate",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 580000
-            }
-          ]
-        },
-        {
-          "empire": "voidborn",
-          "specialty": "ice_gas_miner",
-          "share": 0.35,
-          "ladder": [
-            {
-              "hull": "liminal",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 45000
-            },
-            {
-              "hull": "resonance_miner",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 240000
-            }
-          ]
-        },
-        {
-          "empire": "nebula",
-          "specialty": "bulk_miner",
-          "share": 1.0,
-          "ladder": [
-            {
               "hull": "bonanza",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "liminal",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 55000
+            },
+            {
+              "hull": "archimedes",
               "tier": 1,
               "min_piloting": 0,
               "max_price": 55000
@@ -698,98 +846,247 @@
               "hull": "workhorse",
               "tier": 2,
               "min_piloting": 0,
-              "max_price": 120000
+              "max_price": 180000
             },
             {
-              "hull": "bonanza_king",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 620000
-            }
-          ]
-        },
-        {
-          "empire": "solarian",
-          "specialty": "precision_miner",
-          "share": 1.0,
-          "ladder": [
-            {
-              "hull": "bonanza",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 55000
+              "hull": "motherlode",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
             },
             {
-              "hull": "resonance_miner",
+              "hull": "excavation",
               "tier": 2,
               "min_piloting": 10,
               "max_price": 240000
             },
             {
+              "hull": "resonance_miner",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 280000
+            },
+            {
+              "hull": "bedrock",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
+            },
+            {
+              "hull": "bonanza_king",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "substrate",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 550000
+            },
+            {
               "hull": "praxis",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 620000
+              "max_price": 550000
+            },
+            {
+              "hull": "deep_survey",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 550000
+            },
+            {
+              "hull": "rock_eater",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "paydirt",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "harmonic",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "lithosphere",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "pithead",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1600000
+            },
+            {
+              "hull": "eldorado",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "manifold",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "tellurian",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "all_mine",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "specialty": "ice_harvester",
+          "share": 0.2,
+          "ladder": [
+            {
+              "hull": "rime",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "frost_dividend",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "glacius",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "cold_storage",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "hoarfrost",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "cryogenic_survey",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "ice_trawler",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "frost_venture",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "glacialis",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "verglas",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "cryo_industrial",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "specialty": "gas_harvester",
+          "share": 0.15,
+          "ladder": [
+            {
+              "hull": "aether",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "nebulae",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "nebulous",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "gas_tanker",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "atmospheric_sampler",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "gas_trawler",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "phase_collector",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 500000
+            },
+            {
+              "hull": "exosphere",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "rift_siphon",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         }
       ]
-    },
-    "Trade": {
-      "enabled": true,
-      "max_active": 7,
-      "cohorts": [
-        {
-          "empire": "any",
-          "specialty": "mobile_trade",
-          "share": 1.0,
-          "ladder": [
-            {
-              "hull": "prayer",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 45000
-            },
-            {
-              "hull": "ledger",
-              "tier": 1,
-              "min_piloting": 0,
-              "max_price": 45000
-            },
-            {
-              "hull": "baling_wire",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 90000
-            },
-            {
-              "hull": "meridian_freighter",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 95000
-            },
-            {
-              "hull": "bulk_terms",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 100000
-            },
-            {
-              "hull": "apophenia",
-              "tier": 2,
-              "min_piloting": 10,
-              "max_price": 165000
-            },
-            {
-              "hull": "monopoly",
-              "tier": 3,
-              "min_piloting": 20,
-              "max_price": 180000
-            }
-          ]
-        }
-      ],
-      "min_t0_bursar_reserve": 65
     },
     "Logistics": {
       "enabled": true,
@@ -816,30 +1113,102 @@
               "hull": "floor_price",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 45000
+              "max_price": 50000
+            },
+            {
+              "hull": "fugue",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
             },
             {
               "hull": "baling_wire",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 90000
+              "max_price": 140000
+            },
+            {
+              "hull": "bulk_terms",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
             },
             {
               "hull": "apophenia",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 165000
+              "max_price": 220000
+            },
+            {
+              "hull": "junk_convoy",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "syndicate",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
             },
             {
               "hull": "monopoly",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 180000
+              "max_price": 450000
+            },
+            {
+              "hull": "fold_hauler",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 480000
+            },
+            {
+              "hull": "nomad",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "conglomerate",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "dimensional_fold",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "plenum",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "frankenhauler",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "no_fixed_address",
+              "tier": 4,
+              "min_piloting": 0,
+              "max_price": 1800000
+            },
+            {
+              "hull": "grand_transit",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         },
         {
-          "empire": "nebula",
+          "empire": "any",
           "specialty": "express_passenger",
           "share": 0.15,
           "ladder": [
@@ -853,38 +1222,305 @@
               "hull": "futures",
               "tier": 1,
               "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "consortium",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "omnibus",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "reticence",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "treasury",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "concordia",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "promenade",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "cloister",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "liquidity_event",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "premiere",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "ascendancy",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            },
+            {
+              "hull": "finish_line",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            }
+          ]
+        }
+      ]
+    },
+    "Trade": {
+      "enabled": true,
+      "max_active": 7,
+      "min_t0_bursar_reserve": 50,
+      "cohorts": [
+        {
+          "empire": "any",
+          "specialty": "mobile_trade",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "prayer",
+              "tier": 1,
+              "min_piloting": 0,
               "max_price": 45000
+            },
+            {
+              "hull": "ledger",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "floor_price",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "fugue",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "cogito",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 50000
+            },
+            {
+              "hull": "baling_wire",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "meridian_freighter",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "bulk_terms",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "apophenia",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "compendium",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "syndicate",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "monopoly",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 450000
+            },
+            {
+              "hull": "fold_hauler",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 480000
+            },
+            {
+              "hull": "logistics_prime",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "conglomerate",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "dimensional_fold",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "grand_transit",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         }
       ]
     },
     "Intel": {
-      "enabled": false,
+      "enabled": true,
       "max_active": 3,
       "cohorts": [
         {
           "empire": "any",
-          "specialty": "recon_survey",
-          "share": 1.0,
+          "specialty": "covert_recon",
+          "share": 0.6,
+          "ladder": [
+            {
+              "hull": "qualia",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "dirk",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "interstice",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "parallax",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 220000
+            },
+            {
+              "hull": "dust_devil",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "arbitrage",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
+            },
+            {
+              "hull": "catharsis",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 480000
+            },
+            {
+              "hull": "probable_cause",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "palimpsest",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "need_to_know",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "insider",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "omniscience",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "specialty": "sensor_survey_recon",
+          "share": 0.4,
           "ladder": [
             {
               "hull": "crimson_stiletto",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 40000
             },
             {
               "hull": "venture",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 25000
+              "max_price": 45000
+            },
+            {
+              "hull": "warranty_void",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 40000
             },
             {
               "hull": "prospectus",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 180000
+              "max_price": 200000
             },
             {
               "hull": "survey_vessel",
@@ -896,12 +1532,41 @@
               "hull": "perigee",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 720000
+              "max_price": 600000
+            },
+            {
+              "hull": "noumenon",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 480000
+            },
+            {
+              "hull": "peer_review",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 420000
+            },
+            {
+              "hull": "manifest_destiny",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "observatorium",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 1800000
+            },
+            {
+              "hull": "omniscience",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 5500000
             }
           ]
         }
       ]
     }
-  },
-  "max_auto_tier": 3
+  }
 }

@@ -1020,6 +1020,9 @@ def main(argv=None):
                 claimed = active_claimed_keys(DATA)
                 peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
                 import escort_proto as _ep
+                if not hasattr(_ep, "mark_convoy_started"):
+                    import importlib as _il_h
+                    _ep = _il_h.reload(_ep)
                 _p_thr = _ep.load_pirate_threat(DATA, hours=6.0)
                 _r_sys = _ep.load_recent_raids(DATA, hours=24.0)
                 _s_meta = {}

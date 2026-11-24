@@ -126,6 +126,10 @@
   {
    "what": "Read the Survey Scanner II surveys (census-kit-herds): a faint signature resolved goes to Mining in queue.log",
    "when": "next turn"
+  },
+  {
+   "what": "Weigh a tier-2 scout hull only by fuel a read against the Threshold (tests.md); none bought while the census pays by reads, not by speed",
+   "when": "once a T2 hull's fuel a jump is on record"
   }
  ],
  "ships": {

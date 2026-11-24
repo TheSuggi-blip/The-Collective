@@ -192,6 +192,9 @@ def _escort_active(data, escort_key, now):
         return True
     try:
         import escort_proto as _ep
+        if not hasattr(_ep, "is_escort_active"):
+            import importlib as _il_g
+            _ep = _il_g.reload(_ep)
         return _ep.is_escort_active(data, escort_key, now_t=now)
     except Exception:
         return True

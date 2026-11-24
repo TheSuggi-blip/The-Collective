@@ -608,6 +608,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     if _deferred_escorts and not any(c["tier"] == "deficit" for c in ranked):
         try:
             import escort_proto as _ep
+            if not hasattr(_ep, "mark_convoy_started"):
+                import importlib as _il_m
+                _ep = _il_m.reload(_ep)
             _deferred_escorts.sort(key=lambda x: x[0])
             _hops0, _s0, _p0, _r0, _pol0, _pt0 = _deferred_escorts[0]
             _need0 = min(5, max(3, _ep.needed_escorts_for_threat(_pt0.get("count", 1), _pt0.get("raiders", 0), 0, lawless=not _pol0)))

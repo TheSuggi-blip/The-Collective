@@ -1245,7 +1245,7 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
         cur = pack_update(DATA, pid, lambda p: p.setdefault("arrived", {}).__setitem__(pilot, True))
 
         # Wait for pack arrival at target POI
-        wait_end = time.time() + min(150.0, arrive_timeout)
+        wait_end = time.time() + min(240.0, arrive_timeout)
         min_ready = max(2, int(math.ceil(len(members) * 0.75)))
         while cur and len(cur.get("arrived") or {}) < len(members) and time.time() < wait_end and not (DATA / "fleet" / "STOP").exists():
             time.sleep(5)
@@ -1268,6 +1268,9 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
                 in_game_fleet = True
                 try:
                     import escort_proto as _ep_p
+                    if not hasattr(_ep_p, "mark_convoy_started"):
+                        import importlib as _il_p
+                        _ep_p = _il_p.reload(_ep_p)
                 except Exception:
                     _ep_p = None
                 _invited = []
@@ -1537,6 +1540,9 @@ def main(argv=None):
             p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 12))
             try:
                 import escort_proto as _ep
+                if not hasattr(_ep, "mark_convoy_started"):
+                    import importlib as _il_e
+                    _ep = _il_e.reload(_ep)
                 _ereqs = _ep.list_escort_requests(DATA)
             except Exception:
                 _ep, _ereqs = None, []

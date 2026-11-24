@@ -42,7 +42,7 @@
   "max_price": {
     "mining_laser_ii": 6000,
     "mining_laser_iii": 11000,
-    "mining_laser_iv": 26000,
+    "mining_laser_iv": 32000,
     "ice_harvester_ii": 3500,
     "ice_harvester_iii": 10000,
     "gas_harvester_ii": 5500,
@@ -89,7 +89,26 @@
     "blood_reaver": 14000,
     "phase_disruptor": 28000,
     "regenerative_armor_ii": 18000,
-    "fuel_optimizer": 2000
+    "fuel_optimizer": 2000,
+    "mining_laser_v": 75000,
+    "hyper_mining_laser_iii": 28000,
+    "deep_core_extractor_iii": 25000,
+    "ice_harvester_iv": 36000,
+    "gas_harvester_iv": 32000,
+    "plasma_cannon_iii": 16000,
+    "plasma_cannon_iv": 22000,
+    "flak_cannon_iii": 42000,
+    "emp_pulse_iii": 55000,
+    "focused_beam_iii": 38000,
+    "ion_blaster_iii": 18000,
+    "quantum_shield_iv": 32000,
+    "adaptive_shield_iii": 68000,
+    "shield_booster_iii": 18000,
+    "armor_repairer_iii": 38000,
+    "hull_reinforcement_iii": 5000,
+    "afterburner_iii": 5000,
+    "remote_armor_repairer_iii": 16000,
+    "tracking_computer_iii": 48000
   },
   "specialties": {
     "Mining": {
@@ -124,37 +143,52 @@
       "loadouts": {
         "ore": {
           "utility": [
+            "mining_laser_v",
+            "mining_laser_iv",
+            "hyper_mining_laser_iii",
+            "deep_core_extractor_iii",
             "mining_laser_iii",
             "mining_laser_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         },
         "ice": {
           "utility": [
+            "ice_harvester_iv",
             "ice_harvester_iii",
             "ice_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         },
         "gas": {
           "utility": [
+            "gas_harvester_iv",
             "gas_harvester_iii",
             "gas_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         }
@@ -189,36 +223,55 @@
       "loadouts": {
         "brawler": {
           "weapon": [
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "plasma_cannon_iii",
+            "ion_blaster_iii",
             "phase_disruptor",
             "blood_reaver",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
             "regenerative_armor_ii",
             "armor_plate_iii",
-            "shield_booster_iv",
             "shield_booster_ii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "afterburner_ii",
             "expanded_fuel_tank"
           ]
         },
         "ewar": {
           "weapon": [
+            "emp_pulse_iii",
+            "focused_beam_iii",
+            "ion_blaster_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "shield_booster_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "sensor_dampener",
             "target_painter_ii",
             "target_painter_i",
@@ -227,18 +280,26 @@
         },
         "flak_tank": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "afterburner_iii",
             "warp_disruptor",
             "expanded_fuel_tank",
             "afterburner_ii"
@@ -246,16 +307,25 @@
         },
         "royal_guard_escort": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
+            "focused_beam_iii",
             "pulse_laser_iii",
             "flak_cannon_ii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
+            "ship_scanner_iii",
             "expanded_fuel_tank",
             "afterburner_ii",
             "warp_disruptor",
@@ -264,17 +334,24 @@
         },
         "royal_guard_utility": {
           "weapon": [
+            "emp_pulse_iii",
+            "ion_blaster_iii",
             "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "shield_booster_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "afterburner_iii",
             "remote_armor_repairer_ii",
             "target_painter_ii",
             "target_painter_i",
@@ -285,6 +362,8 @@
         },
         "command_ewar_tac": {
           "weapon": [
+            "emp_pulse_iii",
+            "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
             "system_disabler",
@@ -292,12 +371,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "target_painter_ii",
             "target_painter_i",
             "ecm_jammer",
@@ -310,18 +394,25 @@
         },
         "command_logi_rep": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "afterburner_iii",
             "remote_armor_repairer_ii",
             "repair_arm",
             "refueling_pump",
@@ -337,12 +428,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "afterburner_iii",
             "fleet_hospital",
             "remote_armor_repairer_ii",
             "shipboard_sickbay",
@@ -353,17 +449,24 @@
         },
         "command_carrier_screen": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "combat_drone_bay",
             "light_drone_bay",
             "target_painter_ii",
@@ -375,6 +478,8 @@
         },
         "command_stealth_ewar": {
           "weapon": [
+            "emp_pulse_iii",
+            "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
             "system_disabler",
@@ -382,12 +487,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "shield_booster_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "phase_cloaking_device",
             "cloaking_device_i",
             "ecm_jammer",
@@ -517,7 +627,10 @@
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         },
@@ -528,7 +641,10 @@
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         }
@@ -553,7 +669,10 @@
             "cargo_expander_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         }
@@ -578,10 +697,15 @@
       "loadouts": {
         "recon": {
           "utility": [
+            "ship_scanner_iii",
+            "afterburner_iii",
             "survey_scanner_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii"
           ]
         }
@@ -688,6 +812,8 @@
       "loadouts": {
         "command_ewar_tac": {
           "weapon": [
+            "emp_pulse_iii",
+            "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
             "system_disabler",
@@ -695,12 +821,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "target_painter_ii",
             "target_painter_i",
             "ecm_jammer",
@@ -713,18 +844,25 @@
         },
         "command_logi_rep": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "afterburner_iii",
             "remote_armor_repairer_ii",
             "repair_arm",
             "refueling_pump",
@@ -740,12 +878,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "regenerative_armor_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "afterburner_iii",
             "fleet_hospital",
             "remote_armor_repairer_ii",
             "shipboard_sickbay",
@@ -756,17 +899,24 @@
         },
         "command_carrier_screen": {
           "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "combat_drone_bay",
             "light_drone_bay",
             "target_painter_ii",
@@ -778,6 +928,8 @@
         },
         "command_stealth_ewar": {
           "weapon": [
+            "emp_pulse_iii",
+            "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
             "system_disabler",
@@ -785,12 +937,17 @@
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_recharger_ii",
             "shield_booster_ii",
             "armor_plate_iii"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "afterburner_iii",
             "phase_cloaking_device",
             "cloaking_device_i",
             "ecm_jammer",
