@@ -199,3 +199,4 @@ Planned:
 |---|---|
 | read the Sarin carbon test's first results (carbon a run, minutes, fuel) against the 4 cr carbon ask in Crimson space and Apollo's answer to requests ENT-510; end the far carbon wing or keep it | next turn |
 | read the three Resonance Miners' delivery and switch (upgrades.py queue show); measure their fuel per run against a Threshold on the same field before any further hull (requests ENT-509) | next turn |
+| silicon: GSC-0007 waits while pirates stand there (three sightings 10:52-11:46 UTC), Muphrid and Hadar while raider elites stand on the Muphrid road; read the watch and the census | each turn |
