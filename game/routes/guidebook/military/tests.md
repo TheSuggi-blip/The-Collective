@@ -1,16 +1,17 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-24. Evidence: table runs (lowest_hull_pct, goods); table stats_pilot_hour (6 h to 00:57 UTC 2026-11-24); switch_hull.py RESULT; hive.py herds; admirals.log ENT-113; routes hunt-kit-*; group_hunt.py --pirate.
+Status: test. Updated: 2026-11-24. Evidence: table runs (lowest_hull_pct, goods); hive.py herds; routes hunt-kit-*, hunt-network, hunt-network-packs; game/hunt-policy.json; commit dd490e79.
 
 - Whale hunts alone with a Shield Booster II hold at the siphon and Antares
   herds (lowest hull 52 to 100 percent); two other herds took ships to 4
   and 14 percent and are off (F9). The proven way stays three Laser III.
-- The Recursion (two Pulse Laser II, Focused Beam I, Shield Booster II,
-  Shield Recharger II; firepower 52, toughness 350 by gauges.py): carapace
-  hunts of 5 kills a run at full hull; 7,126 combat and piloting XP in 6
-  hours against the median drone's 2,325 (stats_pilot_hour). The second
-  waits on its pilot coming free (commission_hull.py).
+- hunt-network (hunt_net.py, first flight 2026-11-24): it found 0 herds
+  until dd490e79 (a store query on columns `stations` lacks, swallowed);
+  now F9 by gauges.py gates solo and packs, guns without rounds count 0.
+  Test: one pack of 3 at a time, Laser III or better, wildlife only, one
+  tier-2 escort (game/hunt-policy.json); three Laser III drones on it.
+  Read `RESULT ... hunt_net pack` lines, kills and fuel before lifting.
 - Atria kit parts: a silica-borer kill drops 1 silica_lens and 1 carapace
   (one run). Of the five species only one herd stands above the two F38
   keeps (hive.py herds: silica-borers at Zubenelhakrabi, lawless):
