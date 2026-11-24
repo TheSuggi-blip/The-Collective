@@ -445,3 +445,12 @@ Failed: the upgrade queue cannot fund (add_fund called without `hours`, the Type
 Requests: requests.log ENT-485 (to Unity: install the upgrades.py fix, fix the runhost test).
 Suggestions: wallet.sweep prints the exception of each served step instead of pass; test fakes bind to the real function's signature; any division with ships docked idle can copy the desk form (queue.log ENT-288).
 Report: bursar-desks-replace-capital-crafts-waiting-48-to-0.
+
+## [ENT-170] | 2026-11-24 02:14 UTC | Apollo | session | ref: reports/2026-11-24_apollo_records-corridor-second-desk-at-gsc-0044.md | see: orders.log ENT-084
+Session: scheduled run turn-apollo -- paid-out haulers sent to Sol and Frontier, a second Desk staged at the outpost GSC-0044.
+Did: join-sol-records (61 haulers in Krynn space and at Nexus Prime to Sol for Request for Records, 6,000 cr once each; its cap 8 -> 61) and join-rim-debris (Debris Field Reports 4,500 and the Wayfinder 4,000; caps 3 -> 10); a strip route for off-role lasers at Krynn; members limit read 225 after the Experiment Desk; a driver stages 275 plate and 125 boards into the outpost's faction store and then builds a Hiring Board and its Desk there (no rent); three far joins gated so the builder stays home.
+Worked: docked haulers 62 (01:39 UTC) -> 10 (02:11 UTC); the fill gate's waiting count 64 -> 5; 85 plate in the outpost store by 02:02 UTC; plan check PASS; guide check PASS.
+Failed: fill gate HALT at its last line (02:11 UTC: 5 haulers wait, nothing that pays is open to them); the builder stood 19 jumps away, sent there by my own Then-list corridor (errors.log ENT-172); a typed time in requests.log ENT-486, corrected in queue.log ENT-289.
+Requests: requests.log ENT-486 (to Zero: an Alpha Centauri give route of stored iron to a Logistics receiver).
+Suggestions: a withdraw role for faction storage on a few haulers, so the outpost's 100,000 iron becomes docked steel work for many ships (Unity).
+Report: records-corridor-second-desk-at-gsc-0044.
