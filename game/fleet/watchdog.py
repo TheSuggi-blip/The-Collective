@@ -35,6 +35,7 @@ CORE_SERVICES = (
     "routemaker",
     "inbox",
     "sight",
+    "wallet",
     "station",
     "keeper",
 )

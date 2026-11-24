@@ -276,6 +276,215 @@ def release_job(data, pilot):
             fcntl.flock(lf, fcntl.LOCK_UN)
 
 
+def load_available_haulers(data, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, claimed_pilots):
+    """Return currently available Logistics haulers (including `pilot`) for global optimal job matching."""
+    fuel_res = int(policy.get("fuel_reserve_cr") or 6000)
+    me = {"pilot": str(pilot), "system": str(cur_sys or ""), "hold_cap": int(hold_cap),
+          "avail_cash": int(avail_cash), "has_hazmat": bool(has_hazmat)}
+    out = {str(pilot): me}
+    fl = read_json(Path(data) / "fleet" / "fleet.json", {})
+    ships = fl.get("ships") if isinstance(fl, dict) else []
+    if not isinstance(ships, list):
+        return [me]
+    for s in ships:
+        if not isinstance(s, dict):
+            continue
+        nm = str(s.get("name") or "")
+        if not nm or nm == str(pilot) or nm in claimed_pilots:
+            continue
+        if str(s.get("division") or "") != "Logistics" or s.get("status") != "connected" or s.get("in_combat"):
+            continue
+        ord_s = str(s.get("order") or "").strip()
+        if ord_s and not ord_s.startswith("haul "):
+            continue
+        if pilot_has_protected_fund(data, nm):
+            continue
+        p_cap = max(10, int(s.get("cargo_capacity") or 65) - int(s.get("cargo_used") or 0))
+        p_cash = max(0, int(s.get("credits") or 0) - fuel_res)
+        p_sys = str(s.get("system") or "")
+        if not p_sys:
+            continue
+        out[nm] = {"pilot": nm, "system": p_sys, "hold_cap": p_cap, "avail_cash": p_cash, "has_hazmat": False}
+    return list(out.values())
+
+
+def active_claimed_pilots(data, ttl_s=2400, now_t=None):
+    now_t = time.time() if now_t is None else float(now_t)
+    claims = read_json(Path(data) / "fleet" / "haul_claims.json", {})
+    if not isinstance(claims, dict):
+        return set()
+    return {str(v.get("pilot")) for v in claims.values()
+            if isinstance(v, dict) and v.get("pilot") and (now_t - float(v.get("at") or 0)) < ttl_s}
+
+
+def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed_keys, now_t=None, exclude_bases=None):
+    """Global greedy 1-to-1 optimal matcher across available haulers and fresh arbitrage spreads."""
+    now_t = time.time() if now_t is None else float(now_t)
+    if not peers:
+        return {}
+    policed = bool(policy.get("policed_only", True))
+    max_pick = int(policy.get("max_jumps_pickup") or 12)
+    max_del = int(policy.get("max_jumps_delivery") or 25)
+    min_cpj = float(policy.get("min_cr_per_jump") or 80)
+    min_tot = float(policy.get("min_total_profit") or 600)
+    max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
+    max_spend_cfg = float(policy.get("max_buy_spend_cr") or 35000)
+    min_margin = float(policy.get("min_margin_pct") or 0.20)
+
+    by_item = {}
+    for r in books_rows or []:
+        b_id = str(r.get("base") or "")
+        loc = base_map.get(b_id)
+        if not loc or (policed and not loc[3]):
+            continue
+        if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
+            continue
+        t = float(r.get("t") or 0)
+        if t > 0 and (now_t - t) > max_age_s:
+            continue
+        iid = str(r.get("item") or "")
+        if not iid or iid in PROTECTED_ITEMS:
+            continue
+        by_item.setdefault(iid, []).append((b_id, loc, float(r.get("ask") or 0), int(r.get("ask_qty") or 0),
+                                            float(r.get("bid") or 0), int(r.get("bid_qty") or 0)))
+
+    edges, hop_cache = [], {}
+    def _hops(a, b):
+        k = (a, b)
+        if k not in hop_cache:
+            hop_cache[k] = _bfs_hops(lanes, a, b) if (a and b and lanes) else (0 if a == b else 1)
+        return hop_cache[k]
+
+    for iid, entries in by_item.items():
+        asks = [e for e in entries if e[2] > 0 and e[3] > 0]
+        bids = [e for e in entries if e[4] > 0 and e[5] > 0]
+        if not asks or not bids:
+            continue
+        for ab, aloc, ask_p, ask_q, _, _ in asks:
+            unit_cost = ask_p * 1.05
+            for bb, bloc, _, _, bid_p, bid_q in bids:
+                if ab == bb or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
+                    continue
+                jkey = "arb-bid:%s:%s" % (bb, iid)
+                if jkey in claimed_keys:
+                    continue
+                d_hops = _hops(aloc[0], bloc[0])
+                if d_hops is None or d_hops > max_del:
+                    continue
+                edges.append((jkey, iid, aloc, bloc, ask_p, ask_q, bid_p, bid_q, unit_cost, d_hops))
+
+    if not edges:
+        return {}
+
+    scored = []
+    for peer in peers:
+        p_nm = str(peer["pilot"])
+        p_sys = str(peer.get("system") or "")
+        p_cap = int(peer.get("hold_cap") or 0)
+        p_spend = min(max_spend_cfg, max(0.0, float(peer.get("avail_cash") or 0)))
+        if p_cap < 1 or p_spend < 100:
+            continue
+        for jkey, iid, aloc, bloc, ask_p, ask_q, bid_p, bid_q, unit_cost, d_hops in edges:
+            p_hops = _hops(p_sys, aloc[0]) if p_sys else 0
+            if p_hops is None or p_hops > max_pick:
+                continue
+            qty = min(p_cap, int(ask_q), int(bid_q), int(p_spend // unit_cost))
+            if qty < 1:
+                continue
+            tot_hops = max(1, p_hops + d_hops)
+            est_profit = qty * (bid_p - unit_cost) - tot_hops * 45.0
+            if est_profit < min_tot or (est_profit / tot_hops) < min_cpj:
+                continue
+            score = (est_profit / tot_hops) * (1.15 if p_hops <= 1 else (1.05 if p_hops <= 3 else 1.0))
+            scored.append((score, est_profit, -p_hops, p_nm, jkey, {
+                "job_key": jkey, "item": iid, "buy_loc": aloc, "sell_loc": bloc,
+                "est_ask": int(round(ask_p)), "est_bid": int(round(bid_p)), "qty": int(qty),
+                "est_profit": int(round(est_profit)), "pickup_hops": p_hops, "delivery_hops": d_hops,
+            }))
+
+    scored.sort(key=lambda x: (x[0], x[1], x[2], x[3]), reverse=True)
+    assigned, used_jobs = {}, set()
+    for _sc, _pr, _nh, p_nm, jkey, job in scored:
+        if p_nm in assigned or jkey in used_jobs:
+            continue
+        assigned[p_nm] = job
+        used_jobs.add(jkey)
+        if len(assigned) >= len(peers):
+            break
+    return assigned
+
+
+def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags, claimed_keys, exclude_bases=None):
+    """Global greedy 1-to-1 optimal matcher across available >=100c haulers and public freight contracts."""
+    if not peers or not entries:
+        return {}
+    policed = bool(policy.get("policed_only", True))
+    max_pick = int(policy.get("max_jumps_pickup") or 12)
+    max_del = int(policy.get("max_jumps_delivery") or 25)
+    min_cpj = float(policy.get("min_cr_per_jump") or 80)
+    min_tot = float(policy.get("min_total_profit") or 600)
+    max_col = float(policy.get("max_collateral") or 15000)
+    partners_first = bool(policy.get("partners_first", True))
+
+    scored = []
+    for c in entries:
+        if not isinstance(c, dict):
+            continue
+        cid = str(c.get("id") or c.get("shipment_id") or "")
+        if not cid or ("freight:" + cid) in claimed_keys:
+            continue
+        orig = str(c.get("origin_base_id") or c.get("origin_base") or "")
+        dest = str(c.get("destination_base_id") or c.get("destination_base") or "")
+        oloc, dloc = base_map.get(orig), base_map.get(dest)
+        if not oloc or not dloc:
+            continue
+        if exclude_bases and (orig in exclude_bases or dest in exclude_bases or oloc[0] in exclude_bases or dloc[0] in exclude_bases):
+            continue
+        if policed and (not oloc[3] or not dloc[3]):
+            continue
+        col = float(c.get("collateral") or 0)
+        rew = float(c.get("base_reward") or c.get("reward_escrow") or c.get("reward") or 0)
+        if col > max_col or rew < min_tot:
+            continue
+        d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else int(c.get("jumps") or 1)
+        if d_hops is None or d_hops > max_del:
+            continue
+        req_vol = int(c.get("volume") or c.get("cargo_size") or 100)
+        blob = (str(c.get("shipper_tag") or "") + " " + str(c.get("recipient_tag") or "") + " " + str(c.get("shipper_name") or "")).upper()
+        partner = next((tag for tag in (neutral_tags or {}) if tag and tag in blob), "")
+        for peer in peers:
+            p_nm = str(peer["pilot"])
+            if int(peer.get("hold_cap") or 0) < req_vol or float(peer.get("avail_cash") or 0) < col:
+                continue
+            if c.get("requires_hazmat") and not peer.get("has_hazmat"):
+                continue
+            p_sys = str(peer.get("system") or "")
+            p_hops = _bfs_hops(lanes, p_sys, oloc[0]) if p_sys and lanes else 0
+            if p_hops is None or p_hops > max_pick:
+                continue
+            tot_hops = max(1, p_hops + d_hops)
+            cpj = rew / tot_hops
+            if cpj < min_cpj:
+                continue
+            score = cpj * (1.25 if (partners_first and partner) else 1.0) * (1.15 if p_hops <= 1 else 1.0)
+            scored.append((score, rew, -p_hops, p_nm, "freight:" + cid, {
+                "job_key": "freight:" + cid, "cid": cid, "pkg_id": str(c.get("package_id") or ""),
+                "origin": oloc, "dest": dloc, "reward": int(round(rew)),
+                "pickup_hops": p_hops, "delivery_hops": d_hops, "partner": partner,
+            }))
+
+    scored.sort(key=lambda x: (x[0], x[1], x[2], x[3]), reverse=True)
+    assigned, used_jobs = {}, set()
+    for _sc, _rw, _nh, p_nm, jkey, job in scored:
+        if p_nm in assigned or jkey in used_jobs:
+            continue
+        assigned[p_nm] = job
+        used_jobs.add(jkey)
+        if len(assigned) >= len(peers):
+            break
+    return assigned
+
+
 def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, neutral_tags, claimed_keys, hold_cap=None, exclude_bases=None):
     """Pure selector: returns best safe eligible freight contract dict or None."""
     policed = bool(policy.get("policed_only", True))
@@ -724,7 +933,8 @@ def main(argv=None):
                         entries = cached.get("entries") or []
                 ntags = neutral_partner_tags(DATA)
                 claimed = active_claimed_keys(DATA)
-                pick = pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, ntags, claimed, hold_cap=hold_cap, exclude_bases=strongholds)
+                peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
+                pick = assign_optimal_freight(entries, base_map, lanes, peers, policy, ntags, claimed, exclude_bases=strongholds).get(pilot)
                 if pick and claim_job(DATA, pilot, pick["job_key"]):
                     cid, oloc, dloc = pick["cid"], pick["origin"], pick["dest"]
                     say("freight %s: %s -> %s (%d cr, %dj+%dj%s)" % (
@@ -764,7 +974,8 @@ def main(argv=None):
             elif lane == "arbitrage":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                job = pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed)
+                peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
+                job = assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed, exclude_bases=strongholds).get(pilot)
                 if job and claim_job(DATA, pilot, job["job_key"]):
                     iid, bloc, sloc = job["item"], job["buy_loc"], job["sell_loc"]
                     say("arb %s: %d units %s (%d cr) -> %s (%d cr) | est +%d cr" % (

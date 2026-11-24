@@ -84,5 +84,21 @@ class HaulEngineTests(unittest.TestCase):
         self.assertEqual(j["job_key"], "arb-bid:base_b:control_node")
         self.assertIsNone(haul.pick_arbitrage_job(fresh, self.base_map, self.lanes, "sys_a", 30, 10000, haul.DEFAULT_POLICY, {"arb-bid:base_b:control_node"}, now_t=now_t))
 
+    def test_global_optimal_assignment_gives_spread_to_closest_biggest_hauler(self):
+        now_t = time.time()
+        books = [
+            {"base": "base_a", "item": "lead_shielding", "ask": 100, "ask_qty": 100, "bid": 80, "bid_qty": 10, "t": now_t - 60},
+            {"base": "base_b", "item": "lead_shielding", "ask": 300, "ask_qty": 10, "bid": 250, "bid_qty": 100, "t": now_t - 60},
+        ]
+        peers = [
+            {"pilot": "hauler-far", "system": "sys_b", "hold_cap": 65, "avail_cash": 20000, "has_hazmat": False},
+            {"pilot": "hauler-near", "system": "sys_a", "hold_cap": 480, "avail_cash": 30000, "has_hazmat": False},
+        ]
+        assigned = haul.assign_optimal_arbitrage(books, self.base_map, self.lanes, peers, haul.DEFAULT_POLICY, set(), now_t=now_t)
+        self.assertIn("hauler-near", assigned)
+        self.assertNotIn("hauler-far", assigned)
+        self.assertEqual(assigned["hauler-near"]["job_key"], "arb-bid:base_b:lead_shielding")
+        self.assertGreater(assigned["hauler-near"]["qty"], 65)
+
 if __name__ == "__main__":
     unittest.main()
