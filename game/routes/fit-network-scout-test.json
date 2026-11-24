@@ -1,0 +1,9 @@
+{
+ "id": "fit-network-scout-test",
+ "kind": "fit_net",
+ "title": "Test of fit-network on one scout: strip the off-role starters and fit what the hull's CPU and power take (game/fit-policy.json, Intel recon)",
+ "note": "Kept by Oracle; written 2026-11-24 17:27 UTC. fit-network (queue.log ENT-309, ENT-310) had flown no run in the fleet; fit_net.py read the ship files' module dicts as text, so the off-role strip never matched, and it bought modules without the hull's CPU and power (fixed by Oracle, commit d375c4f2). One scout first (rule F37: an unproven runner, one ship, its result read): it proves the strip (uninstall_mod by type id), the buy and the install in one stop. Given only to a reader whose routes hold no hunt, since the strip takes the pulse laser. Read the run row (kind fit_net) and the ship's modules next turn before any scout is given fit-network.",
+ "policy": "game/fit-policy.json",
+ "max_ships": 1,
+ "standing": true
+}

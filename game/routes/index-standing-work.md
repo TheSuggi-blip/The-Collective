@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 668.
+Routes: 669.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -260,6 +260,7 @@ Routes: 668.
 | [watch-book-unknown-edge](watch-book-unknown-edge.json) | circuit | beyond the border, 16 jumps | Zero-fuel docked watch: a scout already docked at Unknown Edge Waystation (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 53 | 5 | 0 | -20 | 2026-11-24 |
 | [craft-network](craft-network.json) | craft_net | -- | Dynamic zero-fuel docked manufacturing (Trade commercial profit crafting + Logistics industrial crafting) | up to 40 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [fit-network](fit-network.json) | fit_net | -- | Dynamic multi-specialty module auto-fitter (strips off-role starters and fills open slots <= max_price) | up to 40 ships, standing work | TBD | TBD | TBD | TBD | -- |
+| [fit-network-scout-test](fit-network-scout-test.json) | fit_net | -- | Test of fit-network on one scout: strip the off-role starters and fit what the hull's CPU and power take (game/fit-policy.json, Intel recon) | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-garnet-belt](guard-garnet-belt.json) | guard | beyond the border, 5 jumps | Guard at Garnet Belt, the site Mining and Intel name for the first outpost, while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-gsc-0044-belt](guard-gsc-0044-belt.json) | guard | beyond the border, 6 jumps | Guard at GSC-0044 Belt, the site of the first outpost, while a hunter of ours works there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
