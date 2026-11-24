@@ -86,7 +86,7 @@ Status: proven. Updated: 2026-11-21. Evidence: reserve_hunts.py; loot_bids.py; d
   iron after the order ended it (errors.log ENT-108).
 
 ### Plans, fills and claims
-Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus); dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
+Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus); dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
 
 - The fill gate judges a route by its all-time figure: a hunt whose bid or
   herd is gone gets `status: off` with the record, never put back.
@@ -111,6 +111,11 @@ Status: proven. Updated: 2026-11-23. Evidence: fill.py; comms.py; requests.log E
   open to every class: in the First list it disarmed five hunters, and
   `fill write=true` put it back. Read every route fill adds for an
   `unfit` of a weapon and drop it; rearm by `rearm-pulse-laser-*`.
+- The gate passes with ships on `park`: read its `on park` count each turn
+  (30 on 2026-11-24, every home herd taken or resting) and write herds
+  further out for them (the scratch generator, F23).
+- Partner ranches (admirals.log ENT-113): a hunt at a ranch place or in a
+  partner's system is `status: off` (F2, F4).
 
 ### Battles and stuck ships
 Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; admirals.log ENT-110; observation kind ranch (aspidiske); stuck_check.py; requests.log ENT-369; table runs 2026-11-23 06:52 to 07:10 UTC (hull_before, hull_after); ship files (ships_lost).

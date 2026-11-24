@@ -1,7 +1,7 @@
 # Military guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-23. Evidence: hive.py upgrades military; table ship_modules; table hulls (catalog 0.734.0); MISSION.md.
+Status: proven. Updated: 2026-11-24. Evidence: hive.py upgrades military; table ship_modules; table hulls (the live catalog); MISSION.md.
 
 The Military class in short (rule F14): the `drone-` ships of three birth
 empires (Voidborn, Crimson, Solarian; the counts: hive.py upgrades
@@ -14,7 +14,7 @@ view=levels, member Apophis. Hulls and fits: ships.md; work: routes.md;
 tests: tests.md; pirates, raids, guards: topic-pirates.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-23. Evidence: table hulls; table ship_modules; catalog 0.734.0 (modules); ships.md; tests.md entry Weapon fits.
+Status: proven. Updated: 2026-11-24. Evidence: table hulls; table ship_modules; the live catalog (modules); ships.md; tests.md entry Weapon fits.
 
 - Tier 0 by birth empire, speed 1 each: Voidborn Threshold (hull 75,
   shield 80, 1 weapon, 2 defence, 2 utility); Crimson Shard (110 / 40,

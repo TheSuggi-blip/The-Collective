@@ -1,35 +1,28 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-23. Evidence: table runs (lowest_hull_pct); list_ships and switch_ship (switch_hull.py RESULT); gauges.py ship; table herds; admirals.log ENT-111; routes fit-armor-plate-ii-*-test, recursion-parts-*, hunt-kit-*.
+Status: test. Updated: 2026-11-24. Evidence: table runs (lowest_hull_pct, goods); table stats_pilot_hour (6 h to 00:57 UTC 2026-11-24); switch_hull.py RESULT; hive.py herds; admirals.log ENT-113; routes hunt-kit-*; group_hunt.py --pirate.
 
-- Whale hunts alone with a Shield Booster II: the siphon and Antares herds
-  hold (lowest hull 52 to 100 percent); two other herds took ships to 4 and
-  14 percent and are off for danger (F9). The proven way stays a group of
-  three Laser III ships.
-- The Recursion: commissioned for credits at Node Beta; the yard's own
-  bids filled by our once routes took it from SOURCING to BUILDING. It
-  came with two Pulse Laser II, a Focused Beam I, a Shield Booster II and
-  a Shield Recharger II (hull 150, shield 200, speed 4; list_ships).
-  switch_hull.py moved its pilot in (the Threshold stays stored there):
-  firepower 52 and toughness 350 by the gauges, so prey of up to 175
-  weight passes alone. Its first runs: a kit hunt (cauldronback, magnet-
-  barnacle), then the whale hunts; three results decide the batch.
-- The Atria kit's creature parts (orders P3): hunts of silica-borer,
-  cauldronback and magnet-barnacle (hunt-kit-*, gift to a hauler at Node
-  Beta). The wild herds are small (one to four a place) and F38 keeps
-  two, so a place gives one kill a run at most; mirror-skate and inkwyrm
-  herds are never huntable (two animals a place). The parts a kill drops
-  are not measured yet.
-- Armor Plate II (armor +10, speed penalty 1): fitted on a Crimson Shard
-  (armor 8 -> 18) and a Solarian Theoria (5 -> 15); speed stays 1 (ship
-  files). Lifted for the role (F17); its hunts' lowest hull is read next.
-- Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks; reserve
-  goods (ferrous nodule, carapace).
-- Cloudwhales (20 jumps out): a group sets out only on a census under
-  120 minutes (`--census-minutes`).
-- Pirate formations (F27): the next build is a group form of
-  pirate_test.py (three Laser III ships on one lone weak pirate).
+- Whale hunts alone with a Shield Booster II hold at the siphon and Antares
+  herds (lowest hull 52 to 100 percent); two other herds took ships to 4
+  and 14 percent and are off (F9). The proven way stays three Laser III.
+- The Recursion (two Pulse Laser II, Focused Beam I, Shield Booster II,
+  Shield Recharger II; firepower 52, toughness 350 by gauges.py): carapace
+  hunts of 5 kills a run at full hull; 7,126 combat and piloting XP in 6
+  hours against the median drone's 2,325 (stats_pilot_hour). The second
+  waits on its pilot coming free (commission_hull.py).
+- Atria kit parts: a silica-borer kill drops 1 silica_lens and 1 carapace
+  (one run). Of the five species only one herd stands above the two F38
+  keeps (hive.py herds: silica-borers at Zubenelhakrabi, lawless):
+  hunt-kit-zubenelhakrabi-* tests it with one ship (F3). Cauldronback,
+  magnet-barnacle, mirror-skate and inkwyrm herds read 0 to 2: wild herds
+  cannot fill the kit.
+- Armor Plate II on a Shard or Theoria: armor +10, speed stays 1; lifted.
+- Pulse Laser III hunts: tortoises, deuteron slugs, bulwarks.
+- Pirate formations (F27): `group_hunt.py --pirate --systems a,b` takes
+  three Laser III ships into one game fleet, visits each POI, attacks only
+  a lone pirate of tier scout (weight 2 x hull within the side's gauges)
+  and flees all when a second foe joins. First run 2026-11-24.
 ### Group hunts
 Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.
 
