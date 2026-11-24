@@ -1,0 +1,42 @@
+{
+ "id": "sell-melt-at-dheneb",
+ "kind": "circuit",
+ "title": "Crystal melt stored at Hex Star (Dheneb, lawless) sold into its bid where it lies",
+ "note": "Written by Mercury, 2026-11-24 15:33 UTC (MISSION: surplus liquidated; rules F24, F23). Hex Star bid 3,508 cr x 142 for crystal melt (table books, read 15:27:50 UTC); a trader stores 20 melt there (holdings 15:30 UTC). sell-loot-at-dheneb sells melt too but is gated on stored ember glands, so it stays closed while none lie there: one route per flowing good (trade-books pitfall). The pilot whose own storage at Hex Star holds 5 melt or more withdraws what the bid takes at its best price and sells at 3,000 or more; the rest stays stored.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "b495c6003fc83e18f6d8cecbe6929133",
+   "item": "crystal_melt",
+   "min": 5
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 3000,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "withdraw": [
+    {
+     "item": "crystal_melt"
+    }
+   ],
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 3000
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": [
+    "crystal_melt"
+   ]
+  }
+ ]
+}

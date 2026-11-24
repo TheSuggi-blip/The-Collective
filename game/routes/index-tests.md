@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 95.
+Routes: 97.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -88,8 +88,10 @@ Routes: 95.
 | [sell-ember-hexstar-first-step](sell-ember-hexstar-first-step.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from Hex Star (Dheneb) to the First Step Memorial Station bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while first_step_memorial_station bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-nexus-dheneb](sell-ember-nexus-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from Central Nexus to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at central_nexus, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-first-step](sell-loot-at-first-step.json) | circuit | beyond the border, 18 jumps | Hunt loot stored by Trade's receiver at First Step Memorial Station sold where it lies | up to 1 ships, with 30 verdigris_curd stored at first_step_memorial_station, while first_step_memorial_station bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
+| [sell-melt-at-dheneb](sell-melt-at-dheneb.json) | circuit | beyond the border, 11 jumps | Crystal melt stored at Hex Star (Dheneb, lawless) sold into its bid where it lies | up to 1 ships, with 5 crystal_melt stored at b495c6003fc83e18f6d8cecbe6929133, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-at-sirius](sell-melt-at-sirius.json) | circuit | beyond the border, 9 jumps | Crystal melt stored at Sirius Observatory sold into its bid | up to 1 ships, with 1 crystal_melt stored at sirius_observatory_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-experiment-sirius](sell-melt-experiment-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from The Experiment Research Station to the Sirius Observatory bid | up to 1 ships, with 3 crystal_melt stored at the_experiment_research_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
+| [sell-melt-nexus-dheneb](sell-melt-nexus-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal melt carried from Central Nexus to the Hex Star bid (Dheneb, lawless) and sold there | up to 2 ships, with 20 crystal_melt stored at central_nexus, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-nexus-sirius](sell-melt-nexus-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Central Nexus to the Sirius Observatory bid | up to 1 ships, with 3 crystal_melt stored at central_nexus, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-node-beta-sirius](sell-melt-node-beta-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Node Beta to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at node_beta_industrial_station, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-melt-synchrony-sirius](sell-melt-synchrony-sirius.json) | circuit | beyond the border, 9 jumps | Stored crystal melt carried from Synchrony Hub to the Sirius Observatory bid | up to 1 ships, with 2 crystal_melt stored at synchrony_hub, while sirius_observatory_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |

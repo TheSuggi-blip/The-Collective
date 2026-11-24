@@ -1,0 +1,46 @@
+{
+ "id": "sell-melt-nexus-dheneb",
+ "kind": "circuit",
+ "title": "Stored crystal melt carried from Central Nexus to the Hex Star bid (Dheneb, lawless) and sold there",
+ "note": "Written by Mercury, 2026-11-24 15:33 UTC (MISSION: surplus liquidated; orders ENT-090 P1 pay for itself; rules F24, F23). Hex Star (Dheneb, a [HEXC] station, a neutral partner) bid 3,508 cr x 142 for crystal melt (table books, read 15:27:50 UTC); every home bid is 54. Our traders store 344 melt at Central Nexus (holdings 15:30 UTC), none of it reserved (stock surplus: 816 surplus, reserved 0). A pilot whose own storage at Central Nexus holds 20 or more withdraws what its hold and the bid take at the best price (route_run.withdraw_units) and sells at 3,000 or more; what is not sold is stored at Hex Star, where sell-melt-at-dheneb sells it later. Road: 11 jumps, 6 lawless, the road of sell-ember-first-step-dheneb and sell-loot-at-dheneb (paying, runs of 2026-11-24). The bid is a player's order and does not regain: requires.bid closes the route once it is gone; max_ships 2 because two loads of our stored melt fill it.",
+ "max_ships": 2,
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "crystal_melt",
+   "min": 20
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 3000,
+   "min_qty": 20
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 142
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 3000
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": [
+    "crystal_melt"
+   ]
+  }
+ ]
+}
