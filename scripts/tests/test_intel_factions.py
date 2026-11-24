@@ -153,5 +153,35 @@ class IndexTests(Tree):
         self.assertEqual(factions.jumps_from([{"id": "a", "lanes": ["b"]}, {"id": "b", "lanes": ["a", "c"]}, {"id": "c", "lanes": ["b"]}, {"id": "d", "lanes": []}], "a"), {"a": 0, "b": 1, "c": 2})
 
 
+
+class ChurnThrottleTests(Tree):
+    def test_minor_sighting_drift_skipped_within_min_interval_but_strategic_change_rewrites_immediately(self):
+        written, index = self.run_pass()
+        self.assertEqual(sorted(written), ["game/factions/n-hexc.md", "game/factions/n-olsv.md"])
+        self.assertEqual(index, "game/factions/index.md")
+        # 1. Minor 1-pilot rolling drift 10 minutes later: skipped when min_interval=21600
+        pilots = json.loads((self.station / "pilots.json").read_text(encoding="utf-8"))
+        pilots["HexBot3"] = ["synchrony", self.now + 600, "nebula", "HEXC"]
+        self.write("pilots.json", pilots)
+        data2 = factions.gather(str(self.station), str(self.station / "met.json"), str(self.station / "fleet.json"), self.now + 600)
+        w2 = factions.write_files(str(self.root), data2, self.now + 600, 40, min_interval=21600)
+        i2 = factions.write_index(str(self.root), data2, self.now + 600, min_interval=21600, files_written=w2)
+        self.assertEqual(w2, [])
+        self.assertIsNone(i2)
+        # 2. Strategic change (new base built by HEXC): rewrites IMMEDIATELY even within min_interval
+        self.bases.append(base("New Outpost", "outpost", "okab", "HEXC", "Hex Collective"))
+        self.write("stations.json", self.bases)
+        data3 = factions.gather(str(self.station), str(self.station / "met.json"), str(self.station / "fleet.json"), self.now + 700)
+        w3 = factions.write_files(str(self.root), data3, self.now + 700, 40, min_interval=21600)
+        i3 = factions.write_index(str(self.root), data3, self.now + 700, min_interval=21600, files_written=w3)
+        self.assertEqual(w3, ["game/factions/n-hexc.md"])
+        self.assertEqual(i3, "game/factions/index.md")
+        # 3. Once min_interval elapses, minor drift rewrites cleanly
+        pilots["Olaf2"] = ["nexus_prime", self.now + 25000, "solarian", "OLSV"]
+        self.write("pilots.json", pilots)
+        data4 = factions.gather(str(self.station), str(self.station / "met.json"), str(self.station / "fleet.json"), self.now + 25000)
+        w4 = factions.write_files(str(self.root), data4, self.now + 25000, 40, min_interval=21600)
+        self.assertIn("game/factions/n-olsv.md", w4)
+
 if __name__ == "__main__":
     unittest.main()

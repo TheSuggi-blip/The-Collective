@@ -236,7 +236,53 @@ def front(fields):
     return "---\n" + "".join("%s: %s\n" % (k, fields[k]) for k in order) + "---\n"
 
 
-def write_files(root, data, now, limit):
+def seen_count(part):
+    """Extract the 24h in-our-space pilot count from a faction written part."""
+    m = re.search(r"Pilots of it in our space in the last 24 hours: (\d+)\.", part or "")
+    return int(m.group(1)) if m else 0
+
+
+def structural_part(part):
+    """Strategic core of a faction dossier (title, bases summary, Identity minus public-stream count, and Bases table).
+    Excludes only volatile rolling-24h sighting counts and per-pilot sighting rows."""
+    text = str(part or "")
+    cut = text.find("\n## Pilots in Our Space")
+    core = text[:cut] if cut >= 0 else text
+    kept = []
+    for line in core.splitlines():
+        if line.startswith("Pilots of it in our space in the last 24 hours:"):
+            continue
+        if line.startswith("| Pilots carrying the tag on the public event stream |"):
+            continue
+        kept.append(line)
+    return "\n".join(kept)
+
+
+def structural_index(body):
+    """Strategic core of game/factions/index.md (Zones Held, Hostile/Allied/Watchlist, Pirate Strongholds,
+    and faction list/bases/standing, ignoring only volatile 24h sighting counts and Updated dates)."""
+    out = []
+    in_tags = False
+    for line in str(body or "").splitlines():
+        if line.startswith("## Tags Seen in Our Space"):
+            in_tags = True
+            continue
+        if in_tags and line.startswith("## "):
+            in_tags = False
+        if in_tags:
+            continue
+        if line.startswith("| ") and line.endswith(" |") and line.count("|") >= 9:
+            cells = [c.strip() for c in line.split("|")[1:-1]]
+            if len(cells) == 8 and cells[0] != "Faction" and cells[0] != "---":
+                # Keep Faction, Tag, Threat, Bases, Nearest base, File; mask volatile 24h pilots & Updated date
+                cells[5] = "*"
+                cells[6] = "*"
+                line = "| " + " | ".join(cells) + " |"
+        out.append(line)
+    return "\n".join(out)
+
+
+def write_files(root, data, now, limit, min_interval=0):
     """Write the faction files that are new or changed; returns the paths written."""
     day = time.strftime("%Y-%m-%d", time.gmtime(now))
     folder = os.path.join(root, "game", "factions")
@@ -252,6 +298,16 @@ def write_files(root, data, now, limit):
                 fields, old, kept = split_file(handle.read())
             if old == part:
                 continue
+            if min_interval > 0:
+                try:
+                    age = now - os.path.getmtime(path)
+                except OSError:
+                    age = min_interval
+                if age < min_interval:
+                    old_n, new_n = seen_count(old), seen_count(part)
+                    sighting_jump = ((old_n == 0) != (new_n == 0)) or (abs(new_n - old_n) >= 5)
+                    if not sighting_jump and structural_part(old) == structural_part(part):
+                        continue
             letter = have[key][0]
             if not fields.get("id"):
                 used = used_ids(root) if used is None else used
@@ -339,8 +395,8 @@ def index_body(root, data):
     return "\n".join(lines) + "\n"
 
 
-def write_index(root, data, now):
-    """Write game/factions/index.md when its text changed; returns its path or None."""
+def write_index(root, data, now, min_interval=0, files_written=None):
+    """Write game/factions/index.md if it changed; returns its relative path, or None."""
     path = os.path.join(root, "game", "factions", "index.md")
     body = index_body(root, data)
     head = ""
@@ -352,6 +408,13 @@ def write_index(root, data, now):
             head, old = text[:end], text[end:].lstrip("\n")
             if old == body:
                 return None
+            if min_interval > 0 and files_written == []:
+                try:
+                    age = now - os.path.getmtime(path)
+                except OSError:
+                    age = min_interval
+                if age < min_interval and structural_index(old) == structural_index(body):
+                    return None
     elif not existing(root):
         return None
     if not head:
@@ -370,14 +433,16 @@ def main():
     parser.add_argument("--met", default=MET)
     parser.add_argument("--fleet", default=FLEET)
     parser.add_argument("--max", type=int, default=40)
+    parser.add_argument("--min-interval", type=int, default=0,
+                        help="seconds before minor rolling-24h sighting drift rewrites an unchanged faction dossier (0=always)")
     args = parser.parse_args()
     root, now = os.path.abspath(args.root), time.time()
     data = gather(args.station, args.met, args.fleet, now)
     if not data["space"]:
         print("factions: the station's chart is not readable (%s); nothing written" % os.path.join(args.station, "map.json"))
         return 0
-    written = write_files(root, data, now, args.max)
-    index = write_index(root, data, now)
+    written = write_files(root, data, now, args.max, min_interval=args.min_interval)
+    index = write_index(root, data, now, min_interval=args.min_interval, files_written=written)
     for path in written + ([index] if index else []):
         print("written " + path)
     print("factions: %d file(s) written, index %s" % (len(written), "written" if index else "current"))

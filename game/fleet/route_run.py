@@ -189,7 +189,7 @@ def goal(kind, options, tries=3):
 
 def pure_visit_tail(stops):
     """True when every remaining stop only visits/redocks (no buy/sell/craft/give/fit/mine/hunt/store/accept)."""
-    work_keys = {'buy', 'sell', 'sell_all', 'craft', 'give', 'gift', 'fit', 'mine', 'hunt', 'withdraw', 'deposit', 'store', 'accept'}
+    work_keys = {'buy', 'sell', 'sell_all', 'craft', 'give', 'gift', 'fit', 'mine', 'hunt', 'withdraw', 'deposit', 'store', 'accept', 'shipping'}
     return bool(stops) and all(isinstance(s, dict) and not (set(s.keys()) & work_keys) for s in stops)
 
 
@@ -738,6 +738,300 @@ def crashed(kind, error, trace):
     sys.__excepthook__(kind, error, trace)
 
 
+
+def shipping_extract(resp):
+    """Extract the list of shipment entries from a spacemolt_shipping response."""
+    b = body(resp) if isinstance(resp, dict) else {}
+    if not isinstance(b, dict):
+        return []
+    for key in ('shipments', 'contracts', 'listings', 'results', 'items'):
+        val = b.get(key)
+        if isinstance(val, list):
+            return val
+    return []
+
+
+def shipping_partner_tag(contract, neutral_tags):
+    """Return matching Neutral partner faction tag if contract references a partner, else None."""
+    if not neutral_tags or not isinstance(contract, dict):
+        return None
+    blob = json.dumps(contract, sort_keys=True).lower()
+    stag = str(contract.get('shipper_tag') or '').upper()
+    for tag, name in neutral_tags.items():
+        t = str(tag).upper()
+        if stag == t or ('[%s]' % t.lower()) in blob or (name and str(name).lower() in blob):
+            return t
+    return None
+
+
+def shipping_locate_base(base_id, data_dir=None):
+    """Resolve a station base_id or poi_id to (system_id, poi_id, base_id, is_policed), or None."""
+    import sqlite3
+    target = str(base_id or '').strip()
+    if not target:
+        return None
+    base_dir = pathlib.Path(data_dir) if data_dir is not None else DATA
+    db = base_dir / 'store' / 'read.db'
+    found = None
+    if db.is_file():
+        try:
+            con = sqlite3.connect(f'file:{db}?mode=ro', uri=True, timeout=2.0)
+            row = con.execute(
+                "SELECT p.system, p.poi, COALESCE(NULLIF(p.base,''), p.poi), COALESCE(s.empire, '') "
+                "FROM places p LEFT JOIN systems s ON s.id = p.system "
+                "WHERE p.base = ? OR p.poi = ? LIMIT 1",
+                (target, target),
+            ).fetchone()
+            con.close()
+            if row and row[0] and row[1]:
+                found = (str(row[0]), str(row[1]), str(row[2]), bool(str(row[3] or '').strip()))
+        except Exception:
+            found = None
+    if found is None:
+        sc_dir = base_dir / 'scouting'
+        if sc_dir.is_dir():
+            for sp in sorted(sc_dir.glob('*.json')):
+                try:
+                    doc = json.loads(sp.read_text(encoding='utf-8'))
+                except (OSError, ValueError):
+                    continue
+                sys_d = doc.get('system') if isinstance(doc, dict) else None
+                if not isinstance(sys_d, dict):
+                    continue
+                sid = str(sys_d.get('id') or sp.stem)
+                emp = str(sys_d.get('empire') or '').strip()
+                sec = sys_d.get('security')
+                policed = bool(emp) or (isinstance(sec, (int, float)) and sec >= 50)
+                for p in sys_d.get('pois') or []:
+                    if not isinstance(p, dict):
+                        continue
+                    if p.get('base_id') == target or p.get('id') == target:
+                        found = (sid, str(p.get('id') or target), str(p.get('base_id') or target), policed)
+                        break
+                if found is not None:
+                    break
+    if found is None:
+        return None
+    sys_id, poi_id, b_id, policed = found
+    sys_id, poi_id, _moved = mobile.locate(sys_id, poi_id, b_id, base_dir)
+    return (sys_id, poi_id, b_id, policed)
+
+
+def shipping_pick(entries, cfg, base_lookup, neutral_tags=None, has_hazmat=False, cash_avail=0):
+    """Select the best eligible freight contract from list output.
+    Returns (contract_dict, (dest_sys, dest_poi, dest_base, policed), partner_tag) or (None, None, None)."""
+    cfg = cfg if isinstance(cfg, dict) else {}
+    min_reward = int(cfg.get('min_reward', 500))
+    max_hops = int(cfg.get('max_hops', 15))
+    max_exposure = int(cfg.get('max_exposure', 100000))
+    max_debt = int(cfg.get('max_failure_debt', 5000))
+    partners_first = cfg.get('partners_first', True) is not False
+    lawless_ok = bool(cfg.get('lawless_ok', False))
+    allowed_levels = set(cfg.get('service_levels') or ())
+    ranked = []
+    for wrap in entries or []:
+        if not isinstance(wrap, dict):
+            continue
+        if wrap.get('eligible', True) is False:
+            continue
+        c = wrap.get('contract') if isinstance(wrap.get('contract'), dict) else wrap
+        if not isinstance(c, dict):
+            continue
+        st = str(c.get('status') or 'posted').lower()
+        if st not in ('', 'posted'):
+            continue
+        cid = str(c.get('id') or c.get('shipment_id') or '')
+        pkg = str(c.get('package_id') or '')
+        dest_base = str(c.get('destination_base_id') or '')
+        if not (cid and pkg and dest_base):
+            continue
+        rew = int(round(float(c.get('base_reward') or c.get('reward_escrow') or c.get('reward') or 0)))
+        if rew < min_reward:
+            continue
+        hops = c.get('route_hops')
+        if hops is not None and int(hops) > max_hops:
+            continue
+        exp = int(round(float(c.get('reserved_exposure') or c.get('appraised_value') or 0)))
+        if exp > max_exposure:
+            continue
+        debt = int(round(float(c.get('failure_debt') or 500)))
+        if debt > max_debt or debt > cash_avail:
+            continue
+        lvl = str(c.get('service_level') or 'standard').lower()
+        if allowed_levels and lvl not in allowed_levels:
+            continue
+        warn = str(wrap.get('warning') or c.get('warning') or '').lower()
+        hazmat = bool(c.get('requires_hazmat') or wrap.get('requires_hazmat') or ('lead' in warn) or ('hazmat' in warn))
+        if hazmat and not has_hazmat:
+            continue
+        dest = base_lookup(dest_base)
+        if not dest:
+            continue
+        if not lawless_ok and not dest[3]:
+            continue
+        ptag = shipping_partner_tag(c, neutral_tags or {})
+        eff_hops = max(1, int(hops) if hops is not None else 1)
+        ranked.append((0 if (ptag and partners_first) else 1, -(rew / eff_hops), -rew, cid, c, dest, ptag))
+    if not ranked:
+        return None, None, None
+    ranked.sort(key=lambda r: (r[0], r[1], r[2], r[3]))
+    top = ranked[0]
+    return top[4], top[5], top[6]
+
+
+def shipping_deliver_one(cid, pkg_id, orig_base, dest_base, in_hold, cur_base, reward=0):
+    """Withdraw a package if needed, fly to dest_base, and deliver it. Returns (ok, new_base, note)."""
+    pkg_item = pkg_id if str(pkg_id).startswith('package:') else f'package:{pkg_id}'
+    have_in_hold = bool(in_hold) or bool(cargo().get(pkg_item))
+    at_base = cur_base
+    if not have_in_hold:
+        if orig_base and at_base != orig_base:
+            orig_loc = shipping_locate_base(orig_base)
+            if not orig_loc:
+                return False, at_base, f'shipping {cid[:8]}: unknown origin {orig_base}'
+            ok_o, msg_o = goal('prepare-at-station', {'systemId': orig_loc[0], 'poiId': orig_loc[1], 'baseId': orig_loc[2], 'refuel': True})
+            if not ok_o:
+                return False, at_base, f'shipping {cid[:8]}: origin unreachable: {msg_o[:60]}'
+            at_base = orig_loc[2]
+        w_resp = raw('withdraw', {'item_id': pkg_item, 'quantity': 1}, group='spacemolt_storage')
+        time.sleep(11)
+        if not cargo().get(pkg_item):
+            err = str(text(w_resp) or 'withdraw failed')[:80].replace('\n', ' ')
+            return False, at_base, f'shipping {cid[:8]}: withdraw failed ({err})'
+    dest_loc = shipping_locate_base(dest_base)
+    if not dest_loc:
+        return False, at_base, f'shipping {cid[:8]}: unknown destination {dest_base}'
+    ok_d, msg_d = goal('prepare-at-station', {'systemId': dest_loc[0], 'poiId': dest_loc[1], 'baseId': dest_loc[2], 'refuel': True})
+    if not ok_d:
+        return False, at_base, f'shipping {cid[:8]}: destination unreachable: {msg_d[:60]}'
+    at_base = dest_loc[2]
+    del_resp = raw('deliver', {'shipment_id': cid}, group='spacemolt_shipping')
+    time.sleep(11)
+    d_body = body(del_resp) if isinstance(del_resp, dict) else {}
+    d_err = (del_resp.get('error') if isinstance(del_resp, dict) else None) or (d_body.get('error') if isinstance(d_body, dict) else None)
+    if d_err:
+        return False, at_base, f'shipping {cid[:8]}: deliver error ({str(d_err)[:60]})'
+    say(f'shipping delivered {cid[:8]} -> {dest_base} (+{int(reward)} cr)')
+    return True, at_base, f'shipping delivered {cid[:8]} -> {dest_base}'
+
+
+def shipping_neutral_tags(data_dir=None):
+    """Load Neutral/trade partner faction tags from data/comms/diplomacy.json."""
+    tags = {}
+    p = (pathlib.Path(data_dir) if data_dir is not None else DATA) / 'comms' / 'diplomacy.json'
+    if not p.is_file():
+        return tags
+    try:
+        doc = json.loads(p.read_text(encoding='utf-8'))
+        for tag, rec in (doc.get('factions') or {}).items():
+            st = str((rec or {}).get('status') or '').lower()
+            if st in ('neutrality_agreed', 'trade_active', 'info_sharing_active'):
+                tags[str(tag).upper()] = str((rec or {}).get('name') or tag)
+    except Exception:
+        pass
+    return tags
+
+
+def shipping_run_stop(cfg, cur_system, cur_poi, cur_base):
+    """Execute a spacemolt_shipping freight stop: deliver any active carrier contract first, then accept & haul up to max_contracts."""
+    cfg = cfg if isinstance(cfg, dict) else {}
+    max_contracts = max(1, int(cfg.get('max_contracts', 1)))
+    delivered = 0
+    at_base = cur_base
+    # Phase A: deliver any active carried/accepted contract first (zero-default guarantee)
+    act_resp = raw('active', {}, group='spacemolt_shipping')
+    for wrap in shipping_extract(act_resp):
+        if stop_reason():
+            break
+        if not isinstance(wrap, dict):
+            continue
+        c = wrap.get('contract') if isinstance(wrap.get('contract'), dict) else wrap
+        if not isinstance(c, dict):
+            continue
+        role = str(wrap.get('role') or c.get('role') or '').lower()
+        st = str(c.get('status') or '').lower()
+        if role and role != 'carrier':
+            continue
+        if st in ('delivered', 'cancelled', 'defaulted', 'returned', 'expired', 'settled'):
+            continue
+        cid = str(c.get('id') or c.get('shipment_id') or '')
+        pkg = str(c.get('package_id') or '')
+        dest_base = str(c.get('destination_base_id') or '')
+        orig_base = str(c.get('origin_base_id') or '')
+        if not (cid and pkg and dest_base):
+            continue
+        in_hold = bool(wrap.get('in_hold') or wrap.get('package_in_hold'))
+        rew = int(round(float(c.get('base_reward') or c.get('reward_escrow') or c.get('reward') or 0)))
+        say(f'shipping resume active {cid[:8]} ({orig_base} -> {dest_base}, in_hold={in_hold})')
+        ok_del, at_base, note = shipping_deliver_one(cid, pkg, orig_base, dest_base, in_hold, at_base, rew)
+        notes.append(note)
+        if ok_del:
+            delivered += 1
+    if delivered >= max_contracts or stop_reason():
+        return
+    if at_base != cur_base:
+        ok_back, _msg_back = goal('prepare-at-station', {'systemId': cur_system, 'poiId': cur_poi, 'baseId': cur_base, 'refuel': True})
+        if not ok_back:
+            return
+        at_base = cur_base
+    neutral_tags = shipping_neutral_tags(DATA) if cfg.get('partners_first', True) is not False else {}
+    has_hazmat = None
+    for _slot in range(max_contracts - delivered):
+        if stop_reason():
+            break
+        if at_base != cur_base:
+            ok_b, _mb = goal('prepare-at-station', {'systemId': cur_system, 'poiId': cur_poi, 'baseId': cur_base, 'refuel': True})
+            if not ok_b:
+                break
+            at_base = cur_base
+        lparams = {'eligible_as': 'player', 'sort': 'reward', 'per_page': 25}
+        if cfg.get('filter_destination'):
+            lparams['filter_destination'] = str(cfg['filter_destination'])
+        list_resp = raw('list', lparams, group='spacemolt_shipping')
+        entries = shipping_extract(list_resp)
+        if not entries:
+            say(f'shipping at {cur_base}: no eligible freight contracts posted')
+            notes.append(f'shipping {cur_base}: no contracts')
+            break
+        if has_hazmat is None and any(
+            isinstance(e, dict) and (
+                (e.get('contract') or e).get('requires_hazmat') or
+                'lead' in str(e.get('warning') or '').lower() or
+                'hazmat' in str(e.get('warning') or '').lower()
+            ) for e in entries
+        ):
+            mods = [m.get('type_id') or m.get('type') for m in modules_now()]
+            has_hazmat = any(m in ('lead_lined_cargo_i', 'lead_lined_cargo_ii') for m in mods)
+        avail = max(0, credits() - FLOOR)
+        chosen, dest_loc, ptag = shipping_pick(entries, cfg, shipping_locate_base, neutral_tags, bool(has_hazmat), avail)
+        if not chosen:
+            say(f'shipping at {cur_base}: {len(entries)} contract(s) seen, none matched filters/charted policed destinations')
+            notes.append(f'shipping {cur_base}: none matched')
+            break
+        cid = str(chosen.get('id') or chosen.get('shipment_id'))
+        pkg = str(chosen.get('package_id'))
+        dest_base = str(chosen.get('destination_base_id'))
+        rew = int(round(float(chosen.get('base_reward') or chosen.get('reward_escrow') or chosen.get('reward') or 0)))
+        say(f'shipping accept {cid[:8]} ({rew} cr{" partner=" + ptag if ptag else ""} -> {dest_base})')
+        acc_resp = raw('accept', {'shipment_id': cid, 'carrier': 'player'}, group='spacemolt_shipping')
+        time.sleep(11)
+        a_body = body(acc_resp) if isinstance(acc_resp, dict) else {}
+        a_err = (acc_resp.get('error') if isinstance(acc_resp, dict) else None) or (a_body.get('error') if isinstance(a_body, dict) else None)
+        if a_err:
+            say(f'shipping accept {cid[:8]} refused: {str(a_err)[:80]}')
+            notes.append(f'shipping {cid[:8]}: accept refused')
+            break
+        ok_del, at_base, note = shipping_deliver_one(cid, pkg, cur_base, dest_base, False, cur_base, rew)
+        if not ok_del and 'withdraw failed' in note:
+            raw('return', {'shipment_id': cid}, group='spacemolt_shipping')
+            time.sleep(11)
+            note += ' (returned safely)'
+        notes.append(note)
+        if ok_del:
+            delivered += 1
+        else:
+            break
+
 def finish():
     """The run's row in data/routes/runs.jsonl and its RESULT line, written once: after the last stop, or on the way out
     of a run that an exception ended. A run without a row is invisible to the record and to the loss stop."""
@@ -1169,6 +1463,8 @@ for n, stop in enumerate(ROUTE['stops']):
         say(f'hunt at {hunt_poi}: ' + ('objectives done' if not left else f'stopped, still open: {sorted(left)}'))
         if left:
             notes.append(f'hunt {hunt_poi}: objectives not done; the step said: {said}; the ship stood at {where_now()}')
+    if stop.get('shipping'):
+        shipping_run_stop(stop['shipping'] if isinstance(stop['shipping'], dict) else {}, system, poi, base)
     if verbose:
         active()
   except SystemExit as leave:                        # told to stop (runhost per-pilot stop file or signal): record reason cleanly

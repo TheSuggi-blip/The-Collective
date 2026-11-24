@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 25 tools.
+The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 26 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -247,6 +247,9 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop | stop_pilot.py --list |
 | Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop pilot=<pilot> | stop_pilot.py <pilot> |
 | Stop one or more in-flight ships of your division cleanly (or every active run of your division on a... | stop route=<route> | stop_pilot.py --route <route> |
+| Queue or inspect docked-leader faction errands (Unity-only, Q75 (12)): promote officer, post_mission... | errand action=show | wallet.py errand --show |
+| Queue or inspect docked-leader faction errands (Unity-only, Q75 (12)): promote officer, post_mission... | errand action=add errand_action=<errand_action> params_json=<params_json> why=<why> | wallet.py errand add <errand_action> --params <params_json> --why <why> |
+| Queue or inspect docked-leader faction errands (Unity-only, Q75 (12)): promote officer, post_mission... | errand action=cancel id=<id> | wallet.py errand cancel <id> |
 | a session's start in one answer: the orders in force, the requests addressed to the member (and how... | hive verb=briefing | hive.py briefing |
 
 ### The store itself

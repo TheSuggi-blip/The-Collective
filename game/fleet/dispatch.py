@@ -1168,7 +1168,8 @@ def command(route, pilot, argument, root):
         sell = ",".join("%s:%d" % (s["item"], s["min_price"]) for s in route.get("sell") or [])
         return (base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
                 + (["--deposit", "faction"] if route.get("deposit") == "faction" else [])
-                + (["--gift", json.dumps(route["gift"], sort_keys=True)] if route.get("gift") else []))     # r22: the hand-over (handover.py)
+                + (["--gift", json.dumps(route["gift"], sort_keys=True)] if route.get("gift") else [])     # r22: the hand-over (handover.py)
+                + (["--jettison-gangue", ",".join(route["jettison_gangue"])] if route.get("jettison_gangue") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
         follow = argument.get("follow") if isinstance(argument, dict) else None
         spot = argument.get("place") if isinstance(argument, dict) else argument
@@ -1617,6 +1618,9 @@ ORPHANS = {}                  # pilot -> when its loop was first seen without an
 FUND_DOCK_WAIT = {}           # (leader, fund_at) -> epoch first held docked for wallet.py sweep
 FUND_HOLD_SECS = 12 * 60      # two 5m passes max so the leader never freezes if sweep is off
 FUND_TOLD = set()             # keys already logged once while waiting at dock
+ERRAND_DOCK_WAIT = {}         # (leader, errand_id) -> epoch first held docked for wallet.py sweep
+ERRAND_HOLD_SECS = 12 * 60    # two 5m passes max so the leader never freezes if sweep is off
+ERRAND_TOLD = set()           # keys already logged once while waiting at dock
 SEAT_HOLD_WAIT = {}           # pilot -> epoch first held idle for wallet.py sweep seat pass
 SEAT_HOLD_SECS = 7 * 60       # one 5m pass + margin for queued seat invite/join
 SEAT_BATCH_HOLD = 20          # max idle unseated pilots held per pass
@@ -1662,6 +1666,54 @@ def leader_fund_action(name, ship, data, now, routes):
         return "park", park_r
     return None, None
 
+
+
+def _park_route_for_station(routes, station):
+    """Find a park route that docks at `station` (or park-lockbox/park when station is empty)."""
+    if not isinstance(routes, dict):
+        return None
+    if not station:
+        return routes.get("park-lockbox") or routes.get("park")
+    for r in routes.values():
+        if not isinstance(r, dict) or not r.get("park") or r.get("status") == "off":
+            continue
+        stops = r.get("stops") or []
+        if stops and isinstance(stops[0], dict) and str(stops[0].get("at") or "").endswith(":" + station):
+            return r
+    return None
+
+
+def leader_errand_action(name, ship, data, now, routes):
+    """When an open docked-leader errand waits in data/fleet/leader_errands.json, route the undocked leader
+    to the required station (or park-lockbox/park) once, or hold it docked up to ERRAND_HOLD_SECS for wallet.py sweep."""
+    leader = leader_of_empire(data)
+    if name != leader:
+        return None, None
+    erows = read_json(Path(data) / "fleet" / "leader_errands.json", [])
+    if not isinstance(erows, list):
+        return None, None
+    open_rows = [r for r in erows if isinstance(r, dict) and r.get("state") == "open" and now - float(r.get("at") or 0) < 24 * 3600]
+    active_keys = {(leader, str(r.get("id") or r.get("at") or "")) for r in open_rows}
+    for k in list(ERRAND_DOCK_WAIT):
+        if k not in active_keys:
+            ERRAND_DOCK_WAIT.pop(k, None)
+            ERRAND_TOLD.discard(k)
+    if not open_rows:
+        return None, None
+    todo = open_rows[0]
+    key = (leader, str(todo.get("id") or todo.get("at") or ""))
+    need_station = str(todo.get("station") or "").strip()
+    dock_station = str(ship.get("docked") or "")
+    at_valid_dock = bool(dock_station) and (not need_station or dock_station == need_station)
+    if at_valid_dock:
+        since = ERRAND_DOCK_WAIT.setdefault(key, now)
+        if now - since < ERRAND_HOLD_SECS:
+            return "hold", todo
+        return None, None
+    park_r = _park_route_for_station(routes, need_station)
+    if key not in ERRAND_DOCK_WAIT and park_r is not None:
+        return "park", park_r
+    return None, None
 
 def seat_hold_needed(name, data, now):
     """True when data/fleet/seats.json holds open seat picks and `name` (the leader or one of the next batch
@@ -1826,8 +1878,17 @@ def one_pass(root, data, dry_run, children):
             continue
         if seat_hold_needed(name, data, now):
             continue
+        e_act, e_obj = (None, None) if f_act is not None else leader_errand_action(name, ship, data, now, routes)
+        if e_act == "hold":
+            ekey = (name, str(e_obj.get("id") or e_obj.get("at") or ""))
+            if ekey not in ERRAND_TOLD:
+                ERRAND_TOLD.add(ekey)
+                lines.append("%s held docked for open leader errand (%s %s)" % (name, e_obj.get("id"), e_obj.get("action")))
+            continue
         if f_act == "park" and f_obj is not None:
             route, argument = f_obj, None
+        elif e_act == "park" and e_obj is not None:
+            route, argument = e_obj, None
         else:
             route, argument = pick(pilot, plan, routes, state)
         if route is None:

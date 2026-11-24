@@ -240,6 +240,20 @@ def stop_plan(a):
     return [("game/fleet/stop_pilot.py", argv + (["--dry-run"] if a.get("dry_run") else []))]
 
 
+def errand_plan(a):
+    act = str(a.get("action") or "show")
+    if act == "show":
+        return [("game/fleet/wallet.py", ["errand", "--show"])]
+    if act == "cancel":
+        need(a, "id")
+        return [("game/fleet/wallet.py", ["errand", "cancel", str(a["id"])])]
+    need(a, "errand_action", "params_json", "why")
+    argv = ["errand", "add", str(a["errand_action"]), "--params", str(a["params_json"]), "--why", str(a["why"])]
+    if a.get("station"):
+        argv += ["--station", str(a["station"])]
+    return [("game/fleet/wallet.py", argv)]
+
+
 def fund_plan(a):
     if a.get("show") or (not a.get("pilot") and a.get("credits") is None and not a.get("why")):
         return [("game/fleet/wallet.py", ["fund", "--show"])]
@@ -441,6 +455,19 @@ TOOLS = {
                  "dry_run": arg(B, "true: preview which pilots would be stopped without writing stop files")},
         "plan": stop_plan,
         "door": True},
+    "errand": {
+        "text": "Queue or inspect docked-leader faction errands (Unity-only, Q75 (12)): promote officer, post_mission on Notice Board, cancel_mission, write_room, role or station policy. The dispatcher holds the leader at its next dock and the 5-minute wallet sweep executes the errand automatically. War, ally, and leadership transfer are permanently blocked.",
+        "door": True,
+        "args": {
+            "action": arg(S, "show (default), add, or cancel", ["show", "add", "cancel"]),
+            "errand_action": arg(S, "for add: allowlisted leader action", ["promote", "post_mission", "cancel_mission", "write_room", "create_role", "edit_role", "delete_role", "set_station_policy"]),
+            "params_json": arg(S, "for add: JSON object of parameters for the action"),
+            "why": arg(S, "for add: short reason for the errand"),
+            "station": arg(S, "for add: optional base_id where leader must be docked (e.g. node_beta_industrial_station)"),
+            "id": arg(S, "for cancel: errand id to cancel"),
+        },
+        "plan": errand_plan,
+    },
     "fund": {
         "text": "Draw credits from the shared faction treasury for one or more pilots of your division (rule F12: up to 400,000 cr/pilot and 750,000 cr/division per 24h, "
                 "keeping 500,000 cr treasury floor; uncapped for Unity), served every 5 minutes. Use show=true to view open funds and 24h division budgets.",
@@ -517,7 +544,7 @@ TOOLS["docs"]["args"]["topic"] = arg(S, "for handbook: a table's or view's name 
 TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbook"] + ([str(a["topic"])] if a.get("topic") else []))]
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
-WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund")      # every other tool only reads
+WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund", "errand")      # every other tool only reads
 WRITES += ("needs",)                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 

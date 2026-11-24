@@ -1126,6 +1126,237 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
     return 0
 
 
+
+ERRAND_WAIT = 24                 # hours an open leader errand waits before expiring by itself
+ERRAND_BATCH = 5                 # max open errands executed in a single docked sweep pass
+ERRAND_ACTIONS = {
+    "promote": "spacemolt_faction_admin",
+    "post_mission": "spacemolt_faction_admin",
+    "cancel_mission": "spacemolt_faction",
+    "write_room": "spacemolt_faction_admin",
+    "create_role": "spacemolt_faction_admin",
+    "edit_role": "spacemolt_faction_admin",
+    "delete_role": "spacemolt_faction",
+    "set_station_policy": "spacemolt_faction_admin",
+}
+ERRAND_DEFAULT_ROLES = ("recruit", "member", "officer", "leader")
+
+
+def errands_file(data):
+    return Path(data) / "fleet" / "leader_errands.json"
+
+
+def errands(data):
+    rows = dispatch.read_json(errands_file(data), [])
+    return [r for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
+
+
+def write_errands(data, rows):
+    path = errands_file(data)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = "%s.%d.tmp" % (path, os.getpid())
+    with open(tmp, "w", encoding="utf-8") as handle:
+        json.dump(rows[-200:], handle, indent=1)
+        handle.write("\n")
+    os.replace(tmp, path)
+
+
+def validate_errand(action, params):
+    """Validate a queued leader-only faction errand. Returns (toolGroup, clean_params, error_str)."""
+    act = str(action or "").strip()
+    if act not in ERRAND_ACTIONS:
+        return None, None, "action %r is not on the leader errand allowlist (%s)" % (act, ", ".join(sorted(ERRAND_ACTIONS)))
+    if not isinstance(params, dict):
+        return None, None, "params must be a JSON object"
+    p = dict(params)
+    if act == "promote":
+        pid = str(p.get("player_id") or "").strip()
+        rid = str(p.get("role_id") or "").strip().lower()
+        if not pid:
+            return None, None, "promote requires player_id"
+        if rid == "leader":
+            return None, None, "transferring faction leadership (role_id=leader) is forbidden in the errand queue"
+        if rid not in ("recruit", "member", "officer"):
+            return None, None, "promote role_id must be one of recruit, member, officer"
+        p = {"player_id": pid, "role_id": rid}
+    elif act == "post_mission":
+        for req in ("title", "description", "type"):
+            if not isinstance(p.get(req), str) or not p[req].strip():
+                return None, None, "post_mission requires non-empty string `%s`" % req
+        if not isinstance(p.get("objectives"), list) or not p["objectives"]:
+            return None, None, "post_mission requires a non-empty `objectives` list"
+        if not isinstance(p.get("rewards"), dict):
+            return None, None, "post_mission requires a `rewards` object"
+    elif act == "cancel_mission":
+        if not isinstance(p.get("template_id"), str) or not p["template_id"].strip():
+            return None, None, "cancel_mission requires template_id"
+    elif act == "write_room":
+        for req in ("name", "description"):
+            if not isinstance(p.get(req), str) or not p[req].strip():
+                return None, None, "write_room requires non-empty `%s`" % req
+        if p.get("access") not in ("public", "members", "officers"):
+            return None, None, "write_room access must be public, members, or officers"
+    elif act == "create_role":
+        if not isinstance(p.get("name"), str) or not p["name"].strip():
+            return None, None, "create_role requires name"
+    elif act == "edit_role":
+        if not isinstance(p.get("role_id"), str) or not p["role_id"].strip():
+            return None, None, "edit_role requires role_id"
+    elif act == "delete_role":
+        rid = str(p.get("role_id") or "").strip().lower()
+        if not rid or rid in ERRAND_DEFAULT_ROLES:
+            return None, None, "delete_role requires a custom (non-default) role_id"
+    elif act == "set_station_policy":
+        if not p:
+            return None, None, "set_station_policy requires at least one policy field"
+    return ERRAND_ACTIONS[act], p, ""
+
+
+def add_errand(data, action, params, why, station="", now=None, who="Unity"):
+    """Queue a docked leader-only faction errand (Unity-only, rule F11). Returns 0 on success, 1 on refusal."""
+    now = time.time() if now is None else now
+    if who != "Unity":
+        print("REFUSED: leader faction errands are the Fleet Admiral's (rule F11; caller=%s)" % who)
+        return 1
+    why_s = str(why or "").strip()
+    if not why_s:
+        print("REFUSED: --why is required when queueing a leader errand")
+        return 1
+    group, clean, err = validate_errand(action, params)
+    if err:
+        print("REFUSED: %s" % err)
+        return 1
+    rows = errands(data)
+    eid = "err-%d-%d" % (int(now), len(rows) + 1)
+    row = {
+        "id": eid,
+        "at": int(now),
+        "by": who,
+        "action": str(action).strip(),
+        "group": group,
+        "params": clean,
+        "station": str(station or "").strip(),
+        "why": why_s,
+        "state": "open",
+    }
+    rows.append(row)
+    write_errands(data, rows)
+    st_msg = (" at station " + row["station"]) if row["station"] else " (any docked station)"
+    print("ERRAND queued: %s | %s%s | %s" % (eid, row["action"], st_msg, why_s))
+    return 0
+
+
+def cancel_errand(data, eid, now=None, who="Unity"):
+    """Cancel an open leader errand by id (Unity-only). Returns 0 if cancelled, 1 otherwise."""
+    now = time.time() if now is None else now
+    if who != "Unity":
+        print("REFUSED: cancelling leader errands is the Fleet Admiral's (rule F11)")
+        return 1
+    rows = errands(data)
+    for r in rows:
+        if r.get("id") == eid and r.get("state") == "open":
+            r.update(state="cancelled", done_at=int(now), note="cancelled by %s" % who)
+            write_errands(data, rows)
+            print("ERRAND cancelled: %s (%s)" % (eid, r.get("action")))
+            return 0
+    print("REFUSED: no open errand with id %r" % eid)
+    return 1
+
+
+def format_errands(data):
+    """Human-readable summary of leader_errands.json."""
+    rows = errands(data)
+    n_open = sum(1 for r in rows if r.get("state") == "open")
+    n_done = sum(1 for r in rows if r.get("state") == "done")
+    lines = ["ERRANDS | open: %d | done: %d | total: %d | allowlist: %s"
+             % (n_open, n_done, len(rows), ", ".join(sorted(ERRAND_ACTIONS)))]
+    for r in rows[-25:]:
+        st = (" @ " + r["station"]) if r.get("station") else ""
+        note = (" | " + str(r["note"])[:120]) if r.get("note") else ""
+        lines.append("  %s | %-14s | %-9s%s | %s%s"
+                     % (r.get("id", "?"), r.get("action", "?"), r.get("state", "?"), st, r.get("why", ""), note))
+    return "\n".join(lines)
+
+
+def errand_raw(pilot, group, action, params):
+    """Send one validated leader-only faction call through the gate; (ok, text)."""
+    status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
+                               {"toolGroup": group, "action": action, "params": params}, timeout=60)
+    try:
+        body = json.loads(answer)
+    except ValueError:
+        return False, "HTTP %s %s" % (status, str(answer)[:160])
+    if status not in (200, 201) or body.get("error"):
+        return False, str(body.get("error") or ("HTTP %s" % status))[:220]
+    res = body.get("result")
+    if isinstance(res, dict) and res.get("error"):
+        return False, str(res.get("error"))[:220]
+    sc = body.get("structuredContent") if isinstance(body.get("structuredContent"), dict) else {}
+    if sc.get("error"):
+        return False, str(sc.get("error"))[:220]
+    txt = res if isinstance(res, str) else json.dumps(res if res is not None else sc, separators=(",", ":"))
+    return True, str(txt)[:220]
+
+
+def serve_errands(data, leader, now, dry):
+    """Execute open docked-leader errands while the leader stands docked (Q75 (12)). Returns 0, or 1 on call error."""
+    rows, changed = errands(data), False
+    for r in rows:
+        if r.get("state") == "open" and now - float(r.get("at") or 0) > ERRAND_WAIT * 3600:
+            r.update(state="ended", done_at=int(now), note="leader did not dock at required station within %d hours" % ERRAND_WAIT)
+            changed = True
+            print("ERRAND ended: %s (%s): timed out after %dh" % (r.get("id"), r.get("action"), ERRAND_WAIT))
+    open_rows = [r for r in rows if r.get("state") == "open"]
+    if not open_rows or dry:
+        for r in open_rows[:ERRAND_BATCH]:
+            print("would errand: %s %s (%s)" % (r.get("id"), r.get("action"), r.get("why")))
+        if changed and not dry:
+            write_errands(data, rows)
+        return 0
+    fleet = ships(data)
+    dock_base = str((fleet.get(leader) or {}).get("docked") or "")
+    if not dock_base:
+        print("ERRAND waits: %d open (%s %s first): %s is not docked"
+              % (len(open_rows), open_rows[0].get("id"), open_rows[0].get("action"), leader))
+        if changed:
+            write_errands(data, rows)
+        return 0
+    ready = [r for r in open_rows if not r.get("station") or str(r.get("station")) == dock_base]
+    if not ready:
+        need_st = open_rows[0].get("station")
+        print("ERRAND waits: %d open (%s needs station %s; %s docked at %s)"
+              % (len(open_rows), open_rows[0].get("id"), need_st, leader, dock_base))
+        if changed:
+            write_errands(data, rows)
+        return 0
+    if not try_hold_sweep(data, leader, now):
+        print("ERRAND waits: %s holds an active order; trying next pass" % leader)
+        if changed:
+            write_errands(data, rows)
+        return 0
+    failed = 0
+    try:
+        for r in ready[:ERRAND_BATCH]:
+            group, clean, err = validate_errand(r.get("action"), r.get("params"))
+            if err:
+                r.update(state="failed", done_at=int(time.time()), station_used=dock_base, note="invalid: " + err)
+                write_errands(data, rows)
+                failed = 1
+                continue
+            ok, text = errand_raw(leader, group, r["action"], clean)
+            ascii_txt = str(text or "").encode("ascii", "replace").decode("ascii")[:220]
+            if ok:
+                r.update(state="done", done_at=int(time.time()), station_used=dock_base, note=ascii_txt or "ok")
+                print("ERRAND done: %s | %s at %s | %s" % (r.get("id"), r["action"], dock_base, ascii_txt[:120]))
+            else:
+                r.update(state="failed", done_at=int(time.time()), station_used=dock_base, note=ascii_txt or "failed")
+                print("HALT: ERRAND %s (%s) at %s failed: %s" % (r.get("id"), r["action"], dock_base, ascii_txt[:140]))
+                failed = 1
+            write_errands(data, rows)
+    finally:
+        release_sweep(data, leader)
+    return failed
+
 def sweep(data, now, dry):
     """One pass of the sweep: at most PER_PASS gifts to the leader, then the leader's deposit. 0, or 1 when a call failed."""
     fleet, leader = ships(data), leader_of(data)
@@ -1145,6 +1376,7 @@ def sweep(data, now, dry):
     failed = serve_topups(data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
     auto_queue_seats(data, now, dry)
     serve_seats(data, leader, now, dry)
+    failed = serve_errands(data, leader, now, dry) or failed
     _upg_skip = set()
     try:
         import upgrades as _upg
@@ -1260,8 +1492,30 @@ def main(argv=None):
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)
     data = args[args.index("--data") + 1] if "--data" in args else division.DATA
-    verb = "seat" if "seat" in args else "fund" if "fund" in args else "topup" if "topup" in args else "sweep" if "sweep" in args else "check"
+    verb = "errand" if "errand" in args else "seat" if "seat" in args else "fund" if "fund" in args else "topup" if "topup" in args else "sweep" if "sweep" in args else "check"
     now = time.time()
+    if verb == "errand":
+        rest = [a for i, a in enumerate(args) if a != "errand" and a != "--data" and (i == 0 or args[i - 1] != "--data")]
+        if not rest or "--show" in rest or rest[0] == "show":
+            print(format_errands(data))
+            return 0
+        kind, who = division.member()
+        caller = who if kind == "member" else "Unity"
+        sub = rest[0]
+        if sub == "cancel" and len(rest) >= 2:
+            return cancel_errand(data, rest[1], now=now, who=caller)
+        if sub == "add" and len(rest) >= 2:
+            act = rest[1]
+            p_raw = rest[rest.index("--params") + 1] if "--params" in rest and rest.index("--params") + 1 < len(rest) else "{}"
+            why_s = rest[rest.index("--why") + 1] if "--why" in rest and rest.index("--why") + 1 < len(rest) else ""
+            st_s = rest[rest.index("--station") + 1] if "--station" in rest and rest.index("--station") + 1 < len(rest) else ""
+            try:
+                p_obj = json.loads(p_raw)
+            except ValueError as e:
+                print("REFUSED: invalid --params JSON: %s" % e)
+                return 1
+            return add_errand(data, act, p_obj, why_s, station=st_s, now=now, who=caller)
+        sys.exit('USAGE: wallet.py errand [--show | add <action> --params "<json>" --why "<text>" [--station <base>] | cancel <id>]')
     if verb == "seat":
         if "--show" in args:
             rows = seat_rows(data)

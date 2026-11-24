@@ -259,6 +259,23 @@ def check(root):
                         errors.append(where + "stop %d: `unfit` must be a non-empty list of module ids" % n)
                 for want in stop["fit"] if isinstance(stop.get("fit"), list) else []:     # a `replace` or `count` of the fit step (requests ENT-290)
                     errors += [where + "stop %d: " % n + line for line in fit_faults(want)]
+                if "shipping" in stop:
+                    sh = stop["shipping"]
+                    if not (sh is True or isinstance(sh, dict)):
+                        errors.append(where + "stop %d: `shipping` must be true or an object of filters" % n)
+                    elif isinstance(sh, dict):
+                        for nk in ("min_reward", "max_hops", "max_exposure", "max_failure_debt", "max_contracts"):
+                            if nk in sh and (not isinstance(sh[nk], int) or isinstance(sh[nk], bool) or sh[nk] < 0):
+                                errors.append(where + "stop %d: `shipping.%s` must be a whole number >= 0" % (n, nk))
+                        for bk in ("partners_first", "lawless_ok"):
+                            if bk in sh and not isinstance(sh[bk], bool):
+                                errors.append(where + "stop %d: `shipping.%s` must be true or false" % (n, bk))
+                        if "service_levels" in sh:
+                            lv = sh["service_levels"]
+                            if not (isinstance(lv, list) and lv and all(x in ("standard", "priority") for x in lv)):
+                                errors.append(where + "stop %d: `shipping.service_levels` must be a non-empty list of standard/priority" % n)
+                        if "filter_destination" in sh and not isinstance(sh["filter_destination"], str):
+                            errors.append(where + "stop %d: `shipping.filter_destination` must be a string" % n)
         levels = lambda value: isinstance(value, dict) and all(isinstance(v, int) and not isinstance(v, bool) for v in value.values())
         pos_counts = lambda value: isinstance(value, dict) and bool(value) and all(isinstance(k, str) and k and isinstance(v, int) and not isinstance(v, bool) and v >= 1 for k, v in value.items())
         if "pirates_ok" in route:
@@ -266,6 +283,12 @@ def check(root):
                 errors.append(where + "`pirates_ok` must be true or false")
             elif route["pirates_ok"] and kind not in ("hunt", "guard", "circuit"):
                 errors.append(where + "`pirates_ok` is allowed only on combat hunt, guard or circuit routes (rule F27)")
+        if "jettison_gangue" in route:
+            jg = route["jettison_gangue"]
+            if kind != "mine":
+                errors.append(where + "`jettison_gangue` is allowed only on `mine` routes")
+            elif not (isinstance(jg, list) and jg and all(isinstance(x, str) and x.strip() and "," not in x for x in jg)):
+                errors.append(where + "`jettison_gangue` must be a non-empty list of item ids")
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if need.get("hold") and need.get("empty_hold"):
             errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")
@@ -840,18 +863,29 @@ def index_files(root, keep_id=False):
     return {name: (FRONT % ("routes-" + name[:-3], ids[name]) + "\n".join(texts[name]) + "\n") if ids[name] else "missing" for name in names}
 
 
-def write_index(root):
-    """Write the index files that changed and remove the ones written no longer; [(file name, `written`, `current` or
-    `removed`)]."""
+def write_index(root, min_interval=0):
+    """Write the index files that changed and remove the ones written no longer; [(file name, `written`, `current`,
+    `deferred` or `removed`)]. When min_interval > 0 and every expected index file exists with no stale files and
+    master-index.md was written within min_interval seconds, skips regenerating markdown churn and returns `deferred`."""
+    folder = Path(root) / "routes"
+    if min_interval > 0:
+        names = index_names(root)
+        master = folder / MASTER
+        if master.is_file() and not stale(root) and all((folder / n).is_file() for n in names):
+            try:
+                if time.time() - master.stat().st_mtime < min_interval:
+                    return [(n, "deferred") for n in names]
+            except OSError:
+                pass
     done = []
     for name, text in index_files(root).items():
         if text == current_index(root, name):
             done.append((name, "current"))
         else:
-            (Path(root) / "routes" / name).write_text(text, encoding="ascii")
+            (folder / name).write_text(text, encoding="ascii")
             done.append((name, "written"))
     for name in stale(root):
-        (Path(root) / "routes" / name).unlink()
+        (folder / name).unlink()
         done.append((name, "removed"))
     return done
 
@@ -1355,6 +1389,7 @@ def main():
     parser.add_argument("ids", nargs="*", help="measure --write: the routes whose measured block is written")
     parser.add_argument("--role", help="measure --write: the routes of this role's plan")
     parser.add_argument("--all", action="store_true", help="measure --write: every route (the hourly job)")
+    parser.add_argument("--min-interval", type=int, default=0, help="index: minimum seconds between index rewrites (0=always)")
     args = parser.parse_args()
     if args.command == "check":
         errors, count = check(args.root)
@@ -1383,7 +1418,7 @@ def main():
             print(line)
         return 0
     if args.command == "index":
-        done = write_index(args.root)
+        done = write_index(args.root, min_interval=args.min_interval)
         for name, state in done:
             print("game/routes/%s: %s" % (name, state))
         changed = ["game/routes/" + name for name, state in done if state != "current"]

@@ -176,13 +176,13 @@ class PlanTests(unittest.TestCase):
 
     def test_the_tools_carry_the_protocols_hints(self):
         hints = {name: self.server.schema(name)["annotations"] for name in self.server.TOOLS}
-        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "fill", "fund", "goal", "hold", "needs", "plan", "stop"])
-        self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "fund", "goal", "hold", "stop"])
+        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "errand", "fill", "fund", "goal", "hold", "needs", "plan", "stop"])
+        self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "errand", "fund", "goal", "hold", "stop"])
 
     def test_the_door_is_marked_and_every_script_exists(self):
-        self.assertEqual(sorted(name for name, tool in self.server.TOOLS.items() if tool.get("door")), ["command", "fund", "goal", "hold", "stop"])
+        self.assertEqual(sorted(name for name, tool in self.server.TOOLS.items() if tool.get("door")), ["command", "errand", "fund", "goal", "hold", "stop"])
         samples = {"ship": {"pilot": "p"}, "route": {"id": "r"}, "market": {"item": "i"}, "base_plan": {"kind": "outpost"}, "system": {"id": "s"}, "search": {"question": "q"},
-                   "command": {"pilots": ["p"], "action": "a"}, "goal": {"pilot": "p", "type": "t"}, "hold": {"pilot": "p"}, "stop": {"list": True}, "fund": {"show": True}, "hive": {"verb": "fleet"}, "catalog": {"name": "x"}}
+                   "command": {"pilots": ["p"], "action": "a"}, "goal": {"pilot": "p", "type": "t"}, "hold": {"pilot": "p"}, "stop": {"list": True}, "errand": {"action": "show"}, "fund": {"show": True}, "hive": {"verb": "fleet"}, "catalog": {"name": "x"}}
         for name, tool in self.server.TOOLS.items():
             for script, _argv in tool["plan"](samples.get(name, {})):
                 self.assertTrue((REPO / script).is_file(), "%s: %s" % (name, script))

@@ -1293,5 +1293,40 @@ class StrictClassesTests(Tree):
             "game/routes/give-d.json: a gift to `Somebody`: neither a role (miner, trader, hauler, drone, sentinel, scout, command) nor a flagship of ours: a gift to a stranger is a loss"])
 
 
+    def test_the_mine_command_carries_jettison_gangue_and_gate_checks_it(self):
+        routes = self.dispatch.load_routes(self.root)
+        line = self.dispatch.command(dict(routes["mine"], jettison_gangue=["ore_iron", "ore_copper"]), "miner-1", None, self.root)
+        self.assertEqual(line[-2:], ["--jettison-gangue", "ore_iron,ore_copper"])
+        self.assertNotIn("--jettison-gangue", self.dispatch.command(routes["mine"], "miner-1", None, self.root))
+        for rid, route in (
+            ("jg-ok", {"kind": "mine", "belt": "far:belt", "station": "home:core:base", "jettison_gangue": ["ore_iron"]}),
+            ("jg-empty", {"kind": "mine", "belt": "far:belt", "station": "home:core:base", "jettison_gangue": []}),
+            ("jg-comma", {"kind": "mine", "belt": "far:belt", "station": "home:core:base", "jettison_gangue": ["ore_iron,ore_copper"]}),
+            ("jg-kind", {"kind": "hunt", "place": "far:nebula", "sell_at": "home:core:base", "jettison_gangue": ["ore_iron"]}),
+        ):
+            (self.root / "routes" / (rid + ".json")).write_text(json.dumps(dict(route, id=rid, title="t")), encoding="ascii")
+        found = [e for e in self.routes.check(str(self.root))[0] if e.startswith("game/routes/jg-")]
+        self.assertEqual(found, [
+            "game/routes/jg-comma.json: `jettison_gangue` must be a non-empty list of item ids",
+            "game/routes/jg-empty.json: `jettison_gangue` must be a non-empty list of item ids",
+            "game/routes/jg-kind.json: `jettison_gangue` is allowed only on `mine` routes",
+        ])
+
+    def test_write_index_min_interval_defers_fresh_rewrites_until_expired_or_missing(self):
+        first = self.routes.write_index(str(self.root))
+        self.assertTrue(all(st == "written" for _n, st in first))
+        deferred = self.routes.write_index(str(self.root), min_interval=900)
+        self.assertTrue(all(st == "deferred" for _n, st in deferred))
+        # Missing index file bypasses defer
+        (self.root / "routes" / "plan-drone.md").unlink()
+        rebuilt = dict(self.routes.write_index(str(self.root), min_interval=900))
+        self.assertEqual(rebuilt["plan-drone.md"], "written")
+        # Expired mtime bypasses defer
+        master = self.root / "routes" / "master-index.md"
+        old_t = master.stat().st_mtime - 1000
+        os.utime(master, (old_t, old_t))
+        expired = dict(self.routes.write_index(str(self.root), min_interval=900))
+        self.assertEqual(expired["master-index.md"], "current")
+
 if __name__ == "__main__":
     unittest.main()

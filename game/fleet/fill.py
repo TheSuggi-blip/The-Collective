@@ -893,7 +893,9 @@ def commit(root, data, who, files, message, tries=None, wait=None):
         new = [rel for rel in files if not (Path(root) / rel).exists()]
         for rel, text in files.items():
             (Path(root) / rel).write_text(text, encoding="ascii")
-        made = ["routes/" + name for name, _state in routefiles.write_index(root)]     # written, current and removed
+        _deb_default = 900 if str(Path(root).resolve()) == "/srv/collective/the-collective/game" else 0
+        _deb = int(os.environ.get("FLEET_INDEX_DEBOUNCE", _deb_default))
+        made = ["routes/" + name for name, state in routefiles.write_index(root, min_interval=_deb) if state != "deferred"]
         new += [rel for rel in made if rel.split("/")[-1] not in before]
         paths = sorted(set(files) | set(made))
         errors, _count = routefiles.check(root)

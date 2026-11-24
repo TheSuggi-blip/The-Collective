@@ -891,5 +891,114 @@ class EmptyTourAbortTests(unittest.TestCase):
         self.assertFalse(tail([]))
 
 
+
+class ShippingStepTests(unittest.TestCase):
+    """Automated spacemolt_shipping freight stop: filter/ranking safety, active recovery, withdraw/deliver, and workclass."""
+
+    def test_shipping_pick_prefers_partners_and_enforces_safety_gates(self):
+        ns = functions("body", "shipping_extract", "shipping_partner_tag", "shipping_pick")
+        pick = ns["shipping_pick"]
+        lookup = lambda b: {
+            "base_ok": ("sys_a", "poi_a", "base_ok", True),
+            "base_partner": ("sys_b", "poi_b", "base_partner", True),
+            "base_lawless": ("sys_bad", "poi_bad", "base_lawless", False),
+        }.get(b)
+        entries = [
+            {"eligible": False, "contract": {"id": "c_inelig", "package_id": "p0", "destination_base_id": "base_ok", "base_reward": 9000, "route_hops": 2}},
+            {"eligible": True, "contract": {"id": "c_lawless", "package_id": "p1", "destination_base_id": "base_lawless", "base_reward": 9000, "route_hops": 2}},
+            {"eligible": True, "contract": {"id": "c_hazmat", "package_id": "p2", "destination_base_id": "base_ok", "base_reward": 8000, "route_hops": 2, "requires_hazmat": True}},
+            {"eligible": True, "contract": {"id": "c_far", "package_id": "p3", "destination_base_id": "base_ok", "base_reward": 7000, "route_hops": 25}},
+            {"eligible": True, "contract": {"id": "c_uncharted", "package_id": "p4", "destination_base_id": "unknown_base", "base_reward": 7000, "route_hops": 2}},
+            {"eligible": True, "contract": {"id": "c_public", "package_id": "p5", "destination_base_id": "base_ok", "base_reward": 4000, "route_hops": 4}},
+            {"eligible": True, "contract": {"id": "c_partner", "package_id": "p6", "destination_base_id": "base_partner", "base_reward": 2500, "route_hops": 5, "shipper": {"name": "[HEXC] Hex Collective"}}},
+        ]
+        cfg = {"min_reward": 500, "max_hops": 15, "max_exposure": 100000, "max_failure_debt": 5000, "partners_first": True}
+        chosen, dest, ptag = pick(entries, cfg, lookup, neutral_tags={"HEXC": "Hex Collective"}, has_hazmat=False, cash_avail=10000)
+        self.assertEqual(chosen["id"], "c_partner")
+        self.assertEqual(dest[2], "base_partner")
+        self.assertEqual(ptag, "HEXC")
+        # With hazmat hold and partners_first=False, highest reward/hop safe contract wins
+        chosen2, _d2, _p2 = pick(entries, dict(cfg, partners_first=False), lookup, neutral_tags={"HEXC": "Hex Collective"}, has_hazmat=True, cash_avail=10000)
+        self.assertEqual(chosen2["id"], "c_hazmat")
+        # With cash below failure_debt, nothing is picked
+        chosen3, _d3, _p3 = pick(entries, cfg, lookup, neutral_tags={}, has_hazmat=True, cash_avail=100)
+        self.assertIsNone(chosen3)
+
+    def test_shipping_run_stop_executes_accept_withdraw_fly_deliver_and_recovers_active(self):
+        ns = functions("body", "text", "shipping_extract", "shipping_partner_tag", "shipping_neutral_tags", "shipping_pick", "shipping_deliver_one", "shipping_run_stop")
+        calls = []
+        hold = {}
+        notes = []
+        active_list = [
+            {"role": "carrier", "in_hold": False, "contract": {"id": "act11111", "package_id": "pkg_act", "origin_base_id": "orig_b", "destination_base_id": "dest_a", "status": "in_transit", "base_reward": 1800}}
+        ]
+        board_list = [
+            {"eligible": True, "contract": {"id": "new22222", "package_id": "pkg_new", "origin_base_id": "orig_b", "destination_base_id": "dest_b", "status": "posted", "base_reward": 3200, "route_hops": 3, "failure_debt": 500}}
+        ]
+
+        def fake_raw(action, params=None, group="spacemolt"):
+            calls.append((group, action, dict(params or {})))
+            if group == "spacemolt_shipping" and action == "active":
+                return {"structuredContent": {"shipments": list(active_list)}}
+            if group == "spacemolt_shipping" and action == "list":
+                return {"structuredContent": {"shipments": list(board_list)}}
+            if group == "spacemolt_storage" and action == "withdraw":
+                hold[params["item_id"]] = 1
+                return {"ok": True}
+            if group == "spacemolt_shipping" and action == "deliver":
+                hold.clear()
+                return {"structuredContent": {"delivered": True}}
+            return {"structuredContent": {"ok": True}}
+
+        def fake_goal(kind, opts, tries=3):
+            calls.append(("goal", kind, dict(opts)))
+            return True, "ok"
+
+        ns["raw"] = fake_raw
+        ns["goal"] = fake_goal
+        ns["cargo"] = lambda: dict(hold)
+        ns["credits"] = lambda: 50000
+        ns["FLOOR"] = 5000
+        ns["DATA"] = Path(tempfile.gettempdir())
+        ns["notes"] = notes
+        ns["say"] = lambda _m: None
+        ns["stop_reason"] = lambda: ""
+        ns["modules_now"] = lambda: []
+        ns["shipping_locate_base"] = lambda b, data_dir=None: {
+            "orig_b": ("sys0", "poi0", "orig_b", True),
+            "dest_a": ("sys1", "poi1", "dest_a", True),
+            "dest_b": ("sys2", "poi2", "dest_b", True),
+        }.get(b)
+        class _FakeTime:
+            sleep = staticmethod(lambda _s: None)
+        ns["time"] = _FakeTime
+        ns["pathlib"] = __import__("pathlib")
+        ns["shipping_run_stop"]({"max_contracts": 2, "min_reward": 500}, "sys0", "poi0", "orig_b")
+        actions = [(g, a) for g, a, _p in calls]
+        self.assertIn(("spacemolt_shipping", "active"), actions)
+        self.assertIn(("spacemolt_storage", "withdraw"), actions)
+        self.assertIn(("spacemolt_shipping", "accept"), actions)
+        self.assertEqual(actions.count(("spacemolt_shipping", "deliver")), 2)
+        self.assertTrue(any("act11111" in n for n in notes))
+        self.assertTrue(any("new22222" in n for n in notes))
+
+    def test_workclass_and_routes_gate_accept_shipping_as_haul(self):
+        sys.path.insert(0, str(FLEET))
+        import workclass, routes
+        r = {"id": "haul-freight-nexus", "kind": "circuit", "title": "Freight", "stops": [{"at": "nexus_prime:the_core:central_nexus", "shipping": {"min_reward": 1000, "max_hops": 10}}]}
+        self.assertEqual(workclass.work_class(r, strict=True), "haul")
+        self.assertTrue(workclass.own("hauler", r, strict=True))
+        self.assertFalse(workclass.sells(r))
+        with tempfile.TemporaryDirectory() as td:
+            g = Path(td)
+            (g / "routes").mkdir()
+            (g / "routes" / "plans").mkdir()
+            (g / "routes" / "ship-ok.json").write_text(json.dumps(dict(r, id="ship-ok")), encoding="ascii")
+            (g / "routes" / "ship-bad.json").write_text(json.dumps({"id": "ship-bad", "kind": "circuit", "title": "Bad", "stops": [{"at": "a:b:c", "shipping": {"max_hops": -1, "lawless_ok": "yes", "service_levels": ["warp"]}}]}), encoding="ascii")
+            errs, _warns = routes.check(str(g))
+            bad = [e for e in errs if "ship-bad" in e]
+            self.assertEqual(len(bad), 3, bad)
+            self.assertEqual([e for e in errs if "ship-ok" in e], [])
+
 if __name__ == "__main__":
     unittest.main()

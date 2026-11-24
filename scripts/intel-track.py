@@ -75,7 +75,9 @@ def main():
         return 1
     planets_extra = [a for pair in zip(extra, extra[1:]) if pair[0] == "--data" for a in pair]
     players_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--kills", "--max") for a in pair]
-    factions_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--met") for a in pair]
+    factions_extra = [a for pair in zip(extra, extra[1:]) if pair[0] in ("--station", "--fleet", "--met", "--min-interval") for a in pair]
+    if "--min-interval" not in factions_extra:
+        factions_extra += ["--min-interval", "21600"]
     for command in (["python3", "-B", os.path.join(scripts, "intel-planets.py"), "--root", root] + planets_extra,
                     ["python3", "-B", os.path.join(scripts, "intel-players.py"), "--root", root] + players_extra,
                     ["python3", "-B", os.path.join(scripts, "intel-factions.py"), "--root", root] + factions_extra,
