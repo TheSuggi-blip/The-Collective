@@ -411,3 +411,10 @@ Effect: no credits lost; P3 waited on hunts that could not finish it; the first 
 Cause: I read the needs tool's covered share (93%) and its buy list as the gap; the tool counts raw units and lists facility steps as crafts without checking that a facility of that type stands.
 Fix: skill logistics-stock step 41 (every facility step of a part's tree read against table faction_facilities and the tool base_plan before goods are named its gap); knowledge/faction-builds.md; suggested to Unity in my report: the needs tool marks a facility-only step with no facility of ours. Would it have prevented the original: yes, the step reads the facilities before the plan line is written.
 Class: a figure read as progress without checking what it counts.
+
+## [ENT-192] | 2026-11-24 15:55 UTC | Mercury | error | ref: game/fleet/gate.py | see: errors.log ENT-190
+What: a trader that bought a listed Apophenia at Node Gamma by `buy_listed_hull.py` (RESULT and `released` at 15:20:37 UTC) was held again by the dispatcher as `hand Mercury` at 15:20:54 UTC and stood docked with no work for 17 minutes, until I released it by hand at 15:38 UTC (ship file, order since 15:20:54Z).
+Effect: one ship idle 17 minutes; no credits lost.
+Cause (read from the code): `gate.py want` writes data/fleet/want/<pilot>.json, which the dispatcher consumes when it holds the pilot at its run's end (dispatch.py, want_of then unlink). `buy_listed_hull.py` takes a pilot with no order at once (`gate.take`), so the want file stays; after the script's release the dispatcher finds a free pilot with a fresh want and holds it again for a script that has ended.
+Fix: my copy of buy_listed_hull.py (skill trade-books) cancels the want (`gate.want(pilot, '--cancel')`) before it releases, 15:55 UTC; the skill's pitfall says every hand script does the same. Proposed to Unity and Trinity: `gate.release` removes the member's want file of that pilot, so no hand script can leave one behind. Would it have prevented the original: yes.
+Class: a hand-over token left behind by a path that did not consume it.
