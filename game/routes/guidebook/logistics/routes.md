@@ -1,17 +1,17 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check (2026-11-24 15:16 UTC); fill.py status and check hauler 14:41 to 15:20 UTC; runs.jsonl 2026-11-24; requests.log ENT-504, ENT-511, ENT-516, ENT-523; orders.log ENT-089 (block APOLLO).
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check, fill.py status and check hauler (2026-11-24 18:06 to 18:24 UTC); runs.jsonl and the tool route haul-network (hours 15 to 17 UTC); shipping.py list (18:20 UTC); requests.log ENT-504, ENT-523, ENT-525; orders.log ENT-090 (block APOLLO).
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), Sol's paid loop, the `finish-*` routes of missions held half done.
-- Own: `finish-*` in the holders' rows only; `@newborn-nebula` (Grand Exchange's once lines, First Links with nickel bought there), `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row (`Stored goods`).
-- Then: `buy-steel-reserve-central-nexus` (docked buy that only stores, ENT-504, closed by `held_below` steel 88,000 of Logistics), `builder-home-node-beta` (the Builder home once), `buy-carbon-reserve-node-beta` (4 cr, `in_system` node_beta, three buy-and-store cycles a run so dispatch's stall rest does not idle its pilots, `held_below` carbon 50,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network`, `park`.
-- `haul-network` (haul.py, game/haul-policy.json): freight and supply only, its arbitrage lane out (orders ENT-089 block APOLLO; P5: a buy that feeds a sale is Trade's). Policed freight is scarce (the board's contracts end mostly at pirate strongholds), so most of its runs wait docked at no cost for a job; its runs are read each turn.
-- Off: the officer steel route on the outpost's faction iron (an outpost's faction store gives nothing out, topic-bases). Buying iron for steel stays off while plate asks 18 cr.
-- Hulls (F17): no bulk hull while no freight or carry fills it (Prayer flown: no pay).
-- What would change it: Unity's word on the Atria kit (ENT-523: Arneb's kit or our own kit line), freight a hull can carry, the Grand Exchange missions without a route.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), the `finish-*` routes (each with `requires.mission`).
+- Own: `finish-*` in the holders' rows only; `@newborn-nebula`, `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row.
+- Then: `buy-steel-reserve-central-nexus` (`held_below` steel), `builder-home-node-beta`, `buy-carbon-reserve-node-beta` (`held_below` carbon 50,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network-builder` (the Builder's own watch, game/haul-policy-builder.json: pickup within 2 jumps, delivery within 6), `haul-network` (94 ships), `park`.
+- `haul-network`: freight and supply only, no arbitrage (P5). Since the lane went out it earned 0 cr (15 to 17 UTC, about 2,000 runs): the board's policed contracts end at strongholds. Its ships wait docked at no fuel; read each turn.
+- Off: the officer steel route on the outpost's faction iron (topic-bases). Hulls (F17): no bulk hull while no freight fills it.
+- What would change it: Unity's word on the Atria kit (ENT-523) and the Guild Hall (ENT-525), freight a hull can carry.
+
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
 
