@@ -69,7 +69,7 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log 2026-11-15 to 2026-11-
   check its `added` line.
 
 ### Hunts, bids and the reserve
-Status: proven. Updated: 2026-11-21. Evidence: reserve_hunts.py; loot_bids.py; data/stock/storage.json; errors.log ENT-108.
+Status: proven. Updated: 2026-11-24. Evidence: reserve_hunts.py; loot_bids.py; data/stock/storage.json; errors.log ENT-108; runs.jsonl 2026-11-24 01:20 to 06:30 UTC.
 
 - A money hunt names its loot's bid (`requires.bid` {item, base,
   min_price, min_qty}); a bid gate takes the price at the depth that comes
@@ -84,6 +84,10 @@ Status: proven. Updated: 2026-11-21. Evidence: reserve_hunts.py; loot_bids.py; d
   just before sends a pilot on an empty run.
 - The fallback never serves a target only a turn reads: 46.5 ship-hours of
   iron after the order ended it (errors.log ENT-108).
+- A hunt keeps two animals (F38), so `min_creatures` is at least 3: at 2
+  the dispatcher sent hunters to herds they could not touch (12 zero-kill
+  runs on four routes in five hours). The dispatcher trusts a census only
+  90 minutes; a far herd with an older one is flown blind.
 
 ### Plans, fills and claims
 Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus); dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.

@@ -26,7 +26,7 @@ a Pulse Laser I (CPU 2, power 5) leave both defence slots free.
   (2026-11-15).
 
 ### Hulls
-Status: proven. Updated: 2026-11-22. Evidence: commission_quote Central Nexus 2026-11-16 03:16 UTC and Node Beta 2026-11-22 08:11 UTC; game/catalog/ships/; hive.py stats upgrades --member Apophis.
+Status: proven. Updated: 2026-11-24. Evidence: commission_quote Central Nexus 2026-11-16 03:16 UTC and Node Beta 2026-11-22 08:11 UTC, 2026-11-24 01:19 UTC; commission_status 2026-11-24 07:10 UTC; game_docs.py help spacemolt_ship; game/catalog/ships/.
 
 - Tier 1, no Piloting gate: Vigil (patrol, hull 75, shield 90, 2 weapons),
   111,316 cr in credits or 15,706 cr plus materials (87 ticks); Paradox
@@ -36,6 +36,16 @@ Status: proven. Updated: 2026-11-22. Evidence: commission_quote Central Nexus 20
   Node Beta commissions it for 315,699 cr, or 45,247 cr plus materials
   (commission_quote 2026-11-22 08:11 UTC, default fit two Pulse Laser II);
   asked of the purse (requests ENT-345). The upgrades view names who is 10.
+- A credits-only quote is materials, the same again as markup, labor and
+  a yard fee (310,897 = 133,138 + 133,138 + 3,600 + 41,021). The yard bids
+  under the asks and stalls in SOURCING; `supply_commission` (docked at the
+  yard, the owner) donates bought parts and the yard keeps its earmarked
+  credits for a refund when sourcing ends: switch_hull.py `--supply`.
+- One hull a pilot: a fund spent stays held for its hours and the top-up
+  refilled the buyer, so a second commission went out on it;
+  commission_hull.py now refuses a pilot with an open commission or a
+  stored hull of the class. `cancel_commission` refunds in sourcing; a
+  spare hull moves to another pilot by `list_ship_for_sale` at the yard.
 - Tier 3 at Piloting 20: Annihilation (4 weapons, hull 360, shield 430),
   Voidborn Singularity (3 weapons); the sentinels go back to the command
   group at 20.
