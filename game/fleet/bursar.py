@@ -55,7 +55,7 @@ DEFAULT_POLICY = {
     "min_cash_keep": 20000,
     "buy": {
         "enabled": True,
-        "max_escrow_per_station": 30000,
+        "max_escrow_per_station": 0,
         "max_orders_per_station": 4,
         "max_units_per_order": 200,
         "max_unit_price_ratio": 0.90,
@@ -474,12 +474,14 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
                 used_sell_ords += 1
 
     if buy_cfg.get("enabled", True):
-        max_escrow = int(buy_cfg.get("max_escrow_per_station") or 30000)
+        raw_cap = buy_cfg.get("max_escrow_per_station")
+        max_escrow = int(raw_cap) if raw_cap is not None else 0
         max_buy_ords = int(buy_cfg.get("max_orders_per_station") or 4)
         max_units = int(buy_cfg.get("max_units_per_order") or 200)
         max_ratio = float(buy_cfg.get("max_unit_price_ratio") or 0.90)
         outbid = max(1, int(buy_cfg.get("outbid_cr") or 1))
-        cash_avail = min(max_escrow, max(0, int(credits or 0) - min_keep))
+        free_cash = max(0, int(credits or 0) - min_keep)
+        cash_avail = min(max_escrow, free_cash) if max_escrow > 0 else free_cash
         excl_buy = set(str(x) for x in (buy_cfg.get("exclude_buy_items") or []))
         want_items = {k: v for k, v in (open_needs or {}).items() if k not in excl_buy} if buy_cfg.get("use_needs_tsv", True) else {}
         for extra in buy_cfg.get("extra_items") or []:
@@ -573,7 +575,7 @@ def main(argv=None):
     policy = load_policy(policy_path)
     p_enc = urllib.parse.quote(pilot, safe="")
     order_path = DATA / "fleet" / "orders" / ship_file_name(pilot)
-    stop_file = DATA / "fleet" / "host" / "stop" / ship_file_name(pilot)
+    stop_files = (DATA / "fleet" / "host" / "stop" / pilot, DATA / "fleet" / "host" / "stop" / ship_file_name(pilot))
     started = time.time()
     notes = []
 
@@ -636,12 +638,13 @@ def main(argv=None):
     def stop_requested():
         if (DATA / "fleet" / "STOP").exists():
             return "fleet STOP"
-        if stop_file.exists():
-            try:
-                stop_file.unlink()
-            except OSError:
-                pass
-            return "per-pilot stop file"
+        for sf in stop_files:
+            if sf.exists():
+                try:
+                    sf.unlink()
+                except OSError:
+                    pass
+                return "per-pilot stop file"
         return ""
 
     write_json(order_path, {"pilot": pilot, "what": "bursar " + route_id, "since": utc_now(), "pid": os.getpid()})
@@ -676,101 +679,110 @@ def main(argv=None):
               % (pilot, route_id, mins, before, after, after - before, "; ".join(notes[:4]) or "ok"), flush=True)
         try:
             cur = read_json(order_path, {})
-            if isinstance(cur, dict) and cur.get("pid") == os.getpid():
+            if isinstance(cur, dict) and cur.get("pid") == os.getpid() and cur.get("what") == "bursar " + route_id:
                 order_path.unlink()
         except OSError:
             pass
 
-    atexit.register(cleanup)
+    try:
+        ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
+        claim = claim_station(DATA, REPO, pilot, ship_doc, policy, explicit_station=explicit_station)
+        if not claim:
+            say("no unstaffed Exchange station available under max_per_station=%s" % policy.get("max_per_station", 1))
+            notes.append("all stations staffed")
+            time.sleep(60)
+            return 0
 
-    ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
-    claim = claim_station(DATA, REPO, pilot, ship_doc, policy, explicit_station=explicit_station)
-    if not claim:
-        say("no unstaffed Exchange station available under max_per_station=%s" % policy.get("max_per_station", 1))
-        notes.append("all stations staffed")
-        time.sleep(60)
-        return 0
+        sys_id, poi_id, base_id = claim["system"], claim["poi"], claim["base"]
+        say("claimed station %s (%s:%s)" % (base_id, sys_id, poi_id))
+        notes.append("station %s" % base_id)
 
-    sys_id, poi_id, base_id = claim["system"], claim["poi"], claim["base"]
-    say("claimed station %s (%s:%s)" % (base_id, sys_id, poi_id))
-    notes.append("station %s" % base_id)
+        ok, msg = run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
+        if not ok:
+            say("could not reach %s: %s" % (base_id, msg))
+            notes.append("unreachable: %s" % msg[:60])
+            return 0
 
-    ok, msg = run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
-    if not ok:
-        say("could not reach %s: %s" % (base_id, msg))
-        notes.append("unreachable: %s" % msg[:60])
-        return 0
+        until = started + max(2.0, minutes) * 60.0
+        poll_s = max(60.0, float(policy.get("poll_interval_s") or 120))
+        acted = 0
 
-    until = started + max(2.0, minutes) * 60.0
-    poll_s = max(60.0, float(policy.get("poll_interval_s") or 120))
-    acted = 0
-
-    while time.time() < until and not stop_requested():
-        try:
-            book = save_station(base_id, sys_id)
-            open_needs, reserved, catalog_vals = load_needs_and_reserves(REPO, DATA)
-            hold = get_cargo()
-            for iid, q in list(hold.items()):
-                if q > 0 and iid not in PROTECTED_ITEMS:
-                    raw("deposit", {"item_id": iid, "quantity": q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
-                    time.sleep(TICK)
-            stored = get_stored(base_id)
-            orders_resp = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
-            cr = get_credits()
-            acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, policy)
-            for act in acts:
-                if stop_requested() or time.time() >= until:
-                    break
-                kind_a = act[0]
-                if kind_a == "sell_bid":
-                    _, iid, qty, bp = act
-                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
-                    time.sleep(TICK)
-                    d = raw("sell", {"item_id": iid, "quantity": qty}, group="spacemolt")
-                    time.sleep(TICK)
-                    say("sell_bid %d %s @ ~%d cr%s" % (qty, iid, bp, " ERR" if "error" in d else ""))
-                    acted += 1
-                elif kind_a == "sell_modify":
-                    _, iid, oid, np = act
-                    d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
-                    time.sleep(TICK)
-                    say("sell_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
-                    acted += 1
-                elif kind_a == "sell_create":
-                    _, iid, qty, np = act
-                    d = raw("create_sell_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
-                    time.sleep(TICK)
-                    say("sell_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
-                    acted += 1
-                elif kind_a == "buy_modify":
-                    _, iid, oid, np = act
-                    d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
-                    time.sleep(TICK)
-                    say("buy_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
-                    acted += 1
-                elif kind_a == "buy_create":
-                    _, iid, qty, np = act
-                    d = raw("create_buy_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
-                    time.sleep(TICK)
-                    say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
-                    acted += 1
-        except SystemExit:
-            raise
-        except Exception as err:
-            say("poll error: %s: %s" % (type(err).__name__, str(err)[:120]))
-            notes.append("poll err: %s" % type(err).__name__)
-        rem = until - time.time()
-        if rem <= 15:
-            break
-        nap_end = min(until, time.time() + poll_s)
-        while time.time() < nap_end and not stop_requested():
-            time.sleep(min(20.0, max(1.0, nap_end - time.time())))
+        while time.time() < until and not stop_requested():
             try:
-                os.utime(order_path)
-            except OSError:
-                pass
-    notes.append("actions=%d" % acted)
-    return 0
+                book = save_station(base_id, sys_id)
+                open_needs, reserved, catalog_vals = load_needs_and_reserves(REPO, DATA)
+                hold = get_cargo()
+                for iid, q in list(hold.items()):
+                    if q > 0 and iid not in PROTECTED_ITEMS:
+                        raw("deposit", {"item_id": iid, "quantity": q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                stored = get_stored(base_id)
+                orders_resp = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
+                cr = get_credits()
+                eff_pol = policy
+                try:
+                    import upgrades as _upg
+                    if pilot in _upg.protected_pilots(DATA):
+                        eff_pol = json.loads(json.dumps(policy))
+                        eff_pol.setdefault("buy", {})["enabled"] = False
+                except Exception:
+                    pass
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol)
+                for act in acts:
+                    if stop_requested() or time.time() >= until:
+                        break
+                    kind_a = act[0]
+                    if kind_a == "sell_bid":
+                        _, iid, qty, bp = act
+                        raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        d = raw("sell", {"item_id": iid, "quantity": qty}, group="spacemolt")
+                        time.sleep(TICK)
+                        say("sell_bid %d %s @ ~%d cr%s" % (qty, iid, bp, " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "sell_modify":
+                        _, iid, oid, np = act
+                        d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
+                        time.sleep(TICK)
+                        say("sell_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "sell_create":
+                        _, iid, qty, np = act
+                        d = raw("create_sell_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
+                        time.sleep(TICK)
+                        say("sell_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "buy_modify":
+                        _, iid, oid, np = act
+                        d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
+                        time.sleep(TICK)
+                        say("buy_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "buy_create":
+                        _, iid, qty, np = act
+                        d = raw("create_buy_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
+                        time.sleep(TICK)
+                        say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
+                        acted += 1
+            except SystemExit:
+                raise
+            except Exception as err:
+                say("poll error: %s: %s" % (type(err).__name__, str(err)[:120]))
+                notes.append("poll err: %s" % type(err).__name__)
+            rem = until - time.time()
+            if rem <= 15:
+                break
+            nap_end = min(until, time.time() + poll_s)
+            while time.time() < nap_end and not stop_requested():
+                time.sleep(min(20.0, max(1.0, nap_end - time.time())))
+                try:
+                    os.utime(order_path)
+                except OSError:
+                    pass
+        notes.append("actions=%d" % acted)
+        return 0
+    finally:
+        cleanup()
 
 
 if __name__ == "__main__":

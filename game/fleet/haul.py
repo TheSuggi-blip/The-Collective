@@ -488,7 +488,7 @@ def main(argv=None):
 
     p_enc = urllib.parse.quote(pilot, safe="")
     order_path = DATA / "fleet" / "orders" / ship_file_name(pilot)
-    stop_file = DATA / "fleet" / "host" / "stop" / ship_file_name(pilot)
+    stop_files = (DATA / "fleet" / "host" / "stop" / pilot, DATA / "fleet" / "host" / "stop" / ship_file_name(pilot))
     started = time.time()
     notes = []
 
@@ -545,12 +545,13 @@ def main(argv=None):
     def stop_requested():
         if (DATA / "fleet" / "STOP").exists():
             return "fleet STOP"
-        if stop_file.exists():
-            try:
-                stop_file.unlink()
-            except OSError:
-                pass
-            return "per-pilot stop file"
+        for sf in stop_files:
+            if sf.exists():
+                try:
+                    sf.unlink()
+                except OSError:
+                    pass
+                return "per-pilot stop file"
         return ""
 
     write_json(order_path, {"pilot": pilot, "what": "haul " + route_id, "since": utc_now(), "pid": os.getpid()})
@@ -585,223 +586,224 @@ def main(argv=None):
               % (pilot, route_id, mins, before, after, after - before, "; ".join(notes[:4]) or "ok"), flush=True)
         try:
             cur = read_json(order_path, {})
-            if isinstance(cur, dict) and cur.get("pid") == os.getpid():
+            if isinstance(cur, dict) and cur.get("pid") == os.getpid() and cur.get("what") == "haul " + route_id:
                 order_path.unlink()
         except OSError:
             pass
 
-    atexit.register(cleanup)
-
-    base_map = load_base_map(DATA)
     try:
-        lanes = fuelplan.chart(REPO / "game")[0]
-    except Exception:
-        lanes = {}
-    ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
-    cur_sys = str(ship_doc.get("system") or "")
-    hold_cap = max(10, int(ship_doc.get("cargo_capacity") or 100) - int(ship_doc.get("cargo_used") or 0))
-    mods = [str(m).lower() for m in (ship_doc.get("modules") or [])]
-    has_hazmat = any("hazmat" in m for m in mods)
-    avail_cash = max(0, before - int(policy.get("fuel_reserve_cr") or 6000))
-    lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
-    completed = 0
+        base_map = load_base_map(DATA)
+        try:
+            lanes = fuelplan.chart(REPO / "game")[0]
+        except Exception:
+            lanes = {}
+        ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
+        cur_sys = str(ship_doc.get("system") or "")
+        hold_cap = max(10, int(ship_doc.get("cargo_capacity") or 100) - int(ship_doc.get("cargo_used") or 0))
+        mods = [str(m).lower() for m in (ship_doc.get("modules") or [])]
+        has_hazmat = any("hazmat" in m for m in mods)
+        avail_cash = max(0, before - int(policy.get("fuel_reserve_cr") or 6000))
+        lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
+        completed = 0
 
-    # Flush any leftover non-protected cargo from prior runs if docked so hold capacity stays clean
-    _cur_cargo = {k: v for k, v in get_cargo().items() if v > 0 and k not in PROTECTED_ITEMS and not str(k).startswith("package:")}
-    _cur_base = str(ship_doc.get("base") or ship_doc.get("docked") or "")
-    if _cur_cargo and _cur_base and _cur_base in base_map:
-        _mb = save_market(_cur_base, base_map[_cur_base][0])
-        for _iid, _qty in list(_cur_cargo.items()):
-            _row = _mb.get(_iid) or {}
-            _bq = int(_row.get("best_buy_qty") or _row.get("buy_quantity") or 0)
-            _bp = float(_row.get("best_buy") or 0)
-            if _bp >= 10 and _bq > 0:
-                _sq = min(_qty, _bq)
-                raw("sell", {"item_id": _iid, "quantity": _sq}, group="spacemolt")
-                time.sleep(TICK)
-                say("flushed %d leftover %s @ ~%d cr at %s" % (_sq, _iid, int(_bp), _cur_base))
-            _left = get_cargo().get(_iid, 0)
-            if _left > 0:
-                raw("deposit", {"item_id": _iid, "quantity": _left, "target": "self", "source": "cargo"}, group="spacemolt_storage")
-                time.sleep(TICK)
+        # Flush any leftover non-protected cargo from prior runs if docked so hold capacity stays clean
+        _cur_cargo = {k: v for k, v in get_cargo().items() if v > 0 and k not in PROTECTED_ITEMS and not str(k).startswith("package:")}
+        _cur_base = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+        if _cur_cargo and _cur_base and _cur_base in base_map:
+            _mb = save_market(_cur_base, base_map[_cur_base][0])
+            for _iid, _qty in list(_cur_cargo.items()):
+                _row = _mb.get(_iid) or {}
+                _bq = int(_row.get("best_buy_qty") or _row.get("buy_quantity") or 0)
+                _bp = float(_row.get("best_buy") or 0)
+                if _bp >= 10 and _bq > 0:
+                    _sq = min(_qty, _bq)
+                    raw("sell", {"item_id": _iid, "quantity": _sq}, group="spacemolt")
+                    time.sleep(TICK)
+                    say("flushed %d leftover %s @ ~%d cr at %s" % (_sq, _iid, int(_bp), _cur_base))
+                _left = get_cargo().get(_iid, 0)
+                if _left > 0:
+                    raw("deposit", {"item_id": _iid, "quantity": _left, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    time.sleep(TICK)
 
-    for lane in lane_order:
-        if completed > 0 or stop_requested() or (time.time() - started) > minutes * 60.0:
-            break
-        if lane == "active_freight":
-            act = extract_shipments(raw("active", {}, group="spacemolt_shipping"))
-            for c in act:
-                cid = str(c.get("id") or c.get("shipment_id") or "")
-                pkg = str(c.get("package_id") or "")
-                ob = str(c.get("origin_base_id") or "")
-                db = str(c.get("destination_base_id") or "")
-                if not cid or db not in base_map:
-                    continue
-                pkg_item = pkg if pkg.startswith("package:") else ("package:" + pkg)
-                if not get_cargo().get(pkg_item):
-                    if ob not in base_map:
+        for lane in lane_order:
+            if completed > 0 or stop_requested() or (time.time() - started) > minutes * 60.0:
+                break
+            if lane == "active_freight":
+                act = extract_shipments(raw("active", {}, group="spacemolt_shipping"))
+                for c in act:
+                    cid = str(c.get("id") or c.get("shipment_id") or "")
+                    pkg = str(c.get("package_id") or "")
+                    ob = str(c.get("origin_base_id") or "")
+                    db = str(c.get("destination_base_id") or "")
+                    if not cid or db not in base_map:
                         continue
-                    ok_o, msg_o = go_dock(base_map[ob])
+                    pkg_item = pkg if pkg.startswith("package:") else ("package:" + pkg)
+                    if not get_cargo().get(pkg_item):
+                        if ob not in base_map:
+                            continue
+                        ok_o, msg_o = go_dock(base_map[ob])
+                        if not ok_o:
+                            notes.append("active orig unreachable: %s" % msg_o[:40])
+                            continue
+                        raw("withdraw", {"item_id": pkg_item, "quantity": 1}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                    ok_d, msg_d = go_dock(base_map[db])
+                    if ok_d:
+                        del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
+                        time.sleep(TICK)
+                        say("delivered active freight %s -> %s%s" % (cid[:8], db, " ERR" if "error" in del_r else ""))
+                        notes.append("active freight %s -> %s" % (cid[:8], db))
+                        completed += 1
+                        break
+
+            elif lane == "public_freight":
+                entries = extract_shipments(raw("list_all", {"limit": 50}, group="spacemolt_shipping"))
+                if entries:
+                    write_json(DATA / "fleet" / "freight_board.json", {"at": int(time.time()), "entries": entries})
+                else:
+                    cached = read_json(DATA / "fleet" / "freight_board.json", {})
+                    if isinstance(cached, dict) and (time.time() - float(cached.get("at") or 0)) < 600:
+                        entries = cached.get("entries") or []
+                ntags = neutral_partner_tags(DATA)
+                claimed = active_claimed_keys(DATA)
+                pick = pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, ntags, claimed)
+                if pick and claim_job(DATA, pilot, pick["job_key"]):
+                    cid, oloc, dloc = pick["cid"], pick["origin"], pick["dest"]
+                    say("freight %s: %s -> %s (%d cr, %dj+%dj%s)" % (
+                        cid[:8], oloc[2], dloc[2], pick["reward"], pick["pickup_hops"], pick["delivery_hops"],
+                        " partner=" + pick["partner"] if pick["partner"] else ""))
+                    ok_o, msg_o = go_dock(oloc)
                     if not ok_o:
-                        notes.append("active orig unreachable: %s" % msg_o[:40])
+                        notes.append("freight orig err: %s" % msg_o[:40])
+                        release_job(DATA, pilot)
                         continue
+                    save_market(oloc[2], oloc[0])
+                    acc = raw("accept", {"shipment_id": cid, "carrier": "player"}, group="spacemolt_shipping")
+                    time.sleep(TICK)
+                    if "error" in acc or (isinstance(body(acc), dict) and body(acc).get("error")):
+                        say("freight accept %s refused" % cid[:8])
+                        notes.append("freight accept refused")
+                        release_job(DATA, pilot)
+                        continue
+                    pkg_item = pick["pkg_id"] if pick["pkg_id"].startswith("package:") else ("package:" + pick["pkg_id"])
                     raw("withdraw", {"item_id": pkg_item, "quantity": 1}, group="spacemolt_storage")
                     time.sleep(TICK)
-                ok_d, msg_d = go_dock(base_map[db])
-                if ok_d:
-                    del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
-                    time.sleep(TICK)
-                    say("delivered active freight %s -> %s%s" % (cid[:8], db, " ERR" if "error" in del_r else ""))
-                    notes.append("active freight %s -> %s" % (cid[:8], db))
-                    completed += 1
-                    break
-
-        elif lane == "public_freight":
-            entries = extract_shipments(raw("list_all", {"limit": 50}, group="spacemolt_shipping"))
-            if entries:
-                write_json(DATA / "fleet" / "freight_board.json", {"at": int(time.time()), "entries": entries})
-            else:
-                cached = read_json(DATA / "fleet" / "freight_board.json", {})
-                if isinstance(cached, dict) and (time.time() - float(cached.get("at") or 0)) < 600:
-                    entries = cached.get("entries") or []
-            ntags = neutral_partner_tags(DATA)
-            claimed = active_claimed_keys(DATA)
-            pick = pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, ntags, claimed)
-            if pick and claim_job(DATA, pilot, pick["job_key"]):
-                cid, oloc, dloc = pick["cid"], pick["origin"], pick["dest"]
-                say("freight %s: %s -> %s (%d cr, %dj+%dj%s)" % (
-                    cid[:8], oloc[2], dloc[2], pick["reward"], pick["pickup_hops"], pick["delivery_hops"],
-                    " partner=" + pick["partner"] if pick["partner"] else ""))
-                ok_o, msg_o = go_dock(oloc)
-                if not ok_o:
-                    notes.append("freight orig err: %s" % msg_o[:40])
-                    release_job(DATA, pilot)
-                    continue
-                save_market(oloc[2], oloc[0])
-                acc = raw("accept", {"shipment_id": cid, "carrier": "player"}, group="spacemolt_shipping")
-                time.sleep(TICK)
-                if "error" in acc or (isinstance(body(acc), dict) and body(acc).get("error")):
-                    say("freight accept %s refused" % cid[:8])
-                    notes.append("freight accept refused")
-                    release_job(DATA, pilot)
-                    continue
-                pkg_item = pick["pkg_id"] if pick["pkg_id"].startswith("package:") else ("package:" + pick["pkg_id"])
-                raw("withdraw", {"item_id": pkg_item, "quantity": 1}, group="spacemolt_storage")
-                time.sleep(TICK)
-                if not get_cargo().get(pkg_item):
-                    raw("return", {"shipment_id": cid}, group="spacemolt_shipping")
-                    time.sleep(TICK)
-                    notes.append("freight withdraw failed, returned")
-                    release_job(DATA, pilot)
-                    continue
-                ok_d, msg_d = go_dock(dloc)
-                if ok_d:
-                    save_market(dloc[2], dloc[0])
-                    del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
-                    time.sleep(TICK)
-                    say("freight delivered %s -> %s (+%d cr%s)" % (cid[:8], dloc[2], pick["reward"], " ERR" if "error" in del_r else ""))
-                    notes.append("freight %s +%d cr" % (cid[:8], pick["reward"]))
-                    completed += 1
-
-        elif lane == "arbitrage":
-            books_rows = _load_books(DATA)
-            claimed = active_claimed_keys(DATA)
-            job = pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed)
-            if job and claim_job(DATA, pilot, job["job_key"]):
-                iid, bloc, sloc = job["item"], job["buy_loc"], job["sell_loc"]
-                say("arb %s: %d units %s (%d cr) -> %s (%d cr) | est +%d cr" % (
-                    iid, job["qty"], bloc[2], job["est_ask"], sloc[2], job["est_bid"], job["est_profit"]))
-                ok_b, msg_b = go_dock(bloc)
-                if not ok_b:
-                    notes.append("arb buy dock err: %s" % msg_b[:40])
-                    release_job(DATA, pilot)
-                    continue
-                live_b = save_market(bloc[2], bloc[0])
-                row_b = live_b.get(iid) or {}
-                live_ask = float(row_b.get("best_sell") or 0)
-                live_ask_q = int(row_b.get("best_sell_qty") or row_b.get("sell_quantity") or 0)
-                min_m = float(policy.get("min_margin_pct") or 0.20)
-                if live_ask <= 0 or live_ask_q <= 0 or job["est_bid"] < live_ask * (1.0 + min_m):
-                    say("arb %s aborted at %s: live ask %s no longer clears margin vs bid %d" % (iid, bloc[2], live_ask, job["est_bid"]))
-                    notes.append("arb live ask shifted")
-                    release_job(DATA, pilot)
-                    continue
-                buy_q = min(job["qty"], live_ask_q, max(0, int((get_credits() - int(policy.get("fuel_reserve_cr") or 6000)) // (live_ask * 1.05))))
-                if buy_q < 1:
-                    release_job(DATA, pilot)
-                    continue
-                had = get_cargo().get(iid, 0)
-                run_goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(round(live_ask * 1.02)), "maxQuantity": buy_q}]}, tries=1, timeout=300)
-                got = get_cargo().get(iid, 0) - had
-                if got <= 0:
-                    say("arb %s buy got 0 units at %s" % (iid, bloc[2]))
-                    notes.append("arb buy got 0")
-                    release_job(DATA, pilot)
-                    continue
-                ok_s, msg_s = go_dock(sloc)
-                if not ok_s:
-                    notes.append("arb sell dock err: %s" % msg_s[:40])
-                    release_job(DATA, pilot)
-                    continue
-                live_s = save_market(sloc[2], sloc[0])
-                row_s = live_s.get(iid) or {}
-                live_bid = float(row_s.get("best_buy") or 0)
-                live_bid_q = int(row_s.get("best_buy_qty") or row_s.get("buy_quantity") or 0)
-                sell_q = min(got, live_bid_q) if live_bid_q > 0 else 0
-                if live_bid >= live_ask * 1.05 and sell_q > 0:
-                    d = raw("sell", {"item_id": iid, "quantity": sell_q}, group="spacemolt")
-                    time.sleep(TICK)
-                    say("arb sold %d %s at %s @ ~%d cr%s" % (sell_q, iid, sloc[2], int(live_bid), " ERR" if "error" in d else ""))
-                    notes.append("arb sold %d %s %s->%s" % (sell_q, iid, bloc[2], sloc[2]))
-                    rem_q = get_cargo().get(iid, 0)
-                    if rem_q > 0:
-                        raw("deposit", {"item_id": iid, "quantity": rem_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    if not get_cargo().get(pkg_item):
+                        raw("return", {"shipment_id": cid}, group="spacemolt_shipping")
                         time.sleep(TICK)
-                else:
-                    # Bid slipped: deposit safely for local Bursar rather than panic-selling at a loss
-                    raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
-                    time.sleep(TICK)
-                    say("arb %s bid slipped (%s < cost %s): stored %d at %s for Bursar" % (iid, live_bid, live_ask, got, sloc[2]))
-                    notes.append("arb stored %d %s at %s" % (got, iid, sloc[2]))
-                completed += 1
-
-        elif lane == "internal_supply":
-            claimed = active_claimed_keys(DATA)
-            sup = _pick_internal_supply(DATA, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed)
-            if sup and claim_job(DATA, pilot, sup["job_key"]):
-                iid, oloc, dloc, qty = sup["item"], sup["origin"], sup["dest"], sup["qty"]
-                say("supply %d %s: %s -> %s" % (qty, iid, oloc[2], dloc[2]))
-                ok_o, _ = go_dock(oloc)
-                if not ok_o:
-                    release_job(DATA, pilot)
-                    continue
-                raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
-                time.sleep(TICK)
-                have = get_cargo().get(iid, 0)
-                if have <= 0:
-                    release_job(DATA, pilot)
-                    continue
-                ok_d, _ = go_dock(dloc)
-                if ok_d:
-                    r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
-                    time.sleep(TICK)
-                    if "error" in r_dep:
-                        raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                        notes.append("freight withdraw failed, returned")
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, msg_d = go_dock(dloc)
+                    if ok_d:
+                        save_market(dloc[2], dloc[0])
+                        del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
                         time.sleep(TICK)
-                    notes.append("supply %d %s -> %s" % (have, iid, dloc[2]))
+                        say("freight delivered %s -> %s (+%d cr%s)" % (cid[:8], dloc[2], pick["reward"], " ERR" if "error" in del_r else ""))
+                        notes.append("freight %s +%d cr" % (cid[:8], pick["reward"]))
+                        completed += 1
+
+            elif lane == "arbitrage":
+                books_rows = _load_books(DATA)
+                claimed = active_claimed_keys(DATA)
+                job = pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed)
+                if job and claim_job(DATA, pilot, job["job_key"]):
+                    iid, bloc, sloc = job["item"], job["buy_loc"], job["sell_loc"]
+                    say("arb %s: %d units %s (%d cr) -> %s (%d cr) | est +%d cr" % (
+                        iid, job["qty"], bloc[2], job["est_ask"], sloc[2], job["est_bid"], job["est_profit"]))
+                    ok_b, msg_b = go_dock(bloc)
+                    if not ok_b:
+                        notes.append("arb buy dock err: %s" % msg_b[:40])
+                        release_job(DATA, pilot)
+                        continue
+                    live_b = save_market(bloc[2], bloc[0])
+                    row_b = live_b.get(iid) or {}
+                    live_ask = float(row_b.get("best_sell") or 0)
+                    live_ask_q = int(row_b.get("best_sell_qty") or row_b.get("sell_quantity") or 0)
+                    min_m = float(policy.get("min_margin_pct") or 0.20)
+                    if live_ask <= 0 or live_ask_q <= 0 or job["est_bid"] < live_ask * (1.0 + min_m):
+                        say("arb %s aborted at %s: live ask %s no longer clears margin vs bid %d" % (iid, bloc[2], live_ask, job["est_bid"]))
+                        notes.append("arb live ask shifted")
+                        release_job(DATA, pilot)
+                        continue
+                    buy_q = min(job["qty"], live_ask_q, max(0, int((get_credits() - int(policy.get("fuel_reserve_cr") or 6000)) // (live_ask * 1.05))))
+                    if buy_q < 1:
+                        release_job(DATA, pilot)
+                        continue
+                    had = get_cargo().get(iid, 0)
+                    run_goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(round(live_ask * 1.02)), "maxQuantity": buy_q}]}, tries=1, timeout=300)
+                    got = get_cargo().get(iid, 0) - had
+                    if got <= 0:
+                        say("arb %s buy got 0 units at %s" % (iid, bloc[2]))
+                        notes.append("arb buy got 0")
+                        release_job(DATA, pilot)
+                        continue
+                    ok_s, msg_s = go_dock(sloc)
+                    if not ok_s:
+                        notes.append("arb sell dock err: %s" % msg_s[:40])
+                        release_job(DATA, pilot)
+                        continue
+                    live_s = save_market(sloc[2], sloc[0])
+                    row_s = live_s.get(iid) or {}
+                    live_bid = float(row_s.get("best_buy") or 0)
+                    live_bid_q = int(row_s.get("best_buy_qty") or row_s.get("buy_quantity") or 0)
+                    sell_q = min(got, live_bid_q) if live_bid_q > 0 else 0
+                    if live_bid >= live_ask * 1.05 and sell_q > 0:
+                        d = raw("sell", {"item_id": iid, "quantity": sell_q}, group="spacemolt")
+                        time.sleep(TICK)
+                        say("arb sold %d %s at %s @ ~%d cr%s" % (sell_q, iid, sloc[2], int(live_bid), " ERR" if "error" in d else ""))
+                        notes.append("arb sold %d %s %s->%s" % (sell_q, iid, bloc[2], sloc[2]))
+                        rem_q = get_cargo().get(iid, 0)
+                        if rem_q > 0:
+                            raw("deposit", {"item_id": iid, "quantity": rem_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                    else:
+                        # Bid slipped: deposit safely for local Bursar rather than panic-selling at a loss
+                        raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        say("arb %s bid slipped (%s < cost %s): stored %d at %s for Bursar" % (iid, live_bid, live_ask, got, sloc[2]))
+                        notes.append("arb stored %d %s at %s" % (got, iid, sloc[2]))
                     completed += 1
 
-    if completed == 0:
-        say("no eligible haul/freight/arb/supply job matched policy right now; resting 120s")
-        notes.append("no eligible job")
-        end_nap = time.time() + 120.0
-        while time.time() < end_nap and not stop_requested():
-            time.sleep(min(20.0, max(1.0, end_nap - time.time())))
-            try:
-                os.utime(order_path)
-            except OSError:
-                pass
-    return 0
+            elif lane == "internal_supply":
+                claimed = active_claimed_keys(DATA)
+                sup = _pick_internal_supply(DATA, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed)
+                if sup and claim_job(DATA, pilot, sup["job_key"]):
+                    iid, oloc, dloc, qty = sup["item"], sup["origin"], sup["dest"], sup["qty"]
+                    say("supply %d %s: %s -> %s" % (qty, iid, oloc[2], dloc[2]))
+                    ok_o, _ = go_dock(oloc)
+                    if not ok_o:
+                        release_job(DATA, pilot)
+                        continue
+                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    have = get_cargo().get(iid, 0)
+                    if have <= 0:
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, _ = go_dock(dloc)
+                    if ok_d:
+                        r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        if "error" in r_dep:
+                            raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                        notes.append("supply %d %s -> %s" % (have, iid, dloc[2]))
+                        completed += 1
+
+        if completed == 0:
+            say("no eligible haul/freight/arb/supply job matched policy right now; resting 120s")
+            notes.append("no eligible job")
+            end_nap = time.time() + 120.0
+            while time.time() < end_nap and not stop_requested():
+                time.sleep(min(20.0, max(1.0, end_nap - time.time())))
+                try:
+                    os.utime(order_path)
+                except OSError:
+                    pass
+        return 0
+    finally:
+        cleanup()
 
 
 if __name__ == "__main__":

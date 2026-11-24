@@ -287,6 +287,35 @@ def protected_pilots(data_dir):
             if isinstance(r, dict) and r.get("state") in ("queued", "funding", "funded") and r.get("pilot")}
 
 
+def hold_pilots(data_dir):
+    """Pilots needing exclusive shipyard access (funded to commission, or built and ready to switch)."""
+    out = set()
+    for r in load_queue(data_dir):
+        if not isinstance(r, dict) or not r.get("pilot"):
+            continue
+        st = r.get("state")
+        if st == "funded" or (st == "building" and (r.get("ready_to_switch") or str(r.get("note") or "").startswith("ready"))):
+            out.add(str(r["pilot"]))
+    return out
+
+
+def _request_pilot_stop(data_dir, pilot):
+    """Politely ask a pilot's active run (hosted or standalone) to end cleanly so serve_upgrades can dock it."""
+    root = Path(data_dir) / "fleet"
+    try:
+        stop_h = root / "host" / "stop" / str(pilot)
+        stop_h.parent.mkdir(parents=True, exist_ok=True)
+        stop_h.touch()
+        run_marker = root / "host" / "running" / (str(pilot) + ".json")
+        if not run_marker.exists() and (root / "orders" / (str(pilot) + ".json")).exists():
+            safe = re.sub(r"[^A-Za-z0-9._-]", "_", str(pilot))
+            stop_s = root / "stop" / safe
+            stop_s.parent.mkdir(parents=True, exist_ok=True)
+            stop_s.touch()
+    except OSError:
+        pass
+
+
 def _pilot_division_map(data_dir):
     out = {}
     fl_p = Path(data_dir) / "fleet" / "fleet.json"
@@ -652,12 +681,17 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                 actions += 1
                 continue
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
+                _request_pilot_stop(data_dir, pilot)
+                r["note"], r["updated_at"] = "waiting for active run to end (stop sent)", int(now)
+                changed = True
                 continue
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
                     ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
                     if not ok_d:
+                        if "already executing" in msg_d.lower():
+                            _request_pilot_stop(data_dir, pilot)
                         r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
                         changed = True
                         continue
@@ -719,19 +753,24 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                       and not s.get("is_active") and s.get("location_base_id") == base_id]
             if not stored:
                 continue
+            r["ready_to_switch"] = True
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
-                r["note"] = "ready at %s; waiting for pilot free" % base_id
+                _request_pilot_stop(data_dir, pilot)
+                r["note"] = "ready at %s; waiting for pilot free (stop sent)" % base_id
                 continue
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
                     ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
                     if not ok_d:
+                        if "already executing" in msg_d.lower():
+                            _request_pilot_stop(data_dir, pilot)
                         r["note"] = "ready; dock deferred: %s" % msg_d[:60]
                         continue
                 ok_sw, sw_ans = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
                 if ok_sw:
                     _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    r.pop("ready_to_switch", None)
                     r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into %s @ %s" % (hull, base_id)
                     print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id))
                 else:

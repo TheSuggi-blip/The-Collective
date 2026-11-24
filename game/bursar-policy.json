@@ -7,7 +7,7 @@
   "min_cash_keep": 20000,
   "buy": {
     "enabled": true,
-    "max_escrow_per_station": 15000,
+    "max_escrow_per_station": 0,
     "max_orders_per_station": 4,
     "max_units_per_order": 200,
     "max_unit_price_ratio": 0.9,

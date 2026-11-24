@@ -100,5 +100,18 @@ class BursarEngineTests(unittest.TestCase):
         self.assertEqual(acts, [])
 
 
+
+    def test_uncapped_escrow_uses_full_free_cash_above_min_keep(self):
+        book = {"outpost_kit": {"best_buy": 150000, "best_buy_qty": 1, "best_sell": 220000, "best_sell_qty": 1}}
+        pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+        pol["min_cash_keep"] = 20000
+        pol["buy"]["max_escrow_per_station"] = 0
+        acts = bursar.plan_bursar_actions(book, {}, [], {"outpost_kit": 1}, set(), {"outpost_kit": 180000}, 200000, pol)
+        buys = [a for a in acts if a[0] == "buy_create" and a[1] == "outpost_kit"]
+        self.assertEqual(len(buys), 1)
+        self.assertEqual(buys[0][2], 1)
+        self.assertEqual(buys[0][3], 150001)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1742,6 +1742,9 @@ ERRAND_TOLD = set()           # keys already logged once while waiting at dock
 SEAT_HOLD_WAIT = {}           # pilot -> epoch first held idle for wallet.py sweep seat pass
 SEAT_HOLD_SECS = 7 * 60       # one 5m pass + margin for queued seat invite/join
 SEAT_BATCH_HOLD = 20          # max idle unseated pilots held per pass
+UPGRADE_HOLD_WAIT = {}        # (pilot, upgrade_id) -> epoch first held idle for upgrades.serve_upgrades
+UPGRADE_HOLD_SECS = 12 * 60   # two 5m passes max so pilots never freeze if wallet service is stopped
+UPGRADE_TOLD = set()          # keys already logged once while waiting idle for hull upgrade
 
 
 def leader_of_empire(data):
@@ -1860,6 +1863,38 @@ def seat_hold_needed(name, data, now):
         return False
     since = SEAT_HOLD_WAIT.setdefault(name, now)
     return (now - since) < SEAT_HOLD_SECS
+
+
+def upgrade_hold_needed(name, data, now):
+    """Return the active upgrade_queue.json row when `name` should wait idle up to UPGRADE_HOLD_SECS
+    so wallet.py serve / upgrades.serve_upgrades can commission or switch into its queued hull."""
+    urows = read_json(Path(data) / "fleet" / "upgrade_queue.json", [])
+    if not isinstance(urows, list) or not urows:
+        UPGRADE_HOLD_WAIT.clear()
+        UPGRADE_TOLD.clear()
+        return None
+    waiting = {}
+    for r in urows:
+        if not isinstance(r, dict) or not r.get("pilot"):
+            continue
+        st = r.get("state")
+        if st == "funded" or (st == "building" and (r.get("ready_to_switch") or str(r.get("note") or "").startswith("ready"))):
+            p = str(r["pilot"])
+            if p not in waiting:
+                waiting[p] = r
+    active_keys = {(p, str(r.get("id") or "")) for p, r in waiting.items()}
+    for k in list(UPGRADE_HOLD_WAIT):
+        if k not in active_keys:
+            UPGRADE_HOLD_WAIT.pop(k, None)
+            UPGRADE_TOLD.discard(k)
+    todo = waiting.get(name)
+    if todo is None:
+        return None
+    key = (name, str(todo.get("id") or ""))
+    since = UPGRADE_HOLD_WAIT.setdefault(key, now)
+    if (now - since) < UPGRADE_HOLD_SECS:
+        return todo
+    return None
 
 
 def orphans(fleet, orders, now, seen):
@@ -2013,6 +2048,13 @@ def one_pass(root, data, dry_run, children):
                 lines.append("%s held docked for open treasury fund (%s %s cr)" % (name, f_obj.get("pilot"), format(int(f_obj.get("credits") or 0), ",")))
             continue
         if seat_hold_needed(name, data, now):
+            continue
+        u_obj = upgrade_hold_needed(name, data, now)
+        if u_obj is not None:
+            ukey = (name, str(u_obj.get("id") or ""))
+            if ukey not in UPGRADE_TOLD:
+                UPGRADE_TOLD.add(ukey)
+                lines.append("%s held idle for queued hull upgrade (%s %s)" % (name, u_obj.get("id"), u_obj.get("hull")))
             continue
         e_act, e_obj = (None, None) if f_act is not None else leader_errand_action(name, ship, data, now, routes)
         if e_act == "hold":

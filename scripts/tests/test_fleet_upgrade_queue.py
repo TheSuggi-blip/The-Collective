@@ -157,5 +157,49 @@ class UpgradeQueueTests(unittest.TestCase):
         self.assertEqual(gate.calls, [])
 
 
+
+    def test_busy_funded_and_ready_pilots_receive_polite_stop_and_dispatch_hold(self):
+        import dispatch
+        dispatch.UPGRADE_HOLD_WAIT.clear()
+        dispatch.UPGRADE_TOLD.clear()
+        rc, lines = upgrades.queue_add(self.data, "Apophis", "recursion", "node_beta:poi:node_beta_base", 370000,
+                                       pilots="drone-2", now=1000)
+        self.assertEqual(rc, 0, lines)
+        rows = upgrades.load_queue(self.data)
+        rows[0]["state"] = "funded"
+        upgrades.save_queue(self.data, rows)
+
+        # Dispatch must hold funded pilot idle up to UPGRADE_HOLD_SECS
+        held = dispatch.upgrade_hold_needed("drone-2", self.data, 1050)
+        self.assertIsNotNone(held)
+        self.assertEqual(held["hull"], "recursion")
+        self.assertIsNone(dispatch.upgrade_hold_needed("drone-1", self.data, 1050))
+        self.assertIsNone(dispatch.upgrade_hold_needed("drone-2", self.data, 1050 + dispatch.UPGRADE_HOLD_SECS + 1))
+
+        # Busy funded pilot receives host/stop/<pilot> instead of silent deferral
+        gate, wal, div = FakeGate(quote_price=350000, delivered=False), FakeWallet(), FakeDivision()
+        ord_p = self.data / "fleet" / "orders" / "drone-2.json"
+        ord_p.write_text(json.dumps({"pilot": "drone-2", "what": "bursar bursar-network"}), encoding="ascii")
+        upgrades.serve_upgrades(self.data, now=1060, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        stop_h = self.data / "fleet" / "host" / "stop" / "drone-2"
+        self.assertTrue(stop_h.is_file())
+        rows_after = upgrades.load_queue(self.data)
+        self.assertIn("stop sent", rows_after[0]["note"])
+
+        # Once pilot is free, it commissions; when ready while busy, ready_to_switch + stop sent
+        stop_h.unlink()
+        ord_p.unlink()
+        upgrades.serve_upgrades(self.data, now=1070, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        self.assertEqual(upgrades.load_queue(self.data)[0]["state"], "building")
+        gate.delivered = True
+        ord_p.write_text(json.dumps({"pilot": "drone-2", "what": "hunt hunt-alpha"}), encoding="ascii")
+        upgrades.serve_upgrades(self.data, now=2000, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        self.assertTrue(stop_h.is_file())
+        self.assertTrue(upgrades.load_queue(self.data)[0].get("ready_to_switch"))
+        self.assertIn("drone-2", upgrades.hold_pilots(self.data))
+        dispatch.UPGRADE_HOLD_WAIT.clear()
+        self.assertIsNotNone(dispatch.upgrade_hold_needed("drone-2", self.data, 2010))
+
+
 if __name__ == "__main__":
     unittest.main()
