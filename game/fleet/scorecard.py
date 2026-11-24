@@ -112,13 +112,13 @@ RESPONSIBILITY_CENTERS = {
     "Command": {"type": "Investment Center", "short": "Investment",
                 "focus": "Fleetwide Net Worth, Consolidated Cash & Accrual, Seating, Roadmaps, CapEx Governance"},
     "Trade": {"type": "Profit Center", "short": "Profit Ctr",
-              "focus": "Recurring Cash & Accrual Margin (net of handovers), Dynamic Market Hub Coverage"},
+              "focus": "Recurring Cash & Accrual Margin (net of handovers), Dynamic Hub Coverage, Commercial Crafting"},
     "Mining": {"type": "Production Center", "short": "Production",
                "focus": "IAS 2 Accrual Value-Add (handovers + vault), Ore/ship-h, Belt Spread"},
     "Military": {"type": "Combat & Security Center", "short": "Combat/Sec",
                  "focus": "0 Losses, Combat XP & Kills, IAS 2 Loot Value-Add, Herd Spread"},
     "Logistics": {"type": "Service & Infra Center", "short": "Service/Infra",
-                  "focus": "Supply Chains at Keep, Open P1/P2 Fulfillment SLA, Freight/Shipping, Zero Idle"},
+                  "focus": "Supply Chains at Keep, Industrial Crafting, Open P1/P2 SLA, Freight/Shipping & Express Passengers"},
     "Intel": {"type": "Recon Cost Center", "short": "Cost Ctr",
               "focus": "<3h Market/Place Freshness (enables Trade), 0 Losses, Diplomatic Comms SLA"},
 }
@@ -617,7 +617,7 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             poi, is_bursar = _route_meta("circuit", rid)
             if is_bursar and poi and sdivs.get(pilot, "Trade") == "Trade":
                 by_div["Trade"][poi] += 1
-            elif sdivs.get(pilot) == "Logistics" and (rid.startswith(("supply-", "freight-", "carry-", "outpost-")) or "shipping" in rid):
+            elif sdivs.get(pilot) == "Logistics" and (rid.startswith(("supply-", "freight-", "carry-", "outpost-", "passenger-")) or "shipping" in rid):
                 haul_active += 1
 
     depleted_by_poi = defaultdict(list)

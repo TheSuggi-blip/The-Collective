@@ -91,5 +91,29 @@ class TestFleetRivals(unittest.TestCase):
             self.assertTrue(len(pb0["empires"]) >= 1)
 
 
+    def test_active_rivals_prioritized_and_zero_wealth_baseline_skipped(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = self._fixture(tmp)
+            conn = sqlite3.connect(str(data / "store" / "read.db"))
+            conn.executescript("""
+                INSERT INTO rival_snapshots VALUES
+                    (100000, 'AFK1', 'Dormant Vault', 10, 0, 0, 50000000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3.0, '[]', '[]', 'x'),
+                    (107200, 'AFK1', 'Dormant Vault', 10, 0, 0, 50000000000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 3.0, '[]', '[]', 'x'),
+                    (100000, 'RISE', 'Rising Crafters', 25, 1, 0, 0, 0, 0, 0, 0, 1000, 0, 0, 0, 0, 10, 20, 3, 1.8, '[]', '[]', 'x'),
+                    (103600, 'RISE', 'Rising Crafters', 25, 1, 0, 100000000, 0, 0, 0, 0, 2000, 0, 0, 0, 0, 10, 20, 3, 1.8, '[]', '[]', 'x'),
+                    (107200, 'RISE', 'Rising Crafters', 25, 1, 0, 110000000, 0, 0, 0, 0, 3500, 0, 0, 0, 0, 10, 20, 3, 1.8, '[]', '[]', 'x');
+            """)
+            conn.commit()
+            conn.close()
+            doc = rivals.compute_sedcards(root, data, top_n=4, now=107200)
+            tags = [c["tag"] for c in doc["sedcards"]]
+            self.assertIn("RISE", tags)
+            self.assertNotIn("AFK1", tags)
+            self.assertEqual([d["tag"] for d in doc["dormant_vaults"]], ["AFK1"])
+            by_tag = {c["tag"]: c for c in doc["sedcards"]}
+            # Zero-wealth row at t=100000 must be skipped; baseline is t=103600 -> +10M over 1h
+            self.assertEqual(by_tag["RISE"]["wealth_vel_h"], 10000000.0)
+            self.assertEqual(by_tag["RISE"]["crafted_vel_h"], 1500.0)
+
 if __name__ == "__main__":
     unittest.main()
