@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 20 | 6 | 14 | sell-ember-experiment-dheneb: 333,190 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 90 | 47 | 43 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 38 | 17 | 21 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 643 | 122 | 519 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 645 | 122 | 521 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 8 | 4 | 4 | need-melt-crucible: -440 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 61 | 19 | 42 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 952 | 238 | 712 | |
+| All | | 954 | 238 | 714 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | bursar | census | circuit | guard | haul | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|---|---|
 | home space | 238 | 0 | 1 | 201 | 1 | 0 | 20 | 15 | 3 |
-| beyond the border | 712 | 0 | 24 | 241 | 7 | 0 | 312 | 128 | 29 |
+| beyond the border | 714 | 0 | 24 | 243 | 7 | 0 | 312 | 128 | 29 |
 | not on the chart | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | -- |
 
 ## Plans by Role

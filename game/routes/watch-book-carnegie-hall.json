@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-carnegie-hall",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Carnegie Hall, Winterhold ([BEAT]) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 11:53 UTC (orders ENT-086 P1 and block ORACLE; MISSION.md: rival books and dark earners read; rule F8; skill intel-turn step 9: a station where scouts wait docked gets a watch route). At 11:50 UTC a scout stood docked and free here (board.py, Oracle: docked, free) and the scorecard counted it idle (idle 6, 88.0 percent work, 11:50 UTC); no watch route named winterhold. The station lists storage only (table stations), yet its book was read at 11:47 UTC (data/market); [BEAT] is a zero-base docked factory earner the rival playbooks ask us to probe (hive.py rivals intel). If view_market answers nothing here, the route goes off. A copy of watch-book-hex-star: one ship a station, only a scout already in this system (requires.in_system). Standing work, never judged on its pay (F22). The book of another faction's station ([BEAT] BEAT, rulebook sec 14: hailed, no agreement): read as any visitor reads it, never traded from here, which is Trade's work.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "winterhold"
+ },
+ "stops": [
+  {
+   "at": "winterhold:6a286d5d8c48468a8d50e57da6cb3690:554230f8a484b98ffeb5760d80d44c60",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}

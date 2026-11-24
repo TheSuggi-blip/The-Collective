@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 643.
+Routes: 645.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -239,6 +239,8 @@ Routes: 643.
 | [supply-repair-gsc-0044-plate](supply-repair-gsc-0044-plate.json) | circuit | beyond the border, 6 jumps | Steel plate for the repair of our outpost CLTV Outpost GSC-0044: 60 plate of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only | once per pilot, up to 1 ships, 6 pilots in all, from 5,000 cr, with 100 steel_plate stored at node_beta_industrial_station, standing work | 6 | 12 | -20 | one-time | 2026-11-22 |
 | [watch-book-alpha-centauri](watch-book-alpha-centauri.json) | circuit | beyond the border, 11 jumps | Zero-fuel docked watch: a scout already docked at Alpha Centauri Colonial Station (Solarian) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 39 | 5 | 0 | 0 | 2026-11-24 |
 | [watch-book-cargo-lanes](watch-book-cargo-lanes.json) | circuit | beyond the border, 20 jumps | Zero-fuel docked watch: a scout already docked at Cargo Lanes Freight Depot (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 9 | 30 | 440 | 890 | 2026-11-24 |
+| [watch-book-carnegie-hall](watch-book-carnegie-hall.json) | circuit | beyond the border, 17 jumps | Zero-fuel docked watch: a scout already docked at Carnegie Hall, Winterhold ([BEAT]) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
+| [watch-book-crescent-moon](watch-book-crescent-moon.json) | circuit | beyond the border, 11 jumps | Zero-fuel docked watch: a scout already docked at The Crescent Moon, Mebsuta ([MOON]) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-deep-range](watch-book-deep-range.json) | circuit | beyond the border, 19 jumps | Zero-fuel docked watch: a scout already docked at Deep Range Outpost (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 8 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-factory-belt](watch-book-factory-belt.json) | circuit | beyond the border, 23 jumps | Zero-fuel docked watch: a scout already docked at Factory Belt Manufacturing Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 26 | 5 | 150 | 790 | 2026-11-24 |
 | [watch-book-gold-run](watch-book-gold-run.json) | circuit | beyond the border, 19 jumps | Zero-fuel docked watch: a scout already docked at Gold Run Extraction Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 13 | 5 | 0 | 0 | 2026-11-23 |

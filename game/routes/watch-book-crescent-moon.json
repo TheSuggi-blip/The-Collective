@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-crescent-moon",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at The Crescent Moon, Mebsuta ([MOON]) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 11:53 UTC (orders ENT-086 P1 and block ORACLE; MISSION.md: rival books and dark earners read; rule F8; skill intel-turn step 9: a station where scouts wait docked gets a watch route). At 11:50 UTC a scout stood docked and free here (board.py, Oracle: docked, free) and the scorecard counted it idle (idle 6, 88.0 percent work, 11:50 UTC); no watch route named mebsuta. The station lists market and missions (table stations); [MOON] is of the [BUSY] bloc, the largest rival by wealth (hive.py briefing, RIVAL #1). A copy of watch-book-hex-star: one ship a station, only a scout already in this system (requires.in_system). Standing work, never judged on its pay (F22). The book of another faction's station ([MOON] Rise and Fall of Goldcrest Moon, rulebook sec 14: hailed, no agreement): read as any visitor reads it, never traded from here, which is Trade's work.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "mebsuta"
+ },
+ "stops": [
+  {
+   "at": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
