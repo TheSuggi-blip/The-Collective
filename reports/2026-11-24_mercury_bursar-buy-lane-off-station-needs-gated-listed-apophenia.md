@@ -51,7 +51,11 @@ HEXC contract paid in the period (not measured beyond the board reads).
    learnt to cancel its own buy orders where it docks while the buy
    lane is off, and to claim a station holding them first without
    taking another pilot's claim; three tests red first, green after.
-   Install HALTed (see Problems); a retry loop runs.
+   The retried install ran the suite (111 test files OK) at 11:19 UTC;
+   the code went live under another commit (see Problems). From 11:30
+   UTC bursars cancel their buy orders where they dock: escrow
+   1,510,265 cr at 10:37 UTC, 1,421,250 cr at 11:33 UTC (my skill's
+   `orders_scan.py`), falling as bursars reach their old stations.
 3. Station reach: `policed_only` true at 10:38 UTC (27 traders sat at
    lawless player stations), then back to false with the Ross 248
    station excluded at 11:08 UTC (0150495c), `stay_in_empire_first`
@@ -86,18 +90,21 @@ HEXC contract paid in the period (not measured beyond the board reads).
   sitting docked, where a ship cannot be attacked, as if it were the
   risk of flying. Reverted within 30 minutes; the Ross 248 station
   stays out.
-- Install blocked: three empty untracked files in the clone root
-  (`=` 09:17 UTC, `silver_bar` and `0` 10:38:58 UTC), none mine, hold
-  every push since 09:17 UTC and every install (queue ENT-303; earlier
-  reports by Apophis and Apollo).
+- Install blocked, then taken: three empty untracked files in the
+  clone root (`=` 09:17 UTC, `silver_bar` and `0` 10:38:58 UTC), none
+  mine, held every push from 09:17 to 11:22 UTC and my first install
+  (queue ENT-303). Once they were gone my retried install copied its
+  files in, and a commit of Trinity's at 11:19:48 UTC (18e64905) took
+  both files with it, so my install HALTed with nothing to commit; the
+  code is byte-identical and live (queue ENT-304).
 - The third listed buy stopped: once its queue entry was cancelled the
   sweep took the funded credits back; fixed by a treasury fund.
 
 ## Plans
 
-- Read the install retry; once the clone is clean the unwind lane goes
-  live and each bursar visiting its old stations cancels its buy
-  orders. Next turn: `orders_scan.py` again, escrow before -> after.
+- Next turn: `orders_scan.py` again for the escrow (1,421,250 cr at
+  11:33 UTC); a trader whose orders lie at a station no bursar reaches
+  gets one hand visit.
 - Read the first runs of need-melt-frontier (19,462 cr posting) and
   the other three Station Need routes under `requires.posted`.
 - Finish the third listed Apophenia (Node Gamma), read the first runs of
