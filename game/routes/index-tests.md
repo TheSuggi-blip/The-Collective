@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 94.
+Routes: 95.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -78,6 +78,7 @@ Routes: 94.
 | [carry-liner-first-step-to-ramens](carry-liner-first-step-to-ramens.json) | circuit | beyond the border, 18 jumps | Stored chemical liners carried from First Step to Ramen's Rest and sold into its bid at 900 cr or more | up to 1 ships, with 6 chemical_liner stored at first_step_memorial_station, while ramens_rest bids 900 cr for chemical_liner | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-nexus-to-sol](carry-melt-nexus-to-sol.json) | circuit | beyond the border, 10 jumps | Crystal melt stored by Trade at Central Nexus carried to the station bid at Confederacy Central Command (Sol) and sold there | up to 1 ships, with 20 crystal_melt stored at central_nexus, while confederacy_central_command bids 4000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-null-matter-nexus-to-crucible](carry-null-matter-nexus-to-crucible.json) | circuit | beyond the border, 18 jumps | Null matter stored by Trade at Central Nexus carried to the station bid at The Crucible Garrison and sold there | up to 1 ships, with 65 null_matter stored at central_nexus, while the_crucible_garrison bids 300 cr for null_matter | TBD | TBD | TBD | TBD | -- |
+| [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 60 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac | TBD | TBD | TBD | TBD | -- |
 | [mission-shipyard-engine-core-deep-range](mission-shipyard-engine-core-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Engine Core at Deep Range Outpost: 12 bought at Unknown Edge Waystation, delivered for 18,988 cr (Outer Rim haulers) | up to 1 ships, from 19,862 cr, born outerrim, while unknown_edge_waystation asks 1400 cr or less for engine_core | TBD | TBD | TBD | TBD | -- |
 | [mission-shipyard-fuel-tank-deep-range](mission-shipyard-fuel-tank-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Fuel Tank at Deep Range Outpost: 14 fuel tanks bought at Unknown Edge Waystation, carried 3 jumps and delivered for 9,515 cr (Outer Rim haulers) | up to 3 ships, from 11,500 cr, born outerrim, while unknown_edge_waystation asks 620 cr or less for fuel_tank | TBD | TBD | TBD | TBD | -- |
 | [mission-shipyard-titanium-alloy-deep-range](mission-shipyard-titanium-alloy-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Titanium Alloy at Deep Range Outpost: 25 bought at Frontier Station, delivered for 26,133 cr (Outer Rim haulers) | up to 1 ships, from 27,361 cr, born outerrim, while frontier_station asks 960 cr or less for titanium_alloy | TBD | TBD | TBD | TBD | -- |

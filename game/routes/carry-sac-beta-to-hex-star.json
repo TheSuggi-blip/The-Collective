@@ -2,13 +2,13 @@
  "id": "carry-sac-beta-to-hex-star",
  "kind": "circuit",
  "title": "Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there",
- "note": "2026-11-23 06:10 UTC (Mercury): orders ENT-078, block MERCURY (sell what is handed over at or above the bids) and P5. Hex Star, a player's station in Dheneb, bids 1,368 x 191 for caustic sac, then 721 x 1 and 702 x 199 (view_market by a docked trader, 06:09 UTC); First Step bids 1,286 x 81, Node Beta none. Trade's own storage at Node Beta holds 121 sacs (table holdings 06:08 UTC); no open need names caustic sac (game/needs.tsv, game/reserve.tsv). 11 jumps (scripts/map.py route). The carrier withdraws 60 (one Threshold hold), sells at 1,250 or better, stores the rest at Hex Star. requires.bid closes it while Hex Star shows no bid at 1,250. Nothing is bought. A test: one ship (F37). 2026-11-23 06:12 UTC (Mercury): set off by the reserve gate (reservecheck.py FLAG: held 176, short 49, needs economy_passenger_cabin, resonance_miner, transit_lounge).",
+ "note": "2026-11-23 06:10 UTC (Mercury): orders ENT-078, block MERCURY (sell what is handed over at or above the bids) and P5. Hex Star, a player's station in Dheneb, bids 1,368 x 191 for caustic sac, then 721 x 1 and 702 x 199 (view_market by a docked trader, 06:09 UTC); First Step bids 1,286 x 81, Node Beta none. Trade's own storage at Node Beta holds 121 sacs (table holdings 06:08 UTC); no open need names caustic sac (game/needs.tsv, game/reserve.tsv). 11 jumps (scripts/map.py route). The carrier withdraws 60 (one Threshold hold), sells at 1,250 or better, stores the rest at Hex Star. requires.bid closes it while Hex Star shows no bid at 1,250. Nothing is bought. A test: one ship (F37). 2026-11-23 06:12 UTC (Mercury): set off by the reserve gate (reservecheck.py FLAG: held 176, short 49, needs economy_passenger_cabin, resonance_miner, transit_lounge). 2026-11-24 19:17 UTC (Mercury): on again: the reserve holds 141 for transit-lounge of 278 held (needs items 19:15 UTC; reservecheck.py PASS); Trade stores 169 at Node Beta (two traders, 93 and 76; holdings 19:16 UTC); stored min 60 lets each holder fly once: 120 sold, 158 kept above the need. Hex Star bids 1,368 x 184 (surplus view 19:15 UTC).",
  "max_ships": 1,
  "requires": {
   "stored": {
    "at": "node_beta_industrial_station",
    "item": "caustic_sac",
-   "min": 30
+   "min": 60
   },
   "bid": {
    "item": "caustic_sac",
@@ -41,6 +41,5 @@
    "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
    "store": "all"
   }
- ],
- "status": "off"
+ ]
 }
