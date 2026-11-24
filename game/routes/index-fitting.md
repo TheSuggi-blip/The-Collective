@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 40.
+Routes: 41.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -31,6 +31,7 @@ Routes: 40.
 | [rearm-pulse-laser-central-nexus](rearm-pulse-laser-central-nexus.json) | circuit | home space | A Military ship without a weapon takes the Pulse Laser I it stored at Central Nexus out of storage and fits it again | once per pilot, up to 5 ships, 20 pilots in all, without ['pulse_laser_i', 'pulse_laser_ii', 'pulse_laser_iii', 'focused_beam_i', 'plasma_cannon_ii', 'piercing_railgun_i'], from 3,000 cr, with 1 pulse_laser_i stored at central_nexus | 4 | 18 | -180 | one-time | 2026-11-23 |
 | [strip-mining-laser-central-nexus](strip-mining-laser-central-nexus.json) | circuit | home space | A Military ship in nexus_prime strips its off-role Mining Laser I (and an Ice Harvester I) docked at Central Nexus into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 12 | 1 | -10 | one-time | 2026-11-23 |
 | [strip-mining-laser-node-beta](strip-mining-laser-node-beta.json) | circuit | home space | A Military ship in node_beta strips its off-role Mining Laser I (and an Ice Harvester I) docked at Node Beta Industrial Station into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 46 | 1 | -10 | one-time | 2026-11-24 |
+| [strip-missile-launcher-central-nexus](strip-missile-launcher-central-nexus.json) | circuit | home space | A drone with a Missile Launcher I or a Railgun I and autocannons strips the launcher at Central Nexus, stores it, and takes four rounds boxes | once per pilot, up to 3 ships, 10 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr | TBD | TBD | TBD | TBD | -- |
 | [strip-pulse-laser-central-nexus](strip-pulse-laser-central-nexus.json) | circuit | home space | A Voidborn miner docked at Central Nexus strips its off-role Pulse Laser I into its storage there (no fuel: docked_at) | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr, born voidborn | 93 | 1 | 10 | one-time | 2026-11-23 |
 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | circuit | home space | A trader docked at The Experiment strips its off-role starter modules (Pulse Laser I, Mining Laser I, Gas Harvester I) into its storage there | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | 9 | 1 | 0 | one-time | 2026-11-24 |
 | [fit-armor-plate-ii-krynn-test](fit-armor-plate-ii-krynn-test.json) | circuit | beyond the border, 20 jumps | A Crimson-born Military ship strips its Mining Laser I and fits an Armor Plate II into its empty defence slot at crimson_war_citadel | once per pilot, up to 3 ships, 5 pilots in all, without armor_plate_ii, empty hold, from 5,000 cr, born crimson, while crimson_war_citadel asks 1500 cr or less for armor_plate_ii | 5 | 4 | -650 | one-time | 2026-11-23 |

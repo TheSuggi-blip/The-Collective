@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 676.
+Routes: 674.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -526,14 +526,12 @@ Routes: 676.
 | [hunt-test-keid-ice-shelf-deuteron-slug-pl3](hunt-test-keid-ice-shelf-deuteron-slug-pl3.json) | hunt | beyond the border, 5 jumps | Weapon test: deuteron slug with a Pulse Laser III at keid_ice_shelf; loot stored | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 13 | 20 | -200 | -570 | 2026-11-22 |
 | [hunt-test-lesath-cinder-sylph](hunt-test-lesath-cinder-sylph.json) | hunt | beyond the border, 5 jumps | Cinder-sylphs at lesath_gas_cloud (lawless); ember glands kept for the Hex Star bid (Dheneb) | up to 1 ships, without piercing_railgun_i, empty hold, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland, standing work | 5 | 18 | -240 | -630 | 2026-11-24 |
 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | hunt | beyond the border, 6 jumps | Yield test: hollow_pilgrim at tanglewood_frost_ring (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 1 | 32 | -340 | -640 | 2026-11-24 |
-| [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | hunt | beyond the border, 29 jumps | veil_ray at the_dim_lantern; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-the-quiet-shimmer-veil-ray](hunt-the-quiet-shimmer-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_quiet_shimmer; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 14 | 41 | -250 | -360 | 2026-11-22 |
 | [hunt-the-telescope-entangled-drift-veil-ray](hunt-the-telescope-entangled-drift-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_entangled_drift; loot sold at First Step Memorial Station | up to 1 ships, standing work | 19 | 29 | -140 | -290 | 2026-11-24 |
 | [hunt-the-telescope-flicker-field-veil-ray](hunt-the-telescope-flicker-field-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at the_telescope_flicker_field; loot sold at First Step Memorial Station | up to 1 ships, standing work | 9 | 31 | -190 | -330 | 2026-11-24 |
 | [hunt-thin-breath-haze-veil-ray](hunt-thin-breath-haze-veil-ray.json) | hunt | beyond the border, 18 jumps | veil_ray at thin_breath_haze; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 2 | 13 | -110 | -500 | 2026-11-24 |
 | [hunt-timberline-gas-pocket-drift-ray](hunt-timberline-gas-pocket-drift-ray.json) | hunt | beyond the border, 13 jumps | drift_ray at timberline_gas_pocket; loot to the trader at Alpha Centauri Colonial Station (newborn region work, Sol) | up to 1 ships, empty hold, standing work | 14 | 11 | -130 | -700 | 2026-11-23 |
 | [hunt-titawin-gas-cloud-chlorophage](hunt-titawin-gas-cloud-chlorophage.json) | hunt | beyond the border, 12 jumps | chlorophage at titawin_gas_cloud; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 4 | 30 | -320 | -630 | 2026-11-23 |
-| [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold, standing work | 9 | 55 | -360 | -400 | 2026-11-24 |
 | [hunt-torcular-frost-ring-hollow-pilgrim](hunt-torcular-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 18 jumps | hollow_pilgrim at torcular_frost_ring; loot sold at First Step Memorial Station | up to 1 ships, empty hold, standing work | 7 | 35 | -240 | -400 | 2026-11-24 |
 | [hunt-trappist-1-banked-coal-reef-belt-grazer](hunt-trappist-1-banked-coal-reef-belt-grazer.json) | hunt | beyond the border, 20 jumps | belt_grazer, patina_grazer at banked_coal_reef; loot to the trader at War Citadel (newborn region work) | up to 1 ships, empty hold, standing work | 8 | 32 | -340 | -680 | 2026-11-23 |
 | [hunt-trappist-1-frost-ring-rime-grazer](hunt-trappist-1-frost-ring-rime-grazer.json) | hunt | beyond the border, 20 jumps | rime_grazer, pressblister at trappist_1_frost_ring; loot to the trader at War Citadel (newborn region work) | up to 1 ships, empty hold, standing work | 7 | 28 | -310 | -800 | 2026-11-24 |

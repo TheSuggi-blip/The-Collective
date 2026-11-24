@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 62.
+Routes: 64.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -74,6 +74,8 @@ Routes: 62.
 | [hunt-test-amberfall-chlorophage](hunt-test-amberfall-chlorophage.json) | hunt | beyond the border, 5 jumps | Yield test: chlorophage at Amberfall Emission Nebula (lawless); does a kill drop caustic sac | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-bluerift-frost-ring-rime-grazer](hunt-test-bluerift-frost-ring-rime-grazer.json) | hunt | beyond the border, 7 jumps | rime-grazer, pressblister at bluerift frost ring; goods into storage at The Experiment Research Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-garnet-slag-tortoise](hunt-test-garnet-slag-tortoise.json) | hunt | beyond the border, 5 jumps | Yield test: slag_tortoise at garnet_belt (lawless); what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | hunt | beyond the border, 29 jumps | veil_ray at the_dim_lantern; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold, standing work, off | 9 | 55 | -360 | -400 | 2026-11-24 |
 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [mine-floodlight-flats](mine-floodlight-flats.json) | mine | beyond the border, 12 jumps | Floodlight Flats: iron_ore, copper_ore, silicon_ore, neodymium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-long-errand-band](mine-long-errand-band.json) | mine | beyond the border, 10 jumps | Long Errand Band: nickel_ore; sold at Ironlight Crossroads | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
