@@ -110,7 +110,7 @@ RESPONSIBILITY_CENTERS = {
     "Military": {"type": "Combat & Security Center", "short": "Combat/Sec",
                  "focus": "0 Losses, Combat XP & Kills, IAS 2 Loot Value-Add, Herd Spread"},
     "Logistics": {"type": "Service & Infra Center", "short": "Service/Infra",
-                  "focus": "Supply Chains at Keep, Outpost Kits, Freight/Shipping, Zero Idle"},
+                  "focus": "Supply Chains at Keep, Open P1/P2 Fulfillment SLA, Freight/Shipping, Zero Idle"},
     "Intel": {"type": "Recon Cost Center", "short": "Cost Ctr",
               "focus": "<3h Market/Place Freshness (enables Trade), 0 Losses, Diplomatic Comms SLA"},
 }
@@ -1325,12 +1325,20 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 })
         elif div == "Logistics":
             chain_pct = round(100.0 * supply_ok / max(1, supply_tot), 1) if supply_tot else 100.0
-            top_need = needs_open[0] if needs_open else None
-            need_txt = f"top P{top_need['priority']} {top_need['id']} {top_need['pct']:.1f}%" if top_need else "all P1/P2 covered"
+            log_needs = [n for n in needs_open if (n.get("division") or "logistics") == "logistics"]
+            log_reqs = [r for r in open_req_items if "apollo" in r["to"].lower() or "logistics" in r["to"].lower()]
+            backlog_n = len(log_needs) + len(log_reqs)
+            if log_needs:
+                top_n = log_needs[0]
+                bk_txt = f"{backlog_n} open P1/P2 ({top_n['id']} {top_n['pct']:.0f}%)"
+            elif log_reqs:
+                bk_txt = f"{len(log_reqs)} open req(s)"
+            else:
+                bk_txt = "0 open backlog"
             log_sev = _severity_pct(chain_pct, 60.0, 80.0)
             role_kpi = {
-                "name": "Supply Chains & Build Kits",
-                "value": f"chains {supply_ok}/{supply_tot} OK ({chain_pct:.0f}%) | {need_txt}",
+                "name": "Supply Chains & Fulfillment SLA",
+                "value": f"chains {supply_ok}/{supply_tot} OK ({chain_pct:.0f}%) | {bk_txt}",
                 "pct": chain_pct,
                 "status": log_sev,
                 "cashflow_24h": round(d_net24, 1),
@@ -1340,7 +1348,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     "severity": log_sev, "code": "SUPPLY_CHAINS", "metric": "Supply Chains at Keep",
                     "actual": f"{supply_ok}/{supply_tot} ({chain_pct:.1f}%): {', '.join(supply_short[:3])}",
                     "target": ">=80% chains OK", "direction": d_trend,
-                    "action": "Refill short outpost fuel/repair reserves and close Atria kit / Core Foundry craft gaps (P2/P3); check shipping.py list (Ch3)",
+                    "action": "Refill short supply chains and fulfill active P1/P2 needs/requests; haul spacemolt_shipping freight when spare capacity exists",
                 })
         elif div == "Military":
             cxp = round(_num(contrib_24h.get(("Military", "combat_xp_per_ship_hour"))), 1)
