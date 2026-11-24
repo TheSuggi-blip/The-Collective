@@ -2,7 +2,7 @@
  "id": "mission-workshop-production-run-krynn",
  "kind": "circuit",
  "title": "Workshop Production Run at the War Citadel (Krynn): 3,500 cr once; five batches of coolant fluid made by hand from liquid nitrogen and purified water bought there",
- "note": "Written by Mercury, 2026-11-24 07:19 UTC (orders ENT-085 block MERCURY: close the <80% alarms, F40; F23: the Krynn desk ships earned no XP since 02:00 UTC, their neon craft finds no neon ask: 'neon_gas: not bought; craft ionize_neon_gas: no inputs', route bursar-desk-krynn; F34 tier 2, paid once). The War Citadel's board (data/missions 07:06 UTC): Workshop Production Run, crafting, 3,500 cr, template workshop_production_run, craft 5 items by any recipe. 39 of the 42 traders docked there have no such reward booked (data/fleet/onetime.json 07:19 UTC). The book (table books 07:08 UTC): purified_water asked 52 x 11,620 (liquid_nitrogen asked 8 x 10,058, most of it our own desks' listings: the pilot's own stored nitrogen is withdrawn first, the buy tops up only what is missing); synthesize_coolant_fluid 3 nitrogen + 2 water -> 3 coolant, five runs about 650 cr; the War Citadel bids 262 x 7 for coolant, sold at 200 or more, the rest stored. The form of mission-workshop-production-run-grand (10 runs, 3,420 a run). Whether the board offers it to pilots not born Crimson is not known (Node Beta's offers it to its own empire only): one ship first, its RESULT read before a lift. Lifted to 10 at 07:31 UTC: the first run (one trader, 07:23 UTC, 3.8 min) was paid 2,852 once and sold 7 coolant for 1,834 (route tool).",
+ "note": "Written by Mercury, 2026-11-24 07:19 UTC (orders ENT-085 block MERCURY: close the <80% alarms, F40; F23: the Krynn desk ships earned no XP since 02:00 UTC, their neon craft finds no neon ask: 'neon_gas: not bought; craft ionize_neon_gas: no inputs', route bursar-desk-krynn; F34 tier 2, paid once). The War Citadel's board (data/missions 07:06 UTC): Workshop Production Run, crafting, 3,500 cr, template workshop_production_run, craft 5 items by any recipe. 39 of the 42 traders docked there have no such reward booked (data/fleet/onetime.json 07:19 UTC). The book (table books 07:08 UTC): purified_water asked 52 x 11,620 (liquid_nitrogen asked 8 x 10,058, most of it our own desks' listings: the pilot's own stored nitrogen is withdrawn first, the buy tops up only what is missing); synthesize_coolant_fluid 3 nitrogen + 2 water -> 3 coolant, five runs about 650 cr; the War Citadel bids 262 x 7 for coolant, sold at 200 or more, the rest stored. The form of mission-workshop-production-run-grand (10 runs, 3,420 a run). Whether the board offers it to pilots not born Crimson is not known (Node Beta's offers it to its own empire only): one ship first, its RESULT read before a lift. Lifted to 10 at 07:31 UTC: the first run (one trader, 07:23 UTC, 3.8 min) was paid 2,852 once and sold 7 coolant for 1,834 (route tool). Nebula-born only from 07:48 UTC: at 07:43 UTC the Voidborn-born desk traders read 'workshop_production_run not offered' (zero-minute runs) while the Nebula-born were paid 2,852 to 2,973 once each (route tool).",
  "once": true,
  "max_ships": 10,
  "min_credits": 3200,
@@ -21,7 +21,8 @@
     "max_price": 60,
     "min_qty": 10
    }
-  ]
+  ],
+  "empire": "nebula"
  },
  "stops": [
   {
