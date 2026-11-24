@@ -1,0 +1,51 @@
+{
+ "id": "mission-old-charts-sol",
+ "kind": "circuit",
+ "title": "Gathering the Old Charts: 3,500 cr once at Sol Central: the charts collected at Alpha Centauri, 5 circuit boards bought at Sol delivered to Sirius Observatory",
+ "note": "Written by Apollo, 2026-11-24 06:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F12, F34). Sol Central's board as a hauler at Sol reads it (get_missions, this turn): gathering_the_old_charts, objectives dock_at_base alpha_centauri_colonial_station and deliver_item circuit_board x5 at sirius_observatory_station; 3,500 cr, exploration 45, Piloting 40. The boards are bought at Sol (best ask 290 x 44, table books this turn), never taken from the reserve (rule F24: circuit boards are short). Alpha Centauri is 1 jump from Sol, Sirius 1 from Sol (table lanes). max_ships 1: the first run is the test of goods bought for a mission (rule F12); lifted when its RESULT line pays.",
+ "once": true,
+ "far_ok": true,
+ "max_ships": 1,
+ "one_time": [
+  "Gathering the Old Charts"
+ ],
+ "skip_if_booked": [
+  "Gathering the Old Charts"
+ ],
+ "min_credits": 5000,
+ "requires": {
+  "max_jumps": 3,
+  "empty_hold": true,
+  "skills_below": {
+   "corporation_management": 7
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "buy": [
+    {
+     "item": "circuit_board",
+     "qty": 5,
+     "max_price": 320,
+     "one_time": true
+    }
+   ],
+   "accept": [
+    {
+     "template": "gathering_the_old_charts",
+     "needs": {
+      "circuit_board": 5
+     }
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "redock": true
+  },
+  {
+   "at": "sirius:sirius_observatory_station:sirius_observatory_station"
+  }
+ ]
+}
