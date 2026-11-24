@@ -2,7 +2,7 @@
  "id": "hunt-test-acubens-bulwark-pl3",
  "kind": "hunt",
  "title": "Weapon test: bulwark (95 hull) at acubens_shadow_pocket with a Pulse Laser III; loot stored at Central Nexus",
- "note": "Written by Apophis 2026-11-21 20:51 UTC (orders.log ENT-056, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first). One ship that fits a Pulse Laser III (28 energy damage against 10 for the starter). A starter does not kill a bulwark: the group log of 2026-11-21 20:38 to 20:47 UTC read 100 to 65 percent in 45 ticks for one Pulse Laser I, the leader's shield 111 to 7 percent. Policed space (Acubens, police 55), herd of 3 bulwarks at the last census (19:42 UTC), floor 2. Every good is stored (min_bid 5000) so the row shows the drop. Read its kills an hour and its lowest hull before the division's fit is named. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes. 2026-11-22 00:41 UTC (Apophis): standing (rule F22: class-skill work never rests for its pay; a test that stores every good reads only its fuel).",
+ "note": "Written by Apophis 2026-11-21 20:51 UTC (orders.log ENT-056, block APOPHIS: weapons fitted, prey the division can beat; rule F17: a new module on one ship first). One ship that fits a Pulse Laser III (28 energy damage against 10 for the starter). A starter does not kill a bulwark: the group log of 2026-11-21 20:38 to 20:47 UTC read 100 to 65 percent in 45 ticks for one Pulse Laser I, the leader's shield 111 to 7 percent. Policed space (Acubens, police 55), herd of 3 bulwarks at the last census (19:42 UTC), floor 2. Every good is stored (min_bid 5000) so the row shows the drop. Read its kills an hour and its lowest hull before the division's fit is named. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes. 2026-11-22 00:41 UTC (Apophis): standing (rule F22: class-skill work never rests for its pay; a test that stores every good reads only its fuel). min_creatures 2 -> 3 by Apophis 2026-11-24 06:58 UTC: the hunt keeps 2 animals (F38), so a herd of 2 or fewer gave 0 kills a flight (routes with min_creatures 2 flew 12 zero-kill runs between 01:20 and 06:30 UTC, runs.jsonl); the dispatcher now waits for a census of 3.",
  "place": "acubens:acubens_shadow_pocket",
  "species": [
   "bulwark"
@@ -12,7 +12,7 @@
  "kills": 2,
  "minutes": 40,
  "max_ships": 1,
- "min_creatures": 2,
+ "min_creatures": 3,
  "alone": "pirates",
  "requires": {
   "module": "pulse_laser_iii",

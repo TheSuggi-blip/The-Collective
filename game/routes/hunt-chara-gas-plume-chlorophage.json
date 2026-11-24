@@ -2,7 +2,7 @@
  "id": "hunt-chara-gas-plume-chlorophage",
  "kind": "hunt",
  "title": "Caustic sac for the reserve: chlorophages at chara_gas_plume (lawless), every drop stored at Node Beta",
- "note": "2026-11-22 04:10 UTC (Apophis): caustic sac for the reserve: the recruitment center (needs list, P1, the faction's ladder P4: seats 99/100) is short of 91 caustic sac and no station asks it (market caustic_sac: bids only, 420 to 840 cr). Chlorophages drop it (hunt_figures since 01:15 UTC: Alathfar 9 sacs in 2 runs, Amberfall 7 in 6). min_bid 5000 stands above every bid read, so the hunt sells nothing and stores every drop at Node Beta, where the center is built; with strict classes on, gift_to hauler hands the hold to the hauler named there (Logistics builds it, orders ENT-061 block APOLLO). Standing work (rule F23; F22: reserve work never rests for its pay); one ship, alone, a test of three results (F37). Herd: 3 chlorophages (table herds, census of 2026-11-22).",
+ "note": "2026-11-22 04:10 UTC (Apophis): caustic sac for the reserve: the recruitment center (needs list, P1, the faction's ladder P4: seats 99/100) is short of 91 caustic sac and no station asks it (market caustic_sac: bids only, 420 to 840 cr). Chlorophages drop it (hunt_figures since 01:15 UTC: Alathfar 9 sacs in 2 runs, Amberfall 7 in 6). min_bid 5000 stands above every bid read, so the hunt sells nothing and stores every drop at Node Beta, where the center is built; with strict classes on, gift_to hauler hands the hold to the hauler named there (Logistics builds it, orders ENT-061 block APOLLO). Standing work (rule F23; F22: reserve work never rests for its pay); one ship, alone, a test of three results (F37). Herd: 3 chlorophages (table herds, census of 2026-11-22). min_creatures 2 -> 3 by Apophis 2026-11-24 06:58 UTC: the hunt keeps 2 animals (F38), so a herd of 2 or fewer gave 0 kills a flight (routes with min_creatures 2 flew 12 zero-kill runs between 01:20 and 06:30 UTC, runs.jsonl); the dispatcher now waits for a census of 3.",
  "place": "chara:chara_gas_plume",
  "species": [
   "chlorophage"
@@ -13,7 +13,7 @@
  "minutes": 60,
  "max_ships": 1,
  "lift_to": 1,
- "min_creatures": 2,
+ "min_creatures": 3,
  "alone": true,
  "standing": true,
  "requires": {
