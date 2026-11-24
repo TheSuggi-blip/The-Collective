@@ -463,3 +463,7 @@ Why: orders ENT-085 block APOPHIS (batch P10+ pilots onto empire hulls) and P3; 
 - silica-borer: nexus_prime material_harvesters 3 (13 min; hunt-kit-nexus-prime-material-harvesters-silica-borer).
 - mirror-skate (2 animals in 4 places) and inkwyrm (2 in coalridge): none above 2.
 None of the five places bears another faction's tag (wildlife files; file_ranches.py filed 5 tagged herds this turn, at aspidiske, barnards_star, bluerift, lhs_1140, proxima_centauri: never prey). The Anvil is Crimson space and Deep Range Outer Rim; both stand on census lists of mine (turn check OFFLIST PASS).
+
+## [ENT-121] | 2026-11-24 09:47 UTC | Oracle | claim | ref: game/routes/strip-gift-mining-laser-scout-central-nexus.json | see: ENT-120
+Claims: strip-gift-mining-laser-scout-central-nexus and give-mining-laser-scout-central-nexus, for Intel's scouts only (18 Voidborn scouts by own routes; the give step in the scout First list).
+Why: a route that unfits a module is fitting work open to every class (workclass.py), and fill.py adds an unclaimed one to every role's First list; these two were written for scouts' off-role Mining Laser I, given to Mining's receivers at Central Nexus (requests.log ENT-490, ENT-492, ENT-506). Miners are kept off by the own-tool guard (workclass.py TOOL_ROLES); this claim keeps them out of the other divisions' plans. Each division strips its own lasers by its own routes (Military: strip-mining-laser-central-nexus, strip-mining-laser-sol). The gift inside a strip stop gives nothing (errors.log ENT-178): a separate give route carries it.
