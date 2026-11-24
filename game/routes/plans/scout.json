@@ -104,6 +104,8 @@
   "watch-book-starfall",
   "watch-book-ironlight-refuge",
   "watch-book-hex-star",
+  "watch-book-crescent-moon",
+  "watch-book-carnegie-hall",
   "park"
  ],
  "planned": [
@@ -230,6 +232,8 @@
   "watch-book-starfall": 50,
   "watch-book-ironlight-refuge": 50,
   "watch-book-hex-star": 50,
+  "watch-book-crescent-moon": 50,
+  "watch-book-carnegie-hall": 50,
   "park": 50
  },
  "of": 50,
