@@ -1,7 +1,7 @@
 {
   "max_per_station": 1,
   "policed_only": true,
-  "stay_in_empire_first": true,
+  "stay_in_empire_first": false,
   "cycle_minutes": 30,
   "poll_interval_s": 120,
   "min_cash_keep": 20000,
