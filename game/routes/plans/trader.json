@@ -208,6 +208,14 @@
   {
    "what": "read the three Apophenia commissions at The Experiment after the owners supplied one neural gel each; the upgrade service switches them",
    "when": "next turn"
+  },
+  {
+   "what": "read the first Meridian Freighter buys of the upgrade service (Sol, 10 jumps) and the fit-network fits of the mobile hulls",
+   "when": "next turn"
+  },
+  {
+   "what": "HEXC levity bladder (750, 55,125 cr) and fusion pearl (274, 69,048 cr) contracts at Krynn: consolidate once a 240+ cargo hull carries the Arneb lot",
+   "when": "after the hull batch"
   }
  ],
  "ships": {
