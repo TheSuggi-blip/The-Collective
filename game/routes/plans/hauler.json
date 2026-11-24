@@ -111,6 +111,7 @@
   "join-sol-records",
   "join-rim-debris",
   "join-krynn-bloodforge",
+  "haul-network",
   "park"
  ],
  "planned": [
@@ -244,6 +245,7 @@
   "join-sol-records": 95,
   "join-rim-debris": 95,
   "join-krynn-bloodforge": 95,
+  "haul-network": 95,
   "park": 95
  },
  "of": 95,

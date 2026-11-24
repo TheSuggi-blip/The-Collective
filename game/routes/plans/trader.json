@@ -186,6 +186,7 @@
   "bursar-desk-experiment",
   "bursar-desk-grand",
   "bursar-desk-nova-terra",
+  "bursar-network",
   "train-trading-weapon-housing-node-alpha",
   "park"
  ],
@@ -387,6 +388,7 @@
   "bursar-desk-experiment": 85,
   "bursar-desk-grand": 85,
   "bursar-desk-nova-terra": 85,
+  "bursar-network": 85,
   "train-trading-weapon-housing-node-alpha": 85,
   "park": 85
  },
