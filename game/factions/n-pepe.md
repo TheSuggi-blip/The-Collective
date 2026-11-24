@@ -15,7 +15,7 @@ updated: 2026-11-24
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 12.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 36 | Public event stream |
+| Pilots carrying the tag on the public event stream | 38 | Public event stream |
 
 ## Bases
 
@@ -39,9 +39,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicDray | Node Alpha (`node_alpha`) | 0 | worship |
+| MimicClaw | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicComet | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlare | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFrost | Node Beta (`node_beta`) | 0 | threshold |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicVent | Node Beta (`node_beta`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

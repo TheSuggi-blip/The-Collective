@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 141 | Public event stream |
+| Pilots carrying the tag on the public event stream | 146 | Public event stream |
 
 ## Bases
 
@@ -38,11 +38,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler 22C-BF | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler 8F5-8T | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler 7UU-CG | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler 8F5-8T | Pherkad (`pherkad`) | 0 | cobble |
 | Wexler QWM-Y0 | Hamal (`hamal`) | 0 | cobble |
-| Wexler THE-9D | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler ZFU-HK | The Experiment (`the_experiment`) | 0 | prayer |
+| Wexler YME-ZK | Synchrony (`synchrony`) | 0 | cobble |
+| Wexler Z25-QC | Acubens (`acubens`) | 0 | cobble |
 
 ## Standing History
 
