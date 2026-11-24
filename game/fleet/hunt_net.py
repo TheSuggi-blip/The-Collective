@@ -169,6 +169,13 @@ def ship_file_name(pilot):
     return (re.sub(r"[^A-Za-z0-9_.-]", "_", str(pilot or ""))[:60] or "pilot") + ".json"
 
 
+def load_command_flagships(data_dir):
+    fg = read_json(Path(data_dir) / "fleet" / "flagships.json", {})
+    if not isinstance(fg, dict):
+        return set()
+    return {str(k) for k, v in fg.items() if isinstance(v, dict) and str(v.get("division") or "") == "Command"}
+
+
 def deep_merge(base, override):
     out = json.loads(json.dumps(base))
     if not isinstance(override, dict):
@@ -971,7 +978,9 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
     if not pcfg.get("enabled", True):
         return None
     target_share = float(pcfg.get("target_share") or 0.25)
-    min_mem_p = float(pcfg.get("min_member_power") or 420.0)
+    cmd_ships = load_command_flagships(data_dir)
+    is_cmd = str(pilot) in cmd_ships
+    min_mem_p = float(pcfg.get("command_flagship_min_power") or 150.0) if is_cmd else float(pcfg.get("min_member_power") or 420.0)
     if ship_power["power"] < min_mem_p:
         return None
     rally_max_j = int(pcfg.get("rally_max_jumps") or 8)
@@ -998,16 +1007,30 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
             quota = max(3, int(round(max(12, active_military_n) * target_share)))
 
             # 1. Prefer joining an existing forming pack within rally_max_jumps
-            for pid, pk in sorted(packs.items(), key=lambda kv: (-len(kv[1].get("members") or []), kv[0])):
+            # Command Support Flagships prioritize larger packs (>=10 allow 2 support flagships, <10 allow 1) and take Pack Leader for leadership bonuses!
+            sort_key = (
+                (lambda kv: (-int(kv[1].get("desired_size") or 3), -len(kv[1].get("members") or []), kv[0]))
+                if is_cmd
+                else (lambda kv: (-len(kv[1].get("members") or []), kv[0]))
+            )
+            for pid, pk in sorted(packs.items(), key=sort_key):
                 if pk.get("state") != "forming":
                     continue
-                if len(pk.get("members") or []) >= int(pk.get("desired_size") or 3):
+                dsz = int(pk.get("desired_size") or 3)
+                if len(pk.get("members") or []) >= dsz:
                     continue
                 if ship_sys and pk.get("system") not in dists:
                     continue
+                if is_cmd:
+                    cur_cmds = sum(1 for m in (pk.get("members") or []) if m in cmd_ships)
+                    max_cmds = 2 if dsz >= 10 else 1
+                    if cur_cmds >= max_cmds:
+                        continue
                 pk["members"].append(pilot)
+                if is_cmd and str(pk.get("leader") or "") not in cmd_ships:
+                    pk["leader"] = pilot
                 pk["updated_at"] = int(now_t)
-                if len(pk["members"]) >= int(pk["desired_size"]):
+                if len(pk["members"]) >= dsz:
                     pk["state"] = "launched"
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return dict(pk, pack_id=pid)
@@ -1422,6 +1445,14 @@ def main(argv=None):
             # Rally timed out -> cleanly fall through to Lane 3 solo hunting!
 
         # --- LANE 3 & 4: SOLO OPTIMAL HERD HUNTING (POWER-RATIO GATED + F38 RANCH FLOOR) ---
+        # Command Support Flagships operate in War Wing / Escorts / Coordinated Packs -- never solo grazing!
+        if pilot in load_command_flagships(DATA) and not policy.get("allow_command_solo", False):
+            nap = min(90, int(policy.get("rest_seconds_when_empty") or 90))
+            print("%s %s hunt_net: Command Support Flagship awaiting pack/escort/war wing; resting %ds" % (utc_now(), pilot, nap), flush=True)
+            end_nap = time.time() + nap
+            while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
+                time.sleep(min(15.0, max(1.0, end_nap - time.time())))
+            return 0
         cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
         chosen = None
         for cand in cands:

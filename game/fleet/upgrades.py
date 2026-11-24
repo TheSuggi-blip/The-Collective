@@ -1113,6 +1113,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
             emp_f = str(coh.get("empire") or "any").lower()
             inc_pre = str(coh.get("pilot_prefix") or "")
             exc_pre = str(coh.get("exclude_prefix") or "")
+            inc_set = set(str(x) for x in (coh.get("include_pilots") or []))
             share = float(coh.get("share") or 1.0)
             ladder = list(coh.get("ladder") or [])
             if not ladder:
@@ -1122,6 +1123,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 if (emp_f == "any" or s["empire"] == emp_f)
                 and (not inc_pre or s["pilot"].startswith(inc_pre))
                 and (not exc_pre or not s["pilot"].startswith(exc_pre))
+                and (not inc_set or s["pilot"] in inc_set)
             ]
             if not cohort_ships:
                 continue
@@ -1173,7 +1175,8 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 ]
                 if not elig:
                     continue
-                elig.sort(key=lambda s: (-s["piloting"], s["tier"], s["pilot"]))
+                pref_set = set(str(x) for x in (coh.get("prefer_pilots") or []))
+                elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, -s["piloting"], s["tier"], s["pilot"]))
                 picked = (elig[0], hid, l_station, min(rmax, int(l_price * 1.02) + 500), l_price, str(coh.get("specialty") or ""))
                 break
 

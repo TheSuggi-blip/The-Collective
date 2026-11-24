@@ -35,7 +35,11 @@
     "enabled": true,
     "target_share": 0.02,
     "sizes": [
-      3
+      3,
+      5,
+      7,
+      10,
+      20
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
@@ -69,7 +73,8 @@
       "inkwyrm",
       "magnet_barnacle",
       "silica_borer"
-    ]
+    ],
+    "command_flagship_min_power": 150.0
   },
   "solo": {
     "enabled": true,

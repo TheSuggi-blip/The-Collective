@@ -70,16 +70,27 @@ def _pilot_bucket(pilot):
     return h
 
 
-def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False):
-    """Deterministically resolve ship specialty while preserving fitted specialty tools & Bursar desks."""
+def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, ship_class=""):
+    """Deterministically resolve ship specialty via pilot pins, hull class, fitted tools, & division mix."""
     if division == "Trade" and is_bursar:
         return "bursar"
     dspec = ((policy.get("specialties") or {}).get(division)) or {}
+    pinned = (dspec.get("pin_pilots") or {}).get(str(pilot))
+    if pinned:
+        return str(pinned)
+    is_sent = str(pilot).startswith("sentinel-")
+    # For non-sentinel ships, match hull class to specialized role (e.g. Triage -> command_medical)
+    cls_l = str(ship_class or "").lower().replace(" ", "_")
+    if cls_l and not is_sent:
+        for spec_name, hull_list in (dspec.get("detect_by_hull") or {}).items():
+            if cls_l in {str(x).lower() for x in (hull_list or [])}:
+                return str(spec_name)
     fset = {str(m).lower() for m in (fitted_modules or [])}
-    for spec_name, mod_list in (dspec.get("detect_by_module") or {}).items():
-        if fset & {str(x).lower() for x in (mod_list or [])}:
-            return str(spec_name)
-    if str(pilot).startswith("sentinel-") and dspec.get("sentinel_mix"):
+    if not is_sent:
+        for spec_name, mod_list in (dspec.get("detect_by_module") or {}).items():
+            if fset & {str(x).lower() for x in (mod_list or [])}:
+                return str(spec_name)
+    if is_sent and dspec.get("sentinel_mix"):
         mix = dspec.get("sentinel_mix") or []
     else:
         mix = dspec.get("mix") or []
@@ -176,11 +187,11 @@ def _module_slot_type(mod_id, item_slots=None):
     m = str(mod_id or "").lower()
     if item_slots and m in item_slots:
         return item_slots[m]
-    if any(k in m for k in ("repair", "hospital", "dampener", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "cargo_expander", "cabin")):
+    if any(k in m for k in ("remote_armor_repair", "repair_arm", "hospital", "sickbay", "ecm_jammer", "jammer", "dampener", "target_painter", "drone_bay", "refueling_pump", "maintenance_bay", "crew_armory", "fuel_optimizer", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "cargo_expander", "cabin")):
         return "utility"
-    if any(k in m for k in ("pulse_laser", "beam_laser", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "em_disruptor")):
+    if any(k in m for k in ("pulse_laser", "beam_laser", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "flak", "em_disruptor", "emp_", "blood_reaver", "phase_disruptor", "system_disabler")):
         return "weapon"
-    if any(k in m for k in ("shield", "armor", "hull_plate", "ecm", "point_defense")):
+    if any(k in m for k in ("shield", "armor", "regenerative_armor", "nanite_hull", "hull_plate", "point_defense")):
         return "defense"
     return "utility"
 
@@ -206,7 +217,7 @@ def plan_ship_fit(ship_doc, world, policy):
     hspec = (world.get("hulls") or {}).get(cls_key) or {"tier": 0, "weapon": 1, "defense": 1, "utility": 1}
 
     is_bursar = pilot in (world.get("bursar_pilots") or set())
-    specialty = resolve_specialty(pilot, division, fitted, policy, is_bursar=is_bursar)
+    specialty = resolve_specialty(pilot, division, fitted, policy, is_bursar=is_bursar, ship_class=cls_key)
 
     # 1. Off-role modules to strip
     off_set = {str(x).lower() for x in ((policy.get("off_role_modules") or {}).get(division) or [])}

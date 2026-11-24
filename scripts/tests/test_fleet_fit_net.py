@@ -61,16 +61,34 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertEqual(b_plan["unfit"], ["mining_laser_i"])
             self.assertEqual(b_plan["buy_fit"], [])
 
-    def test_royal_guard_sentinel_fit_split_and_slots(self):
+    def test_royal_guard_command_and_military_support_specialties(self):
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        # 1. Sentinels 60/40 split: royal_guard_escort + royal_guard_utility
         specs = {fit_net.resolve_specialty(f"sentinel-{n}", "Military", [], pol) for n in range(1, 36)}
-        self.assertEqual(specs, {"royal_guard_escort", "royal_guard_support"})
-        # Verify slot classification of support modules (remote_armor_repairer_ii -> utility, em_disruptor_i -> weapon)
+        self.assertEqual(specs, {"royal_guard_escort", "royal_guard_utility"})
+        # 2. Frontline drones cover all 4 archetypes including 10% organic combat_support
+        d_specs = {fit_net.resolve_specialty(f"drone-{n}", "Military", [], pol) for n in range(1, 96)}
+        self.assertEqual(d_specs, {"brawler", "ewar", "flak_tank", "combat_support"})
+        # 3. Command Flagships: Prime Directive -> command_ewar_tac, 4 regional flagships -> command_stealth_ewar, core 6 hulls -> 4 support roles
+        self.assertEqual(fit_net.resolve_specialty("Prime Directive", "Command", [], pol), "command_ewar_tac")
+        self.assertEqual(fit_net.resolve_specialty("Crimson Aegis", "Command", [], pol), "command_stealth_ewar")
+        self.assertEqual(fit_net.resolve_specialty("Solar Mandate", "Command", [], pol), "command_stealth_ewar")
+        self.assertEqual(fit_net.resolve_specialty("Zero Point", "Command", [], pol, ship_class="triage"), "command_medical")
+        self.assertEqual(fit_net.resolve_specialty("Golden Chariot", "Command", [], pol, ship_class="anvil"), "command_logi_rep")
+        self.assertEqual(fit_net.resolve_specialty("Hades", "Command", [], pol, ship_class="gestalt"), "command_carrier_screen")
+        # 4. Verify slot classification of all support/tactical/medical/jammer/flak modules
+        self.assertEqual(fit_net._module_slot_type("fleet_hospital"), "utility")
+        self.assertEqual(fit_net._module_slot_type("ecm_jammer"), "utility")
         self.assertEqual(fit_net._module_slot_type("remote_armor_repairer_ii"), "utility")
+        self.assertEqual(fit_net._module_slot_type("target_painter_ii"), "utility")
+        self.assertEqual(fit_net._module_slot_type("combat_drone_bay"), "utility")
         self.assertEqual(fit_net._module_slot_type("sensor_dampener"), "utility")
         self.assertEqual(fit_net._module_slot_type("cloaking_device_i"), "utility")
         self.assertEqual(fit_net._module_slot_type("em_disruptor_i"), "weapon")
+        self.assertEqual(fit_net._module_slot_type("emp_missile_launcher"), "weapon")
+        self.assertEqual(fit_net._module_slot_type("flak_cannon_ii"), "weapon")
         self.assertEqual(fit_net._module_slot_type("shield_recharger_ii"), "defense")
+        self.assertEqual(fit_net._module_slot_type("regenerative_armor_ii"), "defense")
 
     def test_auto_enqueue_schema_duplicates_bursar_reserve_and_royal_guard(self):
         with tempfile.TemporaryDirectory() as tmp:

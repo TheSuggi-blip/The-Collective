@@ -32,6 +32,11 @@
       "mining_laser_i",
       "ice_harvester_i",
       "gas_harvester_i"
+    ],
+    "Command": [
+      "mining_laser_i",
+      "ice_harvester_i",
+      "gas_harvester_i"
     ]
   },
   "max_price": {
@@ -55,11 +60,36 @@
     "business_passenger_cabin": 10000,
     "expanded_fuel_tank": 2000,
     "afterburner_ii": 4000,
-    "remote_armor_repairer_ii": 7000,
+    "remote_armor_repairer_ii": 7500,
     "em_disruptor_i": 5000,
     "sensor_dampener": 3000,
     "warp_disruptor": 3000,
-    "shield_recharger_ii": 8000
+    "shield_recharger_ii": 8000,
+    "fleet_hospital": 145000,
+    "shipboard_sickbay": 11000,
+    "remote_armor_repairer_i": 3500,
+    "repair_arm": 2000,
+    "refueling_pump": 3500,
+    "ship_maintenance_bay": 30000,
+    "target_painter_i": 4000,
+    "target_painter_ii": 8500,
+    "ship_scanner_ii": 10000,
+    "ship_scanner_iii": 28000,
+    "cloaking_device_i": 8000,
+    "phase_cloaking_device": 15000,
+    "combat_drone_bay": 5000,
+    "light_drone_bay": 2500,
+    "crew_armory": 14000,
+    "flak_cannon_i": 6500,
+    "flak_cannon_ii": 13000,
+    "emp_missile_launcher": 9500,
+    "emp_pulse_ii": 12000,
+    "ecm_jammer": 25000,
+    "system_disabler": 6000,
+    "blood_reaver": 14000,
+    "phase_disruptor": 28000,
+    "regenerative_armor_ii": 18000,
+    "fuel_optimizer": 2000
   },
   "specialties": {
     "Mining": {
@@ -134,55 +164,130 @@
       "mix": [
         [
           "brawler",
-          50
+          45
         ],
         [
           "ewar",
-          35
+          25
         ],
         [
-          "escort",
-          15
+          "flak_tank",
+          20
+        ],
+        [
+          "combat_support",
+          10
         ]
       ],
-      "detect_by_module": {},
+      "sentinel_mix": [
+        [
+          "royal_guard_escort",
+          60
+        ],
+        [
+          "royal_guard_utility",
+          40
+        ]
+      ],
+      "detect_by_hull": {
+        "combat_support": [
+          "franchise",
+          "scrutiny",
+          "census",
+          "remedy",
+          "anvil",
+          "triage"
+        ]
+      },
+      "detect_by_module": {
+        "combat_support": [
+          "remote_armor_repairer_ii",
+          "remote_armor_repairer_i"
+        ]
+      },
       "loadouts": {
         "brawler": {
           "weapon": [
+            "phase_disruptor",
+            "blood_reaver",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "regenerative_armor_ii",
             "armor_plate_iii",
             "shield_booster_iv",
             "shield_booster_ii"
+          ],
+          "utility": [
+            "afterburner_ii",
+            "expanded_fuel_tank"
           ]
         },
         "ewar": {
           "weapon": [
+            "emp_missile_launcher",
+            "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
             "shield_booster_iv",
+            "shield_recharger_ii",
             "shield_booster_ii",
             "armor_plate_iii"
+          ],
+          "utility": [
+            "sensor_dampener",
+            "target_painter_ii",
+            "target_painter_i",
+            "warp_disruptor"
           ]
         },
-        "escort": {
+        "flak_tank": {
           "weapon": [
+            "flak_cannon_ii",
+            "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
             "shield_booster_iv",
-            "shield_booster_ii",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
             "armor_plate_iii"
+          ],
+          "utility": [
+            "warp_disruptor",
+            "expanded_fuel_tank",
+            "afterburner_ii"
+          ]
+        },
+        "combat_support": {
+          "weapon": [
+            "em_disruptor_i",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "remote_armor_repairer_ii",
+            "remote_armor_repairer_i",
+            "target_painter_ii",
+            "target_painter_i",
+            "sensor_dampener",
+            "expanded_fuel_tank"
           ]
         },
         "royal_guard_escort": {
           "weapon": [
             "pulse_laser_iii",
+            "flak_cannon_ii",
             "pulse_laser_ii"
           ],
           "defense": [
@@ -193,10 +298,11 @@
           "utility": [
             "expanded_fuel_tank",
             "afterburner_ii",
-            "warp_disruptor"
+            "warp_disruptor",
+            "ship_scanner_ii"
           ]
         },
-        "royal_guard_support": {
+        "royal_guard_utility": {
           "weapon": [
             "em_disruptor_i",
             "pulse_laser_iii",
@@ -210,22 +316,14 @@
           ],
           "utility": [
             "remote_armor_repairer_ii",
+            "target_painter_ii",
+            "target_painter_i",
             "sensor_dampener",
             "expanded_fuel_tank",
             "afterburner_ii"
           ]
         }
-      },
-      "sentinel_mix": [
-        [
-          "royal_guard_escort",
-          60
-        ],
-        [
-          "royal_guard_support",
-          40
-        ]
-      ]
+      }
     },
     "Logistics": {
       "mix": [
@@ -309,6 +407,223 @@
           "defense": [
             "shield_booster_iv",
             "shield_booster_ii"
+          ]
+        }
+      }
+    },
+    "Command": {
+      "pin_pilots": {
+        "Prime Directive": "command_ewar_tac",
+        "Crimson Aegis": "command_stealth_ewar",
+        "Nebula Charter": "command_stealth_ewar",
+        "Rimward Pact": "command_stealth_ewar",
+        "Solar Mandate": "command_stealth_ewar"
+      },
+      "detect_by_hull": {
+        "command_stealth_ewar": [
+          "dirk",
+          "arbitrage",
+          "dust_devil",
+          "interstice",
+          "parallax",
+          "silent_tide",
+          "catharsis",
+          "palimpsest",
+          "insider",
+          "need_to_know"
+        ],
+        "command_medical": [
+          "apeiron",
+          "triage",
+          "anamnesis",
+          "homeward",
+          "continuity",
+          "panacea",
+          "cauterizer"
+        ],
+        "command_ewar_tac": [
+          "precept",
+          "census",
+          "syllogism",
+          "bad_influence",
+          "penumbra",
+          "concordance",
+          "polymath",
+          "palinode",
+          "consensus",
+          "magnate"
+        ],
+        "command_logi_rep": [
+          "vigil",
+          "scrutiny",
+          "lone_star",
+          "remedy",
+          "anvil",
+          "palisade",
+          "good_enough",
+          "repatriator"
+        ],
+        "command_carrier_screen": [
+          "overhead",
+          "franchise",
+          "postulate",
+          "cudgel",
+          "tariff",
+          "gestalt",
+          "superposition",
+          "pantheon"
+        ]
+      },
+      "mix": [
+        [
+          "command_ewar_tac",
+          34
+        ],
+        [
+          "command_logi_rep",
+          33
+        ],
+        [
+          "command_medical",
+          17
+        ],
+        [
+          "command_carrier_screen",
+          16
+        ]
+      ],
+      "detect_by_module": {
+        "command_medical": [
+          "fleet_hospital",
+          "field_hospital",
+          "shipboard_sickbay"
+        ],
+        "command_carrier_screen": [
+          "advanced_drone_bay",
+          "combat_drone_bay",
+          "light_drone_bay"
+        ],
+        "command_logi_rep": [
+          "ship_maintenance_bay",
+          "refueling_pump",
+          "repair_arm"
+        ]
+      },
+      "loadouts": {
+        "command_ewar_tac": {
+          "weapon": [
+            "emp_missile_launcher",
+            "em_disruptor_i",
+            "system_disabler",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "target_painter_ii",
+            "target_painter_i",
+            "ecm_jammer",
+            "sensor_dampener",
+            "ship_scanner_iii",
+            "ship_scanner_ii",
+            "cloaking_device_i",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_logi_rep": {
+          "weapon": [
+            "flak_cannon_ii",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "remote_armor_repairer_ii",
+            "repair_arm",
+            "refueling_pump",
+            "ship_maintenance_bay",
+            "ecm_jammer",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_medical": {
+          "weapon": [
+            "em_disruptor_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "fleet_hospital",
+            "remote_armor_repairer_ii",
+            "shipboard_sickbay",
+            "ecm_jammer",
+            "cloaking_device_i",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_carrier_screen": {
+          "weapon": [
+            "flak_cannon_ii",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "combat_drone_bay",
+            "light_drone_bay",
+            "target_painter_ii",
+            "target_painter_i",
+            "crew_armory",
+            "ecm_jammer",
+            "expanded_fuel_tank"
+          ]
+        },
+        "command_stealth_ewar": {
+          "weapon": [
+            "emp_missile_launcher",
+            "em_disruptor_i",
+            "system_disabler",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_recharger_ii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "phase_cloaking_device",
+            "cloaking_device_i",
+            "ecm_jammer",
+            "sensor_dampener",
+            "target_painter_ii",
+            "target_painter_i",
+            "ship_scanner_iii",
+            "warp_disruptor",
+            "expanded_fuel_tank"
           ]
         }
       }

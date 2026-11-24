@@ -4,7 +4,7 @@
   "enabled": true,
   "treasury_floor_cr": 8500000,
   "max_spend_24h_cr": 1200000,
-  "max_new_per_pass": 4,
+  "max_new_per_pass": 5,
   "max_active_per_div": 6,
   "listed_only": true,
   "policed_listings_only": true,
@@ -113,12 +113,12 @@
     },
     "Military": {
       "enabled": true,
-      "max_active": 7,
+      "max_active": 8,
       "cohorts": [
         {
           "empire": "crimson",
           "specialty": "brawler",
-          "share": 0.5,
+          "share": 0.45,
           "ladder": [
             {
               "hull": "cleaver",
@@ -144,7 +144,7 @@
         {
           "empire": "crimson",
           "specialty": "assault",
-          "share": 0.35,
+          "share": 0.3,
           "ladder": [
             {
               "hull": "cleaver",
@@ -184,7 +184,7 @@
         {
           "empire": "voidborn",
           "specialty": "ewar_shield",
-          "share": 0.65,
+          "share": 0.55,
           "ladder": [
             {
               "hull": "paradox",
@@ -230,7 +230,7 @@
         {
           "empire": "solarian",
           "specialty": "gunship",
-          "share": 0.6,
+          "share": 0.5,
           "ladder": [
             {
               "hull": "axiom",
@@ -266,6 +266,56 @@
             }
           ],
           "exclude_prefix": "sentinel-"
+        },
+        {
+          "empire": "any",
+          "exclude_prefix": "sentinel-",
+          "specialty": "combat_support",
+          "share": 0.1,
+          "ladder": [
+            {
+              "hull": "last_warning",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 18000
+            },
+            {
+              "hull": "apeiron",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 28000
+            },
+            {
+              "hull": "franchise",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 65000
+            },
+            {
+              "hull": "scrutiny",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 85000
+            },
+            {
+              "hull": "census",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "remedy",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 190000
+            },
+            {
+              "hull": "anvil",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 210000
+            }
+          ]
         },
         {
           "empire": "any",
@@ -338,7 +388,7 @@
         {
           "empire": "any",
           "pilot_prefix": "sentinel-",
-          "specialty": "royal_guard_support",
+          "specialty": "royal_guard_utility",
           "share": 0.4,
           "ladder": [
             {
@@ -346,6 +396,12 @@
               "tier": 1,
               "min_piloting": 0,
               "max_price": 20000
+            },
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 25000
             },
             {
               "hull": "apeiron",
@@ -561,6 +617,299 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 720000
+            }
+          ]
+        }
+      ]
+    },
+    "Command": {
+      "enabled": true,
+      "max_active": 4,
+      "cohorts": [
+        {
+          "empire": "any",
+          "include_pilots": [
+            "Prime Directive",
+            "Zero Point",
+            "Golden Chariot",
+            "Mercurys Ledger",
+            "Hades",
+            "Vision"
+          ],
+          "prefer_pilots": [
+            "Prime Directive",
+            "Hades"
+          ],
+          "specialty": "command_ewar_tac",
+          "share": 0.34,
+          "ladder": [
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 25000
+            },
+            {
+              "hull": "census",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "syllogism",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 160000
+            },
+            {
+              "hull": "bad_influence",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 235000
+            },
+            {
+              "hull": "concordance",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 230000
+            },
+            {
+              "hull": "polymath",
+              "tier": 3,
+              "min_piloting": 0,
+              "max_price": 550000
+            },
+            {
+              "hull": "consensus",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 900000
+            },
+            {
+              "hull": "magnate",
+              "tier": 4,
+              "min_piloting": 0,
+              "max_price": 1200000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "include_pilots": [
+            "Prime Directive",
+            "Zero Point",
+            "Golden Chariot",
+            "Mercurys Ledger",
+            "Hades",
+            "Vision"
+          ],
+          "specialty": "command_logi_rep",
+          "share": 0.33,
+          "ladder": [
+            {
+              "hull": "vigil",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 75000
+            },
+            {
+              "hull": "scrutiny",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 85000
+            },
+            {
+              "hull": "lone_star",
+              "tier": 2,
+              "min_piloting": 0,
+              "max_price": 180000
+            },
+            {
+              "hull": "remedy",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 190000
+            },
+            {
+              "hull": "anvil",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 210000
+            },
+            {
+              "hull": "palisade",
+              "tier": 3,
+              "min_piloting": 0,
+              "max_price": 500000
+            },
+            {
+              "hull": "good_enough",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 600000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "include_pilots": [
+            "Prime Directive",
+            "Zero Point",
+            "Golden Chariot",
+            "Mercurys Ledger",
+            "Hades",
+            "Vision"
+          ],
+          "specialty": "command_medical",
+          "share": 0.17,
+          "ladder": [
+            {
+              "hull": "apeiron",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 28000
+            },
+            {
+              "hull": "triage",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 135000
+            },
+            {
+              "hull": "anamnesis",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 275000
+            },
+            {
+              "hull": "homeward",
+              "tier": 3,
+              "min_piloting": 0,
+              "max_price": 450000
+            },
+            {
+              "hull": "continuity",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 550000
+            },
+            {
+              "hull": "panacea",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 900000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "include_pilots": [
+            "Prime Directive",
+            "Zero Point",
+            "Golden Chariot",
+            "Mercurys Ledger",
+            "Hades",
+            "Vision"
+          ],
+          "specialty": "command_carrier_screen",
+          "share": 0.17,
+          "ladder": [
+            {
+              "hull": "overhead",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 32000
+            },
+            {
+              "hull": "franchise",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 65000
+            },
+            {
+              "hull": "postulate",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            },
+            {
+              "hull": "tariff",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 260000
+            },
+            {
+              "hull": "gestalt",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 320000
+            },
+            {
+              "hull": "superposition",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 900000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "include_pilots": [
+            "Crimson Aegis",
+            "Nebula Charter",
+            "Rimward Pact",
+            "Solar Mandate"
+          ],
+          "specialty": "command_stealth_ewar",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "dirk",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 22000
+            },
+            {
+              "hull": "arbitrage",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "dust_devil",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 170000
+            },
+            {
+              "hull": "interstice",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 200000
+            },
+            {
+              "hull": "parallax",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 215000
+            },
+            {
+              "hull": "silent_tide",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 350000
+            },
+            {
+              "hull": "catharsis",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 380000
+            },
+            {
+              "hull": "palimpsest",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 900000
             }
           ]
         }
