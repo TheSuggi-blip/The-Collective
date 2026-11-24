@@ -2,9 +2,9 @@
  "id": "mission-debris-field-reports-frontier",
  "kind": "circuit",
  "title": "Debris Field Reports: 4500 cr at Mobile Capital",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 01:18 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4500 cr. A test: one ship; whether the mission hands its goods out at the accept is not known until one accept with an empty hold. Added as a test by fill.py on 2026-11-22 01:18 UTC (Unity): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-24 02:00 UTC (Apollo): max_ships 3 -> 10: haulers paid out at Krynn and Sol join Frontier on join-rim-debris for it; each pilot takes its own copy.",
  "once": true,
- "max_ships": 3,
+ "max_ships": 10,
  "one_time": [
   "Debris Field Reports"
  ],
