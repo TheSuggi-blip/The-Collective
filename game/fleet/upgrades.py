@@ -1023,6 +1023,9 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 active_pilots.add(str(r.get("pilot") or ""))
                 dv = str(r.get("division") or "")
                 active_by_div[dv] = active_by_div.get(dv, 0) + 1
+            elif st == "done" and (now - float(r.get("updated_at") or r.get("created_at") or 0)) <= 1800.0:
+                # 30-minute cooldown after completion so read.db refreshes the new hull tier before re-evaluating
+                active_pilots.add(str(r.get("pilot") or ""))
             if str(r.get("source") or "") == "auto_policy" and st not in ("", "cancelled", "failed"):
                 at_t = float(r.get("created_at") or 0)
                 if (now - at_t) <= 86400.0:
