@@ -1,6 +1,6 @@
 {
   "max_per_station": 1,
-  "policed_only": true,
+  "policed_only": false,
   "stay_in_empire_first": false,
   "cycle_minutes": 30,
   "poll_interval_s": 120,
@@ -30,7 +30,9 @@
     "instant_hit_bid_ratio": 0.85,
     "respect_reserve": true
   },
-  "exclude_stations": [],
+  "exclude_stations": [
+    "428b353757ef4100317abd39cbdb79bf"
+  ],
   "priority_stations": [],
   "exclude_strongholds": true
 }
