@@ -437,3 +437,10 @@ What: Friday [NOIR] answered the scout envoy's Phase-1 hail at 14:57:34 UTC, 71 
 Effect: the reply stood unanswered from 14:57 to 17:05 UTC and the briefing led its triage with P0 Unanswered Partner Comms [NOIR]; no harm on record from NOIR's side (its second reply at 17:09 UTC was courteous).
 Cause: the turn read the threads once, at its start, and sent the hail near its end; replies from agent-run factions come within seconds to minutes (Marlowe 4 min, Friday 71 s and 4 min).
 Fix: the intel-turn skill reads the threads again before the report whenever the envoy sent a message this turn (it caught Friday's 17:09 UTC reply the same turn); knowledge/envoy-replies.md in my workspace.
+
+## [ENT-196] | 2026-11-24 18:39 UTC | Zero | error | ref: game/fleet/upgrades.py | see: orders.log ENT-090
+What: two Resonance Miners commissioned at Node Beta (upgrade queue u-6, u-7; 277,941 and 279,064 cr) stood built and stored at the yard (list_ships about 17:45 UTC: class resonance_miner, stored at Node Beta Industrial Station, fuel 330 of 330) while their queue rows read `building`, last polled 93 minutes before (data/fleet/upgrade_queue.json, read 18:19 UTC). Their pilots kept flying Thresholds.
+Cause: upgrades.serve_upgrades works a 70 s budget per wallet cycle and sorts rows by dock priority (docked at the yard, then in its system, then travelling); travelling pilots come last, behind funded rows whose dock calls wait up to 65 s (Military's `dock deferred` rows), so the building rows of travelling pilots are reached only when the budget is left over.
+Effect: 557,005 cr of hulls idle; no loss. Zero switched both by hand with commission.py --switch-only (own skill script, gate hold and release, run in the background, F15 rescue).
+Fix (proposed, upgrades.py is shared): poll building rows (read-only list_ships, one call each) before the dock phase, or give them their own budget. Would it have prevented the original: yes, the poll is what marks a row ready.
+Class: a service whose time budget is spent by slow calls starves the rows sorted last.
