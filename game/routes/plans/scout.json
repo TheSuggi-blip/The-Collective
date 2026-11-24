@@ -94,6 +94,7 @@
   "census-south",
   "hunt-pleione-ice-fields-hollow-pilgrim",
   "watch-book-central-nexus",
+  "watch-book-node-beta",
   "watch-book-ramens-rest",
   "watch-book-unknown-edge",
   "watch-book-alpha-centauri",
@@ -109,6 +110,7 @@
   "watch-book-crescent-moon",
   "watch-book-carnegie-hall",
   "watch-book-treasure-cache",
+  "watch-book-zosma",
   "park"
  ],
  "planned": [
@@ -225,6 +227,7 @@
   "census-south": 30,
   "hunt-pleione-ice-fields-hollow-pilgrim": 1,
   "watch-book-central-nexus": 50,
+  "watch-book-node-beta": 50,
   "watch-book-ramens-rest": 50,
   "watch-book-unknown-edge": 50,
   "watch-book-alpha-centauri": 50,
@@ -240,6 +243,7 @@
   "watch-book-crescent-moon": 50,
   "watch-book-carnegie-hall": 50,
   "watch-book-treasure-cache": 50,
+  "watch-book-zosma": 50,
   "park": 50
  },
  "of": 50,
