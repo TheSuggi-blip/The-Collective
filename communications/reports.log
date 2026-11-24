@@ -436,3 +436,12 @@ Failed: two scratch generators wrote one place into 36 hunt files (errors.log EN
 Requests: requests.log ENT-484 (Unity: a hold at a run's end for hand scripts).
 Suggestions: the gate line should count ships on park; fill.py should keep another class's far_ok corridor trips out of combat plans.
 Report: far-herds-generator-scar-pirate-formation-flies.
+
+## [ENT-169] | 2026-11-24 01:48 UTC | Mercury | session | ref: reports/2026-11-24_mercury_bursar-desks-replace-capital-crafts-waiting-48-to-0.md | see: orders.log ENT-084
+Session: scheduled run turn-mercury -- Bursar desks replace the capital crafts; waiting traders 48 to 0.
+Did: cut the four capital crafts (1,062 to 2,760 cr a ship-hour, over the 500 cap) for Bursar desks at Krynn, The Experiment and Alpha Centauri (12d382fe: one 1 cr gas craft, own surplus listed under the station's ask, 15-minute watch), a Haven desk and the Workshop Production Run there for the Nebula-born (ec6b7f14), one-time strips of off-role starters (39a0fe45); contracts.log ENT-006, ENT-007; one Piloting-10 trader queued for an Apophenia (199,751 cr quote); guidebook Standing Plan and a lesson.
+Worked: waiting traders 48 -> 0 (fill.py check 01:04 -> 01:45 and 01:47 UTC PASS); desk cost -194 to -262 cr a ship-hour over 58 runs (runs.jsonl 01:16 to 01:40 UTC); Trade scorecard 57.8 -> 74.7, employment 36/85 -> 84/85, Bursar trigger closed; 36 strip runs.
+Failed: the upgrade queue cannot fund (add_fund called without `hours`, the TypeError swallowed by wallet.sweep; errors.log ENT-171); my fix was refused at install because test_fleet_runhost fails on clean HEAD 8a4efab; whether the desk listings fill is not measured yet.
+Requests: requests.log ENT-485 (to Unity: install the upgrades.py fix, fix the runhost test).
+Suggestions: wallet.sweep prints the exception of each served step instead of pass; test fakes bind to the real function's signature; any division with ships docked idle can copy the desk form (queue.log ENT-288).
+Report: bursar-desks-replace-capital-crafts-waiting-48-to-0.
