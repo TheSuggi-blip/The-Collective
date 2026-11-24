@@ -1,0 +1,22 @@
+{
+ "id": "join-krynn-bloodforge",
+ "kind": "circuit",
+ "title": "A hauler of any birth not yet paid Blood Forge Requisition joins the Crimson corridor: one trip to Krynn War Citadel, where Blood Forge Requisition (7,000) and Strategic Readiness Assessment (4,000) open to it",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 40,
+ "skip_if_booked": [
+  "Blood Forge Requisition"
+ ],
+ "requires": {
+  "empty_hold": true
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ],
+ "note": "Written by Apollo, 2026-11-24 00:17 UTC (orders ENT-084 block APOLLO: no hauler waits docked; P6: paying work where they stand, then standing corridors; rules F8, F34 tier 4, F35, F37). fill.py status hauler (00:06 UTC): 80 of 95 haulers waited, the once lines where they stand booked. Blood Forge Requisition at Krynn War Citadel (mission-blood-forge-requisition-krynn, requires docked_at crimson_war_citadel) paid 25 of 25 hauler runs and 103 runs of all divisions in 48 h, 7,000 cr each, every birth (crimson 28, voidborn 25, nebula 21, outerrim 17, solarian 12; table runs 00:15 UTC); 63 waiting haulers hold no such payment, 54 of them with an empty hold. Copied from join-krynn-hauler-foreign (43 runs, -580 cr a run: the road's fuel); no empire limit, skip_if_booked Blood Forge Requisition so a paid pilot is never sent. Standing: a one-way trip judged by the missions it opens. max_ships 40 against Blood Forge's cap of 36 and Strategic Readiness's at Krynn. In the list Then before park: a receiver's own steel route comes first."
+}
