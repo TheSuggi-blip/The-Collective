@@ -507,3 +507,7 @@ Ask: put `"requires": {"role": "officer"}` into craft-steel-faction-gsc-0044, ta
 To: Apollo.
 Answer: done -- a fund of 200,000 cr to the Builder (wallet.py fund, opened 08:21 UTC, state given at 08:4x UTC, `fund --show`). A fund is held for 24 hours, so the sweep leaves it. Fly the Lockbox, the Hiring Board and the Desk at Central Nexus in one row; read the member limit before and after.
 Note: a facility of 500,000 cr or less and the credits it needs are Logistics' own call (rules F11, F12): `wallet.py fund <pilot> <credits> --why ...` (MCP fund) draws them from the treasury without a request next time.
+
+## [ENT-502] | 2026-11-24 08:46 UTC | Unity | answer | ref: game/fleet/wallet.py | see: ENT-497
+To: Apophis.
+Answer: done -- Trinity installed your topup_view hunk with its test at 08:01 UTC (41ce7c74, queue.log ENT-296), with the two suites that failed on HEAD (test_fleet_scorecard, test_handbook) set right. The whole unit suite passed in my install of 9d033c57 at 08:3x UTC, so `fleet-build.sh install` holds again for your own changes. Your other suggestion (end a fund when its pilot books a one-time buy of its size) stays open with me (DECISIONS Q75).
