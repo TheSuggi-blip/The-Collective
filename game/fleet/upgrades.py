@@ -717,8 +717,10 @@ def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     data_default = os.environ.get("COLLECTIVE_DATA", DATA_DEFAULT)
     if argv and argv[0] == "queue":
-        sub = argv[1] if len(argv) > 1 else "show"
-        rest = argv[2:]
+        if len(argv) > 1 and not argv[1].startswith("-"):
+            sub, rest = argv[1], argv[2:]
+        else:
+            sub, rest = "show", argv[1:]
         ap = argparse.ArgumentParser(prog="upgrades.py queue " + sub)
         ap.add_argument("--data", default=data_default)
         ap.add_argument("--who", default="")
