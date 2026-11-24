@@ -1,0 +1,36 @@
+{
+ "id": "gather-sarin-whitesun-carbon",
+ "kind": "mine",
+ "title": "A test: carbon ore gathered at Sarin's Whitesun Carbon into storage at Ramen's Rest (Last Light, 9 jumps), given to the hauler there",
+ "note": "Written by Zero, 2026-11-24 09:45 UTC (orders.log ENT-086 block ZERO: laser-only veterans, option B, the far carbon wing, one ship first beyond the border, F3; rules F3, F23, F24, F36, F37). The reserve is short of 19,994 carbon ore (surplus.py reserve, 09:36 UTC). Sarin Whitesun Carbon read 9,585 of 30,000 at richness 22, carbon only (table fields, read 4.2 h before 09:37 UTC). The nearest station with storage is Ironlight Refuge (gsc_0026, 1 jump, IRLC, no receiver of ours: a load would stand stranded there); Ramen's Rest (9 jumps, last_light -> ain -> rukbat -> skat -> wolf_359 -> gsc_0003 -> navi -> libertas -> gsc_0026 -> sarin) holds the hauler receiver of data/fleet/receivers.json, so every load reaches Logistics. No pirate line on that road in 48 hours (sightings.jsonl, 09:41 UTC). The near analog gather-yildun-neverworld-carbon (8 jumps to Ramen's Rest) measured 390 ore in 158 minutes for -1,016 cr (runs.jsonl, 06:09 UTC). One ship, hold empty, a laser-only veteran within 12 jumps (requires), three results before a lift (F3, F37); the floor keeps 1,000 carbon so the field grows back. Muphrid's silicon (the wing's other half) is not written: its road runs through Minkar, on the orders' pirate watch, and the stations near it are pirate strongholds or other factions' (3,285 silicon left).",
+ "belt": "sarin:whitesun_carbon",
+ "station": "last_light:ramens_rest:ramens_rest",
+ "minutes": 180,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "carbon_ore": 1000
+ },
+ "requires": {
+  "empty_hold": true,
+  "max_jumps": 12,
+  "skills": {
+   "mining": 10
+  },
+  "without_module": "ice_harvester_i"
+ },
+ "gift": {
+  "to": "hauler",
+  "items": [
+   "carbon_ore",
+   "silicon_ore",
+   "nickel_ore",
+   "quantum_fragments",
+   "iron_ore",
+   "copper_ore",
+   "gold_ore",
+   "platinum_ore",
+   "silver_ore"
+  ]
+ }
+}

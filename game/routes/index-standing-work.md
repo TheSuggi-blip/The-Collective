@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 637.
+Routes: 638.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -562,6 +562,7 @@ Routes: 637.
 | [gather-nihal-containment-fracture-train](gather-nihal-containment-fracture-train.json) | mine | beyond the border, 9 jumps | A test: Mining-skill work for Solarian-born miners: ore of Nihal Containment Fracture into storage at Procyon Colonial Station (one jump) | up to 3 ships, empty hold, born solarian, standing work | 130 | 34 | -280 | -480 | 2026-11-24 |
 | [gather-okab-belt](gather-okab-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron and copper ore at Okab Belt (beyond the border, one jump past Hamal) into storage at Node Beta, where the craft-piping route makes them into steel plate and copper piping | up to 3 ships, empty hold, standing work | 66 | 45 | -220 | -390 | 2026-11-24 |
 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Ruchbah Broken Glass Veil (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [gather-sarin-whitesun-carbon](gather-sarin-whitesun-carbon.json) | mine | beyond the border, 23 jumps | A test: carbon ore gathered at Sarin's Whitesun Carbon into storage at Ramen's Rest (Last Light, 9 jumps), given to the hauler there | up to 1 ships, without ice_harvester_i, empty hold, from mining 10, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-schedar-belt](gather-schedar-belt.json) | mine | beyond the border, 2 jumps | Standing work, a test: iron at Schedar Belt (beyond the border, one jump from Node Beta) into storage at Node Beta | up to 3 ships, empty hold, standing work | 104 | 48 | -300 | -410 | 2026-11-23 |
 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | mine | beyond the border, 12 jumps | A test: silicon ore (with iron and copper) gathered at Floodlight Flats (Subra, lawless) into storage at The Crescent Moon (Mebsuta, two jumps) | up to 1 ships, empty hold, standing work | 6 | 94 | -60 | -40 | 2026-11-24 |
 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | mine | beyond the border, 18 jumps | A test: nickel ore gathered at Worldsend Field (Tiaki) into storage at The Crucible Garrison (six jumps) | up to 2 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
