@@ -83,7 +83,7 @@ Kept by Oracle. Routes: 99. Ships: 50.
 | 61 | [mission-the-expeditionary-mandate-first](mission-the-expeditionary-mandate-first.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 18 jumps | once per pilot, up to 3 ships | 1 of 50 |
 | 62 | [hunt-intercrus-ice-fields-hollow-pilgrim](hunt-intercrus-ice-fields-hollow-pilgrim.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | 1 of 50 |
 | 63 | [census-region-sol](census-region-sol.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 13 jumps | up to 2 ships, empty hold | 3 of 50 |
-| 64 | [strip-gift-mining-laser-scout-central-nexus](strip-gift-mining-laser-scout-central-nexus.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 30 pilots in all, from 3,000 cr, born voidborn | 6 of 50 |
+| 64 | [strip-gift-mining-laser-scout-central-nexus](strip-gift-mining-laser-scout-central-nexus.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 30 pilots in all, from 3,000 cr, born voidborn | 7 of 50 |
 | 65 | [census-kit-herds](census-kit-herds.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 3 ships, empty hold | 3 of 50 |
 | 66 | [census-far-4](census-far-4.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 2 ships, empty hold | 11 of 50 |
 | 67 | [census-far-3](census-far-3.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 2 ships, empty hold | 11 of 50 |
