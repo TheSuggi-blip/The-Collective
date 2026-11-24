@@ -185,5 +185,27 @@ class BursarEngineTests(unittest.TestCase):
             self.assertEqual([a for a in acts5 if a[0] == "buy_create" and a[1] == "cobalt_ink"], [])
 
 
+
+    def test_sync_fleet_buys_detects_fills_and_skips_cancelled(self):
+        """sync_fleet_buys books escrow fill on non-cancelled unit drop and ignores cancelled oids."""
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "fleet").mkdir(parents=True, exist_ok=True)
+            # Initial open orders: o1 (100 @ 50), o2 (50 @ 100)
+            bursar.sync_fleet_buys(str(data), "trader-1", "hub_a", [
+                {"order_id": "o1", "side": "buy", "item_id": "iron_ore", "remaining": 100, "price_each": 50},
+                {"order_id": "o2", "side": "buy", "item_id": "gold_ore", "remaining": 50, "price_each": 100},
+            ], book_fills=True)
+            # o1 partially fills 40 units (rem=60); o2 is cancelled (in skip_fill_oids)
+            bursar.sync_fleet_buys(str(data), "trader-1", "hub_a", [
+                {"order_id": "o1", "side": "buy", "item_id": "iron_ore", "remaining": 60, "price_each": 50},
+            ], skip_fill_oids={"o2"}, book_fills=True)
+            ot = json.loads((data / "fleet" / "onetime.json").read_text(encoding="utf-8"))
+            self.assertEqual(len(ot), 1)
+            self.assertEqual(ot[0][1], "trader-1")
+            self.assertEqual(ot[0][2], "Exchange buy escrow: filled")
+            self.assertEqual(ot[0][3], 2000)
+
 if __name__ == "__main__":
     unittest.main()

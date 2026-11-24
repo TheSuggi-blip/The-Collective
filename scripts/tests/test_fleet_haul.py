@@ -100,5 +100,40 @@ class HaulEngineTests(unittest.TestCase):
         self.assertEqual(assigned["hauler-near"]["job_key"], "arb-bid:base_b:lead_shielding")
         self.assertGreater(assigned["hauler-near"]["qty"], 65)
 
+
+    def test_internal_supply_reads_live_need_status_and_supply_status(self):
+        """_pick_internal_supply reads short items from live need_status and supply_status tables."""
+        import sqlite3, tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "store").mkdir(parents=True, exist_ok=True)
+            (data / "stock").mkdir(parents=True, exist_ok=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE need_status (id TEXT, short_items TEXT);
+                CREATE TABLE supply_status (item TEXT, stock INTEGER, keep INTEGER);
+                INSERT INTO need_status VALUES ('atria', 'foil_scale 500, alloy_scale 200');
+                INSERT INTO supply_status VALUES ('iron_ore', 45000, 60000), ('copper_ore', 80000, 50000);
+            """)
+            con.commit()
+            con.close()
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {
+                    "hauler-1": {
+                        "outer_base": {"iron_ore": 120, "copper_ore": 500, "foil_scale": 50},
+                    }
+                }
+            }), encoding="ascii")
+            base_map = {
+                "outer_base": ("sys_out", "poi_out", "outer_base", True, "voidborn"),
+                "node_beta_industrial_station": ("node_beta", "poi_nb", "node_beta_industrial_station", True, "voidborn"),
+            }
+            lanes = {"sys_out": {"node_beta"}, "node_beta": {"sys_out"}}
+            pol = {"policed_only": True, "home_bases": ["node_beta_industrial_station"], "max_jumps_pickup": 10, "max_jumps_delivery": 10}
+            job = haul._pick_internal_supply(str(data), "hauler-1", base_map, lanes, "sys_out", 100, pol, set())
+            self.assertIsNotNone(job)
+            self.assertIn(job["item"], ("iron_ore", "foil_scale"))
+            self.assertEqual(job["dest"][2], "node_beta_industrial_station")
+
 if __name__ == "__main__":
     unittest.main()

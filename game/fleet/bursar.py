@@ -450,26 +450,61 @@ def load_needs_and_reserves(repo_root, data):
     return open_needs, reserved, catalog_vals
 
 
-def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
-    """Record pilot open buy units at base_id in data/fleet/bursar_buys.json; return {item: qty_by_others}."""
+def _book_escrow(data, pilot, kind, credits):
+    """Record double-entry Exchange buy escrow move in data/fleet/onetime.json."""
+    amt = int(round(credits or 0))
+    if not pilot or amt == 0:
+        return
+    try:
+        gate.book_onetime(str(pilot), "Exchange buy escrow: " + str(kind), amt, data=data)
+    except Exception:
+        pass
+
+
+def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None, skip_fill_oids=None, book_fills=False):
+    """Record pilot open buy units at base_id in data/fleet/bursar_buys.json; return {item: qty_by_others}.
+
+    When book_fills=True, detects filled units on tracked non-cancelled buy orders and books
+    `Exchange buy escrow: filled` (+filled_cr) so COGS hits in the window goods actually arrive."""
     now_t = time.time() if now_t is None else float(now_t)
+    skip_set = set(str(x) for x in (skip_fill_oids or ()))
     fdir = Path(data) / "fleet"
     fdir.mkdir(parents=True, exist_ok=True)
     lock_path = fdir / "bursar_buys.lock"
     ledger_path = fdir / "bursar_buys.json"
     my_items = {}
+    my_orders = {}
     for o in own_orders or []:
         if isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy":
             rem = int(o.get("remaining") or o.get("quantity") or 0)
             iid = str(o.get("item_id") or "")
+            oid = str(o.get("order_id") or o.get("id") or "")
+            pr = int(o.get("price_each") or o.get("price") or 0)
             if iid and rem > 0:
                 my_items[iid] = my_items.get(iid, 0) + rem
+                if oid:
+                    my_orders[oid] = {"item": iid, "rem": rem, "price": pr}
     others = {}
+    filled_cr = 0
     with open(lock_path, "a+", encoding="utf-8") as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)
         try:
             doc = read_json(ledger_path, {})
             entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+            prev_orders = {}
+            if pilot and base_id:
+                prev_rec = ((entries.get(str(pilot)) or {}).get(str(base_id)) or {})
+                if isinstance(prev_rec.get("orders"), dict):
+                    prev_orders = prev_rec["orders"]
+            if book_fills and prev_orders:
+                for oid, prec in prev_orders.items():
+                    if str(oid) in skip_set or not isinstance(prec, dict):
+                        continue
+                    p_rem = int(prec.get("rem") or 0)
+                    p_pr = int(prec.get("price") or 0)
+                    c_rem = int((my_orders.get(str(oid)) or {}).get("rem") or 0)
+                    if p_rem > c_rem and p_pr > 0:
+                        filled_cr += (p_rem - c_rem) * p_pr
             cleaned = {}
             for p_nm, bases in entries.items():
                 if not isinstance(bases, dict):
@@ -479,13 +514,16 @@ def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
                     if isinstance(rec, dict) and (now_t - float(rec.get("at") or 0)) <= ttl_s:
                         im = rec.get("items")
                         if isinstance(im, dict) and im:
-                            kept_b[str(b_id)] = {"at": int(rec.get("at") or now_t), "items": {str(k): int(v) for k, v in im.items() if int(v or 0) > 0}}
+                            entry_obj = {"at": int(rec.get("at") or now_t), "items": {str(k): int(v) for k, v in im.items() if int(v or 0) > 0}}
+                            if isinstance(rec.get("orders"), dict) and rec["orders"]:
+                                entry_obj["orders"] = rec["orders"]
+                            kept_b[str(b_id)] = entry_obj
                 if kept_b:
                     cleaned[str(p_nm)] = kept_b
             if pilot and base_id:
                 p_map = cleaned.setdefault(str(pilot), {})
                 if my_items:
-                    p_map[str(base_id)] = {"at": int(now_t), "items": my_items}
+                    p_map[str(base_id)] = {"at": int(now_t), "items": my_items, "orders": my_orders}
                 else:
                     p_map.pop(str(base_id), None)
                     if not p_map:
@@ -499,6 +537,8 @@ def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
             write_json(ledger_path, {"updated_at": int(now_t), "entries": cleaned})
         finally:
             fcntl.flock(lf, fcntl.LOCK_UN)
+    if book_fills and filled_cr > 0:
+        _book_escrow(data, pilot, "filled", filled_cr)
     return others
 
 
@@ -886,7 +926,9 @@ def main(argv=None):
                         eff_pol.setdefault("buy", {})["enabled"] = False
                 except Exception:
                     pass
-                fleet_open_buys = sync_fleet_buys(DATA, pilot, base_id, orders_resp)
+                fleet_open_buys = sync_fleet_buys(DATA, pilot, base_id, orders_resp, book_fills=True)
+                own_by_id = {str(o.get("order_id") or o.get("id") or ""): o for o in (orders_resp or []) if isinstance(o, dict)}
+                cancelled_oids = set()
                 acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
@@ -916,23 +958,43 @@ def main(argv=None):
                         _, iid, oid, np = act
                         d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
                         time.sleep(TICK)
+                        if "error" not in d:
+                            old_o = own_by_id.get(str(oid)) or {}
+                            old_pr = int(old_o.get("price_each") or old_o.get("price") or 0)
+                            old_rem = int(old_o.get("remaining") or old_o.get("quantity") or 0)
+                            if old_pr > 0 and old_rem > 0 and int(np) != old_pr:
+                                _book_escrow(DATA, pilot, "repriced", -(int(np) - old_pr) * old_rem)
                         say("buy_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
                         acted += 1
                     elif kind_a == "buy_cancel":
                         _, iid, oid = act
                         d = raw("cancel_order", {"order_id": oid}, group="spacemolt_market")
                         time.sleep(TICK)
+                        if "error" not in d:
+                            cancelled_oids.add(str(oid))
+                            old_o = own_by_id.get(str(oid)) or {}
+                            old_pr = int(old_o.get("price_each") or old_o.get("price") or 0)
+                            old_rem = int(old_o.get("remaining") or old_o.get("quantity") or 0)
+                            if old_pr > 0 and old_rem > 0:
+                                _book_escrow(DATA, pilot, "released", old_pr * old_rem)
                         say("buy_cancel %s %s%s" % (iid, oid[:8], " ERR" if "error" in d else ""))
                         acted += 1
                     elif kind_a == "buy_create":
                         _, iid, qty, np = act
                         d = raw("create_buy_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
                         time.sleep(TICK)
+                        if "error" not in d and int(qty) > 0 and int(np) > 0:
+                            _book_escrow(DATA, pilot, "locked", -int(qty) * int(np))
                         say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
                         acted += 1
-                if any(a[0] in ("buy_create", "buy_cancel") for a in acts):
+                if any(a[0] in ("buy_create", "buy_cancel", "buy_modify") for a in acts):
                     try:
-                        sync_fleet_buys(DATA, pilot, base_id, body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or [])
+                        sync_fleet_buys(
+                            DATA, pilot, base_id,
+                            body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or [],
+                            skip_fill_oids=cancelled_oids,
+                            book_fills=True,
+                        )
                     except Exception:
                         pass
             except SystemExit:

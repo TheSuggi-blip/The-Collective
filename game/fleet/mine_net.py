@@ -227,9 +227,12 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
                             item_vals[str(iid)] = float(val)
 
             def _books():
-                for iid, bid in cur.execute("SELECT item, MAX(best_buy) FROM books WHERE best_buy > 0 GROUP BY item"):
-                    if iid and bid:
-                        item_vals[str(iid)] = max(item_vals.get(str(iid), 0.0), float(bid))
+                cols = {r[1] for r in cur.execute("PRAGMA table_info(books)").fetchall()}
+                bcol = "bid" if "bid" in cols else ("best_buy" if "best_buy" in cols else None)
+                if bcol:
+                    for iid, bid in cur.execute("SELECT item, MAX(%s) FROM books WHERE %s > 0 GROUP BY item" % (bcol, bcol)):
+                        if iid and bid:
+                            item_vals[str(iid)] = max(item_vals.get(str(iid), 0.0), float(bid))
 
             def _supply():
                 # supply_status carries the stock beside the keep (supply_chains has no stock column).
@@ -317,8 +320,38 @@ def load_claims_state(data_dir, policy, now_t=None):
     return _read_claims_unlocked(path, now_t, ttl_s)
 
 
-def claim_belt_atomic(data_dir, pilot, belt_key, cap, policy, now_t=None):
-    """Atomically claim belt_key for pilot if active count < cap and belt not on cooldown."""
+def count_static_mine_orders(repo_root, data_dir, now_t=None, order_fresh_s=1200.0):
+    """Count active static `mine <route_id>` ships per belt from data/fleet/orders/*.json."""
+    now_t = time.time() if now_t is None else float(now_t)
+    odir = Path(data_dir) / "fleet" / "orders"
+    rdir = Path(repo_root) / "game" / "routes"
+    if not odir.is_dir() or not rdir.is_dir():
+        return {}
+    route_belt = {}
+    counts = {}
+    for p in odir.glob("*.json"):
+        try:
+            if (now_t - p.stat().st_mtime) > order_fresh_s:
+                continue
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        what = str(d.get("what") or "").strip()
+        parts = what.split(" ", 1)
+        if len(parts) != 2 or parts[0] != "mine":
+            continue
+        rid = parts[1]
+        if rid not in route_belt:
+            rd = read_json(rdir / ("%s.json" % rid), {})
+            route_belt[rid] = str(rd.get("belt") or "") if isinstance(rd, dict) else ""
+        bk = route_belt[rid]
+        if bk:
+            counts[bk] = counts.get(bk, 0) + 1
+    return counts
+
+
+def claim_belt_atomic(data_dir, pilot, belt_key, cap, policy, now_t=None, static_counts=None, repo_root=None):
+    """Atomically claim belt_key for pilot if (mine_net claims + static mine orders) < cap and not on cooldown."""
     now_t = time.time() if now_t is None else float(now_t)
     ttl_s = float(policy.get("claim_ttl_s") or 4200)
     fdir = Path(data_dir) / "fleet"
@@ -332,7 +365,10 @@ def claim_belt_atomic(data_dir, pilot, belt_key, cap, policy, now_t=None):
             if cooldowns.get(belt_key, 0) > now_t:
                 return False
             claims.pop(str(pilot), None)
-            cur_n = sum(1 for rec in claims.values() if rec.get("belt") == belt_key)
+            st_c = static_counts
+            if st_c is None and repo_root is not None:
+                st_c = count_static_mine_orders(repo_root, data_dir, now_t=now_t)
+            cur_n = sum(1 for rec in claims.values() if rec.get("belt") == belt_key) + int((st_c or {}).get(belt_key, 0))
             if cur_n >= max(1, int(cap)):
                 return False
             claims[str(pilot)] = {"belt": belt_key, "at": int(now_t)}
@@ -373,7 +409,7 @@ def adaptive_belt_cap(remaining, max_remaining, policy):
     return min(max_cap, max(1, headroom // per_ship))
 
 
-def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=None):
+def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=None, static_counts=None):
     """Return sorted list of candidate belt dicts for one pilot (best first)."""
     now_t = time.time() if now_t is None else float(now_t)
     tools = pilot_tools(pilot_info)
@@ -405,7 +441,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     stations_by_sys = world["stations_by_sys"]
 
     dists = bfs_distances(adj, p_sys, max_hops=max_jumps) if p_sys else {}
-    claimed_counts = {}
+    claimed_counts = dict(static_counts or {})
     for cp, rec in (claims or {}).items():
         if cp == p_name:
             continue
@@ -572,10 +608,11 @@ def main(argv=None):
         ship_doc["name"] = pilot
         world = load_graph_and_world(DATA, REPO, policy)
         claims, cooldowns = load_claims_state(DATA, policy)
-        cands = score_belt_candidates(ship_doc, world, policy, claims, cooldowns)
+        static_counts = count_static_mine_orders(REPO, DATA)
+        cands = score_belt_candidates(ship_doc, world, policy, claims, cooldowns, static_counts=static_counts)
         chosen = None
         for cand in cands:
-            if claim_belt_atomic(DATA, pilot, cand["belt_key"], cand["cap"], policy):
+            if claim_belt_atomic(DATA, pilot, cand["belt_key"], cand["cap"], policy, repo_root=REPO):
                 chosen = cand
                 claimed_belt = cand["belt_key"]
                 break

@@ -1150,23 +1150,31 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
     haul_present = haul_pol_path.is_file()
     haul_pol = _load_json(haul_pol_path, {}) if haul_present else {}
     haul_enabled = bool(haul_pol.get("enabled", True)) if haul_present else False
-    haul_arb_on = bool((haul_pol.get("sell_arb") or {}).get("enabled", True)) if haul_present else False
-    haul_ship_on = bool((haul_pol.get("shipping") or {}).get("enabled", True)) if haul_present else False
+    haul_lanes = [str(x) for x in (haul_pol.get("lanes") or [])] if (haul_present and isinstance(haul_pol.get("lanes"), list)) else None
+    if haul_lanes is not None:
+        haul_arb_on = ("arbitrage" in haul_lanes)
+        haul_ship_on = any(x in haul_lanes for x in ("active_freight", "public_freight", "internal_supply"))
+        haul_lanes_active = len(haul_lanes) > 0
+    else:
+        haul_arb_on = bool((haul_pol.get("sell_arb") or {}).get("enabled", True)) if haul_present else False
+        haul_ship_on = bool((haul_pol.get("shipping") or {}).get("enabled", True)) if haul_present else False
+        haul_lanes_active = (haul_arb_on or haul_ship_on)
     haul_active = int(orders_by_kind.get("haul", 0))
     haul_plan = int(in_plan.get("haul-network", 0))
     haul_claims_raw = _load_json(ddir / "fleet" / "haul_claims.json", {})
     haul_claims_n = len(haul_claims_raw) if isinstance(haul_claims_raw, dict) else 0
+    log_idle = max(0, int((ldiv.get("Logistics") or {}).get("total", 0)) - int((ldiv.get("Logistics") or {}).get("working", 0)))
     haul_notice = None
     haul_status = "OK"
     if haul_present:
-        if not haul_enabled or (not haul_arb_on and not haul_ship_on):
+        if not haul_enabled or not haul_lanes_active:
             haul_status = "ALARM"
             disabled_engines.append("haul-network")
             haul_notice = {
                 "severity": "ALARM", "code": "SMART_ENGINE_GAP",
                 "metric": "AutoNet: haul-network disabled",
-                "actual": f"enabled={haul_enabled}, sell_arb={haul_arb_on}, shipping={haul_ship_on}",
-                "target": "haul-network active (sell_arb + shipping ON)",
+                "actual": f"enabled={haul_enabled}, lanes={haul_lanes if haul_lanes is not None else [haul_arb_on, haul_ship_on]}",
+                "target": "haul-network active with freight/supply lanes ON",
                 "direction": "FLAT",
                 "action": "Re-enable game/haul-policy.json core lanes (tune caps/margins rather than turning off; O3)",
             }
@@ -1178,7 +1186,7 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "actual": f"0/{_div_total('Logistics')} haulers carry haul-network",
                 "target": "haul-network in plan-logistics.md",
                 "direction": "FLAT",
-                "action": "Keep haul-network active in plan-logistics.md for Bursar-combo arb & P2P shipping (O3)",
+                "action": "Keep haul-network active in plan-logistics.md for freight & internal supply (O3)",
             }
         elif _div_total("Logistics") >= 15 and haul_active == 0:
             haul_status = "WARN"
@@ -1186,14 +1194,26 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "severity": "WARN", "code": "SMART_ENGINE_GAP",
                 "metric": "AutoNet: 0 active haul-network ships",
                 "actual": f"0/{_div_total('Logistics')} Logistics ships on haul-network",
-                "target": "active freight/arb haulers",
+                "target": "active freight/supply haulers",
                 "direction": "FLAT",
                 "action": "Check haul-policy.json margins & assign haulers to haul-network (O3)",
             }
+        elif haul_active >= 20 and haul_claims_n == 0 and log_idle >= 15:
+            haul_status = "WARN"
+            haul_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: haul-network polling empty (0 active jobs)",
+                "actual": f"{haul_active} on haul-network, 0 active claims, {log_idle} Logistics idle (lanes={','.join(haul_lanes or ['default'])})",
+                "target": "active jobs or overflow ships on industrial craft/supply",
+                "direction": "FLAT",
+                "action": "Cap haul-network to real freight/supply demand and route surplus haulers to industrial craft, reserve builds, or passenger lanes",
+            }
+    _hl_lbl = (",".join(haul_lanes) if haul_lanes is not None else ("ON" if haul_enabled else "OFF"))
     out["Logistics"] = {
         "engine": "haul-network",
         "policy_present": haul_present,
         "enabled": haul_enabled,
+        "lanes": haul_lanes,
         "sell_arb_enabled": haul_arb_on,
         "shipping_enabled": haul_ship_on,
         "in_plan": haul_plan,
@@ -1205,7 +1225,7 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
         "owned_outposts": owned_outposts,
         "status": haul_status,
         "summary": (
-            f"haul-network {haul_active} active ({haul_claims_n} claims, policy {'ON' if haul_enabled else 'OFF'}) | "
+            f"haul-network {haul_active} active ({haul_claims_n} claims, lanes: {_hl_lbl}) | "
             f"O4 5-emp hubs {o4_covered}/{o4_target} ({owned_outposts} outpost)"
         ) if haul_present else "",
         "notice": haul_notice,

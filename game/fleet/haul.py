@@ -688,12 +688,17 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
     try:
         con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
-        if "contract_candidates" in tbls:
-            for (short_s,) in con.execute("SELECT short_items FROM contract_candidates WHERE short_items IS NOT NULL").fetchall():
-                for part in str(short_s).split(","):
-                    m = re.match(r"\s*([a-z0-9_]+)\s+([\d,]+)", part.strip())
-                    if m:
-                        open_needs.add(m.group(1))
+        for tbl_nm in ("need_status", "contract_candidates"):
+            if tbl_nm in tbls:
+                for (short_s,) in con.execute("SELECT short_items FROM %s WHERE short_items IS NOT NULL" % tbl_nm).fetchall():
+                    for part in str(short_s).split(","):
+                        m = re.match(r"\s*([a-z0-9_]+)\s+([\d,]+)", part.strip())
+                        if m:
+                            open_needs.add(m.group(1))
+        if "supply_status" in tbls:
+            for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
+                if iid and int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
+                    open_needs.add(str(iid))
     except sqlite3.Error:
         return None
     finally:
@@ -1072,15 +1077,44 @@ def main(argv=None):
                         completed += 1
 
         if completed == 0:
-            say("no eligible haul/freight/arb/supply job matched policy right now; resting 120s")
-            notes.append("no eligible job")
-            end_nap = time.time() + 120.0
+            watch_s = float(policy.get("rest_seconds_when_empty") or (float(policy.get("idle_watch_minutes") or 15) * 60.0))
+            poll_s = min(180.0, max(30.0, float(policy.get("idle_poll_interval_s") or 180.0)))
+            say("no eligible haul/freight/arb/supply job matched policy right now; docked watch %ds (poll %ds)" % (int(watch_s), int(poll_s)))
+            notes.append("docked watch %dm" % max(1, int(round(watch_s / 60.0))))
+            end_nap = time.time() + watch_s
+            next_poll = time.time() + poll_s
             while time.time() < end_nap and not stop_requested():
                 time.sleep(min(20.0, max(1.0, end_nap - time.time())))
                 try:
                     os.utime(order_path)
                 except OSError:
                     pass
+                if time.time() >= next_poll and time.time() + 30.0 < end_nap:
+                    next_poll = time.time() + poll_s
+                    # Re-check internal_supply & public_freight cheaply without exiting the docked watch
+                    if "internal_supply" in lane_order:
+                        claimed = active_claimed_keys(DATA)
+                        sup = _pick_internal_supply(DATA, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed)
+                        if sup and claim_job(DATA, pilot, sup["job_key"]):
+                            iid, oloc, dloc, qty = sup["item"], sup["origin"], sup["dest"], sup["qty"]
+                            say("watch->supply %d %s: %s -> %s" % (qty, iid, oloc[2], dloc[2]))
+                            ok_o, _ = go_dock(oloc)
+                            if ok_o:
+                                raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                have = get_cargo().get(iid, 0)
+                                if have > 0:
+                                    ok_d, _ = go_dock(dloc)
+                                    if ok_d:
+                                        r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        if "error" in r_dep:
+                                            raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                                        notes.append("supply %d %s -> %s" % (have, iid, dloc[2]))
+                                        completed += 1
+                                        break
+                            release_job(DATA, pilot)
         return 0
     finally:
         cleanup()

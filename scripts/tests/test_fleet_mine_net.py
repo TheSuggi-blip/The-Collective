@@ -136,5 +136,55 @@ class MineNetLiveSchemaTests(unittest.TestCase):
                              [("iron_ore", "deficit", "sys_b:st_b:base_b")])
 
 
+
+    def test_books_bid_and_static_mine_order_occupancy_cap(self):
+        """books.bid reads cleanly without stderr and active static mine orders count toward max_per_belt."""
+        import io, contextlib, sqlite3, tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            repo = Path(tmp) / "repo"
+            (data / "store").mkdir(parents=True, exist_ok=True)
+            (data / "fleet" / "orders").mkdir(parents=True, exist_ok=True)
+            (repo / "game" / "routes").mkdir(parents=True, exist_ok=True)
+
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE lanes (a TEXT, b TEXT);
+                CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, base TEXT);
+                CREATE TABLE fields (system TEXT, poi TEXT, resource TEXT, remaining INTEGER, max_remaining INTEGER, richness INTEGER, t INTEGER);
+                CREATE TABLE items (id TEXT, base_value REAL);
+                CREATE TABLE books (base TEXT, system TEXT, item TEXT, bid REAL, bid_qty INTEGER);
+                INSERT INTO systems VALUES ('s1', 'voidborn', 0);
+                INSERT INTO places VALUES ('s1', 'st1', 'station', 'Station 1', 'base1');
+                INSERT INTO fields VALUES ('s1', 'b_full', 'iron_ore', 8000, 10000, 5, 1795500000);
+                INSERT INTO items VALUES ('iron_ore', 10.0);
+                INSERT INTO books VALUES ('base1', 's1', 'iron_ore', 45.0, 500);
+            """)
+            con.commit()
+            con.close()
+
+            stderr_buf = io.StringIO()
+            with contextlib.redirect_stderr(stderr_buf):
+                world = mine_net.load_graph_and_world(str(data), str(repo), dict(mine_net.DEFAULT_POLICY))
+            self.assertEqual(stderr_buf.getvalue(), "")
+            self.assertEqual(world["item_vals"]["iron_ore"], 45.0)
+
+            # 3 active static mine orders on s1:b_full must block a 4th mine_net claim (cap=3)
+            (repo / "game" / "routes" / "mine-iron-s1.json").write_text(json.dumps({"kind": "mine", "belt": "s1:b_full"}), encoding="ascii")
+            for i in range(1, 4):
+                (data / "fleet" / "orders" / f"miner-{i}.json").write_text(
+                    json.dumps({"pilot": f"miner-{i}", "what": "mine mine-iron-s1"}), encoding="ascii"
+                )
+            st_counts = mine_net.count_static_mine_orders(str(repo), str(data))
+            self.assertEqual(st_counts.get("s1:b_full"), 3)
+            pol = dict(mine_net.DEFAULT_POLICY, max_per_belt=3)
+            self.assertFalse(mine_net.claim_belt_atomic(str(data), "miner-99", "s1:b_full", 3, pol, repo_root=str(repo)))
+            cands = mine_net.score_belt_candidates(
+                {"name": "miner-99", "system": "s1", "modules": ["mining_laser_i"]},
+                world, pol, {}, {}, static_counts=st_counts,
+            )
+            self.assertEqual(cands, [])
+
 if __name__ == "__main__":
     unittest.main()

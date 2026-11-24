@@ -187,6 +187,8 @@ ONE_SIDED = False
 # game/fleet/routes.py TREASURY): money that goes from a pilot's wallet into the Collective's own purse, no purchase.
 TREASURY = "Faction treasury: credits deposited"
 TREASURY_FUND = "Treasury fund: credits withdrawn"
+BURSAR_ESCROW = "Exchange buy escrow"
+BURSAR_ESCROW_FILL = "Exchange buy escrow: filled"
 MOVES_LEAD = 600             # seconds a booking may follow the reading of its wallet change (a script books once the wallet shows it)
 TRANSIT_MAX = 2 * 3600       # a side of a gift or deposit no reading matched in this long counts at its booking time
 MOVES_KEEP = 48 * 3600       # moves.jsonl keeps this long (the longest window is 24 hours)
@@ -568,7 +570,8 @@ def one_time_until(one, t, place=None):
     out = {"": [0, 0]}
     for row in one:
         if (isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t and row[2] != TRANSFER
-                and not str(row[2]).startswith(TREASURY) and not str(row[2]).startswith(TREASURY_FUND)):
+                and not str(row[2]).startswith(TREASURY) and not str(row[2]).startswith(TREASURY_FUND)
+                and not str(row[2]).startswith(BURSAR_ESCROW)):
             value = num(row[3])
             name = row[1] if isinstance(row[1], str) else ""
             for key in ("", place(name, row[0]) if place else division_of(name)[0]):
@@ -699,6 +702,10 @@ def sides_of(gifts, one):
         if isinstance(row, list) and len(row) == 4 and num(row[0]) and isinstance(row[1], str):
             if (str(row[2]).startswith(TREASURY) and num(row[3]) < 0) or (str(row[2]).startswith(TREASURY_FUND) and num(row[3]) > 0):
                 out.append((row[0], row[1], row[3], "deposit", -1 - number))
+            elif str(row[2]).startswith(BURSAR_ESCROW_FILL) and num(row[3]) != 0:
+                out.append((row[0], row[1], row[3], "escrow_fill", -1 - number))
+            elif str(row[2]).startswith(BURSAR_ESCROW) and num(row[3]) != 0:
+                out.append((row[0], row[1], row[3], "escrow", -1 - number))
     return out
 
 
@@ -714,6 +721,10 @@ def read_times(sides, moves, starts, now, lead=MOVES_LEAD, longest=TRANSIT_MAX):
     out = [None] * len(sides)
     mine, theirs = {}, {}
     for index, side in enumerate(sides):
+        if side[3] == "escrow_fill":
+            # Escrow fill converts prior locked escrow to COGS without a wallet change: book at exact timestamp
+            out[index] = side[0]
+            continue
         mine.setdefault(side[1], []).append(index)
     for at, pilot, moved in sorted(moves):
         theirs.setdefault(pilot, []).append((at, moved))
@@ -769,6 +780,8 @@ def in_window(sides, read, t0, t1, place=None):
             deposits[division] = deposits.get(division, 0) + credits
             treasury -= credits
             continue
+        if kind in ("escrow", "escrow_fill"):
+            continue
         gifts[division] = gifts.get(division, 0) + credits
         if kind == "gift":
             half += credits
@@ -786,6 +799,20 @@ def in_window(sides, read, t0, t1, place=None):
         elif taken is not None and t0 < taken <= t1 and given is not None and given <= t0:
             early += credits
     return gifts, deposits, half, treasury, unseen, early
+
+
+def escrow_in_window(sides, read, t0, t1, place=None):
+    """Balance-sheet Exchange buy-order escrow flows read in (t0, t1] as {division: net_wallet_delta}.
+
+    Locking escrow (-credits) and cancelling (+credits) offset wallet moves so open escrow never
+    books as operating cost; filled orders (+credits via escrow_fill) recognize COGS when goods land."""
+    escrowed = {}
+    for (_booked, pilot, credits, kind, _move), at in zip(sides, read):
+        if kind not in ("escrow", "escrow_fill") or at is None or not t0 < at <= t1:
+            continue
+        division = place(pilot, at) if place else division_of(pilot)[0]
+        escrowed[division] = escrowed.get(division, 0) + credits
+    return escrowed
 
 
 def read_regroup(path):
@@ -1067,7 +1094,8 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
         found = sides_of(gifts, one)
         sides = (found, [side[0] for side in found])
     given, deposited, half, treasury, unseen, early = in_window(sides[0], sides[1], a[0], b[0], place)
-    ours = half + sum(deposited.values())               # what the fleet's wallets show of moves between our purses
+    escrowed = escrow_in_window(sides[0], sides[1], a[0], b[0], place)
+    ours = half + sum(deposited.values()) + sum(escrowed.values())
 
     def booked(key):
         return [after.get(key, [0, 0])[i] - before.get(key, [0, 0])[i] for i in (0, 1)]
@@ -1085,7 +1113,7 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
         p = moves.get(key, [0, 0, 0, 0, 0])
         return {"left": p[0], "back": p[1], "credits": p[2], "earned": p[3]}
 
-    names = set(a[7]) | set(b[7]) | {k for k, v in list(given.items()) + list(deposited.items()) if v}
+    names = set(a[7]) | set(b[7]) | {k for k, v in list(given.items()) + list(deposited.items()) + list(escrowed.items()) if v}
     names |= {k for found in (new, moves, shifted) for k, v in found.items() if any(v)}
     names |= {k for k in set(before) | set(after) if any(booked(k))}
     names.discard("")
@@ -1132,7 +1160,7 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
     for division in sorted(names):
         d, e = b[7].get(division) or [0, 0, 0, 0, 0, 0], a[7].get(division) or [0, 0, 0, 0, 0, 0]
         born, off = new.get(division, [0, 0, 0, 0]), joined(division)
-        got = given.get(division, 0) + deposited.get(division, 0)
+        got = given.get(division, 0) + deposited.get(division, 0) + escrowed.get(division, 0)
         row = figures(hours, d[0], d[1] - e[1] - got - off[0], d[2] - e[2] - off[1], booked(division))
         row.update({"transfers_per_hour": round(given.get(division, 0) / hours), "seed": seed(born), "presence": absent(division),
                     "treasury_moved_per_hour": round(-deposited.get(division, 0) / hours)})

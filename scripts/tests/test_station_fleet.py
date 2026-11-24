@@ -661,5 +661,32 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual((meters["fuel_units"], meters["hull_points"], meters["repair_cr"]), (20, 0, 0))
 
 
+
+    def test_bursar_buy_escrow_excluded_from_costs_and_recognizes_fills(self):
+        """Buy-order escrow locks/releases produce 0 operating cost; fills recognize exact COGS without polluting treasury."""
+        t0, t1, t2 = 10000, 13600, 17200
+        # Window 1 (t0 -> t1): trader-1 locks 20,000 cr into Exchange buy escrow (wallet drops 100k -> 80k, earned 0)
+        h_lock = [
+            [t0, 100000, 1, 0, 0, 0, 0, {"Trade": [1, 100000, 0, 0, 0, 0]}],
+            [t1, 80000, 1, 0, 0, 0, 0, {"Trade": [1, 80000, 0, 0, 0, 0]}],
+        ]
+        one_lock = [[t0 + 100, "trader-1", "Exchange buy escrow: locked", -20000]]
+        r_lock = self.fleet.window(h_lock, t1, 3600, one=one_lock)
+        self.assertEqual(r_lock["costs_per_hour"], 0)
+        self.assertEqual(r_lock["bought_once_per_hour"], 0)
+        self.assertEqual(r_lock["treasury_moved_per_hour"], 0)
+        self.assertEqual(r_lock["divisions"]["Trade"]["costs_per_hour"], 0)
+
+        # Window 2 (t1 -> t2): order fills (wallet stays 80k, escrow_fill books +20,000 -> COGS = +20,000 cr/h)
+        h_fill = [
+            [t1, 80000, 1, 0, 0, 0, 0, {"Trade": [1, 80000, 0, 0, 0, 0]}],
+            [t2, 80000, 1, 0, 0, 0, 0, {"Trade": [1, 80000, 0, 0, 0, 0]}],
+        ]
+        one_fill = one_lock + [[t1 + 100, "trader-1", "Exchange buy escrow: filled", 20000]]
+        r_fill = self.fleet.window(h_fill, t2, 3600, one=one_fill)
+        self.assertEqual(r_fill["costs_per_hour"], 20000)
+        self.assertEqual(r_fill["divisions"]["Trade"]["costs_per_hour"], 20000)
+        self.assertEqual(r_fill["treasury_moved_per_hour"], 0)
+
 if __name__ == "__main__":
     unittest.main()
