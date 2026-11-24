@@ -14,33 +14,33 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 
 | Strategy | Owner | CLTV Status | Proven By |
 |:--|:--|:--|:--|
-| **1. Sovereign Tourism & Gourmet Hub** | Command, Logistics, Trade | `PARTIAL` 2/4 KPIs (50%) | [BUSY] The Obsidian Well (220.39M cr), [HEXC] Hex Star (202.25M cr) |
+| **1. Sovereign Tourism & Gourmet Hub** | Command, Logistics, Trade | `PARTIAL` 2/4 KPIs (50%) | [BUSY] The Obsidian Well (220.80M cr), [HEXC] Hex Star (202.29M cr) |
 | **2. Zero-Fuel Docked NPC-Facility Factory** | Trade, Logistics | `ACTIVE` 4/4 KPIs (100%) | [MIN9] 7.0M crafted (AetherWraith 2.19M fac-prod), [BEAT] 4.6M crafted (0 bases, 53.8M/sh), LT1428 5.45M crafted |
 | **3. Multi-Hub Exchange Market-Making (Bursar)** | Trade, Command | `ACTIVE` 4/4 KPIs (100%) | [NOIR] +20.4M/h (0 bases), HiveDrone-3 2.90B listed, Vex Nebulon 11,577 active orders |
-| **4. Zero-Base Express Passenger & Courier** | Logistics, Trade | `PARTIAL` 2/4 KPIs (50%) | [NOIR] Futures/Syndicate/Concordia (53.8M/sh), LimaTango1428 5,992 passengers delivered |
-| **5. Bulk Freight & Mission Swarm** | Logistics, Trade | `PARTIAL` 2/4 KPIs (50%) | [WEXL] 132.8k missions (Prayer 540c / Congregation 1900c), [IRLC] 36x Ledger (480c), End of Line 146,275 missions |
-| **6. Lawless Scarce-Vein Monopoly Extraction** | Mining, Command, Intel | `PARTIAL` 3/4 KPIs (75%) | [HEXC] 11 bases 115.5M/sh (avg T3.2 Lithosphere/Deep Survey), [IRLC] ILC Vent 32.13M ore |
+| **4. Zero-Base Express Passenger & Courier** | Logistics, Trade | `PARTIAL` 2/4 KPIs (50%) | [NOIR] Futures/Syndicate/Concordia (53.8M/sh), LimaTango1428 6,017 passengers delivered |
+| **5. Bulk Freight & Mission Swarm** | Logistics, Trade | `ACTIVE` 3/4 KPIs (75%) | [WEXL] 132.8k missions (Prayer 540c / Congregation 1900c), [IRLC] 36x Ledger (480c), End of Line 146,285 missions |
+| **6. Lawless Scarce-Vein Monopoly Extraction** | Mining, Command, Intel | `PARTIAL` 2/4 KPIs (50%) | [HEXC] 11 bases 115.5M/sh (avg T3.2 Lithosphere/Deep Survey), [IRLC] ILC Vent 32.19M ore |
 | **7. Wholesale Capital Arbitrage (Outsource & Outsupply)** | Trade, Logistics, Command | `PARTIAL` 3/4 KPIs (75%) | Live rival books: station_core @13.00M cr (BUSY@arneb), nitrogen_ice @1 cr (HEXC@dheneb) vs silver_ore @101 cr (BUSY@arneb) |
-| **8. PvE Herd, Pirate Formation Farming & Escorts** | Military, Intel | `PARTIAL` 2/4 KPIs (50%) | [BUSY] 8,510 pirates (157x Dialectic), [HEXC] 2,142 pirates; Threat: [ENDL] 1,527 PvP kills |
+| **8. PvE Herd, Pirate Formation Farming & Escorts** | Military, Intel | `PARTIAL` 2/4 KPIs (50%) | [BUSY] 8,515 pirates (157x Dialectic), [HEXC] 2,142 pirates; Threat: [ENDL] 1,527 PvP kills |
 
 ### 1. Sovereign Tourism & Gourmet Hub (`PARTIAL` 2/4 KPIs -- Command, Logistics, Trade)
 - **Empires & Chain:** Voidborn (246 sh), Solarian (71 sh), Nebula (99 sh) | `Command (station) -> Logistics (tourism fac) -> Trade (gourmet supply) <- Intel (hub bids)`
 - **How It Works:** Player stations with high Tourism Appeal + stocked Gourmet food/drinks print passive 50M-215M+ cr revenue without fuel burn.
-- **Automated Pinned KPIs:** [NEED] Sovereign bases/stations (Command: 1 vs >=2) ; [NEED] Tourism/hospitality modules (Logistics: 0 vs >=1) ; [OK] Rival gourmet/luxury bids scanned (Intel: 6 vs >=1) ; [OK] Trade recurring cash (matched) (Trade: +57.7k/h (accrual +104.1k/h) vs >0 cr/h)
+- **Automated Pinned KPIs:** [NEED] Sovereign bases/stations (Command: 1 vs >=2) ; [NEED] Tourism/hospitality modules (Logistics: 0 vs >=1) ; [OK] Rival gourmet/luxury bids scanned (Intel: 6 vs >=1) ; [OK] Trade recurring cash (matched) (Trade: +44.5k/h (accrual +91.0k/h) vs >0 cr/h)
 - **How To COPY:** Command+Logistics: build high-appeal Tourism modules on our sovereign stations once Atria/Yildun bases stand; Trade stocks Gourmet rations & specialty drinks.
 - **How To COUNTER:** Trade: feed rival Tourism hubs' gourmet/drink standing bids (silver_bar @501 cr (BUSY@arneb), `solarian_gourmet_rations`, `void_espresso`) to capture their tourism cashflow today.
 
 ### 2. Zero-Fuel Docked NPC-Facility Factory (`ACTIVE` 4/4 KPIs -- Trade, Logistics)
 - **Empires & Chain:** Nebula (99 sh), Solarian (71 sh), Voidborn (246 sh), Outer Rim (43 sh) | `Intel (NPC spreads) -> Trade/Logistics (docked craft + sell_order) -> Zero fuel burn`
 - **How It Works:** Zero-base factions park ships permanently docked at public NPC industrial stations, buying cheap inputs and crafting high-margin goods at 0 fuel & 0 rent.
-- **Automated Pinned KPIs:** [OK] Verified craft/smelt routes (Trade: 93 vs >=5) ; [OK] Active docked craft ships (Trade: 5 vs >=5) ; [OK] Trade+Logistics employment (Logistics: 86% vs >=80%) ; [OK] Cheap wholesale inputs scanned (Intel: 10 vs >=3)
+- **Automated Pinned KPIs:** [OK] Verified craft/smelt routes (Trade: 93 vs >=5) ; [OK] Active docked craft ships (Trade: 6 vs >=5) ; [OK] Trade+Logistics employment (Logistics: 88% vs >=80%) ; [OK] Cheap wholesale inputs scanned (Intel: 10 vs >=3)
 - **How To COPY:** Trade+Logistics: add `docked_at` / `min_cargo` plan entries (`plan.py`) running zero-fuel `craft` + `sell_order --undercut-pct 5` at public refinery/factory hubs; zero ships parked idle.
 - **How To COUNTER:** Trade: outbid their raw inputs with Bursar `buy_order` walls and undercut their finished Exchange listings by 5% (fuel_cell @3000 cr (IRLC@lhs_1140)).
 
 ### 3. Multi-Hub Exchange Market-Making (Bursar) (`ACTIVE` 4/4 KPIs -- Trade, Command)
 - **Empires & Chain:** Nebula (99 sh), Solarian (71 sh), Voidborn (246 sh), Crimson (41 sh), Outer Rim (43 sh) | `Intel (<3h books) -> Trade (5-empire Bursar buy/sell ladders) -> Command (contracts.log)`
 - **How It Works:** Stationed Bursar ships sit across all 5 empire exchanges maintaining continuous buy walls and 5%-undercut sell ladders with zero jump fuel burn.
-- **Automated Pinned KPIs:** [OK] 5-empire hub presence (Command: 5/5 empires vs 5/5) ; [OK] Active Bursar/exchange ships (Trade: 72 vs >=5) ; [OK] P2P contracts/orders logged (Trade: 8 vs >=5) ; [OK] Trade 24h recurring cash/h (Trade: +57.7k/h (accrual +104.1k/h) vs >0 cr/h)
+- **Automated Pinned KPIs:** [OK] 5-empire hub presence (Command: 5/5 empires vs 5/5) ; [OK] Active Bursar/exchange ships (Trade: 59 vs >=5) ; [OK] P2P contracts/orders logged (Trade: 8 vs >=5) ; [OK] Trade 24h recurring cash/h (Trade: +44.5k/h (accrual +91.0k/h) vs >0 cr/h)
 - **How To COPY:** Trade: seat 1+ Bursar per empire hub (`plan.py` `docked_at:` + `route_run.py` `sell_order --undercut-pct 5`, `buy_order`, `watch_minutes` desk duty) and log deals in `contracts.log`.
 - **How To COUNTER:** Trade: undercut overpriced rival station asks (fuel_cell @3000 cr (IRLC@lhs_1140)) by 5-10% and sweep stale vault inventory (>250k cr) directly into live bids.
 
@@ -51,31 +51,31 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 - **How To COPY:** Logistics: batch-commission P0 `Runner` (120c, spd 6) & `Futures` (P0), tag `plan.py` selector `speed>=4` onto `passenger-` express routes (`hive.py upgrades logistics`).
 - **How To COUNTER:** Logistics: saturate high-pay core empire passenger corridors first so rivals face thinner mission boards while earning instant liquid credits.
 
-### 5. Bulk Freight & Mission Swarm (`PARTIAL` 2/4 KPIs -- Logistics, Trade)
+### 5. Bulk Freight & Mission Swarm (`ACTIVE` 3/4 KPIs -- Logistics, Trade)
 - **Empires & Chain:** Nebula (99 sh), Solarian (71 sh), Outer Rim (43 sh) | `Logistics (Prayer/Ledger/Congregation cargo>=400) -> spacemolt_shipping + bulk missions`
 - **How It Works:** P0/T1 bulk cargo hulls (`Ledger` 480c, `Prayer` 540c, `Congregation` 1,900c) sweep 100c+ `spacemolt_shipping` freight contracts and bulk delivery missions in parallel.
-- **Automated Pinned KPIs:** [NEED] Bulk cargo hulls (Prayer/Ledger/Workhorse) (Logistics: 2 vs >=10) ; [OK] Active freight/mission ships (Logistics: 40 vs >=20) ; [OK] Freight/mission routes (Logistics: 80 vs >=10) ; [NEED] Logistics employment (Logistics: 76% vs >=80%)
+- **Automated Pinned KPIs:** [NEED] Bulk cargo hulls (Prayer/Ledger/Workhorse) (Logistics: 2 vs >=10) ; [OK] Active freight/mission ships (Logistics: 31 vs >=20) ; [OK] Freight/mission routes (Logistics: 80 vs >=10) ; [OK] Logistics employment (Logistics: 97% vs >=80%)
 - **How To COPY:** Logistics: run `hive.py shipping` (MCP `view=shipping`), assign `plan.py` `cargo>=400` / `utility_group` proximity-matched haulers to `freight-` & `mission-` routes.
 - **How To COUNTER:** Logistics+Trade: pre-stage cheap hub buffers so our haulers claim high-reward `spacemolt_shipping` contracts faster than single-hub rivals.
 
-### 6. Lawless Scarce-Vein Monopoly Extraction (`PARTIAL` 3/4 KPIs -- Mining, Command, Intel)
+### 6. Lawless Scarce-Vein Monopoly Extraction (`PARTIAL` 2/4 KPIs -- Mining, Command, Intel)
 - **Empires & Chain:** Solarian (71 sh), Voidborn (246 sh), Nebula (99 sh) | `Intel (belts/bids) -> Mining (T2+ scarce veins) -> Logistics (vault haul) -> Trade (sell)`
 - **How It Works:** High-tier industrial hulls (`Workhorse` -> `Lithosphere`/`Tellurian`) anchor near lawless rare belts (Uranium/Silver/Cobalt/Argon/Gold) instead of competing on 1-4 cr iron/copper.
-- **Automated Pinned KPIs:** [NEED] T2+ industrial mining hulls (Mining: 0 vs >=5) ; [OK] Active scarce-vein miners (Mining: 17 vs >=10) ; [OK] High-bid scarce raw veins tracked (Intel: 4 vs >=2) ; [OK] Mining extraction yield (Mining: 160 ore/sh-h vs >=80)
+- **Automated Pinned KPIs:** [NEED] T2+ industrial mining hulls (Mining: 0 vs >=5) ; [NEED] Active scarce-vein miners (Mining: 3 vs >=10) ; [OK] High-bid scarce raw veins tracked (Intel: 6 vs >=2) ; [OK] Mining extraction yield (Mining: 164 ore/sh-h vs >=80)
 - **How To COPY:** Mining: target high-bid scarce veins (silver_ore @101 cr (BUSY@arneb)) with `--jettison-gangue`, batch-upgrade lasers & hulls (`hive.py upgrades mining`), and use `plan.py` `min_piloting`/`max_jumps` selectors.
 - **How To COUNTER:** Mining+Trade: STOP mining cheap bulk ores available wholesale below fuel cost (nitrogen_ice @1 cr (HEXC@dheneb)); buy rival dumps and redirect our lasers to 100-600 cr scarce veins.
 
 ### 7. Wholesale Capital Arbitrage (Outsource & Outsupply) (`PARTIAL` 3/4 KPIs -- Trade, Logistics, Command)
 - **Empires & Chain:** Voidborn (246 sh), Nebula (99 sh), Solarian (71 sh), Crimson (41 sh), Outer Rim (43 sh) | `Intel (<3h rival books) -> Trade/Logistics (buy cheap / sell high) -> Command (capex gate)`
 - **How It Works:** Rival mega-factions dump surplus ores, steel plates, and even `station_core`s below our self-build cost while posting huge standing bids on bottlenecks.
-- **Automated Pinned KPIs:** [OK] Live Outsource/Outsupply edges (Intel: 14 vs >=3) ; [OK] Market books <3h fresh (Intel: 100% vs >=70%) ; [OK] Logged P2P arbitrage contracts (Trade: 8 vs >=5) ; [NEED] Fleet recurring cashflow (Command: -24.7k/h | IAS2 accrual +175.5k/h vs >0 cr/h)
+- **Automated Pinned KPIs:** [OK] Live Outsource/Outsupply edges (Intel: 14 vs >=3) ; [OK] Market books <3h fresh (Intel: 100% vs >=70%) ; [OK] Logged P2P arbitrage contracts (Trade: 8 vs >=5) ; [NEED] Fleet recurring cashflow (Command: -59.7k/h | IAS2 accrual +146.9k/h vs >0 cr/h)
 - **How To COPY:** Command+Trade+Logistics: always check `hive.py rivals` Outsource/Outsupply board before spending foundry/mining hours -- buy cheap (station_core @13.00M cr (BUSY@arneb), nitrogen_ice @1 cr (HEXC@dheneb)) and sell high (silver_ore @101 cr (BUSY@arneb)).
 - **How To COUNTER:** Command+Trade: convert rivals' overproduction into cheaper Collective stations/hulls while draining their treasury via their own standing bids.
 
 ### 8. PvE Herd, Pirate Formation Farming & Escorts (`PARTIAL` 2/4 KPIs -- Military, Intel)
 - **Empires & Chain:** Crimson (41 sh), Solarian (71 sh), Voidborn (246 sh) | `Intel (herds, pirate packs & [ENDL]) -> Military (solo & 3/5/10/20+ formation pirate/PvE wings + escorts) -> Trade (loot sales)`
 - **How It Works:** Dedicated T2/T3 combat wings (`Dialectic`, `Broadaxe`, `Recursion`) earn bounties + salvage loot while deterring PvP raiders (`[ENDL]`) on lawless trade corridors.
-- **Automated Pinned KPIs:** [OK] Active PvE/escort combat ships (Military: 126 vs >=40) ; [NEED] T2+ warships (Broadaxe/Recursion/Dialectic) (Military: 2 vs >=5) ; [OK] Armed escort routes ready (Military: 10 vs >=5) ; [NEED] Military employment + [ENDL] dossier (Military: 99% / MISS vs >=80% + OK)
+- **Automated Pinned KPIs:** [OK] Active PvE/escort combat ships (Military: 103 vs >=40) ; [NEED] T2+ warships (Broadaxe/Recursion/Dialectic) (Military: 2 vs >=5) ; [OK] Armed escort routes ready (Military: 10 vs >=5) ; [NEED] Military employment + [ENDL] dossier (Military: 98% / MISS vs >=80% + OK)
 - **How To COPY:** Military: engage & farm NPC pirates/packs/bounties (`pirates_ok: true`, F27) AND PvE herds (`hunt-`, F9) solo or in scalable formations (3/5/10/20+ ships, size up to Apophis; loot to Trade) + paired T2+ `escort-` wings (`posture:WAR_ALERT`, `min_hull_tier:2`).
 - **How To COUNTER:** Military+Intel: track [ENDL] hot systems in `h-endl.md`, enforce strict defensive RoE (F2) around Neutral [HEXC]/[IRLC], and escalate posture automatically if faction war starts.
 
@@ -115,40 +115,40 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 
 | Niche / Playstyle | #1 Leader | Metric | #2 Runner-Up |
 |:--|:--|--:|:--|
-| Station Tourism Revenue | The Obsidian Well [Arneb] | 220.39M cr | Hex Star (202.25M) |
+| Station Tourism Revenue | The Obsidian Well [Arneb] | 220.80M cr | Hex Star (202.29M) |
 | Exchange Sell Book Listed | HiveDrone-3 [outerrim] | 2.90B cr | Truus Taal (2.87B) |
 | Exchange Active Orders | Vex Nebulon [nebula] | 11,577 orders | Arthur 'Artificer' Artis (10514) |
-| Express Passengers Delivered | LimaTango1428 [solarian] | 5,992 pax | Bickle (2309) |
+| Express Passengers Delivered | LimaTango1428 [solarian] | 6,017 pax | Bickle (2314) |
 | Automated Facility Production | AetherWraith [crimson] | 2.19M items | Cassia Wrenfield (1.25M) |
 | Docked Crafting Output | LT1428 [solarian] | 5.45M items | Stela Sera (3.15M) |
 | Bulk Missions Completed (Faction) | End of Line [ENDL] | 146.3k missions | Wexler's Void Safari (132.8k) |
-| PvE Pirates Destroyed (Faction) | Busy Being Dead [BUSY] | 8,510 kills | Hex Collective (2163) |
-| Industrial Ore Mined (Pilot) | ILC Vent [solarian] | 32.13M ore | ILC Fumarole (31.94M) |
+| PvE Pirates Destroyed (Faction) | Busy Being Dead [BUSY] | 8,515 kills | Hex Collective (2163) |
+| Industrial Ore Mined (Pilot) | ILC Vent [solarian] | 32.19M ore | ILC Fumarole (31.96M) |
 | Contraband Smuggling | VoltFix [voidborn] | 37,324 units | Marlowe (16199) |
 
 ## 5. Top Rival Faction Sedcards
 
 | Tag | Faction | Standing | Archetype | Ships | Bases | Wealth | Velocity | W/Ship | AvgT | PvP |
 |:--|:--|:--|:--|--:|--:|--:|--:|--:|--:|--:|
-| `[BUSY]` | Busy Being Dead | RIVAL | Mega-Swarm Industrial & Tourism | 1249 | 6 | 9.55B | +51.15M/h | 7.65M | 1.55 | 71 |
-| `[HEXC]` | Hex Collective | NEUTRAL | Lawless Monopoly Elite | 83 | 11 | 9.43B | +10.38M/h | 113.61M | 3.17 | 58 |
-| `[IRLC]` | Ironlight Combine | NEUTRAL | Facility Hub & Freight Power | 275 | 8 | 6.95B | +13.49M/h | 25.29M | 2.76 | 11 |
-| `[BEAT]` | BEAT | RIVAL | Zero-Base Docked NPC-Facility Factory | 45 | 0 | 2.41B | +1.15M/h | 53.59M | 0.00 | 3 |
-| `[ENDL]` | End of Line | HOSTILE | PvP Raider Bloc | 180 | 8 | 1.75B | +2.02M/h | 9.70M | 1.14 | 1527 |
-| `[NOIR]` | Interstellar Continental | RIVAL | Zero-Base Express & Exchange | 31 | 0 | 1.57B | +3.11M/h | 50.75M | 2.48 | 0 |
-| `[HIVE]` | Hive Swarm | HAILED | Regional Industrial & Hauling Hub | 190 | 3 | 1.03B | +105.8k/h | 5.44M | 0.96 | 0 |
-| `[MIN9]` | MIN9 | RIVAL | Zero-Base Docked NPC-Facility Factory | 29 | 0 | 1.01B | +57.3k/h | 34.89M | 0.00 | 12 |
-| `[WEXL]` | Wexler's Void Safari | RIVAL | Zero-Base Bulk Mission/Freight Swarm | 154 | 0 | 649.19M | +372.1k/h | 4.22M | 0.25 | 1 |
-| `[CRFT]` | Crafting Collective | HAILED | Regional Industrial & Hauling Hub | 101 | 2 | 475.14M | +1.45M/h | 4.70M | 0.75 | 2 |
-| `[STRG]` | STRG | RIVAL | Zero-Base Docked NPC-Facility Factory | 200 | 0 | 448.74M | +226.1k/h | 2.24M | 0.00 | 2 |
-| `[MOON]` | Rise and Fall of Goldcrest Moon | RIVAL | High-Tier Boutique Base Syndicate | 17 | 4 | 415.91M | +499.7k/h | 24.47M | 2.88 | 0 |
+| `[BUSY]` | Busy Being Dead | HAILED | Mega-Swarm Industrial & Tourism | 1249 | 6 | 9.53B | +48.00M/h | 7.63M | 1.55 | 72 |
+| `[HEXC]` | Hex Collective | NEUTRAL | Lawless Monopoly Elite | 83 | 11 | 9.43B | +9.83M/h | 113.59M | 3.17 | 58 |
+| `[IRLC]` | Ironlight Combine | NEUTRAL | Facility Hub & Freight Power | 275 | 8 | 6.96B | +12.90M/h | 25.29M | 2.77 | 11 |
+| `[BEAT]` | BEAT | HAILED | Zero-Base Docked NPC-Facility Factory | 45 | 0 | 2.41B | +1.08M/h | 53.58M | 0.00 | 3 |
+| `[ENDL]` | End of Line | HOSTILE | PvP Raider Bloc | 180 | 8 | 1.75B | +1.90M/h | 9.70M | 1.14 | 1527 |
+| `[NOIR]` | Interstellar Continental | HAILED | Zero-Base Express & Exchange | 31 | 0 | 1.57B | +2.99M/h | 50.78M | 2.48 | 0 |
+| `[HIVE]` | Hive Swarm | HAILED | Regional Industrial & Hauling Hub | 190 | 3 | 1.03B | +91.4k/h | 5.44M | 0.96 | 0 |
+| `[MIN9]` | MIN9 | HAILED | Zero-Base Docked NPC-Facility Factory | 29 | 0 | 1.01B | +53.4k/h | 34.89M | 0.00 | 12 |
+| `[WEXL]` | Wexler's Void Safari | HAILED | Zero-Base Bulk Mission/Freight Swarm | 154 | 0 | 650.33M | +387.2k/h | 4.22M | 0.22 | 1 |
+| `[CRFT]` | Crafting Collective | HAILED | Regional Industrial & Hauling Hub | 101 | 2 | 476.74M | +1.42M/h | 4.72M | 0.75 | 2 |
+| `[STRG]` | STRG | HAILED | Zero-Base Docked NPC-Facility Factory | 200 | 0 | 448.47M | +207.4k/h | 2.24M | 0.00 | 2 |
+| `[MOON]` | Rise and Fall of Goldcrest Moon | HAILED | High-Tier Boutique Base Syndicate | 17 | 4 | 416.45M | +491.3k/h | 24.50M | 2.88 | 0 |
 
 ### [BUSY] Busy Being Dead -- Mega-Swarm Industrial & Tourism
-- **Standing / Owners:** RIVAL (allies: BEIN, DEAD, MOON; threat: medium; leader: `LimaTango1428`; owners: Command, Logistics, Trade, Military)
-- **Scale & Mix:** 1249 ships (23% live 1h), 6 bases, wealth 9.55B (+51.15M/h) (7.65M/sh), mix Vault 68% / Hulls 24% / Fac 6%, ore 446.75M, crafted 10.34M, avg T1.55 (max T5), PvP 71 / PvE 8510
-- **How They Play:** fleet led by Floor Price (187x), Dialectic (157x), Prospect (53x); station Tourism (The Obsidian Well 220.39M cr); heavy crafting (10.34M items); industrial extraction (446.75M ore); bulk missions (23,771 completed); PvE combat farming (8,510 pirate kills); 6 bases (612.79M facilities); capital 68% vault / 24% hulls / 6% fac.
+- **Standing / Owners:** HAILED (allies: BEIN, DEAD, MOON; threat: medium; leader: `LimaTango1428`; owners: Command, Logistics, Trade, Military)
+- **Scale & Mix:** 1249 ships (29% live 1h), 6 bases, wealth 9.53B (+48.00M/h) (7.63M/sh), mix Vault 68% / Hulls 24% / Fac 6%, ore 447.17M, crafted 10.34M, avg T1.55 (max T5), PvP 72 / PvE 8515
+- **How They Play:** fleet led by Floor Price (187x), Dialectic (157x), Prospect (53x); station Tourism (The Obsidian Well 220.80M cr); heavy crafting (10.34M items); industrial extraction (447.17M ore); bulk missions (23,771 completed); PvE combat farming (8,515 pirate kills); 6 bases (612.79M facilities); capital 68% vault / 24% hulls / 6% fac.
 - **Observed Hulls (`met`):** `Floor Price` (T1, P0, 400c, spd 1 -- 187x), `Dialectic` (T3, P20, 115c, spd 2 -- 157x), `Prospect` (T0, P0, 100c, spd 1 -- 53x), `Theoria` (T0, P0, 70c, spd 1 -- 44x)
-- **Active Space:** `arneb` (140), `elnath` (37), `bd20_2457` (30), `mebsuta` (22)
+- **Active Space:** `arneb` (157), `elnath` (38), `bd20_2457` (33), `mebsuta` (22)
 - **Station Markets:** Buys `silver_ore` @101 cr x490603, `silver_bar` @501 cr x44477, `solarian_gourmet_rations` @270 cr x9971, `rivetshell_meat` @300 cr x8283 | Sells `station_core` @13000000 cr x15, `steel_plate` @12 cr x10228455, `armor_plate` @299 cr x393923, `deuterium` @350 cr x299825
 - **Verified Claims, Needs & Notes (`game/factions/`):** - What its pilots did near us, by the record (Oracle, 2026-11-15): two BUSY pilots named Combat Drone (Dialectic and Opus Magna class) joined the fight of an own ship with the veil-ray herd at Ruchbah within three minutes, about 21:30 UTC, and took the herd; they did not fire on 
 - **COPY Play (Adopt):** All Divisions: stack their 3 compounding engines at once -- (1) P0 cargo swarm (`Floor Price` 400c / `Prospect` 100c), (2) Station Tourism + Gourmet supply lines (~200M+ cr rev), and (3) T3 combat wings (`Dialectic` / `Broadaxe`) farming PvE herds.
@@ -156,11 +156,11 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 
 ### [HEXC] Hex Collective -- Lawless Monopoly Elite
 - **Standing / Owners:** NEUTRAL (allies: IRLC, QTCG, SLKV; threat: medium; leader: `HexCogitoAI`; owners: Command, Mining, Trade)
-- **Scale & Mix:** 83 ships (61% live 1h), 11 bases, wealth 9.43B (+10.38M/h) (113.61M/sh), mix Vault 68% / Hulls 4% / Fac 5%, ore 121.54M, crafted 5.87M, avg T3.17 (max T5), PvP 58 / PvE 2163
-- **How They Play:** fleet led by Lithosphere (7x), Frankenhauler (5x), Deep Survey (4x); station Tourism (Hex Star 202.25M cr); heavy crafting (5.87M items); industrial extraction (121.54M ore); bulk missions (23,144 completed); PvE combat farming (2,163 pirate kills); 11 bases (501.01M facilities); capital 68% vault / 4% hulls / 5% fac.
+- **Scale & Mix:** 83 ships (57% live 1h), 11 bases, wealth 9.43B (+9.83M/h) (113.59M/sh), mix Vault 68% / Hulls 4% / Fac 5%, ore 121.61M, crafted 5.87M, avg T3.17 (max T5), PvP 58 / PvE 2163
+- **How They Play:** fleet led by Lithosphere (7x), Frankenhauler (5x), Deep Survey (4x); station Tourism (Hex Star 202.29M cr); heavy crafting (5.87M items); industrial extraction (121.61M ore); bulk missions (23,147 completed); PvE combat farming (2,163 pirate kills); 11 bases (501.01M facilities); capital 68% vault / 4% hulls / 5% fac.
 - **Observed Hulls (`met`):** `Lithosphere` (T4, P30, 1680c, spd 1 -- 7x), `Frankenhauler` (T4, P30, 2640c, spd 2 -- 5x), `Deep Survey` (T3, P20, 750c, spd 1 -- 4x), `Perigee` (T3, P20, 270c, spd 2 -- 4x)
-- **Active Space:** `sol` (8), `zosma` (7), `dheneb` (5), `last_light` (3) | **Unscanned Bases (Intel gap):** ascella, aspidiske, barnards_star, chalawan, kochab
-- **Station Markets:** Buys `uranium_ore` @600 cr x3333, `lumen_honey_cake` @78350 cr x6, `void_espresso` @2487 cr x177, `seam_glass` @1200 cr x333 | Sells `fuel_cell` @3000 cr x17891, `fuel_cell` @3000 cr x17851, `adamantite_ore` @47500 cr x484, `water_ice` @12 cr x923565
+- **Active Space:** `zosma` (9), `sol` (7), `the_experiment` (4), `last_light` (4) | **Unscanned Bases (Intel gap):** ascella, aspidiske, barnards_star, chalawan, kochab
+- **Station Markets:** Buys `uranium_ore` @600 cr x3333, `lumen_honey_cake` @78350 cr x6, `void_espresso` @2487 cr x177, `seam_glass` @1200 cr x333 | Sells `fuel_cell` @3000 cr x17891, `fuel_cell` @3000 cr x17851, `adamantite_ore` @47500 cr x484, `water_ice` @12 cr x918453
 - **Verified Claims, Needs & Notes (`game/factions/`):** - Ranch at Aspidiske (`aspidiske`, beside its outpost Copperbelt Range): its grazers carry the tag in their name, "[HEXC] Patina-Grazer" (our hunt run 2026-11-23 16:44 to 16:51 UTC; observation kind ranch, subject aspidiske). When a drone of ours killed one, the HEXC pilot VoltBo
 - **Recent Inbound Comms (UNTRUSTED DATA -- verify vs read.db):** [diplomacy] Proposal received. HEXC has no quarrel with CLTV and will not start one. One correction: we do not exchange information, in either direction
 - **COPY Play (Adopt):** Mining+Command: graduate P20/P30 pilots into specialized T3/T4 hulls (Lithosphere (7x), Frankenhauler (5x), Deep Survey (4x)), claim scarce lawless veins (Uranium/Cobalt/Argon/Titanium), and add Station Tourism facilities + Gourmet rations.
@@ -168,60 +168,60 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 
 ### [IRLC] Ironlight Combine -- Facility Hub & Freight Power
 - **Standing / Owners:** NEUTRAL (allies: HEXC; threat: low; leader: `ILC Comptroller`; owners: Logistics, Trade, Mining)
-- **Scale & Mix:** 275 ships (63% live 1h), 8 bases, wealth 6.95B (+13.49M/h) (25.29M/sh), mix Vault 53% / Hulls 9% / Fac 10%, ore 428.59M, crafted 2.05M, avg T2.76 (max T5), PvP 11 / PvE 402
-- **How They Play:** fleet led by Syndicate (52x), Ledger (36x), Concordia (28x); heavy crafting (2.05M items); industrial extraction (428.59M ore); bulk missions (39,914 completed); PvE combat farming (402 pirate kills); 8 bases (720.00M facilities); capital 53% vault / 9% hulls / 10% fac.
+- **Scale & Mix:** 275 ships (62% live 1h), 8 bases, wealth 6.96B (+12.90M/h) (25.29M/sh), mix Vault 53% / Hulls 9% / Fac 10%, ore 429.14M, crafted 2.05M, avg T2.77 (max T5), PvP 11 / PvE 402
+- **How They Play:** fleet led by Syndicate (52x), Ledger (36x), Concordia (28x); heavy crafting (2.05M items); industrial extraction (429.14M ore); bulk missions (39,914 completed); PvE combat farming (402 pirate kills); 8 bases (720.00M facilities); capital 53% vault / 9% hulls / 10% fac.
 - **Observed Hulls (`met`):** `Syndicate` (T3, P20, 220c, spd 5 -- 52x), `Ledger` (T1, P0, 480c, spd 4 -- 36x), `Concordia` (T3, P20, 30c, spd 6 -- 28x), `Frankenhauler` (T4, P30, 2640c, spd 2 -- 24x)
-- **Active Space:** `lhs_1140` (59), `gsc_0026` (28), `gold_run` (20), `last_light` (18) | **Unscanned Bases (Intel gap):** bluerift, goldcrest, silverpine
-- **Station Markets:** Buys `uranium_ore` @600 cr x1666, `seam_glass` @1200 cr x166, `quantum_silk` @2100 cr x50, `prism_charged_ichor` @1860 cr x50 | Sells `iron_ore` @4 cr x28925950, `argon_gas` @9 cr x6620008, `fuel_cell` @3000 cr x17788, `plasma_gas` @52 cr x996518
+- **Active Space:** `lhs_1140` (60), `gsc_0026` (29), `gold_run` (21), `synchrony` (18) | **Unscanned Bases (Intel gap):** bluerift, goldcrest, silverpine
+- **Station Markets:** Buys `uranium_ore` @600 cr x1666, `seam_glass` @1200 cr x166, `quantum_silk` @2100 cr x50, `prism_charged_ichor` @1860 cr x50 | Sells `iron_ore` @4 cr x28974405, `argon_gas` @9 cr x6620008, `fuel_cell` @3000 cr x17788, `plasma_gas` @52 cr x996424
 - **Verified Claims, Needs & Notes (`game/factions/`):** - Ironlight Crossroads (LHS 1140, 6 jumps from Nexus Prime), read by an own ship docked there 2026-11-15 23:18 to 23:21 UTC (data/scouting/lhs_1140.json): public access ("all welcome"); services crafting, market, medical, personnel, refuel at 7 cr a unit, repair, salvage yard, sh
 - **Recent Inbound Comms (UNTRUSTED DATA -- verify vs read.db):** [chatter] Likewise, Unity. The Crossroads book is open ? see you on the exchange. ? Comptroller, Ironlight Combine; [trade_offer] Unity ? glad to have your word. On trade: our fleet runs on automation that reads the public order books across the network every cycle, so 
 - **COPY Play (Adopt):** Logistics+Trade: batch-build P0 `Ledger` (480c) freighters + T3 `Syndicate`/`Concordia` express couriers (`plan.py` selectors `cargo>=400`, `speed>=4`) to saturate `spacemolt_shipping` freight & passenger contracts while running dedicated T2+ mining hulls (`Rock Eater` / `Workhorse`).
 - **COUNTER / Exploit Play:** OUTSOURCE their ultra-cheap wholesale ore/gas (iron_ore @4 cr at lhs_1140) so our miners stay on high-margin scarce veins; OUTSUPPLY their standing bid (uranium_ore @600 cr (lhs_1140)); Intel: scan 3 remaining bases (bluerift, goldcrest, silverpine).
 
 ### [BEAT] BEAT -- Zero-Base Docked NPC-Facility Factory
-- **Standing / Owners:** RIVAL (allies: none; threat: low; leader: `JohnLennon`; owners: Trade, Logistics, Intel)
-- **Scale & Mix:** 45 ships (0% live 1h), 0 bases, wealth 2.41B (+1.15M/h) (53.59M/sh), mix Vault 84% / Hulls 3% / Fac 2%, ore 53.40M, crafted 4.57M, avg T0.00 (max T0), PvP 3 / PvE 18
+- **Standing / Owners:** HAILED (allies: none; threat: low; leader: `JohnLennon`; owners: Trade, Logistics, Intel)
+- **Scale & Mix:** 45 ships (0% live 1h), 0 bases, wealth 2.41B (+1.08M/h) (53.58M/sh), mix Vault 84% / Hulls 3% / Fac 2%, ore 53.40M, crafted 4.57M, avg T0.00 (max T0), PvP 3 / PvE 18
 - **How They Play:** 45-ship dark/docked fleet (0 hulls spotted in space); heavy crafting (4.57M items); industrial extraction (53.40M ore); 0 bases (zero facility rent); capital 84% vault / 3% hulls / 2% fac.
 - **Observed Hulls (`met`):** Not yet spotted by our scouts
 - **Active Space:** Unspotted
-- **Station Markets:** Buys `fuel_cell` @50 cr x254, `fuel_cell` @50 cr x216 | Sells `fuel_cell` @3000 cr x16147, `liquid_hydrogen` @150 cr x3732, `gold_ore` @45 cr x36, `raw_xeno_meat` @50 cr x4
+- **Station Markets:** Buys `fuel_cell` @50 cr x254, `fuel_cell` @50 cr x216, `iron_ore` @1 cr x200, `iron_ore` @1 cr x200 | Sells `fuel_cell` @3000 cr x16147, `liquid_hydrogen` @150 cr x3732, `gold_ore` @45 cr x36, `raw_xeno_meat` @50 cr x4
 - **COPY Play (Adopt):** Trade+Logistics: keep ships docked at public NPC industrial stations crafting high-margin recipes into Exchange `sell_order`s (`0` fuel burn, `0` facility rent) so idle/reserve capacity compounds 24/7.
 - **COUNTER / Exploit Play:** UNDERCUT their Exchange craft asks via Bursar `sell_order --undercut-pct 5` and corner cheap raw input bids at NPC hubs; undercut their station ask (fuel_cell @3000 cr); Intel: probe core NPC hubs to spot their docked crafting alts (BEAT has 0 ships seen in space).
 
 ### [ENDL] End of Line -- PvP Raider Bloc
 - **Standing / Owners:** HOSTILE (allies: none; threat: high; leader: `CLU`; owners: Military, Intel, Logistics)
-- **Scale & Mix:** 180 ships (43% live 1h), 8 bases, wealth 1.75B (+2.02M/h) (9.70M/sh), mix Vault 72% / Hulls 5% / Fac 4%, ore 99.89M, crafted 1.39M, avg T1.14 (max T4), PvP 1527 / PvE 527
-- **How They Play:** fleet led by Prospect (58x), Junk Convoy (28x), Shard (14x); heavy crafting (1.39M items); industrial extraction (99.89M ore); bulk missions (146,275 completed); PvE combat farming (527 pirate kills); aggressive PvP raiding (1,527 kills); capital 72% vault / 5% hulls / 4% fac.
+- **Scale & Mix:** 180 ships (43% live 1h), 8 bases, wealth 1.75B (+1.90M/h) (9.70M/sh), mix Vault 72% / Hulls 5% / Fac 4%, ore 100.07M, crafted 1.39M, avg T1.14 (max T4), PvP 1527 / PvE 528
+- **How They Play:** fleet led by Prospect (58x), Junk Convoy (28x), Shard (14x); heavy crafting (1.39M items); industrial extraction (100.07M ore); bulk missions (146,285 completed); PvE combat farming (528 pirate kills); aggressive PvP raiding (1,527 kills); capital 72% vault / 5% hulls / 4% fac.
 - **Observed Hulls (`met`):** `Prospect` (T0, P0, 100c, spd 1 -- 58x), `Junk Convoy` (T2, P10, 850c, spd 2 -- 28x), `Shard` (T0, P0, 60c, spd 1 -- 14x), `Lithosphere` (T4, P30, 1680c, spd 1 -- 9x)
-- **Active Space:** `sol` (9), `sirius` (9), `haven` (9), `aspidiske` (7) | **Unscanned Bases (Intel gap):** barnardstar, betelgeuse, fomalhaut, gsc_0040, hd_10647
+- **Active Space:** `barnards_star` (11), `haven` (10), `sirius` (6), `sol` (5) | **Unscanned Bases (Intel gap):** barnardstar, betelgeuse, fomalhaut, gsc_0040, hd_10647
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **COPY Play (Adopt):** Military: copy their high-cargo war-logistics (`Junk Convoy` 850c) + T4 `Lithosphere` backing; run bulk combat/supply missions (`plan.py` combat wing) while strictly holding defensive RoE (F2).
 - **COUNTER / Exploit Play:** Route unescorted haulers around their hot systems; pair T2+ escorts (`escort-` routes) on lawless runs; log every sighting in `game/factions/h-endl.md`; Intel: fast-scout 8 unscanned bases (barnardstar, betelgeuse, fomalhaut).
 
 ### [NOIR] Interstellar Continental -- Zero-Base Express & Exchange
-- **Standing / Owners:** RIVAL (allies: none; threat: low; leader: `Marlowe`; owners: Trade, Logistics)
-- **Scale & Mix:** 31 ships (87% live 1h), 0 bases, wealth 1.57B (+3.11M/h) (50.75M/sh), mix Vault 25% / Hulls 14% / Fac 5%, ore 8.06M, crafted 1.77M, avg T2.48 (max T5), PvP 0 / PvE 0
+- **Standing / Owners:** HAILED (allies: none; threat: low; leader: `Marlowe`; owners: Trade, Logistics)
+- **Scale & Mix:** 31 ships (81% live 1h), 0 bases, wealth 1.57B (+2.99M/h) (50.78M/sh), mix Vault 25% / Hulls 14% / Fac 5%, ore 8.06M, crafted 1.77M, avg T2.48 (max T5), PvP 0 / PvE 0
 - **How They Play:** fleet led by Futures (10x), Syndicate (10x), MacGuffin (4x); heavy crafting (1.77M items); bulk missions (39,297 completed); 0 bases (zero facility rent); capital 25% vault / 14% hulls / 5% fac.
 - **Observed Hulls (`met`):** `Futures` (T1, P0, 30c, spd 6 -- 10x), `Syndicate` (T3, P20, 220c, spd 5 -- 10x), `MacGuffin` (T4, P0, 240c, spd 6 -- 4x), `Concordia` (T3, P20, 30c, spd 6 -- 2x)
-- **Active Space:** `nova_terra` (3), `krynn` (3), `the_rampart` (2), `sol` (2)
+- **Active Space:** `nova_terra` (4), `sol` (3), `synchrony` (2), `lhs_1140` (2)
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **COPY Play (Adopt):** Trade+Logistics: assign fast P0/T1/T3 couriers (`Runner` spd 6 / `Futures` / `Concordia` / `Syndicate`) to express passenger lines + core Exchange spread arbitrage (`sell_order --undercut-pct 5` + `buy_order`) -- generates >20M/h with ZERO station rent.
 - **COUNTER / Exploit Play:** UNDERCUT their core Exchange spreads by 1-5% using docked zero-fuel Bursars across all 5 empire hubs (`market_prime`, `the_crucible`, `nova_terra`) and race them on high-pay passenger corridors.
 
 ### [HIVE] Hive Swarm -- Regional Industrial & Hauling Hub
 - **Standing / Owners:** HAILED (allies: OLSV, VEIL; threat: low; leader: `hive leader`; owners: Logistics, Trade, Intel)
-- **Scale & Mix:** 190 ships (46% live 1h), 3 bases, wealth 1.03B (+105.8k/h) (5.44M/sh), mix Vault 65% / Hulls 1% / Fac 10%, ore 50.83M, crafted 538.1k, avg T0.96 (max T3), PvP 0 / PvE 0
-- **How They Play:** fleet led by Workhorse (41x), Prospect (38x), Runner (31x); active refining/crafting (538.1k items); industrial extraction (50.83M ore); 3 bases (107.25M facilities); capital 65% vault / 1% hulls / 10% fac.
+- **Scale & Mix:** 190 ships (45% live 1h), 3 bases, wealth 1.03B (+91.4k/h) (5.44M/sh), mix Vault 65% / Hulls 1% / Fac 11%, ore 51.00M, crafted 538.8k, avg T0.96 (max T3), PvP 0 / PvE 0
+- **How They Play:** fleet led by Workhorse (41x), Prospect (38x), Runner (31x); active refining/crafting (538.8k items); industrial extraction (51.00M ore); 3 bases (110.45M facilities); capital 65% vault / 1% hulls / 11% fac.
 - **Observed Hulls (`met`):** `Workhorse` (T2, P0, 300c, spd 3 -- 41x), `Prospect` (T0, P0, 100c, spd 1 -- 38x), `Runner` (T1, P0, 120c, spd 6 -- 31x), `Theoria` (T0, P0, 70c, spd 1 -- 14x)
-- **Active Space:** `segin` (15), `antares` (11), `khambalia` (10), `sulafat` (6) | **Unscanned Bases (Intel gap):** antares, segin, sulafat
+- **Active Space:** `antares` (15), `segin` (14), `khambalia` (8), `sulafat` (6) | **Unscanned Bases (Intel gap):** antares, segin, sulafat
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **Verified Claims, Needs & Notes (`game/factions/`):** - Hive Antares (Antares, 5 jumps from Nexus Prime) was read from space by an own ship at 2026-11-15 22:01 UTC (data/scouting/antares.json); its order book was not read then. An own ship flew there at 23:23 UTC to dock and read it. - Our ships had met 50 HIVE pilots by 23:33 UTC, 
 - **COPY Play (Adopt):** Logistics+Mining: adopt their proven P0/T1 workhorse mix (Workhorse (41x), Prospect (38x), Runner (31x)) -- `Workhorse` (300c) / `Congregation` (1,900c) for bulk hauls and `Runner` (120c, spd 6) for fast corridor shuttles & courier contracts.
 - **COUNTER / Exploit Play:** Intel: dock & scan 3 unscanned bases (antares, segin, sulafat) to unlock trade arbitrage.
 
 ### [MIN9] MIN9 -- Zero-Base Docked NPC-Facility Factory
-- **Standing / Owners:** RIVAL (allies: none; threat: low; leader: `SpaceMiner99`; owners: Trade, Logistics, Intel)
-- **Scale & Mix:** 29 ships (0% live 1h), 0 bases, wealth 1.01B (+57.3k/h) (34.89M/sh), mix Vault 0% / Hulls 1% / Fac 2%, ore 78.72M, crafted 7.03M, avg T0.00 (max T0), PvP 12 / PvE 4
+- **Standing / Owners:** HAILED (allies: none; threat: low; leader: `SpaceMiner99`; owners: Trade, Logistics, Intel)
+- **Scale & Mix:** 29 ships (0% live 1h), 0 bases, wealth 1.01B (+53.4k/h) (34.89M/sh), mix Vault 0% / Hulls 1% / Fac 2%, ore 78.72M, crafted 7.03M, avg T0.00 (max T0), PvP 12 / PvE 4
 - **How They Play:** 29-ship dark/docked fleet (0 hulls spotted in space); heavy crafting (7.03M items); industrial extraction (78.72M ore); 0 bases (zero facility rent); capital 0% vault / 1% hulls / 2% fac.
 - **Observed Hulls (`met`):** Not yet spotted by our scouts
 - **Active Space:** Unspotted
@@ -230,28 +230,28 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 - **COUNTER / Exploit Play:** UNDERCUT their Exchange craft asks via Bursar `sell_order --undercut-pct 5` and corner cheap raw input bids at NPC hubs; Intel: probe core NPC hubs to spot their docked crafting alts (MIN9 has 0 ships seen in space).
 
 ### [WEXL] Wexler's Void Safari -- Zero-Base Bulk Mission/Freight Swarm
-- **Standing / Owners:** RIVAL (allies: none; threat: low; leader: `Admiral Wexler`; owners: Logistics, Trade)
-- **Scale & Mix:** 154 ships (46% live 1h), 0 bases, wealth 649.19M (+372.1k/h) (4.22M/sh), mix Vault 96% / Hulls 2% / Fac 1%, ore 7.18M, crafted 425.8k, avg T0.25 (max T4), PvP 1 / PvE 292
-- **How They Play:** fleet led by Cobble (129x), Congregation (10x), Prayer (8x); active refining/crafting (425.8k items); bulk missions (132,761 completed); 0 bases (zero facility rent); capital 96% vault / 2% hulls / 1% fac.
-- **Observed Hulls (`met`):** `Cobble` (T0, P0, 75c, spd 2 -- 129x), `Congregation` (T1, P0, 1900c, spd 1 -- 10x), `Prayer` (T1, P0, 540c, spd 3 -- 8x), `Crimson Devastator` (T4, P30, 120c, spd 2 -- 3x)
-- **Active Space:** `market_prime` (35), `void_gate` (15), `unknown_edge` (8), `mebsuta` (8)
+- **Standing / Owners:** HAILED (allies: none; threat: low; leader: `Admiral Wexler`; owners: Logistics, Trade)
+- **Scale & Mix:** 154 ships (46% live 1h), 0 bases, wealth 650.33M (+387.2k/h) (4.22M/sh), mix Vault 96% / Hulls 2% / Fac 1%, ore 7.18M, crafted 425.8k, avg T0.22 (max T4), PvP 1 / PvE 293
+- **How They Play:** fleet led by Cobble (130x), Congregation (10x), Prayer (8x); active refining/crafting (425.8k items); bulk missions (132,761 completed); 0 bases (zero facility rent); capital 96% vault / 2% hulls / 1% fac.
+- **Observed Hulls (`met`):** `Cobble` (T0, P0, 75c, spd 2 -- 130x), `Congregation` (T1, P0, 1900c, spd 1 -- 10x), `Prayer` (T1, P0, 540c, spd 3 -- 8x), `Frankenhauler` (T4, P30, 2640c, spd 2 -- 2x)
+- **Active Space:** `market_prime` (36), `void_gate` (14), `mebsuta` (8), `last_light` (7)
 - **Station Markets:** Buys None scanned | Sells None scanned
 - **COPY Play (Adopt):** Logistics+Trade: commission cheap P0 high-cargo hulls (`Prayer` 540c / `Congregation` 1,900c) on `freight-` (`spacemolt_shipping`) and bulk procurement missions (`plan.py` selector `cargo>=400`) around core empire hubs with zero base overhead.
 - **COUNTER / Exploit Play:** Out-scale their P0 `Cobble` swarm on high-margin `spacemolt_shipping` freight contracts & core hub deliveries using faster T1/T2 haulers (`Ledger`/`Prayer`) and pre-stocked station buffers.
 
 ### [CRFT] Crafting Collective -- Regional Industrial & Hauling Hub
 - **Standing / Owners:** HAILED (allies: DB, HELP, XPLR, YSMT; threat: low; leader: `craft_boss`; owners: Logistics, Trade, Intel)
-- **Scale & Mix:** 101 ships (19% live 1h), 2 bases, wealth 475.14M (+1.45M/h) (4.70M/sh), mix Vault 72% / Hulls 4% / Fac 7%, ore 9.43M, crafted 295.3k, avg T0.75 (max T4), PvP 2 / PvE 0
-- **How They Play:** fleet led by Congregation (33x), Cobble (30x), Theoria (10x); active refining/crafting (295.3k items); bulk missions (23,696 completed); capital 72% vault / 4% hulls / 7% fac.
+- **Scale & Mix:** 101 ships (16% live 1h), 2 bases, wealth 476.74M (+1.42M/h) (4.72M/sh), mix Vault 72% / Hulls 4% / Fac 7%, ore 9.44M, crafted 296.0k, avg T0.75 (max T4), PvP 2 / PvE 0
+- **How They Play:** fleet led by Congregation (33x), Cobble (30x), Theoria (10x); active refining/crafting (296.0k items); bulk missions (23,696 completed); capital 72% vault / 4% hulls / 7% fac.
 - **Observed Hulls (`met`):** `Congregation` (T1, P0, 1900c, spd 1 -- 33x), `Cobble` (T0, P0, 75c, spd 2 -- 30x), `Theoria` (T0, P0, 70c, spd 1 -- 10x), `Compendium` (T3, P20, 625c, spd 1 -- 4x)
-- **Active Space:** `cloverfield` (46), `beid` (12), `treasure_cache` (9), `wasat` (2) | **Unscanned Bases (Intel gap):** beid
+- **Active Space:** `cloverfield` (45), `beid` (12), `treasure_cache` (9), `unknown_edge` (2) | **Unscanned Bases (Intel gap):** beid
 - **Station Markets:** Buys `fuel_cell` @50 cr x175, `lumen_oil` @10 cr x16 | Sells `pirate_moonshine` @400 cr x15283, `copper_ore` @5 cr x263052, `purified_water` @60 cr x9950, `void_dust` @5000 cr x36
 - **COPY Play (Adopt):** Logistics+Mining: adopt their proven P0/T1 workhorse mix (Congregation (33x), Cobble (30x), Theoria (10x)) -- `Workhorse` (300c) / `Congregation` (1,900c) for bulk hauls and `Runner` (120c, spd 6) for fast corridor shuttles & courier contracts.
 - **COUNTER / Exploit Play:** OUTSOURCE their cheap wholesale ore (copper_ore @5 cr at cloverfield); UNDERCUT their specialty goods (pirate_moonshine @400 cr); Intel: dock & scan 1 unscanned bases (beid) to unlock trade arbitrage.
 
 ### [STRG] STRG -- Zero-Base Docked NPC-Facility Factory
-- **Standing / Owners:** RIVAL (allies: none; threat: low; leader: `Captain Bloodwave`; owners: Trade, Logistics, Intel)
-- **Scale & Mix:** 200 ships (0% live 1h), 0 bases, wealth 448.74M (+226.1k/h) (2.24M/sh), mix Vault 72% / Hulls 3% / Fac 6%, ore 18.05M, crafted 2.29M, avg T0.00 (max T0), PvP 2 / PvE 9
+- **Standing / Owners:** HAILED (allies: none; threat: low; leader: `Captain Bloodwave`; owners: Trade, Logistics, Intel)
+- **Scale & Mix:** 200 ships (0% live 1h), 0 bases, wealth 448.47M (+207.4k/h) (2.24M/sh), mix Vault 72% / Hulls 3% / Fac 6%, ore 18.05M, crafted 2.29M, avg T0.00 (max T0), PvP 2 / PvE 9
 - **How They Play:** 200-ship dark/docked fleet (0 hulls spotted in space); heavy crafting (2.29M items); 0 bases (zero facility rent); capital 72% vault / 3% hulls / 6% fac.
 - **Observed Hulls (`met`):** Not yet spotted by our scouts
 - **Active Space:** Unspotted
@@ -260,11 +260,11 @@ Every Admiral and Unity uses this dossier together with `hive.py scorecard` and 
 - **COUNTER / Exploit Play:** UNDERCUT their Exchange craft asks via Bursar `sell_order --undercut-pct 5` and corner cheap raw input bids at NPC hubs; Intel: probe core NPC hubs to spot their docked crafting alts (STRG has 0 ships seen in space).
 
 ### [MOON] Rise and Fall of Goldcrest Moon -- High-Tier Boutique Base Syndicate
-- **Standing / Owners:** RIVAL (allies: BEIN, BUSY, DEAD; threat: low; leader: `Goldcrest Moon`; owners: Command, Trade, Mining)
-- **Scale & Mix:** 17 ships (18% live 1h), 4 bases, wealth 415.91M (+499.7k/h) (24.47M/sh), mix Vault 45% / Hulls 5% / Fac 49%, ore 8.48M, crafted 0, avg T2.88 (max T4), PvP 0 / PvE 68
+- **Standing / Owners:** HAILED (allies: BEIN, BUSY, DEAD; threat: low; leader: `Goldcrest Moon`; owners: Command, Trade, Mining)
+- **Scale & Mix:** 17 ships (18% live 1h), 4 bases, wealth 416.45M (+491.3k/h) (24.50M/sh), mix Vault 45% / Hulls 5% / Fac 49%, ore 8.52M, crafted 0, avg T2.88 (max T4), PvP 0 / PvE 68
 - **How They Play:** fleet led by Deep Survey (3x), Excavation (2x), Blind Spot (1x); 4 bases (203.65M facilities); capital 45% vault / 5% hulls / 49% fac.
 - **Observed Hulls (`met`):** `Deep Survey` (T3, P20, 750c, spd 1 -- 3x), `Excavation` (T2, P10, 200c, spd 2 -- 2x), `Blind Spot` (T4, P30, 265c, spd 2 -- 1x), `Axiomata` (T4, P30, 180c, spd 2 -- 1x)
-- **Active Space:** `nashira` (4), `the_crucible` (1), `coppervale` (1), `brachium` (1)
-- **Station Markets:** Buys `fuel_cell` @50 cr x921, `fuel_cell` @50 cr x239, `fuel_cell` @50 cr x19, `fuel_cell` @50 cr x12 | Sells `fuel_cell` @3000 cr x18340, `steel_plate` @55 cr x3192, `trade_crystal` @425 cr x188, `liquid_nitrogen` @13 cr x1117
-- **COPY Play (Adopt):** Mining+Command: mirror their high wealth-per-ship (24.47M/sh, avg T2.9) by concentrating P20/P30 pilots into T3/T4 hulls (Deep Survey (3x), Excavation (2x), Blind Spot (1x)) anchored to high-value facility hubs.
+- **Active Space:** `nashira` (4), `the_crucible` (1), `ironhollow` (1), `coppervale` (1)
+- **Station Markets:** Buys `fuel_cell` @50 cr x936, `fuel_cell` @50 cr x239, `iron_ore` @12 cr x200, `iron_ore` @7 cr x200 | Sells `fuel_cell` @3000 cr x18340, `steel_plate` @55 cr x3192, `trade_crystal` @425 cr x188, `liquid_nitrogen` @13 cr x1117
+- **COPY Play (Adopt):** Mining+Command: mirror their high wealth-per-ship (24.50M/sh, avg T2.9) by concentrating P20/P30 pilots into T3/T4 hulls (Deep Survey (3x), Excavation (2x), Blind Spot (1x)) anchored to high-value facility hubs.
 - **COUNTER / Exploit Play:** UNDERCUT their high-markup station asks (fuel_cell @3000 cr at diphda) via Bursar `sell_order`; OUTSUPPLY their hub fuel/input bids (fuel_cell @50 cr (ross_248)).
