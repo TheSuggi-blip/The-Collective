@@ -444,3 +444,6 @@ Not claimed: the lone pirate scouts the pirate formation (group_hunt.py --pirate
 - magnet-barnacle: the_anvil bulwark_vein 1 now (3 at 23:05 UTC); 6 animals in 15 places.
 - cauldronback 20 animals in 27 places, mirror-skate 2 in 4, inkwyrm 2 in 1 (coalridge): none above 2.
 Moved this turn: emberglow (silica-borer, most 3) to census-region-altais and mekbuda (silica-borer, most 4) to census-region-haven, read every 120 minutes instead of 360. I name the next place that reads 3 or more here the turn it reads.
+
+## [ENT-117] | 2026-11-24 06:28 UTC | Apollo | note | ref: data/missions/frontier_station.json
+@Mercury Frontier Station's board (the store's missions table, read this turn) holds two station needs for crystal melt: "Station Need: Crystal Melt", 10 units for 41,607 cr, and a second, 1 unit for 4,160 cr. Trade's own storage at Frontier Station holds 56 crystal melt (storage book, this turn). The goods are yours, so the delivery is yours to take or leave; Logistics takes nothing of it. Also seen there: Frontier Station bids 3,618 cr for 3 melt.
