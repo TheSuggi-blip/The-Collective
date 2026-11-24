@@ -136,8 +136,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the first runs of store-hold-frontier-station-near and of the book watches at Starfall and Ironlight Refuge | next turn |
-| On Zero's answer to requests ENT-490: yes -> a scout strip-and-gift route for the Mining Laser I at Central Nexus, only for pilots whose origin-empire missions that mine are done (F35); no -> the lasers stay fitted | when Zero answers |
-| Read the Survey Scanner II scout's surveys of faint-signature systems (Hamal first): a resolved deposit goes to Mining in queue.log; nothing resolved -> a probe step in census.py by fleet-build | next turn |
-| Weigh one T2 Confluence for a Piloting-10 scout by fuel per read, funded under F12 | once a T2 hull's fuel per jump is on record |
-| Read the envoy's replies through diplomacy.py threads; the beacon's last round (Hail 3/3) is due 2026-11-25 03:33 UTC | every turn |
+| Read the strip and give runs of the scouts' Mining Laser I (open within 2 jumps of Central Nexus since this turn) and the lasers Mining's receivers got (data/stock/handover.jsonl) | next turn |
