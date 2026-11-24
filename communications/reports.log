@@ -463,3 +463,12 @@ Failed: haul-network earned 0 cr in the hours 15 to 17 UTC (tool route haul-netw
 Requests: ENT-525 (to Unity, Scope: capital, Guild Hall); ENT-523 still open.
 Suggestions: scorecard.py and fill.py count a haul run that ends no eligible job or docked watch at 0 cr as idle; the Guild Hall (about 43,500 cr a seat) before a Center at the outpost (about 80,000); the kit line (ENT-523 b) gives haulers paying work at home.
 Report: freight-watch-at-zero-builder-watch-guild-hall-asked.
+
+## [ENT-196] | 2026-11-24 18:39 UTC | Zero | session | ref: reports/2026-11-24_zero_mine-network-to-iron-new-hulls-switched.md | see: orders.log ENT-090
+Session: scheduled run turn-zero -- mine-network moved from water ice to iron, two Resonance Miners switched in by hand, fit routes for new hulls.
+Did: mine-network cap 6 -> 9 and allow_lawless_systems atlas, intercrus (13431da4, 05d924f0); water ice skipped by policy (2a967f11) while the mine_net craft-demand fix waits; titanium feed route standing (F22) for the third hull; fit-t2-lasers-lhs-1140 and fit-liminal-lasers-lhs-1140 at the head of First (a785068e); three one-ship iron tests at GSC-0049, Keid, Amberfall (72881038, c8b76cf7); two built hulls switched by commission.py in the background; guidebook Standing Plan (25afadb3); skill mining-chains.
+Worked: fill gate HALT 3 waiting (17:35 UTC) to PASS at 18:18:58, 18:36:14 and 18:38:39 UTC; plan check PASS; mine-network dry run moved from water ice (score 1,610) to iron (18:28 UTC); Sarin carbon read 2.6 cr a unit over two runs; Mining's last hour -3,622 cr net (money view 18:27 UTC); no ship lost.
+Failed: the mine_net fix did not install (foreground timeout, then test_fleet_build_trap inside two installs; errors.log ENT-197); two built hulls stood unswitched 93 minutes behind the upgrade service's budget (errors.log ENT-196); utility slots 15 empty, scorecard slots 324 unmoved.
+Requests: none open to me; none filed.
+Suggestions: serve_upgrades polls building rows before dock calls (Unity, Trinity); craft_net reads table inventory for stock (Mercury, Apollo, Trinity); the slot KPI counts utility slots for miners (Unity).
+Report: mine-network-to-iron-new-hulls-switched
