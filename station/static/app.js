@@ -3259,8 +3259,9 @@ function renderProgressionSubtab(panel, prData) {
   const progSeatPct = (s.ships_total || 500) ? ((100 * (s.seats_used || 0)) / (s.ships_total || 500)).toFixed(1) : '0.0';
   pk('Faction Seating & Fleet', fmt(s.seats_used || 0) + ' / ' + fmt(s.ships_total || 500) + ' (' + progSeatPct + '%, cap ' + fmt(s.seats_cap || 0) + ')',
     fmt(s.open_seats || 0) + ' open in current cap | ' + fmt(Math.max(0, (s.ships_total || 500) - (s.seats_cap || 0))) + ' more cap needed for 100% seating', 'pos');
-  pk('Hull & Module Saturation', fmt(s.hulls_upgraded || 0) + '/' + fmt(s.ships_synced || s.ships_total || 0) + ' hulls | ' + fmt(s.ships_with_adv || 0) + ' T2+ fit',
-    fmt(s.t0_hulls || 0) + ' T0 left | ' + fmt(s.ships_unfitted || 0) + ' ships unfitted (' + fmt(s.adv_mods_fitted || 0) + '/' + fmt(s.total_slots || 0) + ' slots = ' + (s.adv_slot_pct || 0) + '%)',
+  pk('Hull & Module Gaps (-> 0)', fmt(s.t0_hulls || 0) + ' T0 hulls | ' + fmt(s.ships_unfitted || 0) + ' ships missing T2+',
+    fmt(s.hulls_upgraded || 0) + '/' + fmt(s.ships_synced || s.ships_total || 0) + ' hulls (' + (s.hull_upgrade_pct || 0) + '%) | '
+    + fmt(s.empty_slots || 0) + ' empty slots | ' + fmt(s.adv_mods_fitted || 0) + '/' + fmt(s.total_slots || 0) + ' T2+ (' + (s.adv_slot_pct || 0) + '%)',
     (s.ships_unfitted || 0) > 0 || (s.t0_hulls || 0) > 0 ? 'warn' : 'pos');
   pk('12-Rung Roadmap Avg', avgPct.toFixed(1) + '%', fmt(s.outposts || 0) + '/8 outposts | ' + fmt(s.stations || 0) + '/5 stations | ' + fmt(s.systems_charted || 0) + '/' + fmt(s.total_systems || 506) + ' sys', 'pos');
   panel.append(kpis);
@@ -4149,18 +4150,31 @@ async function renderMetrics(panel, live) {
         );
         card.append(cfRow);
 
-        const empSub = d.employment.effective_working + '/' + d.employment.total + ' (' + d.employment.pct.toFixed(0) + '%)';
+        const empIdle = d.employment.idle !== undefined ? d.employment.idle : Math.max(0, (d.employment.total || 0) - (d.employment.effective_working || 0));
+        const empSub = (empIdle === 0 ? '0 idle' : fmt(empIdle) + ' idle') + ' (' + d.employment.pct.toFixed(0) + '% work)';
+        const missElig = d.hulls.missing_eligible !== undefined ? d.hulls.missing_eligible : Math.max(0, (d.hulls.eligible_p10 || 0) - (d.hulls.upgraded_eligible || 0));
         const hullSub = d.hulls.mode === 'eligible_t2'
-          ? d.hulls.upgraded_eligible + '/' + d.hulls.eligible_p10 + ' P10+ T2 (' + d.hulls.pct.toFixed(0) + '%)'
+          ? (missElig === 0 ? '0 missing (100%)' : fmt(missElig) + ' P10+ missing T2+ (' + d.hulls.pct.toFixed(0) + '%)')
           : 'P' + d.hulls.max_piloting + ' -> T2 (' + d.hulls.pct.toFixed(0) + '%*)';
-        const modSub = d.modules.slot_pct.toFixed(0) + '% (' + d.modules.t2_mod_ships + ' T2+, ' + d.modules.off_role_ships + ' off-role)';
+        const emptySl = d.modules.empty_slots !== undefined ? d.modules.empty_slots : Math.max(0, (d.modules.max_slots || 0) - (d.modules.fitted_slots || 0));
+        const modSub = fmt(emptySl) + ' empty (' + d.modules.slot_pct.toFixed(0) + '% fit' + (d.modules.off_role_ships ? ', ' + d.modules.off_role_ships + ' off-role' : '') + ')';
         const meters = el('div', 'sc-meters');
         meters.append(
-          meterRow('Working', d.employment.pct, empSub, d.employment.status),
-          meterRow('Hulls', d.hulls.pct, hullSub, d.hulls.status),
-          meterRow('Slots', d.modules.slot_pct, modSub, d.modules.status)
+          meterRow('Idle gap', d.employment.pct, empSub, d.employment.status),
+          meterRow('Hull gap', d.hulls.pct, hullSub, d.hulls.status),
+          meterRow('Slot gap', d.modules.slot_pct, modSub, d.modules.status)
         );
         card.append(meters);
+        if (d.saturation && d.saturation.active_depleting > 0) {
+          const sat = d.saturation;
+          const sRow = el('div', 'sc-drkpi');
+          sRow.append(
+            el('span', 'sc-drkpi-k', 'Field spread: '),
+            el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
+            el('span', 'sc-drkpi-v', ' ' + fmt(sat.distinct_pois) + ' POIs, max ' + fmt(sat.max_per_poi) + '/POI (' + (sat.top_poi || '').split(':').pop() + ')')
+          );
+          card.append(sRow);
+        }
 
         const rk = el('div', 'sc-drkpi');
         rk.append(
@@ -4253,9 +4267,10 @@ async function renderMetrics(panel, live) {
     const moreCapNeeded = Math.max(0, standingShips - capN);
     const pctSeatedM = standingShips ? ((100 * seatedN) / standingShips).toFixed(1) : '0.0';
     const nextSeatBldg = !capN ? 'not read' : capN < 100 ? 'next: Recruitment Desk (100)' : capN < 200 ? 'next: Recruitment Center (200)' : capN < 400 ? 'next: Guild Hall (400)' : 'next: cap upgrade';
+    const unseatedN = Math.max(0, standingShips - seatedN);
     rkpi('Faction seating', capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (' + pctSeatedM + '%, cap ' + fmt(capN) + ')' : '--',
-      capN ? (fmt(openSeats) + ' open in current cap | ' + fmt(moreCapNeeded) + ' more cap needed for full fleet | ' + nextSeatBldg) : 'not read',
-      openSeats > 0 ? 'pos' : 'warn');
+      capN ? (fmt(unseatedN) + ' unseated (' + fmt(openSeats) + ' open in cap ' + fmt(capN) + '; +' + fmt(moreCapNeeded) + ' cap for 100%) | ' + nextSeatBldg) : 'not read',
+      unseatedN === 0 ? 'pos' : (openSeats > 0 ? 'warn' : 'warn'));
     const tf = ops.tech_frontier || {};
     const hs = (ops.readiness || {}).hull_summary || null;
     const hulls = (ops.readiness || {}).hulls || [];
@@ -4263,18 +4278,31 @@ async function renderMetrics(panel, live) {
     hulls.forEach((h) => byTier.set(h.tier, (byTier.get(h.tier) || 0) + h.count));
     const tierTxt = [...byTier.entries()].sort((x, y) => y[0] - x[0]).map(([tr, n]) => fmt(n) + ' T' + tr).join(', ') || '--';
     const ftTier = tf.target_tier || 2;
-    rkpi('Hull upgrades (T1-T5)', hs ? fmt(hs.upgraded) + ' / ' + fmt(hs.total) + ' (' + hs.upgraded_pct + '%)' : tierTxt,
-      (hs ? fmt(hs.t0_remaining) + ' T0 still un-upgraded (' + tierTxt + ') | ' : tierTxt + ' | ')
-      + 'T' + ftTier + ' ready: ' + fmt(tf.at_or_above || 0) + '/' + fmt(tf.ready_pilots || 0) + ' (P avg ' + (tf.avg_piloting || '--') + '/max ' + (tf.max_piloting || '--') + ')',
-      (hs && hs.t0_remaining > 0) || (tf.ready_pilots || 0) > (tf.at_or_above || 0) ? 'warn' : 'pos');
+    const readyMissingT = Math.max(0, (tf.ready_pilots || 0) - (tf.at_or_above || 0));
+    rkpi('Hull upgrades missing (-> 0)', hs ? (hs.t0_remaining > 0 ? fmt(hs.t0_remaining) + ' T0 missing (' + hs.upgraded_pct + '% T1+)' : '0 missing (100% T1+)') : tierTxt,
+      fmt(readyMissingT) + ' P10+ missing T' + ftTier + '+ (' + fmt(tf.at_or_above || 0) + '/' + fmt(tf.ready_pilots || 0) + ' done) | '
+      + (hs ? fmt(hs.upgraded) + '/' + fmt(hs.total) + ' upgraded (' + tierTxt + ')' : tierTxt)
+      + ' | P avg ' + (tf.avg_piloting || '--') + '/max ' + (tf.max_piloting || '--'),
+      (hs && hs.t0_remaining > 0) || readyMissingT > 0 ? 'warn' : 'pos');
     const mods = (ops.readiness || {}).modules || [];
     const fs = (ops.readiness || {}).fit_summary || null;
     const topMods = mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ');
-    rkpi('Advanced fits (T2-T5)', fs ? fmt(fs.ships_with_adv) + ' / ' + fmt(fs.ships) + ' ships (' + fs.adv_ship_pct + '%)' : (mods.length ? fmt(mods.reduce((a, m) => a + m.count, 0)) + ' fitted' : '0'),
+    rkpi('Module fits missing (-> 0)', fs ? (fs.ships_unfitted > 0 ? fmt(fs.ships_unfitted) + ' ships missing T2+ (' + fs.adv_ship_pct + '% fit)' : '0 missing (100% T2+)') : (mods.length ? fmt(mods.reduce((a, m) => a + m.count, 0)) + ' fitted' : '0'),
       fs
-        ? fmt(fs.ships_unfitted) + ' ships & ' + fmt(fs.adv_unfitted_slots) + ' slots still unfitted (' + fmt(fs.adv_mods) + '/' + fmt(fs.total_slots) + ' slots = ' + fs.adv_slot_pct + '%; ' + fmt(fs.empty_slots) + ' empty)' + (topMods ? ' | ' + topMods : '')
+        ? fmt(fs.empty_slots) + ' empty slots | ' + fmt(fs.adv_unfitted_slots) + ' non-T2+ slots (' + fmt(fs.adv_mods) + '/' + fmt(fs.total_slots) + ' = ' + fs.adv_slot_pct + '%)' + (topMods ? ' | ' + topMods : '')
         : (topMods || 'no T2+ modules fitted yet'),
-      fs && fs.ships_unfitted > 0 ? 'warn' : (mods.length ? 'pos' : 'warn'));
+      fs && (fs.ships_unfitted > 0 || fs.empty_slots > 0) ? 'warn' : (mods.length ? 'pos' : 'warn'));
+    const entSat = sc && sc.enterprise && sc.enterprise.saturation ? sc.enterprise.saturation : null;
+    if (entSat && (entSat.Mining || entSat.Military)) {
+      const sm = entSat.Mining || {}, sml = entSat.Military || {};
+      const satWorst = (sm.status === 'ALARM' || sml.status === 'ALARM') ? 'neg' : ((sm.status === 'WARN' || sml.status === 'WARN') ? 'warn' : 'pos');
+      rkpi('Field spread (saturation)',
+        'Mining max ' + fmt(sm.max_per_poi || 0) + '/belt | Mil max ' + fmt(sml.max_per_poi || 0) + '/POI',
+        'Mining: ' + fmt(sm.distinct_pois || 0) + ' belts for ' + fmt(sm.active_depleting || 0) + ' miners'
+        + (sm.top_poi ? ' (top: ' + sm.top_poi.split(':').pop() + ')' : '')
+        + ' | Military: ' + fmt(sml.distinct_pois || 0) + ' POIs for ' + fmt(sml.active_depleting || 0) + ' hunters',
+        satWorst);
+    }
     const eff = ops.efficiency || null;
     if (eff) {
       const jl = eff.jump_loops || { hours: 0, credits: 0 }, cn = eff.census || { hours: 0, credits: 0 };

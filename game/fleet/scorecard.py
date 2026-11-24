@@ -119,6 +119,7 @@ TRIAGE_SPECS = {
     "PRODUCTIVE_EFFICIENCY": ("P1", "P1", 84, 72, 1),
     "SURPLUS_BACKLOG": ("P1", "P1", 82, 76, 1),
     "MINING_YIELD": ("P1", "P1", 82, 72, 2),
+    "FIELD_CONGESTION": ("P1", "P2", 80, 64, 1),
     "DIV_HULL_UPGRADE": ("P1", "P1", 80, 70, 2),
     "HULL_UPGRADE_LAG": ("P1", "P1", 80, 70, 2),
     "OPEN_SEATS": ("P1", "P1", 76, 68, 1),
@@ -494,6 +495,107 @@ def _load_watchdog_deltas(data_dir):
     }
 
 
+def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
+    """Compute USE-method saturation (ship concentration on depleting mine belts & hunt POIs).
+    Never penalizes non-depleting work (craft, bursar desks, shipping, one-time missions, census)."""
+    from collections import Counter, defaultdict
+    out = {}
+    for div in ("Mining", "Military"):
+        out[div] = {
+            "active_depleting": 0, "distinct_pois": 0, "max_per_poi": 0,
+            "top_poi": "", "depleted_on_top": [], "crowded_pois": 0, "status": "OK",
+        }
+    odir = Path(data_dir) / "fleet" / "orders"
+    rdir = Path(repo_root) / "game" / "routes"
+    if not odir.is_dir() or not rdir.is_dir():
+        return out
+    orders = {}
+    for p in odir.glob("*.json"):
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+            if isinstance(d, dict) and d.get("pilot") and d.get("what"):
+                orders[str(d["pilot"])] = str(d["what"])
+        except Exception:
+            continue
+    if not orders:
+        return out
+    route_cache = {}
+    def _route_poi(kind, rid):
+        key = (kind, rid)
+        if key not in route_cache:
+            poi = ""
+            rf = rdir / (rid + ".json")
+            if rf.is_file():
+                try:
+                    rd = json.loads(rf.read_text(encoding="ascii", errors="replace"))
+                    if kind == "mine":
+                        poi = str(rd.get("belt") or "")
+                    elif kind == "hunt":
+                        poi = str(rd.get("place") or "")
+                except Exception:
+                    poi = ""
+            route_cache[key] = poi
+        return route_cache[key]
+
+    by_div = {"Mining": Counter(), "Military": Counter()}
+    sdivs = ship_divs or {}
+    for pilot, what in orders.items():
+        parts = what.split(" ", 1)
+        if len(parts) < 2:
+            continue
+        kind, rid = parts[0], parts[1]
+        if kind == "mine":
+            poi = _route_poi("mine", rid)
+            if poi:
+                div = sdivs.get(pilot, "Mining")
+                if div in by_div:
+                    by_div[div][poi] += 1
+        elif kind == "hunt":
+            poi = _route_poi("hunt", rid)
+            if poi:
+                div = sdivs.get(pilot, "Military")
+                if div in by_div:
+                    by_div[div][poi] += 1
+
+    depleted_by_poi = defaultdict(list)
+    if conn is not None:
+        try:
+            tbls = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            if "fields" in tbls:
+                for sys_id, poi_id, res, rem, mx in conn.execute(
+                    "SELECT system, poi, resource, COALESCE(remaining,0), COALESCE(max_remaining,0) FROM fields"
+                ).fetchall():
+                    if mx and int(mx) > 0 and int(rem or 0) <= 0 and res not in ("iron_ore", "copper_ore"):
+                        depleted_by_poi[f"{sys_id}:{poi_id}"].append(f"{res} 0/{int(mx)}")
+        except Exception:
+            pass
+
+    for div, warn_cap, alarm_cap in (("Mining", 10, 20), ("Military", 6, 10)):
+        c = by_div[div]
+        tot = sum(c.values())
+        if not tot:
+            continue
+        top_poi, max_n = c.most_common(1)[0]
+        dep = depleted_by_poi.get(top_poi, [])[:2] if div == "Mining" else []
+        crowded = sum(1 for _p, n in c.items() if n >= warn_cap)
+        if max_n >= alarm_cap or (max_n >= warn_cap and dep):
+            st = "ALARM"
+        elif max_n >= warn_cap:
+            st = "WARN"
+        else:
+            st = "OK"
+        out[div] = {
+            "active_depleting": tot,
+            "distinct_pois": len(c),
+            "max_per_poi": max_n,
+            "top_poi": top_poi,
+            "depleted_on_top": dep,
+            "crowded_pois": crowded,
+            "status": st,
+        }
+    return out
+
+
 def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, rivals_doc=None):
     """Compute complete enterprise & per-division KPI scorecard + alert triggers."""
     now = float(now if now is not None else time.time())
@@ -525,6 +627,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     money_by_div = {}
     kpi_live = {}
     contrib_24h = {}
+    ship_divs_map = {}
+    field_sat = {}
     hulls_by_div = {d: {"total": 0, "t1_plus": 0, "t2_plus": 0, "eligible_p10": 0, "upgraded_eligible": 0,
                         "near_p10": 0, "max_piloting": 0, "sum_piloting": 0.0, "empires": {}} for d in DIVISIONS}
     mods_by_div = {d: {"ships": 0, "fitted_slots": 0, "max_slots": 0, "t2_mod_ships": 0, "off_role_ships": 0}
@@ -604,6 +708,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 """ if (has_hulls and has_skills) else "SELECT pilot, division, 'voidborn' AS emp, 0 AS tier, 0 AS piloting FROM ships"
                 for r in conn.execute(q).fetchall():
                     div = r["division"] or "Command"
+                    if r["pilot"]:
+                        ship_divs_map[str(r["pilot"])] = div
                     if div not in hulls_by_div:
                         continue
                     h = hulls_by_div[div]
@@ -742,6 +848,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 if pr:
                     places_tot = int(_num(pr["tot"]))
                     places_fresh = int(_num(pr["fr"]))
+            field_sat = _compute_field_saturation(repo_root, data_dir, conn=conn, ship_divs=ship_divs_map)
 
             # GAAP/IFRS Cash-to-Accrual P&L & Transfer-Priced Division Attribution
             acc_24 = None
@@ -761,6 +868,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 acc_24 = None
                 acc_6 = None
     finally:
+        if not field_sat:
+            field_sat = _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=ship_divs_map)
         if conn is not None:
             conn.close()
 
@@ -814,13 +923,18 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
     fleet_elig_p10 = sum(hulls_by_div[d]["eligible_p10"] for d in DIVISIONS)
     fleet_upg_elig = sum(hulls_by_div[d]["upgraded_eligible"] for d in DIVISIONS)
+    fleet_t1_plus = sum(hulls_by_div[d]["t1_plus"] for d in DIVISIONS)
     fleet_t2_plus = sum(hulls_by_div[d]["t2_plus"] for d in DIVISIONS)
+    fleet_hulls_missing_t2 = max(0, fleet_elig_p10 - fleet_upg_elig)
+    fleet_t0_missing = max(0, total_ships - fleet_t1_plus)
     fleet_hull_elig_pct = round(100.0 * fleet_upg_elig / max(1, fleet_elig_p10), 1) if fleet_elig_p10 else 0.0
 
     fleet_fitted = sum(mods_by_div[d]["fitted_slots"] for d in DIVISIONS)
     fleet_max_slots = sum(mods_by_div[d]["max_slots"] for d in DIVISIONS)
+    fleet_empty_slots = max(0, fleet_max_slots - fleet_fitted)
     fleet_slot_pct = round(100.0 * fleet_fitted / max(1, fleet_max_slots), 1) if fleet_max_slots else 0.0
     fleet_off_role = sum(mods_by_div[d]["off_role_ships"] for d in DIVISIONS)
+    unseated_ships = max(0, total_ships - fac_members)
 
     # Roadmap rungs & achieved milestones from progression.py
     roadmap_avg = 0.0
@@ -877,35 +991,46 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     if eff_emp_pct < 90.0:
         ent_triggers.append({
             "severity": _severity_pct(eff_emp_pct, 80.0, 90.0), "code": "FLEET_IDLE",
-            "metric": "Fleet Operational Employment",
-            "actual": f"{eff_emp_pct:.1f}% ({total_idle} waiting; {intel_watch} Intel watch)",
-            "target": ">=90% (0 idle)", "direction": "IMPROVING" if (wd_deltas["idle_delta"] or 0) < 0 else ("WORSENING" if (wd_deltas["idle_delta"] or 0) > 0 else "FLAT"),
+            "metric": "Fleet Idle Gap",
+            "actual": f"{total_idle} idle ({eff_emp_pct:.1f}% working; {intel_watch} Intel watch)",
+            "target": "0 idle (>=90% working)", "direction": "IMPROVING" if (wd_deltas["idle_delta"] or 0) < 0 else ("WORSENING" if (wd_deltas["idle_delta"] or 0) > 0 else "FLAT"),
             "action": "Admirals autonomously set far_ok for newborns past home Mastery (F16/F35/P6) so idle ships join main corridors",
         })
     if open_seats > 0 and seat_cap_pct < TARGET_COMPLETION_PCT:
         ent_triggers.append({
             "severity": _severity_pct(seat_cap_pct, 60.0, 80.0), "code": "OPEN_SEATS",
-            "metric": "Faction Cap Seating",
-            "actual": f"{fac_members}/{fac_limit} ({seat_cap_pct:.1f}%, {open_seats} open; {seat_fleet_pct:.1f}% of {total_ships})",
-            "target": ">=80% of cap (0 open)", "direction": "FLAT",
+            "metric": "Faction Seating Gap",
+            "actual": f"{open_seats} open seats in cap {fac_limit} ({unseated_ships} unseated; {seat_fleet_pct:.1f}% of {total_ships})",
+            "target": "0 open seats (>=80% cap)", "direction": "FLAT",
             "action": f"Unity seats {open_seats} ready ships via wallet.py seat (F11/P4)",
         })
     if fleet_elig_p10 > 0 and fleet_hull_elig_pct < TARGET_COMPLETION_PCT:
         ent_triggers.append({
             "severity": _severity_pct(fleet_hull_elig_pct, 60.0, 80.0), "code": "HULL_UPGRADE_LAG",
-            "metric": "Eligible Hull Upgrades (P10+ -> T2+)",
-            "actual": f"{fleet_upg_elig}/{fleet_elig_p10} ({fleet_hull_elig_pct:.1f}%)",
-            "target": ">=80% of eligible", "direction": "IMPROVING" if (wd_deltas["t2_delta"] or 0) > 0 else "FLAT",
+            "metric": "Hull Upgrades Missing (P10+ -> T2+)",
+            "actual": f"{fleet_hulls_missing_t2} P10+ missing T2+ ({fleet_upg_elig}/{fleet_elig_p10} done, {fleet_hull_elig_pct:.1f}%; {fleet_t0_missing} T0 left)",
+            "target": "0 P10+ missing T2+ (>=80%)", "direction": "IMPROVING" if (wd_deltas["t2_delta"] or 0) > 0 else "FLAT",
             "action": "Parallel batch-upgrade P10+ pilots & P0 cargo freighters (Ledger/Prayer/Workhorse) via `hive.py upgrades` (F17/F37/O2)",
         })
     if fleet_slot_pct < TARGET_COMPLETION_PCT:
         ent_triggers.append({
             "severity": _severity_pct(fleet_slot_pct, 60.0, 80.0), "code": "MODULE_FIT_SATURATION",
-            "metric": "Fleet Module Fit Saturation",
-            "actual": f"{fleet_fitted}/{fleet_max_slots} slots ({fleet_slot_pct:.1f}%, {fleet_off_role} off-role starters)",
-            "target": ">=80% slots, 0 off-role", "direction": "FLAT",
+            "metric": "Module Slots Missing",
+            "actual": f"{fleet_empty_slots} empty slots ({fleet_slot_pct:.1f}% fit, {fleet_off_role} off-role starters)",
+            "target": "0 empty / 0 off-role (>=80%)", "direction": "FLAT",
             "action": "Strip off-role starter modules (`unfit`) and fill open slots with role-matched T2+ modules (O2)",
         })
+    for _sdiv in ("Mining", "Military"):
+        _sd = field_sat.get(_sdiv) or {}
+        if _sd.get("status") == "ALARM":
+            _dep_s = ("; depleted: " + ", ".join(_sd["depleted_on_top"])) if _sd.get("depleted_on_top") else ""
+            ent_triggers.append({
+                "severity": "ALARM", "code": "FIELD_CONGESTION",
+                "metric": f"{_sdiv} Field Saturation",
+                "actual": f"{_sd['max_per_poi']} ships on {_sd['top_poi']} ({_sd['distinct_pois']} POIs for {_sd['active_depleting']} active{_dep_s})",
+                "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
+                "action": f"Spread {_sdiv} ships across unsaturated scarce POIs & use jettison_gangue on scarce belts",
+            })
     _ent_gaps = {
         "CASHFLOW_NEGATIVE": min(1.0, abs(recurring_cash_24h) / 100000.0) if recurring_cash_24h < 0 else 0.3,
         "PRODUCTIVE_EFFICIENCY": max(0.0, (TARGET_COMPLETION_PCT - prod_pct) / TARGET_COMPLETION_PCT),
@@ -913,6 +1038,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         "OPEN_SEATS": max(0.0, (TARGET_COMPLETION_PCT - seat_cap_pct) / TARGET_COMPLETION_PCT),
         "HULL_UPGRADE_LAG": max(0.0, (TARGET_COMPLETION_PCT - fleet_hull_elig_pct) / TARGET_COMPLETION_PCT),
         "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
+        "FIELD_CONGESTION": 0.85,
     }
     for _t in ent_triggers:
         if _t.get("code") == "ACTIVE_WAR":
@@ -946,10 +1072,13 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         elig_p10 = hd["eligible_p10"]
         upg_elig = hd["upgraded_eligible"]
         avg_pil = round(hd["sum_piloting"] / max(1, hd["total"]), 1)
+        missing_elig = max(0, elig_p10 - upg_elig)
+        t0_missing_div = max(0, hd["total"] - hd["t1_plus"])
         if elig_p10 > 0:
             hull_pct = round(100.0 * upg_elig / elig_p10, 1)
             hull_mode = "eligible_t2"
-            hull_label = f"{upg_elig}/{elig_p10} P10+ on T2+ ({hull_pct:.0f}%)"
+            hull_label = (f"0 missing (all {elig_p10} P10+ T2+, 100%)" if missing_elig == 0
+                          else f"{missing_elig} P10+ missing T2+ ({upg_elig}/{elig_p10} done, {hull_pct:.0f}%)")
             hull_sev = _severity_pct(hull_pct, 60.0, 80.0)
         else:
             # No pilots at P10 yet -- measure Piloting progression toward T2 gate + T1+ hulls
@@ -959,6 +1088,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             hull_sev = "WARN" if (hd["max_piloting"] < 8 and hd["t1_plus"] == 0) else ("OK" if hull_pct >= 80.0 else "WARN")
 
         # Module fit saturation & role purity
+        div_empty_slots = max(0, md["max_slots"] - md["fitted_slots"])
+        div_missing_t2_mod = max(0, (md["ships"] or tot) - md["t2_mod_ships"])
         slot_pct = round(100.0 * md["fitted_slots"] / max(1, md["max_slots"]), 1) if md["max_slots"] else 0.0
         t2_mod_pct = round(100.0 * md["t2_mod_ships"] / max(1, tot), 1)
         off_role_pct = round(100.0 * md["off_role_ships"] / max(1, tot), 1)
@@ -985,9 +1116,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
 
         if emp_sev != "OK":
             triggers.append({
-                "severity": emp_sev, "code": "DIV_IDLE", "metric": "Employment",
-                "actual": f"{eff_wrk}/{tot} ({div_emp_pct:.1f}%, {tot - eff_wrk} idle)",
-                "target": f">={int(emp_warn_cut)}%", "direction": d_trend,
+                "severity": emp_sev, "code": "DIV_IDLE", "metric": "Idle Ships Gap",
+                "actual": f"{tot - eff_wrk} idle ({div_emp_pct:.1f}% working, {eff_wrk}/{tot})",
+                "target": f"0 idle (>={int(emp_warn_cut)}%)", "direction": d_trend,
                 "action": "Assign waiting ships now; set far_ok autonomously for newborns past home Mastery (F8/F16/F35)",
             })
         if hull_sev != "OK" and elig_p10 > 0:
@@ -1006,10 +1137,19 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             })
         if mod_sev != "OK":
             triggers.append({
-                "severity": mod_sev, "code": "DIV_MODULE_FIT", "metric": "Module Fit & Purity",
-                "actual": f"{md['fitted_slots']}/{md['max_slots']} slots ({slot_pct:.1f}%), {md['t2_mod_ships']} T2+ ships, {md['off_role_ships']} off-role",
-                "target": ">=80% slots, 0 off-role", "direction": "FLAT",
+                "severity": mod_sev, "code": "DIV_MODULE_FIT", "metric": "Module Slots Missing",
+                "actual": f"{div_empty_slots} empty slots ({slot_pct:.1f}% fit), {div_missing_t2_mod} ships missing T2+, {md['off_role_ships']} off-role",
+                "target": "0 empty / 0 off-role (>=80%)", "direction": "FLAT",
                 "action": "Unfit off-role starter modules and fit role-matched T2+ modules across open slots (O2)",
+            })
+        div_sat = field_sat.get(div)
+        if div_sat and div_sat.get("status") != "OK":
+            _d_dep = ("; depleted: " + ", ".join(div_sat["depleted_on_top"])) if div_sat.get("depleted_on_top") else ""
+            triggers.append({
+                "severity": div_sat["status"], "code": "FIELD_CONGESTION", "metric": "Field Saturation",
+                "actual": f"{div_sat['max_per_poi']} ships on {div_sat['top_poi']} ({div_sat['distinct_pois']} POIs for {div_sat['active_depleting']} active{_d_dep})",
+                "target": "spread <=8/belt (<=5/herd)", "direction": "FLAT",
+                "action": "Spread ships across unsaturated scarce POIs (max ~6-8/belt) and use jettison_gangue on scarce veins",
             })
 
         # Division-matched Role Success KPI
@@ -1151,6 +1291,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "DIV_SKILL_TO_T2": max(0.0, (TARGET_COMPLETION_PCT - hull_pct) / TARGET_COMPLETION_PCT),
             "DIV_MODULE_FIT": max(0.0, (TARGET_COMPLETION_PCT - slot_pct) / TARGET_COMPLETION_PCT),
             "MINING_YIELD": max(0.0, (100.0 - _num(role_kpi.get("pct"))) / 100.0),
+            "FIELD_CONGESTION": min(1.0, ((div_sat or {}).get("max_per_poi", 0)) / 30.0),
             "TRADE_NET": 0.9 if d_net24 <= 0 else 0.4,
             "SURPLUS_BACKLOG": min(1.0, surplus_worth / 1000000.0),
             "SUPPLY_CHAINS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
@@ -1304,15 +1445,18 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             },
             "hulls": {
                 "mode": hull_mode, "pct": hull_pct, "eligible_p10": elig_p10,
-                "upgraded_eligible": upg_elig, "t1_plus": hd["t1_plus"], "t2_plus": hd["t2_plus"],
+                "upgraded_eligible": upg_elig, "missing_eligible": missing_elig,
+                "t0_missing": t0_missing_div, "t1_plus": hd["t1_plus"], "t2_plus": hd["t2_plus"],
                 "max_piloting": hd["max_piloting"], "avg_piloting": avg_pil, "near_p10": hd["near_p10"],
                 "empires": hd["empires"], "label": hull_label, "status": hull_sev,
             },
             "modules": {
-                "fitted_slots": md["fitted_slots"], "max_slots": md["max_slots"], "slot_pct": slot_pct,
-                "t2_mod_ships": md["t2_mod_ships"], "t2_mod_pct": t2_mod_pct,
-                "off_role_ships": md["off_role_ships"], "status": mod_sev,
+                "fitted_slots": md["fitted_slots"], "max_slots": md["max_slots"],
+                "empty_slots": div_empty_slots, "slot_pct": slot_pct,
+                "t2_mod_ships": md["t2_mod_ships"], "ships_missing_t2_mod": div_missing_t2_mod,
+                "t2_mod_pct": t2_mod_pct, "off_role_ships": md["off_role_ships"], "status": mod_sev,
             },
+            "saturation": div_sat,
             "playbook": {
                 "max_chapter_pct": pb_pct, "status": pb_sev,
             },
@@ -1623,6 +1767,14 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "weights": active_ent_weights,
             "triggers": ent_triggers,
             "triage": ent_triage[:10],
+            "idle_ships": total_idle,
+            "unseated_ships": unseated_ships,
+            "open_seats": open_seats,
+            "hulls_missing_t2": fleet_hulls_missing_t2,
+            "t0_hulls_missing": fleet_t0_missing,
+            "empty_slots": fleet_empty_slots,
+            "off_role_ships": fleet_off_role,
+            "saturation": field_sat,
             "alarm_count": ent_alarms,
             "warn_count": sum(1 for t in ent_triggers if t["severity"] == "WARN"),
         },
@@ -1646,12 +1798,14 @@ def render_briefing(sc, who="all"):
             f"(excl {_fmt_cr(e.get('once_direct_24h', 0))}/h once-fuel) + IAS2 Inv {_fmt_cr(e.get('inventory_accrual_24h', 0))}/h = "
             f"Accrual Op {_fmt_cr(e.get('accrual_operating_24h', 0))}/h | Seed {_fmt_cr(e.get('seed_net_24h', 0))}/h | CapEx {_fmt_cr(e.get('capex_net_24h', 0))}/h"
         )
+    _sat_m = (e.get("saturation") or {}).get("Mining") or {}
+    _sat_s = f" | mining spread {_sat_m['distinct_pois']} belts (max {_sat_m['max_per_poi']}/belt)" if _sat_m.get("active_depleting") else ""
     lines.append(
-        f"  PULSE      | eff {e['productive_pct']:.1f}% (jumps {e['jump_loop_pct']:.1f}%) | "
-        f"working {e['working_ships']}/{e['total_ships']} ({e['effective_employment_pct']:.1f}% eff) | "
-        f"seats {e['seated_ships']}/{e['seat_cap']} ({e['seat_cap_pct']:.0f}%, {e['seat_fleet_pct']:.1f}% fleet) | "
-        f"P10+->T2 {e['upgraded_eligible']}/{e['eligible_p10']} ({e['hull_eligible_pct']:.0f}%){p10_d} | "
-        f"slots {e['slot_fit_pct']:.1f}% | roadmap {e['roadmap_avg_pct']:.1f}%"
+        f"  GAPS->0    | idle {e.get('idle_ships', e['total_ships'] - e['working_ships'])} ({e['effective_employment_pct']:.1f}% work) | "
+        f"unseated {e.get('unseated_ships', max(0, e['total_ships'] - e['seated_ships']))} ({e.get('open_seats', 0)} open in cap {e['seat_cap']}, {e['seat_fleet_pct']:.1f}% fleet) | "
+        f"hulls {e.get('hulls_missing_t2', max(0, e['eligible_p10'] - e['upgraded_eligible']))} P10+ missing T2+ ({e.get('t0_hulls_missing', 0)} T0 left){p10_d} | "
+        f"slots {e.get('empty_slots', 0)} empty ({e['slot_fit_pct']:.1f}% fit, {e.get('off_role_ships', 0)} off-role) | "
+        f"eff {e['productive_pct']:.1f}% | roadmap {e['roadmap_avg_pct']:.1f}%{_sat_s}"
     )
     if e["drags"]:
         lines.append("  BOTTLENECKS| " + "; ".join(e["drags"][:4]))
@@ -1670,11 +1824,14 @@ def render_briefing(sc, who="all"):
             f"  MY DIVISION ({d['division']} / {d['admiral']}) | Score {d['health_score']:.1f}/100 | state={d['status']} | "
             f"24h Purse {_fmt_cr(d_purse)}/h | Recur {_fmt_cr(d_recur)}/h ({d['trend_24h']}) | Accrual {_fmt_cr(d_accop)}/h"
         )
+        _dsat = d.get("saturation") or {}
+        _dsat_s = f" | spread {_dsat['distinct_pois']} POIs (max {_dsat['max_per_poi']}/POI [{_dsat['status']}])" if _dsat.get("active_depleting") else ""
         lines.append(
-            f"    Readiness: work {d['employment']['effective_working']}/{d['employment']['total']} ({d['employment']['pct']:.1f}%) | "
+            f"    Gaps->0  : idle {d['employment']['idle']} ({d['employment']['pct']:.1f}% work) | "
             f"hulls {d['hulls']['label']} | "
-            f"slots {d['modules']['fitted_slots']}/{d['modules']['max_slots']} ({d['modules']['slot_pct']:.1f}%, {d['modules']['t2_mod_ships']} T2+, {d['modules']['off_role_ships']} off-role) | "
-            f"playbook {d['playbook']['max_chapter_pct']:.0f}%"
+            f"slots {d['modules'].get('empty_slots', d['modules']['max_slots'] - d['modules']['fitted_slots'])} empty "
+            f"({d['modules']['slot_pct']:.1f}% fit, {d['modules'].get('ships_missing_t2_mod', 0)} ships missing T2+, {d['modules']['off_role_ships']} off-role) | "
+            f"playbook {d['playbook']['max_chapter_pct']:.0f}%{_dsat_s}"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
         if da:
@@ -1694,17 +1851,19 @@ def render_briefing(sc, who="all"):
             lines.append("  ACTIVE TRIGGERS: none (all division KPIs >=80% target)")
     else:
         # Unity / fleetwide view: compact 6-division scorecard table + top fleet alarms
-        lines.append("  DIVISIONS  | Division   Score  State  Work%   Hull-Upg  Slot%   Purse/h   Recur/h  Accrual/h  Role KPI")
+        lines.append("  DIVISIONS  | Division   Score  State  Idle  HullGap  EmptySl  Purse/h   Recur/h  Accrual/h  Role KPI")
         for div in DIVISIONS:
             d = sc["divisions"][div]
             da = d.get("accounting_24h") or {}
-            h_txt = f"{d['hulls']['pct']:4.0f}%" + ("*" if d["hulls"]["mode"] == "piloting_to_t2" else " ")
+            h_gap = (f"{d['hulls'].get('missing_eligible', 0):3d} T2" if d["hulls"]["mode"] == "eligible_t2"
+                     else f"P{d['hulls']['max_piloting']:<2d}->T2")
+            e_sl = d["modules"].get("empty_slots", d["modules"]["max_slots"] - d["modules"]["fitted_slots"])
             lines.append(
-                f"             | {div:10s} {d['health_score']:5.1f}  {d['status']:5s}  {d['employment']['pct']:5.1f}%  {h_txt:>7s}  "
-                f"{d['modules']['slot_pct']:5.1f}%  "
+                f"             | {div:10s} {d['health_score']:5.1f}  {d['status']:5s}  {d['employment']['idle']:4d}  {h_gap:>7s}  "
+                f"{e_sl:7d}  "
                 f"{_fmt_cr(da.get('purse_h', d.get('purse_24h', d['cashflow_24h']))):>8s}  "
                 f"{_fmt_cr(da.get('recurring_cash_h', d['cashflow_24h'])):>8s}  "
-                f"{_fmt_cr(da.get('accrual_op_h', d['cashflow_24h'])):>9s}  {d['role_kpi']['value'][:46]}"
+                f"{_fmt_cr(da.get('accrual_op_h', d['cashflow_24h'])):>9s}  {d['role_kpi']['value'][:44]}"
             )
         lines.append("             (* = 0 P10+ pilots yet; % shows avg Piloting progress toward T2 unlock)")
         q_ent = e.get("triage") or e.get("triggers") or []

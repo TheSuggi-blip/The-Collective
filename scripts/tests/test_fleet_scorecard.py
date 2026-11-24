@@ -306,5 +306,46 @@ class TestFleetScorecard(unittest.TestCase):
             self.assertIn("Recur/h", txt)
             self.assertIn("Accrual/h", txt)
 
+
+    def test_gap_to_goal_deficits_and_field_congestion_saturation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = _make_fixture(tmp)
+            # Create a mining route + 22 active orders stacked on one belt + a stacked non-depleting bursar desk
+            rdir = Path(root) / "game" / "routes"
+            rdir.mkdir(parents=True, exist_ok=True)
+            (rdir / "mine-crowded.json").write_text(json.dumps({"id": "mine-crowded", "kind": "mine", "belt": "hamal:hamal_crystal_bloom"}), encoding="ascii")
+            (rdir / "bursar-desk.json").write_text(json.dumps({"id": "bursar-desk", "kind": "circuit", "stops": [{"at": "krynn:s:b", "sell_order": []}]}), encoding="ascii")
+            odir = Path(data) / "fleet" / "orders"
+            odir.mkdir(parents=True, exist_ok=True)
+            for i in range(1, 23):
+                (odir / f"miner-{i}.json").write_text(json.dumps({"pilot": f"miner-{i}", "what": "mine mine-crowded"}), encoding="ascii")
+            for i in range(1, 35):
+                (odir / f"trader-{i}.json").write_text(json.dumps({"pilot": f"trader-{i}", "what": "circuit bursar-desk"}), encoding="ascii")
+
+            sc = scorecard.compute_scorecard(root, data, now=1795410000)
+            ent = sc["enterprise"]
+            # Gap-to-goal deficit fields exist
+            self.assertIn("idle_ships", ent)
+            self.assertIn("hulls_missing_t2", ent)
+            self.assertIn("empty_slots", ent)
+            self.assertIn("unseated_ships", ent)
+            # Mining field saturation triggers ALARM at 22/belt; Trade stacked desk never false-alarms
+            msat = sc["divisions"]["Mining"]["saturation"]
+            self.assertEqual(msat["max_per_poi"], 22)
+            self.assertEqual(msat["status"], "ALARM")
+            m_codes = {t["code"] for t in sc["divisions"]["Mining"]["triggers"]}
+            self.assertIn("FIELD_CONGESTION", m_codes)
+            self.assertIn("FIELD_CONGESTION", {t["code"] for t in ent["triggers"]})
+            t_codes = {t["code"] for t in sc["divisions"]["Trade"]["triggers"]}
+            self.assertNotIn("FIELD_CONGESTION", t_codes)
+            # Briefing renders gap-to-goal burndown headers
+            txt_u = scorecard.render_briefing(sc, who="Unity")
+            self.assertIn("GAPS->0", txt_u)
+            self.assertIn("HullGap", txt_u)
+            self.assertIn("EmptySl", txt_u)
+            txt_z = scorecard.render_briefing(sc, who="Zero")
+            self.assertIn("Gaps->0", txt_z)
+            self.assertIn("Field Saturation", txt_z)
+
 if __name__ == "__main__":
     unittest.main()
