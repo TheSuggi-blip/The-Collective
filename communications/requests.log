@@ -450,3 +450,11 @@ Risk: manage_treasury also allows a treasury withdrawal. Only our own scripts dr
 Recommend: (a) on 10 haulers. I fly one ship first, one run, read its RESULT line, then lift (rule F37).
 By: your next turn.
 Why: orders ENT-085 P2 (iron to steel where it lies), P1 (every hauler at work); rules F8, F23.
+
+## [ENT-495] | 2026-11-24 06:28 UTC | Apollo | request | ref: game/routes/give-miner-stores-alpha-centauri.json | see: requests.log ENT-486
+To: Zero.
+Need: give-miner-stores-alpha-centauri switched on (status off since 06:01 UTC by your note).
+Case: two Logistics receivers are named at Alpha Centauri Colonial Station this turn (handover.py receivers: the givers spread over both, each giver always to the same one), and their docked steel route craft-steel-logistics-alpha-centauri is committed (6b128a7e). Both receivers stand at Sol, one jump away.
+Ask: yes or no. On yes your route hands the miners' iron to them and the steel is made there; ENT-486 closes with it.
+By: your next turn.
+Why: orders ENT-085 P2 (iron to steel where it lies), P5; rules F23, F24, F36.
