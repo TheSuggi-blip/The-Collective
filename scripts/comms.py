@@ -424,6 +424,24 @@ def orders_words(entry):
     return parts
 
 
+ORDERS_BLOCKS = ("UNITY", "ZERO", "MERCURY", "APOLLO", "APOPHIS", "ORACLE")   # a block for each member, in this order of the protocol
+
+
+def orders_missing(body):
+    """What an orders entry lacks to be the orders whole: Suggi's goals (a heading line with GOALS), PLAN and the block of
+    every member (ORDERS_BLOCKS). orders.log ENT-088 (2026-11-24) carried three lines only, and every member's briefing
+    then read the goals, the PLAN and every block as gone: the newest entry is the orders in force, complete."""
+    heads = [block_pattern().match(line) for line in body]
+    heads = [m.group(1) for m in heads if m]
+    members = {m.group(1) for m in (MEMBER_BLOCK.match(line) for line in body) if m}
+    missing = [] if any(line.split(" (")[0].endswith("GOALS") for line in body) else ["the goals"]
+    missing += [] if "PLAN" in heads else ["PLAN"]
+    absent = [name for name in ORDERS_BLOCKS if name not in members]
+    if absent:
+        missing.append(("the block of " if len(absent) == 1 else "the blocks of ") + ", ".join(absent))
+    return missing
+
+
 def orders_size(entry):
     """Error lines for the newest orders entry: the whole entry over ENTRY_CHARS, each part over its word limit, each
     named with its count."""
@@ -534,6 +552,10 @@ def append(root, log, entry_file, name, commit=True):
             problems.append(blocked)
     if log == "orders" and name not in ORDERS_WRITERS:
         problems.append("orders.log is written by the Fleet Admiral (or Trinity for Suggi mandate sync) only")
+    if log == "orders":
+        missing = orders_missing(lines[1:])
+        if missing:
+            problems.append("an orders entry holds the orders whole (protocol.md, The Orders Log); missing: " + ", ".join(missing))
     if any(line.startswith("## [ENT-") for line in lines[1:]):
         problems.append("one entry per call")
     if not any(line.strip() for line in lines[1:]):

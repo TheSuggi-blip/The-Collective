@@ -346,6 +346,14 @@ UNITY, Fleet Admiral (the command group: %s)
 Order: %s
 ZERO, Mining (the miner- ships)
 Order: %s
+MERCURY, Trade (the trader- ships)
+Order: sell.
+APOLLO, Logistics (the hauler- ships)
+Order: build.
+APOPHIS, Military (the drone- ships)
+Order: guard.
+ORACLE, Intel (the scout- ships)
+Order: read.
 """
 
 
@@ -369,7 +377,8 @@ class OrdersSizeTests(Tree):
         self.assertEqual(self.errors_for(text), [])
         parts = {part: count for part, count, _limit, _name in comms.orders_words(comms.parse(text)[0][0])}
         self.assertEqual(parts, {"the `Changed:` line": comms.CHANGED_WORDS, "PLAN": comms.PLAN_WORDS,
-                                 "block UNITY": comms.BLOCK_WORDS, "block ZERO": comms.BLOCK_WORDS})
+                                 "block UNITY": comms.BLOCK_WORDS, "block ZERO": comms.BLOCK_WORDS, "block MERCURY": 2, "block APOLLO": 2,
+                                 "block APOPHIS": 2, "block ORACLE": 2})
         self.assertEqual((comms.ENTRY_CHARS, comms.PLAN_WORDS, comms.BLOCK_WORDS, comms.CHANGED_WORDS), (8500, 150, 80, 60))
 
     def test_each_part_over_its_limit_halts_alone_and_names_its_count(self):
@@ -427,6 +436,25 @@ class OrdersSizeTests(Tree):
         self.assertEqual(len(found), 8, found)                                      # its Changed: line holds 55 words
 
 
+    def test_an_orders_entry_that_is_not_whole_is_refused(self):
+        # orders.log ENT-088 (2026-11-24): a head, a Changed and an In force line only; every member's briefing then showed
+        # the goals, the PLAN and every block as gone. The newest entry is the orders whole (protocol.md, The Orders Log).
+        self.write("orders", ORDERS)
+        before = (self.root / "communications" / "orders.log").read_text(encoding="ascii")
+        draft = Path(self.temp.name) / "delta.txt"
+        draft.write_text("## [ENT-NEXT] | NOW | Trinity | order | ref: governance/strategy.md | see: ENT-002\n"
+                         "Changed: launched two engines.\nIn force: the goals, the plan and the blocks of ENT-002.\n", encoding="ascii")
+        code, text = self.run_command(comms.append, "orders", str(draft), "Trinity", False)
+        self.assertEqual(code, 1)
+        self.assertIn("NOT APPENDED: an orders entry holds the orders whole (protocol.md, The Orders Log); missing: the goals, PLAN, "
+                      "the blocks of UNITY, ZERO, MERCURY, APOLLO, APOPHIS, ORACLE", text)
+        self.assertEqual((self.root / "communications" / "orders.log").read_text(encoding="ascii"), before)
+        draft.write_text(self.entry().replace("## [ENT-003] | 2026-01-02 08:00 UTC", "## [ENT-NEXT] | NOW").replace(
+            "MERCURY, Trade (the trader- ships)\n", ""), encoding="ascii")
+        code, text = self.run_command(comms.append, "orders", str(draft), "Unity", False)
+        self.assertEqual(code, 1)
+        self.assertIn("missing: the block of MERCURY", text)
+
     def test_three_tier_goals_and_operational_subgoals_do_not_count_toward_plan_words(self):
         entry = (
             "## [ENT-NEXT] | NOW | Trinity | order | ref: governance/strategy.md | see: ENT-002\n"
@@ -440,6 +468,8 @@ class OrdersSizeTests(Tree):
             "P1. Keep every ship earning.\n"
             "UNITY, Fleet Admiral (the command group)\n"
             "Coordinate fleet capital and sites.\n"
+            "ZERO, Mining (miner- ships)\nMine.\nMERCURY, Trade (trader- ships)\nSell.\nAPOLLO, Logistics (hauler- ships)\nBuild.\n"
+            "APOPHIS, Military (drone- ships)\nGuard.\nORACLE, Intel (scout- ships)\nRead.\n"
         )
         draft = self.root.parent / "three-tier.md"
         draft.write_text(entry, encoding="ascii")
