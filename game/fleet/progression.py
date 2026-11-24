@@ -133,6 +133,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     t2_plus = 0
     t3_plus = 0
     p10_ready = 0
+    p10_on_t0 = 0
     p20_count = 0
     max_piloting = 0
     seats_used, seats_cap = 0, 20
@@ -249,6 +250,16 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                     max_piloting = int(prow[0] or 0)
                     p10_ready = int(prow[1] or 0)
                     p20_count = int(prow[2] or 0)
+                if _has_table(conn, "ships") and _has_table(conn, "hulls"):
+                    t0_p10_row = conn.execute(
+                        "SELECT COUNT(*) FROM ships s "
+                        "JOIN (SELECT pilot, MAX(level) AS lvl FROM ship_skills WHERE skill = 'piloting' GROUP BY pilot) sk ON sk.pilot = s.pilot "
+                        "LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) "
+                        "WHERE sk.lvl >= 10 AND COALESCE(h.tier, 0) = 0"
+                    ).fetchone()
+                    p10_on_t0 = int(t0_p10_row[0] or 0) if t0_p10_row else p10_ready
+                else:
+                    p10_on_t0 = p10_ready
             if _has_table(conn, "ship_modules"):
                 mrow = conn.execute(
                     "SELECT COUNT(*), "
@@ -519,10 +530,10 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
             "id": "h1-first-t2-hulls", "horizon": "Days (Now)", "orders": "G2, O2",
             "title": "First Tier-2 Hulls & Empire-Matched Fleet Upgrades",
             "pct": _clamp_pct(100.0 if t2_plus >= 3 else (33.3 * t2_plus + 0.4 * max(res_miner_pct, recursion_pct, 80.0 if p10_ready >= 50 else 0.0))),
-            "current": "%d T2+ active (%d T1, %d T0 left) | %d pilots P10+ ready" % (t2_plus, t1_hulls, t0_hulls, p10_ready),
+            "current": "%d T2+ active (%d T1, %d T0 left) | %d P10+ on T0 (%d P10+ total)" % (t2_plus, t1_hulls, t0_hulls, p10_on_t0, p10_ready),
             "target": "First 3 Tier-2 class hulls commissioned & proven",
             "bottleneck": "Resonance Miner %.0f%% | Recursion %.0f%% (%s)" % (
-                res_miner_pct, recursion_pct, _short_summary(rec_n or res_n, "%d P10+ pilots awaiting T2 hulls" % p10_ready),
+                res_miner_pct, recursion_pct, _short_summary(rec_n or res_n, "%d P10+ pilots still on T0 (%d P10+ total)" % (p10_on_t0, p10_ready)),
             ),
         },
         {
@@ -558,8 +569,8 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
                 hulls_upgraded, ships_synced, t0_hulls, ships_with_adv, ships_synced, ships_unfitted, adv_mods_fitted, total_slots, adv_slot_pct,
             ),
             "target": "100% upgraded empire-matched hulls & T2-T5 role-saturated module slots",
-            "bottleneck": "%d ships still unfitted (%d empty slots; %d slots below T2) | %d P10+ pilots awaiting T2 hulls" % (
-                ships_unfitted, empty_slots, adv_slots_unfitted, p10_ready,
+            "bottleneck": "%d ships still unfitted (%d empty slots; %d slots below T2) | %d P10+ pilots still on T0 (%d P10+ total)" % (
+                ships_unfitted, empty_slots, adv_slots_unfitted, p10_on_t0, p10_ready,
             ),
         },
         {
@@ -647,6 +658,8 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
         "t1_hulls": t1_hulls,
         "t1_plus": t1_plus,
         "t2_plus": t2_plus,
+        "p10_ready": p10_ready,
+        "p10_on_t0": p10_on_t0,
         "t3_plus": t3_plus,
         "hulls_upgraded": hulls_upgraded,
         "hull_upgrade_pct": hull_upgrade_pct,
