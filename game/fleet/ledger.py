@@ -94,6 +94,8 @@ LEAVE_SHARE = 0.9            # a fleet file names the fleet when it names this s
 LEAVE_LONG = 86400           # seconds on end outside every fleet file after which a pilot leaves whatever the file named
 WHOLE_SHARE = 0.95           # the book is whole when it holds a reading of this share of the fleet's pilots
 PRESENCE_TAIL = 1_000_000    # bytes read from the end of fleet/presence.jsonl for the pilots' last sign in
+SHIP_LISTINGS_EVERY = 900    # seconds between galaxy-wide browse_ships scans (15 min)
+SHIP_LISTINGS_MAX_PAGES = 40 # safety cap on paginated browse_ships pages (50 listings/page)
 
 
 def read_json(path, default):
@@ -277,7 +279,7 @@ def market_pass(data, seen):
     state_path = folder / "history.state.json"
     state, wrote = read_json(state_path, {}), 0
     for path in sorted(folder.glob("*.json")) if folder.is_dir() else []:
-        if path.name.startswith("history."):
+        if path.name.startswith("history.") or path.name in ("ladders.json", "ship_listings.json"):
             continue
         try:
             stamp = path.stat().st_mtime_ns
@@ -298,6 +300,95 @@ def market_pass(data, seen):
         write_json(state_path, state)
     return wrote
 
+
+
+def browse_ships_page(pilot, page=1):
+    """Read one page of galaxy-wide listed ships via a connected pilot (read-only)."""
+    body = {"toolGroup": "spacemolt_ship", "action": "browse_ships", "params": {"all_stations": True, "page": int(page)}}
+    request = urllib.request.Request(GATE + "/accounts/%s/raw" % urllib.parse.quote(pilot, safe=""), data=json.dumps(body).encode(),
+                                     method="POST", headers={"Content-Type": "application/json"})
+    try:
+        with OPENER.open(request, timeout=45) as answer:
+            found = json.loads(answer.read().decode("utf-8", "replace") or "{}")
+    except (urllib.error.URLError, OSError, ValueError) as error:
+        return None, "%s: %s" % (type(error).__name__, str(error)[:120])
+    content = found.get("structuredContent") if isinstance(found, dict) else None
+    if not isinstance(content, dict) or "listings" not in content:
+        return None, str((content or {}).get("error") or found.get("error") or found)[:200]
+    return content, ""
+
+
+def _clean_ascii(text):
+    return str(text or "").encode("ascii", "ignore").decode("ascii").strip()
+
+
+def ship_listings_pass(data, force=False, now=None, fetch=browse_ships_page, pause=0.15):
+    """Periodically scan galaxy-wide shipyard listings into data/market/ship_listings.json; returns row count written."""
+    now = time.time() if now is None else float(now)
+    out_path = Path(data) / "market" / "ship_listings.json"
+    if not force and out_path.is_file():
+        try:
+            if now - out_path.stat().st_mtime < SHIP_LISTINGS_EVERY:
+                return 0
+        except OSError:
+            pass
+    ships = read_json(Path(data) / "fleet" / "fleet.json", {}).get("ships") or []
+    cands = [s for s in ships if isinstance(s, dict) and s.get("name") and s.get("status") == "connected" and not s.get("in_combat")]
+    cands.sort(key=lambda s: (0 if s.get("docked") else 1, str(s.get("name") or "")))
+    if not cands:
+        return 0
+    first, pilot = None, ""
+    for s in cands[:4]:
+        nm = str(s["name"])
+        content, err = fetch(nm, 1)
+        if content is not None:
+            first, pilot = content, nm
+            break
+    if first is None:
+        return 0
+    total_pages = max(1, min(SHIP_LISTINGS_MAX_PAGES, int(first.get("total_pages") or 1)))
+    total_reported = int(first.get("total") or len(first.get("listings") or []))
+    seen_ids, rows = set(), []
+
+    def _absorb(content):
+        for item in content.get("listings") or []:
+            if not isinstance(item, dict):
+                continue
+            lid = _clean_ascii(item.get("listing_id"))
+            cid = _clean_ascii(item.get("class_id")).lower()
+            if not lid or not cid or lid in seen_ids:
+                continue
+            seen_ids.add(lid)
+            rows.append({
+                "listing_id": lid,
+                "ship_id": _clean_ascii(item.get("ship_id")),
+                "class_id": cid,
+                "ship_name": _clean_ascii(item.get("ship_name")),
+                "category": _clean_ascii(item.get("category")),
+                "tier": int(item.get("tier") or 0),
+                "base_id": _clean_ascii(item.get("base_id")),
+                "base_name": _clean_ascii(item.get("base_name")),
+                "price": int(item.get("price") or 0),
+                "seller": _clean_ascii(item.get("seller")),
+                "listed_at": _clean_ascii(item.get("listed_at")),
+            })
+
+    _absorb(first)
+    pages_read = 1
+    for page in range(2, total_pages + 1):
+        if (Path(data) / "fleet" / "STOP").exists():
+            break
+        if pause > 0:
+            time.sleep(pause)
+        content, _err = fetch(pilot, page)
+        if content is None:
+            break
+        _absorb(content)
+        pages_read += 1
+    rows.sort(key=lambda r: (r["class_id"], r["price"], r["listing_id"]))
+    payload = {"read_at": now_text(), "pilot": pilot, "total": total_reported, "pages": pages_read, "listings": rows}
+    write_json(out_path, payload)
+    return len(rows)
 
 def pilots_of(data):
     ships = read_json(Path(data) / "fleet" / "fleet.json", {}).get("ships") or []
@@ -435,6 +526,13 @@ def main():
     if args and args[0] == "prices" and len(args) > 1:
         prices(data, args[1], args[args.index("--base") + 1] if "--base" in args else "", int(args[args.index("--last") + 1]) if "--last" in args else 20)
         return 0
+    if args and args[0] == "ships":
+        kind, name = division.member()
+        if not (kind == "service" or name == "Unity"):
+            sys.exit("REFUSED: only Unity or a service may trigger an on-demand galaxy ship-listing scan")
+        count = ship_listings_pass(data, force=True)
+        print(now_text(), "ship listings written: %d" % count, flush=True)
+        return 0
     if [a for a in args if a not in ("--once", "--data", data)]:
         sys.exit(__doc__)
     kind, name = division.member()
@@ -449,6 +547,12 @@ def main():
     while True:
         try:
             wrote = market_pass(data, seen)
+            try:
+                ships_listed = ship_listings_pass(data)
+                if ships_listed:
+                    print(now_text(), "ship listings written: %d" % ships_listed, flush=True)
+            except Exception as error:
+                print(now_text(), "ship listings scan failed: %s: %s" % (type(error).__name__, error), flush=True)
             names = pilots_of(data)
             leave(book, data)
             faction = factionbook.put(book, data)            # the faction's storage, from its own reading: no call

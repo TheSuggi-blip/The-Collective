@@ -47,13 +47,14 @@ DIV_CATEGORIES = {
     "Command": ("Combat", "Combat Support", "Commercial", "Exploration"),
 }
 DIV_TOP_MODULES = {
-    "Mining": ("mining_laser_iii", "mining_laser_ii", "ice_harvester_ii", "gas_harvester_ii", "cargo_expander_ii", "cargo_expander_i"),
-    "Military": ("pulse_laser_iii", "pulse_laser_ii", "shield_booster_ii", "armor_plate_ii", "shield_recharger_ii"),
-    "Trade": ("cargo_expander_ii", "cargo_expander_i", "shield_booster_ii"),
-    "Logistics": ("cargo_expander_ii", "cargo_expander_i", "shield_booster_ii"),
-    "Intel": ("survey_scanner_ii", "survey_scanner_i", "shield_booster_ii"),
-    "Command": ("pulse_laser_iii", "shield_booster_ii", "armor_plate_ii", "cargo_expander_ii"),
+    "Mining": ("mining_laser_iv", "mining_laser_iii", "mining_laser_ii", "ice_harvester_ii", "gas_harvester_ii", "cargo_expander_iii", "cargo_expander_ii"),
+    "Military": ("pulse_laser_iii", "pulse_laser_ii", "shield_booster_iv", "shield_booster_ii", "armor_plate_iii", "armor_plate_ii"),
+    "Trade": ("cargo_expander_iii", "cargo_expander_ii", "cargo_expander_i", "shield_booster_ii"),
+    "Logistics": ("cargo_expander_iii", "cargo_expander_ii", "economy_passenger_cabin", "business_passenger_cabin", "cargo_expander_i", "shield_booster_ii"),
+    "Intel": ("survey_scanner_ii", "survey_scanner_i", "shield_booster_iv", "shield_booster_ii"),
+    "Command": ("pulse_laser_iii", "shield_booster_iv", "shield_booster_ii", "armor_plate_iii", "cargo_expander_iii"),
 }
+P0_SKIP_HULLS = ("floor_price", "ledger", "prayer", "workhorse", "congregation", "runner", "futures", "bonanza", "macguffin")
 EMPIRE_EDGES = {
     "voidborn": "shields/EWAR/stealth",
     "solarian": "mining slots/accuracy",
@@ -110,7 +111,7 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
             target_div = MEMBER_TO_DIV.get(str(who).lower())
         show_divs = [target_div] if target_div else list(DIVISIONS)
 
-        # Live exchange hull asks (if any hulls are listed in books)
+        # Live exchange hull asks (books) and galaxy-wide shipyard listings (ship_listings)
         hull_asks = {}
         if "books" in tables:
             for r in conn.execute(
@@ -118,10 +119,31 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
             ).fetchall():
                 hull_asks[str(r["item"])] = (int(r["best_ask"]), str(r["base"] or ""))
 
+        ship_deals = {}
+        if "ship_listings" in tables:
+            for r in conn.execute(
+                "SELECT LOWER(class_id) AS cid, price, base, "
+                "       (SELECT COUNT(*) FROM ship_listings s2 WHERE LOWER(s2.class_id) = LOWER(sl.class_id) AND s2.price > 0) AS cnt "
+                "FROM ship_listings sl WHERE price > 0 "
+                "ORDER BY price ASC"
+            ).fetchall():
+                cid = str(r["cid"])
+                if cid not in ship_deals:
+                    ship_deals[cid] = (int(r["price"]), str(r["base"] or ""), int(r["cnt"] or 1))
+
         lines = [
             "EMPIRE-SPECIALIZED HULL & MODULE UPGRADE PLANNER (Parallel Batch Policy: F17, F37, O2)",
             "Policy: Upgrade clearly dominant T0->T1/T2 hulls & T2+ role modules in parallel batches (within F12 wallet) and measure in flight -- no serial 1-hull freezes.",
+            "Auto-Buy: `upgrades.py queue add` automatically buys a cheaper listed hull (`buy_listed_ship`) at the target station before commissioning (instant delivery, 37-90% savings).",
         ]
+        if ship_deals:
+            p0_hits = []
+            for cid in P0_SKIP_HULLS:
+                if cid in ship_deals:
+                    pr, bs, cnt = ship_deals[cid]
+                    p0_hits.append(f"{cid} @ {_fmt_num(pr)} cr ({bs}, {cnt})")
+            if p0_hits:
+                lines.append("Piloting-0 Instant T1/T2/T4 Skip Deals (`ship_listings`): " + "; ".join(p0_hits[:6]))
 
         for div in show_divs:
             cohorts = conn.execute("""
@@ -197,7 +219,7 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
                 hints = [f"{mid} @ {_fmt_num(m_map[mid][0])} cr ({m_map[mid][1]} avail)" for mid in wanted_mods if mid in m_map]
                 if hints:
                     lines.append(
-                        f"  Top T2/T3 Exchange Mods (prefer T2/T3 over Tier-1 swaps): {', '.join(hints[:4])}"
+                        f"  Top T2/T3 Exchange Mods (prefer T2/T3 over Tier-1 swaps): {', '.join(hints[:5])}"
                     )
 
             # Query candidate T1 (Piloting 0) & T2 hulls matching division categories & active empires (or neutral)
@@ -225,16 +247,30 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
             if p0_list:
                 lines.append("  Immediate Piloting-0 Upgrades (NO Piloting wait -- batch-upgrade now if wallet clears F12):")
                 for r in p0_list:
-                    ask = hull_asks.get(str(r["id"]).lower())
-                    mkt = f" | Exchange ask {_fmt_num(ask[0])} cr @ {ask[1]}" if ask else " | shipyard/craft"
+                    cid_l = str(r["id"]).lower()
+                    deal = ship_deals.get(cid_l)
+                    ask = hull_asks.get(cid_l)
+                    if deal:
+                        mkt = f" | LISTED {_fmt_num(deal[0])} cr @ {deal[1]} ({deal[2]} avail)"
+                    elif ask:
+                        mkt = f" | Exchange ask {_fmt_num(ask[0])} cr @ {ask[1]}"
+                    else:
+                        mkt = " | shipyard/craft"
                     lines.append(
                         f"    T{r['tier']} {r['name']:20s} [{r['fac']:8s} {r['category']:14s}] P{r['pil']} | cargo={int(r['cargo'] or 0):4d} spd={r['speed']} slots={r['weapon_slots']}W/{r['defense_slots']}D/{r['utility_slots']}U{mkt}"
                     )
             if p10_list:
                 lines.append("  Empire-Specialized Tier-2 Upgrades (Piloting 10+ -- parallel batches, measure in flight):")
                 for r in p10_list:
-                    ask = hull_asks.get(str(r["id"]).lower())
-                    mkt = f" | Exchange ask {_fmt_num(ask[0])} cr @ {ask[1]}" if ask else " | shipyard/craft"
+                    cid_l = str(r["id"]).lower()
+                    deal = ship_deals.get(cid_l)
+                    ask = hull_asks.get(cid_l)
+                    if deal:
+                        mkt = f" | LISTED {_fmt_num(deal[0])} cr @ {deal[1]} ({deal[2]} avail)"
+                    elif ask:
+                        mkt = f" | Exchange ask {_fmt_num(ask[0])} cr @ {ask[1]}"
+                    else:
+                        mkt = " | shipyard/craft"
                     lines.append(
                         f"    T{r['tier']} {r['name']:20s} [{r['fac']:8s} {r['category']:14s}] P{r['pil']} | cargo={int(r['cargo'] or 0):4d} spd={r['speed']} slots={r['weapon_slots']}W/{r['defense_slots']}D/{r['utility_slots']}U{mkt}"
                     )
@@ -562,9 +598,23 @@ def _extract_quote_price(answer):
     return max(prices) if prices else 0
 
 
+def _extract_listings(answer):
+    if isinstance(answer, dict):
+        if isinstance(answer.get("listings"), list):
+            return answer["listings"]
+        for v in answer.values():
+            found = _extract_listings(v)
+            if found:
+                return found
+    return []
+
+
 def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
-    status, out = gate_mod.call("post", "/accounts/%s/raw" % gate_mod.q(pilot),
-                                {"toolGroup": group, "action": action, "params": params or {}}, timeout=90)
+    try:
+        status, out = gate_mod.call("post", "/accounts/%s/raw" % gate_mod.q(pilot),
+                                    {"toolGroup": group, "action": action, "params": params or {}}, timeout=90)
+    except Exception as err:
+        return False, {"error": "%s: %s" % (type(err).__name__, str(err)[:160])}
     try:
         data = json.loads(out)
     except (ValueError, TypeError):
@@ -573,9 +623,12 @@ def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
 
 
 def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
-    status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
-                                {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
-                                timeout=max(20, int(timeout)))
+    try:
+        status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
+                                    {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
+                                    timeout=max(20, int(timeout)))
+    except Exception as err:
+        return False, "%s: %s" % (type(err).__name__, str(err)[:160])
     try:
         d = json.loads(out)
     except (ValueError, TypeError):
@@ -728,8 +781,38 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                         r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into stored %s" % hull
                         changed = True
                         continue
+                ok_b, b_ans = _gate_raw(gate_mod, pilot, "browse_ships", {"base_id": base_id, "class_id": hull})
+                listed = [
+                    x for x in (_extract_listings(b_ans) if ok_b else [])
+                    if isinstance(x, dict) and str(x.get("class_id") or "").lower() == hull
+                    and int(x.get("price") or 0) > 0 and x.get("listing_id")
+                    and (not x.get("base_id") or str(x.get("base_id")) == base_id)
+                ]
+                best_listed = min(listed, key=lambda x: int(x.get("price") or 0)) if listed else None
+
                 ok_q, q_ans = _gate_raw(gate_mod, pilot, "commission_quote", {"ship_class": hull})
                 price = _extract_quote_price(q_ans) if ok_q else 0
+
+                if best_listed is not None:
+                    list_price = int(best_listed.get("price") or 0)
+                    if list_price <= int(r["max_price"]) and (not price or list_price <= price):
+                        if credits - list_price < UPGRADE_READY_FLOOR:
+                            r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for listed %s" % _fmt_num(list_price)
+                            changed = True
+                            continue
+                        ok_buy, buy_ans = _gate_raw(gate_mod, pilot, "buy_listed_ship", {"listing_id": str(best_listed["listing_id"])})
+                        if ok_buy:
+                            try:
+                                gate_mod.book_onetime(pilot, "%s hull bought from listing" % hull.capitalize(), -list_price, data=data_dir)
+                            except Exception:
+                                pass
+                            r["state"], r["paid"], r["updated_at"], r["last_poll"] = "done", list_price, int(now), int(now)
+                            q_txt = _fmt_num(price) if price else "n/a"
+                            r["note"] = "bought listed %s (%s cr vs quote %s)" % (hull, _fmt_num(list_price), q_txt)
+                            changed = True
+                            print("UPGRADE bought %s: %s -> %s (%s cr, saved vs quote %s)" % (r["id"], pilot, hull, _fmt_num(list_price), q_txt))
+                            continue
+
                 if not price:
                     r["note"], r["updated_at"] = "quote unreadable", int(now)
                     changed = True

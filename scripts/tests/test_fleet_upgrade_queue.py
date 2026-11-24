@@ -219,5 +219,45 @@ class UpgradeQueueTests(unittest.TestCase):
         self.assertEqual(after["paid"], 350000)
 
 
+    def test_timeout_does_not_abort_and_cheaper_listed_hull_is_bought(self):
+        class ListedOrTimeoutGate(FakeGate):
+            def __init__(self):
+                super().__init__(quote_price=350000, delivered=False)
+                self.bought = []
+
+            def call(self, method, path, body=None, timeout=90):
+                if "/goal" in path and "drone-1" in path:
+                    raise TimeoutError("timed out docking drone-1")
+                if isinstance(body, dict) and body.get("action") == "browse_ships":
+                    return 200, json.dumps({"structuredContent": {"listings": [
+                        {"listing_id": "lst-99", "class_id": "recursion", "base_id": "node_beta_base", "price": 224000},
+                        {"listing_id": "lst-98", "class_id": "recursion", "base_id": "node_beta_base", "price": 260000},
+                    ]}})
+                if isinstance(body, dict) and body.get("action") == "buy_listed_ship":
+                    self.bought.append((path, body["params"]["listing_id"]))
+                    return 200, json.dumps({"structuredContent": {"ok": True}})
+                return super().call(method, path, body=body, timeout=timeout)
+
+        # drone-1 not docked (will raise TimeoutError), drone-2 docked (will buy cheaper listed hull)
+        ships = [
+            {"name": "drone-1", "division": "Military", "credits": 400000, "status": "connected", "docked": "", "system": "other", "in_combat": False},
+            {"name": "drone-2", "division": "Military", "credits": 400000, "status": "connected", "docked": "node_beta_base", "system": "node_beta", "in_combat": False},
+        ]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+        rc, lines = upgrades.queue_add(self.data, "Apophis", "recursion", "node_beta:poi:node_beta_base", 370000,
+                                       pilots="drone-1,drone-2", now=1000)
+        self.assertEqual(rc, 0, lines)
+        gate, wal, div = ListedOrTimeoutGate(), FakeWallet(), FakeDivision()
+        upgrades.serve_upgrades(self.data, now=1010, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        rows = {r["pilot"]: r for r in upgrades.load_queue(self.data)}
+        self.assertEqual(rows["drone-2"]["state"], "done")
+        self.assertEqual(rows["drone-2"]["paid"], 224000)
+        self.assertIn("bought listed recursion", rows["drone-2"]["note"])
+        self.assertEqual(len(gate.bought), 1)
+        self.assertEqual(gate.bought[0][1], "lst-99")
+        self.assertEqual(gate.booked, [("drone-2", "Recursion hull bought from listing", -224000)])
+        self.assertEqual(rows["drone-1"]["state"], "funded")
+        self.assertIn("TimeoutError", rows["drone-1"]["note"])
+
 if __name__ == "__main__":
     unittest.main()

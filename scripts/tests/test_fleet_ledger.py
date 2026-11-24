@@ -168,5 +168,39 @@ class BoardTests(Tree):
         self.assertIn("PLAN miner (game/routes/plans/miner.json)", text)                           # the repository's own plan of the role
 
 
+    def test_ship_listings_pass_paginates_and_throttles(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp)
+            (data / "fleet").mkdir(parents=True)
+            (data / "fleet" / "fleet.json").write_text(json.dumps({
+                "ships": [{"name": "Scout-1", "status": "connected", "docked": "central_nexus", "in_combat": False}]
+            }), encoding="ascii")
+            pages = {
+                1: {"total": 2, "total_pages": 2, "listings": [
+                    {"listing_id": "l1", "ship_id": "s1", "class_id": "Prayer", "ship_name": "P1", "category": "Commercial",
+                     "tier": 2, "base_id": "haven_base", "base_name": "Haven", "price": 3288, "seller": "Bob", "listed_at": "2026-11-24T00:00:00Z"}
+                ]},
+                2: {"total": 2, "total_pages": 2, "listings": [
+                    {"listing_id": "l1", "ship_id": "s1", "class_id": "Prayer", "ship_name": "P1", "category": "Commercial",
+                     "tier": 2, "base_id": "haven_base", "base_name": "Haven", "price": 3288, "seller": "Bob", "listed_at": "2026-11-24T00:00:00Z"},
+                    {"listing_id": "l2", "ship_id": "s2", "class_id": "broadaxe", "ship_name": "B1", "category": "Combat",
+                     "tier": 2, "base_id": "krynn_base", "base_name": "Krynn", "price": 37000, "seller": "Red", "listed_at": "2026-11-24T01:00:00Z"},
+                ]},
+            }
+            calls = []
+            def fake_fetch(pilot, page):
+                calls.append((pilot, page))
+                return pages[page], ""
+            n1 = ledger.ship_listings_pass(data, now=10000, fetch=fake_fetch, pause=0)
+            self.assertEqual(n1, 2)
+            self.assertEqual(calls, [("Scout-1", 1), ("Scout-1", 2)])
+            out = json.loads((data / "market" / "ship_listings.json").read_text(encoding="ascii"))
+            self.assertEqual([r["class_id"] for r in out["listings"]], ["broadaxe", "prayer"])
+            # market_pass must skip ship_listings.json cleanly
+            self.assertEqual(ledger.market_pass(data, {}), 0)
+            # throttled within SHIP_LISTINGS_EVERY unless force=True
+            n2 = ledger.ship_listings_pass(data, now=time.time(), fetch=fake_fetch, pause=0)
+            self.assertEqual(n2, 0)
+
 if __name__ == "__main__":
     unittest.main()

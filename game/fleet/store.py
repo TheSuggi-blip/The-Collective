@@ -473,11 +473,12 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
              ("player_comms", "id TEXT, t TEXT, channel TEXT, system TEXT, sender TEXT, tag TEXT, to_us INTEGER, own INTEGER, "
               "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),
              ("game_releases", "version TEXT, sort_key TEXT, pub_date TEXT, summary TEXT, bullets TEXT", "version"),
-             ("rival_snapshots", "t INTEGER, tag TEXT, name TEXT, members INTEGER, bases INTEGER, wrecked INTEGER, wealth INTEGER, ship_value INTEGER, storage_value INTEGER, facility_inv INTEGER, ore_mined INTEGER, items_crafted INTEGER, missions INTEGER, damage_dealt INTEGER, kills_pve INTEGER, kills_pvp INTEGER, active_1h INTEGER, active_24h INTEGER, max_tier INTEGER, avg_tier REAL, allies TEXT, base_systems TEXT", "t, tag"),)
+             ("rival_snapshots", "t INTEGER, tag TEXT, name TEXT, members INTEGER, bases INTEGER, wrecked INTEGER, wealth INTEGER, ship_value INTEGER, storage_value INTEGER, facility_inv INTEGER, ore_mined INTEGER, items_crafted INTEGER, missions INTEGER, damage_dealt INTEGER, kills_pve INTEGER, kills_pvp INTEGER, active_1h INTEGER, active_24h INTEGER, max_tier INTEGER, avg_tier REAL, allies TEXT, base_systems TEXT", "t, tag"),
+             ("ship_listings", "listing_id TEXT, ship_id TEXT, class_id TEXT, ship_name TEXT, category TEXT, tier INTEGER, base TEXT, base_name TEXT, price INTEGER, seller TEXT, listed_at TEXT, t INTEGER", "listing_id"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"))
 
 
 def views():
@@ -1033,7 +1034,7 @@ def map_files(data, root):
 LOADERS = (    # loader, the tables it fills, its files, whole (one file holds all rows: a new reading replaces them all)
     ("ships", ("ship_skills", "ship_modules", "ship_cargo"), data_files("fleet/ships", read_ship), False),
     ("holdings", ("holdings",), data_file("stock/storage.json", read_storage), True),
-    ("books", ("books",), data_files("market", read_book, skip=("ladders.json", "history.state.json")), False),
+    ("books", ("books",), data_files("market", read_book, skip=("ladders.json", "history.state.json", "ship_listings.json")), False),
     ("ladders", ("ladders",), data_file("market/ladders.json", read_ladders), True),
     ("catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
                  "hull_materials", "skills"), catalog_files, True),
@@ -1162,10 +1163,48 @@ def rival_history_files(data, root):
     return [("intel/rival_history.jsonl", path, read_rival_history, True, "")] if path.is_file() else []
 
 
+
+
+def read_ship_listings(path, ctx):
+    """data/market/ship_listings.json -> ship_listings: galaxy-wide shipyard listings refreshed by ledger.py."""
+    found = need(load_json(path), dict, "no object")
+    read_t = when(found.get("read_at"), mtime_of(path))
+    rows = []
+    for item in found.get("listings") or []:
+        if not isinstance(item, dict):
+            continue
+        lid = text(item.get("listing_id"))
+        cid = text(item.get("class_id")).lower()
+        if not lid or not cid:
+            continue
+        rows.append({
+            "listing_id": lid,
+            "ship_id": text(item.get("ship_id")),
+            "class_id": cid,
+            "ship_name": text(item.get("ship_name")),
+            "category": text(item.get("category")),
+            "tier": number(item.get("tier")),
+            "base": text(item.get("base_id") or item.get("base")),
+            "base_name": text(item.get("base_name")),
+            "price": number(item.get("price")),
+            "seller": text(item.get("seller")),
+            "listed_at": text(item.get("listed_at")),
+            "t": read_t,
+        })
+    return {"ship_listings": rows}
+
+
+def ship_listing_files(data, root):
+    """data/market/ship_listings.json: optional galaxy-wide ship listing snapshot written by ledger.py."""
+    path = Path(data) / "market" / "ship_listings.json"
+    return [("market/ship_listings.json", path, read_ship_listings, True, "")] if path.is_file() else []
+
+
 LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
             ("player_comms", ("player_comms",), player_comms_files, True),
             ("game_releases", ("game_releases",), game_release_files, True),
-            ("rival_snapshots", ("rival_snapshots",), rival_history_files, True),)
+            ("rival_snapshots", ("rival_snapshots",), rival_history_files, True),
+            ("ship_listings", ("ship_listings",), ship_listing_files, True),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1731,6 +1770,7 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
                 "pilot and member `Faction`: the faction's storage at a base (the reading of faction_storage, without a bunker's fuel)",
     "books": "now: each station's order book as our ship read it: best bid and ask with their units per item (market/<base>.json); no price is NULL",
     "ladders": "now: the price ladder of an item at a station, every bid and ask step with its units, step 1 the best (market/ladders.json)",
+    "ship_listings": "now: galaxy-wide player and shipyard ship listings across all stations, refreshed every 15 min by ledger.py (market/ship_listings.json)",
     "items": "catalog: every item of the game: name, category (NULL where the catalog gives none), size, base value, rarity, module type and slot",
     "recipes": "catalog: every recipe: category, made by hand or only in a facility, crafting time; inputs, outputs and facilities in their own tables",
     "recipe_inputs": "catalog: what a recipe takes, item and units per run",
@@ -1864,6 +1904,9 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
               ("The cheapest offers of steel_plate", "SELECT base, ask, ask_qty FROM books WHERE item = 'steel_plate' AND ask IS NOT NULL ORDER BY ask"),
               ("Bought at one station's ask, bid higher at another", "SELECT a.item, a.base AS buy_at, a.ask, b.base AS sell_at, b.bid, b.bid - a.ask AS margin "
                "FROM books a JOIN books b ON b.item = a.item AND b.base <> a.base WHERE a.ask IS NOT NULL AND b.bid > a.ask ORDER BY margin DESC LIMIT 20")),
+    "ship_listings": (("Cheapest listed hull per class across the galaxy", "SELECT class_id, MIN(price) AS min_price, base, COUNT(*) AS avail FROM ship_listings WHERE price > 0 GROUP BY class_id ORDER BY min_price LIMIT 25"),
+                      ("Listed ships under 150,000 cr with cargo >= 250", "SELECT sl.class_id, h.cargo, h.piloting_required, sl.price, sl.base FROM ship_listings sl JOIN hulls h ON h.id = sl.class_id WHERE sl.price > 0 AND sl.price <= 150000 AND h.cargo >= 250 ORDER BY sl.price LIMIT 20"),
+                      ("Cheapest listed combat hulls by tier", "SELECT sl.class_id, sl.tier, MIN(sl.price) AS min_price, sl.base FROM ship_listings sl WHERE sl.category = 'Combat' AND sl.price > 0 GROUP BY sl.class_id ORDER BY sl.tier, min_price")),
     "ladders": (("The whole bid ladder of iron_ore", "SELECT base, step, price, qty FROM ladders WHERE item = 'iron_ore' AND side = 'bid' ORDER BY base, step"),
                 ("Units bid at 100 cr or more, per item", "SELECT item, SUM(qty) FROM ladders WHERE side = 'bid' AND price >= 100 GROUP BY item ORDER BY 2 DESC"),
                 ("Items with a ladder per station", "SELECT base, COUNT(DISTINCT item) FROM ladders GROUP BY base")),
