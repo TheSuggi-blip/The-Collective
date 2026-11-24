@@ -163,6 +163,8 @@ class HuntNetWorldFromStoreTests(unittest.TestCase):
                   "t INTEGER NOT NULL, at TEXT NOT NULL, fields TEXT NOT NULL, note TEXT NOT NULL DEFAULT '', digest TEXT NOT NULL)")
         c.execute("INSERT INTO observations VALUES ('intel', 'Oracle', 'pirate', 'sys_p', ?, 'now', '{}', '', 'd1')", (int(time.time()),))
         c.execute("CREATE TABLE bases (base TEXT, name TEXT, system TEXT, poi TEXT, kind TEXT, t INTEGER, src TEXT NOT NULL)")
+        c.execute("INSERT INTO places VALUES ('sys_b', 'out_b', 'station', 'CLTV Outpost B', NULL, 'base_out', 0, 0, 1, 'x')")
+        c.execute("INSERT INTO bases VALUES ('base_out', 'CLTV Outpost B', 'sys_b', 'out_b', 'outpost', 1, 'x')")
         conn.commit()
         conn.close()
 
@@ -175,6 +177,7 @@ class HuntNetWorldFromStoreTests(unittest.TestCase):
             self.assertIn("sys_b:poi_tag", world["ranch_pois"])
             self.assertEqual(world["stations_by_sys"].get("sys_a"), [("sys_a", "st_a", "base_a")])
             self.assertNotIn("sys_h", world["stations_by_sys"])
+            self.assertNotIn("sys_b", world["stations_by_sys"])      # an outpost of ours: no storage, its fuel is a supply chain
             self.assertIn("sys_p", world["pirates"])
             self.assertIn("sys_h", world["ranch_systems"])
 

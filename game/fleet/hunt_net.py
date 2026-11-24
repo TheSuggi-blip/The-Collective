@@ -434,11 +434,14 @@ def load_combat_world(data_dir, repo_root, policy, now_t=None):
                     foreign_docks.add((str(sys_id), str(nm or "")))
                 if tg in p_tags:
                     ranch_systems.add(str(sys_id))
-            # Docks: every place with a base (table places), our own and the empires' stations.
+            # An outpost of ours (table bases, kind outpost) is no dock: it has no storage for the loot and its
+            # fuel bunker is a supply chain (requests.log ENT-513).
+            outposts = {str(b) for (b,) in _rows("SELECT base FROM bases WHERE kind = 'outpost'") if b}
+            # Docks: every place with a base (table places), our own stations and the empires'.
             for sys_id, poi_id, base_id, nm in _rows(
                 "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
             ):
-                if (str(sys_id), str(nm or "")) in foreign_docks:
+                if (str(sys_id), str(nm or "")) in foreign_docks or str(base_id) in outposts:
                     continue
                 stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
             for sys_id, poi_id, cr, name, role, cnt, ts in _rows(
