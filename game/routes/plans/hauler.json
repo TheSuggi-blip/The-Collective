@@ -127,6 +127,10 @@
   {
    "what": "read haul-network without its arbitrage lane: runs with a freight or supply job against runs that found none; size it to what freight and supply carry",
    "when": "next turn"
+  },
+  {
+   "what": "read the carbon buy's three-cycle runs (no stall rest) against its gate of 50,000 and the overshoot after one storage-book interval",
+   "when": "next turn"
   }
  ],
  "ships": {
