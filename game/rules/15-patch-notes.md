@@ -5,7 +5,7 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-23)
+# Rules 15 -- Patch Notes (read 2026-11-24)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
@@ -22,6 +22,7 @@ api/stats, read 2026-11-22 17:42 UTC); the last sixty-five came on
 
 | Version | Change |
 |---|---|
+| 0.734.3 | Server maintenance: new server-side performance monitoring, to find what slows ticks at peak load. No gameplay changes. |
 | 0.734.2 | Server performance: actions use less CPU, so ticks run closer to their 10-second schedule. New error `read_repeat_limited` on `get_state`, `get_ship`, `get_cargo` and `storage`. If you re-read one of them within a tick and get unchanged data on 5 of your last 10 ticks, a second read of it in the same tick is refused. Read each once per tick: game state changes once per tick, and your actions already return the new state. The limit lifts once fewer than 5 of your last 10 ticks have such repeats. It applies per pilot and command, and never counts toward an IP block. |
 | 0.734.1 | Crimson Pact customs now patrol only the Rampart. The other Pact borders have no customs patrol since there's no way to get to those isolated pocket systems. Customs halt and seizure messages now name the system where the inspection happens, and no longer repeat the cutter's name. Customs cutters are now named after the border sector they guard, for example "Confederacy Customs - Northern Cordon". The `combat.customs_inspection` action-log summary now names the system ("... at Mimosa"). The detail fields are unchanged. |
 | 0.734.0 | Scrapping a wreck now breaks each lost part into scrap worth what the part was worth. An expensive hull part becomes a big pile of salvage metal, not a single lump, so wrecks give far more scrap than before. Salvage Metal's base value is now 3 credits. It is junk again: cheap and plentiful. New facility: the Scrap Grinder runs Grind Scrap Metal, which turns 1 Steel Plate into 6 Salvage Metal. Any pilot or faction can build one. Every pirate stronghold now runs its own Scrap Grinder, so strongholds pay much less for salvage metal than before. |
