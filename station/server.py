@@ -98,6 +98,11 @@ PROGRESSION_LOCK = threading.Lock()
 OPS_LOCK = threading.Lock()
 DIPLO_LOCK = threading.Lock()
 COMMS_LOCK = threading.Lock()
+ROUTES_META_CACHE = {}
+ROUTES_META_LOCK = threading.Lock()
+INCOME_CACHES = {}
+INCOME_LOCKS = {}
+INCOME_LOCK_GUARD = threading.Lock()
 
 
 def _swr_refresh_async(cache, val_key, lock, builder):
@@ -551,11 +556,41 @@ def api_history(hours):
     return {"rows": out}
 
 
+def _build_routes_meta():
+    meta = {}
+    try:
+        names = sorted(os.listdir(REPO / "game" / "routes"))
+    except OSError:
+        names = []
+    for fn in names:
+        if fn.endswith(".json"):
+            try:
+                r = json.loads(repo_text("game/routes/" + fn))
+                if isinstance(r, dict):
+                    meta[fn[:-5]] = {
+                        "title": text(r.get("title"), 140),
+                        "once": bool(r.get("once")),
+                        "systems": list(r.get("systems") or []),
+                    }
+            except (OSError, ValueError):
+                continue
+    return meta
+
+
+def _routes_meta():
+    return _swr_get(ROUTES_META_CACHE, "value", 180.0, ROUTES_META_LOCK, _build_routes_meta, force=bool(OFFLINE))
+
+
 def api_income(hours):
-    """What each route earned in the last hours: primary source is read.db:runs (exact routes.earned()
-    with wallet transfers and taxes removed, zero file-tail truncation), falling back to runs.jsonl only
-    if read.db is unavailable. Loads ALL route metadata files (no 400-file truncation) and reports both
-    steady credits and matched net (credits + one_time)."""
+    """What each route earned in the last hours (SWR-cached 30s): primary source is read.db:runs."""
+    h = int(hours)
+    with INCOME_LOCK_GUARD:
+        cache = INCOME_CACHES.setdefault(h, {})
+        lock = INCOME_LOCKS.setdefault(h, threading.Lock())
+    return _swr_get(cache, "value", 30.0, lock, lambda: _build_income(h), force=bool(OFFLINE))
+
+
+def _build_income(hours):
     since, by = time.time() - hours * 3600, {}
     unit_data = DATA.parent if DATA.name == "station" else DATA
     db_path = unit_data / "store" / "read.db"
@@ -612,17 +647,7 @@ def api_income(hours):
                 minutes = r.get("minutes")
                 e["minutes"] += float(minutes) if isinstance(minutes, (int, float)) else 0.0
                 e["credits"] += num(r.get("delta")) - num(r.get("one_time"))
-    routes = {}
-    try:
-        names = sorted(os.listdir(REPO / "game" / "routes"))
-    except OSError:
-        names = []
-    for fn in names:
-        if fn.endswith(".json"):
-            try:
-                routes[fn[:-5]] = json.loads(repo_text("game/routes/" + fn))
-            except (OSError, ValueError):
-                continue
+    routes = _routes_meta()
     flying = collections.Counter()
     try:
         ships = read_json(FLEET / "fleet.json").get("ships") or []
@@ -630,7 +655,7 @@ def api_income(hours):
         ships = []
     for ship in ships:
         kind, _, rest = text(ship.get("order") if isinstance(ship, dict) else "", 80).partition(" ")
-        if kind not in ("circuit", "hunt", "mine", "census", "guard"):     # a hand hold and a birth are no route
+        if kind not in ("circuit", "hunt", "mine", "census", "guard", "bursar", "haul", "mine_net", "hunt_net", "fit_net", "craft_net"):
             continue
         if kind == "census":                      # a census order names its system: it belongs to the route that lists it
             rest = next((rid for rid, route in routes.items() if isinstance(route, dict) and rest in (route.get("systems") or [])), "")
@@ -4100,6 +4125,9 @@ def cache_warmer():
         ("ops", lambda: _swr_get(OPS, "value", 30.0, OPS_LOCK, _build_ops, force=True)),
         ("diplomacy", lambda: _swr_get(DIPLO, "value", 45.0, DIPLO_LOCK, lambda: _build_diplomacy(False), force=True)),
         ("playbooks", lambda: _swr_get(PLAYBOOKS_CACHE, "data", 30.0, PLAYBOOKS_LOCK, _build_playbooks, force=True)),
+        ("routes_meta", lambda: _routes_meta()),
+        ("income_4", lambda: api_income(4)),
+        ("income_24", lambda: api_income(24)),
     ]
     for _name, fn in warmers:
         try:
@@ -4108,14 +4136,20 @@ def cache_warmer():
             pass
     cycle = 0
     while True:
-        time.sleep(25)
+        time.sleep(60)
         cycle += 1
         _swr_refresh_async(OPS, "value", OPS_LOCK, _build_ops)
         _swr_refresh_async(DIPLO, "value", DIPLO_LOCK, lambda: _build_diplomacy(False))
+        for _h in (4, 24):
+            with INCOME_LOCK_GUARD:
+                _ic = INCOME_CACHES.setdefault(_h, {})
+                _il = INCOME_LOCKS.setdefault(_h, threading.Lock())
+            _swr_refresh_async(_ic, "value", _il, lambda hh=_h: _build_income(hh))
         if cycle % 2 == 0:
             _swr_refresh_async(PROGRESSION_CACHE, "data", PROGRESSION_LOCK, _build_progression)
             _swr_refresh_async(DOCS_CACHE, "value", DOCS_LOCK, _build_docs)
             _swr_refresh_async(PLAYBOOKS_CACHE, "data", PLAYBOOKS_LOCK, _build_playbooks)
+            _swr_refresh_async(ROUTES_META_CACHE, "value", ROUTES_META_LOCK, _build_routes_meta)
             try:
                 inventory_state()
             except Exception:
