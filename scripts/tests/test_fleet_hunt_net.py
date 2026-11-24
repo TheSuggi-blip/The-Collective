@@ -241,5 +241,34 @@ class HuntNetRuleF9Tests(unittest.TestCase):
         self.assertEqual(dry[0], 0)
         self.assertEqual(wet[0], 18)
 
+
+    def test_war_wing_dormant_in_peacetime_and_active_on_war_posture(self):
+        """War Wing stays 100% dormant in peacetime (F2 RoE) and activates base defense strictly on war posture."""
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "empire").mkdir(parents=True, exist_ok=True)
+            (data / "fleet").mkdir(parents=True, exist_ok=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({"faction": {"at_war": False, "wars": []}}), encoding="ascii")
+            pol = dict(hunt_net.DEFAULT_POLICY, war_wing={"enabled": True, "defenders_per_base": 10, "min_power": 300.0, "max_jumps": 15})
+            # 1. Peacetime -> dormant!
+            w_on, w_tags = hunt_net.detect_war_posture(str(data), pol)
+            self.assertFalse(w_on)
+            self.assertEqual(w_tags, set())
+
+            # 2. Active war -> base defense activates for owned stations/outposts!
+            (data / "empire" / "empire.json").write_text(json.dumps({"faction": {"at_war": True, "wars": [{"tag": "HOST"}]}}), encoding="ascii")
+            w_on2, w_tags2 = hunt_net.detect_war_posture(str(data), pol)
+            self.assertTrue(w_on2)
+            self.assertIn("HOST", w_tags2)
+            world = {
+                "adj": {"s1": {"s2"}, "s2": {"s1"}},
+                "owned_bases": [{"base": "st_vb", "system": "s2", "poi": "p2", "kind": "station"}],
+            }
+            job = hunt_net.pick_war_assignment("drone-1", {"system": "s1"}, {"power": 600.0}, world, pol, {}, w_tags2)
+            self.assertIsNotNone(job)
+            self.assertEqual(job["mode"], "war_defense")
+            self.assertEqual(job["system"], "s2")
+
 if __name__ == "__main__":
     unittest.main()

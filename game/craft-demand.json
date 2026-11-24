@@ -1,0 +1,96 @@
+{
+  "_owner": "Mercury (Trade) & Apollo (Logistics)",
+  "_doc": "Shared manufacturing demand register linking craft-network (Trade commercial + Logistics industrial) back to mine-network and hunt-network. Priority 2 behind needs.tsv/supply_status (Priority 1) and ahead of raw market sales (Priority 3).",
+  "enabled": true,
+  "auto_discover_profitable": true,
+  "min_margin_pct": 0.22,
+  "min_profit_cr": 150,
+  "min_bid_qty": 5,
+  "industrial_targets": {
+    "steel_plate": {
+      "cap": 15000,
+      "division": "Logistics"
+    },
+    "circuit_board": {
+      "cap": 3000,
+      "division": "Logistics"
+    },
+    "wiring": {
+      "cap": 3000,
+      "division": "Logistics"
+    },
+    "copper_piping": {
+      "cap": 3000,
+      "division": "Logistics"
+    },
+    "fuel_cell": {
+      "cap": 10000,
+      "division": "Logistics"
+    },
+    "structural_frame": {
+      "cap": 600,
+      "division": "Logistics"
+    },
+    "silicate_composite": {
+      "cap": 1500,
+      "division": "Logistics"
+    },
+    "titanium_alloy": {
+      "cap": 1000,
+      "division": "Logistics"
+    }
+  },
+  "commercial_targets": {
+    "armor_plate_ii": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "armor_plate_iii": {
+      "cap": 150,
+      "division": "Trade"
+    },
+    "cargo_expander_ii": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "cargo_expander_iii": {
+      "cap": 150,
+      "division": "Trade"
+    },
+    "shield_booster_ii": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "mining_laser_ii": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "pulse_laser_ii": {
+      "cap": 100,
+      "division": "Trade"
+    }
+  },
+  "raw_input_caps": {
+    "iron_ore": 60000,
+    "copper_ore": 40000,
+    "silicon_ore": 45000,
+    "carbon_ore": 45000,
+    "nickel_ore": 25000,
+    "titanium_ore": 20000,
+    "gold_ore": 15000,
+    "water_ice": 30000,
+    "nitrogen_ice": 25000,
+    "fluorine_gas": 10000
+  },
+  "priority_loot_species": [
+    "pilot_whale",
+    "bullionaut",
+    "cauldronback",
+    "facet_druse",
+    "kiln_snail",
+    "slag_tortoise",
+    "bulwark",
+    "glintfin",
+    "glitterback_crab"
+  ]
+}

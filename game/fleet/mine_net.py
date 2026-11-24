@@ -279,10 +279,31 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
         if isinstance(extra, str) and extra.strip():
             shortages.setdefault(extra.strip(), 5000)
 
+    # Load Tier-2 commercial/industrial crafting demand (game/craft-demand.json)
+    craft_demand = {}
+    if policy.get("craft_demand_tier", True):
+        try:
+            import craft_net as _cn
+            _cw = _cn.load_craft_world(data_dir, repo_root, {"demand_file": str(policy.get("craft_demand_file") or "game/craft-demand.json")})
+            craft_demand = _cn.expand_demand_raw_inputs(_cw)
+        except Exception:
+            craft_demand = {}
+
+    # Optional: allow miners to drop commercial/craft ore at any of our 61+ live Bursar hubs
+    if policy.get("allow_bursar_dropoffs", False):
+        bc = read_json(Path(data_dir) / "fleet" / "bursar_claims.json", {})
+        if isinstance(bc, dict):
+            for b_id, rec in bc.items():
+                if isinstance(rec, dict) and rec.get("system") and rec.get("poi") and rec.get("base"):
+                    tup = (str(rec["system"]), str(rec["poi"]), str(rec["base"]))
+                    lst = stations_by_sys.setdefault(tup[0], [])
+                    if tup not in lst:
+                        lst.append(tup)
+
     return {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
-        "shortages": shortages, "full_items": full_items,
+        "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand,
     }
 
 
@@ -437,6 +458,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     pirates = world["pirates"]
     shortages = world["shortages"]
     full_items = world["full_items"]
+    craft_demand = world.get("craft_demand") or {}
     item_vals = world["item_vals"]
     stations_by_sys = world["stations_by_sys"]
 
@@ -477,7 +499,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             continue
         is_policed = bool(smeta.get("empire"))
         is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
-        is_full = bool(skip_full and res in full_items and not is_deficit)
+        is_craft = bool(policy.get("craft_demand_tier", True) and res in craft_demand and not is_deficit)
+        is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft)
         if not is_policed:
             lawless_ok = (not policed_only) or (sys_id in allow_sys) or (p_tier >= lawless_min_t) or (allow_lawless_def and is_deficit)
             if not lawless_ok:
@@ -492,6 +515,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if is_deficit:
             tier = "deficit"
             tier_mult = 12.0
+        elif is_craft:
+            tier = "craft_demand"
+            tier_mult = 6.0
         elif not is_full:
             tier = "market"
             tier_mult = 2.0

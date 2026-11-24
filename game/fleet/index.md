@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 73.
+folder; never edited by hand. Scripts listed: 75.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -36,6 +36,7 @@ folder; never edited by hand. Scripts listed: 73.
 | `collective_mcp.py` | The collective MCP server: the fleet's knowledge and the door to its ships, as tools for every member. | By hand |
 | `comms_guard.py` | CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages and outbound OpSec. | By hand |
 | `contracts.py` | Read-only view of player-to-player trade & contract opportunities across all 4 channels. | By hand |
+| `craft_net.py` | Dynamic Docked Commercial & Industrial Manufacturing Network (`craft-network`). | By hand |
 | `craftbook.py` | Answer what can be made, fitted and built: a recipe, everything a thing takes, and what our stored goods can become. | By hand |
 | `diplomacy.py` | Sole authorized, OpSec-scrubbed diplomatic DM airlock and Neutrality Pact ledger (Rule F4, O10). | By hand |
 | `dispatch.py` | Keep every pilot at work: give each free pilot the next task of its role. | Service |
@@ -47,6 +48,7 @@ folder; never edited by hand. Scripts listed: 73.
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
 | `factionbook.py` | The faction's storage in the storage book: the entry `Faction` of data/stock/storage.json, so that the tools stock, surplus.py and the table holdings count what lies in the Lockboxes and at our outposts. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
+| `fit_net.py` | Dynamic Multi-Specialty Module Auto-Fitter (`fit-network`, game/fit-policy.json). | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `fuelplan.py` | Fuel before a flight: the chart's lanes, the stations that sell fuel, and whether a tank holds the way. | By hand |
 | `game_docs.py` | Zero-bloat, pull-on-demand live SpaceMolt API & guide discovery for all Collective agents. | By hand |
@@ -210,6 +212,16 @@ Run by hand.
 
 ```
 game/fleet/contracts.py [--limit 20]
+```
+
+### `craft_net.py`
+
+Dynamic Docked Commercial & Industrial Manufacturing Network (`craft-network`).
+
+Run by hand.
+
+```
+game/fleet/craft_net.py <pilot> [--policy game/craft-policy.json] [--route craft-network]
 ```
 
 ### `craftbook.py`
@@ -387,6 +399,16 @@ fill.py lift <route id> <ships>
 --floor CR   a candidate counts from this estimate, in credits per ship-hour (default 500)
 --root <dir>   the repository's game/ folder (default: the parent of this file's folder)
 --data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `fit_net.py`
+
+Dynamic Multi-Specialty Module Auto-Fitter (`fit-network`, game/fit-policy.json).
+
+Run by hand.
+
+```
+game/fleet/fit_net.py <pilot> [--policy game/fit-policy.json] [--route fit-network]
 ```
 
 ### `fleetfile.py`

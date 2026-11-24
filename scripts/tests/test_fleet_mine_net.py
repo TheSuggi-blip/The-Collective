@@ -186,5 +186,27 @@ class MineNetLiveSchemaTests(unittest.TestCase):
             )
             self.assertEqual(cands, [])
 
+
+    def test_four_tier_craft_demand_priority(self):
+        """Tier 1 deficit (12x) > Tier 2 craft_demand (6x) > Tier 3 market (2x) > Tier 4 xp (0.25x)."""
+        world = {
+            "adj": {"s1": {"s2"}, "s2": {"s1"}},
+            "systems": {"s1": {"empire": "voidborn", "stronghold": False}},
+            "stations_by_sys": {"s1": [("s1", "st1", "b1")]},
+            "fields": [
+                {"system": "s1", "poi": "p_mkt", "resource": "copper_ore", "remaining": 8000, "max_remaining": 10000},
+                {"system": "s1", "poi": "p_craft", "resource": "silicon_ore", "remaining": 8000, "max_remaining": 10000},
+                {"system": "s1", "poi": "p_def", "resource": "iron_ore", "remaining": 8000, "max_remaining": 10000},
+            ],
+            "pirates": set(),
+            "item_vals": {"copper_ore": 20.0, "silicon_ore": 20.0, "iron_ore": 20.0},
+            "shortages": {"iron_ore": 5000},
+            "craft_demand": {"silicon_ore": 5000},
+            "full_items": set(),
+        }
+        pol = dict(mine_net.DEFAULT_POLICY, market_tier=True, craft_demand_tier=True)
+        cands = mine_net.score_belt_candidates({"name": "miner-1", "system": "s1", "modules": ["mining_laser_i"]}, world, pol, {}, {})
+        self.assertEqual([c["tier"] for c in cands], ["deficit", "craft_demand", "market"])
+
 if __name__ == "__main__":
     unittest.main()

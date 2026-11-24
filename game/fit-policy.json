@@ -1,0 +1,265 @@
+{
+  "_owner": "All 5 Admirals & Unity",
+  "_doc": "Policy for dynamic multi-specialty module auto-fitting (game/fleet/fit_net.py). Deterministically matches each pilot's division + specialty (ore/ice/gas, brawler/ewar/tank, freight/passenger, bursar/mobile, recon), strips off-role starter modules, and upgrades empty/lower-tier slots at safe policed stations <= max_price.",
+  "enabled": true,
+  "policed_only": true,
+  "max_jumps": 6,
+  "min_wallet_keep_cr": 10000,
+  "strip_off_role": true,
+  "off_role_modules": {
+    "Mining": [
+      "pulse_laser_i"
+    ],
+    "Trade": [
+      "mining_laser_i",
+      "ice_harvester_i",
+      "gas_harvester_i",
+      "pulse_laser_i"
+    ],
+    "Logistics": [
+      "mining_laser_i",
+      "ice_harvester_i",
+      "gas_harvester_i",
+      "pulse_laser_i"
+    ],
+    "Intel": [
+      "mining_laser_i",
+      "ice_harvester_i",
+      "gas_harvester_i",
+      "pulse_laser_i"
+    ],
+    "Military": [
+      "mining_laser_i",
+      "ice_harvester_i",
+      "gas_harvester_i"
+    ]
+  },
+  "max_price": {
+    "mining_laser_ii": 6000,
+    "mining_laser_iii": 11000,
+    "mining_laser_iv": 26000,
+    "ice_harvester_ii": 3500,
+    "ice_harvester_iii": 10000,
+    "gas_harvester_ii": 5500,
+    "gas_harvester_iii": 8500,
+    "cargo_expander_ii": 2500,
+    "cargo_expander_iii": 4500,
+    "pulse_laser_ii": 8500,
+    "pulse_laser_iii": 16000,
+    "shield_booster_ii": 11000,
+    "shield_booster_iv": 13000,
+    "armor_plate_ii": 2500,
+    "armor_plate_iii": 3500,
+    "survey_scanner_ii": 18000,
+    "economy_passenger_cabin": 5000,
+    "business_passenger_cabin": 10000
+  },
+  "specialties": {
+    "Mining": {
+      "mix": [
+        [
+          "ore",
+          65
+        ],
+        [
+          "ice",
+          20
+        ],
+        [
+          "gas",
+          15
+        ]
+      ],
+      "detect_by_module": {
+        "ice": [
+          "ice_harvester_i",
+          "ice_harvester_ii",
+          "ice_harvester_iii",
+          "ice_harvester_iv"
+        ],
+        "gas": [
+          "gas_harvester_i",
+          "gas_harvester_ii",
+          "gas_harvester_iii",
+          "gas_harvester_iv"
+        ]
+      },
+      "loadouts": {
+        "ore": {
+          "utility": [
+            "mining_laser_iii",
+            "mining_laser_ii",
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        },
+        "ice": {
+          "utility": [
+            "ice_harvester_iii",
+            "ice_harvester_ii",
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        },
+        "gas": {
+          "utility": [
+            "gas_harvester_iii",
+            "gas_harvester_ii",
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        }
+      }
+    },
+    "Military": {
+      "mix": [
+        [
+          "brawler",
+          50
+        ],
+        [
+          "ewar",
+          35
+        ],
+        [
+          "escort",
+          15
+        ]
+      ],
+      "detect_by_module": {},
+      "loadouts": {
+        "brawler": {
+          "weapon": [
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "armor_plate_iii",
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        },
+        "ewar": {
+          "weapon": [
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ]
+        },
+        "escort": {
+          "weapon": [
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ]
+        }
+      }
+    },
+    "Logistics": {
+      "mix": [
+        [
+          "freight",
+          85
+        ],
+        [
+          "passenger",
+          15
+        ]
+      ],
+      "detect_by_module": {
+        "passenger": [
+          "economy_passenger_cabin",
+          "business_passenger_cabin"
+        ]
+      },
+      "loadouts": {
+        "freight": {
+          "utility": [
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        },
+        "passenger": {
+          "utility": [
+            "business_passenger_cabin",
+            "economy_passenger_cabin",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        }
+      }
+    },
+    "Trade": {
+      "mix": [
+        [
+          "mobile",
+          100
+        ]
+      ],
+      "detect_by_module": {},
+      "loadouts": {
+        "bursar": {
+          "utility": [],
+          "defense": []
+        },
+        "mobile": {
+          "utility": [
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        }
+      }
+    },
+    "Intel": {
+      "mix": [
+        [
+          "recon",
+          100
+        ]
+      ],
+      "detect_by_module": {},
+      "loadouts": {
+        "recon": {
+          "utility": [
+            "survey_scanner_ii"
+          ],
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii"
+          ]
+        }
+      }
+    }
+  }
+}

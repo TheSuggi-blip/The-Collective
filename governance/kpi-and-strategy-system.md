@@ -265,3 +265,10 @@ catalogs, and plan priority) rather than micromanaging static loops.
 `SMART_ENGINE_GAP` triage notice, rendered identically in `hive.py briefing` and
 the Command Station HUD (`station/static/app.js` `AutoNet:` row), and vanishing
 automatically (`status = OK`) the instant the gap closes.
+
+### 8.1 Policy-Driven Auto-Upgrades, `fit-network`, Demand-Linked `craft-network` & Dormant War Wing (`2026-11-24`)
+
+- **Multi-Empire, Multi-Specialty Auto-Upgrades (`game/upgrade-policy.json` + `upgrades.auto_enqueue_upgrades` in `wallet` 60s service):** Balances target hull specialties per `(division, empire)` (e.g., Crimson brawlers/assault/tanks, Voidborn shield/EWAR + strikers, Solarian gunships, Nebula/Outer Rim freighters + express passengers, Mining ore/ice/gas), strictly gated by `treasury_floor_cr` (`8.5M cr`), 24h CapEx budget, listed-first bargains (`read.db:ship_listings`), and `exclude_bursar_desks: true`.
+- **Dynamic Module Auto-Fitter (`fit-network` / `game/fit-policy.json`):** Zero-waste open gate (`0ms` skip for fitted ships) strips off-role starters and fills open/lower-tier slots matching each ship's deterministic specialty (`ore`/`ice`/`gas`, `brawler`/`ewar`/`escort`, `freight`/`passenger`, `bursar`/`mobile`, `recon`) at safe policed asks `<= max_price`.
+- **4-Tier Demand-Linked Flywheel (`game/craft-demand.json` + `craft-network` + `mine-network` + `hunt-network`):** `mine_net.py` scores **Tier 1 (`12x` `needs.tsv` deficits) -> Tier 2 (`6x` commercial/industrial `craft-demand.json` inputs) -> Tier 3 (`2x` direct market) -> Tier 4 (`0.25x` XP)**; `hunt_net.py` boosts herds dropping needed manufacturing/kit inputs (`4x`/`2x`); `craft-network` (`game/craft-policy.json`) runs zero-fuel docked commercial crafting (Trade) and industrial crafting (Logistics) under strict `P5` separation.
+- **Dormant `Lane 0: War Wing` (`hunt_net.py` + `game/hunt-policy.json`):** 100% dormant in peacetime (rule `F2` defensive RoE preserved); activates base-defense fleets (`<=10` ships/owned base) and war escorts strictly when `empire.json` declares active war or `data/fleet/war-posture-on` is set.

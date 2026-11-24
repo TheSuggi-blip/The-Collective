@@ -1,0 +1,9 @@
+{
+ "id": "fit-network",
+ "kind": "fit_net",
+ "title": "Dynamic multi-specialty module auto-fitter (strips off-role starters and fills open slots <= max_price)",
+ "note": "Policy-driven autonomous module fitter governed by game/fit-policy.json. Deterministically matches each pilot's division + specialty (ore/ice/gas, brawler/ewar/escort, freight/passenger, bursar/mobile, recon) and opens ONLY when a pilot has an off-role module to strip or an affordable slot upgrade within max_jumps (0ms skip when already fitted).",
+ "policy": "game/fit-policy.json",
+ "max_ships": 40,
+ "standing": true
+}

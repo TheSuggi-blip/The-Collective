@@ -1,0 +1,402 @@
+{
+  "_owner": "Unity & All 5 Admirals",
+  "_doc": "Policy for automated multi-empire, multi-specialty hull upgrading (upgrades.py auto_enqueue_upgrades). Respects hard treasury_floor_cr, 24h CapEx pacing, Bursar desk exclusion, listed-first bargains, and balanced specialty shares per division/empire.",
+  "enabled": true,
+  "treasury_floor_cr": 8500000,
+  "max_spend_24h_cr": 1200000,
+  "max_new_per_pass": 4,
+  "max_active_per_div": 6,
+  "listed_only": true,
+  "policed_listings_only": true,
+  "exclude_bursar_desks": true,
+  "min_listing_age_fresh_h": 6.0,
+  "divisions": {
+    "Mining": {
+      "enabled": true,
+      "max_active": 5,
+      "cohorts": [
+        {
+          "empire": "voidborn",
+          "specialty": "ore_miner",
+          "share": 0.65,
+          "ladder": [
+            {
+              "hull": "liminal",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "resonance_miner",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "substrate",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 580000
+            }
+          ]
+        },
+        {
+          "empire": "voidborn",
+          "specialty": "ice_gas_miner",
+          "share": 0.35,
+          "ladder": [
+            {
+              "hull": "liminal",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "resonance_miner",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            }
+          ]
+        },
+        {
+          "empire": "nebula",
+          "specialty": "bulk_miner",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "bonanza",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 55000
+            },
+            {
+              "hull": "workhorse",
+              "tier": 2,
+              "min_piloting": 0,
+              "max_price": 120000
+            },
+            {
+              "hull": "bonanza_king",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 620000
+            }
+          ]
+        },
+        {
+          "empire": "solarian",
+          "specialty": "precision_miner",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "bonanza",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 55000
+            },
+            {
+              "hull": "resonance_miner",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "praxis",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 620000
+            }
+          ]
+        }
+      ]
+    },
+    "Military": {
+      "enabled": true,
+      "max_active": 5,
+      "cohorts": [
+        {
+          "empire": "crimson",
+          "specialty": "brawler",
+          "share": 0.5,
+          "ladder": [
+            {
+              "hull": "cleaver",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 35000
+            },
+            {
+              "hull": "broadaxe",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "warmaul",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 240000
+            }
+          ]
+        },
+        {
+          "empire": "crimson",
+          "specialty": "assault",
+          "share": 0.35,
+          "ladder": [
+            {
+              "hull": "cleaver",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 35000
+            },
+            {
+              "hull": "halberd",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 170000
+            },
+            {
+              "hull": "partisan",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 220000
+            }
+          ]
+        },
+        {
+          "empire": "crimson",
+          "specialty": "tank",
+          "share": 0.15,
+          "ladder": [
+            {
+              "hull": "stockade",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 180000
+            }
+          ]
+        },
+        {
+          "empire": "voidborn",
+          "specialty": "ewar_shield",
+          "share": 0.65,
+          "ladder": [
+            {
+              "hull": "paradox",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 40000
+            },
+            {
+              "hull": "recursion",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 235000
+            }
+          ]
+        },
+        {
+          "empire": "voidborn",
+          "specialty": "striker",
+          "share": 0.35,
+          "ladder": [
+            {
+              "hull": "cleaver",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 35000
+            },
+            {
+              "hull": "broadaxe",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "warmaul",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 240000
+            }
+          ]
+        },
+        {
+          "empire": "solarian",
+          "specialty": "gunship",
+          "share": 0.6,
+          "ladder": [
+            {
+              "hull": "axiom",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "dialectic",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 350000
+            }
+          ]
+        },
+        {
+          "empire": "solarian",
+          "specialty": "striker",
+          "share": 0.4,
+          "ladder": [
+            {
+              "hull": "broadaxe",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 140000
+            },
+            {
+              "hull": "recursion",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 235000
+            }
+          ]
+        }
+      ]
+    },
+    "Logistics": {
+      "enabled": true,
+      "max_active": 5,
+      "cohorts": [
+        {
+          "empire": "any",
+          "specialty": "bulk_freight",
+          "share": 0.85,
+          "ladder": [
+            {
+              "hull": "prayer",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "ledger",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "floor_price",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "baling_wire",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 90000
+            },
+            {
+              "hull": "apophenia",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 165000
+            },
+            {
+              "hull": "monopoly",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 180000
+            }
+          ]
+        },
+        {
+          "empire": "nebula",
+          "specialty": "express_passenger",
+          "share": 0.15,
+          "ladder": [
+            {
+              "hull": "runner",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "futures",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            }
+          ]
+        }
+      ]
+    },
+    "Trade": {
+      "enabled": true,
+      "max_active": 4,
+      "cohorts": [
+        {
+          "empire": "any",
+          "specialty": "mobile_trade",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "prayer",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "ledger",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "baling_wire",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 90000
+            },
+            {
+              "hull": "apophenia",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 165000
+            },
+            {
+              "hull": "monopoly",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 180000
+            }
+          ]
+        }
+      ]
+    },
+    "Intel": {
+      "enabled": false,
+      "max_active": 2,
+      "cohorts": [
+        {
+          "empire": "any",
+          "specialty": "recon_survey",
+          "share": 1.0,
+          "ladder": [
+            {
+              "hull": "qualia",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "peer_review",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 110000
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

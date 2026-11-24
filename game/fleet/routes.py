@@ -77,7 +77,7 @@ import workclass                                  # noqa: E402  r22: whose work 
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
 EMPIRES = frozenset(("voidborn", "nebula", "solarian", "outerrim", "crimson"))   # the five empires of the game (requires.empire)
-KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station"), "bursar": (), "haul": (), "mine_net": (), "hunt_net": ()}
+KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station"), "bursar": (), "haul": (), "mine_net": (), "hunt_net": (), "fit_net": (), "craft_net": ()}
 PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one place, and the field that names it: what a guard keeps
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
 MASTER = "master-index.md"

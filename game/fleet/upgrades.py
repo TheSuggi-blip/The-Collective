@@ -943,6 +943,256 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
     return 0
 
 
+
+
+def _load_bursar_desk_pilots(data_dir):
+    """Pilots currently staffing Bursar stations (exempt from hull CapEx & wealth tax)."""
+    desks = set()
+    bc = Path(data_dir) / "fleet" / "bursar_claims.json"
+    if bc.is_file():
+        try:
+            d = json.loads(bc.read_text(encoding="utf-8", errors="replace"))
+            for _b, rec in (d.items() if isinstance(d, dict) else []):
+                if isinstance(rec, dict) and rec.get("pilot"):
+                    desks.add(str(rec["pilot"]))
+        except (OSError, ValueError):
+            pass
+    odir = Path(data_dir) / "fleet" / "orders"
+    if odir.is_dir():
+        for p in odir.glob("*.json"):
+            try:
+                od = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+                if str(od.get("what") or "").startswith("bursar "):
+                    desks.add(str(od.get("pilot") or p.stem))
+            except (OSError, ValueError):
+                continue
+    return desks
+
+
+def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=None, dry=False, policy_path=None):
+    """Policy-driven multi-empire, multi-specialty auto-enqueuer with hard Treasury floor & CapEx cap.
+
+    Reads `game/upgrade-policy.json` + live `read.db` (`faction`, `ships`, `hulls`, `ship_skills`,
+    `ship_listings`, `places`, `systems`). Only enqueues when:
+      1. `policy.enabled` is true and Treasury >= `treasury_floor_cr`.
+      2. Rolling 24h auto-queued spend < `max_spend_24h_cr`.
+      3. Division active queue < `max_active` and pilot is NOT a T0 Bursar desk (when `exclude_bursar_desks`).
+      4. Target specialty share is under-represented and a listed hull <= `max_price` exists (when `listed_only`).
+    Returns summary dict `{added: [...], skipped_reason: ...}`.
+    """
+    now = float(now if now is not None else time.time())
+    pol_p = Path(policy_path) if policy_path else (Path(repo_root) / "game" / "upgrade-policy.json")
+    if not pol_p.is_file():
+        return {"added": [], "skipped": "no policy file"}
+    try:
+        policy = json.loads(pol_p.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, ValueError):
+        return {"added": [], "skipped": "invalid policy json"}
+    if not isinstance(policy, dict) or not policy.get("enabled", False):
+        return {"added": [], "skipped": "disabled"}
+
+    con = _connect_ro(data_dir)
+    if con is None:
+        return {"added": [], "skipped": "no read.db"}
+    try:
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        # 1. Treasury reserve floor check
+        treasury = 0
+        if "faction" in tbls:
+            fr = con.execute("SELECT treasury FROM faction LIMIT 1").fetchone()
+            if fr and fr[0] is not None:
+                treasury = int(fr[0])
+        floor_cr = int(policy.get("treasury_floor_cr") or 8500000)
+        if treasury < floor_cr:
+            return {"added": [], "skipped": "treasury %d < floor %d" % (treasury, floor_cr)}
+
+        # 2. Rolling 24h auto-enqueue spend & active queue counts
+        q_rows = load_queue(data_dir)
+        active_states = {"pending", "funding", "funded", "building", "ready"}
+        active_pilots = set()
+        active_by_div = {}
+        spend_24h = 0
+        for r in q_rows:
+            if not isinstance(r, dict):
+                continue
+            st = str(r.get("status") or "")
+            if st in active_states:
+                active_pilots.add(str(r.get("pilot") or ""))
+                dv = str(r.get("division") or "")
+                active_by_div[dv] = active_by_div.get(dv, 0) + 1
+            if str(r.get("source") or "") == "auto_policy" and st != "cancelled":
+                at_t = float(r.get("created_at") or 0)
+                if (now - at_t) <= 86400.0:
+                    spend_24h += int(r.get("max_price") or 0)
+        cap_24h = int(policy.get("max_spend_24h_cr") or 1200000)
+        if spend_24h >= cap_24h:
+            return {"added": [], "skipped": "24h capex %d >= %d" % (spend_24h, cap_24h)}
+
+        # 3. Live safe ship_listings by class_id
+        listed_only = bool(policy.get("listed_only", True))
+        policed_only = bool(policy.get("policed_listings_only", True))
+        max_age_s = float(policy.get("min_listing_age_fresh_h") or 6.0) * 3600.0
+        policed_bases = set()
+        base_to_sys = {}
+        if "places" in tbls and "systems" in tbls:
+            for b_id, sys_id, emp, sh in con.execute("""
+                SELECT p.base, p.system, COALESCE(s.empire, ''), COALESCE(s.stronghold, 0)
+                FROM places p LEFT JOIN systems s ON s.id = p.system
+                WHERE p.base IS NOT NULL AND p.base != ''
+            """).fetchall():
+                base_to_sys[str(b_id)] = str(sys_id)
+                if emp and not int(sh or 0):
+                    policed_bases.add(str(b_id))
+        listings_by_hull = {}
+        if "ship_listings" in tbls:
+            for cid, b_id, price, ts in con.execute(
+                "SELECT class_id, base, price, t FROM ship_listings WHERE price > 0 ORDER BY price ASC"
+            ).fetchall():
+                if ts and (now - float(ts)) > max_age_s:
+                    continue
+                if policed_only and policed_bases and str(b_id) not in policed_bases:
+                    continue
+                listings_by_hull.setdefault(str(cid), []).append((int(price), str(b_id)))
+
+        # 4. Live ships + hulls + piloting skills
+        ships = []
+        if "ships" in tbls and "hulls" in tbls:
+            pil_map = {}
+            if "ship_skills" in tbls:
+                for p_nm, lvl in con.execute("SELECT pilot, level FROM ship_skills WHERE skill = 'piloting'").fetchall():
+                    pil_map[str(p_nm)] = int(lvl or 0)
+            for p_nm, dv, emp, cls, tr, hid in con.execute("""
+                SELECT s.pilot, s.division, LOWER(COALESCE(s.empire, '')), s.class,
+                       COALESCE(h.tier, 0), COALESCE(h.id, LOWER(COALESCE(s.class, '')))
+                FROM ships s LEFT JOIN hulls h ON (h.id = s.class OR h.name = s.class)
+            """).fetchall():
+                ships.append({
+                    "pilot": str(p_nm), "division": str(dv or ""), "empire": str(emp or ""),
+                    "class": str(cls or ""), "tier": int(tr or 0), "hull_id": str(hid or "").lower(),
+                    "piloting": pil_map.get(str(p_nm), 0),
+                })
+    finally:
+        con.close()
+
+    bursar_desks = _load_bursar_desk_pilots(data_dir) if policy.get("exclude_bursar_desks", True) else set()
+    max_new = max(1, int(policy.get("max_new_per_pass") or 4))
+    default_div_cap = int(policy.get("max_active_per_div") or 6)
+    div_cfgs = policy.get("divisions") or {}
+    added = []
+    used_listings = set()
+
+    for div_name, dcfg in div_cfgs.items():
+        if len(added) >= max_new or spend_24h >= cap_24h:
+            break
+        if not isinstance(dcfg, dict) or not dcfg.get("enabled", False):
+            continue
+        div_cap = int(dcfg.get("max_active") or default_div_cap)
+        if active_by_div.get(div_name, 0) >= div_cap:
+            continue
+        div_ships = [s for s in ships if s["division"] == div_name]
+        if not div_ships:
+            continue
+
+        # Score each cohort by how under-represented its target specialty hulls currently are
+        cohorts = list(dcfg.get("cohorts") or [])
+        ranked_cohorts = []
+        for idx, coh in enumerate(cohorts):
+            emp_f = str(coh.get("empire") or "any").lower()
+            share = float(coh.get("share") or 1.0)
+            ladder = list(coh.get("ladder") or [])
+            if not ladder:
+                continue
+            cohort_ships = [s for s in div_ships if (emp_f == "any" or s["empire"] == emp_f)]
+            if not cohort_ships:
+                continue
+            target_hulls = {str(x.get("hull") or "").lower() for x in ladder}
+            have_n = sum(1 for s in cohort_ships if s["hull_id"] in target_hulls)
+            target_n = max(1, int(round(len(cohort_ships) * share)))
+            deficit = target_n - have_n
+            ranked_cohorts.append((deficit, -idx, coh, cohort_ships))
+        ranked_cohorts.sort(reverse=True)
+
+        for deficit, _neg_i, coh, cohort_ships in ranked_cohorts:
+            if len(added) >= max_new or spend_24h >= cap_24h or active_by_div.get(div_name, 0) >= div_cap:
+                break
+            if deficit <= 0:
+                continue
+            # Prefer highest affordable tier rung with an eligible pilot & bargain listing
+            ladder_sorted = sorted(coh.get("ladder") or [], key=lambda x: (-int(x.get("tier") or 0), int(x.get("max_price") or 0)))
+            picked = None
+            for rung in ladder_sorted:
+                hid = str(rung.get("hull") or "").lower()
+                rtier = int(rung.get("tier") or 1)
+                rpil = int(rung.get("min_piloting") or 0)
+                rmax = int(rung.get("max_price") or 0)
+                if not hid or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
+                    continue
+                # Find eligible listing if listed_only
+                l_station = None
+                l_price = rmax
+                if listed_only:
+                    cand_l = [
+                        (pr, bs) for pr, bs in (listings_by_hull.get(hid) or [])
+                        if pr <= rmax and (hid, bs, pr) not in used_listings
+                    ]
+                    if not cand_l:
+                        continue
+                    l_price, l_station = cand_l[0]
+                # Pick highest-piloting eligible non-Bursar pilot currently below rtier
+                elig = [
+                    s for s in cohort_ships
+                    if s["pilot"] not in active_pilots
+                    and s["pilot"] not in bursar_desks
+                    and s["tier"] < rtier
+                    and s["piloting"] >= rpil
+                ]
+                if not elig:
+                    continue
+                elig.sort(key=lambda s: (-s["piloting"], s["tier"], s["pilot"]))
+                picked = (elig[0], hid, l_station or "node_beta_industrial_station", min(rmax, int(l_price * 1.02) + 500), l_price, str(coh.get("specialty") or ""))
+                break
+
+            if not picked:
+                continue
+            pship, hid, st_base, mp, lp, spec = picked
+            if dry:
+                added.append({"pilot": pship["pilot"], "division": div_name, "hull": hid, "station": st_base, "price": lp, "specialty": spec, "dry": True})
+                active_pilots.add(pship["pilot"])
+                active_by_div[div_name] = active_by_div.get(div_name, 0) + 1
+                spend_24h += mp
+                treasury -= lp
+                used_listings.add((hid, st_base, lp))
+                continue
+            # Enqueue via atomic locked queue_add / direct single-pilot locked append
+            with _queue_lock(data_dir):
+                rows = load_queue(data_dir)
+                if any(str(x.get("pilot") or "") == pship["pilot"] and str(x.get("status") or "") in active_states for x in rows if isinstance(x, dict)):
+                    continue
+                next_id = "u-%d" % (max([int(str(x.get("id") or "u-0").split("-")[1]) for x in rows if isinstance(x, dict) and str(x.get("id") or "").startswith("u-") and str(x.get("id")).split("-")[1].isdigit()] or [0]) + 1)
+                rows.append({
+                    "id": next_id,
+                    "pilot": pship["pilot"],
+                    "division": div_name,
+                    "hull": hid,
+                    "station": st_base,
+                    "max_price": int(mp),
+                    "status": "pending",
+                    "by": "AutoUpgrade",
+                    "source": "auto_policy",
+                    "specialty": spec,
+                    "created_at": int(now),
+                    "updated_at": int(now),
+                })
+                save_queue(data_dir, rows, merge=True)
+            added.append({"pilot": pship["pilot"], "division": div_name, "hull": hid, "station": st_base, "price": lp, "specialty": spec})
+            active_pilots.add(pship["pilot"])
+            active_by_div[div_name] = active_by_div.get(div_name, 0) + 1
+            spend_24h += mp
+            treasury -= lp
+            used_listings.add((hid, st_base, lp))
+    return {"added": added, "spend_24h": spend_24h, "treasury": treasury}
+
+
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
     data_default = os.environ.get("COLLECTIVE_DATA", DATA_DEFAULT)

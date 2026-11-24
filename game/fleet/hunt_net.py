@@ -512,21 +512,111 @@ def load_combat_world(data_dir, repo_root, policy, now_t=None):
         except (OSError, ValueError):
             pass
 
+    cd = read_json(Path(repo_root) / "game" / "craft-demand.json", {})
+    craft_loot_species = {str(x).lower() for x in (cd.get("priority_loot_species") or [])} if isinstance(cd, dict) and cd.get("enabled", True) else set()
     for sp, hull in species_hull.items():
-        # Rough value proxy scales super-linearly with creature hull/difficulty + need multiplier
+        # Rough value proxy scales super-linearly with creature hull/difficulty + need/craft multipliers
         base_v = 1200.0 + (hull ** 1.35) * 8.0
         drops = SPECIES_NEED_DROPS.get(sp) or ()
         if any(d in needs_items for d in drops):
             base_v *= 4.0
+        elif sp.lower() in craft_loot_species:
+            base_v *= 2.0
         species_loot_val[sp] = round(base_v, 1)
+    owned_bases = []
+    _db_b = Path(data_dir) / "store" / "read.db"
+    if _db_b.is_file():
+        try:
+            c2 = sqlite3.connect("file:%s?mode=ro" % _db_b, uri=True, timeout=3.0)
+            if "bases" in {r[0] for r in c2.execute("SELECT name FROM sqlite_master WHERE type='table'")}:
+                for b_id, sys_id, poi_id, knd in c2.execute("SELECT base, system, poi, kind FROM bases WHERE system IS NOT NULL"):
+                    owned_bases.append({"base": str(b_id), "system": str(sys_id), "poi": str(poi_id or b_id), "kind": str(knd or "outpost")})
+            c2.close()
+        except sqlite3.Error:
+            pass
 
     return {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "herds": herds, "pirates": pirates, "pirate_details": pirate_details,
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
-        "species_loot_val": species_loot_val,
+        "species_loot_val": species_loot_val, "owned_bases": owned_bases,
+        "craft_loot_species": craft_loot_species,
     }
+
+
+
+def detect_war_posture(data_dir, policy=None):
+    """Return (war_active: bool, enemy_tags: set[str]). Strictly False in peacetime (F2 RoE)."""
+    wcfg = (policy or {}).get("war_wing") if isinstance(policy, dict) else {}
+    if isinstance(wcfg, dict) and not wcfg.get("enabled", True):
+        return False, set()
+    tags = set()
+    # 1. Explicit war-posture flag (set only on Suggi's war declaration)
+    flag_p = Path(data_dir) / "fleet" / "war-posture-on"
+    flag_on = flag_p.is_file()
+    if flag_on:
+        try:
+            for ln in flag_p.read_text(encoding="utf-8", errors="replace").splitlines():
+                t = ln.strip().upper()
+                if t and not t.startswith("#"):
+                    tags.add(t)
+        except OSError:
+            pass
+    # 2. Live faction war state in empire.json
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    fac = emp.get("faction") if isinstance(emp.get("faction"), dict) else {}
+    wars = list(fac.get("wars") or emp.get("wars") or [])
+    for w in wars:
+        tg = str(w.get("tag") or w.get("faction") or w).upper() if isinstance(w, dict) else str(w).upper()
+        if tg:
+            tags.add(tg)
+    at_war = bool(fac.get("at_war") or emp.get("at_war") or wars or flag_on)
+    return at_war, tags
+
+
+def pick_war_assignment(pilot, ship_doc, spow, world, policy, claims, enemy_tags, data_dir=None):
+    """Dormant Lane 0 War Wing selector (active ONLY when war_active=True).
+
+    Priority 0A: Base Defense fleets (up to 10 ships/base) guarding our owned stations/outposts.
+    Priority 0B: Armed Convoy Escorts for civilians in threatened/lawless systems.
+    """
+    wcfg = (policy or {}).get("war_wing") or {}
+    if not wcfg.get("enabled", True):
+        return None
+    min_pow = float(wcfg.get("min_power") or 300.0)
+    if float((spow or {}).get("power") or 0) < min_pow:
+        return None
+    # Priority 0A: Protect owned Collective bases (read.db:bases)
+    bases = list(world.get("owned_bases") or [])
+    max_per_base = int(wcfg.get("defenders_per_base") or 10)
+    active_by_key = {}
+    for _p, rec in (claims or {}).items():
+        if isinstance(rec, dict) and rec.get("mode") == "war_defense":
+            k = str(rec.get("key") or "")
+            active_by_key[k] = active_by_key.get(k, 0) + 1
+    p_sys = str(ship_doc.get("system") or "")
+    adj = world.get("adj") or {}
+    dists = bfs_distances(adj, p_sys, max_hops=int(wcfg.get("max_jumps") or 20)) if p_sys else {}
+    best = None
+    for b in bases:
+        sys_id, poi_id, base_id, kind = b["system"], b["poi"], b["base"], b["kind"]
+        key = "war_def:%s:%s" % (sys_id, poi_id)
+        if active_by_key.get(key, 0) >= max_per_base:
+            continue
+        hops = dists.get(sys_id, 99) if p_sys else 0
+        if hops > int(wcfg.get("max_jumps") or 20):
+            continue
+        prio = 120 if kind == "station" else 100
+        cand = {
+            "key": key, "mode": "war_defense", "system": sys_id, "poi": poi_id,
+            "station": "%s:%s:%s" % (sys_id, poi_id, base_id),
+            "guards": "war-base-%s" % kind, "hops": hops, "priority": prio - hops,
+            "enemy_tags": sorted(enemy_tags),
+        }
+        if best is None or cand["priority"] > best["priority"]:
+            best = cand
+    return best
 
 
 def detect_escort_demands(data_dir, world, policy, claims, now_t=None):
@@ -1267,6 +1357,22 @@ def main(argv=None):
         orders_dir = DATA / "fleet" / "orders"
         active_mil = sum(1 for p in (orders_dir.glob("*.json") if orders_dir.is_dir() else []) if p.stem.startswith(("drone-", "sentinel-")))
         active_mil = max(12, active_mil)
+
+        # --- LANE 0: DORMANT WAR WING (ACTIVATES STRICTLY ON POSTURE == WAR, F2) ---
+        war_active, war_tags = detect_war_posture(DATA, policy)
+        if war_active:
+            wjob = pick_war_assignment(pilot, ship_doc, spow, world, policy, claims, war_tags, data_dir=DATA)
+            if wjob and claim_hunt_key_atomic(DATA, pilot, wjob['key'], 'war_defense', policy, max_per_key=int((policy.get('war_wing') or {}).get('defenders_per_base') or 10)):
+                claimed_key = wjob['key']
+                wcmd = [
+                    sys.executable, '-I', '-B', str(ROOT / 'fleet' / 'guard.py'),
+                    pilot, wjob['system'], wjob['poi'],
+                    '--guards', wjob['guards'], '--station', wjob['station'],
+                    '--minutes', str(int((policy.get('war_wing') or {}).get('minutes') or minutes)),
+                    '--route', route_id,
+                ]
+                print('%s %s hunt_net: WAR WING lane 0 -> %s (%s:%s)' % (utc_now(), pilot, wjob['key'], wjob['system'], wjob['poi']), flush=True)
+                return subprocess.run(wcmd, check=False).returncode
 
         # --- LANE 1: ON-DEMAND ESCORT & PROTECTION ---
         ecfg = policy.get("escort") or {}

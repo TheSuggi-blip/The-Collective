@@ -1,0 +1,29 @@
+{
+  "_owner": "Mercury (Trade) & Apollo (Logistics)",
+  "_doc": "Policy for dynamic zero-fuel docked manufacturing (game/fleet/craft_net.py). Strict P5 separation: Trade crafts highest-margin commercial goods and lists/sells via Bursar/Exchange; Logistics crafts industrial building materials and stores into faction/reserve storage (never sells).",
+  "enabled": true,
+  "demand_file": "game/craft-demand.json",
+  "cycle_minutes": 30,
+  "idle_watch_minutes": 15,
+  "max_runs_per_cycle": 10,
+  "max_fee_per_run_cr": 1500,
+  "min_wallet_keep_cr": 15000,
+  "allow_buy_inputs_docked": true,
+  "max_buy_spend_per_cycle_cr": 25000,
+  "trade": {
+    "enabled": true,
+    "min_margin_pct": 0.22,
+    "min_profit_cr": 150,
+    "min_bid_qty": 3,
+    "sell_mode": "sell_order_or_bid",
+    "instant_hit_bid_ratio": 0.9,
+    "undercut_cr": 1,
+    "gift_to_bursar": false
+  },
+  "logistics": {
+    "enabled": true,
+    "deposit_target": "faction_or_self",
+    "use_needs_tsv": true,
+    "use_industrial_targets": true
+  }
+}

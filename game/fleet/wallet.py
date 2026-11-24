@@ -1780,6 +1780,7 @@ def serve(data, now, dry):
         failed = served("errand", serve_errands, data, leader, now, dry) or failed
         try:
             import upgrades as _upg
+            _upg.auto_enqueue_upgrades(data, now=now, dry=dry)
             _upg.serve_upgrades(data, now=now, dry=dry)
         except Exception as error:
             print("HALT: the upgrade queue's step failed: %s: %s" % (type(error).__name__, str(error)[:200]))
@@ -1847,6 +1848,7 @@ def sweep(data, now, dry, cash_only=False):
         failed = served("errand", serve_errands, data, leader, now, dry) or failed
         try:
             import upgrades as _upg
+            _upg.auto_enqueue_upgrades(data, now=now, dry=dry)
             _upg.serve_upgrades(data, now=now, dry=dry)
             _upg_skip = _upg.protected_pilots(data)
         except Exception as error:              # errors.log ENT-171: a step that fails on every pass is printed, never swallowed

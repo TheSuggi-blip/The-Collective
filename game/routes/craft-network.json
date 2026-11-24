@@ -1,0 +1,9 @@
+{
+ "id": "craft-network",
+ "kind": "craft_net",
+ "title": "Dynamic zero-fuel docked manufacturing (Trade commercial profit crafting + Logistics industrial crafting)",
+ "note": "Policy-driven autonomous docked manufacturing runner governed by game/craft-policy.json and game/craft-demand.json. Strict P5 class separation: Trade crafts profitable commercial goods and lists/sells via Exchange/Bursars; Logistics crafts industrial building materials and stores into faction/reserve storage (never sells).",
+ "policy": "game/craft-policy.json",
+ "max_ships": 40,
+ "standing": true
+}

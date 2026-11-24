@@ -129,7 +129,7 @@ SPAWN_MOST = 30              # runners running as processes of their own at once
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py", "fit_net": "fit_net.py", "craft_net": "craft_net.py"}
 MINE_POI_CAP = 3             # hard cap: max concurrent miners on any single belt/POI (spread miners across belts like hunters)
 BURSAR_STATION_CAP = 1       # hard cap: max concurrent static Bursar desks at any single station (spread across 61+ books)
 
@@ -1028,6 +1028,26 @@ def why_not(pilot, rid, route, state):
             return "bursar cap %d reached at %s" % (hub_cap, bursar_base), None
     if flying >= limit:
         return "max_ships %s reached" % limit, None
+    if route["kind"] == "fit_net":
+        try:
+            import fit_net as _fn
+            _repo_r = Path(state.get("root") or Path(__file__).resolve().parent.parent).parent
+            _data_d = state.get("data") or Path("/srv/collective/data")
+            _pol_p = Path(str(route.get("policy") or "game/fit-policy.json"))
+            if not _pol_p.is_absolute():
+                _pol_p = _repo_r / _pol_p
+            _fpol = state.get("_fit_pol")
+            if _fpol is None:
+                _fpol = _fn.read_json(_pol_p, {})
+                state["_fit_pol"] = _fpol
+            _fw = state.get("_fit_world")
+            if _fw is None:
+                _fw = _fn.load_fit_world(_data_d, _fpol)
+                state["_fit_world"] = _fw
+            if not _fn.needs_fit(pilot.get("name", ""), pilot, data_dir=_data_d, repo_root=_repo_r, policy_path=_pol_p, world_cache=_fw):
+                return "already fitted (no off-role modules or affordable upgrade nearby)", None
+        except Exception:
+            return "fit_net check unavailable", None
     place = None
     if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
         folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one
@@ -1292,6 +1312,9 @@ def command(route, pilot, argument, root):
         return (base + ["--minutes", str(route.get("minutes", 30)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else [])
                 + (["--station", str(route["station"])] if route.get("station") else []))
+    if route["kind"] in ("fit_net", "craft_net"):
+        return (base + ["--route", route["id"]]
+                + (["--policy", str(route["policy"])] if route.get("policy") else []))
     if route["kind"] in ("haul", "mine_net", "hunt_net"):
         return (base + ["--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
@@ -1396,7 +1419,7 @@ def pirate_reason(system, state):
 def judged(route):
     """True for a route whose runs must pay: not the census, not park, not a fitting/unfitting (a tool is fitted or stripped once), not
     standing work (it trains or gathers: its fuel is its price, routes.py `standing`)."""
-    if route.get("park") or route.get("kind") == "census" or routefiles.standing(route):
+    if route.get("park") or route.get("kind") in ("census", "fit_net") or routefiles.standing(route):
         return False
     return not any(isinstance(stop, dict) and (stop.get("fit") or stop.get("unfit")) for stop in route.get("stops") or [])
 

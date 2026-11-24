@@ -163,6 +163,10 @@ def work_class(route, rid=None, strict=None):
         return "gather"
     if kind == "hunt_net":
         return "hunt"
+    if kind == "fit_net":
+        return "fit"
+    if kind == "craft_net":
+        return "craft"
     if kind in ("hunt", "guard", "census", "haul"):
         return kind
     stops = _stops(route)
