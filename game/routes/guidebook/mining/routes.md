@@ -1,34 +1,33 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table fields; table faction_storage; data/intel/sightings.jsonl; data/fleet/upgrade_queue.json.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table fields; the mine-network policy file; data/intel/sightings.jsonl; commission_status.
 
-Turn of orders ENT-086 (3 ships a belt, the dispatcher's cap; no empty
-burn). A free miner takes the list First, its own routes, then Then.
+Turn of orders ENT-090 (3 ships a belt; iron short again under 60,000
+usable, the outpost's iron counted out; P7 smart networks). A free
+miner takes the list First, its own routes, then Then.
 
 | Route | Ships | For |
 |---|---|---|
-| slot routes (Laser II and III at Ironlight, Laser I at Sol, Cargo Expander at Factory Belt) | by asks | every utility slot filled |
-| `give-miner-stores-<station>` | 3 each | stores to the receivers, Alpha Centauri on again |
-| once missions | by route | paid once per pilot |
-| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 (test, max_jumps 12) | far carbon, given at Ramen's Rest |
-| Solarian and Nebula rows: gives, missions, their carbon, silicon and copper-iron gathers | by field | carbon, silicon; Mining skill |
-| `@reserve-prism` / `@reserve-hamal` | 1 to 3 | carbon, silicon; nickel, gold and fragments stand full |
-| Then | 3 a belt | gives; Node Gamma ice (no jump, floor 7,500); copper-iron gathers; the regional belts; `train-jumps-miner`; park |
+| `resonance-parts-*` (titanium at Procyon, sensors at Ironlight) | 3 / 1, once | the Node Beta yard's own sourcing bids |
+| slot routes, `give-miner-stores-<station>`, once missions | by asks, 3, by route | slots filled; stores to receivers; paid once |
+| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 (test) | far carbon below the 4 cr buy a unit |
+| Solarian and Nebula rows; `@reserve-prism` / `@reserve-hamal` | 1 to 3 | carbon, silicon; nickel, gold, fragments full |
+| Then: gives; `mine-network` | 6 (test) | belts no static route holds |
+| Then: home iron gathers; nine far iron gathers 2 to 4 jumps out | 3 a belt | iron to 80,000 |
+| Then: copper-iron and regional belts; `train-jumps-miner`; park | 1 to 3; 20 | Piloting under 10 |
 
-Every mine route has a floor (`min_left`, 15% of its field's main good
-by default); a belt under it closes while its census is fresh, and a
-belt read under it on an older census is cut to one ship; T2/T3
-multi-laser ships stay on belts at 25% or more (the `deposit_too_sparse`
-cliff, `07-economy.md`; Trinity, 2026-11-24). The GSC-0044
-faction gathers open only while the outpost's faction storage holds
-under 98,000 iron (its limit is 100,000) and only to faction members.
-Silicon tests wait while pirates stand at GSC-0007 and on the Muphrid
-road. Three Resonance Miners are commissioned at Node Beta.
+`mine-network` deposits only at the give stations (`deposit_stations`),
+mines only what the reserve lacks (`market_tier` false) and skips every
+belt of the plan's own routes (`exclude_pois`, so a belt never takes a
+fourth ship). Every mine route has a floor (`min_left`); a belt under it
+closes while its census is fresh. The silicon fields near us read under
+their floors; GSC-0007 waits on its pirate reading.
 
-What would change it: the Sarin test's results against the 4 cr carbon
-ask in Crimson space (requests ENT-510); the Resonance Miners' fuel per
-run; iron under its max of 80,000.
+What would change it: iron at its max of 80,000 (the pull rule closes
+every iron gather and the veterans need other work); mine-network's
+runs; the Resonance Miners' fuel per run once built.
+
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
 
