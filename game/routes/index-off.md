@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 66.
+Routes: 65.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,7 +44,6 @@ Routes: 66.
 | [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 30 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac, off | TBD | TBD | TBD | TBD | -- |
 | [craft-sell-argon-krynn](craft-sell-argon-krynn.json) | circuit | beyond the border, 20 jumps | Purified argon made by hand docked at the Crimson War Citadel (Krynn) from argon bought there, sold into its bid, the rest stored | up to 12 ships, while crimson_war_citadel asks 1 cr or less for argon_gas, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [craft-steel-faction-gsc-0044](craft-steel-faction-gsc-0044.json) | circuit | beyond the border, 6 jumps | Steel plate smelted at our outpost GSC-0044 from the faction's iron ore there (withdraw from: faction), put back into the faction's storage (Logistics' haulers) | up to 1 ships, under corporation_management 7, standing work, off | TBD | TBD | TBD | TBD | -- |
-| [give-miner-stores-alpha-centauri](give-miner-stores-alpha-centauri.json) | circuit | beyond the border, 11 jumps | A miner gives its stores at Alpha Centauri Colonial Station: iron, copper and the reserve's ores to the hauler there (docked steel, strict classes) | up to 3 ships, with 50 iron_ore or copper_ore or steel_plate or copper_piping or carbon_ore or silicon_ore or nickel_ore or gold_ore or platinum_ore stored at alpha_centauri_colonial_station, standing work, off | 2 | 2 | -30 | -770 | 2026-11-24 |
 | [join-rim-trader](join-rim-trader.json) | circuit | beyond the border, 17 jumps | A trader whose Solarian once line is booked joins the Outer Rim corridor: one trip to Frontier Station (Altais), where The Memorial and the Rim's once missions open to it | once per pilot, up to 3 ships, empty hold, standing work, off | 3 | 15 | -140 | one-time | 2026-11-23 |
 | [mission-market-participation-nova-terra](mission-market-participation-nova-terra.json) | circuit | beyond the border, 8 jumps | Market Participation: Buying and Selling at Nova Terra Central: 1,000 cr each, once per pilot; 10 argon gas bought at 1 cr, 10 of the pilot's own plasma gas sold into the 25 cr bid | once per pilot, up to 1 ships, from 3,200 cr, with 10 plasma_gas stored at nova_terra_central, while nova_terra_central bids 22 cr for plasma_gas, while nova_terra_central asks 1 cr or less for argon_gas, off | 1 | 1 | 240 | one-time | 2026-11-24 |
 | [mission-scouting-the-lanes-grand](mission-scouting-the-lanes-grand.json) | circuit | beyond the border, 21 jumps | Scouting the Lanes: 1,500 cr and 25 Nebula Attunement once per pilot at Grand Exchange; a visit to Market Prime and back | once per pilot, up to 3 ships, born nebula, off | 3 | 3 | -100 | one-time | 2026-11-23 |
