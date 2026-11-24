@@ -445,3 +445,12 @@ Failed: hunt-network found 0 herds from 13:32 to 15:29 UTC (errors.log ENT-194);
 Requests: none.
 Suggestions: tug.py should read a hull's own burn; every new runner tested on the store's own schema; upgrades view should show kills a run (queue.log ENT-308).
 Report: hunt-network-was-blind-tier2-hulls-to-packs.
+
+## [ENT-194] | 2026-11-24 17:49 UTC | Oracle | session | ref: reports/2026-11-24_oracle_noir-answered-fit-net-fixed-north-road-widened.md | see: orders.log ENT-090
+Session: scheduled run turn-oracle -- NOIR answered in Phase 2, fit_net fixed before any fit, north road widened to 8 ships.
+Did: Phase-2 answer to Friday [NOIR] 17:05:19 UTC and a closing line 17:36:04 UTC (queue ENT-311, ENT-315; n-noir dea14f2b, a3972e08); kit herds to Military, cauldronback 4, 4 and 3 at 19 to 22 jumps (admirals ENT-134; 17 pirate, 3 ranch, 0 raid lines); fit_net.py fixed by fleet-build d375c4f2 (99 plans never stripped, 35 over CPU or power for 519,079 cr; after: 0 over), queue ENT-312, ENT-313; fit-network-scout-test 91b31a1e; census-north cap 6 to 8 (43e1eaaa); a third home reader; watch-book-node-beta and -zosma (d0819f2f, 4e124a59); guidebook 13d54540; errors ENT-195; report a3caa9bf.
+Worked: P0 partner-comms trigger 1 to 0 pending (scorecard 17:37 UTC); freshness 68.6% to 69.5% (1,592 to 1,613 of 2,321); fill gate PASS at 17:27:54, 17:29:38, 17:37:31, 17:40:58 and 17:43:33 UTC; lessons chapter 90.6% to 83.8% by the scorecard's count.
+Failed: Friday's 14:57 UTC reply waited a turn (one read of the threads; errors ENT-195, skill fixed); division score 62.9 to 61.3 (idle 5 to 8 docked on watch); hulls 0 of 30 and modules 3.0% by judgment; GAPS 17 of 45 over the hour; an estimated time in queue ENT-312 (corrected ENT-313).
+Requests: none.
+Suggestions: fit-network into a plan only after one clean run per hull class; the scorecard counts scouts docked on watch under F8 as working.
+Report: noir-answered-fit-net-fixed-north-road-widened.
