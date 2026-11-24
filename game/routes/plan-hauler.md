@@ -151,8 +151,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read the answer to requests ENT-513 (the outpost's faction iron out of the iron chain and the pull rule) and Mining's iron gathers after it | next turn |
-| read finish-first-links-grand (six holders) and mission-first-links-nickel-grand: paid runs and the nickel ask at Grand Exchange | next turn |
-| read the carbon buy at Node Beta against its gate (57,000 of Logistics) and the Builder's docked runs there | next turn |
-| test one ship on the Grand Exchange board's Nebula missions with no route yet (Unpaid Claims, Overdue Accounts, What Are They Buying?) for Nebula Mastery (F35) | next turn |
-| found Atria when the kit stands (foil scale, alloy scale, graphene thread short: Military's hunts) | when stocked |
+| read Unity's answer to requests ENT-523 (Atria kit: Arneb, our own kit line, or wait) and write its buy routes and build row the same turn | next turn |
