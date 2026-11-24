@@ -1,27 +1,31 @@
 # Intel guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-21. Evidence: hive.py levels Oracle; the plan file (tool plan, show); MISSION.md.
+Status: proven. Updated: 2026-11-24. Evidence: hive.py levels Oracle; the plan file (tool plan, show); MISSION.md.
 
-The scout class in short (rule F14): 30 scouts, about ten explorers and
-twenty readers (Suggi, 2026-11-17). Levels now: the tool fleet,
+The scout class in short (rule F14): about a third explorers, the rest
+readers (Suggi, 2026-11-17: ten of thirty); the count now: FLEET.md
+and hive.py upgrades intel, by empire. Levels now: the tool fleet,
 view=levels, member Oracle. Fits: ships.md; the census lists and the
 plan: routes.md; what is under test: tests.md; the traps: lessons.md.
 
 ### Ships
-Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog table hulls; browse_ships all_stations (2026-11-21); scouting/<system>.json `survey`; ships.md.
+Status: proven. Updated: 2026-11-24. Evidence: data/fleet/ships/; catalog table hulls; table ship_modules; browse_ships all_stations (2026-11-21); scouting/<system>.json `survey`; hive.py upgrades intel; ships.md.
 
-- Tier 0, every scout: the starter Threshold (speed 1, hold 65, tank 95,
-  two utility slots), Mining Laser I and Pulse Laser I, stance flee.
-- Fit next: Survey Scanner I in the second utility slot (six scouts carry
-  one; need survey-scanner-i). A ship with a scanner surveys every system
-  it reads (census.py). Then a Mining Survey Probe for the faint
-  signatures (tests.md), then Ship Scanner I.
-- Next hull: tier 1 needs no Piloting (table hulls): Qualia (explorer,
-  speed 3, tank 130, three utility slots, no weapon slot), Eigenstate
-  (scout, speed 3) or Fugue (courier, speed 4). The Qualia test is closed:
-  over three times the fuel a read, no second one (tests.md); tier 2 at
-  Piloting 10, judged by fuel a read.
+- Tier 0, by empire: voidborn the Threshold (speed 1, hold 65, tank 95,
+  two utility slots), outerrim the Cobble, nebula the Prospect; Mining
+  Laser I and Pulse Laser I aboard, stance flee. The Mining Laser I
+  stays while the pilot's own-empire missions that mine are open (F35).
+- Fit next: a survey scanner in the second utility slot (who carries one:
+  table ship_modules; Survey Scanner I has no seller, the II is fitted at
+  Central Nexus). A ship with a scanner surveys every system it reads
+  (census.py). Then a Mining Survey Probe for the faint signatures
+  (tests.md), then Ship Scanner I.
+- Next hull: tier 1 needs no Piloting (voidborn Qualia, Eigenstate;
+  outerrim Warranty Void; nebula Venture). The Qualia test is closed:
+  over three times the fuel a read, no second one (tests.md). Tier 2 at
+  Piloting 10 (Confluence; Dust Devil, Terms and Conditions; Prospectus,
+  Arbitrage) is judged by fuel a read, never bought for Piloting alone.
 - Style: read and leave, hold empty beyond the border (rule F3), never
   fire first (F2), hunt on the way only what passes both gauges of F9,
   pirates by F27 with a test first.
