@@ -24,16 +24,13 @@ Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, sta
 Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST, UNFLOWN; data/routes/runs.jsonl (2026-11-16 23:21 to 2026-11-17 07:30 UTC); hive.py route census-roads; data/scouting/sol.json.
 
 - ROADS HALTs under four hours of first visits: widen a list, nearest
-  first. ROADS END (every system read but strongholds, since 2026-11-17):
-  rotate explorers onto the lists they flew least.
-- A system read once by hand and left on no list that is on (an `off`
-  list counts as none) grows into the oldest reading of the galaxy
-  unseen: on 2026-11-22 Sol and six more stood 718 to 8,958 minutes old.
-  The turn check's OFFLIST line names each; it moves onto census-roads.
-- A list that stands behind lists that always hold a due system is never
-  reached: census-roads flew no run from 00:55 to 11:25 UTC on
-  2026-11-22 while all 57 of its systems aged past 480 minutes. Give
-  such a list ships of its own (own routes first); UNFLOWN HALTs on it.
+  first; ROADS END (all but strongholds read): rotate the explorers.
+- A system read by hand and left on no list that is on (`off` counts
+  as none) ages unseen (Sol and six more, 718 to 8,958 min, 2026-11-22):
+  OFFLIST names it; it moves onto census-roads.
+- A list behind lists that always hold a due system is never reached
+  (census-roads: no run 00:55 to 11:25 UTC 2026-11-22, 57 systems past
+  480 min): give it ships of its own; UNFLOWN HALTs on it.
 
 ### Read every place the orders name against its cadence
 Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
@@ -144,12 +141,11 @@ Status: proven. Updated: 2026-11-24. Evidence: fill.py status scout (2026-11-23 
   left aboard (fuel cells, probes) closes every census to its scout, and
   the gate names it waiting. The HOLDS line lists them: store what lies
   aboard (stash.py) the same turn; a ship in space is docked first.
-- The gate counts five units as nothing (`goods > 5`): only a scout with
-  two rewards aboard is shut. Every store route has a reach (empire,
-  max_jumps): Voidborn scouts ending the frontier missions at Altais
-  (8 units, 17 jumps from Central Nexus) had none open. A store route
-  where the missions end (store-hold-frontier-station-near) fixes it by
-  script; a store route others plan with is never widened for us.
+- The gate counts five units as nothing (`goods > 5`). Store routes
+  have a reach (empire, max_jumps): Voidborn scouts ending frontier
+  missions at Altais (8 units, 17 jumps from Central Nexus) had none;
+  store-hold-frontier-station-near, where they end, fixes it by script.
+  A store route others plan with is never widened for us.
 - A census docked nowhere went home to Central Nexus, across the galaxy
   for a newborn of another empire (a foreign station: `Access denied`);
   with --stay it now ends at the nearest station with fuel (census.py
