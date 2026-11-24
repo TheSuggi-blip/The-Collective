@@ -1,7 +1,7 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the tool plan (show, templates); hive.py briefing (column carries); fill.py status drone; the tool fill (check); dispatch.judged; table herds.
+Status: proven. Updated: 2026-11-24. Evidence: the tool plan (show, templates); hive.py briefing (column carries); the tool fill (check); dispatch.judged; table herds; runs.jsonl joined with stats_pilot_hour (cost per XP).
 
 What the division flies between two turns (orders ENT-084, P1, P3, P5,
 P6 and block APOPHIS): hunts at the least fuel per XP, fits, a group that
@@ -10,12 +10,13 @@ ring (F33). One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | `rearm-pulse-laser-*` (a hunter without a weapon); the once line; `recursion-parts-*` (the yard's bids, once); the Laser III and Shield Booster II fits (lifted for the role, F17); the Armor Plate II tests; `strip-mining-laser-*` (docked, in the system already) and the Sol lasers to the miners; plasma loaders; `give-drone-stores-*`; last the Atria kit hunts (`hunt-kit-*`, booster ships and the Recursion; Zubenelhakrabi silica-borers, lawless, one ship) | each under its limit | F35; F17; P3; P5 |
-| Own | a cheap near hunt first; far herds; the filler's tests | 1 each | P1; tests |
+| First | `buy-autocannon-rounds-*` (home asks first, The Anvil for Crimson-born); `rearm-pulse-laser-*` (a hunter without a weapon); the once line; `recursion-parts-*` (the yard's bids, once); the Laser III, Shield Booster II and Armor Plate II fits (F17); `strip-mining-laser-*`; plasma loaders; `give-drone-stores-*`; the Atria kit hunts (`hunt-kit-*`) | each under its limit | F35; F17; P3; P5 |
+| Own | a cheap near hunt first; far herds; the filler's tests; three Laser III drones fly `hunt-network` first (its first packs) | 1 each | P1; tests; P7 |
+| Tier-2 rows | `hunt-network-packs` only (packs, escorts, else docked): Recursions, Broadaxes | 7 | P1; F9 |
 | `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps of where they stand, a few `far_ok` 7 to 9 jumps out | 1 each | P6; F38 |
-| `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), near drift rays, pilgrims, carapace, veil rays; at its end herds 2 to 6 jumps out of the home stations, written when 30 ships stood on park (2026-11-24); no hunt at a partner ranch (F2, F4) | 1 each | combat XP; F23 |
+| `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), then every hunt by credits a combat-and-piloting XP over 24 hours, cheapest first; at its end herds 2 to 6 jumps out; no hunt at a partner ranch (F2, F4) | 1 each | combat XP; F23 |
 | Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once, `far_ok`, `standing` (a positioning trip is not judged for pay), one trip to Central Nexus | 6 each | P6, O5 |
-| Then | the guard posts beyond the border (not GSC-0044: first ring), then `park` | 1 each | F8, F33 |
+| Then | the guard posts beyond the border (not GSC-0044: first ring), `hunt-network`, then `park` | 1 each | F8, F33 |
 
 Every hunt carries `gift_to`. What changes it: a herd read back
 (table herds), a pirate at a place (`pirate_places.py`), a reserve good
