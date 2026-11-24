@@ -1,27 +1,27 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table ship_skills; table fields; table ship_modules.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table fields; table ship_modules; data/fleet/upgrade_queue.json.
 
-Turn of orders ENT-085 (iron only where a ship's training needs it). A free
-miner takes the list First, its own routes, then the list Then.
+Turn of orders ENT-086 (3 ships a belt, the dispatcher's cap; no empty
+burn). A free miner takes the list First, its own routes, then Then.
 
 | Route | Ships | For |
 |---|---|---|
-| slot routes (Laser II and III at Ironlight, second and third Laser I at Sol, Cargo Expander at Factory Belt; strip-only in Nexus Prime, admirals ENT-114) | by asks | every utility slot filled |
-| `give-miner-stores-<station>` | 3 each | stores to the receivers (Alpha Centauri off until its receiver stands) |
+| slot routes (Laser II and III at Ironlight, Laser I at Sol, Cargo Expander at Factory Belt) | by asks | every utility slot filled |
+| `give-miner-stores-<station>` | 3 each | stores to the receivers, Alpha Centauri on again |
 | once missions | by route | paid once per pilot |
-| Solarian rows: gives, missions, Furud carbon, Lacaille, Markab, Nihal, Harborlight, Electra | 3, 6, 6, 12, 6, 6 | carbon; Mining skill |
-| Nebula rows: gives, missions, Edasich, GSC-0007, Mekbuda silicon, Bunda, Khambalia, Alrakis | 2, 1, 1, 3, 18, 14 | silicon; Mining skill |
-| `@reserve-prism` / `@reserve-hamal` | 1 to 4 | carbon (Gliese 4, Jishui 2), silicon (Emberglow 3), nickel, quantum fragments |
-| Then | shared | gives; seep 3; Pherkad 3; Node Gamma nitrogen ice 10 (zero jumps, Ice Harvester); Schedar 13; Hamal 30; Okab 25; home-sol-central; `train-jumps-miner`; park |
+| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 (test, max_jumps 12) | far carbon, given at Ramen's Rest |
+| Solarian and Nebula rows: gives, missions, their carbon, silicon and copper-iron gathers | by field | carbon, silicon; Mining skill |
+| `@reserve-prism` / `@reserve-hamal` | 1 to 3 | carbon, silicon, nickel, quantum fragments |
+| Then | 3 a belt | gives; copper-iron gathers floored on copper; the regional belts, each floored on its main good; `train-jumps-miner`; park |
 
-Silicon gathers carry `jettison_gangue` (iron, copper). Miners at Mining
-10 and above take every iron-free route before the iron of Then; the
-miners under 10 train on Hamal and Okab instead of the jump loop.
+Every mine route has a floor (`min_left`, 5% of its field's main good):
+a belt read empty closes until its census reads it grown back. Three
+Resonance Miners stand in the upgrade queue at Node Beta.
 
-What would change it: Hamal and Schedar at their iron floors (hours);
-the Node Gamma ice runs' cost and XP; iron under its max of 80,000.
+What would change it: the Sarin test's three results; the hull quote
+and the first T2 runs; iron under its max of 80,000.
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
 
