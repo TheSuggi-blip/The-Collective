@@ -34,8 +34,13 @@ No ship lost.
 - Fill gate (rule F8): three Voidborn veterans at Piloting 10 and
   Navigation 6 waited at 17:35 UTC; every route of the plan was closed to
   them (train-jumps-miner refuses their levels). mine-network's cap went
-  from 6 to 9 (commit 05d924f0). Gate at 18:18:58 UTC: `PASS: no ship of
-  miner waits`.
+  from 6 to 9 (commit 05d924f0); gate PASS at 18:18:58 UTC. Two more
+  veterans came free at 18:29 and 18:32 UTC with every iron belt at three
+  ships: three one-ship iron tests in new lawless systems, each with a
+  fresh census, iron 100,000 at richness 38 to 61 and no pirate in the
+  dispatcher's six-hour reads (gather-gsc-0049-belt, gather-keid-belt,
+  gather-amberfall-belt; commits 72881038, c8b76cf7; rule F3). Last gate
+  lines, 18:36:14 and 18:38:39 UTC: `PASS: no ship of miner waits`.
 - mine-network, read as P7 asks: five runs on record, 260 to 390 ore a
   run in 46 to 50 minutes, -312 to -391 cr each (runs.jsonl 15:05 to 16:23
   UTC). At 17:08 to 17:10 UTC it claimed Markab water ice for three ships
@@ -49,9 +54,10 @@ No ship lost.
   craft_net counts stock only from the four supply chains, so it asked
   30,000 water ice while the fleet holds 66,663 (tool stock, 17:46 UTC),
   and the best bid anywhere (56 cr, 93 units deep) set its value against
-  11 for iron. mine_net now subtracts table inventory from the craft
-  demand: test red first, green after; the install is in flight (see
-  Problems).
+  11 for iron. A mine_net fix subtracts table inventory from the craft
+  demand (test red first, green after) but is not installed (Problems);
+  until it stands the policy skips water ice (`exclude_resources`, commit
+  2a967f11). The dry run at 18:28 UTC then chose intercrus iron.
 - Third Resonance Miner (u-8): still SOURCING for 30 titanium alloy
   (commission_status 17:3x UTC), the yard bidding 850 x 30. The titanium
   feed route was closed by the six-hour loss stop; it is build work, so it
@@ -73,8 +79,9 @@ No ship lost.
   install runs the whole unit suite and takes longer, so it left its two
   paths modified in the clone until fleet-build recovered them. The second
   install failed on test_fleet_build_trap.py, which passes alone (11 s at
-  18:16 UTC). A third install runs in the background; its result is not
-  verified at the time of writing.
+  18:16 UTC and again after the second failure). The second background
+  install failed the same way: the fix is not installed, and the policy
+  stand-in carries the turn (errors.log).
 - upgrades.serve_upgrades works a 70 s budget per cycle and sorts
   travelling pilots last, after funded rows whose dock calls wait up to
   65 s: two built hulls worth 557,005 cr stood unswitched (errors.log).
@@ -88,8 +95,11 @@ No ship lost.
 
 ## Plans
 
-- Read the third mine_net install's result and the next mine-network
-  claims: iron in atlas and intercrus expected, no water ice. Next turn.
+- Install the mine_net fix once the trap test holds inside an install,
+  then take water ice out of `exclude_resources`; read mine-network's
+  claims (iron in atlas and intercrus expected). Next turn.
+- Read the three one-ship iron tests (GSC-0049, Keid, Amberfall): three
+  runs each before any lift (F3, P7).
 - Read the two switched Resonance Miners: their fit route run, then ore
   and fuel a run against a Threshold on the same belt, before any further
   commission. The third hull after its 30 titanium arrive by the feed
