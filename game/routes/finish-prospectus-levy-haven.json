@@ -2,10 +2,10 @@
  "id": "finish-prospectus-levy-haven",
  "kind": "circuit",
  "title": "Federation Trade Route Prospectus finished: The Levy, then Grand Exchange at Haven (4,000 cr once, held half done)",
- "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO and P1: no hauler waits docked; rules F8, F34). The ship files (data/fleet/ships/hauler-*.json, mission_list, read 06:24 UTC) show Federation Trade Route Prospectus (Levy and Haven open) on 21 held half done by haulers of ours: the board no longer offers it to them (runs of 04:22 UTC: 'not offered'), so the route that accepts it cannot finish it. This route has no accept: it docks at the objectives still open and hands in at the last stop (route_run hands in finished missions at every dock). It stands only in the own rows of the pilots that hold the mission (plan-logistics.md), never in a list for every ship; once per pilot. far_ok: foreign once mission beyond 6 jumps (F34). Pilots: 21.",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO and P1: no hauler waits docked; rules F8, F34). The ship files (data/fleet/ships/hauler-*.json, mission_list, read 06:24 UTC) show Federation Trade Route Prospectus (Levy and Haven open) on 21 held half done by haulers of ours: the board no longer offers it to them (runs of 04:22 UTC: 'not offered'), so the route that accepts it cannot finish it. This route has no accept: it docks at the objectives still open and hands in at the last stop (route_run hands in finished missions at every dock). It stands only in the own rows of the pilots that hold the mission (plan-logistics.md), never in a list for every ship; once per pilot. far_ok: foreign once mission beyond 6 jumps (F34). Pilots: 21. 2026-11-24 13:39 UTC (fill.py, Mercury): max_ships 21 -> 43.",
  "once": true,
  "far_ok": true,
- "max_ships": 21,
+ "max_ships": 43,
  "one_time": [
   "Federation Trade Route Prospectus"
  ],
