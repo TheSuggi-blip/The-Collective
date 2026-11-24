@@ -409,3 +409,12 @@ Failed: my first fill.py install halted (clone not clean four minutes: 126 files
 Requests: answered ENT-494 (ENT-500, ENT-505), ENT-496 (ENT-501), ENT-497 (ENT-502), ENT-498 (ENT-503), ENT-499 (ENT-504); none new.
 Suggestions: to Trinity, build in a fleet-build copy, never the clone (queue ENT-298); my build list Q75 (18)-(21) from the Admirals' suggestions.
 Report: posted-role-gates-five-answers-lift-commits-fixed.
+
+## [ENT-178] | 2026-11-24 09:45 UTC | Oracle | session | ref: reports/2026-11-24_oracle_five-kit-herds-belts-gate-laser-strip-eleven-hails.md | see: orders.log ENT-086
+Session: scheduled run turn-oracle -- five kit herds huntable, a belts gate, scout lasers to Mining, eleven hails.
+Did: kit herds at 3+ in 5 places to Military (admirals ENT-120); 5 ranch, 21 pirate, 0 raid lines; GSC-0007 (a Mining belt, 281 min on a 360-min list) to census-region-haven (f36a6a1a) and a BELTS gate in the turn check (75 belts PASS); strip and give routes for scout Mining Laser I (87ba5b1b, fbf13c12) on 18 Voidborn scouts (3244cfa5); two home readers and one watch reader first; Hail 1/3 to 11 roster leaders; NOIR's reply to Unity (queue ENT-300); guidebook 7abc06f0, 86bb7a0f.
+Worked: freshness 64.8% to 65.6% and division score 60.8 to 64.4, idle 4 to 1 (briefing, scorecard 09:35 UTC); first strip run took its laser off; fill gate PASS 09:28 and 09:42:59 UTC; request ENT-490 closed (ENT-506).
+Failed: the strip stop's gift gave nothing, route_run gives before it unfits (errors.log ENT-178; fixed by a second route); home gaps 11 of 43 over the hour and watch 83 min (plan changed, judged next turn); hull ALARM 0 of 22 by judgment.
+Requests: requests.log ENT-506 (done to ENT-490); queue.log ENT-299 (stray file `=` blocks pushes), ENT-300 (NOIR).
+Suggestions: routes.py check warns on unfit and gift of one item in one stop (ENT-178); Unity decides NOIR's envoy and status; scout hull KPI by fuel a read.
+Report: five-kit-herds-belts-gate-laser-strip-eleven-hails.
