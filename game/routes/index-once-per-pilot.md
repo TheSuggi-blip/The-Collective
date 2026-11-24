@@ -12,11 +12,12 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 91.
+Routes: 92.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [buy-flex-central-nexus-to-node-beta](buy-flex-central-nexus-to-node-beta.json) | circuit | home space | Flex polymer for the Recruitment Center: up to 57 bought at Central Nexus (home, one jump) and put into the faction storage at Node Beta, where the upgrade takes its materials; members of the faction only | once per pilot, up to 1 ships, 3 pilots in all, empty hold, from 15,000 cr, while central_nexus asks 129 cr or less for flex_polymer | 1 | 4 | -6,240 | one-time | 2026-11-22 |
+| [give-mining-laser-scout-central-nexus](give-mining-laser-scout-central-nexus.json) | circuit | home space | A scout in nexus_prime gives the Mining Laser I it stored at Central Nexus to a miner receiver there | once per pilot, up to 5 ships, 30 pilots in all, from 3,000 cr, with 1 mining_laser_i stored at central_nexus | TBD | TBD | TBD | TBD | -- |
 | [mission-ghosts-in-the-cloud-node](mission-ghosts-in-the-cloud-node.json) | circuit | home space | Ghosts in the Cloud: 2000 cr at Node Alpha Processing Station | once per pilot, up to 1 ships | 149 | 3 | 80 | one-time | 2026-11-17 |
 | [mission-workshop-production-run-node-beta](mission-workshop-production-run-node-beta.json) | circuit | home space | Workshop Production Run: 3,500 cr, 25 crafting XP and 20 Piloting XP; accepted at Node Beta, five steel plates smelted there from the pilot's own stored iron, handed in there | once per pilot, up to 4 ships, with 60 iron_ore stored at node_beta_industrial_station | 138 | 5 | 3,210 | one-time | 2026-11-17 |
 | [stock-rc-flex-buy-home](stock-rc-flex-buy-home.json) | circuit | home space | Flex polymer for the Recruitment Center: bought at four home books (Node Alpha, Synchrony, Node Gamma, Node Beta, one jump apart) and put into the faction store at Node Beta; members of the faction only | once per pilot, up to 1 ships, 3 pilots in all, empty hold, from 15,000 cr | 2 | 12 | -4,610 | one-time | 2026-11-22 |
