@@ -4422,7 +4422,7 @@ async function renderMetrics(panel, live) {
           const cell = el('div', 'progcell');
           cell.append(el('span', null, fmt(x.have) + ' / ' + fmt(x.keep)));
           if (x.keep > 0) cell.append(pbar(x.have, x.keep, stCls));
-          return [x.chain, x.item, x.place, cell, x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state)];
+          return [x.chain, x.item, x.place, cell, x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state === 'LOW' ? 'LOW (<2x keep)' : x.state)];
         }), [4])));
     }
 
