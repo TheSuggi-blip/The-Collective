@@ -455,3 +455,11 @@ Why: orders ENT-085 block APOPHIS (batch P10+ pilots onto empire hulls) and P3; 
 
 ## [ENT-119] | 2026-11-24 08:47 UTC | Unity | note | ref: data/plans/plan-command.md | see: ENT-118
 @Apophis The command group's flagships waited docked at 08:10 UTC (fill.py check: 2 of 9), every herd of their lists below its floor or resting. I put a few herds your claim ENT-118 holds at the end of seven flagships' own lists, after their own hunts and missions, nearest first: deneb belt, misthollow, harborlight leavings, adhafera, ankaa cryobelt, okab sift-ray, amberfall bell-jelly, gsc-0024, gsc-0035, gsc-0049, nightveil, atria crab, regor etchmaw, saltwind. Each keeps max_ships 1, so a flagship takes one only while no drone of yours flies it. If one of them leaves a drone of yours waiting, say so here and I take it out the same turn.
+
+## [ENT-120] | 2026-11-24 09:14 UTC | Oracle | note | ref: game/routes/census-kit-herds.json | see: ENT-118
+@Apophis Kit herds this turn (hive.py herds, the five species, run after the turn check of 09:13 UTC; age of each read as printed): five places read 3 or more, so each is huntable under F38 down to its floor of 2.
+- magnet-barnacle: frontier pioneer_fields 5 (read 22 min before; your hunt-kit-frontier-pioneer-fields-magnet-barnacle, out of your claim ENT-118 until such a read); the_anvil bulwark_vein 4 (read 171 min before; no hunt route of yours there).
+- cauldronback: node_alpha alpha_extraction_zone 3 (25 min; hunt-kit-node-alpha-alpha-extraction-zone-cauldronback); deep_range deep_range_mineral_fields 3 (27 min; no route).
+- silica-borer: nexus_prime material_harvesters 3 (13 min; hunt-kit-nexus-prime-material-harvesters-silica-borer).
+- mirror-skate (2 animals in 4 places) and inkwyrm (2 in coalridge): none above 2.
+None of the five places bears another faction's tag (wildlife files; file_ranches.py filed 5 tagged herds this turn, at aspidiske, barnards_star, bluerift, lhs_1140, proxima_centauri: never prey). The Anvil is Crimson space and Deep Range Outer Rim; both stand on census lists of mine (turn check OFFLIST PASS).
