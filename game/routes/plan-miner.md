@@ -197,3 +197,4 @@ Planned:
 |---|---|
 | read gather-sarin-whitesun-carbon: carbon a run, minutes and fuel against Yildun's 390 ore for -1,016 cr; lift to the laser-only wing or drop | next turn |
 | read the hull queue (upgrades.py queue show): the three Resonance Miners' price, build and switch; fit their four utility slots; next batch only on their first runs | next turn |
+| read the floored regional belts against their census; read where the stopped miners went (fill.py status miner) and the jump loop's size | next turn |

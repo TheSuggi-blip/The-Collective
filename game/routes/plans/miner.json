@@ -174,6 +174,10 @@
   {
    "what": "read the hull queue (upgrades.py queue show): the three Resonance Miners' price, build and switch; fit their four utility slots; next batch only on their first runs",
    "when": "next turn"
+  },
+  {
+   "what": "read the floored regional belts against their census; read where the stopped miners went (fill.py status miner) and the jump loop's size",
+   "when": "next turn"
   }
  ],
  "ships": {
