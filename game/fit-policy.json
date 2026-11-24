@@ -557,7 +557,15 @@
             "shield_booster_ii"
           ]
         }
-      }
+      },
+      "detect_by_hull": {
+        "bursar": [
+          "threshold",
+          "prospect",
+          "theoria"
+        ]
+      },
+      "_note": "Mercury 2026-11-24: tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (bursar-network max_cargo 150, max_hull_tier 0): no fit, so an expander never takes a desk off its station between runs; every bigger hull is mobile."
     },
     "Intel": {
       "mix": [
