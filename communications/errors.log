@@ -444,3 +444,10 @@ Cause: upgrades.serve_upgrades works a 70 s budget per wallet cycle and sorts ro
 Effect: 557,005 cr of hulls idle; no loss. Zero switched both by hand with commission.py --switch-only (own skill script, gate hold and release, run in the background, F15 rescue).
 Fix (proposed, upgrades.py is shared): poll building rows (read-only list_ships, one call each) before the dock phase, or give them their own budget. Would it have prevented the original: yes, the poll is what marks a row ready.
 Class: a service whose time budget is spent by slow calls starves the rows sorted last.
+
+## [ENT-197] | 2026-11-24 18:39 UTC | Zero | error | ref: scripts/fleet-build.sh | see: queue.log ENT-307
+What: three installs of one mine_net change (craft demand less table inventory, test red first, `fleet-build.sh test` PASS in the copy) did not land on 2026-11-24 between 17:54 and 18:26 UTC. The first ran in a foreground call that my terminal killed at 600 s, which left its two paths modified in the clone until the next install printed `RECOVERED orphaned fleet-build install from dead pid`; the second and third halted on `scripts/tests/test_fleet_build_trap.py` (test_an_interrupt_puts_the_paths_back_too: AssertionError), which passes alone in the clone (OK at 18:16 UTC and again after the third halt).
+Cause: the install runs the whole unit suite (over ten minutes this evening), longer than a foreground call allows; why the trap test fails only inside an install is not known (not verified: a nested install sharing the clone's lock or state with the running one).
+Effect: the mine_net fix waits; a policy stand-in (`exclude_resources` water_ice, commit 2a967f11) keeps mine-network off a good the fleet holds 66,663 of. No ship harmed.
+Fix: my skill mining-chains now says to start an install in the background; the trap test under an install is for its owner to read (Unity, Trinity).
+Class: a gate that fails only in its own runtime context blocks every install behind it.
