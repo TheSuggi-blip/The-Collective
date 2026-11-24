@@ -1,17 +1,18 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show (applied 2026-11-23 18:25 UTC); fill.py status hauler 17:35 and 19:06 UTC; orders.log ENT-083 (block APOLLO); table runs; data/fleet/receivers.json.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show (applied 2026-11-24 00:24 UTC); fill.py status hauler 00:06 and 00:21 UTC; orders.log ENT-084 (block APOLLO); table runs; data/fleet/receivers.json.
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
 - First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals, Filed in Triplicate included; F34, F35).
-- Own: `@outpost-supply`; the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, closed at the reserve max, F36); `@train-hauler` (orders cap 8).
+- Own: `@outpost-supply`; the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, steel at six stations, closed at the reserve max, F36); `@train-hauler` (orders cap 8).
 - Docked steel where the miners' iron lies: one receiver a station (`handover.py receivers`) standing within a few jumps, its `craft-steel-logistics-<station>` first in its row; Mining's give routes hand the iron over.
 - Capital corridors (`far_ok`, once, standing, `skip_if_booked` the reward they open): Voidborn `join-nova-hauler` (Nova Terra) and `join-rim-hauler` (Frontier); Nebula `join-rim-hauler` then `join-krynn-hauler-foreign`; Rim `join-krynn-hauler-foreign`. At the station the First list's missions open (distance 0). Read the rewards paid per birth (table runs by ships.empire) before a corridor.
 - Newborns (P6): Rim `@newborn-rim` (Frontier's board, no buy routes); Nebula `@newborn-nebula`.
 - Hulls (F17): Prayers wait for a freight step in the runner (lessons.md).
-- Then: `park`, which none should reach.
+- Then: `join-krynn-bloodforge` (any birth not yet paid Blood Forge Requisition goes to Krynn War Citadel, where it and Strategic Readiness open), then `park`. A receiver's own steel route stands before it.
+- An engine restart cuts runs at stop 1 (`Account not found`): a cut once run is no try and rests the route's `retry_minutes` (default 60).
 - What would change it: the capitals' lines all booked (then home and docked crafts); an officer seat on the outpost's iron; a freight step; jobs on our Notice Board.
 
 ### Route Templates
