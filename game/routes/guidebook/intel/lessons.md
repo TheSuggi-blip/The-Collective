@@ -1,7 +1,7 @@
 # Intel guidebook -- Lessons (lessons.md)
 
 ### How this guidebook is kept
-Status: proven. Updated: 2026-11-23. Evidence: rule F14; scripts/guide.py check intel.
+Status: retired. Updated: 2026-11-24. Evidence: rule F14 says the same (a figure named by its call, the caps); scripts/guide.py check intel enforces it.
 
 Kept by Oracle for every member. A figure is named by the call that
 prints it, never copied; a number no record holds is `not measured`.
