@@ -238,7 +238,8 @@ def load_world(data, root, now):
                     world["stations"][poi["base_id"]] = {"system": system, "poi": poi_id, "name": poi.get("name") or poi_id,
                                                          "at": "%s:%s:%s" % (system, poi_id, poi["base_id"]),
                                                          "faction_id": base.get("faction_id"), "market_fee_bps": base.get("market_fee_bps")}
-                resources = [{"id": r.get("resource_id"), "richness": num(r.get("richness")), "remaining": num(r.get("remaining"))}
+                resources = [{"id": r.get("resource_id"), "richness": num(r.get("richness")), "remaining": num(r.get("remaining")),
+                              "max_remaining": num(r.get("max_remaining") or 0)}
                              for r in entry.get("resources") or poi.get("resources") or [] if isinstance(r, dict) and r.get("resource_id")]
                 if resources:
                     world["fields"].append({"system": system, "poi": poi_id, "name": poi.get("name") or poi_id, "type": poi.get("type") or "",
@@ -662,6 +663,11 @@ def mine_candidates(world):
                      "note": "Written by routemaker.py from the field's and the book's readings; an estimate of %d cr per ship-hour, not a measurement. A test: one ship."
                              % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1,
                      "sell": floors}
+        # Default 15% depletion floor (6h turn buffer, protecting belts from draining to 0 between turns)
+        sized = [r for r in live if r.get("max_remaining", 0) >= 500]
+        if sized:
+            primary = max(sized, key=lambda r: (r["max_remaining"], r["richness"]))
+            route["min_left"] = {primary["id"]: max(100, int(round(primary["max_remaining"] * 0.15)))}
         if tool:
             route["requires"] = {"module": tool}
         if lawless(world, field["system"]):

@@ -2,13 +2,13 @@
  "id": "mine-veil-nebula",
  "kind": "mine",
  "title": "Veil Nebula: quantum_fragments, phase_crystal, energy_crystal; stored at Trader's Rest Resort Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 7394 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 17:43 UTC (Unity): one ship until its first RESULT line is read. 2026-11-24 09:52 UTC (Zero): min_left energy_crystal 500 (5% of the field's 5,000, its main good): the route had no floor and its field read 251 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 7394 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-17 17:43 UTC (Unity): one ship until its first RESULT line is read. 2026-11-24 09:52 UTC (Zero): min_left energy_crystal 500 (5% of the field's 5,000, its main good): the route had no floor and its field read 251 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "frontier:veil_nebula",
  "station": "traders_rest:traders_rest_resort_station:traders_rest_resort_station",
  "minutes": 90,
  "max_ships": 1,
  "min_left": {
-  "energy_crystal": 500
+  "energy_crystal": 750
  },
  "measured": {
   "date": "2026-11-24",

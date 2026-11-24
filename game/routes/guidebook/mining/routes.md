@@ -16,7 +16,7 @@ burn). A free miner takes the list First, its own routes, then Then.
 | `@reserve-prism` / `@reserve-hamal` | 1 to 3 | carbon, silicon, nickel, quantum fragments |
 | Then | 3 a belt | gives; copper-iron gathers floored on copper; the regional belts, each floored on its main good; `train-jumps-miner`; park |
 
-Every mine route has a floor (`min_left`, 5% of its field's main good):
+Every mine route has a floor (`min_left`, 15% default of its field's main good for a full 6h turn buffer; keep T2/T3 multi-laser arrays on belts >=25% to avoid the `07-economy.md` `deposit_too_sparse` cliff):
 a belt read empty closes until its census reads it grown back. Three
 Resonance Miners stand in the upgrade queue at Node Beta.
 

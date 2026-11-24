@@ -2,13 +2,13 @@
  "id": "mine-bellatrix",
  "kind": "mine",
  "title": "Wait at Bellatrix Major Belt beside Node Gamma station for whatever regrows (thorium, palladium, iridium, carbon)",
- "note": "On trial 2026-11-15: every deposit of this belt read 0, picked clean by other pilots. The belt lies in the station's own system: no jump. Two questions: what a ship costs here per hour, and whether thorium (stations bid 240 cr) or palladium (371 cr at Node Gamma) comes back for us. Result of the trial with five ships, 2026-11-15 17:37 to 18:50 UTC: two runs of 45 minutes cost 0 cr (no trip to the station was needed) and mined 48 and 0 units; every deposit still read 0 at 18:33 UTC. One ship stays as the watch; the census history records the deposits every half hour. 2026-11-24 09:52 UTC (Zero): min_left carbon_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 0 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
+ "note": "On trial 2026-11-15: every deposit of this belt read 0, picked clean by other pilots. The belt lies in the station's own system: no jump. Two questions: what a ship costs here per hour, and whether thorium (stations bid 240 cr) or palladium (371 cr at Node Gamma) comes back for us. Result of the trial with five ships, 2026-11-15 17:37 to 18:50 UTC: two runs of 45 minutes cost 0 cr (no trip to the station was needed) and mined 48 and 0 units; every deposit still read 0 at 18:33 UTC. One ship stays as the watch; the census history records the deposits every half hour. 2026-11-24 09:52 UTC (Zero): min_left carbon_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 0 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "node_gamma:bellatrix_major_belt",
  "station": "node_gamma:node_gamma_relay_station:node_gamma_relay_station",
  "minutes": 45,
  "max_ships": 1,
  "min_left": {
-  "carbon_ore": 1500
+  "carbon_ore": 4500
  },
  "measured": {
   "date": "2026-11-24",

@@ -2,14 +2,14 @@
  "id": "mine-acubens",
  "kind": "mine",
  "title": "Iron and copper at Acubens Shadow Pocket; ore into storage at Node Beta",
- "note": "For skill, not for money: common ore sells for 1 to 4 cr. Iron 78,496 and copper 94,468 left on 2026-11-15. 2026-11-16 15:13 UTC (Unity): standing work (no ship is idle): 18 ships, nothing sold, the ore into the pilot's storage; the census of 14:3x UTC read iron ore 30,110 and copper ore 77,513; `min_left` closes it under its floor and opens it when the field has grown back. It levels the ships; the copper is not short for the stations (S6), the iron is. 2026-11-16 15:24 UTC (Unity): requires a mining laser: one run of a ship without one ended `Mine rejected` after ten minutes.",
+ "note": "For skill, not for money: common ore sells for 1 to 4 cr. Iron 78,496 and copper 94,468 left on 2026-11-15. 2026-11-16 15:13 UTC (Unity): standing work (no ship is idle): 18 ships, nothing sold, the ore into the pilot's storage; the census of 14:3x UTC read iron ore 30,110 and copper ore 77,513; `min_left` closes it under its floor and opens it when the field has grown back. It levels the ships; the copper is not short for the stations (S6), the iron is. 2026-11-16 15:24 UTC (Unity): requires a mining laser: one run of a ship without one ended `Mine rejected` after ten minutes. 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "acubens:acubens_shadow_pocket",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
  "max_ships": 3,
  "standing": true,
  "min_left": {
-  "iron_ore": 10000,
+  "iron_ore": 15000,
   "copper_ore": 20000
  }
 }

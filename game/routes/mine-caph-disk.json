@@ -2,14 +2,14 @@
  "id": "mine-caph-disk",
  "kind": "mine",
  "title": "Caph Disk: copper_ore, aluminum_ore, prismatic_nebulite; stored at The Levy Customs Station (F23 gather)",
- "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -63 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left iron_ore 1,200 (5% of the field's 25,000, its main good): the route had no floor and its field read 0 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -63 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left iron_ore 1,200 (5% of the field's 25,000, its main good): the route had no floor and its field read 0 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "caph:caph_disk",
  "station": "the_levy:the_levy_customs_station:the_levy_customs_station",
  "minutes": 84,
  "max_ships": 3,
  "lift_to": 3,
  "min_left": {
-  "iron_ore": 1200
+  "iron_ore": 3750
  },
  "measured": {
   "date": "2026-11-24",

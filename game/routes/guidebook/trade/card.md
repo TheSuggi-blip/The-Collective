@@ -1,50 +1,46 @@
 # Trade guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-22. Evidence: the catalog's tables skills and hulls; table ship_skills; browse_ships 2026-11-21.
+Status: proven. Updated: 2026-11-24. Evidence: governance/collective-strategy.md; game/bursar-policy.json; game/fleet/workclass.py; read.db tables hulls, books, ship_listings.
 
-The trader's class in short (rule F14): what it flies and what it
-levels, in that order. Detail: ships.md and levelling.md; the work and
-the plan: routes.md. Sources: the catalog's tables `skills` and `hulls`
-(0.732.0), the trader ship files (table `ship_skills`).
-
-The role in the game's words (spacemolt.com/docs/guides/trader and
-arbitrage, read 2026-11-22): missions first, then arbitrage, then
-crafting; cargo over speed; both ends of a gap read on one side of the
-book; thin far books pay most. Trade Run missions pay XP for the hauls
-the station names. Full notes: Mercury's knowledge file on order books.
+Trade is the fleet's Profit Center across all five empires (Voidborn,
+Nebula, Solarian, Outer Rim, Crimson). Core duties under F23: (1)
+multi-hub `bursar-network` market-making (`bursar-policy.json`, 1
+Bursar per policed/safe station, buy walls + undercut sell ladders),
+(2) final liquidation of Mining/Military handovers and surplus vaults,
+(3) zero-fuel **commercial value-added crafting** at public NPC
+refineries/factories for profit and rival buy-walls (`silver_bar`,
+gourmet rations, components, modules -- Logistics crafts empire
+building materials), and (4) wholesale procurement (including
+`station_core` ~13M cr and cheap rival surplus).
 
 ### Ships
-Status: proven. Updated: 2026-11-21. Evidence: table hulls; browse_ships (all stations, can_fly) through a docked trader, 2026-11-21 19:55 UTC; Logistics' ships.md.
+Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings, books; game/fleet/upgrades.py.
 
-- Tier 0, every trader: Threshold, cargo 65, speed 1, hull 75; a mining
-  laser and a pulse laser.
-- Tier 1 asks no Piloting, and other empires' tier-1 freighters stand on
-  the ship exchange, flyable by our pilots (`browse_ships` with
-  `can_fly`, 2026-11-21 19:55 UTC): Prayer (Outer Rim; cargo 540, speed
-  3, hull 40, no shield, no slot) ten times at Ironlight Crossroads at
-  5,000 cr; Worship (1,100) and Congregation (1,900, speed 1) 18 to 19
-  jumps out. The trader's next hull; the first is tried on one ship
-  (go-ironlight-trader, rule F17).
-- Tier 2, Piloting 10: Apophenia, the Voidborn freighter, cargo 240.
-- Style: dock to dock, never fight, stance flee. A freighter without
-  slots cannot mine: it carries and trades.
+- Tier 0 starters across Voidborn, Nebula, Solarian, Outer Rim, and
+  Crimson (cargo 45-65) should skip straight to Piloting-0 bulk hulls
+  without waiting for Piloting 10: `Floor Price` (400c, P0), `Ledger`
+  (480c, P0, shielded), `Prayer` (540c, P0), or `Congregation`
+  (1,900c, P0). Check `hive.py upgrades trade` or SQL `ship_listings`
+  for live galaxy prices (`upgrades.py queue add` automatically buys
+  cheaper listed hulls via `buy_listed_ship` for instant delivery).
+- Tier 2 (Piloting 10+): `Apophenia` (Voidborn, 240c, shielded) and
+  empire equivalents; check `ship_listings` before commissioning.
+- Fit: `cargo_expander_ii/iii` and `shield_booster_ii` from live
+  Exchange asks (`read.db:books`); strip off-role starter lasers.
+- Style: dock to dock, stance flee, never fight; Bursars stay docked
+  at 0 fuel burn.
 
 ### Skills
-Status: proven. Updated: 2026-11-21. Evidence: table ship_skills 2026-11-21 19:51 UTC; the catalog's table skills; xpsnap.py.
+Status: proven. Updated: 2026-11-24. Evidence: table ship_skills; catalog table skills; `hive.py stats xp`.
 
-In levelling order. Levels: `SELECT skill, level, COUNT(*) FROM
-ship_skills WHERE pilot LIKE 'trader-%' GROUP BY skill, level`
-(2026-11-21 19:51 UTC); XP a turn: `xpsnap.py diff` (skill trade-books).
+In levelling order (inspect live levels via `fleet view=levels`):
 
-| Skill | Why | Trained by | Now (level:ships) | Goal |
-|---|---|---|---|---|
-| Trading | the class skill; more of `analyze_market` | buying and selling, about 1 XP per 100 cr bought; mission rewards | 3:5, 2:29, 1:6 | 3 for all |
-| Crafting | workshop speed with Refining | `@trade-craft` | 6:16, 5:19, 4:4, 10:1 | 6 |
-| Refining | workshop speed; smelting | the smelts of `@trade-craft` | 6:6, 5:14, 4:17, 3:2, 10:1 | 5 |
-| Navigation | fuel and jump time, -1% a level | every jump | 6:2, 5:17, 4:21 | 6 |
-| Piloting | tier-2 hulls at 10, tier 3 at 20 | flying, jumping | 8:20, 7:20 | 10 |
-| Engineering | module CPU and power | crafting components | 0 | later |
-
-Trading lags: it rises by credit volume and the home bids are thin; buys
-for the fleet and far trades train it.
+| Skill | Why | Trained by | Target |
+|---|---|---|---|
+| Trading | class skill; `analyze_market` depth | buying, selling, Bursar orders, Trade Run missions | 3+ all |
+| Crafting | workshop speed for commercial goods | docked NPC-facility commercial crafting | 6+ |
+| Refining | smelting speed (`silver_bar`, alloys) | docked refining runs | 5+ |
+| Navigation | -1% jump fuel and time per level | cross-hub transfers and wholesale buys | 6+ |
+| Piloting | unlocks T2 at 10, T3 at 20 | flights and missions (P0 hulls bypass wait) | 10+ |
+| Engineering | module CPU and power reduction | crafting components and modules | 2+ |

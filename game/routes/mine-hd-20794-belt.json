@@ -2,13 +2,13 @@
  "id": "mine-hd-20794-belt",
  "kind": "mine",
  "title": "HD 20794 Belt: carbon_ore, vanadium_ore, lead_ore; stored at The Anvil Arsenal",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 840 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-18 01:04 UTC (Unity): one ship until its first RESULT line is read. 2026-11-24 09:52 UTC (Zero): min_left carbon_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 108 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 840 cr per ship-hour, not a measurement. A test: one ship. Added as a test by fill.py on 2026-11-18 01:04 UTC (Unity): one ship until its first RESULT line is read. 2026-11-24 09:52 UTC (Zero): min_left carbon_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 108 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "hd_20794:hd_20794_belt",
  "station": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
  "minutes": 52,
  "max_ships": 1,
  "min_left": {
-  "carbon_ore": 1500
+  "carbon_ore": 4500
  },
  "measured": {
   "date": "2026-11-24",

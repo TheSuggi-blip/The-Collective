@@ -87,7 +87,8 @@ def _card_freshness(repo_root, div_lower, active_empires, now):
         return "MISSING card.md"
     age_h = max(0.0, (now - p.stat().st_mtime) / 3600.0)
     txt = p.read_text(encoding="ascii", errors="replace").lower()
-    missing = [e for e in sorted(active_empires) if e not in txt]
+    txt_compact = txt.replace(" ", "").replace("-", "").replace("_", "")
+    missing = [e for e in sorted(active_empires) if e not in txt and e not in txt_compact]
     flags = []
     if age_h > 48.0:
         flags.append(f"stale {age_h:.0f}h")

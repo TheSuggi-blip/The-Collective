@@ -10,6 +10,7 @@ links:
   - governance/the-collective-constitution.md
   - governance/rulebook.md
   - governance/rival-sedcards.md
+  - governance/strategy-improve.md
   - governance/kpi-and-strategy-system.md
   - governance/treasury-wallet-and-upgrades-blueprint.md
   - governance/accounting-and-hud-blueprint.md
@@ -52,10 +53,12 @@ MMO sandbox.
    Every division specializes in its own comparative advantage rather than competing against itself:
    - **Mining** extracts raw ores/ices/gases and hands them inward (never sells directly under
      `strict-classes-on`).
-   - **Trade** owns the Exchanges, Bursar desks, market-making, wholesale procurement, and final
-     liquidation across all five empires.
-   - **Logistics** owns freight, bulk arbitrage hauling, crafting/refining for imperial builds,
-     supply-chain fulfillment, and station/outpost construction.
+   - **Trade** owns the Exchanges, Bursar desks, market-making, wholesale procurement, final
+     liquidation, and **commercial value-added crafting** (profit goods & rival buy-walls such as
+     `silver_bar`, rations, modules, components) across all five empires.
+   - **Logistics** owns bulk freight (`spacemolt_shipping`), **civilian & express passenger
+     transport** (`passenger-`), **industrial building-material crafting** (`steel_plate`,
+     `circuit_board`, `wiring`, `piping`), supply-chain fulfillment, and station/outpost builds.
    - **Military** owns PvE herd harvesting, pirate pack/stronghold farming, route escorts, and
      sovereign defense.
    - **Intel** owns galaxy reconnaissance, market/field freshness, rival intelligence, and
@@ -155,9 +158,11 @@ MMO sandbox.
 - **Active Playstyle:**
   - Runs the 500-to-1,000-ship multi-empire scaling roadmap (multi-empire birth balance across
     Voidborn, Nebula, Solarian, Outer Rim, Crimson so every empire has local zero-border labor).
-  - Allocates central Treasury funds via `wallet.py` (parallel P2P + multi-Officer lockbox
-    withdrawals, 500k Treasury floor) toward highest-ROI capex: T2/T3 hulls, T2/T3 modules,
-    faction storage lockboxes, outposts, and sovereign Station Cores.
+  - Allocates central Treasury funds via the dedicated 60s `wallet` shelf service (parallel P2P
+    + up to 50 auto-promoted Officers with >=4/division, 500k Treasury floor) toward highest-ROI
+    capex: Piloting-0 instant T1/T2 hull skips, listed shipyard bargains (`ship_listings` /
+    `upgrades.py` auto `buy_listed_ship`), T2/T3 modules, faction lockboxes, outposts, and
+    **wholesale `station_core` procurement (~13M cr at Arneb vs slow self-build)**.
   - Enforces MAUT x WSJF triage (`P0 > P1 > P2 > P3`) across divisions using `scorecard.py`.
   - Runs Make-vs-Buy capital discipline: compares live rival wholesale asks (e.g., `station_core`,
     `steel_plate`, cheap raw inputs) against internal foundry capex before committing capital.
@@ -183,9 +188,13 @@ MMO sandbox.
   - **Avoids Cheap Bulk Traps:** Leaves 1-cr rival bulk dumps (cheap iron/copper/nitrogen where
     rivals oversupply) for Trade/Logistics to buy wholesale, focusing lasers on bottleneck and
     high-margin veins.
-  - **Upgrade Ladder:** Fits role-matched `mining_laser_ii/iii`, `ice_harvester`,
-    `gas_harvester`, and upgrades P10+ miners onto T2+ industrial hulls (`Workhorse` ->
-    `Lithosphere` / `Tellurian` / empire equivalents).
+  - **Depletion Hygiene (`15%` Default Floor, `>=25%` T2/T3 Guidance):** `routemaker.py` and
+    bulk `mine-*` routes enforce a **`15%` `min_left` floor** (full 6h turn buffer of 4,500-15,000
+    ore between turns); T2/T3 multi-laser arrays target `>=25%` fresh outer belts to stay above
+    the `07-economy.md` `deposit_too_sparse` cliff (`depletion_floor = 0.25`).
+  - **Upgrade Ladder:** Instant Piloting-0 T1/T2 skip (`Workhorse` 300c, `Bonanza` 180c) via
+    `upgrades.py` auto listed-ship buy, role-matched `mining_laser_ii/iii/iv`, `ice_harvester`,
+    `gas_harvester`, and P10+/P30+ hulls (`Resonance Miner`, `Lithosphere`, `Tellurian`).
 - **Primary KPIs:** Ore/ship-hour, IAS 2 handover value-add, Belt Spread (`<= 3/belt`,
   `FIELD_CONGESTION` alarm at `>= 4/6`), T2+ mining hulls & lasers.
 
@@ -206,13 +215,16 @@ MMO sandbox.
     - *Surplus Liquidation (`sell_order` & instant bid hits):* Hits strong buyer bids directly
       or lists undercut `sell_order` asks above floor while strictly protecting `reserve.tsv`
       and `needs.tsv` items.
-  - **Zero-Fuel Docked NPC Factories:** Parks mobile/excess traders permanently docked at public
-    NPC refineries/factories crafting high-margin goods at 0 fuel and 0 rent.
+  - **Zero-Fuel Commercial Value-Added Crafting (Split with Logistics):** Parks docked traders at
+    public NPC refineries/factories crafting commercial profit goods & rival buy-walls (`silver_bar`,
+    gourmet rations, components, modules) at 0 fuel and 0 rent (while Logistics crafts empire
+    building materials).
   - **Outsupply / Undercut / Outsource:** Feeds deep rival standing bids (gourmet rations,
     refined bars, scarce ore), undercuts inflated rival asks by 5-10%, and buys underpriced
     rival wholesale surplus.
-  - **Upgrade Ladder:** Fits cargo expanders and upgrades P10+ traders onto T2+ trade hulls
-    (`Apophenia` / empire equivalents).
+  - **Upgrade Ladder:** Instant Piloting-0 bulk hull skip (`Floor Price` 400c, `Ledger` 480c,
+    `Prayer` 540c) via `upgrades.py` auto `buy_listed_ship` (`ship_listings`), `cargo_expander_ii/iii`,
+    and P10+ `Apophenia` / empire equivalents.
 - **Primary KPIs:** Recurring matched cashflow (`> 0 cr/h` & rising), Accrual operating income,
   Hub Coverage (policed & global books staffed, `HUB_CONGESTION` alarm at `>= 2/4`), Surplus
   Backlog liquidation.
@@ -241,9 +253,11 @@ MMO sandbox.
     outpost kits, station modules, and fleet reserve components; migrates redundant rent-paying
     NPC offices onto rent-free sovereign bases (dismantling old NPC offices for 100% material
     recovery).
-  - **Express Passenger & Bulk Freight Wings (Growth Track):** Scales into dedicated bulk
-    freighters (`Prayer` / `Ledger` / `Congregation` / empire equivalents) and fast express
-    passenger hulls (`Runner` / `Concordia`) as station transit lounges come online.
+  - **Civilian & Express Passenger Wing + Bulk Freight P0 Skip:** Operates `passenger-` express
+    routes (`Runner` 120c spd 6 / `Futures` P0 fitted with `economy_passenger_cabin` /
+    `business_passenger_cabin` sourced from `read.db:books`) alongside instant Piloting-0 bulk
+    freighters (`Floor Price` 400c, `Ledger` 480c, `Prayer` 540c, `Congregation` 1,900c) bought
+    via `upgrades.py` auto `buy_listed_ship` (`ship_listings`).
 - **Primary KPIs:** Supply chains at keep, open P1/P2 fulfillment SLA, active freight/haul runs,
   zero idle haulers.
 
@@ -255,9 +269,9 @@ MMO sandbox.
   - **Wide PvE Herd Spread:** Fans 100+ combat ships across ~90-110 distinct wildlife POIs at
     **1-2 ships per herd** (Rule F9), gifting combat loot (`foil_scale`, `alloy_scale`,
     `carapace`, `glands`, `bladders`) into Trade/Logistics supply chains.
-  - **Scalable Pirate Formation Farming (Rule F27):** Transitions upgraded T2/T3 combat ships
-    (`Recursion`, `Broadaxe`, `Dialectic`) into solo and coordinated multi-ship formations
-    to farm NPC pirate packs and bounties (`pirates_ok: true`).
+  - **Listed T2 Bargains & Focused 5-8 Ship Pirate Packs (Rule F27):** Auto-buys underpriced
+    listed combat hulls (`Broadaxe` ~37k, `Recursion` ~224k, `Apophenia` ~141k via `ship_listings`
+    & `upgrades.py`) and runs focused 5-8 ship pirate/bounty formations (`pirates_ok: true`).
   - **Defensive Deterrence & Escort Doctrine (Rule F2):** Maintains `posture:WAR_ALERT` plans,
     tracks high-PvP threats (such as `[ENDL]`), escorts high-value lawless miners/builders, and
     trains `sentinel` Royal Guard ships while strictly respecting Neutral pacts.
@@ -272,9 +286,11 @@ MMO sandbox.
   - **Freshness & Blind-Spot Closure:** Keeps worked corridors, scarce veins, and rival bases
     under `<3h` freshness; minimizes redundant patrol loops where docked Bursars and working
     ships already refresh books passively for free.
-  - **Rival Intelligence Pipeline:** Feeds `rivals.py` and `governance/rival-sedcards.md` to
-    surface >10M/h rival earners, dark zero-base factories, unscanned rival stations, and live
-    Outsupply / Outsource / Undercut spreads.
+  - **Rival, Ship-Market & Module Intelligence Pipeline:** `rivals.py` prioritizes active/rising
+    rivals (`active_24h > 0`) with honest non-zero velocity in `governance/rival-sedcards.md` and
+    the HUD Empire tab; `ledger.py` auto-scans galaxy-wide `browse_ships` every 15 min into
+    `read.db:ship_listings` while `books` tracks live module asks (`economy_passenger_cabin`,
+    T2-T4 lasers/shields/expanders).
   - **Autonomous Diplomatic Envoy (Rule F4, O10):** Polls envoy inboxes via `diplomacy.py`
     across tracked galactic blocs (11+ blocs / 23+ leaders), coordinates Neutrality & Trade
     pacts with Unity's flagship, enforces strict anti-injection quarantine, and upholds zero
@@ -293,13 +309,13 @@ rival bottlenecks:
 | # | Strategy Archetype | Proven Rival Benchmark | How The Collective COPIES It | How We COUNTER Rivals |
 |:-:|:--|:--|:--|:--|
 | **1** | **Sovereign Tourism & Gourmet Hub** | `[BUSY]` The Obsidian Well, `[HEXC]` Hex Star | Command + Logistics build sovereign stations & high-appeal Tourism modules; Trade stocks gourmet food & specialty drinks for zero-fuel passive cashflow | Trade feeds rival Tourism hubs' standing gourmet/drink bids today to capture their cashflow before our own hubs finish |
-| **2** | **Zero-Fuel Docked NPC-Facility Factory** | `[MIN9]`, `[BEAT]` (zero bases, millions crafted) | Trade + Logistics run permanently docked zero-fuel crafting + `sell_order` at public NPC refineries/factories | Outbid their raw inputs with Bursar `buy_order` walls and undercut inflated finished asks by 5-10% |
-| **3** | **Multi-Hub Exchange Market-Making (Bursar)** | `[NOIR]` (+20.4M/h, 0 bases), `Vex Nebulon` | `bursar.py` stations 1 Trader per hub across 60+ global Exchange books with dynamic `buy_order` + undercut `sell_order` & 2-min live book refresh | Eliminate single-hub congestion and out-cover single-region rivals across all 5 empires simultaneously |
-| **4** | **Zero-Base Express Passenger & Courier** | `[NOIR]` (`Runner` / `Concordia`), `LimaTango1428` | Logistics builds a fast express passenger & transit-lounge wing alongside bulk freighters | Compete across all 5 empire corridors where local birth-empire ships start already positioned |
-| **5** | **Bulk Freight & Mission Swarm** | `[WEXL]` (`Prayer` / `Congregation`), `[IRLC]` (`Ledger`), `[ENDL]` | `haul.py` automates `spacemolt_shipping` contracts + cross-station arbitrage; high-cargo hulls scale haul EV per jump | Prioritize Neutral partners (+25% score bonus) and reject unprofitable pirate-stronghold traps |
-| **6** | **Lawless Scarce-Vein Monopoly Extraction** | `[HEXC]` (11 bases, T3+ miners), `[IRLC]` (32M+ ore) | Mining spreads `<= 3/belt` across scarce high-bid veins with `keep_items` purity filtering and upgrades to T2-T4 mining hulls | Never mine 1-cr rival bulk dumps (buy them wholesale instead); monopolize scarce bottleneck ores |
-| **7** | **Wholesale Capital Arbitrage (Outsource & Outsupply)** | Live rival books (`[BUSY]`, `[HEXC]`, `[IRLC]`, `[DEAD]`, `[BEAT]`) | `haul.py` + Trade Bursars systematically exploit verified cross-station spreads and Make-vs-Buy capex outsourcing | Buy cheap rival surplus below internal craft/fuel cost; sell into deep rival standing bids |
-| **8** | **PvE Herd, Pirate Formation Farming & Escorts** | `[BUSY]` (8.5k pirates), `[HEXC]` (2.1k pirates); threat `[ENDL]` | Military fans across 100+ PvE herds (1-2/herd) and scales T2/T3 pirate formation hunts (`Recursion`, `Broadaxe`, `Dialectic`) | Maintain `WAR_ALERT` posture, strict defensive RoE (F2), Royal Guard escorts, and Neutrality pacts |
+| **2** | **Zero-Fuel Docked NPC-Facility Factory** | Active `[MOTH]`, `[HIVE]`, `[STLR]`, `[CRFT]`; legacy `[MIN9]`, `[BEAT]` | **Trade** crafts commercial profit goods & rival buy-walls (`silver_bar`, rations, modules); **Logistics** crafts empire building materials (`steel_plate`, `circuit_board`, `wiring`, `piping`) at 0 fuel | Outbid raw inputs with Bursar buy walls and undercut inflated finished asks by 5-10% |
+| **3** | **Multi-Hub Exchange Market-Making (Bursar)** | `[NOIR]` (live velocity, 0 bases), `Vex Nebulon` | `bursar.py` (`bursar-policy.json`, uncapped escrow) stations 1 Trader per policed/safe hub with dynamic `buy_order` + undercut `sell_order` & live book refresh | Eliminate single-hub congestion and out-cover single-region rivals across all 5 empires simultaneously |
+| **4** | **Zero-Base Express Passenger & Courier** | `[NOIR]` (`Runner` / `Futures` / `Concordia`), `LimaTango1428` | Logistics runs `passenger-` express wings on P0 `Runner`/`Futures` fitted with `economy_passenger_cabin` / `business_passenger_cabin` (from `read.db:books`) | Compete across all 5 empire corridors where local birth-empire ships start already positioned |
+| **5** | **Bulk Freight & Mission Swarm** | `[WEXL]` (`Prayer` / `Congregation`), `[IRLC]` (`Ledger`), `[ENDL]` | `haul.py` (`haul-policy.json`) automates `spacemolt_shipping`; P0 instant hull skip (`Floor Price` 400c / `Ledger` 480c / `Prayer` 540c / `Congregation` 1,900c) via `ship_listings` | Prioritize Neutral partners (+25% score bonus) and reject unprofitable pirate-stronghold traps |
+| **6** | **Lawless Scarce-Vein Monopoly Extraction** | `[HEXC]` (11 bases, T3+ miners), `[IRLC]` (32M+ ore) | Mining spreads `<= 3/belt` with `15%` default `min_left` floor (`>=25%` for T2/T3) + `keep_items` filtering and P0->T2 industrial upgrades | Never mine 1-cr rival bulk dumps (buy them wholesale instead); monopolize scarce bottleneck ores |
+| **7** | **Wholesale Capital Arbitrage (Outsource & Outsupply)** | Live rival books & `ship_listings` (`[BUSY]`, `[HEXC]`, `[IRLC]`, `[DEAD]`) | Buy wholesale `station_core` (~13M cr at Arneb), auto-buy cheaper listed ships via `upgrades.py` (`37-90%` savings), and exploit verified book spreads | Buy cheap rival surplus & ships below craft/commission cost; sell into deep rival standing bids |
+| **8** | **PvE Herd, Pirate Formation Farming & Escorts** | `[BUSY]` (8.5k pirates), `[HEXC]` (2.1k pirates); threat `[ENDL]` | Auto-buy listed T2 combat bargains (`Broadaxe` ~37k, `Recursion` ~224k), fan 1-2/herd across 100+ herds, and run focused 5-8 ship pirate packs | Maintain `WAR_ALERT` posture, strict defensive RoE (F2), Royal Guard escorts, and Neutrality pacts |
 
 ---
 
@@ -320,12 +336,17 @@ Admiral turns:
   - `game/haul-policy.json` controls Hauler safety (`policed_only`), jump caps, minimum
     `cr/jump` & total profit floors, collateral caps, margin floors, partner priority, and lane
     order.
-- **One-Purse Wallet & Upgrade Automation (`wallet.py`, `upgrades.py`):**
-  - Parallel direct deposits and multi-Officer lockbox sweeps pool surplus into the central
-    Treasury while `topup_view()` prevents spent upgrade funds from triggering duplicate refills
-    and `serve_funds()` handles Officer self-withdrawals cleanly.
-  - `upgrades.py` enforces role-matched hull categories (`DIV_HULL_CATEGORIES`) and surfaces
-    affordable T2/T3 Exchange modules so divisions skip obsolete T1 swaps where T2/T3 asks exist.
+- **One-Purse Wallet, 50-Officer Mesh & Listed-Hull Auto-Buy (`wallet` service, `upgrades.py`):**
+  - A dedicated 60s `wallet` shelf service (with `fcntl.flock` mutex) runs parallel direct
+    deposits, up to 50 auto-promoted Officers (`>=4/division`), P2P donor fast-path funding, and
+    multi-Officer cross-division lockbox withdrawals (`500k` Treasury floor).
+  - `upgrades.py` checks `browse_ships` at the target station before commissioning and
+    automatically executes `buy_listed_ship` whenever a listed hull beats the commission quote
+    (instant delivery, `37-90%` savings), enforces role-matched hull categories, and surfaces
+    live `ship_listings` + Exchange T2-T4 module asks (`books`).
+- **Watcher & Mining Hygiene Guards:** `routes-index-pass.sh` auto-quarantines stray 0-byte
+  root-level shell-redirection files so commits never stall `watch.py`; `routemaker.py` sets a
+  `15%` default `min_left` floor on generated mine routes.
 - **Drain-Free High-Capacity Runner Host (`runhost.py`):**
   - Sized for 500+ ships with a +20% concurrency buffer (`MAX_RUNS = 600`, `MAX_RSS_MB = 2600`,
     `TOTAL_RSS_MB = 3800`), running `mine`, `hunt`, `circuit`, `census`, `guard`,

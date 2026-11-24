@@ -2,7 +2,7 @@
  "id": "mine-hd-20794-ice-fields",
  "kind": "mine",
  "title": "HD 20794 Ice Fields: water_ice, nitrogen_ice, carbon_dioxide_ice; stored at The Anvil Arsenal",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2321 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). The Anvil Arsenal (Crimson, 20 jumps from home) bids water ice 42 cr, 60 units an hour (routemaker.py, 23:01 UTC); three candidates sell into it, so one ship only. The field was read 2026-11-17 16:42 UTC (41,810 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not there. Hold empty on the way out (rule F3). 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes. 2026-11-24 09:52 UTC (Zero): min_left nitrogen_ice 2,500 (5% of the field's 50,000, its main good): the route had no floor and its field read 50,000 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2321 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). The Anvil Arsenal (Crimson, 20 jumps from home) bids water ice 42 cr, 60 units an hour (routemaker.py, 23:01 UTC); three candidates sell into it, so one ship only. The field was read 2026-11-17 16:42 UTC (41,810 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not there. Hold empty on the way out (rule F3). 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes. 2026-11-24 09:52 UTC (Zero): min_left nitrogen_ice 2,500 (5% of the field's 50,000, its main good): the route had no floor and its field read 50,000 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
  "belt": "hd_20794:hd_20794_ice_fields",
  "station": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
  "minutes": 46,
@@ -27,6 +27,6 @@
   "last_run": "2026-11-24T00:32:14Z"
  },
  "min_left": {
-  "nitrogen_ice": 2500
+  "nitrogen_ice": 7500
  }
 }
