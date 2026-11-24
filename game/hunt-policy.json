@@ -13,32 +13,41 @@
   "exclude_systems": [],
   "exclude_pois": [],
   "exclude_species": [],
-  "partner_factions": ["HEXC", "IRLC", "NOIR"],
+  "partner_factions": [
+    "HEXC",
+    "IRLC",
+    "NOIR"
+  ],
   "gift_to": "trader",
   "escort": {
     "enabled": true,
-    "max_ships": 12,
+    "max_ships": 1,
     "max_fleet_share": 0.15,
     "threat_window_h": 4.0,
     "auto_protect_lawless_civilians": true,
     "protect_pilots": [],
     "protect_places": [],
     "max_jumps": 10,
-    "min_power": 350.0,
+    "min_power": 1500.0,
     "minutes": 45
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.25,
-    "sizes": [3, 5, 8, 10],
-    "min_power_ratio": 1.80,
-    "pirate_min_power_ratio": 2.20,
-    "pirates_enabled": true,
-    "pirate_tiers": ["scout", "raider"],
-    "min_member_power": 420.0,
+    "target_share": 0.02,
+    "sizes": [
+      3
+    ],
+    "min_power_ratio": 1.8,
+    "pirate_min_power_ratio": 2.2,
+    "pirates_enabled": false,
+    "pirate_tiers": [
+      "scout",
+      "raider"
+    ],
+    "min_member_power": 900.0,
     "min_target_hull": 85,
     "rally_max_jumps": 8,
-    "rally_timeout_s": 150,
+    "rally_timeout_s": 600,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
@@ -66,7 +75,7 @@
     "enabled": true,
     "min_power_ratio": 1.35,
     "ideal_ratio_low": 1.45,
-    "ideal_ratio_high": 3.20,
+    "ideal_ratio_high": 3.2,
     "max_jumps": 10,
     "kills_per_run": 6,
     "alone": true,
@@ -76,5 +85,6 @@
     "enabled": true,
     "max_jumps": 6
   },
-  "rest_seconds_when_empty": 120
+  "rest_seconds_when_empty": 120,
+  "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results."
 }
