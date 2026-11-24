@@ -1,18 +1,17 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check (applied 2026-11-24 10:06 UTC); fill.py status and check hauler 10:04 to 10:09 UTC; runs.jsonl of haul-network 08:50 to 09:55 UTC; requests.log ENT-500, ENT-504; orders.log ENT-086 (block APOLLO).
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check (applied 2026-11-24 12:47 UTC); fill.py status and check hauler 12:04 to 12:50 UTC; runs.jsonl 2026-11-24; requests.log ENT-504, ENT-511, ENT-513; orders.log ENT-087 (block APOLLO).
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), Sol's paid loop, then the `finish-*` routes of missions held half done.
-- Own: `finish-*` in the holders' rows; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows.
-- Then: `craft-steel-faction-gsc-0044` (the outpost's faction iron, `requires.role` officer, one ship first), `buy-steel-reserve-central-nexus` (docked buy that only stores, `open_to` hauler by ENT-504, max 20 cr, closed by `held_below` steel 90,000 of Logistics), the far joins (`skills_below` corporation_management 7 so the Builder stays home), `haul-network`, `park`.
-- `haul-network` (haul.py, game/haul-policy.json): lanes freight and internal supply only. Its arbitrage lane lost 239,167 cr in its first hour and is Trade's class (orders P5): out since 2026-11-24 10:01 UTC. A Threshold or Cobble carries no freight package (100 cargo).
-- Buying iron for steel is off the plan while iron stands over its max (orders P2).
-- Hulls (F17): Prayer (540, Outer Rim yards) waits for work that fills its hold; Workhorse and Ledger are prestige hulls (achievement_required).
-- What would change it: freight a hull can carry; the officer route's first RESULT; Trade's word on the goods left in hauler holds.
-
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), Sol's paid loop, the `finish-*` routes of missions held half done.
+- Own: `finish-*` in the holders' rows only; `@newborn-nebula` (Grand Exchange's once lines, First Links with nickel bought there), `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row (`Stored goods`).
+- Then: `buy-steel-reserve-central-nexus` (docked buy that only stores, ENT-504, closed by `held_below` steel 88,000 of Logistics), `builder-home-node-beta` (the Builder home once), `buy-carbon-reserve-node-beta` (4 cr, `in_system` node_beta, `held_below` carbon 57,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network`, `park`.
+- `haul-network` (haul.py, game/haul-policy.json, Trinity's): freight, supply and fresh-book arbitrage (restored 2026-11-24 11:51 UTC, orders O3); its job count is bounded by its claims, not by ships; its runs are read each turn.
+- Off: the officer steel route on the outpost's faction iron (an outpost's faction store gives nothing out, topic-bases). Buying iron for steel stays off while plate asks 18 cr.
+- Hulls (F17): no bulk hull while no freight or carry fills it (Prayer flown: no pay).
+- What would change it: ENT-513 (the iron count), freight a hull can carry, the Grand Exchange missions without a route.
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
 
@@ -30,13 +29,14 @@ The templates: `outpost-supply`, `train-hauler`, `stored-goods` (Trade's sell an
 No list of routes that did not pay (rule F22): a credits figure here is a dated reading, never a verdict.
 
 ### Stored goods sold or carried (template `stored-goods`)
-Status: proven. Updated: 2026-11-21. Evidence: runs table 2026-11-15 to 17; game/routes/templates/logistics.json.
+Status: proven. Updated: 2026-11-24. Evidence: runs table 2026-11-15 to 17; game/routes/templates/logistics.json; storage views of a Synchrony Hub receiver 2026-11-24 12:06 and 12:20 UTC (admirals.log ENT-127).
 
 - Fit: none. Trains trading (each sale) and navigation (each jump).
 - Steps: at the stop that sells, `withdraw` takes from the pilot's own storage what the bid takes at its best price and `sell` puts it in; the rest goes back by `store`. A carry withdraws at the storing station and sells one hop away.
 - Opens: `requires.stored` (only the pilot that stores the good) and `requires.bid` (a book of the last hour shows the bid at its floor); `max_ships` 1: a pool bid takes one load.
 - Closes: the bid gone; the good sold out of that pilot's storage.
 - The bids, not the haulers, bound it: soma into pools of 1 to 4 at 559 to 694 cr, armor plate into pools of 3 to 6, 200 hydrogen gas made into 75 liquid hydrogen and 42 sold at 116 cr (+4,798 cr in about 20 minutes, 2026-11-16).
+- A give route that hands stores to the station's hauler receiver never stands in a hauler's own row: two receivers at one station that both fly it give each other their stores, and each one's steel run then finds no iron (2026-11-24: 3,953 iron gone from one receiver in 14 minutes).
 
 ### Crafting what we build with (template `craft-reserve`, and hand chains)
 Status: proven. Updated: 2026-11-21. Evidence: route files and RESULT lines 2026-11-17 00:03 to 2026-11-18 00:12 UTC; queue.log ENT-128; admirals.log ENT-065; requests.log ENT-190, ENT-200.

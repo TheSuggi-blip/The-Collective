@@ -55,3 +55,11 @@ Atria, the north outpost (the Fleet Admiral's choice), is funded (ENT-326: the b
 - The founding: found.py from Node Beta by Schedar, GSC-0050, Brachium, Nightveil, Acrab, Atria (6 jumps); 100,000 cr, the treasury.
 - Its bunker: our own cells, as at GSC-0044.
 - The place: Atria Belt aluminum, gold; Ice Fields water, nitrogen, deuterium; Emission Nebula argon, neon, hydrogen. Nearest fuel and market: 6 jumps.
+
+### An outpost's faction store: goods go in, nothing comes out
+Status: proven. Updated: 2026-11-24. Evidence: runs.jsonl of craft-steel-faction-gsc-0044 (2026-11-24, 32 runs 'faction withdraw iron_ore: refused'); a one-unit hand test by an Officer docked at GSC-0044 (2026-11-24 12:14 to 12:20 UTC); the game's help of storage; game/rules/07-economy.md (Crafting); requests.log ENT-513.
+
+- At an outpost a faction withdraw is refused with `no_storage: This station does not offer storage`, with `target: self` and with no target: a withdraw from the faction's storage goes to the pilot's personal storage (manage_treasury), and an outpost has none.
+- Deposits work (`store_faction` from the hold, fuel into the bunker), so goods put there stay there: the outpost's own stock (repair goods, bunker fuel), never a store to draw from.
+- A craft draws on the hold, then the pilot's storage at the station, never on the faction's storage: a production facility at the outpost would not reach it either.
+- So no route stores ore at an outpost for later use, and the reserve's and the chains' counts leave an outpost's faction store out (ENT-513).
