@@ -19,7 +19,7 @@ ENT-090 (block APOPHIS: read hunt-network's first packs and escorts, one
 pack first above the starters' gauges, ammunition with every armed hull
 bought, guard outward, never a tagged animal). The division flies 140
 ships: 95 drones, 35 lent sentinels and the ten flagships that now fly the
-sentinel lists (fleetfile.py 21d4567). No ship was lost in 24 hours
+sentinel lists (fleetfile.py --commit, 19:03 UTC). No ship was lost in 24 hours
 (stats_pilot_hour, key ships_lost, unix-hour query: 0 rows). Hunts since
 16:26 UTC: 393 runs, 854 kills, 127 runs without a kill, -78,149 cr, -451
 cr a hunter-hour (hunt_figures.py). Military's last hour read -63,647 cr at
