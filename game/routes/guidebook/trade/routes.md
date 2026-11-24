@@ -3,7 +3,7 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 13:23 UTC; ship files mission_list 13:05 UTC; orders_scan.py of 85 traders 13:06 UTC; table ship_listings 13:17 UTC; errors.log ENT-187, ENT-190.
 
-The plan file as set on 2026-11-24 at 13:35 UTC (orders ENT-087,
+The plan file as applied on 2026-11-24 at 13:14 UTC (orders ENT-087,
 block MERCURY of ENT-086):
 
 - First, every ship: the once line of every board; the Station Needs
