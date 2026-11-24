@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 674.
+Routes: 676.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -555,6 +555,7 @@ Routes: 674.
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | mine | beyond the border, 7 jumps | A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | mine | beyond the border, 20 jumps | A test: Mining-skill work for Nebula-born miners: ore of Alrakis Commerce Vein into storage at Cargo Lanes Freight Depot (one jump) | up to 3 ships, empty hold, born nebula, standing work | 21 | 34 | -210 | -370 | 2026-11-24 |
+| [gather-amberfall-belt](gather-amberfall-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test of one ship: iron at Amberfall Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-atlas-belt](gather-atlas-belt.json) | mine | beyond the border, 6 jumps | Standing work, a test: iron at Atlas Belt (beyond the border, 3 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | 6 | 47 | -380 | -480 | 2026-11-24 |
 | [gather-botein-belt](gather-botein-belt.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Botein Belt (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | 6 | 49 | -450 | -560 | 2026-11-24 |
 | [gather-botein-lampglint-rock](gather-botein-lampglint-rock.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Botein Lampglint Rock (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | 3 | 46 | -320 | -400 | 2026-11-24 |
@@ -587,6 +588,7 @@ Routes: 674.
 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | mine | beyond the border, 15 jumps | A test: quantum fragments (with the iron and copper of the deposit) gathered at Tall Tale Nebula, Izar, into storage at Ramen's Rest, Last Light (two jumps) | up to 1 ships, empty hold, standing work | 3 | 125 | -560 | -270 | 2026-11-24 |
 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | mine | beyond the border, 11 jumps | A test: nickel ore gathered at Long Errand Band (Jadecove, lawless) into storage at The Crescent Moon (Mebsuta, four jumps) | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | mine | beyond the border, 11 jumps | A test: carbon ore gathered at Plainrock Field (Jishui, lawless) into storage at The Crescent Moon (Mebsuta, eight jumps) | up to 2 ships, empty hold, standing work | 9 | 28 | -50 | -40 | 2026-11-24 |
+| [gather-keid-belt](gather-keid-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test of one ship: iron at Keid Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | mine | beyond the border, 23 jumps | A test: Mining-skill work for Nebula-born miners: ore of Khambalia Crystal Market into storage at Factory Belt Manufacturing Hub (one jump) | up to 1 ships, empty hold, born nebula, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | mine | beyond the border, 9 jumps | A test: Mining-skill work for Solarian-born miners: ore of Lacaille 9352 Deep Vein into storage at Nova Terra Central (one jump) | up to 1 ships, empty hold, born solarian, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | mine | beyond the border, 15 jumps | A test: carbon ore (with the aluminum and tungsten of the field) gathered at Last Light Mineral Fields into storage at Ramen's Rest, in the same system | up to 1 ships, empty hold, standing work | 5 | 88 | -280 | -230 | 2026-11-24 |

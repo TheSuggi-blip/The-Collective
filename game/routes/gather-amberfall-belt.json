@@ -1,0 +1,18 @@
+{
+ "id": "gather-amberfall-belt",
+ "kind": "mine",
+ "title": "Standing work, a test of one ship: iron at Amberfall Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta",
+ "note": "Written by Zero 2026-11-24 18:33 UTC (orders ENT-090 block ZERO: iron gathers under 60,000 usable iron, stored where it can be taken out; rules F3, F23). Iron reads short (45,281 of keep 60,000, supply show 17:35 UTC); every iron belt of the plan and of mine-network stands at three ships and Voidborn veterans still wait (fill.py status 18:32 UTC). The belt read iron 100,000 of 100,000 at richness 61 and copper 100,000 (table fields, census 18:20 UTC); outside the dispatcher's six-hour pirate reads. A new lawless system: one ship, empty hold, until three runs hold (F3, P7); stores at Node Beta where give-miner-stores-node-beta and its receiver stand; floor 20,000 iron.",
+ "belt": "amberfall:amberfall_belt",
+ "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "minutes": 45,
+ "max_ships": 1,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 1
+}
