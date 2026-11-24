@@ -5,3 +5,5 @@
 # Form: time UTC | in or out | channel | who | text
 2026-11-24 09:27 UTC | out | private | own ship -> Marlowe | (private message, 377 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
 2026-11-24 09:31 UTC | in | private | Marlowe [NOIR] | (private message, 438 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
+2026-11-24 14:56 UTC | out | private | own ship -> Friday | (private message, 430 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
+2026-11-24 14:57 UTC | in | private | Friday [NOIR] | (private message, 347 characters; the text is in the unit's data folder: `game/fleet/inbox.py show --to-us`)
