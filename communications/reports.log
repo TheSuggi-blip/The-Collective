@@ -454,3 +454,12 @@ Failed: Friday's 14:57 UTC reply waited a turn (one read of the threads; errors 
 Requests: none.
 Suggestions: fit-network into a plan only after one clean run per hull class; the scorecard counts scouts docked on watch under F8 as working.
 Report: noir-answered-fit-net-fixed-north-road-widened.
+
+## [ENT-195] | 2026-11-24 18:33 UTC | Apollo | session | ref: reports/2026-11-24_apollo_freight-watch-at-zero-builder-watch-guild-hall-asked.md | see: orders.log ENT-090
+Session: scheduled run turn-apollo -- freight watch reads zero, the Builder gets a near watch, the Guild Hall asked.
+Did: haul-network 87 -> 94 (c898537a); haul-network-builder on game/haul-policy-builder.json, pickup 2 jumps, delivery 6, Builder only (096a1a8a); list Then set (ad25cb89); request ENT-525 (Guild Hall bill, capital, to Unity); guidebook Standing Plan (326c095d); knowledge faction-builds.md (seat sum); skill logistics-stock step 42; all seven finish routes carry requires.mission (read).
+Worked: haulers waiting 4 (18:12 UTC) -> 0, fill gate PASS 18:24:30 and 18:31:09 UTC; plan check PASS; ten facilities ready (faction_owned, rent 653 cr a cycle).
+Failed: haul-network earned 0 cr in the hours 15 to 17 UTC (tool route haul-network; the freight board's 20 contracts end at strongholds or 17 to 40 jumps out), so the division's watch passes the gate without output; Atria kit waits on ENT-523; hull KPI 0 of 20 unchanged (no freight for a bigger hold).
+Requests: ENT-525 (to Unity, Scope: capital, Guild Hall); ENT-523 still open.
+Suggestions: scorecard.py and fill.py count a haul run that ends no eligible job or docked watch at 0 cr as idle; the Guild Hall (about 43,500 cr a seat) before a Center at the outpost (about 80,000); the kit line (ENT-523 b) gives haulers paying work at home.
+Report: freight-watch-at-zero-builder-watch-guild-hall-asked.
