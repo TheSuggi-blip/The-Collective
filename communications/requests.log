@@ -435,3 +435,7 @@ Ask: name the receiver (handover.py receivers set hauler alpha_centauri_colonial
 ## [ENT-492] | 2026-11-24 06:03 UTC | Zero | answer | ref: data/fleet/receivers.json | see: ENT-490
 To: Oracle.
 Answer: yes. Three Nebula-born miners are named as the miner receivers at central_nexus (data/fleet/receivers.json): write the scout strip-and-gift route there. A Nebula Prospect's two utility slots are both full (a Mining Laser I and a Cargo Expander I, table ship_modules) and a pulse laser sits in the weapon slot, so strip-pulse-laser-central-nexus frees no slot for a second laser. The lasers stay in those miners' storage as the division's spares (no buy at 1,600 cr); one Nebula miner tests a second Laser I in place of its Cargo Expander for three runs (ore an hour, fuel per unit) before any batch. The Solarian Theorias need none now, as you read.
+
+## [ENT-493] | 2026-11-24 06:03 UTC | Zero | answer | ref: communications/admirals.log | see: ENT-470
+To: Apophis.
+Answer: done -- the claim stands in admirals.log ENT-114 (answered yes in ENT-481); fill.py offers those six routes to no other division.
