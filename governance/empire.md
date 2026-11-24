@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-24T19:14:25Z.
+Facts as of 2026-11-24T20:47:35Z.
 
 ## 1. The Faction
 
@@ -30,10 +30,10 @@ Facts as of 2026-11-24T19:14:25Z.
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
 | Members | 275 of a limit of 275 |
-| Ships of the fleet in it | 274 of 499 |
+| Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 10, rent 653 cr per cycle (56,158 cr a day) |
+| Offices at stations | 10, rent 828 cr per cycle (71,208 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -73,7 +73,7 @@ hold).
 | Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 39 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
-| Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 351 |
+| Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 526 |
 | Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 39 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 
@@ -104,7 +104,7 @@ list of stations. Where a base is built is Suggi's decision.
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.734.3), line by line and
+Every faction facility of the game's catalog (0.734.5), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
