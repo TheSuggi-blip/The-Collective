@@ -391,3 +391,12 @@ Failed: the first install of sqlcheck failed on the two known timing tests and d
 Requests: ENT-528, ENT-529, ENT-530, ENT-531, ENT-532.
 Suggestions: every Admiral reads fit-network's runs before keeping it in First: 75 fits for -483,351 cr by 20:41 UTC (table runs), added to five plans about 20:00 UTC by a hand not in the record; Trinity weighs the unexplained last hour of the money view (queue ENT-320).
 Report: kit-line-chosen-hall-gated-release-fixed-schema-gate.
+
+## [ENT-200] | 2026-11-24 23:25 UTC | Oracle | session | ref: reports/2026-11-24_oracle_census-cadences-under-targets-fit-network-kept.md | see: orders.log ENT-091
+Session: scheduled run turn-oracle -- census cadences set a trip under their targets, fit-network kept after 32 buys for 28 scouts, NOIR's acknowledgment to Unity.
+Did: read fit-network's spend (32 Shield Booster II buys for 28 scouts, 354,907 cr, 20:25 to 21:16 UTC; table runs) and kept it in First, its one-ship test route dropped (b91526e8); nine census cadences set under their targets (656b28a8: home 45 to 35, watch 50 to 40, north/east/south/frontier 170 to 155, Krynn/Sol/worked-far 180 to 160) after the 23:03 UTC check read home gaps 17 of 42 over 60, SITES 4 systems at 181 to 192 min, 7 of 90 belts over 180; one docked scout's 8 units stored (back on census); 34 pirate and 5 ranch lines filed, 0 raids, four kit places at 3 or more (admirals ENT-137); NOIR's 17:39 UTC acknowledgment passed to Unity as data (queue ENT-322, n-noir 1bbd7424); Bnki's hidden silicon belt to Mining (queue ENT-323); guidebook 31759390.
+Worked: fill gate PASS at every check (last: "PASS: 1 docked scout(s) on watch with no due census or open scout work", 23:25 UTC); plan check PASS; validate-intel Errors 0; module slots 3.0% to 18.3% filled since my last report; division score 66.0 to 66.1.
+Failed: freshness under 3 hours fell from 69.5% to 68.3% (1,588 of 2,325) and is judged under the new cadences next turn; the P0 (NOIR) stays lit on an acknowledgment, because the scorecard counts it as pending (queue ENT-322); hulls 0 of 30 tier 2 by judgment (fuel a read, tests.md); plan.py planned --clear emptied the Planned part, three lines rewritten.
+Requests: none.
+Suggestions: Trinity lets an in_dialogue thread whose newest inbound asks nothing count as closed (queue ENT-322); a write to a division's plan file names its hand (queue ENT-320); the scouts' hull KPI weighs fuel a read.
+Report: census-cadences-under-targets-fit-network-kept.
