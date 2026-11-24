@@ -1,0 +1,42 @@
+{
+ "id": "buy-autocannon-rounds-node-beta",
+ "kind": "circuit",
+ "title": "Autocannon ammunition at home: standard rounds boxes at Node Beta Industrial Station",
+ "note": "Written by Apophis, 2026-11-24 15:57 UTC (orders ENT-089 block APOPHIS: ammunition with every armed hull bought). Node Beta Industrial Station asks 1 cr a standard rounds box (books 15:55 UTC: Central Nexus 141,779 units, Node Beta 14,123), against 6 at The Anvil, which a listed Broadaxe with a 120-fuel tank cannot reach (two runs 'stop 1 not reached', 15:31 UTC). One box fully loads an autocannon magazine (catalog); four a pilot, once: two load the guns at the next hunt, two spare. open_to drone and sentinel (rule F23, the Admiral's exception: ammunition for the ship's own fitted guns, nothing sold). Standing: judged by kills, not by its fuel. Booked once.",
+ "once": true,
+ "standing": true,
+ "max_ships": 3,
+ "max_pilots": 20,
+ "min_credits": 3000,
+ "requires": {
+  "module": [
+   "autocannon_i",
+   "autocannon_ii"
+  ],
+  "ask": {
+   "item": "standard_rounds_box",
+   "base": "node_beta_industrial_station",
+   "max_price": 2,
+   "min_qty": 20,
+   "max_age_minutes": 180
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "buy": [
+    {
+     "item": "standard_rounds_box",
+     "qty": 4,
+     "max_price": 3,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  }
+ ],
+ "open_to": [
+  "drone",
+  "sentinel"
+ ]
+}

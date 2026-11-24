@@ -12,13 +12,15 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 662.
+Routes: 664.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 5 ships | 190 | 7 | -90 | -720 | 2026-11-22 |
 | [builder-home-node-beta](builder-home-node-beta.json) | circuit | home space | The faction's Builder flies home to Node Beta Industrial Station, the build site, once (Logistics) | once per pilot, up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [bursar-desk-experiment](bursar-desk-experiment.json) | circuit | home space | Station Bursar desk at The Experiment: neon made into ionized neon by hand, the pilot's own surplus ionized neon and liquid nitrogen listed under the station's asks, a 15-minute docked watch | up to 1 ships, standing work | 180 | 18 | -70 | -210 | 2026-11-24 |
+| [buy-autocannon-rounds-central-nexus](buy-autocannon-rounds-central-nexus.json) | circuit | home space | Autocannon ammunition at home: standard rounds boxes at Central Nexus | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr, while central_nexus asks 2 cr or less for standard_rounds_box, standing work | TBD | TBD | TBD | TBD | -- |
+| [buy-autocannon-rounds-node-beta](buy-autocannon-rounds-node-beta.json) | circuit | home space | Autocannon ammunition at home: standard rounds boxes at Node Beta Industrial Station | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr, while node_beta_industrial_station asks 2 cr or less for standard_rounds_box, standing work | TBD | TBD | TBD | TBD | -- |
 | [buy-carbon-reserve-node-beta](buy-carbon-reserve-node-beta.json) | circuit | home space | Carbon ore for the reserve bought docked at Node Beta Industrial Station at the 4 cr ask and stored there (Logistics' haulers, standing work at home) | up to 2 ships, while node_beta_industrial_station asks 4 cr or less for carbon_ore, standing work | TBD | TBD | TBD | TBD | -- |
 | [buy-steel-reserve-central-nexus](buy-steel-reserve-central-nexus.json) | circuit | home space | Steel plate for the reserve bought docked at Central Nexus at the 18 cr ask and stored there (Logistics' haulers, standing work at home) | up to 1 ships, while central_nexus asks 19 cr or less for steel_plate, under corporation_management 7, standing work | 31 | 0 | -1,180 | -127,710 | 2026-11-24 |
 | [craft-armor-military-central-nexus](craft-armor-military-central-nexus.json) | circuit | home space | Armor plate made at Central Nexus from all of the pilot's own stored creature carapace in one visit, kept in its storage there for the reserve; a drone's or sentinel's fallback before it gathers | up to 6 ships, with 30 creature_carapace stored at central_nexus, standing work | TBD | TBD | TBD | TBD | -- |
