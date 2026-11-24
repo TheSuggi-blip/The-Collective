@@ -1,34 +1,33 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show; fill.py status trader 07:03 and 07:33 UTC; view_orders of four desk pilots 07:05 UTC (contracts.log ENT-008); data/missions and table books 06:50 to 07:23 UTC; route tool runs 07:23 to 07:37 UTC.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 10:58 UTC; view_orders of 85 traders 10:37 UTC; bursar_claims.json; data/missions 10:43 UTC; errors.log Mercury 2026-11-24 (bursar buy lane).
 
-The plan file as set on 2026-11-24 at 07:40 UTC (orders ENT-085,
+The plan file as set on 2026-11-24 at 11:00 UTC (orders ENT-086,
 block MERCURY):
 
 - First, every ship: the once line of every board; the Station Needs
-  and the far bids for stored loot, each gated by `requires.stored` so
-  only a holder goes (`need-ember-gland-crucible`, `need-melt-crucible`,
-  `need-melt-frontier`, `sell-ember-first-step-dheneb`,
-  `sell-ember-synchrony-dheneb`); Krynn's Workshop Production Run (39
-  traders without it, 10 at a time); a Cargo Expander II for the
-  traders docked at Krynn (the ask's 26).
+  (`need-melt-frontier`, `need-melt-crucible`, `need-ember-gland-*`),
+  each gated by `requires.stored` and `requires.posted` (the board read
+  by a docked ship of ours within 30 minutes holds the title), then the
+  far bids for stored loot.
 - Own rows: the join corridors, the capitals' lines, `@trade-sell >
   @trade-craft`.
-- Then, gated to where each ship stands: the starters stripped once,
-  the Bursar desks (Krynn, Alpha Centauri, The Experiment, Haven, Nova
-  Terra), steel, park.
+- Then, gated to where each ship stands: starters stripped once, the
+  five Bursar desks, `bursar-network` (the engine, one trader a policed
+  Exchange station: 33 stations less the five desks carry 28), steel
+  from own iron, `train-jumps-trader` (Piloting to 10 for the tier-2
+  hull), park.
 
-The desks' listings filled nothing in six hours (contracts.log
-ENT-008); they stay while under 500 cr a ship-hour (Krynn 0, Alpha
-about 230, The Experiment about 220). Krynn's desk ships earn no XP
-(no neon ask): the Workshop Production Run gives each a paid craft.
+The engine's policy (`game/bursar-policy.json`, Trade's): buy lane off
+(a buy that only stores is Logistics', orders P5), policed stations
+only, the nearest station first. Its books and boards are what opens
+the Station Need routes.
 
-What would change it: a fill at a desk; a refill of the Hex Star
-gland bid (5,367 x 30) or a new Station Need for a good we hold
-(scan `data/missions` against table holdings each turn); the
-Apophenia queue (five Piloting-10 traders, about 203,000 cr each at
-The Experiment).
+What would change it: the unwind lane installed (buy escrow back);
+Station Need copies read for goods we hold (`needscan.py`); a buy lane
+with a fleet-wide cap; a HEXC supply contract that counts a part
+delivery.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 

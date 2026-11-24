@@ -94,7 +94,7 @@ Status: proven. Updated: 2026-11-24. Evidence: errors.log ENT-035, ENT-039, ENT-
   `store: all` go in two stops at the same base.
 
 ### Money, calls and the runner
-Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107; requests.log ENT-176; the skill trade-books.
+Status: proven. Updated: 2026-11-24. Evidence: errors.log ENT-047, ENT-066, ENT-067, ENT-090, ENT-107, ENT-183; requests.log ENT-176; admirals.log ENT-124; the skill trade-books.
 
 - A circuit `buy` whose qty x max_price would take the wallet under
   3,000 cr buys nothing (2026-11-22): size qty to the poorest pilot.
@@ -112,7 +112,14 @@ Status: proven. Updated: 2026-11-22. Evidence: errors.log ENT-047, ENT-066, ENT-
   (`refs.py`).
 - `wallet.py topup --dry-run` before a spend that nears the floor.
 - A listed ship is bought docked at its station (`buy_listed_ship`,
-  spacemolt_ship); the old ship stays stored there.
+  spacemolt_ship); the old ship stays stored there. Read `browse_ships`
+  before any commission: Apophenia listed at about 142,000 cr against
+  203,000 commissioned (2026-11-24).
+- A buy order is cancelled only docked at its station (`wrong_station`
+  from elsewhere): escrow spread over many stations comes back only by
+  visits. A buy lane sized per station multiplies a fleet need by the
+  stations staffed (cobalt ink 8,982 posted for a need of 276): cap the
+  fleet's open units per item at the net short, test on one ship.
 
 ### A fallback is flown from where the ship stands
 Status: proven. Updated: 2026-11-22. Evidence: data/fleet/orders 03:51 UTC; dispatch.why_not on carry-liner-first-step-to-ramens (best bid 1060 x 1, book of 03:46 UTC).
