@@ -9,7 +9,7 @@ faction: Wexler's Void Safari
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Wexler's Void Safari [WEXL]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 139 | Public event stream |
+| Pilots carrying the tag on the public event stream | 137 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler JG3-H5 | Acubens (`acubens`) | 0 | cobble |
+| Wexler FHW-W2 | Node Alpha (`node_alpha`) | 0 | congregation |
 
 ## Standing History
 

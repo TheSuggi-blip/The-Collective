@@ -9,7 +9,7 @@ faction: Driftline Survey & Salvage
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Driftline Survey & Salvage [DRFT]
@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Colleen Brown | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | Ronald Mulholland | Node Alpha (`node_alpha`) | 0 | come_along |
-| Sandra Coffield | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 | Tina Kramer | Node Alpha (`node_alpha`) | 0 | odyssey |
 
 ## Standing History

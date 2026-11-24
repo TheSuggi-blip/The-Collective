@@ -9,7 +9,7 @@ faction: You Sexy Mother Truckers
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # You Sexy Mother Truckers [YSMT]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | DB , CRFT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 10 | Public event stream |
+| Pilots carrying the tag on the public event stream | 9 | Public event stream |
 
 ## Bases
 

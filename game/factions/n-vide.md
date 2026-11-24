@@ -9,7 +9,7 @@ faction: Culte du Vide
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Culte du Vide [VIDE]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 8 | Public event stream |
+| Pilots carrying the tag on the public event stream | 6 | Public event stream |
 
 ## Bases
 

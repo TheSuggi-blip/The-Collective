@@ -9,13 +9,13 @@ faction: Hex Collective
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -50,7 +50,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Morgan Drake | Pherkad (`pherkad`) | 0 | bulk_terms |
 | Nino Kuro | Synchrony (`synchrony`) | not on record | warranty_void |
+| Tinibu | Pherkad (`pherkad`) | 0 | praecursor |
 
 ## Standing History
 
