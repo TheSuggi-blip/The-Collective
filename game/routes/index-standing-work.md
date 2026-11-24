@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 664.
+Routes: 666.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -550,6 +550,8 @@ Routes: 664.
 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | mine | beyond the border, 20 jumps | A test: Mining-skill work for Nebula-born miners: ore of Alrakis Commerce Vein into storage at Cargo Lanes Freight Depot (one jump) | up to 3 ships, empty hold, born nebula, standing work | 9 | 34 | -190 | -330 | 2026-11-24 |
 | [gather-atlas-belt](gather-atlas-belt.json) | mine | beyond the border, 6 jumps | Standing work, a test: iron at Atlas Belt (beyond the border, 3 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-botein-belt](gather-botein-belt.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Botein Belt (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [gather-botein-lampglint-rock](gather-botein-lampglint-rock.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Botein Lampglint Rock (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
+| [gather-botein-raysheet-nebula](gather-botein-raysheet-nebula.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Botein Raysheet Nebula (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-bunda-belt-platinum](gather-bunda-belt-platinum.json) | mine | beyond the border, 19 jumps | A test: platinum ore (and carbon) gathered at Bunda Belt into storage at Gold Run Extraction Hub (one jump) | up to 1 ships, empty hold, standing work | 2 | 22 | -90 | -250 | 2026-11-24 |
 | [gather-cedarhold-dim-lattice](gather-cedarhold-dim-lattice.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at Cedarhold Dim Lattice (beyond the border, 2 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-edasich-stormward-silicon](gather-edasich-stormward-silicon.json) | mine | beyond the border, 25 jumps | A test: silicon ore of Stormward Silicon (Edasich) into storage at Cargo Lanes Freight Depot (eleven jumps, lawless) | up to 2 ships, empty hold, born nebula, standing work | 2 | 114 | -710 | -370 | 2026-11-24 |

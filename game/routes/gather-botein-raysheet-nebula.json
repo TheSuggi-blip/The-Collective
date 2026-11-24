@@ -1,0 +1,18 @@
+{
+ "id": "gather-botein-raysheet-nebula",
+ "kind": "mine",
+ "title": "Standing work, a test: iron at Botein Raysheet Nebula (beyond the border, 4 jumps from The Experiment) into storage there",
+ "note": "Written by Zero, 2026-11-24 16:02 UTC (orders ENT-090 block ZERO: iron gathers open under 60,000 usable iron, stored where it can be taken out; rules F3, F23). Every policed iron belt near our give stations is worked at the 3-a-belt cap (queue ENT-297) or under its floor, the nine far gathers of this turn stood full and two veterans still waited at 16:01 UTC (fill.py status). The field read iron_ore 100,000 of 100,000 (richness 23), copper_ore 100,000 of 100,000 (richness 24), energy_crystal 59 of 62 (richness 3) (table fields, 2026-11-24 15:29 UTC); no pirate line in Botein in 24 h (sightings.jsonl); Botein Belt in the same system is worked by gather-botein-belt. Stores into the pilot's storage at The Experiment, where give-miner-stores-experiment hands it to the hauler receivers (P5). Hold empty, lift_to 3, floor 20,000 iron; the pull rule closes it when iron stands at its max.",
+ "belt": "botein:raysheet_nebula",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 45,
+ "max_ships": 3,
+ "standing": true,
+ "min_left": {
+  "iron_ore": 20000
+ },
+ "requires": {
+  "empty_hold": true
+ },
+ "lift_to": 3
+}
