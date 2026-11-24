@@ -244,3 +244,24 @@ and the Command Station HUD enforce four structural mechanisms:
    - `NPC_RENT_MIGRATION` fires only while `owned_bases > 0` and non-storage
      NPC offices still pay rent, vanishing automatically at `0` NPC office rent.
 
+## 8. Autonomous Division Networks (`AutoNet`), Anti-Flood Notices & O4 Regional Hubs (`2026-11-24`)
+
+All five operating divisions now run continuous autonomous network engines backed
+by declarative policy JSONs (`game/*-policy.json`) so ships self-optimize between
+6-hour Admiral turns without stalling or depleting shared resources. Admirals act
+as **policy & strategy governors** (tuning caps, floors, power ratios, route
+catalogs, and plan priority) rather than micromanaging static loops.
+
+| Division | AutoNet Engine | Policy & Claims | Live KPI & Anti-Flood Notice Contract (`SMART_ENGINE_GAP`) |
+| :-- | :-- | :-- | :-- |
+| **Mining (Zero)** | `mine-network` (`mine_net.py`) | `game/mine-policy.json`, `mine_claims.json` | Active `mine_net` vs static miners, cooling `<15%` belts. Fires 1 notice ONLY if disabled (`ALARM`), missing from plan, or shadowed (`0` active while `>=10` static `mine-*`). |
+| **Military (Apophis)** | `hunt-network` (`hunt_net.py`) | `game/hunt-policy.json`, `hunt_claims.json`, `hunt_packs.json` | Active `hunt_net`, `3/5/8/10` pack share (target `20-30%`), on-demand escort count, percentage power-ratio scaling (`T0->T5+`). Fires 1 notice ONLY if any core lane (`enabled`/`packs`/`escort`) is off (`ALARM`), missing/shadowed, or pack share `<15%` with `>=15` active. Coordinated `mode=pack` ships are exempt from solo `FIELD_CONGESTION`. |
+| **Trade (Mercury)** | `bursar-network` (`bursar.py`) | `game/bursar-policy.json`, `bursar_claims.json` | Safe hubs staffed vs `60+` target (`max_ships: 65` across safe empire + non-pirate neutral hubs), `buy.enabled`, and mobile T1+/`>150c` ships kept off desks (`max_hull_tier: 0`, `max_cargo: 150`). Fires 1 notice ONLY if disabled/buy-off (`ALARM`), missing from plan, or `<85%` of safe-hub target. |
+| **Logistics (Apollo)** | `haul-network` (`haul.py`) | `game/haul-policy.json`, `haul_claims.json` | Active `haul` ships + exclusive `sell_base:item` claims + **`O4` 5-Empire Regional Hubs** progress (`X/5`: Voidborn core + 1 sovereign storage station in each of the 4 other empires, non-alarming milestone gauge). Fires 1 notice ONLY if disabled (`ALARM`), missing, or `0` active. |
+| **Intel (Oracle)** | `census-intel` (`census.py`) | `read.db:books`, `read.db:ship_listings` | `<6h` fresh market books across safe hubs + live `ship_listings` count/age (feeds `bursar-network`, `haul-network`, and `upgrades.py` auto-buy). Fires 1 notice ONLY if `ship_listings` stale `>3h`/empty or `<45` hubs have `<6h` books. |
+| **Command (Unity)** | `fleet-networks` rollup | `scorecard.py` (`AUTONET` line + HUD) | Shows 1-line `AUTONET` summary + `O4 X/5` across all 5 divisions; fires an Enterprise `ALARM` **only** if a division's autonomous policy is explicitly turned off (`enabled: false`), keeping Unity's queue flood-free. |
+
+**Strict Anti-Flood Rule:** Every division receives **at most one** consolidated
+`SMART_ENGINE_GAP` triage notice, rendered identically in `hive.py briefing` and
+the Command Station HUD (`station/static/app.js` `AutoNet:` row), and vanishing
+automatically (`status = OK`) the instant the gap closes.

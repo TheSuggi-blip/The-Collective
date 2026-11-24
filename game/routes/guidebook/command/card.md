@@ -24,7 +24,7 @@ refused in code, not remembered.
 ### Hold the purse and the sites
 Status: proven. Updated: 2026-11-24. Evidence: MISSION.md (Hold the whole); rule F33; governance/strategy-improve.md; `hive.py stats kpi`; `hive.py base outpost`.
 
-One purse: the treasury (500k floor), the 60s sweep, the reserve list
+AutoNet & O4: oversee all 5 division AutoNets (`mine-network`, `hunt-network`, `bursar-network` 60+ hubs, `haul-network`, `census`) via `scorecard.py` (`AUTONET` rollup) without turning policies off, and pace `O4` 5-empire regional storage hubs (1 Voidborn core + 1 sovereign station/storage in each of the 4 other empires). One purse: the treasury (500k floor), the 60s sweep, the reserve list
 (with Logistics), and the faction's ladder of seats. Apply Make-vs-Buy
 discipline before heavy capex: buy wholesale `station_core` (~13M cr
 at Arneb) and listed shipyard hulls (`ship_listings`) whenever cheaper

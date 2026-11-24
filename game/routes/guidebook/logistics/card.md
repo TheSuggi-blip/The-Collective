@@ -11,7 +11,7 @@ freight and `spacemolt_shipping` contracts (`haul-network` /
 (`steel_plate`, `circuit_board`, `wiring`, `piping`, base kits --
 commercial profit crafting belongs to Trade), (3) **civilian and
 express passenger transport** (`passenger-` routes), and (4) sovereign
-outpost, lockbox, and station construction.
+outpost, lockbox, and station construction, including **`O4` 5-empire regional storage hubs** (1 Voidborn core + 1 sovereign storage station in each of the 4 other empires: Solarian, Crimson, Nebula, Outer Rim -- tracked on `scorecard.py` `AutoNet`).
 
 ### Ships
 Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings, books; game/fleet/upgrades.py.

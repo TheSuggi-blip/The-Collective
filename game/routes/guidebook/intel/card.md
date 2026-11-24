@@ -32,6 +32,7 @@ Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listin
 - Fit: `survey_scanner_ii` (every system surveyed on census), Mining
   Survey Probe for faint signatures, `shield_booster_ii`. Empty hold
   beyond the border (F3), never fire first (F2).
+- AutoNet feeder (ENT-088): keep `<6h` market books across `60+` safe empire & neutral hubs (feeds `bursar-network` & `haul-network`) and `<3h` `ship_listings` at major shipyards (feeds `upgrades.py` auto-buy); tracked live on `scorecard.py` `AutoNet`.
 
 ### Skills
 Status: proven. Updated: 2026-11-24. Evidence: catalog table skills; hive.py levels Oracle; table ship_skills.

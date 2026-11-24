@@ -4222,6 +4222,17 @@ async function renderMetrics(panel, live) {
           }
           card.append(sRow);
         }
+        if (d.smart_engine && d.smart_engine.summary) {
+          const seInfo = d.smart_engine;
+          const aRow = el('div', 'sc-drkpi');
+          aRow.append(
+            el('span', 'sc-drkpi-k', 'AutoNet: '),
+            el('span', 'pill ' + sevCls(seInfo.status || 'OK'), seInfo.status || 'OK'),
+            el('span', 'sc-drkpi-v', ' ' + seInfo.summary)
+          );
+          aRow.title = 'Autonomous division network (' + (seInfo.engine || dn) + '). Smart anti-flood notice fires only when disabled, missing, or below target.';
+          card.append(aRow);
+        }
         if (d.playbooks && d.playbooks.length) {
           const pwrap = el('div', 'sc-dpbs');
           pwrap.append(el('span', 'sc-drkpi-k', 'Playbook KPIs: '));

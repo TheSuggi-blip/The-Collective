@@ -425,5 +425,143 @@ class TestFleetScorecard(unittest.TestCase):
             cids = [rid for rid, _w in cw]
             self.assertEqual(cids, ["bursar-desk-krynn", "mine-big"])
 
+
+    def test_smart_networks_fire_on_gaps_and_stay_silent_when_healthy(self):
+        """Smart AutoNet notices fire on real gaps/disabled policies and stay completely silent when healthy."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            data = Path(tmp) / "data"
+            (root / "game" / "routes").mkdir(parents=True, exist_ok=True)
+            (data / "store").mkdir(parents=True, exist_ok=True)
+            (data / "fleet" / "orders").mkdir(parents=True, exist_ok=True)
+            (data / "plans").mkdir(parents=True, exist_ok=True)
+
+            # Minimal SQLite store with ships, hulls, books, ship_listings, bases, systems
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE systems (id TEXT, empire TEXT, police_level INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, base TEXT, t INTEGER);
+                CREATE TABLE bases (base TEXT, name TEXT, system TEXT, poi TEXT, kind TEXT, t INTEGER, src TEXT);
+                CREATE TABLE hulls (id TEXT, name TEXT, tier INTEGER, cargo INTEGER, weapon_slots INTEGER, defense_slots INTEGER, utility_slots INTEGER);
+                CREATE TABLE ships (pilot TEXT, division TEXT, empire TEXT, class TEXT, role TEXT, docked INTEGER);
+                CREATE TABLE books (base TEXT, system TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER, t INTEGER);
+                CREATE TABLE ship_listings (id TEXT, base TEXT, hull TEXT, price REAL, t INTEGER);
+                INSERT INTO hulls VALUES ('t0_skiff', 'Skiff', 0, 80, 1, 1, 1), ('t2_prayer', 'Prayer', 1, 540, 0, 1, 2);
+                INSERT INTO systems VALUES ('s1', 'voidborn', 5), ('s2', 'solarian', 5);
+                INSERT INTO bases VALUES ('b_vb', 'VB Station', 's1', 'p1', 'station', 1795409000, 'test');
+            """)
+            for i in range(1, 21):
+                con.execute("INSERT INTO ships VALUES (?, 'Mining', 'voidborn', 't0_skiff', 'miner', 0)", (f"miner-{i}",))
+                con.execute("INSERT INTO ships VALUES (?, 'Military', 'voidborn', 't0_skiff', 'drone', 0)", (f"drone-{i}",))
+                con.execute("INSERT INTO ships VALUES (?, 'Logistics', 'voidborn', 't0_skiff', 'hauler', 0)", (f"hauler-{i}",))
+            for i in range(1, 11):
+                con.execute("INSERT INTO ships VALUES (?, 'Trade', 'voidborn', 't0_skiff', 'trader', 1)", (f"trader-{i}",))
+            con.execute("INSERT INTO ships VALUES ('trader-11', 'Trade', 'voidborn', 't2_prayer', 'trader', 1)")
+            for i in range(1, 61):
+                con.execute("INSERT INTO books VALUES (?, 's1', 'ore', 10, 100, 12, 100, 1795409500)", (f"hub_{i}",))
+            # Stale ship_listings (4h old)
+            con.execute("INSERT INTO ship_listings VALUES ('sl1', 'hub_1', 't2_prayer', 50000, 1795395000)")
+            con.commit()
+            con.close()
+
+            # Live fleet json (20 miners, 20 military, 20 logistics, 11 trade)
+            fleet_ships = []
+            for div, prefix, n in (("Mining", "miner", 20), ("Military", "drone", 20), ("Logistics", "hauler", 20), ("Trade", "trader", 11)):
+                for i in range(1, n + 1):
+                    fleet_ships.append({"pilot": f"{prefix}-{i}", "division": div, "state": "working", "order": "active"})
+            (data / "fleet" / "fleet.json").write_text(json.dumps({"at": 1795409900, "ships": fleet_ships}), encoding="ascii")
+
+            # Policies deployed: mine disabled, hunt shadowed on static routes, bursar understaffed (10/60), haul ON
+            (root / "game" / "mine-policy.json").write_text(json.dumps({"enabled": False, "min_left_pct": 0.15}), encoding="ascii")
+            (root / "game" / "hunt-policy.json").write_text(json.dumps({"enabled": True, "packs": {"enabled": True, "target_share": 0.25}, "escort": {"enabled": True}}), encoding="ascii")
+            (root / "game" / "bursar-policy.json").write_text(json.dumps({"enabled": True, "buy": {"enabled": True}}), encoding="ascii")
+            (root / "game" / "haul-policy.json").write_text(json.dumps({"enabled": True, "sell_arb": {"enabled": True}, "shipping": {"enabled": True}}), encoding="ascii")
+            (root / "game" / "routes" / "bursar-network.json").write_text(json.dumps({"id": "bursar-network", "kind": "bursar", "max_ships": 65}), encoding="ascii")
+
+            # Plans carry all 4 networks
+            pilots_plan = {}
+            for i in range(1, 21):
+                pilots_plan[f"miner-{i}"] = ["mine-network"]
+                pilots_plan[f"drone-{i}"] = ["hunt-network"]
+                pilots_plan[f"hauler-{i}"] = ["haul-network"]
+            for i in range(1, 12):
+                pilots_plan[f"trader-{i}"] = ["bursar-network"]
+            (data / "plans" / "assign.json").write_text(json.dumps({"pilots": pilots_plan}), encoding="ascii")
+
+            # Orders: Military stuck on static hunt (15), Logistics active on haul (10), Trade only 10/60 hubs
+            for i in range(1, 16):
+                (data / "fleet" / "orders" / f"drone-{i}.json").write_text(json.dumps({"pilot": f"drone-{i}", "what": "hunt hunt-static"}), encoding="ascii")
+            for i in range(1, 11):
+                (data / "fleet" / "orders" / f"hauler-{i}.json").write_text(json.dumps({"pilot": f"hauler-{i}", "what": "haul haul-network"}), encoding="ascii")
+                (data / "fleet" / "orders" / f"trader-{i}.json").write_text(json.dumps({"pilot": f"trader-{i}", "what": "bursar bursar-network"}), encoding="ascii")
+            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({f"hub_{i}": {"pilot": f"trader-{i}"} for i in range(1, 11)}), encoding="ascii")
+
+            sc_bad = scorecard.compute_scorecard(str(root), str(data), now=1795410000, rivals_doc={"strategy_playbooks": []})
+            # 1. Disabled mine-network triggers ALARM on Mining AND Command/Enterprise
+            self.assertEqual(sc_bad["divisions"]["Mining"]["smart_engine"]["status"], "ALARM")
+            self.assertIn("SMART_ENGINE_GAP", {t["code"] for t in sc_bad["divisions"]["Mining"]["triggers"]})
+            self.assertIn("SMART_ENGINE_GAP", {t["code"] for t in sc_bad["enterprise"]["triggers"]})
+            # 2. Shadowed hunt-network, under-covered Bursars (<51/60), stale ship_listings fire exactly 1 notice each
+            for dv in ("Military", "Trade", "Intel"):
+                se_trigs = [t for t in sc_bad["divisions"][dv]["triggers"] if t["code"] == "SMART_ENGINE_GAP"]
+                self.assertEqual(len(se_trigs), 1, f"expected 1 SMART_ENGINE_GAP for {dv}, got {se_trigs}")
+            # 3. Healthy Logistics stays COMPLETELY SILENT (0 SMART_ENGINE_GAP) and tracks O4 1/5 stations
+            self.assertEqual(sc_bad["divisions"]["Logistics"]["smart_engine"]["status"], "OK")
+            self.assertEqual(sc_bad["divisions"]["Logistics"]["smart_engine"]["o4_empires_covered"], 1)
+            self.assertNotIn("SMART_ENGINE_GAP", {t["code"] for t in sc_bad["divisions"]["Logistics"]["triggers"]})
+            # 4. Trade mobile cargo preservation counts T1+ Prayer kept off desk
+            self.assertEqual(sc_bad["divisions"]["Trade"]["smart_engine"]["mobile_cargo_free"], 1)
+
+            # Now fix every gap -> ALL divisions must drop to SILENT (0 SMART_ENGINE_GAP, zero flood!)
+            (root / "game" / "mine-policy.json").write_text(json.dumps({"enabled": True, "min_left_pct": 0.15}), encoding="ascii")
+            for i in range(1, 11):
+                (data / "fleet" / "orders" / f"miner-{i}.json").write_text(json.dumps({"pilot": f"miner-{i}", "what": "mine_net mine-network"}), encoding="ascii")
+            for i in range(1, 17):
+                (data / "fleet" / "orders" / f"drone-{i}.json").write_text(json.dumps({"pilot": f"drone-{i}", "what": "hunt_net hunt-network"}), encoding="ascii")
+            # 5 of 16 Military ships in a coordinated 5-ship pack (31.2% share)
+            (data / "fleet" / "hunt_claims.json").write_text(json.dumps({
+                "claims": {
+                    f"drone-{i}": {"key": "sys1:pirate_den", "mode": "pack" if i <= 5 else "solo"}
+                    for i in range(1, 17)
+                }
+            }), encoding="ascii")
+            (data / "fleet" / "hunt_packs.json").write_text(json.dumps({
+                "packs": {"p1": {"status": "active", "members": [f"drone-{i}" for i in range(1, 6)]}}
+            }), encoding="ascii")
+            # 55/60 safe hubs staffed
+            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({f"hub_{i}": {"pilot": f"trader-{i}"} for i in range(1, 56)}), encoding="ascii")
+            # Fresh ship_listings (5m old)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.execute("UPDATE ship_listings SET t = 1795409700")
+            con.commit()
+            con.close()
+
+            sc_ok = scorecard.compute_scorecard(str(root), str(data), now=1795410000, rivals_doc={"strategy_playbooks": []})
+            for dv in ("Command", "Mining", "Military", "Trade", "Logistics", "Intel"):
+                self.assertEqual(sc_ok["divisions"][dv]["smart_engine"]["status"], "OK", f"{dv} not OK: {sc_ok['divisions'][dv]['smart_engine']}")
+                self.assertNotIn("SMART_ENGINE_GAP", {t["code"] for t in sc_ok["divisions"][dv]["triggers"]}, f"{dv} flooded when healthy")
+            self.assertNotIn("SMART_ENGINE_GAP", {t["code"] for t in sc_ok["enterprise"]["triggers"]})
+            txt_all = scorecard.render_briefing(sc_ok, who="all")
+            self.assertIn("AUTONET", txt_all)
+            txt_mil = scorecard.render_briefing(sc_ok, who="Apophis")
+            self.assertIn("AutoNet  :", txt_mil)
+
+    def test_military_coordinated_pack_exempt_from_solo_field_congestion(self):
+        """An 8-ship coordinated hunt-network pack on 1 POI must NOT falsely trigger solo FIELD_CONGESTION."""
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            data = Path(tmp) / "data"
+            (data / "fleet" / "orders").mkdir(parents=True, exist_ok=True)
+            for i in range(1, 9):
+                (data / "fleet" / "orders" / f"drone-{i}.json").write_text(
+                    json.dumps({"pilot": f"drone-{i}", "what": "hunt_net hunt-network"}), encoding="ascii"
+                )
+            (data / "fleet" / "hunt_claims.json").write_text(json.dumps({
+                "claims": {f"drone-{i}": {"key": "sys_pirate:stronghold_1", "mode": "pack"} for i in range(1, 9)}
+            }), encoding="ascii")
+            sat = scorecard._compute_field_saturation(str(root), str(data), conn=None, ship_divs={f"drone-{i}": "Military" for i in range(1, 9)})
+            self.assertEqual(sat["Military"]["active_depleting"], 0)
+            self.assertEqual(sat["Military"]["status"], "OK")
+
 if __name__ == "__main__":
     unittest.main()

@@ -110,17 +110,17 @@ ENTERPRISE_WEIGHTS = dict(POSTURE_WEIGHTS["CASHFLOW_RECOVERY"])
 # CapEx (hulls/modules/fit-fuel) is excluded from operating accrual; internal handovers are transfer-priced at IAS 2 NRV.
 RESPONSIBILITY_CENTERS = {
     "Command": {"type": "Investment Center", "short": "Investment",
-                "focus": "Fleetwide Net Worth, Consolidated Cash & Accrual, Seating, Roadmaps, CapEx Governance"},
+                "focus": "Fleetwide Net Worth, Consolidated Cash & Accrual, Seating, Roadmaps, CapEx & AutoNet Governance"},
     "Trade": {"type": "Profit Center", "short": "Profit Ctr",
-              "focus": "Recurring Cash & Accrual Margin (net of handovers), Dynamic Hub Coverage, Commercial Crafting"},
+              "focus": "Recurring Cash & Accrual Margin, 60+ Safe Hub BursarNet (T0 desks / T1+ mobile split), Commercial Crafting"},
     "Mining": {"type": "Production Center", "short": "Production",
-               "focus": "IAS 2 Accrual Value-Add (handovers + vault), Ore/ship-h, Belt Spread"},
+               "focus": "IAS 2 Accrual Value-Add (handovers + vault), Ore/ship-h, MineNet >=15% Floor Auto-Rotation"},
     "Military": {"type": "Combat & Security Center", "short": "Combat/Sec",
-                 "focus": "0 Losses, Combat XP & Kills, IAS 2 Loot Value-Add, Herd Spread"},
+                 "focus": "0 Losses, On-Demand Escorts, 20-30% 3/5/8/10 Packs & Power-Ratio HuntNet Scaling (T0->T5+)"},
     "Logistics": {"type": "Service & Infra Center", "short": "Service/Infra",
-                  "focus": "Supply Chains at Keep, Industrial Crafting, Open P1/P2 SLA, Freight/Shipping & Express Passengers"},
+                  "focus": "Supply Chains at Keep, HaulNet Arb+Shipping, Industrial Crafting, O4 5-Empire Regional Hubs"},
     "Intel": {"type": "Recon Cost Center", "short": "Cost Ctr",
-              "focus": "<3h Market/Place Freshness (enables Trade), 0 Losses, Diplomatic Comms SLA"},
+              "focus": "<3h Market/Place Freshness & Ship Listings (feeds Bursar/Haul/Upgrades), 0 Losses, Diplomacy SLA"},
 }
 
 DIVISION_WEIGHTS = {
@@ -146,6 +146,7 @@ TRIAGE_SPECS = {
     "MINING_YIELD": ("P1", "P1", 82, 72, 2),
     "FIELD_CONGESTION": ("P1", "P2", 80, 64, 1),
     "HUB_CONGESTION": ("P1", "P2", 78, 62, 1),
+    "SMART_ENGINE_GAP": ("P1", "P2", 82, 66, 1),
     "DIV_HULL_UPGRADE": ("P1", "P1", 80, 70, 2),
     "HULL_UPGRADE_LAG": ("P1", "P1", 80, 70, 2),
     "OPEN_SEATS": ("P1", "P1", 76, 68, 1),
@@ -601,13 +602,29 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
         except Exception:
             pass
     hunt_claims = {}
+    hunt_pack_pilots = set()
     hc_path = Path(data_dir) / "fleet" / "hunt_claims.json"
     if hc_path.is_file():
         try:
-            hc_raw = (json.loads(hc_path.read_text(encoding="utf-8")) or {}).get("claims") or {}
-            for p_nm, rec in hc_raw.items():
+            hc_doc = json.loads(hc_path.read_text(encoding="utf-8", errors="replace")) or {}
+            hc_raw = hc_doc.get("claims") if isinstance(hc_doc.get("claims"), dict) else hc_doc
+            for p_nm, rec in (hc_raw.items() if isinstance(hc_raw, dict) else []):
                 if isinstance(rec, dict) and rec.get("key"):
                     hunt_claims[str(p_nm)] = str(rec["key"])
+                    if str(rec.get("mode") or "").lower() == "pack":
+                        hunt_pack_pilots.add(str(p_nm))
+        except Exception:
+            pass
+    hp_path = Path(data_dir) / "fleet" / "hunt_packs.json"
+    if hp_path.is_file():
+        try:
+            hp = json.loads(hp_path.read_text(encoding="utf-8", errors="replace"))
+            packs_map = hp.get("packs") if isinstance(hp, dict) and isinstance(hp.get("packs"), dict) else hp
+            if isinstance(packs_map, dict):
+                for _pk, prec in packs_map.items():
+                    if isinstance(prec, dict) and str(prec.get("status") or "active") != "closed":
+                        for m in (prec.get("members") or []):
+                            hunt_pack_pilots.add(str(m))
         except Exception:
             pass
 
@@ -636,9 +653,11 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             if belt and sdivs.get(pilot, "Mining") == "Mining":
                 by_div["Mining"][belt] += 1
         elif kind == "hunt_net":
-            hk = hunt_claims.get(pilot) or ""
-            if hk and sdivs.get(pilot, "Military") == "Military":
-                by_div["Military"][hk] += 1
+            # Coordinated 3/5/8/10 packs intentionally concentrate firepower; never flag them as solo herd crowding
+            if pilot not in hunt_pack_pilots:
+                hk = hunt_claims.get(pilot) or ""
+                if hk and sdivs.get(pilot, "Military") == "Military":
+                    by_div["Military"][hk] += 1
         elif kind == "haul":
             haul_active += 1
         elif kind == "circuit":
@@ -748,6 +767,566 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
     return out
 
 
+def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_divs=None, live_div=None, now=None):
+    """Compute live autonomous-network KPIs & threshold-gated anti-flood notices per division.
+
+    Anti-flood contract:
+    - Emits at most ONE consolidated notice per division ONLY when the network policy is
+      deployed on disk AND an actionable threshold is breached (policy off, missing from plan,
+      stalled adoption, pack share below band, <85% safe hub target, or stale listings/books).
+    - Vanishes automatically (`notice = None`, `status = OK`) once healthy.
+    """
+    from collections import Counter
+    now = float(now if now is not None else time.time())
+    tables = tables or set()
+    sdivs = ship_divs or {}
+    ldiv = live_div or {}
+    repo = Path(repo_root)
+    ddir = Path(data_dir)
+    game_dir = repo / "game"
+
+    # Active orders by kind & pilot
+    orders_by_kind = Counter()
+    orders_by_pilot = {}
+    odir = ddir / "fleet" / "orders"
+    if odir.is_dir():
+        for p in odir.glob("*.json"):
+            try:
+                d = json.loads(p.read_text(encoding="utf-8", errors="replace"))
+            except (OSError, ValueError):
+                continue
+            what = str(d.get("what") or "").strip()
+            parts = what.split(" ", 1)
+            if len(parts) == 2:
+                k, rid = parts[0], parts[1]
+                orders_by_kind[k] += 1
+                orders_by_pilot[p.stem] = (k, rid)
+
+    # Plan adoption from data/plans/assign.json
+    in_plan = Counter()
+    assign_path = ddir / "plans" / "assign.json"
+    if assign_path.is_file():
+        try:
+            ass = json.loads(assign_path.read_text(encoding="utf-8", errors="replace"))
+            pilots_map = ass.get("pilots") if isinstance(ass, dict) else {}
+            for _p, routes in (pilots_map.items() if isinstance(pilots_map, dict) else []):
+                if isinstance(routes, list):
+                    for net_id in ("mine-network", "hunt-network", "bursar-network", "haul-network"):
+                        if net_id in routes:
+                            in_plan[net_id] += 1
+        except (OSError, ValueError):
+            pass
+
+    def _div_total(div):
+        return int((ldiv.get(div) or {}).get("total", 0))
+
+    # O4 5-Empire regional storage hub count (Voidborn core + 1 station/storage in each of 4 other empires)
+    o4_empires = set()
+    owned_stations = 0
+    owned_outposts = 0
+    if conn is not None and "bases" in tables:
+        try:
+            has_sys = "systems" in tables
+            q = (
+                "SELECT b.kind, COALESCE(s.empire, '') FROM bases b LEFT JOIN systems s ON s.id = b.system"
+                if has_sys else "SELECT kind, '' FROM bases"
+            )
+            for kind_v, emp_v in conn.execute(q).fetchall():
+                kv = str(kind_v or "").lower()
+                ev = str(emp_v or "").strip().lower()
+                if kv == "station":
+                    owned_stations += 1
+                    if ev:
+                        o4_empires.add(ev)
+                elif kv == "outpost":
+                    owned_outposts += 1
+        except Exception:
+            pass
+    o4_covered = len(o4_empires)
+    o4_target = 5
+
+    out = {}
+    disabled_engines = []
+
+    # 1. Mining (mine-network)
+    mine_pol_path = game_dir / "mine-policy.json"
+    mine_present = mine_pol_path.is_file()
+    mine_pol = _load_json(mine_pol_path, {}) if mine_present else {}
+    mine_enabled = bool(mine_pol.get("enabled", True)) if mine_present else False
+    _raw_ml = float(mine_pol.get("min_left_pct", 15)) if mine_present else 15.0
+    mine_min_left = int(round(_raw_ml * 100.0)) if _raw_ml <= 1.0 else int(round(_raw_ml))
+    mine_active = int(orders_by_kind.get("mine_net", 0))
+    mine_static = int(orders_by_kind.get("mine", 0))
+    mine_plan = int(in_plan.get("mine-network", 0))
+    mc_raw = _load_json(ddir / "fleet" / "mine_claims.json", {})
+    mine_claims_n = 0
+    mine_cool_n = 0
+    if isinstance(mc_raw, dict):
+        if isinstance(mc_raw.get("claims"), dict):
+            mine_claims_n = len(mc_raw["claims"])
+        else:
+            mine_claims_n = sum(1 for k, v in mc_raw.items() if k != "cooldowns" and isinstance(v, dict) and v.get("belt"))
+        cds = mc_raw.get("cooldowns")
+        if isinstance(cds, dict):
+            mine_cool_n = sum(1 for _k, ts in cds.items() if _num(ts) > now)
+    mine_tot_active = mine_active + mine_static
+    mine_notice = None
+    mine_status = "OK"
+    if mine_present:
+        if not mine_enabled:
+            mine_status = "ALARM"
+            disabled_engines.append("mine-network")
+            mine_notice = {
+                "severity": "ALARM", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: mine-network disabled",
+                "actual": "game/mine-policy.json enabled=false",
+                "target": "enabled=true (auto-rotate >=15% floor)",
+                "direction": "FLAT",
+                "action": "Re-enable game/mine-policy.json (tune weights/floors rather than disabling AutoNet; ENT-088)",
+            }
+        elif _div_total("Mining") >= 5 and mine_plan == 0:
+            mine_status = "WARN"
+            mine_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: mine-network missing from plan",
+                "actual": f"0/{_div_total('Mining')} miners carry mine-network",
+                "target": "mine-network in plan-mining.md",
+                "direction": "FLAT",
+                "action": "Add mine-network to plan-mining.md so miners auto-rotate belts at >=15% floor (ENT-088)",
+            }
+        elif mine_active == 0 and mine_static >= 10:
+            mine_status = "WARN"
+            mine_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: mine-network shadowed by static routes",
+                "actual": f"0/{mine_tot_active} active miners on mine-network ({mine_static} on static mine-*)",
+                "target": "active auto-rotation across unsaturated belts",
+                "direction": "FLAT",
+                "action": "Promote mine-network ahead of static mine-* loops in plan-mining.md so >=15% floor & reserve priority auto-rotate (ENT-088)",
+            }
+    out["Mining"] = {
+        "engine": "mine-network",
+        "policy_present": mine_present,
+        "enabled": mine_enabled,
+        "in_plan": mine_plan,
+        "active_ships": mine_active,
+        "static_ships": mine_static,
+        "claimed_belts": mine_claims_n,
+        "cooldown_belts": mine_cool_n,
+        "min_left_pct": mine_min_left,
+        "status": mine_status,
+        "summary": (
+            f"mine-network {mine_active}/{max(1, mine_tot_active)} active "
+            f"(plan {mine_plan}, {mine_cool_n} cooling <{mine_min_left}% floor)"
+        ) if mine_present else "",
+        "notice": mine_notice,
+    }
+
+    # 2. Military (hunt-network: escort + 3/5/8/10 packs + power-ratio T0->T5+)
+    hunt_pol_path = game_dir / "hunt-policy.json"
+    hunt_present = hunt_pol_path.is_file()
+    hunt_pol = _load_json(hunt_pol_path, {}) if hunt_present else {}
+    hunt_enabled = bool(hunt_pol.get("enabled", True)) if hunt_present else False
+    packs_cfg = hunt_pol.get("packs") if isinstance(hunt_pol.get("packs"), dict) else {}
+    escort_cfg = hunt_pol.get("escort") if isinstance(hunt_pol.get("escort"), dict) else {}
+    packs_enabled = bool(packs_cfg.get("enabled", True)) if hunt_present else False
+    escort_enabled = bool(escort_cfg.get("enabled", True)) if hunt_present else False
+    pack_target_pct = int(round(float(packs_cfg.get("target_share", 0.25)) * 100.0)) if hunt_present else 25
+    hunt_active = int(orders_by_kind.get("hunt_net", 0))
+    hunt_static = int(orders_by_kind.get("hunt", 0))
+    hunt_plan = int(in_plan.get("hunt-network", 0))
+    hc_doc = _load_json(ddir / "fleet" / "hunt_claims.json", {})
+    hc_raw = hc_doc.get("claims") if isinstance(hc_doc, dict) and isinstance(hc_doc.get("claims"), dict) else hc_doc
+    hp_raw = _load_json(ddir / "fleet" / "hunt_packs.json", {})
+    pack_ships_set = set()
+    escort_ships_n = 0
+    if isinstance(hc_raw, dict):
+        for p_nm, rec in hc_raw.items():
+            if not isinstance(rec, dict):
+                continue
+            md = str(rec.get("mode") or "").lower()
+            if md == "pack":
+                pack_ships_set.add(str(p_nm))
+            elif md == "escort":
+                escort_ships_n += 1
+    active_packs_n = 0
+    packs_map = hp_raw.get("packs") if isinstance(hp_raw, dict) and isinstance(hp_raw.get("packs"), dict) else hp_raw
+    if isinstance(packs_map, dict):
+        for _pk, prec in packs_map.items():
+            if isinstance(prec, dict) and str(prec.get("status") or "active") != "closed":
+                active_packs_n += 1
+                for m in (prec.get("members") or []):
+                    pack_ships_set.add(str(m))
+    # Count only pilots still carrying an active hunt_net or guard order
+    pack_active_n = sum(1 for p in pack_ships_set if p in orders_by_pilot and orders_by_pilot[p][0] in ("hunt_net", "hunt"))
+    escort_active_n = escort_ships_n + int(orders_by_kind.get("guard", 0))
+    mil_combat_active = hunt_active + hunt_static + int(orders_by_kind.get("guard", 0))
+    pack_share_pct = round(100.0 * pack_active_n / max(1, mil_combat_active), 1) if mil_combat_active else 0.0
+    hunt_notice = None
+    hunt_status = "OK"
+    if hunt_present:
+        if not hunt_enabled or not packs_enabled or not escort_enabled:
+            hunt_status = "ALARM"
+            off_bits = [nm for nm, ok in (("hunt-network", hunt_enabled), ("packs", packs_enabled), ("escort", escort_enabled)) if not ok]
+            if not hunt_enabled:
+                disabled_engines.append("hunt-network")
+            hunt_notice = {
+                "severity": "ALARM", "code": "SMART_ENGINE_GAP",
+                "metric": f"AutoNet: hunt-network lane(s) off ({', '.join(off_bits)})",
+                "actual": f"enabled={hunt_enabled}, packs={packs_enabled}, escort={escort_enabled}",
+                "target": "all core hunt-network lanes ON",
+                "direction": "FLAT",
+                "action": "Re-enable disabled lanes in game/hunt-policy.json (tune power ratios or caps instead; ENT-088)",
+            }
+        elif _div_total("Military") >= 5 and hunt_plan == 0:
+            hunt_status = "WARN"
+            hunt_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: hunt-network missing from plan",
+                "actual": f"0/{_div_total('Military')} combat ships carry hunt-network",
+                "target": "hunt-network in plan-military.md",
+                "direction": "FLAT",
+                "action": "Add hunt-network to plan-military.md for power-ratio scaling, 3/5/8/10 packs (~25%), and on-demand escorts (ENT-088)",
+            }
+        elif hunt_active == 0 and hunt_static >= 10:
+            hunt_status = "WARN"
+            hunt_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: hunt-network shadowed by static hunts",
+                "actual": f"0/{mil_combat_active} on hunt-network ({hunt_static} static hunt-*, 0% in 3/5/8/10 packs)",
+                "target": f"hunt-network active, ~{pack_target_pct}% in 3/5/8/10 packs",
+                "direction": "FLAT",
+                "action": "Promote hunt-network ahead of static hunt-* loops so ~25% run 3/5/8/10 packs & escorts engage on demand (ENT-088)",
+            }
+        elif hunt_active >= 15 and pack_share_pct < 15.0:
+            hunt_status = "WARN"
+            hunt_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: 3/5/8/10 pack share below target",
+                "actual": f"{pack_active_n}/{mil_combat_active} in packs ({pack_share_pct:.1f}%, {active_packs_n} active packs)",
+                "target": f"20-30% pack share (target {pack_target_pct}%)",
+                "direction": "FLAT",
+                "action": "Inspect game/hunt-policy.json pack ratios/targets so 20-30% of Military farms tougher wildlife/pirates in 3/5/8/10 packs",
+            }
+    out["Military"] = {
+        "engine": "hunt-network",
+        "policy_present": hunt_present,
+        "enabled": hunt_enabled,
+        "packs_enabled": packs_enabled,
+        "escort_enabled": escort_enabled,
+        "in_plan": hunt_plan,
+        "active_ships": hunt_active,
+        "static_ships": hunt_static,
+        "active_packs": active_packs_n,
+        "pack_ships": pack_active_n,
+        "pack_share_pct": pack_share_pct,
+        "pack_target_pct": pack_target_pct,
+        "escort_ships": escort_active_n,
+        "status": hunt_status,
+        "summary": (
+            f"hunt-network {hunt_active}/{max(1, mil_combat_active)} active | "
+            f"packs {pack_share_pct:.0f}% ({pack_active_n}s/{active_packs_n}p, target {pack_target_pct}%) | "
+            f"escorts {escort_active_n} (on-demand)"
+        ) if hunt_present else "",
+        "notice": hunt_notice,
+    }
+
+    # 3. Trade (bursar-network: 60+ safe hubs + T0 desk / T1+ cargo mobile split)
+    bur_pol_path = game_dir / "bursar-policy.json"
+    bur_present = bur_pol_path.is_file()
+    bur_pol = _load_json(bur_pol_path, {}) if bur_present else {}
+    bur_enabled = bool(bur_pol.get("enabled", True)) if bur_present else False
+    bur_buy_cfg = bur_pol.get("buy") if isinstance(bur_pol.get("buy"), dict) else {}
+    bur_buy_enabled = bool(bur_buy_cfg.get("enabled", True)) if bur_present else False
+    bur_active = int(orders_by_kind.get("bursar", 0))
+    bur_plan = int(in_plan.get("bursar-network", 0))
+    bc_raw = _load_json(ddir / "fleet" / "bursar_claims.json", {})
+    bur_claimed_hubs = set()
+    if isinstance(bc_raw, dict):
+        for b_id, rec in bc_raw.items():
+            if isinstance(rec, dict) and rec.get("pilot"):
+                bur_claimed_hubs.add(str(b_id))
+    bur_hubs_cov = len(bur_claimed_hubs)
+    bur_hubs_elig = 0
+    if bur_present:
+        try:
+            import bursar as _bur_mod
+            st_list = _bur_mod.load_exchange_stations(
+                str(ddir),
+                policed_only=bool(bur_pol.get("policed_only", False)),
+                exclude_strongholds=bool(bur_pol.get("exclude_strongholds", True)),
+                exclude_pirates=bool(bur_pol.get("exclude_pirates", True)),
+                pirate_avoid_hours=float(bur_pol.get("pirate_avoid_hours") or 6.0),
+                include_empty_neutral=bool(bur_pol.get("include_empty_neutral_stations", True)),
+            )
+            bur_hubs_elig = len(st_list)
+        except Exception:
+            bur_hubs_elig = 0
+    if bur_hubs_elig == 0 and conn is not None and "books" in tables:
+        try:
+            bur_hubs_elig = int(_num(conn.execute("SELECT COUNT(DISTINCT base) FROM books").fetchone()[0]))
+        except Exception:
+            bur_hubs_elig = 0
+    bur_route = _load_json(repo / "game" / "routes" / "bursar-network.json", {})
+    bur_max_ships = int(_num(bur_route.get("max_ships"), 65))
+    bur_hubs_target = min(bur_max_ships, bur_hubs_elig) if bur_hubs_elig > 0 else 0
+    if bur_hubs_elig >= 60:
+        bur_hubs_target = min(max(60, bur_hubs_target), bur_max_ships, bur_hubs_elig)
+    # Count mobile T1+ / high-cargo Trade ships kept free off Bursar desks
+    mobile_cargo_free = 0
+    mobile_on_desk = 0
+    if conn is not None and "ships" in tables and "hulls" in tables:
+        try:
+            for r in conn.execute("""
+                SELECT s.pilot, COALESCE(h.tier, 0) AS tier, COALESCE(h.cargo, 0) AS cargo
+                FROM ships s LEFT JOIN hulls h ON (h.id = s.class OR h.name = s.class)
+                WHERE s.division = 'Trade'
+            """).fetchall():
+                if int(_num(r[1])) >= 1 or int(_num(r[2])) > 150:
+                    pn = str(r[0])
+                    if pn in orders_by_pilot and orders_by_pilot[pn][0] == "bursar":
+                        mobile_on_desk += 1
+                    else:
+                        mobile_cargo_free += 1
+        except Exception:
+            pass
+    bur_notice = None
+    bur_status = "OK"
+    if bur_present:
+        if not bur_enabled or not bur_buy_enabled:
+            bur_status = "ALARM"
+            if not bur_enabled:
+                disabled_engines.append("bursar-network")
+            bur_notice = {
+                "severity": "ALARM", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: bursar-network or buy-side disabled",
+                "actual": f"enabled={bur_enabled}, buy.enabled={bur_buy_enabled}",
+                "target": "enabled=true & buy.enabled=true",
+                "direction": "FLAT",
+                "action": "Re-enable game/bursar-policy.json (keep buy+sell active; tune price/cap filters rather than turning off; ENT-088)",
+            }
+        elif _div_total("Trade") >= 5 and bur_plan == 0:
+            bur_status = "WARN"
+            bur_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: bursar-network missing from plan",
+                "actual": f"0/{_div_total('Trade')} traders carry bursar-network",
+                "target": "bursar-network in plan-trade.md (60+ safe hubs)",
+                "direction": "FLAT",
+                "action": "Add bursar-network to plan-trade.md (T0 desk split keeps T1+/cargo mobile; ENT-088)",
+            }
+        elif bur_hubs_target >= 40 and bur_hubs_cov < int(bur_hubs_target * 0.85):
+            bur_status = "WARN"
+            bur_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: Bursar safe-hub coverage below 60+ target",
+                "actual": f"{bur_hubs_cov}/{bur_hubs_target} safe hubs staffed ({bur_active} Bursars, {bur_hubs_elig} safe stations eligible)",
+                "target": f">={int(bur_hubs_target * 0.85)}/{bur_hubs_target} safe hubs (T0 desks, {mobile_cargo_free} T1+/cargo mobile)",
+                "direction": "FLAT",
+                "action": "Keep T0 traders routing through bursar-network to fill 60+ safe empire & neutral hubs while T1+/cargo ships run mobile trade/craft (ENT-088)",
+            }
+    out["Trade"] = {
+        "engine": "bursar-network",
+        "policy_present": bur_present,
+        "enabled": bur_enabled,
+        "buy_enabled": bur_buy_enabled,
+        "in_plan": bur_plan,
+        "active_ships": bur_active,
+        "hubs_covered": bur_hubs_cov,
+        "hubs_target": bur_hubs_target,
+        "hubs_eligible": bur_hubs_elig,
+        "mobile_cargo_free": mobile_cargo_free,
+        "mobile_on_desk": mobile_on_desk,
+        "status": bur_status,
+        "summary": (
+            f"bursar-network {bur_hubs_cov}/{bur_hubs_target or bur_hubs_elig} safe hubs "
+            f"({bur_active} active, buy {'ON' if bur_buy_enabled else 'OFF'}, {mobile_cargo_free} T1+/cargo mobile)"
+        ) if bur_present else "",
+        "notice": bur_notice,
+    }
+
+    # 4. Logistics (haul-network + O4 5-empire regional storage hubs)
+    haul_pol_path = game_dir / "haul-policy.json"
+    haul_present = haul_pol_path.is_file()
+    haul_pol = _load_json(haul_pol_path, {}) if haul_present else {}
+    haul_enabled = bool(haul_pol.get("enabled", True)) if haul_present else False
+    haul_arb_on = bool((haul_pol.get("sell_arb") or {}).get("enabled", True)) if haul_present else False
+    haul_ship_on = bool((haul_pol.get("shipping") or {}).get("enabled", True)) if haul_present else False
+    haul_active = int(orders_by_kind.get("haul", 0))
+    haul_plan = int(in_plan.get("haul-network", 0))
+    haul_claims_raw = _load_json(ddir / "fleet" / "haul_claims.json", {})
+    haul_claims_n = len(haul_claims_raw) if isinstance(haul_claims_raw, dict) else 0
+    haul_notice = None
+    haul_status = "OK"
+    if haul_present:
+        if not haul_enabled or (not haul_arb_on and not haul_ship_on):
+            haul_status = "ALARM"
+            disabled_engines.append("haul-network")
+            haul_notice = {
+                "severity": "ALARM", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: haul-network disabled",
+                "actual": f"enabled={haul_enabled}, sell_arb={haul_arb_on}, shipping={haul_ship_on}",
+                "target": "haul-network active (sell_arb + shipping ON)",
+                "direction": "FLAT",
+                "action": "Re-enable game/haul-policy.json core lanes (tune caps/margins rather than turning off; O3)",
+            }
+        elif _div_total("Logistics") >= 5 and haul_plan == 0:
+            haul_status = "WARN"
+            haul_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: haul-network missing from plan",
+                "actual": f"0/{_div_total('Logistics')} haulers carry haul-network",
+                "target": "haul-network in plan-logistics.md",
+                "direction": "FLAT",
+                "action": "Keep haul-network active in plan-logistics.md for Bursar-combo arb & P2P shipping (O3)",
+            }
+        elif _div_total("Logistics") >= 15 and haul_active == 0:
+            haul_status = "WARN"
+            haul_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: 0 active haul-network ships",
+                "actual": f"0/{_div_total('Logistics')} Logistics ships on haul-network",
+                "target": "active freight/arb haulers",
+                "direction": "FLAT",
+                "action": "Check haul-policy.json margins & assign haulers to haul-network (O3)",
+            }
+    out["Logistics"] = {
+        "engine": "haul-network",
+        "policy_present": haul_present,
+        "enabled": haul_enabled,
+        "sell_arb_enabled": haul_arb_on,
+        "shipping_enabled": haul_ship_on,
+        "in_plan": haul_plan,
+        "active_ships": haul_active,
+        "active_claims": haul_claims_n,
+        "o4_empires_covered": o4_covered,
+        "o4_target": o4_target,
+        "owned_stations": owned_stations,
+        "owned_outposts": owned_outposts,
+        "status": haul_status,
+        "summary": (
+            f"haul-network {haul_active} active ({haul_claims_n} claims, policy {'ON' if haul_enabled else 'OFF'}) | "
+            f"O4 5-emp hubs {o4_covered}/{o4_target} ({owned_outposts} outpost)"
+        ) if haul_present else "",
+        "notice": haul_notice,
+    }
+
+    # 5. Intel (census freshness feeding Bursar/Haul + ship_listings feeding auto-upgrades)
+    fresh_books_6h = 0
+    sl_count = 0
+    sl_age_min = None
+    intel_policy_ctx = bur_present or haul_present
+    if conn is not None:
+        try:
+            if "books" in tables:
+                bcols = {r[1] for r in conn.execute("PRAGMA table_info(books)")}
+                if "t" in bcols:
+                    fresh_books_6h = int(_num(conn.execute(
+                        "SELECT COUNT(DISTINCT base) FROM books WHERE (? - COALESCE(t,0)) <= 21600", (now,)
+                    ).fetchone()[0]))
+                else:
+                    fresh_books_6h = int(_num(conn.execute("SELECT COUNT(DISTINCT base) FROM books").fetchone()[0]))
+            if "ship_listings" in tables:
+                sl_r = conn.execute("SELECT COUNT(*), MAX(t) FROM ship_listings").fetchone()
+                if sl_r:
+                    sl_count = int(_num(sl_r[0]))
+                    if sl_r[1]:
+                        sl_age_min = round(max(0.0, (now - float(sl_r[1])) / 60.0), 1)
+        except Exception:
+            pass
+    intel_notice = None
+    intel_status = "OK"
+    if intel_policy_ctx and conn is not None and ("books" in tables or "ship_listings" in tables):
+        if "ship_listings" in tables and (sl_count == 0 or (sl_age_min is not None and sl_age_min > 180.0)):
+            intel_status = "WARN"
+            intel_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: ship_listings stale for auto-upgrades",
+                "actual": f"{sl_count} listings" + (f" ({sl_age_min:.0f}m old)" if sl_age_min is not None else " (empty)"),
+                "target": "fresh <3h shipyard listings",
+                "direction": "FLAT",
+                "action": "Keep scouts scanning major empire shipyards so upgrades.py auto-buys discounted listed hulls",
+            }
+        elif bur_hubs_elig >= 50 and fresh_books_6h < 45:
+            intel_status = "WARN"
+            intel_notice = {
+                "severity": "WARN", "code": "SMART_ENGINE_GAP",
+                "metric": "AutoNet: <6h market books below safe-hub floor",
+                "actual": f"{fresh_books_6h}/{bur_hubs_elig} hubs have <6h books",
+                "target": ">=45 hubs fresh <6h (feeds BursarNet + HaulNet)",
+                "direction": "FLAT",
+                "action": "Expand scout census cadence across safe neutral & empire hubs so BursarNet/HaulNet see live books",
+            }
+    out["Intel"] = {
+        "engine": "census-intel",
+        "policy_present": intel_policy_ctx,
+        "fresh_books_6h": fresh_books_6h,
+        "safe_hubs_eligible": bur_hubs_elig,
+        "ship_listings_count": sl_count,
+        "ship_listings_age_min": sl_age_min,
+        "status": intel_status,
+        "summary": (
+            f"books <6h {fresh_books_6h}/{bur_hubs_elig or fresh_books_6h} hubs | "
+            f"ship_listings {sl_count}" + (f" ({sl_age_min:.0f}m)" if sl_age_min is not None else "")
+        ) if intel_policy_ctx else "",
+        "notice": intel_notice,
+    }
+
+    # 6. Command (Unity rollup - fires ALARM ONLY if any autonomous policy was turned OFF)
+    div_keys = ("Mining", "Military", "Trade", "Logistics", "Intel")
+    ok_cnt = sum(1 for k in div_keys if out[k]["status"] == "OK")
+    degraded = [k for k in div_keys if out[k]["status"] != "OK"]
+    cmd_notice = None
+    cmd_status = "ALARM" if disabled_engines else ("WARN" if len(degraded) >= 3 else "OK")
+    if disabled_engines:
+        cmd_notice = {
+            "severity": "ALARM", "code": "SMART_ENGINE_GAP",
+            "metric": f"AutoNet Policy Turned Off ({', '.join(disabled_engines)})",
+            "actual": f"{len(disabled_engines)} autonomous network(s) disabled",
+            "target": "all 5 division autonomous networks ON",
+            "direction": "WORSENING",
+            "action": "Re-enable disabled game/*-policy.json immediately; tune caps/ratios rather than disabling AutoNet (ENT-088)",
+        }
+    out["Command"] = {
+        "engine": "fleet-networks",
+        "policy_present": any(out[k]["policy_present"] for k in ("Mining", "Military", "Trade", "Logistics")),
+        "networks_ok": ok_cnt,
+        "networks_total": len(div_keys),
+        "degraded": degraded,
+        "disabled_engines": disabled_engines,
+        "o4_empires_covered": o4_covered,
+        "o4_target": o4_target,
+        "status": cmd_status,
+        "summary": (
+            f"{ok_cnt}/{len(div_keys)} AutoNets OK"
+            + (f" (gap: {', '.join(degraded)})" if degraded else "")
+            + f" | O4 5-emp hubs {o4_covered}/{o4_target}"
+        ) if any(out[k]["policy_present"] for k in ("Mining", "Military", "Trade", "Logistics")) else "",
+        "notice": cmd_notice,
+    }
+    out["enterprise"] = {
+        "present": out["Command"]["policy_present"],
+        "networks_ok": ok_cnt,
+        "networks_total": len(div_keys),
+        "degraded": degraded,
+        "disabled_engines": disabled_engines,
+        "o4_empires_covered": o4_covered,
+        "o4_target": o4_target,
+        "mine_active": mine_active,
+        "mine_total": mine_tot_active,
+        "hunt_active": hunt_active,
+        "hunt_total": mil_combat_active,
+        "pack_share_pct": pack_share_pct,
+        "bursar_hubs": bur_hubs_cov,
+        "bursar_target": bur_hubs_target,
+        "haul_active": haul_active,
+        "fresh_books_6h": fresh_books_6h,
+        "ship_listings_count": sl_count,
+        "notice": cmd_notice,
+    }
+    return out
+
+
 def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, rivals_doc=None):
     """Compute complete enterprise & per-division KPI scorecard + alert triggers."""
     now = float(now if now is not None else time.time())
@@ -781,6 +1360,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     contrib_24h = {}
     ship_divs_map = {}
     field_sat = {}
+    smart_nets = {}
     hulls_by_div = {d: {"total": 0, "t1_plus": 0, "t2_plus": 0, "eligible_p10": 0, "upgraded_eligible": 0,
                         "off_role_hulls": 0, "near_p10": 0, "max_piloting": 0, "sum_piloting": 0.0, "empires": {}} for d in DIVISIONS}
     mods_by_div = {d: {"ships": 0, "fitted_slots": 0, "max_slots": 0, "t2_mod_ships": 0, "off_role_ships": 0}
@@ -1009,6 +1589,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     places_tot = int(_num(pr["tot"]))
                     places_fresh = int(_num(pr["fr"]))
             field_sat = _compute_field_saturation(repo_root, data_dir, conn=conn, ship_divs=ship_divs_map)
+            smart_nets = _compute_smart_networks(
+                repo_root, data_dir, conn=conn, tables=tables, ship_divs=ship_divs_map, live_div=live_div, now=now
+            )
 
             # GAAP/IFRS Cash-to-Accrual P&L & Transfer-Priced Division Attribution
             acc_24 = None
@@ -1202,6 +1785,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "target": "1-3 Bursars/hub, max hub coverage", "direction": "FLAT",
             "action": "Keep 1-3 Bursars per hub (1,000 order cap/pilot) and spread excess traders across unserved high-liquidity hubs",
         })
+    _sn_ent = (smart_nets.get("enterprise") or {})
+    if _sn_ent.get("notice"):
+        ent_triggers.append(dict(_sn_ent["notice"]))
     _ent_gaps = {
         "CASHFLOW_NEGATIVE": min(1.0, abs(recurring_cash_24h) / 100000.0) if recurring_cash_24h < 0 else 0.3,
         "PRODUCTIVE_EFFICIENCY": max(0.0, (TARGET_COMPLETION_PCT - prod_pct) / TARGET_COMPLETION_PCT),
@@ -1211,6 +1797,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
         "FIELD_CONGESTION": 0.85,
         "HUB_CONGESTION": 0.80,
+        "SMART_ENGINE_GAP": 0.85,
     }
     for _t in ent_triggers:
         if _t.get("code") == "ACTIVE_WAR":
@@ -1491,6 +2078,10 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "action": f"Compress bloated playbook chapters (`hive.py guide {div.lower()}`) below 90% cap (F14)",
             })
 
+        div_smart = smart_nets.get(div) or {}
+        if div_smart.get("notice"):
+            triggers.append(dict(div_smart["notice"]))
+
         _div_gaps = {
             "DIV_IDLE": max(0.0, (emp_warn_cut - div_emp_pct) / max(1.0, emp_warn_cut)),
             "DIV_HULL_UPGRADE": max(0.0, (TARGET_COMPLETION_PCT - hull_pct) / TARGET_COMPLETION_PCT),
@@ -1507,6 +2098,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "DIPLO_PENDING": min(1.0, 0.6 + 0.2 * diplo_pending),
             "OPEN_REQUESTS": min(1.0, open_reqs / 5.0),
             "PLAYBOOK_CAP": max(0.0, (pb_pct - 90.0) / 10.0),
+            "SMART_ENGINE_GAP": 0.85 if ((div_smart.get("notice") or {}).get("severity") == "ALARM") else 0.55,
         }
         for _t in triggers:
             _annotate_trigger(_t, gap_ratio=_div_gaps.get(_t["code"], 0.5))
@@ -1665,6 +2257,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "t2_mod_pct": t2_mod_pct, "off_role_ships": md["off_role_ships"], "status": mod_sev,
             },
             "saturation": div_sat,
+            "smart_engine": {k: v for k, v in div_smart.items() if k != "notice"} if div_smart else None,
             "playbook": {
                 "max_chapter_pct": pb_pct, "status": pb_sev,
             },
@@ -1988,6 +2581,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "empty_slots": fleet_empty_slots,
             "off_role_ships": fleet_off_role,
             "saturation": field_sat,
+            "smart_networks": {k: v for k, v in _sn_ent.items() if k != "notice"} if _sn_ent else None,
             "alarm_count": ent_alarms,
             "warn_count": sum(1 for t in ent_triggers if t["severity"] == "WARN"),
         },
@@ -2026,6 +2620,22 @@ def render_briefing(sc, who="all"):
         f"slots {e.get('empty_slots', 0)} empty ({e['slot_fit_pct']:.1f}% fit, {e.get('off_role_ships', 0)} off-role) | "
         f"eff {e['productive_pct']:.1f}% | roadmap {e['roadmap_avg_pct']:.1f}%{_sat_s}"
     )
+    _sn = e.get("smart_networks") or {}
+    if _sn.get("present"):
+        _sd = sc.get("divisions") or {}
+        _ms = ((_sd.get("Mining") or {}).get("smart_engine") or {}).get("status", "OK")
+        _hs = ((_sd.get("Military") or {}).get("smart_engine") or {}).get("status", "OK")
+        _bs = ((_sd.get("Trade") or {}).get("smart_engine") or {}).get("status", "OK")
+        _ls = ((_sd.get("Logistics") or {}).get("smart_engine") or {}).get("status", "OK")
+        _is = ((_sd.get("Intel") or {}).get("smart_engine") or {}).get("status", "OK")
+        lines.append(
+            f"  AUTONET    | Mine {_sn.get('mine_active',0)}/{max(1,_sn.get('mine_total',0))} [{_ms}] | "
+            f"Hunt {_sn.get('hunt_active',0)}/{max(1,_sn.get('hunt_total',0))} packs {_sn.get('pack_share_pct',0):.0f}% [{_hs}] | "
+            f"Bursar {_sn.get('bursar_hubs',0)}/{_sn.get('bursar_target',60)} hubs [{_bs}] | "
+            f"Haul {_sn.get('haul_active',0)} [{_ls}] | "
+            f"Intel {_sn.get('fresh_books_6h',0)}b/{_sn.get('ship_listings_count',0)}sl [{_is}] | "
+            f"O4 {_sn.get('o4_empires_covered',0)}/{_sn.get('o4_target',5)}"
+        )
     if e["drags"]:
         lines.append("  BOTTLENECKS| " + "; ".join(e["drags"][:4]))
 
@@ -2059,6 +2669,9 @@ def render_briefing(sc, who="all"):
             f"playbook {d['playbook']['max_chapter_pct']:.0f}%{_dsat_s}"
         )
         lines.append(f"    Role KPI : {d['role_kpi']['name']} = {d['role_kpi']['value']} [{d['role_kpi']['status']}]")
+        _dse = d.get("smart_engine") or {}
+        if _dse.get("summary"):
+            lines.append(f"    AutoNet  : {_dse['summary']} [{_dse.get('status', 'OK')}]")
         if da:
             lines.append(
                 f"    Finance  : Purse {_fmt_cr(d_purse)}/h (Recur {_fmt_cr(d_recur)} + Once {_fmt_cr(da.get('once_net_h', 0))}) | "
