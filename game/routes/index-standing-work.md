@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 518.
+Routes: 519.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -385,6 +385,7 @@ Routes: 518.
 | [hunt-keid-fractured-prism-veil-ray](hunt-keid-fractured-prism-veil-ray.json) | hunt | beyond the border, 5 jumps | veil_ray at keid_fractured_prism; loot sold at Node Beta Industrial Station | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 9 | 31 | -230 | -450 | 2026-11-22 |
 | [hunt-kepler-442-emission-nebula-drift-ray](hunt-kepler-442-emission-nebula-drift-ray.json) | hunt | beyond the border, 23 jumps | drift_ray at kepler_442_emission_nebula, one hunter, loot to a trader receiver at nova_terra_central | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-kit-frontier-pioneer-fields-magnet-barnacle](hunt-kit-frontier-pioneer-fields-magnet-barnacle.json) | hunt | beyond the border, 18 jumps | magnet_barnacle at pioneer_fields (Frontier, Outer Rim) for the Atria outpost kit; the Recursion alone; parts to a hauler at Node Beta | up to 1 ships, needs {'shield_booster_ii': 1, 'shield_recharger_ii': 1}, empty hold, standing work | 2 | 14 | 0 | 0 | 2026-11-23 |
+| [hunt-kit-zubenelhakrabi-crystal-sand-silica-borer](hunt-kit-zubenelhakrabi-crystal-sand-silica-borer.json) | hunt | beyond the border, 11 jumps | silica_borer at zubenelhakrabi_crystal_sand (lawless, 11 jumps) for the Atria outpost kit; one Laser III ship with a Shield Booster II; parts to a hauler at Node Beta | up to 1 ships, needs shield_booster_ii, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-kitalpha-lonesweep-field-belt-grazer](hunt-kitalpha-lonesweep-field-belt-grazer.json) | hunt | beyond the border, 23 jumps | belt_grazer at lonesweep_field, one hunter, loot to a trader receiver at nova_terra_central | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-kitalpha-lonesweep-field-slag-tortoise-pl3](hunt-kitalpha-lonesweep-field-slag-tortoise-pl3.json) | hunt | beyond the border, 8 jumps | slag tortoise (90 hull) at lonesweep_field with a Pulse Laser III; ferrous nodules and carapace for the reserve | up to 1 ships, needs pulse_laser_iii, empty hold, standing work | 8 | 27 | -260 | -590 | 2026-11-23 |
 | [hunt-kornephoros-frost-ring-rime-grazer](hunt-kornephoros-frost-ring-rime-grazer.json) | hunt | beyond the border, 17 jumps | rime_grazer at kornephoros_frost_ring; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn) | up to 1 ships, empty hold, standing work | 5 | 13 | -240 | -750 | 2026-11-23 |

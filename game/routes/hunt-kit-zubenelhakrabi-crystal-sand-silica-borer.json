@@ -1,0 +1,24 @@
+{
+ "id": "hunt-kit-zubenelhakrabi-crystal-sand-silica-borer",
+ "kind": "hunt",
+ "title": "silica_borer at zubenelhakrabi_crystal_sand (lawless, 11 jumps) for the Atria outpost kit; one Laser III ship with a Shield Booster II; parts to a hauler at Node Beta",
+ "note": "Written by Apophis 2026-11-24 00:53 UTC (orders ENT-084, P3 and block APOPHIS: hunt the kit's silica-borers by F9 and F38, the parts to Logistics, P5). Need atria-outpost-kit (needs show, 00:52 UTC) is short silica_lens 15; a silica-borer kill dropped 1 silica_lens and 1 creature_carapace (runs of hunt-kit-nexus-prime-material-harvesters-silica-borer, 2026-11-23 19:54 UTC). The only huntable herd of the five kit species: 4 silica-borers at zubenelhakrabi:zubenelhakrabi_crystal_sand (hive.py herds, read 346 min before 00:51 UTC; admirals.log ENT-113), lawless, 11 jumps, no pirate met in 72 h. Rule F3: beyond policed space a test of one ship, requires.empty_hold, alone: pirates. Rule F9: silica-borer hull 80, a Laser III ship with a Shield Booster II passes both gauges. Rule F38: kills 2 keeps 2. gift_to hauler at Node Beta, where the kit is assembled.",
+ "place": "zubenelhakrabi:zubenelhakrabi_crystal_sand",
+ "species": [
+  "silica_borer"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 2,
+ "minutes": 45,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "max_prey_hull": 80,
+ "alone": "pirates",
+ "requires": {
+  "module": "shield_booster_ii",
+  "empty_hold": true
+ },
+ "gift_to": "hauler",
+ "standing": true
+}
