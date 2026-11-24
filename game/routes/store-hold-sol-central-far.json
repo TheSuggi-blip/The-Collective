@@ -1,0 +1,19 @@
+{
+ "id": "store-hold-sol-central-far",
+ "kind": "circuit",
+ "title": "A loaded Solarian-born hunter far from home stores its hold at Sol Central and is home again",
+ "note": "Written by Apophis, 2026-11-24 13:15 UTC (orders ENT-087 P6 and O1; rule F8). At 13:13 UTC a Solarian-born drone waited docked at Haven (Grand Exchange) with 8 units aboard after a mission circuit: every hunt of its row asks an empty hold, store-hold-sol-central (Zero's) opens only within 10 jumps and Haven stands 14 out (fill.py status drone). The same store, for the far ones: up to 18 jumps, after the near route in the list. It brings the ship back to its own region (P6). Standing work: it stores, nothing is sold.",
+ "standing": true,
+ "max_ships": 10,
+ "requires": {
+  "hold": true,
+  "empire": "solarian",
+  "max_jumps": 18
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}

@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apophis. Routes: 357. Ships: 95.
+Kept by Apophis. Routes: 358. Ships: 95.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -370,13 +370,14 @@ Kept by Apophis. Routes: 357. Ships: 95.
 | 348 | [craft-piping-node-beta](craft-piping-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 14 ships, with 300 iron_ore stored at node_beta_industrial_station, 180 copper_ore stored at node_beta_industrial_station, standing work | all 95 |
 | 349 | [join-corridor-solarian](join-corridor-solarian.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born solarian, standing work | 15 of 95 |
 | 350 | [join-corridor-crimson](join-corridor-crimson.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 6 ships, born crimson, standing work | 30 of 95 |
-| 351 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 352 | [guard-schedar-belt](guard-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 353 | [guard-ironhollow-echo-ejecta](guard-ironhollow-echo-ejecta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 354 | [guard-garnet-belt](guard-garnet-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 355 | [guard-achernar-belt](guard-achernar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 356 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | all 95 |
-| 357 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
+| 351 | [store-hold-sol-central-far](store-hold-sol-central-far.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 10 ships, goods aboard, born solarian, standing work | all 95 |
+| 352 | [guard-ironhollow-fading-signal](guard-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 353 | [guard-schedar-belt](guard-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 354 | [guard-ironhollow-echo-ejecta](guard-ironhollow-echo-ejecta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 355 | [guard-garnet-belt](guard-garnet-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 356 | [guard-achernar-belt](guard-achernar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 357 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | all 95 |
+| 358 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 

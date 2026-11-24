@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 646.
+Routes: 647.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -234,6 +234,7 @@ Routes: 646.
 | [store-hold-grand-exchange](store-hold-grand-exchange.json) | circuit | beyond the border, 21 jumps | A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold | up to 35 ships, goods aboard, born nebula, standing work | 18 | 6 | -250 | -2,400 | 2026-11-24 |
 | [store-hold-krynn-war-citadel](store-hold-krynn-war-citadel.json) | circuit | beyond the border, 20 jumps | A Crimson-born drone a run left loaded docks at Crimson War Citadel, Krynn and stores its hold | up to 12 ships, goods aboard, born crimson, standing work | 49 | 10 | -340 | -1,560 | 2026-11-24 |
 | [store-hold-sol-central](store-hold-sol-central.json) | circuit | beyond the border, 10 jumps | A newborn miner a run left loaded docks at Confederacy Central Command, Sol and stores its hold | up to 35 ships, goods aboard, born solarian, standing work | 59 | 7 | -240 | -1,760 | 2026-11-24 |
+| [store-hold-sol-central-far](store-hold-sol-central-far.json) | circuit | beyond the border, 10 jumps | A loaded Solarian-born hunter far from home stores its hold at Sol Central and is home again | up to 10 ships, goods aboard, born solarian, standing work | TBD | TBD | TBD | TBD | -- |
 | [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044: 65 fuel cells bought at The Experiment, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | up to 1 ships, empty hold, from 12,000 cr, standing work | 3 | 22 | -5,910 | -14,370 | 2026-11-24 |
 | [supply-bunker-gsc-0044-own-cells](supply-bunker-gsc-0044-own-cells.json) | circuit | beyond the border, 6 jumps | Fuel for our outpost CLTV Outpost GSC-0044 from our own fuel cells: up to 65 cells taken from the pilot's storage at Node Beta (made there from hydrogen no bid takes), burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
 | [supply-repair-gsc-0044-boards](supply-repair-gsc-0044-boards.json) | circuit | beyond the border, 6 jumps | Circuit boards for the repair of our outpost CLTV Outpost GSC-0044: 60 boards of the pilot's own storage at Node Beta put into the faction's storage at the outpost; members of the faction only | up to 1 ships, from 5,000 cr, with 30 circuit_board stored at node_beta_industrial_station, standing work | TBD | TBD | TBD | TBD | -- |
