@@ -108,7 +108,7 @@ its read copy (read.db) -> hive.py and the MCP tool `collective` -> the members.
 SUBJECTS = (    # (title, the tables and views it holds, in their order); the calls of each subject: ASKS and VERBS
     ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "hull_readiness", "stats_pilot_hour", "stats_pilot_last")),
     ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions")),
-    ("Money", ("stats_money_hour",)),
+    ("Money", ("stats_money_hour", "division_pnl_24h")),
     ("Markets", ("books", "ladders", "moves", "market_hour", "contract_candidates")),
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
@@ -129,7 +129,7 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
               "capacity": "Routes and runs", "standing": "Routes and runs", "tasks": "Routes and runs", "refill": "Statistics",
               "kpi": "Statistics", "contribution": "Statistics", "classes": "Statistics", "time": "Statistics", "supply": "Statistics",
               "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics", "rival": "Map and intel", "rivals": "Map and intel", "contracts": "Markets", "shipping": "Markets", "progression": "Our faction", "scorecard": "Statistics", "upgrade_plan": "Ships and pilots"},
-    "ship": {"": "Ships and pilots"}, "routes": {"": "Routes and runs"}, "route": {"": "Routes and runs"}, "candidates": {"": "Routes and runs"},
+    "ship": {"": "Ships and pilots"}, "upgrades": {"": "Ships and pilots"}, "routes": {"": "Routes and runs"}, "route": {"": "Routes and runs"}, "candidates": {"": "Routes and runs"},
     "market": {"": "Markets"}, "stock": {"": "Stock and reserve"}, "catalog": {"": "The catalog"}, "base_plan": {"": "Our faction"},
     "system": {"": "Map and intel"}, "comms": {"contacts": "Map and intel", "safe_comms": "Map and intel", "": "Written knowledge"}, "search": {"": "Written knowledge"},
     "docs": {"": "Written knowledge"}, "supply": {"": "Supply"}, "sql": {"": "The store itself"},

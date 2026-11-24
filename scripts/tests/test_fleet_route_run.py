@@ -844,9 +844,6 @@ class SellOrderStepTests(unittest.TestCase):
         bm2 = ns["buy_order_moves"]({"item": "iron_ore", "qty": 100, "price": 10, "ceiling": 10}, {"best_buy": 3, "best_sell": 5}, [], 1000)
         self.assertEqual(bm2, [("create", 100, 4)])
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class AcceptByTitleTests(unittest.TestCase):
     """A station's procurement missions carry no template and a fresh mission_id each (Shipyard Supply at a shipyard):
@@ -892,3 +889,7 @@ class EmptyTourAbortTests(unittest.TestCase):
         self.assertTrue(tail(stops[1:]))
         self.assertFalse(tail(stops))
         self.assertFalse(tail([]))
+
+
+if __name__ == "__main__":
+    unittest.main()

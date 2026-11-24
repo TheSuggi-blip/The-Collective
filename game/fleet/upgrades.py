@@ -18,7 +18,9 @@ Usage:
   python3 -I -B game/fleet/upgrades.py [--who all|Unity|Zero|Mercury|Apollo|Apophis|Oracle]
 """
 import argparse
+import json
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -215,15 +217,561 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
                     lines.append(
                         f"    T{r['tier']} {r['name']:20s} [{r['fac']:8s} {r['category']:14s}] P{r['pil']} | cargo={int(r['cargo'] or 0):4d} spd={r['speed']} slots={r['weapon_slots']}W/{r['defense_slots']}D/{r['utility_slots']}U{mkt}"
                     )
+        q_txt = format_queue(data_dir, who=who)
+        if q_txt:
+            lines.append("")
+            lines.append(q_txt)
         return "\n".join(lines)
     finally:
         conn.close()
 
 
+
+
+# ---- Autonomous Batch Hull-Upgrade Queue (F12 / F17 / F37) ----
+
+UPGRADE_FLOOR = 20000          # minimum wallet kept after commissioning a hull
+UPGRADE_POLL_S = 600           # seconds between read-only list_ships checks while building
+UPGRADE_FUND_TIMEOUT = 48 * 3600
+UPGRADE_HOLD = "hand upgrade"
+ACTIVE_QUEUE_STATES = ("queued", "funding", "funded", "building")
+
+
+def queue_file(data_dir):
+    return Path(data_dir) / "fleet" / "upgrade_queue.json"
+
+
+def load_queue(data_dir):
+    p = queue_file(data_dir)
+    if not p.is_file():
+        return []
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        return raw if isinstance(raw, list) else []
+    except (OSError, ValueError):
+        return []
+
+
+def save_queue(data_dir, rows):
+    p = queue_file(data_dir)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    tmp = p.with_name(p.name + ".tmp")
+    tmp.write_text(json.dumps(rows, indent=1) + "\n", encoding="ascii")
+    os.replace(tmp, p)
+
+
+def protected_pilots(data_dir):
+    """Pilots holding or awaiting credits for an active hull upgrade: wallet.py sweep leaves them alone."""
+    return {str(r.get("pilot")) for r in load_queue(data_dir)
+            if isinstance(r, dict) and r.get("state") in ("queued", "funding", "funded") and r.get("pilot")}
+
+
+def _pilot_division_map(data_dir):
+    out = {}
+    fl_p = Path(data_dir) / "fleet" / "fleet.json"
+    if fl_p.is_file():
+        try:
+            fl = json.loads(fl_p.read_text(encoding="utf-8"))
+            for s in (fl.get("ships") or []) if isinstance(fl, dict) else []:
+                nm = s.get("name") or ""
+                if nm:
+                    out[nm] = (str(s.get("division") or ""), int(s.get("credits") or 0), s)
+        except (OSError, ValueError):
+            pass
+    return out
+
+
+def _member_division(who):
+    who_l = str(who or "").strip().lower()
+    mapping = {
+        "unity": "all", "command": "Command",
+        "zero": "Mining", "mining": "Mining",
+        "mercury": "Trade", "trade": "Trade",
+        "apollo": "Logistics", "logistics": "Logistics",
+        "apophis": "Military", "military": "Military",
+        "oracle": "Intel", "intel": "Intel",
+    }
+    return mapping.get(who_l, "")
+
+
+def _hull_info(data_dir, hull_id):
+    conn = _connect_ro(data_dir)
+    if conn is None:
+        return None
+    try:
+        r = conn.execute(
+            "SELECT id, name, tier, COALESCE(piloting_required, 0) AS pil, LOWER(COALESCE(faction, 'neutral')) AS fac "
+            "FROM hulls WHERE LOWER(id) = ? OR LOWER(name) = ? LIMIT 1",
+            (hull_id.lower(), hull_id.lower()),
+        ).fetchone()
+        return dict(r) if r else None
+    finally:
+        conn.close()
+
+
+def pick_candidates(data_dir, hull_id, role=None, empire=None, min_piloting=0, count=5, division_filter=None, exclude=()):
+    """Select eligible pilots from read.db sorted by highest piloting then highest wallet (least funding needed)."""
+    hinfo = _hull_info(data_dir, hull_id)
+    req_pil = max(int(min_piloting or 0), int(hinfo["pil"]) if hinfo else 0)
+    target_tier = int(hinfo["tier"]) if hinfo else 1
+    target_id = str(hinfo["id"]).lower() if hinfo else hull_id.lower()
+    conn = _connect_ro(data_dir)
+    if conn is None:
+        return []
+    excl = set(exclude or ())
+    try:
+        sql = """
+            SELECT s.pilot, s.division, s.role, LOWER(COALESCE(s.empire, '')) AS emp,
+                   LOWER(COALESCE(s.class, '')) AS cls, COALESCE(h.tier, 0) AS tier,
+                   COALESCE(s.credits, 0) AS credits, COALESCE(sk.level, 0) AS pil
+            FROM ships s
+            LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class)
+            LEFT JOIN ship_skills sk ON sk.pilot = s.pilot AND sk.skill = 'piloting'
+            WHERE COALESCE(sk.level, 0) >= ?
+        """
+        params = [req_pil]
+        if division_filter and division_filter != "all":
+            sql += " AND LOWER(s.division) = ?"
+            params.append(division_filter.lower())
+        if role:
+            sql += " AND LOWER(s.role) = ?"
+            params.append(role.lower())
+        if empire:
+            sql += " AND LOWER(s.empire) = ?"
+            params.append(empire.lower())
+        sql += " ORDER BY pil DESC, credits DESC, s.pilot ASC"
+        picks = []
+        for r in conn.execute(sql, params).fetchall():
+            nm = str(r["pilot"])
+            if nm in excl:
+                continue
+            if str(r["cls"]) == target_id or int(r["tier"] or 0) >= target_tier:
+                continue
+            picks.append({"pilot": nm, "division": str(r["division"] or ""), "piloting": int(r["pil"] or 0),
+                          "credits": int(r["credits"] or 0), "empire": str(r["emp"] or "")})
+            if len(picks) >= int(count):
+                break
+        return picks
+    finally:
+        conn.close()
+
+
+def queue_add(data_dir, who, hull_id, station, max_price, count=5, role=None, empire=None,
+              min_piloting=0, pilots=None, provide_materials=False, now=None):
+    """Queue a batch of pilots for autonomous hull upgrade (F12/F17/F37). Returns (rc, lines)."""
+    now = float(time.time() if now is None else now)
+    parts = [x.strip() for x in str(station or "").split(":")]
+    if len(parts) != 3 or not all(parts):
+        return 1, ["REFUSED: --station must be <system:poi:base>, got %r" % (station,)]
+    max_price = int(max_price or 0)
+    if max_price <= 0:
+        return 1, ["REFUSED: --max-price must be > 0"]
+    hull_clean = str(hull_id or "").strip().lower()
+    if not hull_clean:
+        return 1, ["REFUSED: --hull is required"]
+    caller_div = _member_division(who)
+    if not caller_div:
+        return 1, ["REFUSED: unknown caller %r (only Unity or a division Admiral may queue upgrades)" % (who,)]
+    rows = load_queue(data_dir)
+    active_pilots = {str(r.get("pilot")) for r in rows if isinstance(r, dict) and r.get("state") in ACTIVE_QUEUE_STATES}
+    pmap = _pilot_division_map(data_dir)
+    hinfo = _hull_info(data_dir, hull_clean)
+    if hinfo:
+        hull_clean = str(hinfo["id"]).lower()
+    req_pil = max(int(min_piloting or 0), int(hinfo["pil"]) if hinfo else 0)
+
+    chosen = []
+    if pilots:
+        for nm in [x.strip() for x in str(pilots).split(",") if x.strip()]:
+            if nm in active_pilots:
+                return 1, ["REFUSED: pilot %s already has an active entry in upgrade_queue.json" % nm]
+            info = pmap.get(nm)
+            pdiv = info[0] if info else ""
+            if caller_div != "all" and pdiv and pdiv.lower() != caller_div.lower():
+                return 1, ["REFUSED: %s belongs to %s, not %s's division (%s)" % (nm, pdiv, who, caller_div)]
+            chosen.append({"pilot": nm, "division": pdiv or (caller_div if caller_div != "all" else "Command"),
+                           "credits": info[1] if info else 0})
+    else:
+        chosen = pick_candidates(data_dir, hull_clean, role=role, empire=empire, min_piloting=req_pil,
+                                 count=max(1, int(count or 1)), division_filter=caller_div, exclude=active_pilots)
+        if not chosen:
+            return 1, ["REFUSED: no eligible pilot found for hull=%s (min_piloting=%d, div=%s, role=%s, empire=%s)" % (
+                hull_clean, req_pil, caller_div, role or "*", empire or "*")]
+
+    batch_id = "upg-%s-%d" % (re.sub(r"[^a-z0-9]+", "-", hull_clean)[:14], int(now))
+    next_num = max((int(str(r.get("id") or "0").split("-")[-1]) for r in rows if isinstance(r, dict) and str(r.get("id") or "").split("-")[-1].isdigit()), default=0) + 1
+    added = []
+    for c in chosen:
+        entry = {
+            "id": "u-%d" % next_num,
+            "batch_id": batch_id,
+            "pilot": c["pilot"],
+            "division": c["division"],
+            "by": str(who),
+            "hull": hull_clean,
+            "station": ":".join(parts),
+            "max_price": max_price,
+            "provide_materials": bool(provide_materials),
+            "state": "queued",
+            "created_at": int(now),
+            "updated_at": int(now),
+            "last_poll": 0,
+            "paid": 0,
+            "note": "",
+        }
+        next_num += 1
+        rows.append(entry)
+        added.append(entry)
+    save_queue(data_dir, rows)
+    lines = ["UPGRADE QUEUE ADDED | batch %s | %d pilot(s) -> %s @ %s (max %s cr, by %s)" % (
+        batch_id, len(added), hull_clean, ":".join(parts), _fmt_num(max_price), who)]
+    for e in added:
+        lines.append("  %s | %-16s | %-10s | state=%s" % (e["id"], e["pilot"], e["division"], e["state"]))
+    return 0, lines
+
+
+def queue_cancel(data_dir, who, target, now=None):
+    """Cancel pending (queued/funding/funded) entries matching id, batch_id, or pilot."""
+    now = float(time.time() if now is None else now)
+    caller_div = _member_division(who)
+    if not caller_div:
+        return 1, ["REFUSED: unknown caller %r" % (who,)]
+    rows = load_queue(data_dir)
+    hits = []
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        if target in (r.get("id"), r.get("batch_id"), r.get("pilot")):
+            if r.get("state") in ("building", "done", "cancelled"):
+                continue
+            if caller_div != "all" and str(r.get("division") or "").lower() != caller_div.lower():
+                return 1, ["REFUSED: %s belongs to %s, not %s" % (r.get("id"), r.get("division"), who)]
+            r["state"] = "cancelled"
+            r["updated_at"] = int(now)
+            r["note"] = "cancelled by %s" % who
+            hits.append(r["id"])
+    if not hits:
+        return 1, ["REFUSED: no cancellable (queued/funding/funded) entry matched %r" % (target,)]
+    save_queue(data_dir, rows)
+    return 0, ["UPGRADE QUEUE CANCELLED | %d entry(s): %s" % (len(hits), ", ".join(hits))]
+
+
+def format_queue(data_dir, who="all"):
+    rows = load_queue(data_dir)
+    if not rows:
+        return ""
+    div = _member_division(who)
+    shown = [r for r in rows if isinstance(r, dict) and (not div or div == "all" or str(r.get("division") or "").lower() == div.lower())]
+    if not shown:
+        return ""
+    active = [r for r in shown if r.get("state") in ACTIVE_QUEUE_STATES]
+    recent_done = [r for r in shown if r.get("state") not in ACTIVE_QUEUE_STATES][-5:]
+    lines = ["=== AUTONOMOUS HULL UPGRADE QUEUE (%d active, %d total | `upgrades.py queue add|show|cancel`)" % (len(active), len(shown))]
+    for r in active + recent_done:
+        lines.append("  %-6s %-16s %-10s %-14s %-10s max=%-9s paid=%-9s %s" % (
+            str(r.get("id") or "")[:6], str(r.get("pilot") or "")[:16], str(r.get("division") or "")[:10],
+            str(r.get("hull") or "")[:14], str(r.get("state") or "")[:10],
+            _fmt_num(r.get("max_price") or 0), _fmt_num(r.get("paid") or 0), str(r.get("note") or "")[:60]))
+    return "\n".join(lines)
+
+
+def _extract_ships(answer):
+    if isinstance(answer, dict):
+        if isinstance(answer.get("ships"), list):
+            return answer["ships"]
+        for v in answer.values():
+            found = _extract_ships(v)
+            if found:
+                return found
+    return []
+
+
+def _extract_quote_price(answer):
+    blob = json.dumps(answer)
+    prices = [int(m.replace(",", "")) for m in re.findall(r"Credits only:\s*([\d,]+)\s*cr", blob)]
+    def walk(d):
+        if isinstance(d, dict):
+            for k, v in d.items():
+                if k in ("credits_only", "credits_only_cost", "total_cost") and isinstance(v, (int, float)) and v > 0:
+                    prices.append(int(v))
+                else:
+                    walk(v)
+        elif isinstance(d, list):
+            for v in d:
+                walk(v)
+    walk(answer)
+    return max(prices) if prices else 0
+
+
+def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
+    status, out = gate_mod.call("post", "/accounts/%s/raw" % gate_mod.q(pilot),
+                                {"toolGroup": group, "action": action, "params": params or {}}, timeout=90)
+    try:
+        data = json.loads(out)
+    except (ValueError, TypeError):
+        data = {"raw": str(out)[:300]}
+    return status == 200 and '"error"' not in str(out)[:240], data
+
+
+def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id):
+    status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
+                                {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}}, timeout=240)
+    try:
+        d = json.loads(out)
+    except (ValueError, TypeError):
+        return False, str(out)[:160]
+    return status == 200 and bool(d.get("success")), str(d.get("message") or d.get("error") or "")[:160]
+
+
+def _try_hold_upgrade(data_dir, pilot, now, division_mod):
+    if division_mod.order_of(pilot, data_dir):
+        return False
+    p = Path(data_dir) / "fleet" / "orders" / (pilot + ".json")
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"pilot": pilot, "what": UPGRADE_HOLD, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))}), encoding="ascii")
+    return division_mod.order_of(pilot, data_dir) == UPGRADE_HOLD
+
+
+def _release_upgrade(data_dir, pilot, division_mod):
+    if division_mod.order_of(pilot, data_dir) == UPGRADE_HOLD:
+        try:
+            (Path(data_dir) / "fleet" / "orders" / (pilot + ".json")).unlink()
+        except OSError:
+            pass
+
+
+def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=3, budget_s=45.0,
+                   gate_mod=None, wallet_mod=None, division_mod=None):
+    """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
+    now = float(time.time() if now is None else now)
+    if (Path(data_dir) / "fleet" / "STOP").exists():
+        return 0
+    rows = load_queue(data_dir)
+    active = [r for r in rows if isinstance(r, dict) and r.get("state") in ACTIVE_QUEUE_STATES]
+    if not active:
+        return 0
+    here = str(Path(__file__).resolve().parent)
+    if here not in sys.path:
+        sys.path.insert(0, here)
+    if division_mod is None:
+        import division as division_mod
+    if wallet_mod is None:
+        import wallet as wallet_mod
+    if gate_mod is None:
+        import gate as gate_mod
+
+    pmap = _pilot_division_map(data_dir)
+    changed, actions, t0 = False, 0, time.time()
+
+    for r in active:
+        if time.time() - t0 > budget_s:
+            break
+        pilot = str(r.get("pilot") or "")
+        hull = str(r.get("hull") or "")
+        st_parts = str(r.get("station") or "").split(":")
+        if len(st_parts) != 3 or not pilot or not hull:
+            continue
+        sys_id, poi_id, base_id = st_parts
+        info = pmap.get(pilot)
+        ship = info[2] if info else {}
+        credits = int(info[1]) if info else 0
+        need_cr = int(r.get("max_price") or 0) + UPGRADE_FLOOR
+        state = r.get("state")
+
+        if state == "queued":
+            if credits >= need_cr:
+                r["state"], r["updated_at"], r["note"] = "funded", int(now), "wallet covers hull"
+                changed = True
+                state = "funded"
+            else:
+                short = need_cr - credits
+                if dry:
+                    print("would fund upgrade %s: %s +%s cr for %s" % (r["id"], pilot, _fmt_num(short), hull))
+                    continue
+                rc = wallet_mod.add_fund(data_dir, pilot, short, "upgrade %s (%s)" % (hull, r.get("batch_id") or r["id"]),
+                                         now=now, who=r.get("by") or "Unity")
+                if rc == 0:
+                    r["state"], r["updated_at"], r["note"] = "funding", int(now), "requested +%s cr" % _fmt_num(short)
+                    changed = True
+                else:
+                    r["note"], r["updated_at"] = "fund deferred (cap/floor)", int(now)
+                    changed = True
+                continue
+
+        if state == "funding":
+            if credits >= need_cr:
+                r["state"], r["updated_at"], r["note"] = "funded", int(now), "funds arrived"
+                changed = True
+                state = "funded"
+            elif now - float(r.get("created_at") or now) > UPGRADE_FUND_TIMEOUT:
+                r["state"], r["updated_at"], r["note"] = "failed", int(now), "funding timeout (48h)"
+                changed = True
+                continue
+            else:
+                continue
+
+        if actions >= max_actions:
+            continue
+        if ship.get("status", "connected") != "connected" or ship.get("in_combat"):
+            continue
+
+        if state == "funded":
+            if dry:
+                print("would commission %s: %s -> %s @ %s (max %s cr)" % (r["id"], pilot, hull, base_id, _fmt_num(r["max_price"])))
+                actions += 1
+                continue
+            if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
+                continue
+            actions += 1
+            try:
+                if str(ship.get("docked") or "") != base_id:
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    if not ok_d:
+                        r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
+                        changed = True
+                        continue
+                ok_ls, ls_ans = _gate_raw(gate_mod, pilot, "list_ships", {})
+                stored = [s for s in _extract_ships(ls_ans) if str(s.get("class_id") or "").lower() == hull
+                          and not s.get("is_active") and s.get("location_base_id") == base_id] if ok_ls else []
+                if stored:
+                    ok_sw, _ = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
+                    if ok_sw:
+                        r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into stored %s" % hull
+                        changed = True
+                        continue
+                ok_q, q_ans = _gate_raw(gate_mod, pilot, "commission_quote", {"ship_class": hull})
+                price = _extract_quote_price(q_ans) if ok_q else 0
+                if not price:
+                    r["note"], r["updated_at"] = "quote unreadable", int(now)
+                    changed = True
+                    continue
+                if price > int(r["max_price"]):
+                    r["state"], r["updated_at"], r["note"] = "failed", int(now), "quote %s > max %s" % (_fmt_num(price), _fmt_num(r["max_price"]))
+                    changed = True
+                    continue
+                if credits - price < UPGRADE_FLOOR:
+                    r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for quote %s" % _fmt_num(price)
+                    changed = True
+                    continue
+                c_params = {"ship_class": hull}
+                if r.get("provide_materials"):
+                    c_params["provide_materials"] = True
+                ok_c, c_ans = _gate_raw(gate_mod, pilot, "commission_ship", c_params)
+                if ok_c:
+                    try:
+                        gate_mod.book_onetime(pilot, "%s hull commissioned" % hull.capitalize(), -price, data=data_dir)
+                    except Exception:
+                        pass
+                    r["state"], r["paid"], r["updated_at"], r["last_poll"] = "building", price, int(now), int(now)
+                    r["note"] = "commissioned %s (%s cr)" % (hull, _fmt_num(price))
+                    changed = True
+                    print("UPGRADE commissioned %s: %s -> %s (%s cr)" % (r["id"], pilot, hull, _fmt_num(price)))
+                else:
+                    r["note"], r["updated_at"] = "commission failed: %s" % json.dumps(c_ans)[:90], int(now)
+                    changed = True
+            finally:
+                _release_upgrade(data_dir, pilot, division_mod)
+
+        elif state == "building":
+            if now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S:
+                continue
+            if dry:
+                print("would poll building upgrade %s: %s (%s @ %s)" % (r["id"], pilot, hull, base_id))
+                actions += 1
+                continue
+            r["last_poll"] = int(now)
+            changed = True
+            ok_ls, ls_ans = _gate_raw(gate_mod, pilot, "list_ships", {})
+            if not ok_ls:
+                continue
+            stored = [s for s in _extract_ships(ls_ans) if str(s.get("class_id") or "").lower() == hull
+                      and not s.get("is_active") and s.get("location_base_id") == base_id]
+            if not stored:
+                continue
+            if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
+                r["note"] = "ready at %s; waiting for pilot free" % base_id
+                continue
+            actions += 1
+            try:
+                if str(ship.get("docked") or "") != base_id:
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    if not ok_d:
+                        r["note"] = "ready; dock deferred: %s" % msg_d[:60]
+                        continue
+                ok_sw, sw_ans = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
+                if ok_sw:
+                    _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into %s @ %s" % (hull, base_id)
+                    print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id))
+                else:
+                    r["note"] = "switch failed: %s" % json.dumps(sw_ans)[:80]
+            finally:
+                _release_upgrade(data_dir, pilot, division_mod)
+
+    if changed and not dry:
+        save_queue(data_dir, rows)
+    return 0
+
+
 def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    data_default = os.environ.get("COLLECTIVE_DATA", DATA_DEFAULT)
+    if argv and argv[0] == "queue":
+        sub = argv[1] if len(argv) > 1 else "show"
+        rest = argv[2:]
+        ap = argparse.ArgumentParser(prog="upgrades.py queue " + sub)
+        ap.add_argument("--data", default=data_default)
+        ap.add_argument("--who", default="")
+        if sub == "add":
+            ap.add_argument("--hull", required=True)
+            ap.add_argument("--station", required=True, help="system:poi:base")
+            ap.add_argument("--max-price", type=int, required=True)
+            ap.add_argument("--count", type=int, default=5)
+            ap.add_argument("--role", default="")
+            ap.add_argument("--empire", default="")
+            ap.add_argument("--min-piloting", type=int, default=0)
+            ap.add_argument("--pilots", default="")
+            ap.add_argument("--provide-materials", action="store_true")
+            a = ap.parse_args(rest)
+            here = str(Path(__file__).resolve().parent)
+            if here not in sys.path:
+                sys.path.insert(0, here)
+            import division as _div
+            _k, me = _div.member()
+            caller = a.who or (me if me in _div.MEMBERS else "Unity")
+            rc, lines = queue_add(a.data, caller, a.hull, a.station, a.max_price, count=a.count,
+                                  role=a.role or None, empire=a.empire or None, min_piloting=a.min_piloting,
+                                  pilots=a.pilots or None, provide_materials=a.provide_materials)
+            for l in lines:
+                print(l)
+            return rc
+        if sub == "cancel":
+            ap.add_argument("target")
+            a = ap.parse_args(rest)
+            here = str(Path(__file__).resolve().parent)
+            if here not in sys.path:
+                sys.path.insert(0, here)
+            import division as _div
+            _k, me = _div.member()
+            caller = a.who or (me if me in _div.MEMBERS else "Unity")
+            rc, lines = queue_cancel(a.data, caller, a.target)
+            for l in lines:
+                print(l)
+            return rc
+        a = ap.parse_args(rest)
+        txt = format_queue(a.data, who=a.who or "all")
+        print(txt or "UPGRADE QUEUE | empty (use `upgrades.py queue add --hull <id> --station <sys:poi:base> --max-price <cr> --count <N>`)")
+        return 0
+    if argv and argv[0] == "serve":
+        ap = argparse.ArgumentParser(prog="upgrades.py serve")
+        ap.add_argument("--data", default=data_default)
+        ap.add_argument("--dry-run", action="store_true")
+        ap.add_argument("--max-actions", type=int, default=3)
+        a = ap.parse_args(argv[1:])
+        return serve_upgrades(a.data, dry=a.dry_run, max_actions=a.max_actions)
     ap = argparse.ArgumentParser(description="Empire-specialized hull & module parallel upgrade planner.")
     ap.add_argument("who", nargs="?", default="all", help="Member or division name (default: all)")
-    ap.add_argument("--data", default=os.environ.get("COLLECTIVE_DATA", DATA_DEFAULT))
+    ap.add_argument("--data", default=data_default)
     ap.add_argument("--root", default=REPO_DEFAULT)
     args = ap.parse_args(argv)
     print(render_upgrades(repo_root=args.root, data_dir=args.data, who=args.who))

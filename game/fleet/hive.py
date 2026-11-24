@@ -1801,9 +1801,12 @@ def main():
         __import__("scorecard").briefing(root, data, now, rest[0] if rest else (me if me in division.MEMBERS else "all"))
         return 0
     if verb == "upgrades":
+        _upg = __import__("upgrades")
+        if rest and rest[0] in ("queue", "serve"):
+            return _upg.main(rest + ["--data", data])
         _kind, me = division.member()
         who_u = rest[0] if rest else (me if me in division.MEMBERS else "all")
-        print(__import__("upgrades").render_upgrades(str(Path(root).parent if Path(root).name == "game" else root), data, who=who_u, now=now))
+        print(_upg.render_upgrades(str(Path(root).parent if Path(root).name == "game" else root), data, who=who_u, now=now))
         return 0
     if verb == "rivals":
         _kind, me = division.member()

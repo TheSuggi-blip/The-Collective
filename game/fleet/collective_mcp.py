@@ -287,6 +287,35 @@ TOOLS = {
                  "kind": arg(S, "circuit, hunt, mine, census or guard", ("circuit", "hunt", "mine", "census", "guard")), "zone": arg(S, "home or beyond (the border)", ("home", "beyond")),
                  "hours": arg(I, "the window of the runs, default 4")},
         "plan": lambda a: [("game/fleet/hive.py", ["routes"] + flag(a, "group") + flag(a, "kind") + flag(a, "zone") + flag(a, "hours"))]},
+    "upgrades": {
+        "text": "Empire-specialized hull & module upgrade planner and autonomous batch hull-upgrade queue (F12/F17/F37). action=status: division cohorts, P0/P10 hull tables, and active queue. action=queue: list queued upgrades. action=add: queue batch of pilots for automatic fund->commission->switch (executed every 5m in wallet sweep). action=cancel: cancel pending entries by id, batch_id, or pilot.",
+        "args": {
+            "action": arg(S, "status (default), queue, add, or cancel", ("status", "queue", "add", "cancel")),
+            "who": arg(S, "member or division filter for status/queue", MEMBERS),
+            "hull": arg(S, "for add: catalog hull id (e.g. recursion, prayer, runner, resonance_miner)"),
+            "station": arg(S, "for add: shipyard station as system:poi:base"),
+            "max_price": arg(I, "for add: maximum acceptable quote in credits"),
+            "count": arg(I, "for add: number of eligible pilots to queue (default 5)"),
+            "role": arg(S, "for add: optional role filter (miner, trader, hauler, drone, sentinel, scout)"),
+            "empire": arg(S, "for add: optional empire filter"),
+            "min_piloting": arg(I, "for add: minimum piloting level (enforced >= catalog requirement)"),
+            "pilots": arg(S, "for add: optional comma-separated explicit pilot names"),
+            "provide_materials": arg(B, "for add: pass provide_materials=true to commission_ship"),
+            "target": arg(S, "for cancel: entry id, batch_id, or pilot name"),
+        },
+        "plan": lambda a: (
+            [("game/fleet/upgrades.py", ["queue", "show"] + (["--who", a["who"]] if a.get("who") else []))]
+            if a.get("action") == "queue" else
+            [("game/fleet/upgrades.py", ["queue", "cancel", str(a.get("target") or "")])]
+            if a.get("action") == "cancel" else
+            [("game/fleet/upgrades.py", ["queue", "add", "--hull", str(a.get("hull") or ""), "--station", str(a.get("station") or ""),
+              "--max-price", str(a.get("max_price") or 0)] + flag(a, "count") + flag(a, "role") + flag(a, "empire")
+              + (["--min-piloting", str(a["min_piloting"])] if a.get("min_piloting") is not None else [])
+              + flag(a, "pilots") + (["--provide-materials"] if a.get("provide_materials") else []))]
+            if a.get("action") == "add" else
+            [("game/fleet/upgrades.py", ([a["who"]] if a.get("who") else []))]
+        ),
+    },
     "route": {
         "text": "One route in full: its file's facts, who flies it now, last twelve runs and 24h hourly rates. Set why=true to diagnose why pilots are open or closed to this route (`hive.py why <id>`).",
         "args": {"id": arg(S, "the route id, e.g. mine-ruchbah-ice-belt"),

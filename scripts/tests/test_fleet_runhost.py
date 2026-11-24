@@ -316,5 +316,100 @@ class DispatcherSideTests(Shelf):
         self.assertEqual((self.runhost.waiting(str(self.data)), self.runhost.load(str(self.data))), (1, 1))
 
 
+
+class DrainFreeHandoverTests(Shelf):
+    def test_module_change_hands_over_to_fresh_worker_with_zero_downtime(self):
+        helper = self.fleet / "helper_ho.py"
+        helper.write_text("VALUE = 1\n", encoding="ascii")
+        self.runner("long_mod.py", """
+            import os, sys, time
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            import helper_ho
+            print("val", helper_ho.VALUE, flush=True)
+            while not os.path.exists(sys.argv[1]):
+                time.sleep(0.02)
+            print("done", helper_ho.VALUE, flush=True)
+        """)
+        go1 = str(Path(self.temp.name) / "go1")
+        go2 = str(Path(self.temp.name) / "go2")
+        self.addCleanup(lambda: [Path(g).write_text("") for g in (go1, go2)])
+        env = dict(os.environ, FLEET_MEMBER="runhost", FLEET_HOST_EVERY="0.1")
+        env.pop("HERMES_SESSION_PROFILE", None)
+        proc = subprocess.Popen(
+            [sys.executable, "-I", "-B", str(FLEET / "runhost.py"), "--fleet", str(self.fleet), "--data", str(self.data)],
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, env=env,
+        )
+        def cleanup_proc():
+            if proc.poll() is None:
+                proc.terminate()
+                try:
+                    proc.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    proc.kill()
+                    proc.wait()
+            if proc.stdout:
+                proc.stdout.close()
+        self.addCleanup(cleanup_proc)
+
+        # Wait for Worker 1 accepting
+        limit = time.time() + 10
+        pid1 = None
+        while time.time() < limit:
+            st = self.runhost.read_json(self.home / "state.json", {})
+            if st.get("accepting") and st.get("pid"):
+                pid1 = st["pid"]
+                break
+            time.sleep(0.05)
+        self.assertIsNotNone(pid1, "worker 1 never started accepting")
+
+        # Start miner-1 on Worker 1 (loads helper_ho VALUE=1)
+        self.submit("miner-1", "long_mod.py", go1)
+        limit = time.time() + 10
+        while time.time() < limit and not (self.log("miner-1").exists() and "val 1" in self.log("miner-1").read_text()):
+            time.sleep(0.05)
+        self.assertIn("val 1", self.log("miner-1").read_text())
+
+        # Wait two ticks so Worker 1 records helper_ho initial stat, then modify on disk
+        time.sleep(0.35)
+        helper.write_text("VALUE = 2  # updated on disk\n", encoding="ascii")
+        limit = time.time() + 10
+        pid2 = None
+        while time.time() < limit:
+            st = self.runhost.read_json(self.home / "state.json", {})
+            if st.get("accepting") and st.get("pid") and st["pid"] != pid1:
+                pid2 = st["pid"]
+                break
+            time.sleep(0.05)
+        if pid2 is None:
+            proc.terminate()
+            out, _ = proc.communicate(timeout=5)
+            self.fail("worker 2 never took over after module change; log:\n" + out)
+        self.assertNotEqual(pid1, pid2)
+
+        # Submit miner-2 while miner-1 is STILL flying in Worker 1 -> miner-2 flies immediately with VALUE=2!
+        self.submit("miner-2", "long_mod.py", go2)
+        limit = time.time() + 10
+        while time.time() < limit and not (self.log("miner-2").exists() and "val 2" in self.log("miner-2").read_text()):
+            time.sleep(0.05)
+        self.assertIn("val 2", self.log("miner-2").read_text())
+        # Both runs counted in load() (1 active + 1 retiring)
+        self.assertGreaterEqual(self.runhost.load(str(self.data)), 2)
+        # Re-submitting miner-1 while still active in Worker 1 is refused cleanly (no double-drive)
+        self.assertTrue((self.home / "running" / "miner-1.json").exists())
+        # Release miner-1 and miner-2 -> retiring Worker 1 exits and removes its retiring.<pid>.json
+        Path(go1).write_text("")
+        Path(go2).write_text("")
+        limit = time.time() + 10
+        while time.time() < limit and list(self.home.glob("retiring.*.json")):
+            time.sleep(0.05)
+        self.assertEqual(list(self.home.glob("retiring.*.json")), [])
+        self.assertIn("done 1", self.log("miner-1").read_text())
+        self.assertIn("done 2", self.log("miner-2").read_text())
+
+        # Clean SIGTERM shutdown of supervisor + active worker
+        proc.terminate()
+        rc = proc.wait(timeout=12)
+        self.assertEqual(rc, 0)
+
 if __name__ == "__main__":
     unittest.main()

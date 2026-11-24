@@ -216,7 +216,7 @@ def survey(root, data, now=None):
     named = dispatch.flagships(data)
     ammo = set(dispatch.read_json(Path(data) / "catalog" / "ammo.json", []) or [])
     fleet = dispatch.read_json(Path(data) / "fleet" / "fleet.json", {})
-    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "park": [], "reasons": {}}
+    blank = lambda: {"ships": 0, "work": [], "hand": [], "away": [], "starting": [], "waiting": [], "standing": [], "next": [], "park": [], "once_only": [], "reasons": {}}
     crews = {role: blank() for role in roles}
     played = dict(state["orders"])                     # the orders as they stand after the dispatcher's next pass
     played_counts = Counter(played.values())
@@ -240,6 +240,17 @@ def survey(root, data, now=None):
                 census_counts[_cs] += 1
                 census_busy.add(_cs)
     why_state = dict(state, orders=played, _order_counts=played_counts, _census_counts=census_counts, _census_busy=census_busy)
+
+    def _has_standing_fallback(pilot_obj, plan_ids):
+        probe = dict(pilot_obj, goods=0)
+        for r2id in plan_ids:
+            r2 = routes.get(r2id)
+            if not r2 or r2.get("once") or r2.get("park") or r2.get("status") == "off":
+                continue
+            r_why = dispatch.why_not(probe, r2id, r2, why_state)[0]
+            if r_why is None or str(r_why).startswith("max_ships"):
+                return True
+        return False
     for ship in fleet.get("ships") or [] if isinstance(fleet, dict) else []:
         name = ship.get("name") or ""
         role = dispatch.role_of(name, named)
@@ -253,6 +264,10 @@ def survey(root, data, now=None):
             flown = routes.get(what.split(" ", 1)[1]) if " " in what and not what.startswith("hand ") else None
             if flown and flown.get("park"):
                 crew.setdefault("park", []).append(name)             # at work by its order, yet on the route no ship should reach (rule F8)
+            if flown and flown.get("once"):
+                _plan_ids = own.get(name) or roles.get(role) or []
+                if not _has_standing_fallback(dispatch.pilot_of(ship, named, data, ammo), _plan_ids):
+                    crew["once_only"].append((name, str(ship.get("system") or "?")))
             if flown and routefiles.standing(flown) and not flown.get("park"):      # free for paying work and tests when its run ends
                 pilot = dict(dispatch.pilot_of(ship, named, data, ammo), docked=True, goods=0)
                 for rid in own.get(name) or roles.get(role) or []:
@@ -273,6 +288,10 @@ def survey(root, data, now=None):
                 if reason is None:
                     _set_played(name, mark_of(routes[rid], argument))
                     crew["starting"].append((name, rid))
+                    if (routes.get(rid) or {}).get("once"):
+                        _plan_ids = own.get(name) or roles.get(role) or []
+                        if not _has_standing_fallback(pilot, _plan_ids):
+                            crew["once_only"].append((name, str(ship.get("system") or "?")))
                     break
                 why.append((rid, reason))
             else:
@@ -649,7 +668,7 @@ def read_role(seen, role, floor=500, tests=8):
     seen["taken"] = {name: what for name, what in state["orders"].items() if name not in seen["played"]}
     return {"role": role, "owner": seen["owners"].get(role) or division.ROLES.get(role, "?"), "ships": crew["ships"], "work": crew["work"], "hand": crew["hand"],
             "away": crew["away"], "starting": starting, "waiting": [p["name"] for p in waiting], "standing": [p["name"] for p in crew.get("standing") or []],
-            "next": list(crew.get("next") or []), "park": list(crew.get("park") or []),
+            "next": list(crew.get("next") or []), "park": list(crew.get("park") or []), "once_only": list(crew.get("once_only") or []),
             "idle": [p["name"] for p in left if p in waiting], "plan": rows,
             "paying": paying, "tests": found, "closed": closed, "by_hand": sorted(by_hand, reverse=True), "refused": refused}
 
@@ -774,7 +793,10 @@ def verdict(seen, got):
             " | %d places of paying work and %d tests stand open to its ships on standing work: python3 -I -B game/fleet/fill.py fill %s --write"
             % (places, tests, got["role"]) if places or tests else "") + (
             " | %d on park, the route no ship should reach (rule F8; Apollo's report of 2026-11-17): %s; `fill.py status %s` says what closes the rest"
-            % (len(parked), ", ".join(parked[:4]) + (" ..." if len(parked) > 4 else ""), got["role"]) if parked else "")
+            % (len(parked), ", ".join(parked[:4]) + (" ..." if len(parked) > 4 else ""), got["role"]) if parked else "") + (
+            " | CLIFF WARNING: %d ship(s) on once-only routes lack repeating standing fallback (%s)"
+            % (len(got.get("once_only") or []), ", ".join("%s %d" % kv for kv in Counter(sy for _n, sy in (got.get("once_only") or [])).most_common(4)))
+            if got.get("once_only") else "")
     if places or tests:
         return False, ("HALT: %d ships of %s wait while %d places of paying work and %d tests stand open: python3 -I -B game/fleet/fill.py fill %s --write"
                        % (waiting, got["role"], places, tests, got["role"]))
@@ -826,6 +848,11 @@ def show(seen, got):
     tell_refused(seen, got)                                       # Q75 (2): each refusal once, with its reason
     if seen["list_age"] > STALE / 2:
         print("  NOTE: the route maker's list is %s old" % ("%d minutes" % (seen["list_age"] // 60) if seen["list_age"] != float("inf") else "missing or not dated"))
+    once_only = got.get("once_only") or []
+    if once_only:
+        hubs = ", ".join("%s %d" % kv for kv in Counter(sy for _n, sy in once_only).most_common(5))
+        print("  CLIFF WARNING (2h idle risk): %d ship(s) of %s fly finite once-routes with NO repeating standing fallback (%s): %s"
+              % (len(once_only), got["role"], hubs, short([n for n, _sy in once_only])))
     ok, line = verdict(seen, got)
     print("  " + line)
     return ok

@@ -688,5 +688,30 @@ class ClassRuleTests(Tree):
         self.assertEqual(self.fill.spare(seen, got), [("gather", 1)])                             # its file's `open_to`: the Admiral's word
 
 
+
+class StandingFallbackCliffTests(unittest.TestCase):
+    def test_verdict_and_show_warn_when_once_only_ships_lack_standing_fallback(self):
+        import io, contextlib, sys as _sys
+        _sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "game" / "fleet"))
+        import fill as _fill
+        seen = {"list_age": 10.0, "fleet_at": "2026-11-24T00:00:00Z", "told": set()}
+        got = {"role": "hauler", "owner": "Apollo", "ships": 2, "work": ["hauler-1", "hauler-2"], "hand": [], "away": [],
+               "starting": [], "waiting": [], "standing": [], "next": [], "park": [],
+               "once_only": [("hauler-1", "nova_terra"), ("hauler-2", "nova_terra")],
+               "idle": [], "plan": [], "paying": [], "tests": [], "closed": {}, "by_hand": [], "refused": []}
+        ok, line = _fill.verdict(seen, got)
+        self.assertTrue(ok)
+        self.assertIn("CLIFF WARNING", line)
+        self.assertIn("nova_terra 2", line)
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            _fill.show(seen, got)
+        self.assertIn("CLIFF WARNING (2h idle risk): 2 ship(s)", buf.getvalue())
+        # Cleared when once_only is empty
+        got["once_only"] = []
+        ok2, line2 = _fill.verdict(seen, got)
+        self.assertTrue(ok2)
+        self.assertNotIn("CLIFF WARNING", line2)
+
 if __name__ == "__main__":
     unittest.main()

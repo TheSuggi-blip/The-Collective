@@ -15,3 +15,15 @@ history (stats.py): per whole UTC hour and division (Fleet: the whole) the stead
 - The fleet's steady net hour by hour: `SELECT datetime(hour, 'unixepoch') AS hour, ROUND(net) AS net, ROUND(income) AS income, ROUND(costs) AS costs, ROUND(once) AS paid_once FROM stats_money_hour WHERE division = 'Fleet' ORDER BY hour DESC LIMIT 24`
 - The fleet's steady credits over the last 72 whole hours: `SELECT ROUND(SUM(net * minutes / 60.0)) AS net_credits, COUNT(*) AS hours FROM stats_money_hour WHERE division = 'Fleet' AND hour >= strftime('%s', 'now') - 72 * 3600`
 - The idle share of the fleet hour by hour: `SELECT datetime(hour, 'unixepoch'), ROUND(100 * idle, 1) AS idle_pct, samples FROM stats_money_hour WHERE division = 'Fleet' ORDER BY hour DESC LIMIT 24`
+
+## division_pnl_24h
+
+view: trailing 24h and 6h division cashflow per hour (steady, once, total Net Purse/h, and fuel) from stats_money_hour
+
+- Kind: view over stats_money_hour
+- Columns: division, hrs_24h, steady_24h, once_24h, purse_24h, fuel_24h, steady_6h, once_6h, purse_6h
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- 24h and 6h Net Purse/h, steady, once and fuel per division: `SELECT * FROM division_pnl_24h ORDER BY purse_24h DESC`
+- Divisions with negative 24h steady cashflow vs positive Net Purse/h: `SELECT division, steady_24h, once_24h, purse_24h FROM division_pnl_24h WHERE steady_24h < 0 ORDER BY purse_24h DESC`
+- Trailing 6h vs 24h Net Purse/h momentum per division: `SELECT division, purse_6h, purse_24h, fuel_24h FROM division_pnl_24h WHERE division != 'Fleet' ORDER BY purse_6h DESC`

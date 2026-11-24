@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 24 tools.
+The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 25 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -35,7 +35,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Where to ask what (below): a question -> the MCP call and the shell line, by subject
 - Ships and pilots, `game/handbook/ships-and-pilots.md`: ships, ship_skills, ship_modules, ship_cargo, fleet_positions, hull_readiness, stats_pilot_hour, stats_pilot_last
 - Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
-- Money, `game/handbook/money.md`: stats_money_hour
+- Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
 - Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour, contract_candidates
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
@@ -46,7 +46,6 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
-- Other, `game/handbook/other.md`: division_pnl_24h
 
 ## How the data flows
 
@@ -96,6 +95,10 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | a member's ships one line each, with their orders and last runs. | fleet view=board | board.py |
 | empire-specialized T1/T2 parallel batch upgrade sheet. | fleet view=upgrade_plan | upgrades.py all |
 | one ship: place, hull, fuel, hold, modules, wallet, order, skills | ship pilot=<pilot> | hive.py ship <pilot> |
+| division cohorts, P0/P10 hull tables, and active queue. | upgrades action=status | upgrades.py |
+| list queued upgrades. | upgrades action=queue | upgrades.py queue show |
+| queue batch of pilots for automatic fund->commission->switch (executed every 5m in wallet sweep). | upgrades action=add | upgrades.py queue add --hull  --station  --max-price 0 |
+| cancel pending entries by id, batch_id, or pilot. | upgrades action=cancel | upgrades.py queue cancel  |
 | what a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | hive verb=gauges | hive.py gauges |
 
 ### Routes and runs

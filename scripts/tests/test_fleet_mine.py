@@ -185,10 +185,6 @@ class HostStopTests(unittest.TestCase):
         self.assertIn("RESULT miner-1", said.getvalue())
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class DepositTargetTests(unittest.TestCase):
     """A mine route that unloads at our outpost stores into the faction's storage (it offers no personal storage):
     the turn of 2026-11-17 21:30 UTC, for Mining's fields around GSC-0044."""
@@ -218,3 +214,7 @@ class DepositTargetTests(unittest.TestCase):
         tree = ast.parse((FLEET / "mine.py").read_text(encoding="ascii"))
         main = next(ast.unparse(n) for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == "main")
         self.assertIn("'depositTarget': deposit", main)
+
+
+if __name__ == "__main__":
+    unittest.main()

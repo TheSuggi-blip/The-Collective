@@ -233,7 +233,10 @@ def read(repo):
 
 
 def prio(row):
-    return row["priority"] if isinstance(row.get("priority"), int) else 9
+    v = row.get("priority")
+    if isinstance(v, int) and not isinstance(v, bool):
+        return v
+    return int(v) if isinstance(v, str) and v.strip().isdigit() else 9
 
 
 def units_text(units):
@@ -768,6 +771,8 @@ def write(repo, data, who, change, verb, dry=False, now=None):
         rows = [r for r in rows if r["id"] not in gone]
         text = render(rows)
         rows, _problem = parse(text)                            # read back as the file will be read: line numbers and errors anew
+        if not _problem:
+            text = render(rows)                                 # canonical sort after string->int normalization matches needs.py check
         mine = [r for r in rows if r["id"] == rid]
         errors = [e for r in mine for e in r["errors"]]         # the row written, and the cap of its division (tidy: the caps)
         errors += [e for e in validate(rows, None)[0] if "MAX_OPEN" in e and (rid is None or " of %s, " % where in e)]

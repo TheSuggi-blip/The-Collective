@@ -50,6 +50,7 @@ import json
 import os
 import re
 import signal
+import subprocess
 import sys
 import threading
 import time
@@ -61,6 +62,8 @@ ALIVE = 30                   # a state file older than this: the host is away
 TAKE_BACK = 60               # a job that waited this long in the inbox is the dispatcher's again
 MAX_RUNS = 600               # runs in flight at most
 MAX_RSS_MB = 2048            # above this the host drains and starts fresh
+MAX_RETIRING = 3             # retiring worker generations allowed in flight during drain-free handover
+TOTAL_RSS_MB = 2600          # cap total RSS across active + retiring workers before pausing new handovers
 SCRIPT = re.compile(r"^[a-z][a-z0-9_]*\.py$")
 NUMBERS = itertools.count(1000001)   # what a run reads as its process id: its own, and above every real one (files named by os.getpid())
 STOPPED = "stopped by the host's stop file"
@@ -104,10 +107,47 @@ def accepting(data, now=None):
     return bool(isinstance(at, (int, float)) and -ALIVE <= now - at <= ALIVE and state.get("accepting"))
 
 
+def _pid_alive(pid):
+    if not isinstance(pid, int) or pid <= 1:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    except OSError:
+        return False
+
+
+def _proc_rss_mb(pid):
+    try:
+        with open("/proc/%d/statm" % int(pid), encoding="ascii") as handle:
+            return int(handle.read().split()[1]) * os.sysconf("SC_PAGE_SIZE") // (1024 * 1024)
+    except (OSError, ValueError, IndexError):
+        return 0
+
+
+def retiring_runs(data):
+    """Runs still flying in retiring worker generations during a drain-free handover."""
+    home, total = folder(data), 0
+    if not home.is_dir():
+        return 0
+    for path in sorted(home.glob("retiring.*.json")):
+        info = read_json(path, {})
+        if not isinstance(info, dict):
+            continue
+        pid = info.get("pid")
+        if _pid_alive(pid):
+            total += int(info.get("runs") or 0)
+    return total
+
+
 def load(data):
-    """Runs the host flies or is about to: those in its state file and those that wait in its inbox."""
+    """Runs the host flies or is about to: active + retiring workers and those waiting in inbox."""
     state = read_json(folder(data) / "state.json", {})
-    return int((state.get("runs") if isinstance(state, dict) else 0) or 0) + waiting(data)
+    return int((state.get("runs") if isinstance(state, dict) else 0) or 0) + retiring_runs(data) + waiting(data)
 
 
 def waiting(data):
@@ -243,9 +283,10 @@ def rss_mb():
 
 
 class Host:
-    def __init__(self, fleet, data, say=print, max_runs=MAX_RUNS, max_rss_mb=MAX_RSS_MB):
+    def __init__(self, fleet, data, say=print, max_runs=MAX_RUNS, max_rss_mb=MAX_RSS_MB, managed=False):
         self.fleet, self.data, self.say = Path(os.path.realpath(fleet)), data, say
         self.max_runs, self.max_rss_mb = max_runs, max_rss_mb
+        self.managed = bool(managed)
         self.folder = folder(data)
         for part in ("inbox", "running", "stop"):
             (self.folder / part).mkdir(parents=True, exist_ok=True)
@@ -256,8 +297,22 @@ class Host:
         self.codes = {}                  # script -> (what its file looked like, its compiled text)
         self.seen = {}                   # watched file -> what it looked like when first seen
         self.draining = ""               # why the host takes no new run and ends when the last one has ended
+        self.retired = False             # managed worker handed over inbox/state to replacement; finishes in-flight runs only
+        self.retire_requested = ""       # external retire request from parent (SIGUSR2)
         self.wrote = (None, None, 0.0)   # the state last written: accepting, runs, when
+        self.retire_wrote = (None, 0.0)  # retiring marker last written: runs, when
         self.flown = 0
+
+    def request_retire(self, reason="parent handover"):
+        if not self.retire_requested:
+            self.retire_requested = reason
+
+    def _running_elsewhere(self, run_path):
+        info = read_json(run_path, None)
+        if not isinstance(info, dict):
+            return False
+        pid = info.get("pid")
+        return bool(isinstance(pid, int) and pid != os.getpid() and _pid_alive(pid))
 
     # -- what the host looks at --
 
@@ -295,11 +350,15 @@ class Host:
 
     # -- one look --
 
-    def recover(self):
+    def recover(self, skip_live=False):
         """Free the pilots of the runs a dead host left in `running/`; returns one line per run."""
         lines = []
         for path in sorted((self.folder / "running").glob("*.json")):
             job = read_json(path, {})
+            if skip_live and isinstance(job, dict):
+                pid = job.get("pid")
+                if isinstance(pid, int) and pid != os.getpid() and _pid_alive(pid):
+                    continue
             pilot = str(job.get("pilot") or path.stem) if isinstance(job, dict) else path.stem
             freed = False
             if isinstance(job, dict) and self.order_names(job):
@@ -333,9 +392,16 @@ class Host:
             return self.refuse(job, path, "the job names no pilot of its file")
         if not SCRIPT.match(script) or not (self.fleet / script).is_file():
             return self.refuse(job, path, "`%s` is no script of the fleet folder" % script)
+        run_marker = self.folder / "running" / path.name
         if path.name in self.runs:
             self.runs[path.name][1].set()                # that run kept its order file stale for the dispatcher to give new work: it is stuck
             return self.refuse(job, path, "the pilot's last run has not ended; it is told to stop")
+        if run_marker.exists() and self._running_elsewhere(run_marker):
+            try:
+                (self.folder / "stop" / pilot).write_text("", encoding="ascii")
+            except OSError:
+                pass
+            return self.refuse(job, path, "the pilot's last run has not ended in a retiring host; it is told to stop")
         if not self.order_names(job):
             return self.refuse(job, path, "the pilot's order file does not name this work")
         try:
@@ -343,6 +409,7 @@ class Host:
         except (OSError, SyntaxError, ValueError) as error:
             return self.refuse(job, path, "%s does not compile: %s" % (script, " ".join(str(error).split())[:120]))
         job["since"] = stamp()
+        job["pid"] = os.getpid()
         try:
             write_json(self.folder / "running" / path.name, job)
             path.unlink()
@@ -354,31 +421,80 @@ class Host:
         self.flown += 1
         thread.start()
 
+    def _retire_path(self):
+        return self.folder / ("retiring.%d.json" % os.getpid())
+
+    def _write_retiring(self, now):
+        if len(self.runs) == self.retire_wrote[0] and 0 <= now - self.retire_wrote[1] < 5:
+            return
+        try:
+            write_json(self._retire_path(), {"pid": os.getpid(), "runs": len(self.runs), "memory_mb": rss_mb(),
+                                             "reason": self.draining, "at": now, "updated_at": stamp(now)})
+            self.retire_wrote = (len(self.runs), now)
+        except OSError:
+            pass
+
     def step(self, now=None):
         """One look. False when the host has drained and must end, so that the shelf starts it fresh."""
         now = time.time() if now is None else now
         for name in [n for n, run in self.runs.items() if not run[0].is_alive()]:
             del self.runs[name]
         for path in sorted((self.folder / "stop").iterdir()):
-            run = self.runs.get(job_file(path.name))
+            jname = job_file(path.name)
+            run = self.runs.get(jname)
             if run:
                 run[1].set()
                 self.say("%s: its run `%s` is told to stop (stop file)" % (path.name, run[2].get("what")))
-            try:
-                path.unlink()
-            except OSError:
-                pass
+                try:
+                    path.unlink()
+                except OSError:
+                    pass
+            elif not self.retired:
+                # Leave stop files belonging to a live retiring worker untouched so that worker handles them.
+                rm = self.folder / "running" / jname
+                owned_elsewhere = rm.exists() and self._running_elsewhere(rm)
+                try:
+                    stale_stop = (now - path.stat().st_mtime) > 15
+                except OSError:
+                    stale_stop = False
+                if not owned_elsewhere or stale_stop:
+                    try:
+                        path.unlink()
+                    except OSError:
+                        pass
         if not self.draining:
-            found = self.changed()
-            if found:
-                self.draining = "%s changed on disk" % found
-            elif (self.folder / "drain").exists():
-                self.draining = "the drain file"
-            elif self.max_rss_mb and rss_mb() > self.max_rss_mb:
-                self.draining = "memory above %d MB" % self.max_rss_mb
+            if self.retire_requested:
+                self.draining = self.retire_requested
+            else:
+                found = self.changed()
+                if found:
+                    self.draining = "%s changed on disk" % found
+                elif (self.folder / "drain").exists():
+                    self.draining = "the drain file"
+                elif self.max_rss_mb and rss_mb() > self.max_rss_mb:
+                    self.draining = "memory above %d MB" % self.max_rss_mb
             if self.draining:
-                self.say("draining (%s): %d run(s) in flight end first, no new run is taken" % (self.draining, len(self.runs)))
+                if self.managed:
+                    self.retired = True
+                    try:
+                        write_json(self.folder / "handover.json", {"pid": os.getpid(), "reason": self.draining, "at": now})
+                    except OSError:
+                        pass
+                    try:
+                        (self.folder / "drain").unlink()
+                    except OSError:
+                        pass
+                    self.say("retiring for drain-free handover (%s): %d run(s) finish cleanly while replacement accepts" % (self.draining, len(self.runs)))
+                else:
+                    self.say("draining (%s): %d run(s) in flight end first, no new run is taken" % (self.draining, len(self.runs)))
         if self.draining and not self.runs:
+            if self.retired:
+                try:
+                    self._retire_path().unlink()
+                except OSError:
+                    pass
+                self.say("retired worker ended cleanly: %s" % self.draining)
+                return False
             try:
                 (self.folder / "drain").unlink()
             except OSError:
@@ -386,12 +502,17 @@ class Host:
             self.write_state(now, False)
             self.say("ending for a fresh start: %s" % self.draining)
             return False
+        if self.retired:
+            self._write_retiring(now)
+            return True
         if not self.draining:
+            used_other = retiring_runs(self.data) if self.managed else 0
             for path in sorted((self.folder / "inbox").glob("*.json")):
-                if len(self.runs) >= self.max_runs:
+                if len(self.runs) + used_other >= self.max_runs:
                     break
                 self.take(path)
-        self.write_state(now, not self.draining and len(self.runs) < self.max_runs)
+        used_other = retiring_runs(self.data) if self.managed else 0
+        self.write_state(now, not self.draining and (len(self.runs) + used_other) < self.max_runs)
         return True
 
     def write_state(self, now, accepting_now):
@@ -413,7 +534,13 @@ class Host:
         while time.time() < limit and any(run[0].is_alive() for run in self.runs.values()):
             time.sleep(0.05)
         left = sorted(str(run[2].get("pilot")) for run in self.runs.values() if run[0].is_alive())
-        self.write_state(time.time() + 6, False)
+        if self.retired:
+            try:
+                self._retire_path().unlink()
+            except OSError:
+                pass
+        else:
+            self.write_state(time.time() + 6, False)
         return left
 
     # -- one run --
@@ -440,9 +567,161 @@ class Host:
             self.say("%s: its run ended on the host's fault: %s: %s" % (job.get("pilot"), type(error).__name__, " ".join(str(error).split())[:160]))
         finally:
             try:
-                (self.folder / "running" / name).unlink()
+                rm = self.folder / "running" / name
+                info = read_json(rm, {})
+                if not isinstance(info, dict) or info.get("pid") in (None, os.getpid()):
+                    rm.unlink()
             except OSError:
                 pass
+
+
+def _run_worker(args, say):
+    host = Host(args.fleet, args.data, say=say, max_runs=int(os.environ.get("FLEET_HOST_MAX_RUNS") or MAX_RUNS),
+                max_rss_mb=int(os.environ.get("FLEET_HOST_MAX_MB") or MAX_RSS_MB), managed=True)
+    for line in host.recover(skip_live=True):
+        say(line)
+    leaving = []
+    signal.signal(signal.SIGTERM, lambda number, frame: leaving.append(number))
+    if hasattr(signal, "SIGUSR2"):
+        signal.signal(signal.SIGUSR2, lambda number, frame: host.request_retire("parent handover"))
+    try:
+        import faulthandler
+        faulthandler.register(signal.SIGUSR1, file=sys.stderr, all_threads=True)
+    except (ImportError, AttributeError, ValueError, OSError):
+        pass
+    say("worker %d started: at most %d runs, %d MB" % (os.getpid(), host.max_runs, host.max_rss_mb))
+    while host.step():
+        if leaving:
+            left = host.close()
+            say("worker %d stopped by a signal: %d run(s) were told to stop%s" % (
+                os.getpid(), len(host.runs), ("; not out in time: " + ", ".join(left)) if left else ""))
+            return 0
+        time.sleep(float(os.environ.get("FLEET_HOST_EVERY") or EVERY))
+    return 0
+
+
+def _file_sig(path):
+    try:
+        st = os.stat(path)
+        return (st.st_mtime_ns, st.st_size)
+    except OSError:
+        return None
+
+
+def _run_parent(args, say):
+    home = folder(args.data)
+    for part in ("inbox", "running", "stop"):
+        (home / part).mkdir(parents=True, exist_ok=True)
+    lock = open(home / "lock", "w")
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        sys.exit("another host flies the runs: this one ends")
+    for stale in list(home.glob("retiring.*.json")) + [home / "handover.json"]:
+        try:
+            stale.unlink()
+        except OSError:
+            pass
+    for line in Host(args.fleet, args.data, say=say).recover(skip_live=True):
+        say(line)
+    leaving = []
+    signal.signal(signal.SIGTERM, lambda number, frame: leaving.append(number))
+    script = os.path.realpath(__file__)
+    script_sig = _file_sig(script)
+    max_retiring = int(os.environ.get("FLEET_HOST_MAX_RETIRING") or MAX_RETIRING)
+    total_rss_cap = int(os.environ.get("FLEET_HOST_TOTAL_MB") or TOTAL_RSS_MB)
+    cmd = [sys.executable, "-I", "-B", script, "--worker", "--fleet", args.fleet, "--data", args.data]
+
+    def spawn_worker():
+        return subprocess.Popen(cmd, env=dict(os.environ))
+
+    active = spawn_worker()
+    retiring = []
+    say("host supervisor started (drain-free handover enabled, active worker pid %d)" % active.pid)
+    try:
+        while not leaving:
+            still = []
+            for proc in retiring:
+                if proc.poll() is not None:
+                    try:
+                        (home / ("retiring.%d.json" % proc.pid)).unlink()
+                    except OSError:
+                        pass
+                else:
+                    still.append(proc)
+            retiring = still
+
+            if active.poll() is not None:
+                rc = active.returncode
+                try:
+                    (home / "handover.json").unlink()
+                except OSError:
+                    pass
+                for line in Host(args.fleet, args.data, say=say).recover(skip_live=True):
+                    say(line)
+                if leaving:
+                    break
+                time.sleep(0.5 if rc == 0 else 1.5)
+                active = spawn_worker()
+                say("active worker restarted (previous exit %s -> pid %d)" % (rc, active.pid))
+                continue
+
+            reason = ""
+            ho_path = home / "handover.json"
+            ho = read_json(ho_path, None) if ho_path.exists() else None
+            if isinstance(ho, dict) and ho.get("pid") == active.pid:
+                reason = str(ho.get("reason") or "module changed")
+            elif (home / "drain").exists():
+                reason = "the drain file"
+            else:
+                now_sig = _file_sig(script)
+                if now_sig != script_sig:
+                    script_sig = now_sig
+                    reason = "runhost.py changed on disk"
+
+            if reason:
+                total_rss = sum(_proc_rss_mb(p.pid) for p in [active] + retiring)
+                if len(retiring) < max_retiring and (not total_rss_cap or total_rss < total_rss_cap):
+                    for f in (ho_path, home / "drain"):
+                        try:
+                            f.unlink()
+                        except OSError:
+                            pass
+                    if hasattr(signal, "SIGUSR2"):
+                        try:
+                            active.send_signal(signal.SIGUSR2)
+                        except OSError:
+                            pass
+                    old_pid = active.pid
+                    retiring.append(active)
+                    active = spawn_worker()
+                    say("drain-free handover (%s): worker %d retiring (%d retiring total), new worker %d accepting immediately" % (
+                        reason, old_pid, len(retiring), active.pid))
+            time.sleep(min(0.5, float(os.environ.get("FLEET_HOST_EVERY") or EVERY)))
+    finally:
+        procs = [p for p in [active] + retiring if p is not None and p.poll() is None]
+        for p in procs:
+            try:
+                p.terminate()
+            except OSError:
+                pass
+        limit = time.time() + 12.0
+        while time.time() < limit and any(p.poll() is None for p in procs):
+            time.sleep(0.1)
+        for p in procs:
+            if p.poll() is None:
+                try:
+                    p.kill()
+                except OSError:
+                    pass
+                p.wait()
+        for stale in list(home.glob("retiring.*.json")) + [home / "handover.json"]:
+            try:
+                stale.unlink()
+            except OSError:
+                pass
+        say("host supervisor stopped cleanly")
+    return 0
 
 
 def main():
@@ -450,6 +729,7 @@ def main():
     parser = argparse.ArgumentParser(description="Fly the runs the dispatcher hands over, each as a thread.")
     parser.add_argument("--fleet", default=str(here))
     parser.add_argument("--data", default="/srv/collective/data")
+    parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     sys.path.insert(0, str(here))
     import division                               # who is asking
@@ -460,30 +740,9 @@ def main():
     def say(text):
         print(stamp(), text, flush=True)
 
-    host = Host(args.fleet, args.data, say=say, max_runs=int(os.environ.get("FLEET_HOST_MAX_RUNS") or MAX_RUNS),
-                max_rss_mb=int(os.environ.get("FLEET_HOST_MAX_MB") or MAX_RSS_MB))
-    lock = open(host.folder / "lock", "w")
-    try:
-        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
-        sys.exit("another host flies the runs: this one ends")
-    for line in host.recover():
-        say(line)
-    leaving = []
-    signal.signal(signal.SIGTERM, lambda number, frame: leaving.append(number))
-    try:
-        import faulthandler
-        faulthandler.register(signal.SIGUSR1, file=sys.stderr, all_threads=True)      # kill -USR1: where every run stands, into service.log
-    except (ImportError, AttributeError, ValueError, OSError):
-        pass
-    say("host started: at most %d runs, %d MB" % (host.max_runs, host.max_rss_mb))
-    while host.step():
-        if leaving:
-            left = host.close()
-            say("stopped by a signal: %d run(s) were told to stop%s" % (len(host.runs), ("; not out in time: " + ", ".join(left)) if left else ""))
-            return 0
-        time.sleep(EVERY)
-    return 0
+    if args.worker:
+        return _run_worker(args, say)
+    return _run_parent(args, say)
 
 
 if __name__ == "__main__":

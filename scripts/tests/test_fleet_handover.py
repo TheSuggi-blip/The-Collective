@@ -339,10 +339,6 @@ class HuntHandOverTests(Data):
         self.assertTrue(any("is not a pilot of ours" in note for note in row.get("notes") or []), row)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class UndockedGiverTests(Data):
     """Apophis, requests ENT-352 (2): 15 of 783 give runs since 09:35 UTC on 2026-11-22 gave nothing, every deposit
     answered `not_docked`; the goods stayed with the giver and the same ship was sent again. A refused gift docks
@@ -373,3 +369,7 @@ class UndockedGiverTests(Data):
         self.assertEqual(calls.count("dock"), 1)
         self.assertIn("docked again", out["note"] or "")
         self.assertIn("docked again", out["line"])
+
+
+if __name__ == "__main__":
+    unittest.main()

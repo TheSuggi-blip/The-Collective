@@ -316,10 +316,6 @@ class DoorTests(Base):
         self.assertEqual((problem, [r["error"] for r in rows if r["error"]]), ("", []))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class DutyClassTests(Base):
     """Rule F23, round r21: duty puts a source only into the plan of a division whose class of work it is (Suggi,
     2026-11-18: "Ore is miners job"); a gather source of a Logistics chain went into the haulers' plan before."""
@@ -347,3 +343,7 @@ class DutyClassTests(Base):
         plan_steps = supply.steps(res, record, self.now, str(self.root))
         self.assertEqual(plan_steps["divisions"]["logistics"]["end"], [("logistics/mine-c", "mine-c", "it is gather work, the miners' (rule F23), not the logistics division's")])
         self.assertEqual(supply.steps(res, record, self.now)["divisions"]["logistics"]["end"], [])     # without the route files nothing is judged
+
+
+if __name__ == "__main__":
+    unittest.main()

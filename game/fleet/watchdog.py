@@ -365,7 +365,7 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         pnl_24 = None
         try:
             import accounting as _acc_wd
-            pnl_24 = _acc_wd.compute_pnl(con, repo_root=str(root), data_dir=str(data), hours=24, now=now)
+            pnl_24 = _acc_wd.compute_pnl(con, repo_root=str(repo_root), data_dir=str(data), hours=24, now=now)
         except Exception:
             pnl_24 = None
         if steady_24h is not None and steady_24h < 0:
@@ -475,9 +475,9 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         if "supply_status" in tables:
             for sc in con.execute("SELECT chain, place, status, stock, keep, hours_left FROM supply_status"):
                 st = (sc["status"] or "").upper()
-                if st in ("SHORT", "LOW"):
-                    stock_v = float(sc["stock"] or 0.0)
-                    keep_v = max(1.0, float(sc["keep"] or 1.0))
+                stock_v = float(sc["stock"] or 0.0)
+                keep_v = max(1.0, float(sc["keep"] or 1.0))
+                if st == "SHORT" or (st == "LOW" and stock_v < keep_v):
                     hl = sc["hours_left"]
                     hl_v = float(hl) if hl not in (None, "") else 999.0
                     tag = "%s@%s(%d/%d)" % (sc["chain"], sc["place"], int(stock_v), int(keep_v))

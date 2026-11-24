@@ -173,7 +173,7 @@ def compute_progression(repo_root, data="/srv/collective/data", now=None):
     clog = repo_p / "communications" / "contracts.log"
     if clog.is_file():
         try:
-            contracts_count = max(0, len(re.findall(r"^## \[ENT-\d+\]", clog.read_text(encoding="ascii", errors="replace"), re.M)) - 1)
+            contracts_count = len(re.findall(r"^## \[ENT-\d+\]", clog.read_text(encoding="ascii", errors="replace"), re.M))
         except OSError:
             contracts_count = 0
 

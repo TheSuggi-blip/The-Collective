@@ -171,10 +171,6 @@ class ForeignRanchTests(unittest.TestCase):
         self.assertFalse(self.foreign_ranched({"name": None}))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class AfterFightTests(unittest.TestCase):
     """A ship that joined our fight ends the hunt at the place (2026-11-23: a hunter fled a pilot, came back to the
     same herd and was destroyed)."""
@@ -189,3 +185,7 @@ class AfterFightTests(unittest.TestCase):
 
     def test_a_fight_with_creatures_only_goes_on(self):
         self.assertEqual(self.after_fight(""), (False, ""))
+
+
+if __name__ == "__main__":
+    unittest.main()

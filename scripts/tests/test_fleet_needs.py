@@ -387,5 +387,26 @@ class ReadersTests(Base):
         self.assertEqual(out.getvalue(), "=== NEEDS | trade: 1 open, 0 red, 0 stale | the fleet: 2 open, 0 red, 0 stale | the tool needs: action=list, action=add\n")
 
 
+
+class AddPrioritySortRoundtripTests(unittest.TestCase):
+    def test_add_with_string_priority_roundtrips_cleanly_in_check(self):
+        import needs
+        with tempfile.TemporaryDirectory(prefix="needs-rt-") as td:
+            repo = Path(td) / "repo"
+            data = Path(td) / "data"
+            (repo / "game").mkdir(parents=True)
+            data.mkdir(parents=True)
+            # Existing priority-3 row whose id sorts AFTER guild-hall-recruiting
+            rc1, _ = needs.write(repo, data, "Apollo", needs.adder("Apollo", "facility", "transit_lounge", "1",
+                                 {"id": "transit-lounge", "project": "pax", "priority": "3", "division": "logistics"}), "add", now=1700000000)
+            self.assertEqual(rc1, 0)
+            rc2, _ = needs.write(repo, data, "Apollo", needs.adder("Apollo", "facility", "guild_hall_recruiting", "1",
+                                 {"project": "400 seats", "priority": "3", "place": "central_nexus", "division": "logistics"}), "add", now=1700000060)
+            self.assertEqual(rc2, 0)
+            rows, prob, pres = needs.read(repo)
+            self.assertTrue(pres and not prob)
+            text = needs.path_of(repo).read_bytes().decode("ascii")
+            self.assertEqual(text, needs.render(rows))
+
 if __name__ == "__main__":
     unittest.main()

@@ -46,6 +46,13 @@ def run_head_suite(repo, out_path, timeout=180, verbose=False):
         for tf in test_files:
             rel = str(tf.relative_to(tmp_p))
             t0 = time.time()
+            # Structural guard (R5/R6): catch test classes/methods accidentally appended after unittest.main()
+            _lines = tf.read_text(encoding="utf-8", errors="replace").splitlines()
+            _main_i = next((i for i, l in enumerate(_lines) if "unittest.main()" in l), None)
+            if _main_i is not None and any(l.lstrip().startswith(("class ", "def test_")) for l in _lines[_main_i + 1:]):
+                failed.append({"file": rel, "seconds": 0.0, "code": 2, "tail": ["tests defined after unittest.main() at line %d" % (_main_i + 1)]})
+                print("FAIL %s (mid-file unittest.main() at line %d)" % (rel, _main_i + 1))
+                continue
             try:
                 proc = subprocess.run(
                     [sys.executable, "-B", str(tf)],

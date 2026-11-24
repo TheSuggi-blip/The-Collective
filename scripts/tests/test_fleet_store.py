@@ -416,10 +416,6 @@ class ObservationTests(unittest.TestCase):
         self.assertTrue({row[1] for row in conn.execute("PRAGMA index_list('observations')")} >= {"observations_kind", "observations_subject"})
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class EarnedCodeTests(unittest.TestCase):
     """requests ENT-246: a recount asked of a store that still ran the old earned rule moved nothing; the store now
     knows the code it runs and counts the kept runs again when that code changed."""
@@ -441,3 +437,7 @@ class EarnedCodeTests(unittest.TestCase):
         self.assertEqual(store.LOADED_CODE, store.earned_code())
         source = (ROOT / "game" / "fleet" / "store.py").read_text(encoding="ascii")
         self.assertIn("meta(conn, \"earned.code\", \"\") != LOADED_CODE", source)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1145,10 +1145,17 @@ def sweep(data, now, dry):
     failed = serve_topups(data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
     auto_queue_seats(data, now, dry)
     serve_seats(data, leader, now, dry)
+    _upg_skip = set()
+    try:
+        import upgrades as _upg
+        _upg.serve_upgrades(data, now=now, dry=dry)
+        _upg_skip = _upg.protected_pilots(data)
+    except Exception:
+        pass
     log = swept(data)
     battle = {r.get("from"): r["at"] for r in log if r.get("state") == "battle" and now - r["at"] < BATTLE_WAIT}
     held = [r for r in log if r.get("kind") == "deposit" and r.get("state") == "unsure" and now - r["at"] < UNSURE_HOLD]
-    skip = {leader} | SKIP_PILOTS | builders(data) | set(funded(data, now))
+    skip = {leader} | SKIP_PILOTS | builders(data) | set(funded(data, now)) | _upg_skip
     cool = dict(touched(data, now), **{name: at for name, at in flying.items() if name})
     named = dispatch.flagships(data)
     above = [(name, s["credits"], keep_for(name, named)[0]) for name, s in fleet.items()
