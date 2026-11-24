@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 523.
+Routes: 524.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -198,6 +198,7 @@ Routes: 523.
 | [join-sol-hauler](join-sol-hauler.json) | circuit | beyond the border, 10 jumps | A hauler with no class work at home joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 50 ships, standing work | 51 | 14 | -220 | one-time | 2026-11-23 |
 | [join-sol-hauler-nexus](join-sol-hauler-nexus.json) | circuit | beyond the border, 10 jumps | An Outer Rim-born hauler standing at Nexus Prime with no work joins the Solarian corridor by the proven road: one trip to Sol Central | once per pilot, up to 15 ships, born outerrim, standing work | 20 | 11 | -400 | one-time | 2026-11-23 |
 | [join-sol-hauler-rim](join-sol-hauler-rim.json) | circuit | beyond the border, 10 jumps | An Outer Rim-born hauler with no work at Frontier joins the Solarian corridor: one trip to Sol Central (a test, one ship, empty hold) | once per pilot, up to 1 ships, empty hold, born outerrim, standing work | 14 | 13 | -470 | one-time | 2026-11-23 |
+| [join-sol-records](join-sol-records.json) | circuit | beyond the border, 10 jumps | A hauler stranded in Crimson space or waiting at Nexus Prime, not yet paid Request for Records, joins Sol Central, where Request for Records (6,000 cr, Sol to Krynn and back) opens to it | once per pilot, up to 61 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-sol-trader](join-sol-trader.json) | circuit | beyond the border, 10 jumps | A trader whose home trade is full joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 70 ships, standing work | 48 | 14 | -220 | one-time | 2026-11-23 |
 | [load-plasma-ammo-nova-terra](load-plasma-ammo-nova-terra.json) | circuit | beyond the border, 8 jumps | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 7 | 3 | 300 | 3,160 | 2026-11-24 |
