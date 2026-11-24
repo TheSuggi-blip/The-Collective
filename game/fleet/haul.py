@@ -1045,6 +1045,7 @@ def main(argv=None):
                         " partner=" + pick["partner"] if pick["partner"] else "",
                         " escort=%d" % pick["escort_needed"] if pick.get("needs_escort") else ""))
                     esc_key = ""
+                    convoy_fleet_created = False
                     try:
                         if pick.get("needs_escort"):
                             esc_key = "convoy:%s:%s" % (pilot, pick["job_key"])
@@ -1091,6 +1092,34 @@ def main(argv=None):
                             notes.append("freight withdraw failed, returned")
                             release_job(DATA, pilot)
                             continue
+                        if esc_key:
+                            raw("undock", {}, group="spacemolt")
+                            time.sleep(TICK)
+                            cf = raw("create", {}, group="spacemolt_fleet")
+                            time.sleep(TICK)
+                            if "error" not in cf:
+                                convoy_fleet_created = True
+                                _rec_f = _ep.get_escort_request(DATA, esc_key) or {}
+                                _arrived_es = [p_nm for p_nm, info in (_rec_f.get("escorts") or {}).items()
+                                               if isinstance(info, dict) and info.get("arrived")]
+                                _invited = []
+                                for _epilot in _arrived_es:
+                                    _pid32 = _ep.resolve_player_id(_epilot)
+                                    _ir = raw("invite", {"player_id": _pid32}, group="spacemolt_fleet")
+                                    time.sleep(TICK)
+                                    if "error" in _ir:
+                                        break
+                                    _invited.append(_epilot)
+                                if _invited:
+                                    _ep.set_convoy_fleet(DATA, esc_key, pilot, _invited)
+                                    _wait_acc = time.time() + 25.0
+                                    while time.time() < _wait_acc and not stop_requested():
+                                        _r2 = _ep.get_escort_request(DATA, esc_key) or {}
+                                        _in_n = sum(1 for _p in _invited if ((_r2.get("escorts") or {}).get(_p) or {}).get("in_fleet"))
+                                        if _in_n >= len(_invited):
+                                            break
+                                        time.sleep(4)
+                                    say("convoy fleet locked with %d/%d escorts" % (len(_invited), len(_arrived_es)))
                         ok_d, msg_d = go_dock(dloc)
                         if ok_d:
                             save_market(dloc[2], dloc[0])
@@ -1099,7 +1128,20 @@ def main(argv=None):
                             say("freight delivered %s -> %s (+%d cr%s)" % (cid[:8], dloc[2], pick["reward"], " ERR" if "error" in del_r else ""))
                             notes.append("freight %s +%d cr" % (cid[:8], pick["reward"]))
                             completed += 1
+                            _dmeta = _s_meta.get(dloc[0]) or {}
+                            if esc_key and not (_dmeta.get("empire") and not _dmeta.get("stronghold")):
+                                _safe_border = _ep.nearest_policed_system(lanes, _s_meta, dloc[0], max_hops=12)
+                                if _safe_border and _safe_border != dloc[0]:
+                                    say("exiting lawless dest %s -> policed border %s under escort" % (dloc[0], _safe_border))
+                                    raw("undock", {}, group="spacemolt")
+                                    time.sleep(TICK)
+                                    goal("navigate-to-system", {"targetSystemId": _safe_border}, timeout=240)
                     finally:
+                        if convoy_fleet_created:
+                            try:
+                                raw("disband", {}, group="spacemolt_fleet")
+                            except Exception:
+                                pass
                         if esc_key:
                             _ep.clear_escort_request(DATA, esc_key)
 

@@ -1949,6 +1949,9 @@ def upgrade_hold_needed(name, data, now):
     if todo is None:
         return None
     key = (name, str(todo.get("id") or ""))
+    upd = float(todo.get("updated_at") or 0)
+    if upd > 0 and (now - upd) < 900:
+        UPGRADE_HOLD_WAIT[key] = max(UPGRADE_HOLD_WAIT.get(key, now), upd)
     since = UPGRADE_HOLD_WAIT.setdefault(key, now)
     if (now - since) < UPGRADE_HOLD_SECS:
         return todo

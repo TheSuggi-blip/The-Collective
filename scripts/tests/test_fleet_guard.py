@@ -410,5 +410,38 @@ class KindTests(unittest.TestCase):
         self.assertEqual(self.routes.KINDS["guard"], ("guards", "station"))
 
 
+    def test_escort_key_instant_exit_and_empty_belt_cutoff(self):
+        import guard as guard_mod
+        import escort_proto as ep_mod
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            (data / "fleet" / "ships").mkdir(parents=True, exist_ok=True)
+            (data / "fleet" / "orders").mkdir(parents=True, exist_ok=True)
+            (data / "fleet" / "fleet.json").write_text(json.dumps({"ships": [{"name": "sentinel-1"}, {"name": "miner-1"}]}), encoding="ascii")
+            (data / "fleet" / "ships" / "sentinel-1.json").write_text(json.dumps({"hull": 100, "max_hull": 100}), encoding="ascii")
+            ep_mod.request_escort(data, "field:merak:belt_a", "field", "miner-1", "mine-network", "merak", "belt_a", needed=3, now_t=1000)
+
+            t_now = [1000.0]
+            def fake_clock():
+                return t_now[0]
+            def fake_sleep(s):
+                t_now[0] += float(s)
+            def fake_call(method, path, body=None, timeout=60):
+                if path.endswith("/raw"):
+                    act = (body or {}).get("action")
+                    if act == "status":
+                        return 200, {"structuredContent": {"is_participant": False}}
+                    if act == "get_nearby":
+                        return 200, {"structuredContent": {"poi_id": "belt_a", "nearby": [], "pirate_count": 0}}
+                return 200, {"success": True, "ok": True, "state": {"credits": 50000}}
+
+            opts = guard_mod.parse(["sentinel-1", "merak", "belt_a", "--guards", "mine-network", "--station", "s:p:b",
+                                    "--minutes", "45", "--route", "hunt-network", "--escort-key", "field:merak:belt_a"])
+            row = guard_mod.run(opts, fake_call, str(data), sleep=fake_sleep, clock=fake_clock)
+            self.assertEqual(row["left"], "no miner at belt")
+            self.assertLess(row["stay_minutes"], 8.0)
+            self.assertFalse(ep_mod.is_escort_active(data, "field:merak:belt_a", now_t=t_now[0]))
+
+
 if __name__ == "__main__":
     unittest.main()

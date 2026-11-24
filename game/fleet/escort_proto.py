@@ -371,3 +371,111 @@ def is_field_escorted(data_dir, sys_id, poi_id, now_t=None):
     if not rec:
         return False
     return escort_ready_count(rec) >= max(1, int(rec.get("needed") or 3))
+
+
+def set_convoy_fleet(data_dir, key, leader_pilot, invited_pilots=None, now_t=None):
+    """Stamp native spacemolt_fleet leader & invited escorts onto an active convoy request."""
+    now_t = time.time() if now_t is None else float(now_t)
+    invited = [str(p) for p in (invited_pilots or []) if p]
+
+    def _op(req_p):
+        reqs = _clean_requests_unlocked(_read_json(req_p, {}), now_t)
+        rec = reqs.get(str(key))
+        if not rec or not rec.get("active", True):
+            return None
+        rec["fleet_leader"] = str(leader_pilot)
+        rec["fleet_invited"] = invited
+        rec["updated_at"] = int(now_t)
+        reqs[str(key)] = rec
+        _write_json(req_p, {"updated_at": int(now_t), "requests": reqs})
+        return rec
+
+    return _with_lock(data_dir, _op)
+
+
+def mark_escort_in_fleet(data_dir, key, pilot, now_t=None):
+    """Record that an escort accepted the convoy leader's native spacemolt_fleet invite."""
+    now_t = time.time() if now_t is None else float(now_t)
+
+    def _op(req_p):
+        reqs = _clean_requests_unlocked(_read_json(req_p, {}), now_t)
+        rec = reqs.get(str(key))
+        if not rec:
+            return None
+        es = rec.setdefault("escorts", {})
+        if str(pilot) in es:
+            es[str(pilot)]["in_fleet"] = True
+            es[str(pilot)]["at"] = int(now_t)
+        rec["updated_at"] = int(now_t)
+        reqs[str(key)] = rec
+        _write_json(req_p, {"updated_at": int(now_t), "requests": reqs})
+        return rec
+
+    return _with_lock(data_dir, _op)
+
+
+def is_escort_active(data_dir, key, now_t=None):
+    """True iff `key` is currently active and unexpired in escort_requests.json."""
+    rec = get_escort_request(data_dir, key, now_t=now_t)
+    return bool(rec and rec.get("active", True))
+
+
+def resolve_player_id(pilot, gate_call_fn=None):
+    """Resolve SpaceMolt 32-hex player_id for `pilot` from GET /accounts (cached 300s)."""
+    def _load_map():
+        try:
+            if gate_call_fn is not None:
+                st, txt = gate_call_fn("GET", "/accounts", None, 20)
+            else:
+                import gate as _g
+                st, txt = _g.call("GET", "/accounts", timeout=20)
+            if st != 200:
+                return {}
+            raw = json.loads(txt) if isinstance(txt, str) else txt
+            rows = raw.get("accounts") if isinstance(raw, dict) else (raw if isinstance(raw, list) else [])
+            out = {}
+            for a in rows or []:
+                if not isinstance(a, dict):
+                    continue
+                nm = str(a.get("username") or a.get("name") or "")
+                pid = str(a.get("player_id") or ((a.get("state") or {}).get("player") or {}).get("id") or "")
+                if nm and pid:
+                    out[nm] = pid
+            return out
+        except Exception:
+            return {}
+
+    if gate_call_fn is not None:
+        return _load_map().get(str(pilot)) or str(pilot)
+    try:
+        import worldcache as _wc
+        mp = _wc.cached(("ep_player_ids",), 300.0, _load_map)
+        return mp.get(str(pilot)) or str(pilot)
+    except Exception:
+        return _load_map().get(str(pilot)) or str(pilot)
+
+
+def nearest_policed_system(adj, sys_meta, start_sys, max_hops=12):
+    """BFS to the nearest policed non-stronghold system (for safe convoy exit from lawless destinations)."""
+    if not start_sys:
+        return None
+    meta0 = (sys_meta or {}).get(str(start_sys)) or {}
+    if meta0.get("empire") and not meta0.get("stronghold"):
+        return str(start_sys)
+    from collections import deque
+    q = deque([(str(start_sys), 0)])
+    seen = {str(start_sys)}
+    while q:
+        cur, d = q.popleft()
+        if d >= max_hops:
+            continue
+        for nxt in sorted((adj or {}).get(cur) or ()):
+            nxt = str(nxt)
+            if nxt in seen:
+                continue
+            seen.add(nxt)
+            m = (sys_meta or {}).get(nxt) or {}
+            if m.get("empire") and not m.get("stronghold"):
+                return nxt
+            q.append((nxt, d + 1))
+    return None

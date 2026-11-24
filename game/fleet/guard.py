@@ -44,6 +44,8 @@ GATE = os.environ.get('FLEET_GATE', 'http://172.30.0.32:7580')
 DATA = os.environ.get('FLEET_DATA_ROOT', '/srv/collective/data')
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 LOOK_EVERY = 60              # seconds between two looks at the place
+ESCORT_LOOK_EVERY = 20       # faster poll when bound to a dynamic --escort-key
+FIELD_ARRIVAL_GRACE_S = 300  # 5m grace for requesting miner to warp into guarded belt
 HULL_FLOOR = 0.6             # under this share of its hull the guard leaves (the fleet's stance: no fight it did not choose)
 GONE_LOOKS = 2               # looks in a row without the guarded order: a pilot between two runs of the route carries none for one dispatcher pass
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
@@ -65,9 +67,12 @@ def parse(args):
     station = str(option(args, '--station', '')).split(':')
     if len(args) < 3 or args[0].startswith('--') or not option(args, '--guards') or len(station) != 3:
         sys.exit('usage: guard.py <pilot> <system_id> <poi> --guards <route id> --station <system:poi:base> [--minutes M] [--route ID]')
-    return {'pilot': args[0], 'system': args[1], 'poi': args[2], 'guards': option(args, '--guards'), 'station': station,
-            'minutes': float(option(args, '--minutes', '60')), 'route': option(args, '--route') or 'guard-' + option(args, '--guards'),
-            'follow': option(args, '--follow')}
+    out = {'pilot': args[0], 'system': args[1], 'poi': args[2], 'guards': option(args, '--guards'), 'station': station,
+           'minutes': float(option(args, '--minutes', '60')), 'route': option(args, '--route') or 'guard-' + option(args, '--guards'),
+           'follow': option(args, '--follow')}
+    if option(args, '--escort-key'):
+        out['escort_key'] = option(args, '--escort-key')
+    return out
 
 
 def content(answer):
@@ -182,6 +187,46 @@ def where(data, pilot):
     return str(ship.get('system') or '') or None, str(ship.get('poi') or '') or None
 
 
+def _escort_active(data, escort_key, now):
+    if not escort_key:
+        return True
+    try:
+        import escort_proto as _ep
+        return _ep.is_escort_active(data, escort_key, now_t=now)
+    except Exception:
+        return True
+
+
+def _clear_escort(data, escort_key, now=None):
+    if not escort_key:
+        return
+    try:
+        import escort_proto as _ep
+        _ep.clear_escort_request(data, escort_key, now_t=now)
+    except Exception:
+        pass
+
+
+def _belt_has_friendly_miner(data, sys_id, poi_id, ours, now):
+    """True if any friendly miner is live at this POI or holds an active claim on sys_id:poi_id."""
+    if any(str(n).startswith('miner-') for n in (ours or ())):
+        return True
+    belt_key = '%s:%s' % (sys_id, poi_id)
+    try:
+        with open(os.path.join(data, 'fleet', 'mine_claims.json'), encoding='utf-8') as handle:
+            doc = json.load(handle)
+        claims = doc.get('claims') if isinstance(doc, dict) else {}
+        if isinstance(claims, dict):
+            for rec in claims.values():
+                if not isinstance(rec, dict):
+                    continue
+                if str(rec.get('belt') or '') == belt_key and float(rec.get('expires_at') or 0) > now:
+                    return True
+    except (OSError, ValueError, TypeError):
+        pass
+    return False
+
+
 def carries(data, pilot, marks, now):
     """True while the pilot's own fresh order file names the guarded route."""
     path = os.path.join(data, 'fleet', 'orders', pilot + '.json')
@@ -214,12 +259,17 @@ def look(opts, call, quoted, own, seen, say, guarded_text):
 def escort(opts, call, quoted, data, say, sleep, clock, seen):
     """--follow: keep beside one pilot of ours, moving after it, until its order for the guarded route is gone."""
     target, marks = opts['follow'], {kind + ' ' + opts['guards'] for kind in FOLLOWED}
+    escort_key = opts.get('escort_key') or ''
+    poll_s = ESCORT_LOOK_EVERY if escort_key else LOOK_EVERY
     own, missing, here, at = own_names(data), 0, None, None
     seen['arrived'] = clock()
-    say('following %s on %s' % (target, opts['guards']))
+    say('following %s on %s%s' % (target, opts['guards'], (' (escort %s)' % escort_key) if escort_key else ''))
     while not seen['left']:
         if os.path.exists(os.path.join(data, 'fleet', 'STOP')):
             seen['left'] = 'STOP file'
+            break
+        if escort_key and not _escort_active(data, escort_key, clock()):
+            seen['left'] = 'escort request closed'
             break
         if in_battle(call, quoted):
             say('in a battle beside %s: stance flee, no shot fired' % target)
@@ -253,7 +303,7 @@ def escort(opts, call, quoted, data, say, sleep, clock, seen):
         if clock() - seen['arrived'] >= opts['minutes'] * 60:
             seen['left'] = '%g minutes passed' % opts['minutes']
             break
-        sleep(LOOK_EVERY)
+        sleep(poll_s)
     seen['left_at'] = clock()
     say('leaving %s: %s' % (target, seen['left']))
 
@@ -272,11 +322,17 @@ def keep(opts, call, quoted, data, say, sleep, clock, seen, notes):
         notes.append('place not reached')
     else:
         seen['arrived'] = clock()
-        own, marks, missing = own_names(data), {kind + ' ' + opts['guards'] for kind in PLACED}, 0
-        say('at %s:%s, guarding %s' % (opts['system'], poi, opts['guards']))
+        escort_key = opts.get('escort_key') or ''
+        poll_s = ESCORT_LOOK_EVERY if escort_key else LOOK_EVERY
+        is_field_escort = escort_key.startswith('field:')
+        own, marks, missing, belt_empty = own_names(data), {kind + ' ' + opts['guards'] for kind in PLACED}, 0, 0
+        say('at %s:%s, guarding %s%s' % (opts['system'], poi, opts['guards'], (' (escort %s)' % escort_key) if escort_key else ''))
         while not seen['left']:
             if os.path.exists(os.path.join(data, 'fleet', 'STOP')):
                 seen['left'] = 'STOP file'
+                break
+            if escort_key and not _escort_active(data, escort_key, clock()):
+                seen['left'] = 'escort request closed'
                 break
             if in_battle(call, quoted):
                 say('in a battle at the place: stance flee, no shot fired')
@@ -303,14 +359,26 @@ def keep(opts, call, quoted, data, say, sleep, clock, seen, notes):
             if near.get('poi_id') not in (None, '', poi):            # moved away, by the engine or a hand: it keeps no place
                 seen['left'] = 'not at the place (at %s)' % near.get('poi_id')
                 break
-            missing = 0 if guarded else missing + 1
-            if missing >= GONE_LOOKS:
-                seen['left'] = 'guarded ship gone'
-                break
+            if is_field_escort:
+                elapsed = clock() - seen['arrived']
+                if elapsed >= FIELD_ARRIVAL_GRACE_S:
+                    if _belt_has_friendly_miner(data, opts['system'], poi, ours, clock()):
+                        belt_empty = 0
+                    else:
+                        belt_empty += 1
+                        if belt_empty >= 2:
+                            _clear_escort(data, escort_key, clock())
+                            seen['left'] = 'no miner at belt'
+                            break
+            else:
+                missing = 0 if guarded else missing + 1
+                if missing >= GONE_LOOKS:
+                    seen['left'] = 'guarded ship gone'
+                    break
             if clock() - seen['arrived'] >= opts['minutes'] * 60:
                 seen['left'] = '%g minutes passed' % opts['minutes']
                 break
-            sleep(LOOK_EVERY)
+            sleep(poll_s)
         seen['left_at'] = clock()
         say('leaving %s: %s' % (poi, seen['left']))
     station = opts['station']

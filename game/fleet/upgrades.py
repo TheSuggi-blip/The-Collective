@@ -697,8 +697,8 @@ def _release_upgrade(data_dir, pilot, division_mod):
             pass
 
 
-def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=70.0,
-                   gate_mod=None, wallet_mod=None, division_mod=None):
+def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=210.0,
+                   gate_mod=None, wallet_mod=None, division_mod=None, max_workers=6):
     """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
     now = float(time.time() if now is None else now)
     if (Path(data_dir) / "fleet" / "STOP").exists():
@@ -772,7 +772,106 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             return (st_rank, 1, str(row.get("id") or ""))
         return (st_rank, 2, str(row.get("id") or ""))
 
-    for r in sorted(active, key=_dock_prio):
+    import concurrent.futures as _cf
+    import threading as _th
+    _save_lock = _th.Lock()
+
+    def _process_funded_row(r):
+        pilot = str(r.get("pilot") or "")
+        hull = str(r.get("hull") or "")
+        sys_id, poi_id, base_id = str(r.get("station") or "").split(":")
+        info = pmap.get(pilot)
+        ship = info[2] if info else {}
+        credits = int(info[1]) if info else 0
+        row_changed = False
+        try:
+            if str(ship.get("docked") or "") != base_id:
+                rem_t = max(30.0, budget_s - (time.time() - t0))
+                ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180.0, rem_t))
+                if not ok_d:
+                    if "already executing" in msg_d.lower():
+                        _request_pilot_stop(data_dir, pilot)
+                    r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
+                    row_changed = True
+                    return
+            ok_ls, ls_ans = _gate_raw(gate_mod, pilot, "list_ships", {})
+            stored = [s for s in _extract_ships(ls_ans) if str(s.get("class_id") or "").lower() == hull
+                      and not s.get("is_active") and s.get("location_base_id") == base_id] if ok_ls else []
+            if stored:
+                ok_sw, _ = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
+                if ok_sw:
+                    r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into stored %s" % hull
+                    row_changed = True
+                    return
+            ok_b, b_ans = _gate_raw(gate_mod, pilot, "browse_ships", {"base_id": base_id, "class_id": hull})
+            listed = [
+                x for x in (_extract_listings(b_ans) if ok_b else [])
+                if isinstance(x, dict) and str(x.get("class_id") or "").lower() == hull
+                and int(x.get("price") or 0) > 0 and x.get("listing_id")
+                and (not x.get("base_id") or str(x.get("base_id")) == base_id)
+            ]
+            best_listed = min(listed, key=lambda x: int(x.get("price") or 0)) if listed else None
+
+            ok_q, q_ans = _gate_raw(gate_mod, pilot, "commission_quote", {"ship_class": hull})
+            price = _extract_quote_price(q_ans) if ok_q else 0
+
+            if best_listed is not None:
+                list_price = int(best_listed.get("price") or 0)
+                if list_price <= int(r["max_price"]) and (not price or list_price <= price):
+                    if credits - list_price < UPGRADE_READY_FLOOR:
+                        r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for listed %s" % _fmt_num(list_price)
+                        row_changed = True
+                        return
+                    ok_buy, buy_ans = _gate_raw(gate_mod, pilot, "buy_listed_ship", {"listing_id": str(best_listed["listing_id"])})
+                    if ok_buy:
+                        try:
+                            gate_mod.book_onetime(pilot, "%s hull bought from listing" % hull.capitalize(), -list_price, data=data_dir)
+                        except Exception:
+                            pass
+                        r["state"], r["paid"], r["updated_at"], r["last_poll"] = "done", list_price, int(now), int(now)
+                        q_txt = _fmt_num(price) if price else "n/a"
+                        r["note"] = "bought listed %s (%s cr vs quote %s)" % (hull, _fmt_num(list_price), q_txt)
+                        row_changed = True
+                        print("UPGRADE bought %s: %s -> %s (%s cr, saved vs quote %s)" % (r["id"], pilot, hull, _fmt_num(list_price), q_txt))
+                        return
+
+            if not price:
+                r["note"], r["updated_at"] = "quote unreadable", int(now)
+                row_changed = True
+                return
+            if price > int(r["max_price"]):
+                r["state"], r["updated_at"], r["note"] = "failed", int(now), "quote %s > max %s" % (_fmt_num(price), _fmt_num(r["max_price"]))
+                row_changed = True
+                return
+            if credits - price < UPGRADE_READY_FLOOR:
+                r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for quote %s" % _fmt_num(price)
+                row_changed = True
+                return
+            c_params = {"ship_class": hull}
+            if r.get("provide_materials"):
+                c_params["provide_materials"] = True
+            ok_c, c_ans = _gate_raw(gate_mod, pilot, "commission_ship", c_params)
+            if ok_c:
+                try:
+                    gate_mod.book_onetime(pilot, "%s hull commissioned" % hull.capitalize(), -price, data=data_dir)
+                except Exception:
+                    pass
+                r["state"], r["paid"], r["updated_at"], r["last_poll"] = "building", price, int(now), int(now)
+                r["note"] = "commissioned %s (%s cr)" % (hull, _fmt_num(price))
+                row_changed = True
+                print("UPGRADE commissioned %s: %s -> %s (%s cr)" % (r["id"], pilot, hull, _fmt_num(price)))
+            else:
+                r["note"], r["updated_at"] = "commission failed: %s" % json.dumps(c_ans)[:90], int(now)
+                row_changed = True
+        finally:
+            _release_upgrade(data_dir, pilot, division_mod)
+            if row_changed and not dry:
+                with _save_lock:
+                    save_queue(data_dir, [r], merge=True)
+
+    ordered = sorted(active, key=_dock_prio)
+    funded_batch = []
+    for r in ordered:
         if time.time() - t0 > budget_s:
             break
         pilot = str(r.get("pilot") or "")
@@ -789,7 +888,6 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
 
         if state in ("queued", "funding"):
             continue
-
         if actions >= max_actions:
             continue
         if ship.get("status", "connected") != "connected" or ship.get("in_combat"):
@@ -807,93 +905,12 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
                 _request_pilot_stop(data_dir, pilot)
                 r["note"], r["updated_at"] = "waiting for active run to end (stop sent)", int(now)
-                if not dry:
-                    save_queue(data_dir, rows, merge=True)
+                with _save_lock:
+                    save_queue(data_dir, [r], merge=True)
                 continue
             actions += 1
-            try:
-                if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(65, max(20, budget_s - (time.time() - t0))))
-                    if not ok_d:
-                        if "already executing" in msg_d.lower():
-                            _request_pilot_stop(data_dir, pilot)
-                        r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
-                        changed = True
-                        continue
-                ok_ls, ls_ans = _gate_raw(gate_mod, pilot, "list_ships", {})
-                stored = [s for s in _extract_ships(ls_ans) if str(s.get("class_id") or "").lower() == hull
-                          and not s.get("is_active") and s.get("location_base_id") == base_id] if ok_ls else []
-                if stored:
-                    ok_sw, _ = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
-                    if ok_sw:
-                        r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into stored %s" % hull
-                        changed = True
-                        continue
-                ok_b, b_ans = _gate_raw(gate_mod, pilot, "browse_ships", {"base_id": base_id, "class_id": hull})
-                listed = [
-                    x for x in (_extract_listings(b_ans) if ok_b else [])
-                    if isinstance(x, dict) and str(x.get("class_id") or "").lower() == hull
-                    and int(x.get("price") or 0) > 0 and x.get("listing_id")
-                    and (not x.get("base_id") or str(x.get("base_id")) == base_id)
-                ]
-                best_listed = min(listed, key=lambda x: int(x.get("price") or 0)) if listed else None
-
-                ok_q, q_ans = _gate_raw(gate_mod, pilot, "commission_quote", {"ship_class": hull})
-                price = _extract_quote_price(q_ans) if ok_q else 0
-
-                if best_listed is not None:
-                    list_price = int(best_listed.get("price") or 0)
-                    if list_price <= int(r["max_price"]) and (not price or list_price <= price):
-                        if credits - list_price < UPGRADE_READY_FLOOR:
-                            r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for listed %s" % _fmt_num(list_price)
-                            changed = True
-                            continue
-                        ok_buy, buy_ans = _gate_raw(gate_mod, pilot, "buy_listed_ship", {"listing_id": str(best_listed["listing_id"])})
-                        if ok_buy:
-                            try:
-                                gate_mod.book_onetime(pilot, "%s hull bought from listing" % hull.capitalize(), -list_price, data=data_dir)
-                            except Exception:
-                                pass
-                            r["state"], r["paid"], r["updated_at"], r["last_poll"] = "done", list_price, int(now), int(now)
-                            q_txt = _fmt_num(price) if price else "n/a"
-                            r["note"] = "bought listed %s (%s cr vs quote %s)" % (hull, _fmt_num(list_price), q_txt)
-                            changed = True
-                            print("UPGRADE bought %s: %s -> %s (%s cr, saved vs quote %s)" % (r["id"], pilot, hull, _fmt_num(list_price), q_txt))
-                            continue
-
-                if not price:
-                    r["note"], r["updated_at"] = "quote unreadable", int(now)
-                    changed = True
-                    continue
-                if price > int(r["max_price"]):
-                    r["state"], r["updated_at"], r["note"] = "failed", int(now), "quote %s > max %s" % (_fmt_num(price), _fmt_num(r["max_price"]))
-                    changed = True
-                    continue
-                if credits - price < UPGRADE_READY_FLOOR:
-                    r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for quote %s" % _fmt_num(price)
-                    changed = True
-                    continue
-                c_params = {"ship_class": hull}
-                if r.get("provide_materials"):
-                    c_params["provide_materials"] = True
-                ok_c, c_ans = _gate_raw(gate_mod, pilot, "commission_ship", c_params)
-                if ok_c:
-                    try:
-                        gate_mod.book_onetime(pilot, "%s hull commissioned" % hull.capitalize(), -price, data=data_dir)
-                    except Exception:
-                        pass
-                    r["state"], r["paid"], r["updated_at"], r["last_poll"] = "building", price, int(now), int(now)
-                    r["note"] = "commissioned %s (%s cr)" % (hull, _fmt_num(price))
-                    changed = True
-                    print("UPGRADE commissioned %s: %s -> %s (%s cr)" % (r["id"], pilot, hull, _fmt_num(price)))
-                else:
-                    r["note"], r["updated_at"] = "commission failed: %s" % json.dumps(c_ans)[:90], int(now)
-                    changed = True
-            finally:
-                _release_upgrade(data_dir, pilot, division_mod)
-                if changed and not dry:
-                    save_queue(data_dir, rows, merge=True)
-                    changed = False
+            funded_batch.append(r)
+            continue
 
         elif state == "building":
             if now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S:
@@ -919,7 +936,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(65, max(20, budget_s - (time.time() - t0))))
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180, max(30, budget_s - (time.time() - t0))))
                     if not ok_d:
                         if "already executing" in msg_d.lower():
                             _request_pilot_stop(data_dir, pilot)
@@ -940,7 +957,15 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     changed = False
 
     if changed and not dry:
-        save_queue(data_dir, rows, merge=True)
+        with _save_lock:
+            save_queue(data_dir, rows, merge=True)
+    if funded_batch and not dry:
+        n_w = max(1, min(int(max_workers or 6), len(funded_batch)))
+        if n_w == 1:
+            _process_funded_row(funded_batch[0])
+        else:
+            with _cf.ThreadPoolExecutor(max_workers=n_w) as _pool:
+                list(_pool.map(_process_funded_row, funded_batch))
     return 0
 
 

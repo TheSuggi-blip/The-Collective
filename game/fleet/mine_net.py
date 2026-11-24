@@ -450,10 +450,13 @@ def release_belt_claim(data_dir, pilot, cooldown_belt=None, cooldown_minutes=90,
         fcntl.flock(lf, fcntl.LOCK_EX)
         try:
             claims, cooldowns = _read_claims_unlocked(path, now_t, ttl_s)
-            claims.pop(str(pilot), None)
+            prev = claims.pop(str(pilot), None)
+            rel_belt = str((prev or {}).get("belt") or cooldown_belt or "")
             if cooldown_belt and float(cooldown_minutes or 0) > 0:
                 cooldowns[str(cooldown_belt)] = now_t + float(cooldown_minutes) * 60.0
             write_json(path, {"updated_at": int(now_t), "claims": claims, "cooldowns": cooldowns})
+            rem = sum(1 for rec in claims.values() if isinstance(rec, dict) and str(rec.get("belt") or "") == rel_belt) if rel_belt else 0
+            return rem
         finally:
             fcntl.flock(lf, fcntl.LOCK_UN)
 
@@ -758,12 +761,18 @@ def main(argv=None):
     finally:
         hb.set()
         if claimed_belt:
-            release_belt_claim(
+            rem_miners = release_belt_claim(
                 DATA, pilot,
                 cooldown_belt=(claimed_belt if floor_hit else None),
                 cooldown_minutes=float(policy.get("cooldown_minutes") or 90),
                 policy=policy,
             )
+            if rem_miners == 0:
+                try:
+                    import escort_proto as _ep
+                    _ep.clear_escort_request(DATA, "field:" + str(claimed_belt))
+                except Exception:
+                    pass
         try:
             cur = read_json(order_path, {})
             if isinstance(cur, dict) and cur.get("pid") == os.getpid() and cur.get("what") == "mine_net " + route_id:

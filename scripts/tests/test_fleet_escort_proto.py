@@ -200,5 +200,28 @@ class EscortAndAutoNetTests(unittest.TestCase):
             self.assertIn("arg=miner-1", buf.getvalue())
 
 
+    def test_convoy_fleet_state_and_nearest_policed_border(self):
+        import escort_proto as ep
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            ep.request_escort(data, "convoy:h1:c1", "convoy", "hauler-1", "haul-network", "lawless_a", "poi1", needed=3, now_t=1000)
+            ep.join_escort(data, "convoy:h1:c1", "sentinel-1", power=700, now_t=1005)
+            ep.mark_escort_arrived(data, "convoy:h1:c1", "sentinel-1", now_t=1010)
+            self.assertTrue(ep.is_escort_active(data, "convoy:h1:c1", now_t=1015))
+            ep.set_convoy_fleet(data, "convoy:h1:c1", "hauler-1", ["sentinel-1"], now_t=1016)
+            ep.mark_escort_in_fleet(data, "convoy:h1:c1", "sentinel-1", now_t=1018)
+            rec = ep.get_escort_request(data, "convoy:h1:c1", now_t=1020)
+            self.assertEqual(rec["fleet_leader"], "hauler-1")
+            self.assertTrue(rec["escorts"]["sentinel-1"]["in_fleet"])
+            ep.clear_escort_request(data, "convoy:h1:c1", now_t=1030)
+            self.assertFalse(ep.is_escort_active(data, "convoy:h1:c1", now_t=1035))
+
+            adj = {"lawless_a": {"lawless_b"}, "lawless_b": {"lawless_a", "sh_sys", "safe_emp"}, "sh_sys": {"lawless_b"}, "safe_emp": {"lawless_b"}}
+            meta = {"lawless_a": {"empire": "", "stronghold": False}, "lawless_b": {"empire": "", "stronghold": False},
+                    "sh_sys": {"empire": "pirate", "stronghold": True}, "safe_emp": {"empire": "solarian", "stronghold": False}}
+            self.assertEqual(ep.nearest_policed_system(adj, meta, "lawless_a"), "safe_emp")
+            self.assertEqual(ep.nearest_policed_system(adj, meta, "safe_emp"), "safe_emp")
+
+
 if __name__ == "__main__":
     unittest.main()

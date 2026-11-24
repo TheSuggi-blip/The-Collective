@@ -1455,6 +1455,48 @@ def main(argv=None):
                         if req.get("poi"):
                             _goal(pilot, "go-to-poi", {"targetPoiId": req["poi"]}, timeout_s=90)
                         _ep.mark_escort_arrived(DATA, rk, pilot)
+                        if req["mode"] == "convoy":
+                            _wait_f = time.time() + 35.0
+                            _joined_fleet = False
+                            while time.time() < _wait_f and not (DATA / "fleet" / "STOP").exists():
+                                _crec = _ep.get_escort_request(DATA, rk)
+                                if not _crec:
+                                    return 0
+                                if pilot in (_crec.get("fleet_invited") or []):
+                                    _st_a, _sc_a, _ans_a = _raw(pilot, "accept", {}, "spacemolt_fleet")
+                                    time.sleep(10)
+                                    if "error" not in (_ans_a or {}):
+                                        _ep.mark_escort_in_fleet(DATA, rk, pilot)
+                                        _joined_fleet = True
+                                    break
+                                time.sleep(4)
+                            if _joined_fleet:
+                                print("%s %s hunt_net: CONVOY FLEET LOCKED on %s (active defense)" % (utc_now(), pilot, rk), flush=True)
+                                _gate_call("PATCH", "/accounts/%s/combat-mode" % urllib.parse.quote(pilot, safe=""), {"mode": "fight"})
+                                _raw(pilot, "default_stance", {"stance": "fire"}, "spacemolt_battle")
+                                _end_esc = time.time() + float(ecfg.get("minutes") or minutes) * 60.0
+                                try:
+                                    while time.time() < _end_esc and not (DATA / "fleet" / "STOP").exists():
+                                        if not _ep.is_escort_active(DATA, rk):
+                                            break
+                                        _, _bs, _ = _raw(pilot, "status", {}, "spacemolt_battle")
+                                        if _bs.get("is_participant"):
+                                            _gate_call("POST", "/accounts/%s/combat-heartbeat" % urllib.parse.quote(pilot, safe=""), {}, timeout=20)
+                                            _sd_e = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
+                                            _mh_e = max(1.0, float(_sd_e.get("max_hull") or 100.0))
+                                            _hp_e = 100.0 * float(_sd_e.get("hull") or _mh_e) / _mh_e
+                                            _raw(pilot, "stance", {"stance": "flee" if _hp_e < 45.0 else "fire"}, "spacemolt_battle")
+                                        time.sleep(15)
+                                finally:
+                                    try:
+                                        _raw(pilot, "leave", {}, "spacemolt_fleet")
+                                    except Exception:
+                                        pass
+                                    _raw(pilot, "default_stance", {"stance": "flee"}, "spacemolt_battle")
+                                    _gate_call("PATCH", "/accounts/%s/combat-mode" % urllib.parse.quote(pilot, safe=""), {"mode": "flee"})
+                                    _goal(pilot, "prepare-at-station", {"systemId": st_tup[0], "poiId": st_tup[1], "baseId": st_tup[2], "refuel": True}, timeout_s=180)
+                                print("RESULT %s: hunt_net convoy-fleet %s done (returned to hunt)" % (pilot, rk), flush=True)
+                                return 0
                         cmd = [
                             sys.executable, "-I", "-B", str(ROOT / "fleet" / "guard.py"),
                             pilot, req["system"], req.get("poi") or req["system"],
@@ -1462,6 +1504,7 @@ def main(argv=None):
                             "--station", "%s:%s:%s" % st_tup,
                             "--minutes", str(int(ecfg.get("minutes") or minutes)),
                             "--route", route_id,
+                            "--escort-key", rk,
                         ]
                         if req["mode"] == "convoy" and req.get("requester"):
                             cmd += ["--follow", str(req["requester"])]
