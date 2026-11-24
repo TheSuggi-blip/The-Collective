@@ -266,30 +266,37 @@ def plan_ship_fit(ship_doc, world, policy):
     is_bursar = pilot in (world.get("bursar_pilots") or set())
     specialty = resolve_specialty(pilot, division, fitted, policy, is_bursar=is_bursar, ship_class=cls_key)
 
-    # 1. Off-role modules to strip (division-level + specialty-level so hull-locked fits clean wrong-resource tools)
-    off_set = {str(x).lower() for x in ((policy.get("off_role_modules") or {}).get(division) or [])}
-    spec_off = {str(x).lower() for x in ((((policy.get("specialties") or {}).get(division) or {}).get("off_role_by_specialty") or {}).get(specialty) or [])}
-    off_set |= spec_off
-    to_unfit = sorted({m for m in fitted if m in off_set}) if policy.get("strip_off_role", True) else []
+    def _is_primary_harvester(mid_s):
+        return any(k in mid_s for k in ("mining_laser", "deep_core_extractor", "hyper_mining_laser", "damped_mining_head", "ice_harvester", "gas_harvester"))
 
-    # 2. Remaining fitted count per slot type after stripping off-role modules
-    kept = [m for m in fitted if m not in off_set]
-    used_slots = {"weapon": 0, "defense": 0, "utility": 0}
-    for m in kept:
-        st = _module_slot_type(m, world.get('item_slots'))
-        used_slots[st] = used_slots.get(st, 0) + 1
+    # 1. Off-role modules to strip: division-level always safe; specialty-level (`spec_off`) only when
+    # a matching primary tool is already kept OR bought at the station (prevents stranding a miner with 0 tools!).
+    div_off = {str(x).lower() for x in ((policy.get("off_role_modules") or {}).get(division) or [])}
+    spec_off = {str(x).lower() for x in ((((policy.get("specialties") or {}).get(division) or {}).get("off_role_by_specialty") or {}).get(specialty) or [])}
+    strip_on = bool(policy.get("strip_off_role", True))
+    base_unfit = sorted({m for m in fitted if m in div_off}) if strip_on else []
+    spec_unfit_cands = sorted({m for m in fitted if m in spec_off and m not in div_off}) if strip_on else []
+
+    kept_base = [m for m in fitted if m not in div_off]
+    kept_without_spec = [m for m in kept_base if m not in spec_off]
+    # Self-heal guard: a Mining ship with 0 harvesters and full cargo expanders can swap 1 expander for a harvester
+    has_any_harv_base = any(_is_primary_harvester(m) for m in kept_base)
+    has_match_harv = any(_is_primary_harvester(m) for m in kept_without_spec)
+    heal_expander = None
+    if division == "Mining" and not has_any_harv_base:
+        budget = max(budget, max(0, credits - 4000))
+        exp_fitted = [m for m in kept_base if "cargo_expander" in m]
+        if exp_fitted:
+            heal_expander = sorted(exp_fitted)[0]
+
+    used_base = {"weapon": 0, "defense": 0, "utility": 0}
+    for m in kept_base:
+        st = _module_slot_type(m, world.get("item_slots"))
+        used_base[st] = used_base.get(st, 0) + 1
 
     loadout = (((policy.get("specialties") or {}).get(division) or {}).get("loadouts") or {}).get(specialty) or {}
-    wanted_by_slot = {}
-    for st in ("weapon", "defense", "utility"):
-        free_n = max(0, int(hspec.get(st, 0)) - used_slots.get(st, 0))
-        if free_n <= 0:
-            continue
-        cands = [str(x).lower() for x in (loadout.get(st) or [])]
-        if cands:
-            wanted_by_slot[st] = (free_n, cands)
-
-    if not to_unfit and not wanted_by_slot:
+    has_any_open = any(max(0, int(hspec.get(st, 0)) - used_base.get(st, 0)) > 0 and (loadout.get(st) or []) for st in ("weapon", "defense", "utility"))
+    if not base_unfit and not spec_unfit_cands and not heal_expander and not has_any_open:
         return None
 
     # CPU and power are hard caps of the hull (rules 06-pilots-and-ships.md): what stays fitted plus what is
@@ -297,8 +304,6 @@ def plan_ship_fit(ship_doc, world, policy):
     mod_cost = world.get("mod_cost") or {}
     cap_cpu, cap_pow = int(hspec.get("cpu") or 0), int(hspec.get("power") or 0)
     judge_caps = cap_cpu > 0 and cap_pow > 0
-    kept_cpu = sum(mod_cost.get(m, (0, 0))[0] for m in kept)
-    kept_pow = sum(mod_cost.get(m, (0, 0))[1] for m in kept)
 
     policed_only = bool(policy.get("policed_only", True))
     max_jumps = int(policy.get("max_jumps") or 6)
@@ -315,15 +320,43 @@ def plan_ship_fit(ship_doc, world, policy):
         hops = dists.get(sys_id)
         if hops is None:
             continue
+
+        # Decide per-station whether specialty swap (`spec_unfit_cands`) or expander self-heal is safe here
+        util_cands = [str(x).lower() for x in (loadout.get("utility") or [])]
+        harv_avail_here = any(
+            _is_primary_harvester(mid) and any(bid == b_id and pr <= budget for pr, bid, _q in (asks.get(mid) or []))
+            for mid in util_cands
+        )
+        station_unfit = list(base_unfit)
+        if spec_unfit_cands and (has_match_harv or harv_avail_here):
+            station_unfit.extend(spec_unfit_cands)
+        elif heal_expander and harv_avail_here and max(0, int(hspec.get("utility", 0)) - used_base.get("utility", 0)) <= 0:
+            station_unfit.append(heal_expander)
+        station_unfit = sorted(set(station_unfit))
+        unfit_set = set(station_unfit)
+        kept_here = [m for m in fitted if m not in unfit_set]
+        used_here = {"weapon": 0, "defense": 0, "utility": 0}
+        for m in kept_here:
+            st = _module_slot_type(m, world.get("item_slots"))
+            used_here[st] = used_here.get(st, 0) + 1
+        use_cpu = sum(mod_cost.get(m, (0, 0))[0] for m in kept_here)
+        use_pow = sum(mod_cost.get(m, (0, 0))[1] for m in kept_here)
+        have_harv_now = any(_is_primary_harvester(m) for m in kept_here)
+
         buy_list = []
         spend = 0
-        use_cpu, use_pow = kept_cpu, kept_pow
-        # For each open slot type, pick the highest-ranked affordable module listed at THIS station
-        for st, (free_n, cands) in wanted_by_slot.items():
+        for st in ("weapon", "defense", "utility"):
+            free_n = max(0, int(hspec.get(st, 0)) - used_here.get(st, 0))
+            cands = [str(x).lower() for x in (loadout.get(st) or [])]
+            if free_n <= 0 or not cands:
+                continue
             filled_here = 0
             for mid in cands:
                 if filled_here >= free_n:
                     break
+                # Reserve at least 1 utility slot on Mining hulls for a primary harvester!
+                if division == "Mining" and st == "utility" and not have_harv_now and not _is_primary_harvester(mid) and (free_n - filled_here) <= 1:
+                    continue
                 at_here = [pr for pr, bid, _q in (asks.get(mid) or []) if bid == b_id]
                 if not at_here:
                     continue
@@ -337,17 +370,19 @@ def plan_ship_fit(ship_doc, world, policy):
                     use_cpu += mc
                     use_pow += mp
                     filled_here += 1
-        if not to_unfit and not buy_list:
+                    if _is_primary_harvester(mid):
+                        have_harv_now = True
+        if not station_unfit and not buy_list:
             continue
         # Score: more upgrades + unfits, fewer jumps, lower cost
-        score = len(buy_list) * 100 + len(to_unfit) * 80 - hops * 25 - (spend / 5000.0)
+        score = len(buy_list) * 100 + len(station_unfit) * 80 - hops * 25 - (spend / 5000.0)
         cand = {
             "station": "%s:%s:%s" % (sys_id, poi_id, base_id),
             "base": base_id,
             "system": sys_id,
             "poi": poi_id,
             "hops": hops,
-            "unfit": to_unfit,
+            "unfit": station_unfit,
             "buy_fit": buy_list,
             "est_cost": spend,
             "specialty": specialty,

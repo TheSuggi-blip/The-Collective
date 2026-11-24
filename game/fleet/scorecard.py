@@ -395,14 +395,14 @@ def _load_diplomacy_pending(data_dir):
     _CLOSING_ACKS = (
         "likewise", "see you on the exchange", "see you out there", "fair lanes",
         "good trade", "good fortune", "safe travels", "thank you", "thanks",
-        "understood", "noted", "sounds good", "glad to hear", "fly safe",
+        "understood", "noted", "acknowledged", "sounds good", "glad to hear", "fly safe",
     )
     agreed_tags = set()
     for tag, rec in (factions or {}).items():
         if isinstance(rec, dict):
             t_up = str(rec.get("tag") or tag or "").upper()
             st = (rec.get("status") or "").lower()
-            if t_up and st in ("neutrality_agreed", "trade_active", "info_sharing_active"):
+            if t_up and st in ("in_dialogue", "neutrality_agreed", "trade_active", "info_sharing_active"):
                 agreed_tags.add(t_up)
 
     latest_in = {}

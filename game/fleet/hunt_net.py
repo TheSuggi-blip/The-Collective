@@ -1244,9 +1244,9 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
             ok_poi = _goal(pilot, "go-to-poi", {"targetPoiId": cur["poi"]}, timeout_s=90)
         cur = pack_update(DATA, pid, lambda p: p.setdefault("arrived", {}).__setitem__(pilot, True))
 
-        # Wait for pack arrival at target POI
-        wait_end = time.time() + min(240.0, arrive_timeout)
-        min_ready = max(2, int(math.ceil(len(members) * 0.75)))
+        # Wait for pack arrival at target POI (allow up to 390s for 8-12 jump hulls; launch if >=60% ready)
+        wait_end = time.time() + max(300.0, min(390.0, arrive_timeout * 1.5))
+        min_ready = max(2, int(math.ceil(len(members) * 0.60)))
         while cur and len(cur.get("arrived") or {}) < len(members) and time.time() < wait_end and not (DATA / "fleet" / "STOP").exists():
             time.sleep(5)
             try:
@@ -1728,7 +1728,12 @@ def main(argv=None):
             "--no-order",
         ]
         if scfg.get("alone", True):
-            cmd.append("--alone")
+            _sys_rec = (world.get("systems") or {}).get(chosen["system"]) or {}
+            _is_pol = bool(_sys_rec.get("empire")) and not bool(_sys_rec.get("stronghold"))
+            if _is_pol and str(scfg.get("policed_alone_mode", "pirates")) == "pirates":
+                cmd += ["--alone-mode", "pirates"]
+            else:
+                cmd.append("--alone")
         if policy.get("gift_to"):
             cmd += ["--gift-to", str(policy["gift_to"])]
 

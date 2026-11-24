@@ -83,8 +83,13 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
         try:
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
             if "recipes" in tbls and "recipe_inputs" in tbls and "recipe_outputs" in tbls:
-                for rid, nm, fo in con.execute("SELECT id, name, COALESCE(facility_only, 0) FROM recipes"):
-                    recipes[str(rid)] = {"id": str(rid), "name": str(nm or rid), "facility_only": bool(fo), "inputs": [], "outputs": []}
+                r_cols = {r[1] for r in con.execute("PRAGMA table_info(recipes)").fetchall()}
+                cat_expr = "LOWER(COALESCE(category, ''))" if "category" in r_cols else "''"
+                for rid, nm, fo, rcat in con.execute("SELECT id, name, COALESCE(facility_only, 0), %s FROM recipes" % cat_expr):
+                    rid_s = str(rid or "")
+                    if not rid_s or rid_s.startswith("onboard_") or rcat == "ship passive":
+                        continue
+                    recipes[rid_s] = {"id": rid_s, "name": str(nm or rid_s), "facility_only": bool(fo), "inputs": [], "outputs": []}
                 for rid, iid, u in con.execute("SELECT recipe, item, units FROM recipe_inputs"):
                     if str(rid) in recipes and iid and int(u or 0) > 0:
                         recipes[str(rid)]["inputs"].append((str(iid), int(u)))

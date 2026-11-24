@@ -341,5 +341,48 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         self.assertEqual(fit_net._module_slot_type("hull_reinforcement_iii"), "defense")
 
 
+
+    def test_fit_net_never_strips_last_harvester_and_self_heals_zero_harvester_miner(self):
+        """Regression: never strip mining_laser_i without replacement harvester in stock, and self-heal miner-108."""
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "store").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE lanes (a TEXT, b TEXT);
+                CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, base TEXT);
+                CREATE TABLE hulls (id TEXT, name TEXT, tier INTEGER, weapon_slots INTEGER, defense_slots INTEGER, utility_slots INTEGER);
+                CREATE TABLE books (base TEXT, item TEXT, ask REAL, ask_qty INTEGER);
+                INSERT INTO lanes VALUES ('s1', 's2');
+                INSERT INTO systems VALUES ('s1', 'voidborn', 0), ('s2', 'voidborn', 0);
+                INSERT INTO places VALUES ('s1', 'p1', 'b1'), ('s2', 'p2', 'b2');
+                INSERT INTO hulls VALUES ('prospect', 'Prospect', 0, 1, 1, 2), ('rime', 'Rime', 1, 0, 2, 3);
+                INSERT INTO books VALUES ('b1', 'cargo_expander_ii', 1500, 5), ('b2', 'ice_harvester_ii', 2500, 5);
+            """)
+            con.commit()
+            con.close()
+            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+            world = fit_net.load_fit_world(str(data), pol)
+            # 1. Rime (ice specialty) with only mining_laser_i at b1 (no ice harvester at b1, only at b2):
+            # MUST go to b2 to swap mining_laser_i -> ice_harvester_ii, NEVER strip mining_laser_i at b1!
+            ship_swap = {"name": "miner-108", "division": "Mining", "system": "s1", "class": "rime", "credits": 30000, "modules": ["mining_laser_i"]}
+            p1 = fit_net.plan_ship_fit(ship_swap, world, pol)
+            self.assertIsNotNone(p1)
+            if p1["base"] == "b1":
+                self.assertNotIn("mining_laser_i", p1["unfit"])
+            else:
+                self.assertIn("ice_harvester_ii", [m for m, _ in p1["buy_fit"]])
+            # 2. Miner stranded with 0 harvesters & 2 cargo expanders (miner-108) self-heals at b2!
+            ship_zero = {"name": "miner-108", "division": "Mining", "system": "s1", "class": "rime", "credits": 30000, "modules": ["cargo_expander_i", "cargo_expander_ii"]}
+            world["hulls"]["rime"]["utility"] = 2
+            p2 = fit_net.plan_ship_fit(ship_zero, world, pol)
+            self.assertIsNotNone(p2)
+            self.assertEqual(p2["base"], "b2")
+            self.assertIn("cargo_expander_i", p2["unfit"])
+            self.assertIn("ice_harvester_ii", [m for m, _ in p2["buy_fit"]])
+
+
 if __name__ == "__main__":
     unittest.main()
