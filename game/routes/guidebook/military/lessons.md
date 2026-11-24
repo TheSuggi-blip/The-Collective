@@ -90,7 +90,7 @@ Status: proven. Updated: 2026-11-24. Evidence: reserve_hunts.py; loot_bids.py; d
   90 minutes; a far herd with an older one is flown blind.
 
 ### Plans, fills and claims
-Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus); dispatch.newborn_reason; 2026-11-17, 2026-11-21 and 2026-11-23 turns.
+Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log ENT-158; table runs (strip-pulse-laser-central-nexus, finish-*); dispatch.newborn_reason; turns 2026-11-17 to 2026-11-24.
 
 - The fill gate judges a route by its all-time figure: a hunt whose bid or
   herd is gone gets `status: off` with the record, never put back.
@@ -100,8 +100,7 @@ Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log E
 - A route another plan holds too is changed by a request to its writer.
 - `comms.py append admirals` refuses a claim on a route another division
   claims: leave it out of claim and plan until released.
-- The dispatcher may start a route in the minute before a plan commit:
-  read data/fleet/orders/ after.
+- A route may start in the minute before a plan commit: read orders/.
 - The loss stop counts a refused accept of a once route until its window
   moves on; a training route takes `requires.skills_below` and is left
   alone by the loss stop.
@@ -120,6 +119,10 @@ Status: proven. Updated: 2026-11-24. Evidence: fill.py; comms.py; requests.log E
   further out for them (the scratch generator, F23).
 - Partner ranches (admirals.log ENT-113): a hunt at a ranch place or in a
   partner's system is `status: off` (F2, F4).
+- `fill.py` puts every paid-once route into First for every ship, a
+  `finish-*` route too (no accept: it docks at the open objectives of a
+  mission held half done): 167 of 208 runs paid nothing (errors.log
+  ENT-187). Read each new First entry against its note each turn.
 
 ### Battles and stuck ships
 Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; admirals.log ENT-110; observation kind ranch (aspidiske); stuck_check.py; requests.log ENT-369; table runs 2026-11-23 06:52 to 07:10 UTC (hull_before, hull_after); ship files (ships_lost).

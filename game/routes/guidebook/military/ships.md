@@ -53,7 +53,7 @@ Status: proven. Updated: 2026-11-24. Evidence: commission_quote Central Nexus 20
   hull, 3 weapons) name no Piloting gate.
 
 ### Listed Hulls and Tier-2 Fuel
-Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026-11-24 10:27 UTC; table runs 2026-11-24 (Recursion against starters); game/rules/05-galaxy.md (Travel).
+Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026-11-24 10:27 and 12:50 UTC; table runs 2026-11-24 (Recursion against starters, hunt-achernar-gas-pocket-drift-ray); errors.log ENT-187; game/rules/05-galaxy.md (Travel).
 
 - Read the ship exchange before a commission: `browse_ships` with
   `all_stations: true` and `class_id` (free, any docked or flying pilot;
@@ -64,11 +64,15 @@ Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026
   five modules, flyable by a Voidborn Piloting-11 pilot.
   `buy_listed_ship` works docked at the listing's station; the old ship
   stays stored there. Script: skill military-turn, buy_listed_hull.py.
-- A tier-2 hull burns five to fifteen times a starter's fuel on the same
-  hunt (jump fuel goes by ship scale and speed): the Recursion -5,002 cr an
-  hour against -382 to -602 for starters; same route, same kills (the herd
-  floor caps them). Put tier-2 hulls on work a starter cannot do: kit herds
-  above the gauges, pilot whales, pirate formations.
+- A tier-2 hull burns four to six times a starter's fuel on the same short
+  hunt (Recursion -353 cr a run, starters -60 to -65, runs of 12 to 15
+  minutes) and up to fifteen times on long trips; the herd floor caps the
+  kills. Keep tier-2 hulls near their work, on prey a starter cannot take.
+- The listing's `scale` field tells the fuel class: Crimson treasury
+  Cleavers (tier 1, Piloting 0, 3 weapons, speed 3) list at 6,986 cr with
+  scale 1, as the starters. A listed hull may carry a smaller tank than
+  its class (a Broadaxe of 120 against 315): it fails every stop further
+  than the tank, and the dispatcher holds it 30 minutes after three.
 
 ### Multi-Empire Ship Catalog (Voidborn, Crimson, Solarian)
 Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/crimson.md; game/catalog/ships/solarian.md; hive.py guide military.
