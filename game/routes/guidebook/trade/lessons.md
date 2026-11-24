@@ -138,18 +138,21 @@ first and a local fallback (a carry or a loop of the stations where it
 lies), so no ship crosses a lawless road for training alone.
 
 ### Station Need missions pay above the bid
-Status: test. Updated: 2026-11-23. Evidence: get_missions, accept_mission and complete_mission of one trader docked at the War Citadel, 18:39 to 18:43 UTC (wallet read after each); route need-ember-gland-krynn.
+Status: proven. Updated: 2026-11-24. Evidence: need-ember-gland-krynn by hand 2026-11-23; boards and books 2026-11-24 06:50 to 07:23 UTC (data/missions, table books); mission-workshop-production-run-krynn and mission-market-participation-nova-terra first runs, 07:23 and 07:26 UTC.
 
-Stations post `Station Need: <good>` missions (ember gland, caustic
-sac, superfluid vial, crystal melt ...), copies of 1 to 20 units, each
-its own mission id (`creature_<base>_<good>~<hash>`, no template). They
-pay above the standing bid: at the War Citadel 8,112 cr for 1 ember
-gland and 16,189 for 2 against a 7,054 cr bid; one trader handed in 4
-glands for 32,413 cr (withdraw, accept by id, complete). The runner
-accepts by title the first copy posted (`accept: [{title, needs}]`):
-`needs` at the largest copy seen makes any copy completable. Read the
-boards (table missions) for stored goods before a sell route; a
-reservecheck FLAG still holds a good back.
+Stations post `Station Need: <good>` missions, copies of 1 to 20
+units, each its own id (`creature_<base>_<good>~<hash>`, no
+template), above the standing bid: 8,112 cr a gland at the War
+Citadel against 7,054; 5,536 to 5,636 a gland at The Crucible against
+480 there; 4,160 a crystal melt at Frontier Station against 54 at
+home. Scan every board's deliver objectives against our holdings
+(`data/missions/*.json` x table holdings) before a sell route. The
+runner accepts by title the first copy posted and `needs` only checks
+the hold: one accept-and-redock pair per copy, largest copy first,
+goods aboard equal to the copies' sum. Boards differ by birth: Krynn's
+Workshop Production Run paid a Nebula-born trader; Nova Terra's
+Market Participation and Node Beta's workshop are offered to their
+own empire only: one ship first. A reservecheck FLAG holds a good back.
 
 ### A docked craft's cost is its craft runs per hour
 Status: test. Updated: 2026-11-24. Evidence: hive.py briefing 01:01 UTC (craft-sell-neon-krynn -1,089, craft-sell-oxygen-krynn -2,760 cr a ship-hour); route logs of bursar-desk-krynn and bursar-desk-alpha 01:16 to 01:18 UTC; pull.json; contracts.log ENT-006.

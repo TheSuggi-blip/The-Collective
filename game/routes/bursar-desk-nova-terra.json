@@ -1,42 +1,30 @@
 {
  "id": "bursar-desk-nova-terra",
  "kind": "circuit",
- "title": "Docked craft desk at Nova Terra Central: argon gas bought at 1 cr made into purified argon by hand (8 runs), stored, a 30-minute docked watch",
- "note": "Written by Mercury, 2026-11-24 07:27 UTC (orders ENT-085 block MERCURY: no trader waits docked, F8; F23 class work where the ship stands; desks stay under 500 cr a ship-hour). A trader waited docked at Nova Terra Central with no open route (fill.py check 07:22 UTC). The book (table books 07:23 UTC): argon_gas asked 1 x 132,825, the cheapest input of a hand recipe there (purify_argon 5 argon -> 3 purified argon). One buy of 40 argon and one craft of 8 runs a watch: about 40 cr a run of 30 minutes, about 80 cr a ship-hour, Crafting XP; the output is stored (a recipe input the reserve holds back, never sold). The Bursar desk form (bursar-desk-krynn); no sell_order: the desks' listings of 01:19 UTC had filled nothing by 07:05 UTC (view_orders, contracts.log). Up to 2 ships.",
+ "title": "Docked desk at Nova Terra Central: the pilot's own verdigris curd sold into the station's curd bid as it refills, a 30-minute docked market watch",
+ "note": "Written by Mercury, 2026-11-24 07:27 UTC; rewritten 2026-11-24 07:40 UTC (orders ENT-085 block MERCURY: no trader waits docked, F8; sell handed goods at or above the bids). A trader waited docked at Nova Terra Central with no open route (fill.py check 07:22 UTC). The first form crafted purified argon, which the pull record holds full (data/routes/pull.json: 519 held, max 57), so the dispatcher closed it before a run. Nova Terra's curd bid refills a unit at a time: sell-loot-at-nova-terra sold 1 verdigris curd into a 316 cr bid at 07:37 UTC after the book read no curd bid at 07:22 UTC; a trader's own storage there holds 509 curd (storage book 07:06 UTC), surplus (no reserve line). Each run sells what the bid takes at 250 or more, then a 30-minute watch with the book polled (market_poll), 0 fuel, no buy. Up to 2 ships.",
  "standing": true,
  "far_ok": true,
  "max_ships": 2,
  "requires": {
-  "docked_at": "nova_terra_central",
-  "ask": {
-   "item": "argon_gas",
-   "base": "nova_terra_central",
-   "max_price": 1,
-   "min_qty": 40
-  }
+  "docked_at": "nova_terra_central"
  },
  "stops": [
   {
    "at": "nova_terra:nova_terra_central:nova_terra_central",
    "store": "all",
-   "buy": [
+   "withdraw": [
     {
-     "item": "argon_gas",
-     "qty": 40,
-     "max_price": 2
+     "item": "verdigris_curd"
     }
    ],
-   "craft": [
+   "sell": [
     {
-     "recipe": "purify_argon",
-     "runs": 8,
-     "per_run": 3,
-     "makes": "purified_argon",
-     "inputs": [
-      "argon_gas"
-     ]
+     "item": "verdigris_curd",
+     "min_price": 250
     }
    ],
+   "market_poll": true,
    "watch_minutes": 30
   },
   {
