@@ -131,6 +131,10 @@
   {
    "what": "read the carbon buy at Node Beta against its gate (57,000 of Logistics) and the Builder's docked runs there",
    "when": "next turn"
+  },
+  {
+   "what": "test one ship on the Grand Exchange board's Nebula missions with no route yet (Unpaid Claims, Overdue Accounts, What Are They Buying?) for Nebula Mastery (F35)",
+   "when": "next turn"
   }
  ],
  "ships": {
