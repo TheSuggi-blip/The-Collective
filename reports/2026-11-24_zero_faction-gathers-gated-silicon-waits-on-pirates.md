@@ -16,7 +16,7 @@ links:
 
 Period: since `reports/2026-11-24_zero_floors-on-every-belt-sarin-carbon-test-three-t2-hulls.md` (10:04 UTC); this scheduled turn ran 11:31 to about 12:25 UTC. Orders: `orders.log ENT-086` (block ZERO: gather what the reserve lacks; laser-only veterans on the far carbon and silicon wing, one ship first; 3 ships a belt).
 
-Ships: 130 miners; 126 at work at 11:31 UTC (briefing), 129 at work and 1 docked at 12:21 UTC (`hive.py fleet`); none lost. Fill gate: HALT 4 waiting at 11:53 UTC, PASS at 12:08 and 12:12:38 UTC with 2 on park.
+Ships: 130 miners; 126 at work at 11:31 UTC (briefing), 129 at work and 1 docked at 12:21 UTC (`hive.py fleet`); none lost. Fill gate: HALT 4 waiting at 11:53 UTC, PASS at 12:08 and 12:12:38 UTC with 2 on park, HALT 1 waiting at 12:26 UTC, PASS at 12:31:00 UTC with none on park after the Almach lift.
 
 Credits: Mining wallets 4,123,924 (briefing 11:31 UTC) to 3,898,077 (12:21 UTC). The three Resonance Miner commissions (834,486 cr, paid 10:59 to 11:28 UTC, `data/fleet/upgrade_queue.json`) sit in the steady figures: the 11:00 hour of `stats_money_hour` reads Mining costs 889,340 and fuel 332,092 cr, against 64,662 and 63,003 the hour before. Without them the hour is about -54,900 cr, in line with the 10:00 hour (-50,552). Last 1h at 12:21 UTC: -339,217 cr, one 277,481 cr commission inside it, metered fuel and repairs 58,356 cr.
 
@@ -32,6 +32,7 @@ Order "gather what the reserve lacks" and the far wing:
 Order "3 a belt" and the floors:
 - The outpost's faction storage read iron 100,000, its limit (11:39 UTC), while six seated miners flew the two GSC-0044 faction gathers out of the list Then. Those two gathers and Acrux now carry `requires.reserve` (iron under 98,000) and `requires.role` (commits ff755da2, 2fa5711c); the six ships were stopped. fill.py reads them closed by the reserve.
 - Belts under their floors: Sidelong (two ships stopped), 82 Eridani 3 to 1 and Guildless 3 to 1 (commits 2aec5a45, 8cd630d9); near-empty Bunda platinum 3 to 1 and Errai fragments 2 to 1 (dc27fd46, 738e6ba7); five more stopped.
+- Almach Stray Facets 1 to 3 ships (commit c52778f3): two Voidborn veterans waited at 12:26 UTC with every home belt at its cap of 3; the field carries about 7 ships (fill.py status).
 - Node Gamma ice floor 30,000 to 7,500, 15% of its 50,000 (commit 620fc8df). It is the cheapest standing work Mining has: -171 cr a ship-hour over 49 runs in 12 h (route_earnings).
 
 Scorecard (Mining): score 78.7 to 79.4, idle 4 to 1 (96.9% to 99.2% at work), belts spread 36 to 31 places (briefing 11:31 UTC, 12:21 UTC).
@@ -40,7 +41,7 @@ Scorecard (Mining): score 78.7 to 79.4, idle 4 to 1 (96.9% to 99.2% at work), be
 
 - Six miners worked a store that could not take their iron (errors.log ENT-185). Cause: the 2026-11-23 lesson (`knowledge/iron-gathering.md`) asked a turn to remember to read the store; the routes stood in Then with no gate. Action: self-closing gates on all three faction gathers.
 - The far wing reduces to one ship. Silicon fields lie under pirates; carbon is cheaper bought. The laser-only veterans keep the iron fallback the orders allow.
-- Two veterans far out took park (fill.py check 12:12 UTC). Every gather in their reach is at its cap or under its floor, and the jump loop refuses Piloting 10. Park measured -1,702 cr a ship-hour over 12 h (route_earnings).
+- Two veterans far out took park (fill.py check 12:12 UTC) and two more waited at 12:26 UTC. Every gather in their reach stood at its cap or under its floor, and the jump loop refuses Piloting 10. Park measured -1,702 cr a ship-hour over 12 h (route_earnings). Almach lifted to 3; the 12:31 UTC check names no ship on park.
 - The money figures carry hull purchases as running cost (errors.log ENT-186). Cause (from the code, not tested): `station/fleet.py` meter() prices a docked wallet drop as fuel or repair, and the commission is not booked as paid once (`bought` 0 in the 11:00 row).
 - Module slots (328 empty) and tier-2 hulls (0 of 60 delivered) are not attacked this turn. Extra lasers raise the yield of iron and copper the reserve holds above max. The three hulls are measured first (Apophis, requests ENT-509).
 
