@@ -2,12 +2,12 @@
  "id": "give-drone-stores-central-nexus",
  "kind": "circuit",
  "title": "A drone or sentinel gives its stores at Central Nexus: building inputs to the haulers, its loot to the traders (strict classes)",
- "note": "2026-11-22 04:10 UTC (Apophis): orders ENT-061, P5 (each class's activities its own: the sales left in a plan become gifts to Trade's receivers) and rules F23, F24. Replaces in the drone and sentinel plans the sale and carry circuits of their stored loot (ember gland, crystal melt, soma, ice: Trade's work with strict classes on). The form of give-scout-stores-node-beta (Oracle) and give-miner-stores-node-beta (Zero): building inputs and the caustic sac the reserve needs (recruitment-center, needs list) to the hauler named for this station, the loot, rare ores and ices to the trader named for it (data/fleet/receivers.json, handover.py). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch). requires.stored: a pilot whose own storage here holds 20 copper_ore or more (storage book 04:07 UTC: the item most drones store here). 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off.",
+ "note": "2026-11-22 04:10 UTC (Apophis): orders ENT-061, P5 (each class's activities its own: the sales left in a plan become gifts to Trade's receivers) and rules F23, F24. Replaces in the drone and sentinel plans the sale and carry circuits of their stored loot (ember gland, crystal melt, soma, ice: Trade's work with strict classes on). The form of give-scout-stores-node-beta (Oracle) and give-miner-stores-node-beta (Zero): building inputs and the caustic sac the reserve needs (recruitment-center, needs list) to the hauler named for this station, the loot, rare ores and ices to the trader named for it (data/fleet/receivers.json, handover.py). A gift gives nothing while data/fleet/strict-classes-on is absent, so the route stands off until the switch is on (requests.log ENT-332 asks a requires gate on the switch). requires.stored: a pilot whose own storage here holds 20 copper_ore or more (storage book 04:07 UTC: the item most drones store here). 2026-11-22 05:50 UTC (Unity, requests ENT-332): `status: off` replaced by `requires.strict: true`: open by itself while strict classes are on, closed while off. 2026-11-24 00:42 UTC (Apophis): the gate moved from copper_ore to creature_carapace (20) and copper_ore from the hauler gift to the trader gift: the receiving hauler's storage is full for copper_ore (storage_cap_exceeded), so every run gave 0 of 331 and the gate stayed open: 31 runs in 4 hours, -2,660 cr (hive.py briefing, plan table). Copper ore stands at 628,295 in storage, surplus (P5: Trade sells what others hand over).",
  "max_ships": 3,
  "requires": {
   "stored": {
    "at": "central_nexus",
-   "item": "copper_ore",
+   "item": "creature_carapace",
    "min": 20
   },
   "strict": true
@@ -21,7 +21,6 @@
      "to": "hauler",
      "items": [
       "iron_ore",
-      "copper_ore",
       "steel_plate",
       "copper_piping",
       "copper_wiring",
@@ -65,7 +64,8 @@
       "helium_ice",
       "tritium_ice",
       "oxygen_ice",
-      "ammonia_ice"
+      "ammonia_ice",
+      "copper_ore"
      ],
      "source": "storage"
     }
