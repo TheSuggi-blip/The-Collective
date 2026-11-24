@@ -83,3 +83,11 @@ Status: proven. Updated: 2026-11-23. Evidence: shipping list_all, 164 contracts 
 - Map the ends before a hull is bought for it: each contract's origin system stands in `latest_beacon_fingerprint` (third field), its destination by station name in table stations; a breadth-first walk over table lanes gives the hops and the stronghold systems on the way (systems.stronghold). Read of 2026-11-23 08:54 UTC: 165 contracts, 103 touch a stronghold system, 49 end at stations not in our map, 13 run through mapped space, the best of them 361 cr.
 - The circuit runner has no freight step (accept, pick up, deliver): a freighter hull earns nothing on the board until one is built.
 - The read: `FULL=1 gate.py raw <docked pilot> list_all '{"eligible_as":"player","include_ineligible":true,"page":N}' shipping` (20 a page); without FULL the answer is cut at 3,000 characters.
+
+### Missions held half done, and boards per pilot
+Status: proven. Updated: 2026-11-24. Evidence: data/fleet/ships/hauler-*.json (mission_list, 06:20 UTC); runs of mission-federation-trade-route-prospectus-grand (04:22 UTC, 'not offered'), mission-sirius-expedition-sol (06:27 UTC, 15 runs 'not offered'), mission-old-charts-sol (06:40 UTC, +3,500 once); get_missions at Sol and get_active_missions by hand.
+
+- A once run cut mid-tour leaves its mission held half done: the board no longer offers it to that pilot, so the route that accepts it aborts at stop 1. Read `mission_list` in the ship files each turn; a `finish-*` route (no accept, the open objectives, the hand-in stop last) in the holders' own rows pays it (47 holders of two 4,000 cr missions found so).
+- A pilot holds at most 5 missions (get_active_missions `max_missions`): stale ones take slots.
+- The store's missions table is one pilot's view of a board: Sirius Expedition stood in it, yet no hauler at Sol was offered it. A once route's first run is the test; it costs nothing when the mission is not offered.
+- A `deliver_item` objective takes goods bought for it (5 boards bought at Sol for Gathering the Old Charts). Some deliveries hand out the goods on accept (Courier to Haven), others not (The Diplomatic Pouch: the hold stayed empty): accept one by hand first and read the hold.

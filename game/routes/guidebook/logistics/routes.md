@@ -1,19 +1,17 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show (applied 2026-11-24 02:00 UTC); fill.py status and check hauler 01:40 to 02:03 UTC; why_closed.py; orders.log ENT-084 (block APOLLO); table runs by ships.empire; shipping.py list 01:47 UTC.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show (applied 2026-11-24 06:33 UTC); fill.py status and check hauler 06:04 to 06:52 UTC; why_closed.py; ship files (mission_list); orders.log ENT-085 (block APOLLO); runs of 06:27 to 06:47 UTC.
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals, Filed in Triplicate included; F34, F35).
-- Own: `@outpost-supply`; the builder `outpost-kit-ironlight-to-node-beta`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, steel at six stations, closed at the reserve max, F36); `@train-hauler` (orders cap 8).
-- Docked steel where the miners' iron lies: one receiver a station (`handover.py receivers`), its `craft-steel-logistics-<station>` first in its row.
-- Capital corridors (`far_ok`, once, standing, `skip_if_booked` the reward they open): Voidborn `join-nova-hauler` (Nova Terra) and `join-rim-hauler` (Frontier); Nebula `join-rim-hauler` then `join-krynn-hauler-foreign`; Rim `join-krynn-hauler-foreign`. At the station the First list's missions open (distance 0). Read the rewards paid per birth (table runs by ships.empire) before a corridor.
-- Newborns (P6): Rim `@newborn-rim` (Frontier's board, no buy routes); Nebula `@newborn-nebula`.
-- Hulls (F17): a bigger hold waits for a board that pays it; the runner's `shipping` stop stands (tests.md).
-- Then, the corridors of the paid-out: `join-sol-records` (Crimson space and Nexus Prime to Sol, Request for Records), `join-rim-debris` (Crimson space and Sol to Frontier, Debris Field Reports and the Wayfinder), `join-krynn-bloodforge`, then `park`. Each carries `in_system`, `skip_if_booked` its reward and `skills_below` corporation_management 7, so the faction's builder stays at the build sites.
-- An engine restart cuts runs at stop 1: a cut once run is no try and rests `retry_minutes` (default 60).
-- What would change it: the capitals' lines all booked (then home and docked crafts); a faction role that may withdraw the outpost's iron (steel there by hand); a board contract to a policed station; jobs on our Notice Board.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), then Sol's paid loop: `mission-old-charts-sol` (boards bought at Sol), `mission-courier-to-haven-sol-hauler` (every birth), `mission-diplomatic-pouch-haven-gold` (gold bought at Haven, home to Nexus Prime).
+- Own: `finish-*` routes in the rows of the pilots whose ship file holds that mission half done (no accept, hand-in at the last stop); `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, closed at the reserve max, F36); `@train-hauler`.
+- Docked steel where the miners' iron lies: receivers per station (`handover.py receivers set|add`), the station's `craft-steel-logistics-<station>` first in their rows. The outpost's faction iron: `craft-steel-faction-gsc-0044`, off until a hauler's role carries manage_treasury.
+- Corridors (`far_ok`, once, standing, `in_system`, `skip_if_booked`, `skills_below` corporation_management 7 so the builder stays home): Then `join-sol-sirius` (Frontier, Haven, Iron Reach to the Sol hub); own rows only `join-sol-loop-home` (home to Sol for the loop); older capital joins stay in rows and lists.
+- Hulls (F17): a bigger hold waits for a board that pays it (tests.md).
+- An engine restart cuts runs at stop 1: a cut once run is no try and rests `retry_minutes`.
+- What would change it: the loop's missions booked by every pilot (then home crafts); a role that may withdraw faction iron; a board contract to a policed station; jobs on our Notice Board.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
