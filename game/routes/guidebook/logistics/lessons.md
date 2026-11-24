@@ -1,7 +1,7 @@
 # Logistics guidebook -- Lessons (lessons.md)
 
 ### How this guidebook is kept
-Status: proven. Updated: 2026-11-21. Evidence: started by the Fleet Admiral 2026-11-15; rules F14 (Suggi, 2026-11-18) and F22.
+Status: retired. Updated: 2026-11-24. Evidence: rule F14 says it whole (rulebook section 12); started by the Fleet Admiral 2026-11-15; rules F14 (Suggi, 2026-11-18) and F22.
 
 Kept by Apollo, read by every member, so a ship born later starts where the others stand. Small capped entries (`scripts/guide.py check logistics`). A figure is named by the call that prints it (`hive.py route <id>`, the tool fleet view=levels) or carries its date; one no record holds is `not measured`.
 
