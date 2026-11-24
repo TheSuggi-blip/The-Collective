@@ -29,13 +29,6 @@ Status: proven. Updated: 2026-11-24. Evidence: intel turn check ROADS, OFFLIST, 
   their own region, the cohort nearest it: the Outer Rim scouts (5 to 13
   jumps by Unknown Edge) filled it to 6 of 6 within minutes.
 
-### Read every place the orders name against its cadence
-Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
-
-- Atria, the north outpost's site, stood 571 minutes unread on an
-  8-hour list. SITES names every system of the ORACLE block on no list
-  read within 180 minutes: move it onto a road list before the commit.
-
 ### Read where the fleet works now
 Status: proven. Updated: 2026-11-24. Evidence: intel turn check WORKED (2026-11-21, 2026-11-22, 2026-11-24), BELTS (2026-11-24); game/routes/census-worked-far.json.
 
@@ -51,15 +44,6 @@ Status: proven. Updated: 2026-11-24. Evidence: intel turn check WORKED (2026-11-
   Mining's plan by its list (GSC-0007 at 281 minutes, 2026-11-24).
 - After any pause: the home list first, then where ships fly, then the
   roads; judge the gaps from the next reads, not the first hour.
-
-### Hand edits and the plan file
-Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-105; requests.log ENT-279.
-
-- A hand edit that looked for `## Notes` as plain text found its mention
-  in the file head and wrote the file twice. Use `plan.py planned` and
-  `plan.py note`; plan.py check HALTs on a heading twice (PLANFILE line).
-- plan.py writes game/routes/plans/scout.json and plan-scout.md: commit
-  them by path, or the next apply waits.
 
 ### Times, hashes and files
 Status: proven. Updated: 2026-11-24. Evidence: errors.log ENT-034, ENT-047; rule F15; game/fleet/scorecard.py (playbook caps); guide.py drift intel (2026-11-24 14:34 UTC).
@@ -170,3 +154,13 @@ killed one at a partner's base and the owner's pilot destroyed it. The
 census files keep every tagged name (wildlife/<system>.json); the
 store's table herds keeps one name a place: file ranches from the files
 (file_ranches.py); hunt.py leaves tagged animals alone.
+
+### Read a new fleet runner on our own files before a scout flies it
+Status: proven. Updated: 2026-11-24. Evidence: game/fleet/fit_net.py before commit d375c4f2; data/fleet/ships/*.json (modules as dicts); catalog 0.734.2 cpu_usage, power_usage; hulls cpu, power; queue.log ENT-312.
+
+A runner new to the fleet has flown no run of ours: its tests feed it
+made-up data. fit_net read the ship files' module dicts as text, so it
+stripped nothing, and bought modules past a hull's CPU and power (35
+plans of 366). One call of its plan function on every live ship file,
+read in a minute, found both before a ship bought anything. Intel reads
+the runner first, then gives it one ship (F37), then the rest.

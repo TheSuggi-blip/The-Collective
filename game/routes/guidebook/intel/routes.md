@@ -16,12 +16,16 @@ Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); 
   reads the far places of the five species. hive.py herds: a place at 3
   or more goes to Military in admirals.log the same turn; tagged herds:
   file_ranches.py.
-- Readers (@reader): census-voidborn (home, 45 min), the outpost watch
+- Readers (@reader): census-voidborn (home, 45 min; first for three
+  readers, GAPS), the outpost watch
   (50 min), census-worked (120), census-frontier (170), census-worked-far
   (180), the roads.
 - Lasers: a Voidborn scout whose missions that mine are flown gives its
   Mining Laser I to Mining at Central Nexus (within 2 jumps).
-- Explorers: their road (census-north, -east, -south, 170 min),
+- Fits: fit-network on one scout first (fit-network-scout-test); the
+  rest keep their lasers until its run is read.
+- Explorers: their road (census-north up to 8 ships for the Atria to
+  Yildun road, -east, -south, 170 min),
   census-worked-far, their far list (1440 min).
 - Hunters: one reader a hunt, one hunter a herd (F9), every scout hunt
   gifts to a trader (P5); a hunt another claims drops; a tagged herd is
