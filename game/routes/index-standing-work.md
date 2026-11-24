@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 499.
+Routes: 500.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -182,6 +182,7 @@ Routes: 499.
 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | circuit | beyond the border, 15 jumps | A miner gives its stores at Ramen's Rest (Last Light): the reserve's ores and building inputs to the hauler Logistics named there (strict classes) | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | 36 | 18 | -150 | -500 | 2026-11-23 |
 | [home-grand-exchange](home-grand-exchange.json) | circuit | beyond the border, 21 jumps | Home to Grand Exchange: a Nebula-born ship far from Haven docks at its capital, where its region's work is | up to 6 ships, empty hold, born nebula, standing work | 5 | 27 | -350 | -830 | 2026-11-23 |
 | [home-sol-central](home-sol-central.json) | circuit | beyond the border, 10 jumps | Home to Sol Central: a Solarian-born miner far from Sol docks at its capital, where its region's gathers are | up to 6 ships, empty hold, born solarian, standing work | 94 | 6 | -110 | -850 | 2026-11-23 |
+| [join-krynn-bloodforge](join-krynn-bloodforge.json) | circuit | beyond the border, 20 jumps | A hauler of any birth not yet paid Blood Forge Requisition joins the Crimson corridor: one trip to Krynn War Citadel, where Blood Forge Requisition (7,000) and Strategic Readiness Assessment (4,000) open to it | once per pilot, up to 40 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-krynn-hauler](join-krynn-hauler.json) | circuit | beyond the border, 20 jumps | A Voidborn hauler done with the Solarian once lines joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it (a test, three ships) | once per pilot, up to 13 ships, empty hold, born voidborn, standing work | 12 | 18 | -360 | one-time | 2026-11-23 |
 | [join-krynn-hauler-foreign](join-krynn-hauler-foreign.json) | circuit | beyond the border, 20 jumps | A hauler born Nebula or Outer Rim, done with the Solarian once lines, joins the Crimson corridor: one trip to Krynn War Citadel, where Last Known Position and Strategic Readiness Assessment open to it | once per pilot, up to 25 ships, empty hold, born nebula, outerrim, standing work | 43 | 22 | -580 | one-time | 2026-11-23 |
 | [join-krynn-trader](join-krynn-trader.json) | circuit | beyond the border, 20 jumps | A trader whose Solarian once line is booked joins the Crimson corridor: one trip to the War Citadel, where Krynn's once missions open to it | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 148 | 26 | -130 | one-time | 2026-11-23 |
