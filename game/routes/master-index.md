@@ -21,9 +21,9 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 20 | 8 | 12 | sell-noble-at-first-step: 828,000 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 153 | 49 | 104 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 37 | 17 | 20 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 530 | 112 | 418 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 529 | 112 | 417 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 13 | 5 | 8 | need-ember-gland-krynn: 0 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 59 | 19 | 40 | voidborn-first-steps: 4,020 cr per ship-hour |
+| [Off](index-off.md) | Written down, not flown. | 60 | 19 | 41 | voidborn-first-steps: 4,020 cr per ship-hour |
 | All | | 902 | 233 | 669 | |
 
 ## Routes by Zone and Kind
