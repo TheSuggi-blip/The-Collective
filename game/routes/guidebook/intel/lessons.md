@@ -131,19 +131,17 @@ Status: proven. Updated: 2026-11-24. Evidence: fill.py status scout (2026-11-23,
 - Store routes have a reach (empire, max_jumps): scouts that end
   frontier missions at Altais have store-hold-frontier-station-near. A
   store route others plan with is never widened for us.
-- A census docked nowhere went home across the galaxy for a newborn of
-  another empire (`Access denied` at a foreign station); census.py now
-  ends at the nearest station with fuel (end_stop, 2026-11-23).
+- census.py ends at the nearest station with fuel (end_stop,
+  2026-11-23): a newborn of another empire no longer flies home across
+  the galaxy (`Access denied` at a foreign station).
 
 ### A field asked for is answered with the books too
 Status: proven. Updated: 2026-11-23. Evidence: requests.log ENT-435, ENT-443; tables fields, stats_refill, books.
 
-- Mining asked for uranium, thorium and silicon fields. Every deposit
-  read stood near 0 and regrew under 1 unit an hour, taken as fast by
-  others, while the asks named thorium and silicon for sale. Answer a
-  request for a field with what is left, what comes back an hour, the
-  pirates, and the asks of the same good: buying is Trade's (F23), but
-  only Intel reads every book.
+- Mining asked for uranium, thorium and silicon fields: every deposit
+  stood near 0, regrowing under 1 unit an hour, while asks sold thorium
+  and silicon. Answer a field request with what is left, its regrowth,
+  the pirates and the asks of the good: only Intel reads every book.
 
 ### A creature that carries a faction's tag is that faction's livestock
 Status: proven. Updated: 2026-11-23. Evidence: observations kind ranch (2026-11-23); public_battles 16:51 UTC; admirals.log ENT-110, ENT-113; game/fleet/store.py read_wildlife.
@@ -156,11 +154,14 @@ store's table herds keeps one name a place: file ranches from the files
 (file_ranches.py); hunt.py leaves tagged animals alone.
 
 ### Read a new fleet runner on our own files before a scout flies it
-Status: proven. Updated: 2026-11-24. Evidence: game/fleet/fit_net.py before commit d375c4f2; data/fleet/ships/*.json (modules as dicts); catalog 0.734.2 cpu_usage, power_usage; hulls cpu, power; queue.log ENT-312.
+Status: proven. Updated: 2026-11-24. Evidence: fit_net.py before d375c4f2; ship files; catalog and hulls cpu, power; queue.log ENT-312, ENT-320; table runs (fit-network, scouts, 2026-11-24).
 
 A runner new to the fleet has flown no run of ours: its tests feed it
-made-up data. fit_net read the ship files' module dicts as text, so it
-stripped nothing, and bought modules past a hull's CPU and power (35
-plans of 366). One call of its plan function on every live ship file,
-read in a minute, found both before a ship bought anything. Intel reads
-the runner first, then gives it one ship (F37), then the rest.
+made-up data. fit_net read the ship files' module dicts as text and
+bought past a hull's CPU and power (35 plans of 366); one call of its
+plan function on every live ship file found both before a buy. Read the
+runner first, give it one ship (F37), then the rest. First is not ours
+alone: fit-network entered it by a hand not on record (20:02 UTC) and
+made 32 buys for 28 scouts (354,907 cr) before the test was read. Read
+the plan file's changed sections (hive.py changes) at preflight; keep or
+drop what came in the same turn.

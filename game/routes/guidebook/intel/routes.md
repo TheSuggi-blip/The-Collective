@@ -4,28 +4,26 @@
 Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check and status; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
 - First, every scout: the store routes (Central Nexus, frontier station
-  near), give-scout-stores-*, the Survey Scanner II fit (one ship,
-  tests.md), the missions paid once and the Voidborn chain (F34, F35).
-  No census in First or Then: a census is open to any empire's pilot.
+  near), give-scout-stores-*, the missions paid once and the Voidborn
+  chain (F34, F35), fit-network last (fit-policy Intel: survey_scanner_ii
+  under its max price, shield boosters). No census in First or Then: a
+  census is open to any empire's pilot.
 - Newborn scouts: their capital's region, @outerrim (Altais) and
   @nebula (Haven): census-region-<capital> (120 min), its ring (360
   min), then the far lists, the roads. The Outer Rim scouts take
   census-north after their region (the cohort nearest it). Sol and
-  Krynn (180 min) go to Voidborn readers.
+  Krynn (160 min) go to Voidborn readers.
 - The kit's herds (orders P3): census-kit-herds (360 min, three ships)
   reads the far places of the five species. hive.py herds: a place at 3
   or more goes to Military in admirals.log the same turn; tagged herds:
   file_ranches.py.
-- Readers (@reader): census-voidborn (home, 45 min; first for three
-  readers, GAPS), the outpost watch
-  (50 min), census-worked (120), census-frontier (170), census-worked-far
-  (180), the roads.
-- Lasers: a Voidborn scout whose missions that mine are flown gives its
-  Mining Laser I to Mining at Central Nexus (within 2 jumps).
-- Fits: fit-network on one scout first (fit-network-scout-test); the
-  rest keep their lasers until its run is read.
+- Readers (@reader): census-voidborn (home, 35 min; GAPS), the outpost
+  watch (40 min), census-worked (120), census-frontier (155),
+  census-worked-far (160), the roads. A cadence sits a trip under its
+  target: the read comes after the system falls due.
+- Lasers: no scout carries a Mining Laser I (strip-gift stays as a gate).
 - Explorers: their road (census-north up to 8 ships for the Atria to
-  Yildun road, -east, -south, 170 min),
+  Yildun road, -east, -south, 155 min),
   census-worked-far, their far list (1440 min).
 - Hunters: one reader a hunt, one hunter a herd (F9), every scout hunt
   gifts to a trader (P5); a hunt another claims drops; a tagged herd is
@@ -37,16 +35,17 @@ Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); 
   mission (queue.log), an order naming herds or places.
 
 ### Census lists
-Status: proven. Updated: 2026-11-21. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED).
+Status: proven. Updated: 2026-11-24. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED, GAPS, SITES, BELTS).
 
 - Every list is disjoint: dispatch.py counts a census order against
   every route whose systems hold its system, so a shared system closes
   the smaller route (OVERLAP line). A system moves, it is never copied.
-- Cadence by use: home 30, the outpost watch 35, places our routes use
-  90 (home side) and 180 (beyond), frontier 170, roads 150, census-roads
-  480, the far lists 720 (every system read once: oldest first). A
-  system opens when its read is every_minutes old; the threshold is the
-  floor of a gap, never its ceiling.
+- Cadence a trip under the target (2026-11-24): home 35 (hour), the
+  outpost watch 40 (hour), census-worked 120, the region lists 120 to
+  160, the road lists and the frontier 155 and census-worked-far 160
+  (three hours), census-roads 960, the far lists 1440. A system opens
+  when its read is every_minutes old: the threshold is the floor of a
+  gap, never its ceiling.
 - A far list has `chain` 3 within 2 lanes and ends docked where it last
   read (`--stay`): it reads up to three more due systems on one tank.
 - A new list or a moved system is judged from its next reads; the turn
