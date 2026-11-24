@@ -571,9 +571,10 @@ def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
     return status == 200 and '"error"' not in str(out)[:240], data
 
 
-def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id):
+def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
     status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
-                                {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}}, timeout=240)
+                                {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
+                                timeout=max(20, int(timeout)))
     try:
         d = json.loads(out)
     except (ValueError, TypeError):
@@ -598,7 +599,7 @@ def _release_upgrade(data_dir, pilot, division_mod):
             pass
 
 
-def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=90.0,
+def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=70.0,
                    gate_mod=None, wallet_mod=None, division_mod=None):
     """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
     now = float(time.time() if now is None else now)
@@ -621,7 +622,57 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
     pmap = _pilot_division_map(data_dir)
     changed, actions, t0 = False, 0, time.time()
 
+    # Phase 1 (fast, no gate calls): advance all queued/funding rows first and persist immediately
     for r in active:
+        pilot = str(r.get("pilot") or "")
+        hull = str(r.get("hull") or "")
+        if not pilot or not hull:
+            continue
+        info = pmap.get(pilot)
+        credits = int(info[1]) if info else 0
+        need_cr = int(r.get("max_price") or 0) + UPGRADE_FLOOR
+        st0 = r.get("state")
+        if st0 == "queued":
+            if credits >= need_cr:
+                r["state"], r["updated_at"], r["note"] = "funded", int(now), "wallet covers hull"
+                changed = True
+            else:
+                short = need_cr - credits
+                if dry:
+                    print("would fund upgrade %s: %s +%s cr for %s" % (r["id"], pilot, _fmt_num(short), hull))
+                else:
+                    rc = wallet_mod.add_fund(data_dir, pilot, short, "upgrade %s (%s)" % (hull, r.get("batch_id") or r["id"]),
+                                             hours=UPGRADE_FUND_TIMEOUT / 3600.0, now=now, who=r.get("by") or "Unity")
+                    if rc == 0:
+                        r["state"], r["updated_at"], r["note"] = "funding", int(now), "requested +%s cr" % _fmt_num(short)
+                    else:
+                        r["note"], r["updated_at"] = "fund deferred (cap/floor)", int(now)
+                    changed = True
+        elif st0 == "funding":
+            if credits >= need_cr:
+                r["state"], r["updated_at"], r["note"] = "funded", int(now), "funds arrived"
+                changed = True
+            elif now - float(r.get("created_at") or now) > UPGRADE_FUND_TIMEOUT:
+                r["state"], r["updated_at"], r["note"] = "failed", int(now), "funding timeout (48h)"
+                changed = True
+    if changed and not dry:
+        save_queue(data_dir, rows)
+        changed = False
+
+    # Phase 2: prioritize pilots already docked at target shipyard, then same system, then travelling
+    def _dock_prio(row):
+        parts = str(row.get("station") or "").split(":")
+        if len(parts) != 3:
+            return (9, str(row.get("id") or ""))
+        info = pmap.get(str(row.get("pilot") or ""))
+        sh = info[2] if info else {}
+        if str(sh.get("docked") or "") == parts[2]:
+            return (0, str(row.get("id") or ""))
+        if str(sh.get("system") or "") == parts[0]:
+            return (1, str(row.get("id") or ""))
+        return (2, str(row.get("id") or ""))
+
+    for r in sorted(active, key=_dock_prio):
         if time.time() - t0 > budget_s:
             break
         pilot = str(r.get("pilot") or "")
@@ -636,39 +687,8 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
         need_cr = int(r.get("max_price") or 0) + UPGRADE_FLOOR
         state = r.get("state")
 
-        if state == "queued":
-            if credits >= need_cr:
-                r["state"], r["updated_at"], r["note"] = "funded", int(now), "wallet covers hull"
-                changed = True
-                state = "funded"
-            else:
-                short = need_cr - credits
-                if dry:
-                    print("would fund upgrade %s: %s +%s cr for %s" % (r["id"], pilot, _fmt_num(short), hull))
-                    continue
-                # wallet.add_fund(data, pilot, credits, why, hours, now, who): `hours` has no default; without it the call
-                # raised TypeError, which wallet.sweep's try/except swallowed, so no queued upgrade was ever funded.
-                rc = wallet_mod.add_fund(data_dir, pilot, short, "upgrade %s (%s)" % (hull, r.get("batch_id") or r["id"]),
-                                         hours=UPGRADE_FUND_TIMEOUT / 3600.0, now=now, who=r.get("by") or "Unity")
-                if rc == 0:
-                    r["state"], r["updated_at"], r["note"] = "funding", int(now), "requested +%s cr" % _fmt_num(short)
-                    changed = True
-                else:
-                    r["note"], r["updated_at"] = "fund deferred (cap/floor)", int(now)
-                    changed = True
-                continue
-
-        if state == "funding":
-            if credits >= need_cr:
-                r["state"], r["updated_at"], r["note"] = "funded", int(now), "funds arrived"
-                changed = True
-                state = "funded"
-            elif now - float(r.get("created_at") or now) > UPGRADE_FUND_TIMEOUT:
-                r["state"], r["updated_at"], r["note"] = "failed", int(now), "funding timeout (48h)"
-                changed = True
-                continue
-            else:
-                continue
+        if state in ("queued", "funding"):
+            continue
 
         if actions >= max_actions:
             continue
@@ -683,12 +703,13 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
                 _request_pilot_stop(data_dir, pilot)
                 r["note"], r["updated_at"] = "waiting for active run to end (stop sent)", int(now)
-                changed = True
+                if not dry:
+                    save_queue(data_dir, rows)
                 continue
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(65, max(20, budget_s - (time.time() - t0))))
                     if not ok_d:
                         if "already executing" in msg_d.lower():
                             _request_pilot_stop(data_dir, pilot)
@@ -736,6 +757,9 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     changed = True
             finally:
                 _release_upgrade(data_dir, pilot, division_mod)
+                if changed and not dry:
+                    save_queue(data_dir, rows)
+                    changed = False
 
         elif state == "building":
             if now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S:
@@ -761,7 +785,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(65, max(20, budget_s - (time.time() - t0))))
                     if not ok_d:
                         if "already executing" in msg_d.lower():
                             _request_pilot_stop(data_dir, pilot)
@@ -777,6 +801,9 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     r["note"] = "switch failed: %s" % json.dumps(sw_ans)[:80]
             finally:
                 _release_upgrade(data_dir, pilot, division_mod)
+                if changed and not dry:
+                    save_queue(data_dir, rows)
+                    changed = False
 
     if changed and not dry:
         save_queue(data_dir, rows)

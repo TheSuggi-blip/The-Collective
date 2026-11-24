@@ -1743,7 +1743,7 @@ SEAT_HOLD_WAIT = {}           # pilot -> epoch first held idle for wallet.py swe
 SEAT_HOLD_SECS = 7 * 60       # one 5m pass + margin for queued seat invite/join
 SEAT_BATCH_HOLD = 20          # max idle unseated pilots held per pass
 UPGRADE_HOLD_WAIT = {}        # (pilot, upgrade_id) -> epoch first held idle for upgrades.serve_upgrades
-UPGRADE_HOLD_SECS = 12 * 60   # two 5m passes max so pilots never freeze if wallet service is stopped
+UPGRADE_HOLD_SECS = 20 * 60   # two 5m passes max so pilots never freeze if wallet service is stopped
 UPGRADE_TOLD = set()          # keys already logged once while waiting idle for hull upgrade
 
 
