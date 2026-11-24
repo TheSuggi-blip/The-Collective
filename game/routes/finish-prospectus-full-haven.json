@@ -2,7 +2,7 @@
  "id": "finish-prospectus-full-haven",
  "kind": "circuit",
  "title": "Federation Trade Route Prospectus finished: the Federation stations still open, then Grand Exchange at Haven (4,000 cr once, held half done)",
- "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO and P1: no hauler waits docked; rules F8, F34). The ship files (data/fleet/ships/hauler-*.json, mission_list, read 06:24 UTC) show Federation Trade Route Prospectus (five to seven stops open) on 2 held half done by haulers of ours: the board no longer offers it to them (runs of 04:22 UTC: 'not offered'), so the route that accepts it cannot finish it. This route has no accept: it docks at the objectives still open and hands in at the last stop (route_run hands in finished missions at every dock). It stands only in the own rows of the pilots that hold the mission (plan-logistics.md), never in a list for every ship; once per pilot. far_ok: foreign once mission beyond 6 jumps (F34). Pilots: 2.",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO and P1: no hauler waits docked; rules F8, F34). The ship files (data/fleet/ships/hauler-*.json, mission_list, read 06:24 UTC) show Federation Trade Route Prospectus (five to seven stops open) on 2 held half done by haulers of ours: the board no longer offers it to them (runs of 04:22 UTC: 'not offered'), so the route that accepts it cannot finish it. This route has no accept: it docks at the objectives still open and hands in at the last stop (route_run hands in finished missions at every dock). It stands only in the own rows of the pilots that hold the mission (plan-logistics.md), never in a list for every ship; once per pilot. far_ok: foreign once mission beyond 6 jumps (F34). Pilots: 2. 2026-11-24 14:54 UTC (Apollo): requires.mission 'Federation Trade Route Prospectus' (orders ENT-089 block APOLLO, requests.log ENT-514): open only to a pilot that holds the mission.",
  "once": true,
  "far_ok": true,
  "max_ships": 2,
@@ -15,7 +15,8 @@
  "requires": {
   "skills_below": {
    "corporation_management": 7
-  }
+  },
+  "mission": "Federation Trade Route Prospectus"
  },
  "stops": [
   {
