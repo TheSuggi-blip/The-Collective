@@ -19,7 +19,10 @@
    "the_crucible",
    "the_rampart",
    "sol"
-  ]
+  ],
+  "skills_below": {
+   "corporation_management": 7
+  }
  },
  "stops": [
   {
@@ -27,5 +30,5 @@
    "store": "all"
   }
  ],
- "note": "Written by Apollo, 2026-11-24 02:00 UTC (orders ENT-084 block APOLLO: no hauler waits docked; P6; rules F8, F34 tier 4, F35, F37). fill.py check 01:59 UTC: 10 haulers wait, six of them Voidborn at Krynn War Citadel with every Crimson and Solarian once line paid; why_closed.py: Debris Field Reports and the Wayfinder Circuit stand closed to them only by distance (29 to 31 jumps, rule F34). Debris Field Reports paid 4,500 cr to every birth (table runs, 72 h: voidborn 96, nebula 23, crimson 20, outerrim 13, solarian 8; measured 318 runs, 11 min, 1,580 cr a run with the reward); the Wayfinder 4,000 cr (outerrim 12, voidborn 6, nebula 2). This one-way trip places a hauler at distance 0; skip_if_booked Debris Field Reports. In the list Then after join-sol-records: a Sol joiner flies Request for Records first (list First). Standing: a one-way trip judged by the missions it opens."
+ "note": "Written by Apollo, 2026-11-24 02:00 UTC (orders ENT-084 block APOLLO: no hauler waits docked; P6; rules F8, F34 tier 4, F35, F37). fill.py check 01:59 UTC: 10 haulers wait, six of them Voidborn at Krynn War Citadel with every Crimson and Solarian once line paid; why_closed.py: Debris Field Reports and the Wayfinder Circuit stand closed to them only by distance (29 to 31 jumps, rule F34). Debris Field Reports paid 4,500 cr to every birth (table runs, 72 h: voidborn 96, nebula 23, crimson 20, outerrim 13, solarian 8; measured 318 runs, 11 min, 1,580 cr a run with the reward); the Wayfinder 4,000 cr (outerrim 12, voidborn 6, nebula 2). This one-way trip places a hauler at distance 0; skip_if_booked Debris Field Reports. In the list Then after join-sol-records: a Sol joiner flies Request for Records first (list First). Standing: a one-way trip judged by the missions it opens. 2026-11-24 02:01 UTC (Apollo): requires.skills_below corporation_management 7: the faction's builder (the one pilot of that level, table ship_skills) never takes this corridor; on 2026-11-24 join-krynn-bloodforge in the list Then sent it 20 jumps from the build sites."
 }

@@ -19,7 +19,10 @@
    "the_crucible",
    "the_rampart",
    "nexus_prime"
-  ]
+  ],
+  "skills_below": {
+   "corporation_management": 7
+  }
  },
  "stops": [
   {
@@ -27,5 +30,5 @@
    "store": "all"
   }
  ],
- "note": "Written by Apollo, 2026-11-24 01:51 UTC (orders ENT-084 block APOLLO: no hauler waits docked; P6: paying work where they stand, then standing corridors; rules F8, F34 tier 4, F35, F37). fill.py check 01:40 UTC: 64 haulers wait, 47 of them at Krynn War Citadel with the three Krynn once lines paid (fill.py status hauler). Request for Records (mission-request-for-records-confederacy, accept at Sol Central, redock at Krynn, hand in at Sol) paid 6,000 cr to every birth that flew it (table runs, 72 h: voidborn 19, outerrim 5 haulers; measured 18 runs, 54 min, 3,810 cr a run with the reward); 61 haulers in Krynn space or at Nexus Prime hold no such payment (table runs and ships, 01:52 UTC). The dispatcher holds the mission from them at 19 jumps (rule F34) without far_ok: this one-way trip (Krynn to Sol 19 jumps, the road of join-krynn-bloodforge; Nexus Prime to Sol 10 jumps, join-sol-hauler-nexus) places them at distance 0. skip_if_booked Request for Records: a paid pilot is never sent. in_system keeps the builders and receivers at Node Beta and the other stations home. In the list Then before join-krynn-bloodforge. Standing: a one-way trip judged by the mission it opens. At Sol the next leg is home (10 jumps) or the Solarian lines still unpaid."
+ "note": "Written by Apollo, 2026-11-24 01:51 UTC (orders ENT-084 block APOLLO: no hauler waits docked; P6: paying work where they stand, then standing corridors; rules F8, F34 tier 4, F35, F37). fill.py check 01:40 UTC: 64 haulers wait, 47 of them at Krynn War Citadel with the three Krynn once lines paid (fill.py status hauler). Request for Records (mission-request-for-records-confederacy, accept at Sol Central, redock at Krynn, hand in at Sol) paid 6,000 cr to every birth that flew it (table runs, 72 h: voidborn 19, outerrim 5 haulers; measured 18 runs, 54 min, 3,810 cr a run with the reward); 61 haulers in Krynn space or at Nexus Prime hold no such payment (table runs and ships, 01:52 UTC). The dispatcher holds the mission from them at 19 jumps (rule F34) without far_ok: this one-way trip (Krynn to Sol 19 jumps, the road of join-krynn-bloodforge; Nexus Prime to Sol 10 jumps, join-sol-hauler-nexus) places them at distance 0. skip_if_booked Request for Records: a paid pilot is never sent. in_system keeps the builders and receivers at Node Beta and the other stations home. In the list Then before join-krynn-bloodforge. Standing: a one-way trip judged by the mission it opens. At Sol the next leg is home (10 jumps) or the Solarian lines still unpaid. 2026-11-24 02:01 UTC (Apollo): requires.skills_below corporation_management 7: the faction's builder (the one pilot of that level, table ship_skills) never takes this corridor; on 2026-11-24 join-krynn-bloodforge in the list Then sent it 20 jumps from the build sites."
 }
