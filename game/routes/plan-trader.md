@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Mercury. Routes: 189. Ships: 85.
+Kept by Mercury. Routes: 190. Ships: 85.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -208,7 +208,8 @@ Kept by Mercury. Routes: 189. Ships: 85.
 | 186 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, standing work | all 85 |
 | 187 | [bursar-network](bursar-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 65 ships, standing work | all 85 |
 | 188 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 85 |
-| 189 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 85 |
+| 189 | [bursar-network-freighter](bursar-network-freighter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 6 ships, standing work | all 85 |
+| 190 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 85 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
