@@ -7,13 +7,20 @@
   "min_cash_keep": 20000,
   "buy": {
     "enabled": true,
-    "max_escrow_per_station": 30000,
+    "max_escrow_per_station": 15000,
     "max_orders_per_station": 4,
     "max_units_per_order": 200,
     "max_unit_price_ratio": 0.9,
     "outbid_cr": 1,
     "use_needs_tsv": true,
-    "extra_items": []
+    "extra_items": [],
+    "exclude_buy_items": [
+      "iron_ore",
+      "copper_ore",
+      "carbon_ore",
+      "nitrogen_ice",
+      "water_ice"
+    ]
   },
   "sell": {
     "enabled": true,

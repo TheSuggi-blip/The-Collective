@@ -606,6 +606,25 @@ def main(argv=None):
     lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
     completed = 0
 
+    # Flush any leftover non-protected cargo from prior runs if docked so hold capacity stays clean
+    _cur_cargo = {k: v for k, v in get_cargo().items() if v > 0 and k not in PROTECTED_ITEMS and not str(k).startswith("package:")}
+    _cur_base = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+    if _cur_cargo and _cur_base and _cur_base in base_map:
+        _mb = save_market(_cur_base, base_map[_cur_base][0])
+        for _iid, _qty in list(_cur_cargo.items()):
+            _row = _mb.get(_iid) or {}
+            _bq = int(_row.get("best_buy_qty") or _row.get("buy_quantity") or 0)
+            _bp = float(_row.get("best_buy") or 0)
+            if _bp >= 10 and _bq > 0:
+                _sq = min(_qty, _bq)
+                raw("sell", {"item_id": _iid, "quantity": _sq}, group="spacemolt")
+                time.sleep(TICK)
+                say("flushed %d leftover %s @ ~%d cr at %s" % (_sq, _iid, int(_bp), _cur_base))
+            _left = get_cargo().get(_iid, 0)
+            if _left > 0:
+                raw("deposit", {"item_id": _iid, "quantity": _left, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                time.sleep(TICK)
+
     for lane in lane_order:
         if completed > 0 or stop_requested() or (time.time() - started) > minutes * 60.0:
             break
@@ -727,11 +746,17 @@ def main(argv=None):
                 live_s = save_market(sloc[2], sloc[0])
                 row_s = live_s.get(iid) or {}
                 live_bid = float(row_s.get("best_buy") or 0)
-                if live_bid >= live_ask * 1.05:
-                    d = raw("sell", {"item_id": iid, "quantity": got}, group="spacemolt_market")
+                live_bid_q = int(row_s.get("best_buy_qty") or row_s.get("buy_quantity") or 0)
+                sell_q = min(got, live_bid_q) if live_bid_q > 0 else 0
+                if live_bid >= live_ask * 1.05 and sell_q > 0:
+                    d = raw("sell", {"item_id": iid, "quantity": sell_q}, group="spacemolt")
                     time.sleep(TICK)
-                    say("arb sold %d %s at %s @ ~%d cr%s" % (got, iid, sloc[2], int(live_bid), " ERR" if "error" in d else ""))
-                    notes.append("arb %d %s %s->%s" % (got, iid, bloc[2], sloc[2]))
+                    say("arb sold %d %s at %s @ ~%d cr%s" % (sell_q, iid, sloc[2], int(live_bid), " ERR" if "error" in d else ""))
+                    notes.append("arb sold %d %s %s->%s" % (sell_q, iid, bloc[2], sloc[2]))
+                    rem_q = get_cargo().get(iid, 0)
+                    if rem_q > 0:
+                        raw("deposit", {"item_id": iid, "quantity": rem_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
                 else:
                     # Bid slipped: deposit safely for local Bursar rather than panic-selling at a loss
                     raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")

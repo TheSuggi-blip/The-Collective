@@ -83,5 +83,22 @@ class BursarEngineTests(unittest.TestCase):
         self.assertIn(("sell_create", "surplus_widget", 12, 119), acts)
 
 
+    def test_bursar_never_outbids_or_undercuts_its_own_standing_orders(self):
+        book = {
+            "foil_scale": {"best_buy": 41, "best_buy_qty": 200, "best_sell": 80, "best_sell_qty": 100},
+            "surplus_widget": {"best_buy": 20, "best_buy_qty": 5, "best_sell": 119, "best_sell_qty": 12},
+        }
+        own_orders = [
+            {"order_id": "b1", "item_id": "foil_scale", "side": "buy", "remaining": 200, "price_each": 41},
+            {"order_id": "s1", "item_id": "surplus_widget", "side": "sell", "remaining": 12, "price_each": 119},
+        ]
+        acts = bursar.plan_bursar_actions(
+            book, {"surplus_widget": 12}, own_orders, {"foil_scale": 200}, {"foil_scale"},
+            {"foil_scale": 50, "surplus_widget": 100}, 80000, bursar.DEFAULT_POLICY,
+        )
+        # Already best bid (41) and best ask (119) -> zero modify/create calls!
+        self.assertEqual(acts, [])
+
+
 if __name__ == "__main__":
     unittest.main()

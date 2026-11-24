@@ -454,10 +454,15 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
                 continue
             if used_sell_ords >= max_sell_ords:
                 continue
-            target_p = max(floor_p, int(ask) - undercut) if ask > 0 else max(floor_p, int(round(ref_p * 1.05)))
+            mine = own_sell.get(iid) or []
+            my_min_sell = min((int(o.get("price_each") or 0) for o in mine if int(o.get("price_each") or 0) > 0), default=0)
+            if my_min_sell > 0 and (ask <= 0 or my_min_sell <= int(ask)):
+                # Already the cheapest ask on the book: never undercut ourselves!
+                target_p = max(floor_p, my_min_sell)
+            else:
+                target_p = max(floor_p, int(ask) - undercut) if ask > 0 else max(floor_p, int(round(ref_p * 1.05)))
             if bid > 0 and target_p <= int(bid):
                 target_p = int(bid) + 1
-            mine = own_sell.get(iid) or []
             listed = sum(int(o.get("remaining") or 0) for o in mine)
             for o in mine:
                 if int(o.get("price_each") or 0) != target_p and o.get("order_id"):
@@ -475,9 +480,10 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
         max_ratio = float(buy_cfg.get("max_unit_price_ratio") or 0.90)
         outbid = max(1, int(buy_cfg.get("outbid_cr") or 1))
         cash_avail = min(max_escrow, max(0, int(credits or 0) - min_keep))
-        want_items = dict(open_needs or {}) if buy_cfg.get("use_needs_tsv", True) else {}
+        excl_buy = set(str(x) for x in (buy_cfg.get("exclude_buy_items") or []))
+        want_items = {k: v for k, v in (open_needs or {}).items() if k not in excl_buy} if buy_cfg.get("use_needs_tsv", True) else {}
         for extra in buy_cfg.get("extra_items") or []:
-            if isinstance(extra, str) and extra not in want_items:
+            if isinstance(extra, str) and extra not in want_items and extra not in excl_buy:
                 want_items[extra] = max_units
         used_buy_ords = 0
         for iid, need_qty in sorted(want_items.items(), key=lambda kv: (-int(kv[1]), kv[0])):
@@ -501,13 +507,18 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
                 continue
             if ceiling < 1:
                 continue
-            target = int(bid) + outbid if bid > 0 else max(1, int(ceiling * 0.85))
+            mine = own_buy.get(iid) or []
+            my_max_buy = max((int(o.get("price_each") or 0) for o in mine if int(o.get("price_each") or 0) > 0), default=0)
+            if my_max_buy > 0 and my_max_buy >= int(bid):
+                # Already the top bid on the book: never outbid ourselves!
+                target = my_max_buy
+            else:
+                target = int(bid) + outbid if bid > 0 else max(1, int(ceiling * 0.85))
             price = min(target, ceiling)
             if ask > 1 and price >= int(ask):
                 price = int(ask) - 1
             if price < 1:
                 continue
-            mine = own_buy.get(iid) or []
             listed = sum(int(o.get("remaining") or 0) for o in mine)
             for o in mine:
                 if int(o.get("price_each") or 0) != price and o.get("order_id"):
@@ -715,7 +726,7 @@ def main(argv=None):
                     _, iid, qty, bp = act
                     raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
                     time.sleep(TICK)
-                    d = raw("sell", {"item_id": iid, "quantity": qty}, group="spacemolt_market")
+                    d = raw("sell", {"item_id": iid, "quantity": qty}, group="spacemolt")
                     time.sleep(TICK)
                     say("sell_bid %d %s @ ~%d cr%s" % (qty, iid, bp, " ERR" if "error" in d else ""))
                     acted += 1
