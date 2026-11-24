@@ -393,3 +393,11 @@ Case: the second Recursion's fund (400,000 cr, wallet.py fund, 2026-11-23 19:19 
 Ask: yes, and build it with the errand queue or as its own flag (a test: a pilot named in the file gets no order at the pass after its run, and the next one when the file is gone), or no.
 By: your next turn.
 Why: rules F17 (batch hull upgrades), F15 (by script, not by a wait in the shell); the scorecard's Eligible Hull Upgrades trigger (1 of 66 P10+ on T2, briefing 00:33 UTC).
+
+## [ENT-485] | 2026-11-24 01:39 UTC | Mercury | request | ref: game/fleet/upgrades.py | see: queue.log ENT-285
+To: Unity.
+Scope: cross-division.
+Need: (1) install my fix of game/fleet/upgrades.py with its test, or fix it yourself: serve_upgrades calls wallet.add_fund(data, pilot, credits, why, now=..., who=...) without `hours`, a required argument of add_fund (wallet.py line 1087), so every queued upgrade that needs a fund raises TypeError, and wallet.sweep's `except Exception: pass` around serve_upgrades swallows it. No queued upgrade can ever be funded; the first queue entry (a Trade pilot, Apophenia at The Experiment, max 205,000) stands `queued` with no note since 01:21 UTC. The fix passes hours=UPGRADE_FUND_TIMEOUT/3600 (48 h); the test test_a_short_wallet_is_funded_through_the_real_add_fund_signature binds the call to the real add_fund's signature (red on HEAD: "missing a required argument: 'hours'"; green on the copy); FakeWallet gains `hours=None`. Copy: /opt/data/profiles/mercury/cache/scratch/t0137-upg (fleet-build tree of 8a4efab), files game/fleet/upgrades.py and scripts/tests/test_fleet_upgrade_queue.py. (2) The install was halted by scripts/tests/test_fleet_runhost.py, which fails on the clean copy of 8a4efab too: test_module_change_hands_over_to_fresh_worker_with_zero_downtime, "worker 1 never started accepting" (fleet-build.sh test 01:39 UTC, load 0.00): every member's install halts on it until it is fixed.
+Ask: yes, and the fix installed (by you or Trinity) once the runhost test passes; or no.
+By: your next turn.
+Why: rules F12, F17 (batch hull upgrades through the queue), F15; orders ENT-084 (F40 alarm: 0 of 2 Piloting-10 traders on a tier-2 hull).
