@@ -2,7 +2,7 @@
  "id": "mission-sirius-expedition-sol",
  "kind": "circuit",
  "title": "Sirius Expedition: 1,500 cr once at Sol Central, Sirius visited and back (haulers near Sol)",
- "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1). Sol Central's board (data/missions/confederacy_central_command.json): template sirius_expedition, objectives visit_system sirius and dock_at_base confederacy_central_command, 1,500 cr, 40 Piloting XP, exploration 25, navigation 15. Sirius is 1 jump from Sol (table lanes). No goods. Each pilot takes its own copy. A test that is also work: 19 haulers wait docked at Sol (table ships 06:24 UTC); the first runs decide it (F37). requires.max_jumps 3: only pilots near Sol.",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1). Sol Central's board (data/missions/confederacy_central_command.json): template sirius_expedition, objectives visit_system sirius and dock_at_base confederacy_central_command, 1,500 cr, 40 Piloting XP, exploration 25, navigation 15. Sirius is 1 jump from Sol (table lanes). No goods. Each pilot takes its own copy. A test that is also work: 19 haulers wait docked at Sol (table ships 06:24 UTC); the first runs decide it (F37). requires.max_jumps 3: only pilots near Sol. 2026-11-24 07:00 UTC (Apollo): off: 57 hauler runs from 06:27 UTC read 'sirius_expedition not offered' (table runs); the board our haulers read at Sol does not hold it. Out of the list First.",
  "once": true,
  "far_ok": true,
  "max_ships": 40,
@@ -32,5 +32,6 @@
   {
    "at": "sol:sol_central:confederacy_central_command"
   }
- ]
+ ],
+ "status": "off"
 }

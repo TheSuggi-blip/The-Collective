@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 541.
+Routes: 540.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -214,7 +214,6 @@ Routes: 541.
 | [mission-courier-to-haven-sol-hauler](mission-courier-to-haven-sol-hauler.json) | circuit | beyond the border, 21 jumps | Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange at Haven (haulers of every birth) | once per pilot, up to 45 ships, empty hold, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [mission-diplomatic-pouch-haven-gold](mission-diplomatic-pouch-haven-gold.json) | circuit | beyond the border, 21 jumps | The Diplomatic Pouch: 3,000 cr once from Sol Central, 5 gold ore bought at Haven, accepted at Sol and delivered to Central Nexus (a paid way home from Haven) | once per pilot, up to 45 ships, from 5,000 cr, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [mission-old-charts-sol](mission-old-charts-sol.json) | circuit | beyond the border, 11 jumps | Gathering the Old Charts: 3,500 cr once at Sol Central: the charts collected at Alpha Centauri, 5 circuit boards bought at Sol delivered to Sirius Observatory | once per pilot, up to 8 ships, empty hold, from 5,000 cr, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
-| [mission-sirius-expedition-sol](mission-sirius-expedition-sol.json) | circuit | beyond the border, 10 jumps | Sirius Expedition: 1,500 cr once at Sol Central, Sirius visited and back (haulers near Sol) | once per pilot, up to 40 ships, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 14 | 2 | -40 | -270 | 2026-11-24 |
 | [store-hold-frontier-station-near](store-hold-frontier-station-near.json) | circuit | beyond the border, 17 jumps | A scout of any empire near the Mobile Capital with goods aboard docks at Frontier Station and stores its hold | up to 12 ships, goods aboard, standing work | 7 | 2 | 0 | 0 | 2026-11-24 |
 | [store-hold-grand-exchange](store-hold-grand-exchange.json) | circuit | beyond the border, 21 jumps | A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold | up to 35 ships, goods aboard, born nebula, standing work | 16 | 4 | 240 | 3,670 | 2026-11-24 |
