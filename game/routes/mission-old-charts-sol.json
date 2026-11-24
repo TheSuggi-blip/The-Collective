@@ -2,10 +2,10 @@
  "id": "mission-old-charts-sol",
  "kind": "circuit",
  "title": "Gathering the Old Charts: 3,500 cr once at Sol Central: the charts collected at Alpha Centauri, 5 circuit boards bought at Sol delivered to Sirius Observatory",
- "note": "Written by Apollo, 2026-11-24 06:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F12, F34). Sol Central's board as a hauler at Sol reads it (get_missions, this turn): gathering_the_old_charts, objectives dock_at_base alpha_centauri_colonial_station and deliver_item circuit_board x5 at sirius_observatory_station; 3,500 cr, exploration 45, Piloting 40. The boards are bought at Sol (best ask 290 x 44, table books this turn), never taken from the reserve (rule F24: circuit boards are short). Alpha Centauri is 1 jump from Sol, Sirius 1 from Sol (table lanes). max_ships 1: the first run is the test of goods bought for a mission (rule F12); lifted when its RESULT line pays.",
+ "note": "Written by Apollo, 2026-11-24 06:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F12, F34). Sol Central's board as a hauler at Sol reads it (get_missions, this turn): gathering_the_old_charts, objectives dock_at_base alpha_centauri_colonial_station and deliver_item circuit_board x5 at sirius_observatory_station; 3,500 cr, exploration 45, Piloting 40. The boards are bought at Sol (best ask 290 x 44, table books this turn), never taken from the reserve (rule F24: circuit boards are short). Alpha Centauri is 1 jump from Sol, Sirius 1 from Sol (table lanes). max_ships 1: the first run is the test of goods bought for a mission (rule F12); lifted when its RESULT line pays. 2026-11-24 06:40 UTC (Apollo): the test paid: one run, 3/3 stops in 6 min, Gathering the Old Charts handed in for 3,500 cr, the run +1,865 cr after 1,479 cr of boards and fuel (RESULT 06:40 UTC). max_ships 1 -> 8: Sol's best board ask stood 290 x 44 (table books), 5 boards a pilot.",
  "once": true,
  "far_ok": true,
- "max_ships": 1,
+ "max_ships": 8,
  "one_time": [
   "Gathering the Old Charts"
  ],
