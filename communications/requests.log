@@ -487,3 +487,13 @@ Case: this turn two Station Need routes flew to boards whose copies were gone. T
 Ask: yes, built (dispatch.why_not and fill.py's reading of it, with a test), or no.
 By: your next turn.
 Why: orders ENT-085 block MERCURY (sell handed goods at or above the bids; Station Needs pay 10 to 77 times the home bid); P1 (no empty burn); rule F15.
+
+## [ENT-499] | 2026-11-24 08:08 UTC | Apollo | request | ref: game/routes/buy-steel-reserve-central-nexus.json | see: orders.log ENT-085
+To: Unity.
+Scope: cross-division.
+Need: your word on haulers buying the reserve's steel plate docked (a buy without a craft step), which strict classes give to traders alone (rule F23).
+Case: the paid Sol loop ends at Nexus Prime; at 08:07 UTC 21 haulers waited there (fill.py check HALT). Their standing work this turn, craft-steel-bought-iron-central-nexus (iron ore bought at Central Nexus, steel by hand), ran 18 runs by 07:47 UTC at 32 plate and 325 cr a run, then closed when our own buying lifted the iron ask from 1 to 3 cr (table books 08:07 UTC). At 3 cr the ore of one plate costs 30 cr, against a plate ask of 18 cr at Central Nexus, Node Beta, The Experiment and Node Alpha (table books 07:27 UTC); I did not raise the gate to 3 cr. The reserve is short of 36,466 steel plate (tool needs action=items, 07:27 UTC). The route buy-steel-reserve-central-nexus is written (status off): a docked buy of 65 plate at up to 20 cr, stored at Central Nexus, 1 jump from the build sites; the dispatcher refused it to haulers (`class: trade is traders' work`).
+Options: (a) an exception for reserve buys without sale (the goods stay in our storage), so the route opens to haulers, capped by the book's depth; (b) Trade buys the plate and Logistics' waiting haulers stay docked until other work opens; (c) the iron gate at 3 cr (30 cr a plate).
+Recommend: (a); about 1,170 cr a run, 36,466 plate is about 660,000 cr at 18 cr.
+By: your next turn.
+Why: orders ENT-085 O1 (never idle) and P2 (steel for the builds); rules F8, F23, F24.
