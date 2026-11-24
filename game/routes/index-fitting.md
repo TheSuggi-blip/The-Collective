@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 36.
+Routes: 37.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,6 +49,7 @@ Routes: 36.
 | [fit-shield-booster-ii-lhs-1140](fit-shield-booster-ii-lhs-1140.json) | circuit | beyond the border, 6 jumps | Fit one Shield Booster II into a free defence slot of a Pulse Laser III ship at Ironlight Crossroads, LHS 1140: one ship first | once per pilot, up to 5 ships, 34 pilots in all, needs pulse_laser_iii, without shield_booster_ii, empty hold, from 15,000 cr, while 784309214f105860a16a0c100a70eb14 asks 8000 cr or less for shield_booster_ii | 35 | 8 | -7,340 | one-time | 2026-11-23 |
 | [fit-third-laser-i-sol-central](fit-third-laser-i-sol-central.json) | circuit | beyond the border, 10 jumps | A Solarian miner with two Mining Laser I fits a third in its empty utility slot at Confederacy Central Command, Sol (its own stored Laser I first, else bought) | once per pilot, up to 5 ships, 35 pilots in all, needs mining_laser_i, without ['mining_laser_ii', 'mining_laser_iii'], empty hold, from 6,000 cr, born solarian, while confederacy_central_command asks 1650 cr or less for mining_laser_i | 33 | 5 | -1,170 | one-time | 2026-11-24 |
 | [strip-mining-laser-krynn](strip-mining-laser-krynn.json) | circuit | beyond the border, 20 jumps | A Military ship in krynn strips its off-role Mining Laser I (and an Ice Harvester I) docked at the Crimson War Citadel into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 122 | 1 | 20 | one-time | 2026-11-23 |
+| [strip-mining-laser-krynn-hauler](strip-mining-laser-krynn-hauler.json) | circuit | beyond the border, 20 jumps | A hauler at Krynn strips its off-role Mining Laser I and gas or ice harvester docked at the Crimson War Citadel into its storage there | once per pilot, up to 10 ships, 60 pilots in all, from 3,000 cr | TBD | TBD | TBD | TBD | -- |
 | [strip-mining-laser-sol](strip-mining-laser-sol.json) | circuit | beyond the border, 10 jumps | A Military ship in sol strips its off-role Mining Laser I (and an Ice Harvester I) docked at Confederacy Central Command into its storage there | once per pilot, up to 10 ships, 130 pilots in all, from 3,000 cr | 8 | 1 | -10 | one-time | 2026-11-23 |
 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | circuit | beyond the border, 11 jumps | A trader docked at Alpha Centauri Colonial Station strips its off-role starter modules (Pulse Laser I, Mining Laser I, Gas Harvester I) into its storage there | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | TBD | TBD | TBD | TBD | -- |
 | [strip-starters-trader-krynn](strip-starters-trader-krynn.json) | circuit | beyond the border, 20 jumps | A trader docked at the Crimson War Citadel (Krynn) strips its off-role starter modules (Pulse Laser I, Mining Laser I, Gas Harvester I) into its storage there | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | TBD | TBD | TBD | TBD | -- |
