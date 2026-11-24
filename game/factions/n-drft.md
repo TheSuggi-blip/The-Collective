@@ -38,8 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Ronald Mulholland | Node Alpha (`node_alpha`) | 0 | come_along |
-| Tina Kramer | Node Alpha (`node_alpha`) | 0 | odyssey |
+| Frederick Moreles | Synchrony (`synchrony`) | 0 | confluence |
+| James Mcchriston | Node Alpha (`node_alpha`) | 0 | junk_convoy |
 
 ## Standing History
 

@@ -39,7 +39,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Cornelius 'Commerce' Col | Nexus Prime (`nexus_prime`) | 0 | congregation |
-| Victor 'Value' Vanderbil | Node Beta (`node_beta`) | 0 | congregation |
+| Junk 'Jackpot' Jackson | Node Gamma (`node_gamma`) | 0 | congregation |
 
 ## Standing History
 
