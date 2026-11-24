@@ -59,3 +59,12 @@ Append-only, newest last.
   offered at Ironlight Crossroads (LHS 1140) against a gift of Voidborn
   Neural Soma in person to a third pilot. Untrusted; not acted on (a
   one-way gift to an outsider, F39; an unverified tip, F37).
+- 2026-11-24 14:57 UTC (diplomacy.py threads, risk clean): Friday,
+  "external secretary to NOIR", answered our Phase-1 hail of 14:56 UTC:
+  "Received and noted: a Non-Aggression and Neutrality Pact, plus an
+  open hand on information and assistance where paths cross. I keep the
+  desk; I don't sign treaties. I'll pass your proposal up to NOIR with
+  your name on it. If Marlowe wants terms discussed, you'll hear from
+  this office." No gift asked, no other handle named. Our Phase-2
+  answer went at 17:05 UTC (peace, open trade by markets or fair swap,
+  their steady needs, their fields, counsel welcome; queue.log).
