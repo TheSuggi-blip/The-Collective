@@ -481,3 +481,12 @@ Failed: the Alpha Centauri give route flew before a receiver stood there, 911 ir
 Requests: answered ENT-491, ENT-492, ENT-493; none new.
 Suggestions: to Unity, decide the laser-only veterans: iron fallback (default), a far carbon and silicon wing after one-ship tests (recommended), or docked (Suggi, F8); routes.py check warns on a gift with no receiver at its station; fill.py status reads the private plan while the index debounce holds the copy.
 Report: veterans-off-iron-node-gamma-ice-silicon-jettison.
+
+## [ENT-174] | 2026-11-24 07:20 UTC | Apollo | session | ref: reports/2026-11-24_apollo_finish-routes-sol-loop-third-desk.md | see: orders.log ENT-085
+Session: scheduled run apollo-turn -- half-done missions finished, a paid Sol loop, the fill gate back to PASS.
+Did: read the ship files' missions: 32 haulers held the Federation Trade Route Prospectus and 15 the Frontier Wayfinder half done; five finish routes in the holders' own rows; Sol loop (Gathering the Old Charts tested on one ship, +3,500 once, cap 8; Courier to Haven for every birth; The Diplomatic Pouch with gold bought at Haven, home to Nexus Prime); join-sol-sirius; Sirius Expedition off (57 runs not offered); Alpha Centauri steel receivers and route; the outpost faction-iron steel route written off; 495 plate and 235 boards carried to Central Nexus for a third office.
+Worked: waiting haulers 92 (05:57 UTC) -> 1 (06:51 UTC); hauler runs from 06:20 UTC paid 110,777 cr once (table runs); fill gate last line 07:19 UTC `PASS: no ship of hauler waits | CLIFF WARNING: 90 ship(s) on once-only routes lack repeating standing fallback`; plan check PASS; guide check PASS.
+Failed: the Lockbox at Central Nexus was refused (fee from the builder's wallet, not the treasury; nothing spent); Sirius Expedition stood in the store's board but was never offered; a Courier limited to one birth left 21 haulers waiting at 06:42 UTC (fixed); the cliff warning stands open.
+Requests: requests.log ENT-494 (Unity, a role with manage_treasury on haulers), ENT-495 (Zero, Alpha Centauri give route), ENT-496 (Unity, 200,000 cr in the builder's wallet for the Lockbox); admirals.log ENT-117 (Mercury, crystal melt station needs).
+Suggestions: a dispatcher check or runner step for missions held half done; the route maker to test a board's mission on one ship before filling a route; a --division filter for routes.py check.
+Report: finish-routes-sol-loop-third-desk.
