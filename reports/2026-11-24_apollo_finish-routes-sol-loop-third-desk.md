@@ -26,7 +26,8 @@ with the member limit read before and after; assemble the kit as parts arrive.
   repeating standing fallback (market_prime 20, nexus_prime 10, factory_belt 8, maplevale 7)`. The loop's end
   emptied into Nexus Prime from 07:25 UTC (11 to 13 waiting); after the steel route of Activities 6 the last check,
   07:46:48 UTC: `PASS: no ship of hauler waits | CLIFF WARNING: 54 ship(s) on once-only routes lack repeating
-  standing fallback (pherkad 18, sirius 5, alfirk 3, haven 2)`.
+  standing fallback (pherkad 18, sirius 5, alfirk 3, haven 2)`. The last check of the turn, 08:07:25 UTC: `HALT: 21
+  ships of hauler wait and nothing that pays is open to them` (Nexus Prime, the iron route closed at a 3 cr ask).
 - Credits: table division_pnl_24h at 07:01 UTC, Logistics: steady -28,091, once 191,625, purse 163,534 over 24 hours;
   purse 215,320 over 6 hours. Hauler runs started from 06:20 UTC (table runs, 06:59 UTC): 159 runs, 110,777 cr paid
   once, -25,657 cr steady (fuel).
@@ -73,7 +74,9 @@ with the member limit read before and after; assemble the kit as parts arrive.
 - The fill gate's cliff warning: 90 ships (07:19 UTC) flew once-only routes with no repeating work behind them; 13
   waited at Nexus Prime by 07:30 UTC. Cause: docked crafts open only on stored inputs and the training loop is capped
   at 8 by the orders. Fixed in part by the bought-iron steel route; 54 ships stand on once routes at 07:46 UTC, and
-  the 1 to 2 cr iron book (132,696 units) ends that work when it is bought out.
+  the 1 to 2 cr iron book (132,696 units) ends that work when it is bought out: our own buying lifted the ask to 3 cr
+  by 08:07 UTC and 21 haulers waited at Nexus Prime (fill gate HALT). I did not open the gate at 3 cr (30 cr of
+  ore a plate against an 18 cr plate ask); requests.log ENT-499 asks Unity for docked reserve buys by haulers.
 - Atria kit blocked: the four hunted parts have no source but Military's hunts (orders ENT-085, block APOPHIS); the
   kit assembler costs 600,000 cr. Requests.log ENT-451 (Recursion materials) waits behind the kit.
 - The third office did not stand: a Lockbox's fee comes from the builder's wallet, not the treasury (07:09 UTC). My
@@ -99,6 +102,8 @@ with the member limit read before and after; assemble the kit as parts arrive.
   (Sirius Expedition). Owner: Unity (tool).
 - A dispatcher check that reads `mission_list` and flags missions held half done, or a runner step that finishes any
   held mission at a stop, would have found 188,000 cr of reward hours earlier. Owner: Unity, fleet-build.
+- ENT-499: let haulers buy the reserve's steel plate docked at the 18 cr ask (a buy without sale), now traders' work
+  alone under strict classes. Owner: Unity.
 - ENT-494: a custom role with manage_treasury on 10 haulers turns the outpost's 100,000 iron into 10,000 plate by hand.
   Cost: the role's treasury right. Owner: Unity.
 
@@ -135,8 +140,8 @@ with the member limit read before and after; assemble the kit as parts arrive.
 ## Cross-links
 
 - `communications/orders.log` ENT-085 -- the orders in force, block APOLLO.
-- `communications/requests.log` ENT-494, ENT-495, ENT-496 -- the role for faction iron; Alpha Centauri give route;
-  the Lockbox fee for the builder's wallet.
+- `communications/requests.log` ENT-494, ENT-495, ENT-496, ENT-499 -- the role for faction iron; Alpha Centauri give
+  route; the Lockbox fee for the builder's wallet; docked reserve buys by haulers.
 - `communications/admirals.log` ENT-117 -- crystal melt station needs for Trade.
 - `game/routes/finish-prospectus-levy-haven.json` and the four other `finish-*` routes -- half-done missions.
 - `game/routes/mission-old-charts-sol.json`, `mission-courier-to-haven-sol-hauler.json`,
