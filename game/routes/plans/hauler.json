@@ -59,6 +59,7 @@
   "finish-prospectus-cache-haven",
   "finish-wayfinder-full",
   "mission-five-capitals-diplomatic-circuit-confederacy",
+  "fit-network",
   "mission-the-colonies-crimson",
   "finish-first-links-grand",
   "craft-steel-logistics-cargo-lanes",
@@ -116,6 +117,7 @@
   "join-sol-records",
   "join-rim-debris",
   "join-krynn-bloodforge",
+  "craft-network",
   "haul-network-builder",
   "haul-network",
   "park"
@@ -195,6 +197,7 @@
   "finish-prospectus-cache-haven": 95,
   "finish-wayfinder-full": 95,
   "mission-five-capitals-diplomatic-circuit-confederacy": 95,
+  "fit-network": 95,
   "mission-the-colonies-crimson": 1,
   "finish-first-links-grand": 6,
   "craft-steel-logistics-cargo-lanes": 1,
@@ -252,6 +255,7 @@
   "join-sol-records": 95,
   "join-rim-debris": 95,
   "join-krynn-bloodforge": 95,
+  "craft-network": 95,
   "haul-network-builder": 95,
   "haul-network": 95,
   "park": 95
