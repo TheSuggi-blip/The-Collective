@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-24T10:47:01Z.
+Facts as of 2026-11-24T12:08:18Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-24T10:47:01Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 250 of a limit of 262 |
-| Ships of the fleet in it | 250 of 500 |
+| Members | 262 of a limit of 275 |
+| Ships of the fleet in it | 262 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 10, rent 614 cr per cycle (52,804 cr a day) |
+| Offices at stations | 10, rent 653 cr per cycle (56,158 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -70,7 +70,7 @@ hold).
 | Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Recruitment Desk | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
-| Hiring Board | 1 | central_nexus | `nexus_prime` | active | 26 |
+| Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 39 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 351 |
