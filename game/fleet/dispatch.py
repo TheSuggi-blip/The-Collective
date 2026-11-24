@@ -595,6 +595,49 @@ def ask_missing(data, route, now):
     return None
 
 
+POSTED_FRESH = 60            # minutes: a board older than this shows no posting (`requires.posted`, its `max_age_minutes`; requests ENT-498)
+
+
+def postings(route):
+    """The postings a route flies for (`requires.posted`: one {base, title, max_age_minutes} or a list of them)."""
+    need = (route.get("requires") or {}).get("posted")
+    return [need] if isinstance(need, dict) else [p for p in need if isinstance(p, dict)] if isinstance(need, list) else []
+
+
+def posted_missing(data, route, now):
+    """Why a route is closed by `requires.posted`, or None: it opens while any one of its postings stands, that is the
+    station's board (data/missions/<base>.json, written by every docked ship of ours, route_run.save_station), read
+    within `max_age_minutes` (default POSTED_FRESH), holds a mission of that title (case and spaces aside). A board
+    older than that closes the route: a posting not read is no posting. Mercury, requests ENT-498: Station Needs are
+    taken by other pilots within the hour, and two routes flew to boards whose copies were gone."""
+    wants = postings(route)
+    if not wants:
+        return None
+    why = []
+    for want in wants:
+        fresh = float(want.get("max_age_minutes") or POSTED_FRESH) * 60
+        board = _read_cached_json(Path(data) / "missions" / (str(want.get("base")) + ".json"), {}) if data else {}
+        read = read_time(board.get("read_at")) if isinstance(board, dict) else None
+        if read is None or now - read > fresh:
+            why.append("its board not read in %d minutes" % (fresh // 60))
+            continue
+        title = " ".join(str(want.get("title") or "").split()).lower()
+        if any(" ".join(str(m.get("title") or "").split()).lower() == title for m in board.get("missions") or [] if isinstance(m, dict)):
+            return None
+        why.append("not on the board read %d min ago" % ((now - read) // 60))
+    return "no posting `%s` at %s: %s" % (wants[0].get("title"), wants[0].get("base"), why[0])
+
+
+def faction_role(data, name):
+    """The pilot's role in our faction, lower case, from data/empire/empire.json (`members`, read by empire.py collect
+    every 15 minutes), or None when no reading names it (requests ENT-494)."""
+    book = _read_cached_json(Path(data) / "empire" / "empire.json", {}) if data else {}
+    for row in (book.get("members") or []) if isinstance(book, dict) else []:
+        if isinstance(row, dict) and row.get("pilot") == name:
+            return str(row.get("role") or "").lower() or None
+    return None
+
+
 def stored_missing(data, route, pilot, rows):
     """Why a route is closed by `requires.stored`, or None: the pilot's own storage at the station named (`at`, a base
     id) holds fewer than `min` units of `item` by data/stock/storage.json (the service ledger reads each pilot about
@@ -969,6 +1012,12 @@ def why_not(pilot, rid, route, state):
         return "hold not empty", None
     if req.get("hold") and pilot.get("goods", 0) <= 5:                                      # a route that stores what is aboard: not for a pilot that carries nothing
         return "nothing aboard", None
+    want_role = req.get("role")                                                             # requests ENT-494: a faction role (Officer for a withdraw)
+    if want_role:
+        roles = [str(x).lower() for x in (want_role if isinstance(want_role, (list, tuple)) else [want_role]) if x]
+        have = faction_role(state.get("data"), pilot["name"])
+        if roles and have not in roles:
+            return "faction role %s not in %s" % (have or "not read", ",".join(roles)), None
     without = req.get("without_module")
     if isinstance(without, str) and without in p_mods:                                      # the route fits this module: not for a pilot that has it
         return "has the module already", None
@@ -1061,6 +1110,7 @@ def why_not(pilot, rid, route, state):
         return "the place rests", None
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     lacking = lacking or ask_missing(state["data"], route, state["now"])    # requests ENT-297: the buy end, read like requires.bid
+    lacking = lacking or posted_missing(state["data"], route, state["now"])  # requests ENT-498: a board's posting, read like requires.ask
     lacking = lacking or __import__("heldgate").closed(pilot, rid, route, state)     # Q75 (1), ENT-111: open while the division holds less
     if lacking:
         return lacking, None

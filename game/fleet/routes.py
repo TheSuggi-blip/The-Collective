@@ -315,6 +315,11 @@ def check(root):
             errors += [where + line for line in reserve_faults(need["reserve"])]
         if "ask" in need:                              # requests ENT-297: the buy end of a route (dispatch.ask_missing)
             errors += [where + line for line in ask_faults(need["ask"])]
+        if "posted" in need:                           # requests ENT-498: a board's posting (dispatch.posted_missing)
+            errors += [where + line for line in posted_faults(need["posted"])]
+        if "role" in need and not ((isinstance(need["role"], str) and need["role"].strip())
+                                   or (isinstance(need["role"], list) and need["role"] and all(isinstance(r, str) and r.strip() for r in need["role"]))):
+            errors.append(where + "`requires.role` must be a faction role (officer) or a non-empty list of them (requests ENT-494)")
         if "held_below" in need:                       # Q75 (1), errors.log ENT-111: what the division holds (heldgate.py)
             errors += [where + line for line in __import__("heldgate").faults(need["held_below"])]
         if "empire" in need and not ((isinstance(need["empire"], str) and need["empire"] in EMPIRES)
@@ -397,6 +402,33 @@ def reserve_faults(need):
 
 
 ASK_FIELDS = ("item", "base", "max_price", "min_qty", "max_age_minutes")
+
+
+POSTED_FIELDS = ("base", "title", "max_age_minutes")
+
+
+def posted_faults(need):
+    """What is wrong with a route's `requires.posted` (dispatch.posted_missing reads it): one {base, title,
+    max_age_minutes} or a non-empty list of them; `base` an id, `title` a mission's title, `max_age_minutes` a whole
+    number of 1 or more when given (requests ENT-498)."""
+    wants = [need] if isinstance(need, dict) else need if isinstance(need, list) and need else None
+    if wants is None:
+        return ["`requires.posted` must be {base, title, max_age_minutes} or a non-empty list of them"]
+    out = []
+    for want in wants:
+        if not isinstance(want, dict):
+            out.append("`requires.posted` holds an entry that is no {base, title}")
+            continue
+        for key in ("base", "title"):
+            if not (isinstance(want.get(key), str) and want[key].strip()):
+                out.append("`requires.posted` needs `%s`" % key)
+        age = want.get("max_age_minutes")
+        if age is not None and (not isinstance(age, int) or isinstance(age, bool) or age < 1):
+            out.append("`requires.posted` of %s: `max_age_minutes` must be a whole number of 1 or more" % want.get("title"))
+        unknown = sorted(set(want) - set(POSTED_FIELDS))
+        if unknown:
+            out.append("`requires.posted` of %s names fields no reader knows: %s" % (want.get("title"), ", ".join(unknown)))
+    return out
 
 
 def ask_faults(need):

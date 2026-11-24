@@ -1365,5 +1365,56 @@ class StrictClassesTests(Tree):
         expired = dict(self.routes.write_index(str(self.root), min_interval=900))
         self.assertEqual(expired["master-index.md"], "current")
 
+class PostedAndRoleTests(Tree):
+    """requests ENT-498 (Mercury): Station Need routes flew to boards whose copies other pilots had taken within the
+    hour; `requires.posted` opens a route only while the station's board, read within `max_age_minutes`, holds a
+    mission of that title. requests ENT-494 (Apollo): a withdraw from the faction's storage needs manage_treasury,
+    which only some of our pilots' faction roles carry; `requires.role` sends only a pilot of that role."""
+
+    def board(self, titles, ago=600, base="crucible"):
+        folder = self.data / "missions"
+        folder.mkdir(exist_ok=True)
+        (folder / (base + ".json")).write_text(json.dumps({"base": base, "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago)),
+                                                           "missions": [{"title": t} for t in titles]}), encoding="ascii")
+
+    def test_a_route_that_names_a_posting_flies_only_while_a_fresh_board_holds_it(self):
+        need = {"id": "need-melt", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base"}],
+                "requires": {"posted": {"base": "crucible", "title": "Station Need: Crystal Melt"}}}
+        pilot = {"name": "trader-1", "credits": 20000, "modules": [], "docked": True}
+        why = lambda route=need: self.dispatch.why_not(pilot, "need-melt", route, self.state())[0]
+        self.assertEqual(why(), "no posting `Station Need: Crystal Melt` at crucible: its board not read in 60 minutes")
+        self.board(["Station Need: Crystal  melt", "Other"])                                          # case and spaces aside
+        self.assertIsNone(why())
+        self.board(["Other"])
+        self.assertEqual(why(), "no posting `Station Need: Crystal Melt` at crucible: not on the board read 10 min ago")
+        self.board(["Station Need: Crystal Melt"], ago=2 * 3600)                                       # a board two hours old closes it
+        self.assertEqual(why(), "no posting `Station Need: Crystal Melt` at crucible: its board not read in 60 minutes")
+        longer = dict(need, requires={"posted": {"base": "crucible", "title": "Station Need: Crystal Melt", "max_age_minutes": 180}})
+        self.assertIsNone(why(longer))
+        either = dict(need, requires={"posted": [{"base": "frontier", "title": "Station Need: Crystal Melt"},
+                                                 {"base": "crucible", "title": "Station Need: Crystal Melt", "max_age_minutes": 180}]})
+        self.assertIsNone(why(either))                                                                 # a list: any one met
+        for wrong in ({"base": "crucible"}, [{"base": "crucible", "title": "x", "max_age_minutes": 0}], {"base": "b", "title": "x", "price": 1}, []):
+            (self.root / "routes" / "need-melt.json").write_text(json.dumps(dict(need, requires={"posted": wrong})), encoding="ascii")
+            errors, _count = self.routes.check(str(self.root))
+            self.assertTrue(any("game/routes/need-melt.json" in e and "requires.posted" in e for e in errors), (wrong, errors))
+
+    def test_a_route_that_names_a_faction_role_goes_only_to_a_pilot_of_that_role(self):
+        steel = {"id": "steel", "kind": "circuit", "title": "t", "stops": [{"at": "home:core:base"}], "requires": {"role": ["officer", "leader"]}}
+        officer = {"name": "hauler-1", "credits": 20000, "modules": [], "docked": True}
+        member = dict(officer, name="hauler-2")
+        why = lambda pilot, route=steel: self.dispatch.why_not(pilot, "steel", route, self.state())[0]
+        self.assertEqual(why(officer), "faction role not read not in officer,leader")                 # no members list: nobody
+        (self.data / "empire").mkdir()
+        (self.data / "empire" / "empire.json").write_text(json.dumps({"members": [{"pilot": "hauler-1", "role": "Officer"}, {"pilot": "hauler-2", "role": "Member"}]}), encoding="ascii")
+        self.assertIsNone(why(officer))
+        self.assertEqual(why(member), "faction role member not in officer,leader")
+        self.assertIsNone(why(officer, dict(steel, requires={"role": "Officer"})))                   # one role as a string
+        for wrong in ([], "", [""], 3):
+            (self.root / "routes" / "steel.json").write_text(json.dumps(dict(steel, requires={"role": wrong})), encoding="ascii")
+            errors, _count = self.routes.check(str(self.root))
+            self.assertTrue(any("game/routes/steel.json" in e and "requires.role" in e for e in errors), (wrong, errors))
+
+
 if __name__ == "__main__":
     unittest.main()
