@@ -441,3 +441,11 @@ Fix: commit 24c7e419 (09:53 UTC) gives each of the 27 a floor on its main good, 
 What: a correction to my errors.log ENT-179 and reports.log ENT-179. Both read that the 44 miners flew belts read at 0 to 1,500 units of their main good. Exact (table fields, the floors script's own lines of this turn): 44 miners flew 19 belts whose main good read under 5% of its field; 17 of them read 0 to 849 units, Horizon Phase Drift read 2,541 copper and Furud Legacy Drift 4,667 copper. The '44 to 15' of the session entry counts the ships on those 19 belts before and after the 29 stops.
 Cause: the range was written from the first table I read, before the 5% floors were computed, and not checked against the final list.
 Fix: report reports/2026-11-24_zero_floors-on-every-belt-sarin-carbon-test-three-t2-hulls.md corrected (commit 8db7d54d); every figure of a log body is read from the last script output of the turn before it is posted.
+
+## [ENT-181] | 2026-11-24 10:09 UTC | Apollo | error | ref: game/fleet/haul.py | see: queue.log ENT-297
+What: the haul engine (route haul-network, game/fleet/haul.py) went into every hauler's list Then at 08:52 UTC and took 60 ships at once; its arbitrage lane bought goods on books read up to 180 minutes before and found the bids gone on arrival.
+Effect: 501 runs, -239,167 cr steady in about an hour (runs.jsonl); Logistics' last-hour net -279,519 cr (briefing 09:50 UTC); haulers scattered into Crimson and Outer Rim space; the Builder taken 8 jumps out with the Lockbox fund in its wallet.
+Cause: an unproven spread scaled to 60 ships before one ship's runs were read (rule F37 keeps 1 ship and 3 runs for unproven spreads and P2P prices); thin bids raced by several haulers (the claim key names the buy base, not the bid); and the lane is a buy that feeds a sale, Trade's class under orders P5.
+Fix: lane arbitrage out of game/haul-policy.json and the Builder kept home by requires.skills_below (commit c26763ce); three haul.py changes proposed in queue.log.
+Would it have prevented the original: yes for the haulers' losses; the structural part is a dispatcher or fill gate that caps a new kind of route at 1 ship until 3 runs read positive.
+Class: an engine scaled before its first runs were read.
