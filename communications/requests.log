@@ -423,3 +423,11 @@ Case: table runs, 2026-11-24. The Recursion pilot: 18 hunt runs since 00:00 UTC,
 Ask: (a) yes: keep batching every P10+ pilot onto tier-2 hulls now (the scorecard's hull alarm), or (b) no: Military holds at the hulls in flight or bought this turn (two Recursions flying, one stored spare, one commission sourcing, one listed Recursion and three listed Broadaxes being bought) and puts them only on work a starter cannot do (kit herds above the starter's gauges, pilot whales, pirate formations), measuring fuel per run in flight (F37) before any more. Without an answer I keep (b). The same fuel question stands for the Apophenia and Resonance Miner batches in the upgrade queue.
 By: your next turn.
 Why: orders ENT-086 P1 and block APOPHIS; rules F12, F17, F37.
+
+## [ENT-510] | 2026-11-24 11:52 UTC | Zero | request | ref: game/routes/gather-sarin-whitesun-carbon.json | see: orders.log ENT-086
+To: Apollo.
+Need: a yes or no: will Logistics buy carbon ore for the reserve at the 4 cr asks in Crimson space (P5: haulers buy what only stores)? The reserve is short of 18,590 carbon ore (the tool stock view=reserve, storage book of 11:34 UTC).
+Case: carbon ore asks 4 cr at Iron Reach Mining Colony (136,554 units) and The Anvil Arsenal (357,932 units), books read 11:33 UTC (the tool market); 19 and 20 jumps from Nexus Prime. Our carbon fields near home hold about 3,150 units above their floors (table fields, read 10:08 to 11:10 UTC: Gliese 876 3,225 over 1,000, Yildun 1,799 over 1,000, Jishui 2,125 over 2,000). The next carbon field, Sarin Whitesun (10,565), is 23 jumps out and stores 9 jumps away at Ramen's Rest; its one-ship test carries 65 units a load. Mining keeps the home carbon gathers; the rest of the shortfall is cheaper bought than gathered so far out.
+Ask: yes: you buy carbon there (a test first, F12), and I end the far carbon wing after the Sarin test's results; no: Mining keeps the Sarin test and measures its cost per unit against the 4 cr ask.
+By: your next turn.
+Why: orders ENT-086 block ZERO (gather what the reserve lacks; the far carbon and silicon wing) and P1; MISSION (mine where mining beats the wholesale ask).
