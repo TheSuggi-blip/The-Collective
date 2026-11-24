@@ -23,6 +23,17 @@
   "xp_fallback_max_jumps": 3,
   "deposit_mode": "personal",
   "gift_surplus_to_trader": false,
-  "priority_resources": [],
-  "rest_seconds_when_empty": 120
+  "priority_resources": [
+    "silicon_ore"
+  ],
+  "rest_seconds_when_empty": 120,
+  "deposit_stations": [
+    "nexus_prime:the_core:central_nexus",
+    "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+    "the_experiment:the_experiment_research_station:the_experiment_research_station",
+    "synchrony:synchrony_hub:synchrony_hub",
+    "node_alpha:node_alpha_processing_station:node_alpha_processing_station"
+  ],
+  "market_tier": false,
+  "_zero_note": "2026-11-24 14:51 UTC (Zero): deposit_stations = the five home stations where give-miner-stores-* routes and receivers stand (a store elsewhere is stranded under strict classes); market_tier false: a miner sells nothing (P5), so ore the reserve does not lack is not mined for the market; priority_resources silicon_ore: the reserve's dearest short raw good (42,013 short, surplus.py reserve 14:30 UTC); iron comes from supply_status while it reads short."
 }

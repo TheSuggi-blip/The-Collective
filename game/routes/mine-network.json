@@ -2,9 +2,12 @@
  "id": "mine-network",
  "kind": "mine_net",
  "title": "Dynamic Smart Mining network: auto-rotates across unsaturated belts (>=15% floor), prioritizing reserve deficits and tool match",
- "note": "Policy-driven autonomous Mining runner governed by game/mine-policy.json (Zero/Unity). Matches fitted tools (mining laser, ice harvester, gas harvester), prioritizes needs.tsv/supply_chains deficits while skipping full reserves, enforces live 15% regrowth floor in flight with instant cooldown rotation, and caps <=3 ships/belt atomically.",
+ "note": "Policy-driven autonomous Mining runner governed by game/mine-policy.json (Zero/Unity). Matches fitted tools (mining laser, ice harvester, gas harvester), prioritizes needs.tsv/supply_chains deficits while skipping full reserves, enforces live 15% regrowth floor in flight with instant cooldown rotation, and caps <=3 ships/belt atomically. 2026-11-24 14:51 UTC (Zero): max_ships 90 -> 3 and requires.empire voidborn: a test of three before any lift (F37). mine_net.py read no field since its launch (the stations query named columns read.db lacks; fixed by fleet-build the same turn), so every run rested without mining; the policy deposits only at the five home stations where give routes of ours collect (deposit_stations).",
  "policy": "game/mine-policy.json",
  "minutes": 45,
- "max_ships": 90,
- "standing": true
+ "max_ships": 3,
+ "standing": true,
+ "requires": {
+  "empire": "voidborn"
+ }
 }

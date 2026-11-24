@@ -2,11 +2,11 @@
  "id": "mine-pioneer-fields",
  "kind": "mine",
  "title": "Pioneer Fields: iron_ore, copper_ore, titanium_ore; stored at The Core (F23 gather)",
- "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 2059 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left titanium_ore 1,200 (5% of the field's 25,000, its main good): the route had no floor and its field read 229 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer.",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 2059 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left titanium_ore 1,200 (5% of the field's 25,000, its main good): the route had no floor and its field read 229 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor). 2026-11-24 (Trinity, Suggi approved): raised min_left floor to 15% of max_remaining for full 6h turn buffer. 2026-11-24 14:51 UTC (Zero): max_ships 3 -> 1: lowered to what the field carries (briefing column carries 0 or 1, census of 11:00 to 14:30 UTC); a wide cap in the list Then takes every free ship after a host restart (errors.log, 2026-11-23).",
  "belt": "frontier:pioneer_fields",
  "station": "nexus_prime:the_core:central_nexus",
  "minutes": 90,
- "max_ships": 3,
+ "max_ships": 1,
  "lift_to": 3,
  "keep_items": [
   "titanium_ore"

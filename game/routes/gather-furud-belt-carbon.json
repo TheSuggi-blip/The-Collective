@@ -2,11 +2,11 @@
  "id": "gather-furud-belt-carbon",
  "kind": "mine",
  "title": "A test: carbon ore of Furud Belt into storage at Nova Terra Central (one jump, Solarian space)",
- "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Furud Belt read carbon 1,727 of 30,000 at richness 63 and tungsten 1,120 (table fields, 2.4 h old at 23:37 UTC), one jump from Nova Terra Central by the lane; no pirate line on it in 24 h (data/intel/sightings.jsonl). The reserve is short of 31,128 carbon ore (surplus.py reserve, 23:33 UTC). Loads go to the station's hauler by gift. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-24 05:57 UTC (Zero): max_ships 1 -> 3: carries 1 +9 (fill.py status miner 05:35 UTC); five runs 6 h: 1,455 ore, carbon 773 given.",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Furud Belt read carbon 1,727 of 30,000 at richness 63 and tungsten 1,120 (table fields, 2.4 h old at 23:37 UTC), one jump from Nova Terra Central by the lane; no pirate line on it in 24 h (data/intel/sightings.jsonl). The reserve is short of 31,128 carbon ore (surplus.py reserve, 23:33 UTC). Loads go to the station's hauler by gift. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-24 05:57 UTC (Zero): max_ships 1 -> 3: carries 1 +9 (fill.py status miner 05:35 UTC); five runs 6 h: 1,455 ore, carbon 773 given. 2026-11-24 14:51 UTC (Zero): max_ships 3 -> 1: lowered to what the field carries (briefing column carries 0 or 1, census of 11:00 to 14:30 UTC); a wide cap in the list Then takes every free ship after a host restart (errors.log, 2026-11-23).",
  "belt": "furud:furud_belt",
  "station": "nova_terra:nova_terra_central:nova_terra_central",
  "minutes": 60,
- "max_ships": 3,
+ "max_ships": 1,
  "standing": true,
  "min_left": {
   "carbon_ore": 500

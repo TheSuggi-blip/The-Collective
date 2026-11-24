@@ -1,0 +1,53 @@
+{
+ "id": "resonance-parts-sensor-lhs-node-beta",
+ "kind": "circuit",
+ "title": "Once: buy 8 sensor arrays at Ironlight Crossroads and sell them into the Resonance Miner yard bid at Node Beta",
+ "note": "Written by Zero 2026-11-24 14:38 UTC. One of the three Resonance Miner commissions at Node Beta (upgrade queue u-8) also lacks 8 sensor_array (commission_status 14:3x UTC); the yard bids 1,033 x 8 at Node Beta (book 14:35 UTC), the station asks 1,345. Ironlight Crossroads (LHS 1140, 6 jumps, a partner's station our miners fit at) asks 930 x 268 (book 14:26 UTC). Copied from Military's recursion-parts-sensor-void-node-beta (Apophis, 2026-11-23). open_to miner (F23, the Admiral's exception): goods of our own hull commission sold into the yard's own sourcing bid; once, one pilot, the buy booked once. About 7,600 cr out, 8,260 back.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 12000,
+ "open_to": [
+  "miner"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "max_jumps": 8,
+  "ask": {
+   "item": "sensor_array",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 945,
+   "min_qty": 8,
+   "max_age_minutes": 180
+  },
+  "bid": {
+   "item": "sensor_array",
+   "base": "node_beta_industrial_station",
+   "min_price": 1000,
+   "min_qty": 8
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "sensor_array",
+     "qty": 8,
+     "max_price": 955,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "sell": [
+    {
+     "item": "sensor_array",
+     "min_price": 1000
+    }
+   ]
+  }
+ ]
+}
