@@ -1,7 +1,7 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 13:23 UTC; ship files mission_list 13:05 UTC; orders_scan.py of 85 traders 13:06 UTC; table ship_listings 13:17 UTC; errors.log ENT-187, ENT-190.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 13:23 UTC; ship files mission_list 13:05 UTC; orders_scan.py of 85 traders 13:06 UTC; game/bursar-policy.json (3bbb0fbb, 471a8446); table ship_listings 13:17 UTC; errors.log ENT-187, ENT-190.
 
 The plan file as applied on 2026-11-24 at 13:14 UTC (orders ENT-087,
 block MERCURY of ENT-086):
@@ -15,8 +15,9 @@ block MERCURY of ENT-086):
   the capitals' lines, `@trade-sell > @trade-craft`.
 - Then, gated to where each ship stands: starters stripped once, the
   five Bursar desks, `bursar-network` (one trader an Exchange
-  station, buy lane off, its old buy escrow cancelled where a bursar
-  docks), steel from own iron, `train-jumps-trader`, park.
+  station; its buy lane capped fleet-wide in `bursar_buys.json`
+  since 11:51 UTC, Trinity with Suggi's approval, excess orders
+  unwound where a bursar docks), steel from own iron, `train-jumps-trader`, park.
 
 Hulls: a listed hull before a commission (`browse_ships` with
 `can_fly`, the skill's `buy_listed_hull.py`): Prayer (540 cargo,
@@ -26,8 +27,8 @@ The Experiment wait on yard materials; read `commission_status`
 before queueing more.
 
 What would change it: the commissions sourced or cancelled; a lock
-on the upgrade queue (errors.log ENT-190); a buy lane with a
-fleet-wide cap; a HEXC supply contract carried by a 240+ cargo hull.
+on the upgrade queue (errors.log ENT-190); the capped buy lane's
+fills read against the needs; a HEXC supply contract carried by a 240+ cargo hull.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
