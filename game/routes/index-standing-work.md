@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 651.
+Routes: 652.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -167,6 +167,7 @@ Routes: 651.
 | [bursar-desk-grand](bursar-desk-grand.json) | circuit | beyond the border, 21 jumps | Station Bursar desk at the Grand Exchange (Haven): the pilot's own surplus mining enhancers and survey probes listed under the station's asks, a 30-minute docked watch | up to 1 ships, standing work | 55 | 30 | 0 | 0 | 2026-11-24 |
 | [bursar-desk-krynn](bursar-desk-krynn.json) | circuit | beyond the border, 20 jumps | Station Bursar desk at the Crimson War Citadel (Krynn): neon made into ionized neon by hand, the pilot's own surplus liquid nitrogen, ionized neon and liquid oxygen listed under the station's asks, a 15-minute docked watch | up to 1 ships, standing work | 1156 | 15 | 0 | -10 | 2026-11-24 |
 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | circuit | beyond the border, 8 jumps | Docked desk at Nova Terra Central: the pilot's own verdigris curd sold into the station's curd bid as it refills, a 30-minute docked market watch | up to 1 ships, standing work | 8 | 30 | 320 | 630 | 2026-11-24 |
+| [buy-autocannon-rounds-the-anvil](buy-autocannon-rounds-the-anvil.json) | circuit | beyond the border, 20 jumps | Autocannon ammunition for the listed Cleavers and Broadaxes: standard rounds boxes at The Anvil Arsenal | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 5,000 cr, while the_anvil_arsenal asks 15 cr or less for standard_rounds_box, standing work | TBD | TBD | TBD | TBD | -- |
 | [carry-nitrogen-alpha-to-sol](carry-nitrogen-alpha-to-sol.json) | circuit | beyond the border, 11 jumps | Nitrogen ice bought at Alpha Centauri, made into liquid nitrogen there by hand, sold into Sol Central's deep bid one jump on | up to 30 ships, while confederacy_central_command bids 4 cr for liquid_nitrogen, while alpha_centauri_colonial_station asks 1 cr or less for nitrogen_ice, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-armor-own-first-step](craft-armor-own-first-step.json) | circuit | beyond the border, 18 jumps | Armor plate made by hand at First Step from all of the trader's own stored creature carapace in one visit, kept in its storage there for the reserve | up to 2 ships, with 30 creature_carapace stored at first_step_memorial_station, standing work | 14 | 25 | -120 | -410 | 2026-11-22 |
 | [craft-armor-own-nova-terra](craft-armor-own-nova-terra.json) | circuit | beyond the border, 8 jumps | Armor plate made by hand at Nova Terra Central from the trader's own stored creature carapace, docked, kept in its storage for the reserve | up to 1 ships, with 30 creature_carapace stored at nova_terra_central, standing work | 9 | 2 | 0 | 0 | 2026-11-24 |

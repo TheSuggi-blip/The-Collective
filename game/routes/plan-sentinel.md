@@ -20,7 +20,7 @@ Kept by Apophis. Routes: 359. Ships: 36.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
-| 1 | [buy-autocannon-rounds-the-anvil](buy-autocannon-rounds-the-anvil.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 5,000 cr, while the_anvil_arsenal asks 15 cr or less for standard_rounds_box | all 36 |
+| 1 | [buy-autocannon-rounds-the-anvil](buy-autocannon-rounds-the-anvil.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 5,000 cr, while the_anvil_arsenal asks 15 cr or less for standard_rounds_box, standing work | all 36 |
 | 2 | [rearm-pulse-laser-central-nexus](rearm-pulse-laser-central-nexus.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 5 ships, 20 pilots in all, without ['pulse_laser_i', 'pulse_laser_ii', 'pulse_laser_iii', 'focused_beam_i', 'plasma_cannon_ii', 'piercing_railgun_i'], from 3,000 cr, with 1 pulse_laser_i stored at central_nexus | all 36 |
 | 3 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 10 ships, from navigation 3 | all 36 |
 | 4 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships | all 36 |

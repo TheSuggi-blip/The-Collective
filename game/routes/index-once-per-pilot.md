@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 98.
+Routes: 97.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -39,7 +39,6 @@ Routes: 98.
 | [voidborn-signal-fragments](voidborn-signal-fragments.json) | circuit | home space | Signal Fragments: 7,000 cr once, accepted at Central Nexus, a dock at Node Beta and at Node Gamma, handed in at Central Nexus | once per pilot, up to 10 ships, from navigation 3 | 188 | 17 | 6,600 | one-time | 2026-11-17 |
 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | circuit | home space | The Signal Protocol: 3,500 cr once, the voidborn mastery line after The Collective Provides; docks at Node Beta and Node Gamma, handed in at Central Nexus | once per pilot, up to 20 ships, after the reward The Collective Provides | 212 | 14 | 3,430 | one-time | 2026-11-23 |
 | [voidborn-substrate](voidborn-substrate.json) | circuit | home space | Substrate Delivery: two neural soma bought at Central Nexus, the mission taken at Node Alpha and handed in at Central Nexus; 2 jumps | once per pilot, from 3,000 cr | 221 | 8 | 2,020 | one-time | 2026-11-16 |
-| [buy-autocannon-rounds-the-anvil](buy-autocannon-rounds-the-anvil.json) | circuit | beyond the border, 20 jumps | Autocannon ammunition for the listed Cleavers and Broadaxes: standard rounds boxes at The Anvil Arsenal | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 5,000 cr, while the_anvil_arsenal asks 15 cr or less for standard_rounds_box | TBD | TBD | TBD | TBD | -- |
 | [buy-flex-ironlight-to-node-beta](buy-flex-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | Flex polymer for the Recruitment Center: 57 bought at Ironlight Crossroads (LHS 1140, lawless, six jumps) and put into the faction's storage at Node Beta, where the upgrade takes its materials; members of the faction only | once per pilot, up to 2 ships, 5 pilots in all, empty hold, from 15,000 cr, while 784309214f105860a16a0c100a70eb14 asks 123 cr or less for flex_polymer | 6 | 17 | -3,570 | one-time | 2026-11-21 |
 | [finish-first-links-grand](finish-first-links-grand.json) | circuit | beyond the border, 21 jumps | First Links finished by the pilots that hold it half done: nickel bought at Grand Exchange, stored at Cargo Lanes, copper wiring bought there, handed in at Market Prime (no accept) | once per pilot, up to 8 ships, born nebula, while grand_exchange_station asks 128 cr or less for nickel_ore | TBD | TBD | TBD | TBD | -- |
 | [finish-five-capitals-sol](finish-five-capitals-sol.json) | circuit | beyond the border, 10 jumps | Five Capitals Diplomatic Circuit finished: return to Sol Central (15,000 cr once, held at 5 of 6) | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
