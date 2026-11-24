@@ -1,12 +1,5 @@
 # Intel guidebook -- Lessons (lessons.md)
 
-### How this guidebook is kept
-Status: retired. Updated: 2026-11-24. Evidence: rule F14 says the same (a figure named by its call, the caps); scripts/guide.py check intel enforces it.
-
-Kept by Oracle for every member. A figure is named by the call that
-prints it, never copied; a number no record holds is `not measured`.
-Caps: rule F14; an outdated entry is retired, then `guide.py tidy intel`.
-
 ### How the Census Is Dispatched
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/dispatch.py (pick, stalest_system); errors.log ENT-065.
 
