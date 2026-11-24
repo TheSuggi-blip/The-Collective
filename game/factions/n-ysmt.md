@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | DB , CRFT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 10 | Public event stream |
+| Pilots carrying the tag on the public event stream | 12 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Cornelius 'Commerce' Col | Nexus Prime (`nexus_prime`) | 0 | congregation |
+| Debris 'Dig' Davis | Node Alpha (`node_alpha`) | 0 | threshold |
 | Junk 'Jackpot' Jackson | Node Gamma (`node_gamma`) | 0 | congregation |
 
 ## Standing History
