@@ -8,9 +8,10 @@ Status: test. Updated: 2026-11-22. Evidence: rule F37 (queue.log ENT-203); `hive
 - Open: a Prayer bought and flown by one hauler (ships.md); `craft-steel-refine-node-beta` waits on the Fleet Admiral's word (requests.log ENT-200).
 
 ### Carrying for pay: freight and passengers
-Status: test. Updated: 2026-11-22. Evidence: the game's guides packages and passenger-lines (read 2026-11-22); shipping list_all and profile, list_station_passengers 2026-11-22 08:01 UTC (a docked hauler); table stations; needs passenger-cabin-test, transit-lounge.
+Status: test. Updated: 2026-11-24. Evidence: the game's guides packages and passenger-lines (read 2026-11-22); shipping.py list 2026-11-24 01:47 UTC; shipping list_all and profile, list_station_passengers 2026-11-22 08:01 UTC (a docked hauler); table stations; needs passenger-cabin-test, transit-lounge.
 
 - Freight contracts (`shipping` list_all, accept, deliver; the game's packages guide: 400 cr + 200 a hop, probationary carriers up to 5,000 cr a package): the hauler's paid carrying beyond our borders. Read 2026-11-22 08:01 UTC: 161 contracts; the twenty best all bound for pirate strongholds 11 to 30 jumps out (Kael Arsenal, Crix, Dross Citadel), the best from our stations 2,242 to 13,264 cr; a new carrier is probationary (liability 50,000 cr, a package up to 25,000; licensed after 5 deliveries). Not work for an unarmed Threshold; read again when Military escorts or a contract ends at a policed station. The board is a command for gate.py: read it in a catch.py row (requests.log ENT-344).
+- Read again 2026-11-24 01:47 UTC from a Prospect (110 cargo) docked at Krynn (shipping.py list): 20 contracts, 1,200 to 5,846 cr over 16 to 41 jumps, all to pirate strongholds or inside Ironlight's own station; the runner's `shipping` stop (commit 8a4efabf) takes only a contract to a charted policed station, so none fits yet.
 - Passenger lines (the game's passenger-lines guide): a Threshold has no berth; an Economy Passenger Cabin (12 seats, a utility slot) or a Fugue (Voidborn courier, 1 business seat, speed 4) first, on one ship. Boards of 2026-11-22: 0 to 2 waiting a Voidborn station, fares 3,125 and 5,500 to far stations (need passenger-cabin-test).
 - Why: the haulers outnumber the hauls at home (orders ENT-059); both pay for carrying itself, which is the hauler's class, and both reach beyond our borders.
 
