@@ -112,6 +112,48 @@ class BursarEngineTests(unittest.TestCase):
         self.assertEqual(buys[0][2], 1)
         self.assertEqual(buys[0][3], 150001)
 
+    def test_buy_lane_off_unwinds_own_buy_orders_and_keeps_sells(self):
+        book = {"cobalt_ink": {"best_buy": 143, "best_buy_qty": 200, "best_sell": 170, "best_sell_qty": 50}}
+        own_orders = [
+            {"order_id": "b1", "item_id": "cobalt_ink", "side": "buy", "remaining": 200, "price_each": 143},
+            {"order_id": "b2", "item_id": "silicon_ore", "side": "buy", "remaining": 0, "price_each": 6},
+            {"order_id": "s1", "item_id": "surplus_widget", "side": "sell", "remaining": 12, "price_each": 119},
+        ]
+        pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+        pol["buy"]["enabled"] = False
+        acts = bursar.plan_bursar_actions(book, {}, own_orders, {"cobalt_ink": 276}, {"cobalt_ink"}, {}, 80000, pol)
+        self.assertEqual([a for a in acts if a[0].startswith("buy_")], [("buy_cancel", "cobalt_ink", "b1")])
+        pol["buy"]["unwind_when_off"] = False
+        acts = bursar.plan_bursar_actions(book, {}, own_orders, {"cobalt_ink": 276}, {"cobalt_ink"}, {}, 80000, pol)
+        self.assertEqual([a for a in acts if a[0].startswith("buy_")], [])
+
+    def test_order_stations_read_from_the_view_orders_hint(self):
+        hint = ("You must be docked or provide a station_id to view your orders.\n\n2 buy orders and 2 sell orders on the "
+                "market at crimson_war_citadel, node_beta_industrial_station (32,961 credits and 301 items in escrow)")
+        self.assertEqual(bursar.order_stations(hint), (2, ["crimson_war_citadel", "node_beta_industrial_station"]))
+        self.assertEqual(bursar.order_stations("0 buy orders and 3 sell orders on the market at base_a (0 credits and 7 items in escrow)"),
+                         (0, ["base_a"]))
+        self.assertEqual(bursar.order_stations("No personal orders."), (0, []))
+
+    def test_unwind_base_wins_the_claim_without_taking_another_pilots_claim(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root, data = self._make_world(tmp)
+            now_t = time.time()
+            pol = dict(bursar.DEFAULT_POLICY, max_per_station=1, policed_only=True)
+            c1 = bursar.claim_station(data, root, "trader-1", {"empire": "voidborn", "docked": "base_a"}, pol, now_t=now_t)
+            self.assertEqual(c1["base"], "base_a")
+            c2 = bursar.claim_station(data, root, "trader-2", {"empire": "voidborn", "docked": "base_b"}, pol,
+                                      now_t=now_t, unwind_bases={"base_a"})
+            self.assertEqual(c2["base"], "base_a")
+            self.assertTrue(c2.get("unwind"))
+            claims = json.loads((data / "fleet" / "bursar_claims.json").read_text())
+            self.assertEqual(claims["base_a"]["pilot"], "trader-1")
+            self.assertNotIn("base_b", claims)
+            # a lawless unwind base stays out while policed_only holds
+            c3 = bursar.claim_station(data, root, "trader-3", {"empire": "voidborn"}, pol, now_t=now_t, unwind_bases={"base_c"})
+            self.assertEqual(c3["base"], "base_b")
+            self.assertFalse(c3.get("unwind"))
+
 
 if __name__ == "__main__":
     unittest.main()

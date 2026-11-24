@@ -13,6 +13,10 @@ WHAT: policy-driven runner (`game/bursar-policy.json`, owned & tunable by Mercur
              resting `sell_order` undercutting competing asks above floor; never sells reserved mats).
            - Places/maintains wholesale `buy_order` procurement walls for open `needs.tsv`
              bottlenecks within Mercury's escrow & unit-price ceiling policy.
+           - With the buy lane off (`buy.enabled` false, `buy.unwind_when_off` true, the default) it
+             unwinds instead: cancels its own open buy orders where it docks (escrow back to the wallet;
+             the game cancels only docked at the order's station) and claims a station where it still
+             holds buy orders first, past the one-a-station cap, without taking another pilot's claim.
         4. Releases its claim cleanly (staying docked so the next cycle re-claims the same station
            at 0 fuel) and records one row in data/routes/runs.jsonl.
 
@@ -62,6 +66,7 @@ DEFAULT_POLICY = {
         "outbid_cr": 1,
         "use_needs_tsv": True,
         "extra_items": [],
+        "unwind_when_off": True,
     },
     "sell": {
         "enabled": True,
@@ -251,7 +256,18 @@ def _bfs_hops(lanes, src, dst):
     return None
 
 
-def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=None, now_t=None):
+ORDER_HINT = re.compile(r"(\d+) buy orders? and \d+ sell orders? on the market at (.+?) \(")
+
+
+def order_stations(text):
+    """(buy orders, stations) from the hint of view_orders: '2 buy orders and 1 sell order on the market at a, b (...)'."""
+    m = ORDER_HINT.search(str(text or ""))
+    if not m:
+        return 0, []
+    return int(m.group(1)), [s.strip() for s in m.group(2).split(",") if s.strip()]
+
+
+def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=None, now_t=None, unwind_bases=None):
     now_t = time.time() if now_t is None else now_t
     fdir = Path(data) / "fleet"
     fdir.mkdir(parents=True, exist_ok=True)
@@ -308,19 +324,22 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             p_emp = str((pilot_info or {}).get("empire") or "").strip().lower()
             stay_emp = bool(policy.get("stay_in_empire_first", True))
 
+            unwind = set(str(x) for x in (unwind_bases or ()))
             best = None
             for st in stations:
                 b_id = st["base"]
                 if b_id in exclude:
                     continue
                 used = (1 if b_id in cleaned else 0) + static_counts.get(b_id, 0)
-                if used >= max_per:
+                if used >= max_per and b_id not in unwind:
                     continue
                 hops = _bfs_hops(lanes, cur_sys, st["system"]) if cur_sys else 0
                 if cur_sys and lanes and hops is None:
                     continue
                 hops = 0 if hops is None else hops
                 score = 0.0
+                if b_id in unwind:
+                    score += 200000.0
                 if cur_base and b_id == cur_base:
                     score += 100000.0
                 if b_id in priority:
@@ -343,6 +362,11 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             chosen = dict(best[1])
             rec = {"pilot": pilot, "system": chosen["system"], "poi": chosen["poi"], "base": chosen["base"],
                    "empire": chosen.get("empire") or "", "claimed_at": int(now_t)}
+            if chosen["base"] in unwind:
+                rec["unwind"] = True
+                if chosen["base"] in cleaned or static_counts.get(chosen["base"], 0):
+                    write_json(claims_path, cleaned)
+                    return rec
             cleaned[chosen["base"]] = rec
             write_json(claims_path, cleaned)
             return rec
@@ -472,6 +496,12 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
                 actions.append(("sell_create", iid, more, target_p))
             if mine or more > 0:
                 used_sell_ords += 1
+
+    if not buy_cfg.get("enabled", True) and buy_cfg.get("unwind_when_off", True):
+        for iid, mine in sorted(own_buy.items()):
+            for o in mine:
+                if o.get("order_id"):
+                    actions.append(("buy_cancel", iid, o["order_id"]))
 
     if buy_cfg.get("enabled", True):
         raw_cap = buy_cfg.get("max_escrow_per_station")
@@ -686,7 +716,20 @@ def main(argv=None):
 
     try:
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
-        claim = claim_station(DATA, REPO, pilot, ship_doc, policy, explicit_station=explicit_station)
+        unwind_bases = set()
+        buy_pol = policy.get("buy") or {}
+        if not buy_pol.get("enabled", True) and buy_pol.get("unwind_when_off", True):
+            first = raw("view_orders", {}, group="spacemolt_market")
+            n_buy, at = order_stations(body(first).get("hint") or first.get("error") or "")
+            for st_id in at if n_buy > 0 else []:
+                rows = body(raw("view_orders", {"station_id": st_id}, group="spacemolt_market")).get("orders") or []
+                if any(isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy"
+                       and int(o.get("remaining") or 0) > 0 for o in rows):
+                    unwind_bases.add(st_id)
+            if unwind_bases:
+                notes.append("unwind %d" % len(unwind_bases))
+        claim = claim_station(DATA, REPO, pilot, ship_doc, policy, explicit_station=explicit_station,
+                              unwind_bases=unwind_bases)
         if not claim:
             say("no unstaffed Exchange station available under max_per_station=%s" % policy.get("max_per_station", 1))
             notes.append("all stations staffed")
@@ -757,6 +800,12 @@ def main(argv=None):
                         d = raw("modify_order", {"order_id": oid, "new_price": np}, group="spacemolt_market")
                         time.sleep(TICK)
                         say("buy_modify %s -> %d cr%s" % (iid, np, " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "buy_cancel":
+                        _, iid, oid = act
+                        d = raw("cancel_order", {"order_id": oid}, group="spacemolt_market")
+                        time.sleep(TICK)
+                        say("buy_cancel %s %s%s" % (iid, oid[:8], " ERR" if "error" in d else ""))
                         acted += 1
                     elif kind_a == "buy_create":
                         _, iid, qty, np = act
