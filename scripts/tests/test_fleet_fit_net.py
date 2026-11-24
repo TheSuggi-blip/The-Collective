@@ -61,6 +61,53 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertEqual(b_plan["unfit"], ["mining_laser_i"])
             self.assertEqual(b_plan["buy_fit"], [])
 
+    def test_live_module_dicts_and_cpu_power_caps(self):
+        """The ship files keep modules as dicts ({"type": ...}); a buy must fit the hull's CPU and power."""
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "store").mkdir(parents=True, exist_ok=True)
+            (data / "fleet").mkdir(parents=True, exist_ok=True)
+            (data / "catalog").mkdir(parents=True, exist_ok=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE lanes (a TEXT, b TEXT);
+                CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, base TEXT);
+                CREATE TABLE hulls (id TEXT, name TEXT, tier INTEGER, weapon_slots INTEGER, defense_slots INTEGER, utility_slots INTEGER, cpu INTEGER, power INTEGER);
+                CREATE TABLE books (base TEXT, item TEXT, ask REAL, ask_qty INTEGER);
+                INSERT INTO lanes VALUES ('s1', 's2');
+                INSERT INTO systems VALUES ('s1', 'voidborn', 0), ('s2', 'voidborn', 0);
+                INSERT INTO places VALUES ('s1', 'p1', 'b1'), ('s2', 'p2', 'b2');
+                INSERT INTO hulls VALUES ('cobble', 'Cobble', 0, 1, 1, 2, 12, 24);
+                INSERT INTO books VALUES ('b2', 'shield_booster_iv', 7800, 5), ('b2', 'survey_scanner_ii', 14000, 5);
+            """)
+            con.commit()
+            con.close()
+            (data / "catalog" / "0.734.2.json").write_text(json.dumps({"version": "0.734.2", "items": [
+                {"id": "shield_booster_iv", "slot": "defense", "cpu_usage": 8, "power_usage": 15},
+                {"id": "survey_scanner_ii", "slot": "utility", "cpu_usage": 5, "power_usage": 7},
+                {"id": "mining_laser_i", "slot": "utility", "cpu_usage": 2, "power_usage": 5},
+                {"id": "pulse_laser_i", "slot": "weapon", "cpu_usage": 2, "power_usage": 5}]}), encoding="ascii")
+            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+            world = fit_net.load_fit_world(str(data), pol)
+            ship = {"name": "scout-9", "division": "Intel", "system": "s1", "class": "Cobble", "credits": 60000,
+                    "modules": [{"kind": "mining", "name": "Mining Laser I", "slot": "utility", "type": "mining_laser_i"},
+                                {"kind": "weapon", "name": "Pulse Laser I", "slot": "weapon", "type": "pulse_laser_i"}]}
+            plan = fit_net.plan_ship_fit(ship, world, pol)
+            self.assertIsNotNone(plan)
+            # 1. the off-role module of a live ship file is named by its type id, so it is stripped
+            self.assertIn("mining_laser_i", plan["unfit"])
+            # 2. what stays fitted plus what is bought stays within the hull's 12 CPU / 24 power:
+            #    Shield Booster IV (8) and Survey Scanner II (5) together need 13 CPU, so only one is bought
+            bought = [m for m, _p in plan["buy_fit"]]
+            self.assertIn("shield_booster_iv", bought)
+            self.assertNotIn("survey_scanner_ii", bought)
+            off = set(pol["off_role_modules"]["Intel"])
+            kept = [m["type"] for m in ship["modules"] if m["type"] not in off]
+            cost = {"shield_booster_iv": (8, 15), "survey_scanner_ii": (5, 7), "mining_laser_i": (2, 5), "pulse_laser_i": (2, 5)}
+            self.assertLessEqual(sum(cost[m][0] for m in kept + bought), 12)
+            self.assertLessEqual(sum(cost[m][1] for m in kept + bought), 24)
+
     def test_royal_guard_command_and_military_support_specialties(self):
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
         # 1. Sentinels 60/40 split: royal_guard_escort + royal_guard_utility

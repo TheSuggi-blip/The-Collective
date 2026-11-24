@@ -60,6 +60,26 @@ def ship_file_name(pilot):
     return re.sub(r"[^a-zA-Z0-9._-]+", "_", str(pilot)).strip("_") + ".json"
 
 
+def _mod_id(m):
+    """A fitted module's type id, lower case: the ship files keep modules as dicts ({"type": ...})."""
+    if isinstance(m, dict):
+        m = m.get("type_id") or m.get("type") or m.get("item_id") or m.get("id") or ""
+    return str(m or "").lower()
+
+
+def _catalog_costs(data_dir):
+    """item id -> (cpu, power) from the newest catalog of the data folder (catalog/<version>.json); {} if none."""
+    files = [p for p in (Path(data_dir) / "catalog").glob("*.json") if re.fullmatch(r"\d+(\.\d+)*", p.stem)]
+    if not files:
+        return {}
+    raw = read_json(max(files, key=lambda p: tuple(int(n) for n in p.stem.split("."))), {})
+    costs = {}
+    for it in raw.get("items") or []:
+        if isinstance(it, dict) and it.get("id") and (it.get("cpu_usage") is not None or it.get("power_usage") is not None):
+            costs[str(it["id"]).lower()] = (int(it.get("cpu_usage") or 0), int(it.get("power_usage") or 0))
+    return costs
+
+
 def _pilot_bucket(pilot):
     m = re.search(r"(\d+)$", str(pilot))
     if m:
@@ -153,10 +173,12 @@ def load_fit_world(data_dir, policy):
                 """):
                     stations[str(base_id)] = (str(sys_id), str(poi_id), str(base_id), bool(emp) and not bool(sh))
             if "hulls" in tbls:
-                for hid, hnm, tr, ws, ds, us in con.execute(
-                    "SELECT id, name, COALESCE(tier,0), COALESCE(weapon_slots,0), COALESCE(defense_slots,0), COALESCE(utility_slots,0) FROM hulls"
+                hcols = {r[1] for r in con.execute("PRAGMA table_info(hulls)").fetchall()}
+                cp = ", COALESCE(cpu,0), COALESCE(power,0)" if {"cpu", "power"} <= hcols else ", 0, 0"
+                for hid, hnm, tr, ws, ds, us, hcpu, hpow in con.execute(
+                    "SELECT id, name, COALESCE(tier,0), COALESCE(weapon_slots,0), COALESCE(defense_slots,0), COALESCE(utility_slots,0)%s FROM hulls" % cp
                 ):
-                    rec = {"tier": int(tr), "weapon": int(ws), "defense": int(ds), "utility": int(us)}
+                    rec = {"tier": int(tr), "weapon": int(ws), "defense": int(ds), "utility": int(us), "cpu": int(hcpu or 0), "power": int(hpow or 0)}
                     if hid:
                         hulls[str(hid).lower()] = rec
                     if hnm:
@@ -180,7 +202,8 @@ def load_fit_world(data_dir, policy):
                         item_slots[str(iid).lower()] = str(sl)
         finally:
             con.close()
-    return {"adj": adj, "stations": stations, "hulls": hulls, "asks": asks, "item_slots": item_slots, "bursar_pilots": bursar_pilots}
+    return {"adj": adj, "stations": stations, "hulls": hulls, "asks": asks, "item_slots": item_slots, "bursar_pilots": bursar_pilots,
+            "mod_cost": _catalog_costs(data_dir)}
 
 
 def _module_slot_type(mod_id, item_slots=None):
@@ -212,7 +235,7 @@ def plan_ship_fit(ship_doc, world, policy):
     credits = int(ship_doc.get("credits") or 0)
     min_keep = int(policy.get("min_wallet_keep_cr") or 10000)
     budget = max(0, credits - min_keep)
-    fitted = [str(m).lower() for m in (ship_doc.get("modules") or []) if m]
+    fitted = [i for i in (_mod_id(m) for m in (ship_doc.get("modules") or []) if m) if i]
     cls_key = str(ship_doc.get("class") or ship_doc.get("ship_class") or "").lower()
     hspec = (world.get("hulls") or {}).get(cls_key) or {"tier": 0, "weapon": 1, "defense": 1, "utility": 1}
 
@@ -243,6 +266,14 @@ def plan_ship_fit(ship_doc, world, policy):
     if not to_unfit and not wanted_by_slot:
         return None
 
+    # CPU and power are hard caps of the hull (rules 06-pilots-and-ships.md): what stays fitted plus what is
+    # bought must fit, or install_mod refuses after the buy. Judged only where the hull's caps are known.
+    mod_cost = world.get("mod_cost") or {}
+    cap_cpu, cap_pow = int(hspec.get("cpu") or 0), int(hspec.get("power") or 0)
+    judge_caps = cap_cpu > 0 and cap_pow > 0
+    kept_cpu = sum(mod_cost.get(m, (0, 0))[0] for m in kept)
+    kept_pow = sum(mod_cost.get(m, (0, 0))[1] for m in kept)
+
     policed_only = bool(policy.get("policed_only", True))
     max_jumps = int(policy.get("max_jumps") or 6)
     dists = _bfs(world.get("adj") or {}, cur_sys, max_jumps)
@@ -260,6 +291,7 @@ def plan_ship_fit(ship_doc, world, policy):
             continue
         buy_list = []
         spend = 0
+        use_cpu, use_pow = kept_cpu, kept_pow
         # For each open slot type, pick the highest-ranked affordable module listed at THIS station
         for st, (free_n, cands) in wanted_by_slot.items():
             filled_here = 0
@@ -270,9 +302,14 @@ def plan_ship_fit(ship_doc, world, policy):
                 if not at_here:
                     continue
                 pr = at_here[0]
+                mc, mp = mod_cost.get(mid, (0, 0))
+                if judge_caps and (use_cpu + mc > cap_cpu or use_pow + mp > cap_pow):
+                    continue
                 if spend + pr <= budget:
                     buy_list.append((mid, pr))
                     spend += pr
+                    use_cpu += mc
+                    use_pow += mp
                     filled_here += 1
         if not to_unfit and not buy_list:
             continue
