@@ -75,6 +75,7 @@
   "gather-mekbuda-shardflash-silicon",
   "store-hold-sol-central",
   "give-miner-stores-procyon",
+  "give-miner-stores-alpha-centauri",
   "give-miner-stores-nova-terra",
   "give-miner-stores-confederacy",
   "fit-mining-laser-ii-sol-central",
@@ -118,19 +119,34 @@
   "give-miner-stores-ramens-rest",
   "gather-gsc-0027-spacetime-seep",
   "mine-pherkad-rift",
+  "gather-node-gamma-nitrogen-ice",
   "gather-schedar-belt",
   "gather-hamal-crystal-bloom",
+  "gather-okab-belt",
+  "gather-gj-3470-dewfall-fray",
   "home-sol-central",
   "train-jumps-miner",
   "park"
  ],
  "planned": [
   {
-   "what": "read the slot routes' runs (second lasers, expanders) against each gather's Laser I median ore an hour; lift or drop each",
+   "what": "read gather-node-gamma-nitrogen-ice: credits per ship-hour against Hamal's -391 and whether ice gives Mining XP; lift, keep or drop",
    "when": "next turn"
   },
   {
-   "what": "read Electra and Harborlight first results (lifted to 6 each) and Pherkad's load; a scarce-vein gather where Intel reads uranium or thorium",
+   "what": "read the silicon share of a load on the six silicon gathers now that iron and copper go overboard (jettison_gangue)",
+   "when": "next turn"
+  },
+  {
+   "what": "one Nebula miner tests a second Mining Laser I in place of its Cargo Expander, three runs, once the scouts' lasers stand in the receivers' storage at Central Nexus",
+   "when": "next turn"
+  },
+  {
+   "what": "give-miner-stores-alpha-centauri on when Logistics names its hauler receiver there (requests ENT-491)",
+   "when": "when named"
+  },
+  {
+   "what": "Hamal and Schedar close by their iron floors within hours: read Okab's load (trainees) and the census of all three before any lift",
    "when": "next turn"
   }
  ],
@@ -207,6 +223,7 @@
   "gather-mekbuda-shardflash-silicon": 35,
   "store-hold-sol-central": 35,
   "give-miner-stores-procyon": 35,
+  "give-miner-stores-alpha-centauri": 35,
   "give-miner-stores-nova-terra": 35,
   "give-miner-stores-confederacy": 35,
   "fit-mining-laser-ii-sol-central": 35,
@@ -250,8 +267,11 @@
   "give-miner-stores-ramens-rest": 130,
   "gather-gsc-0027-spacetime-seep": 130,
   "mine-pherkad-rift": 130,
+  "gather-node-gamma-nitrogen-ice": 130,
   "gather-schedar-belt": 130,
   "gather-hamal-crystal-bloom": 130,
+  "gather-okab-belt": 130,
+  "gather-gj-3470-dewfall-fray": 130,
   "home-sol-central": 130,
   "train-jumps-miner": 130,
   "park": 130
