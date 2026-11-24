@@ -21,7 +21,7 @@
   "gift_to": "trader",
   "escort": {
     "enabled": true,
-    "max_ships": 15,
+    "max_ships": 20,
     "max_fleet_share": 0.15,
     "threat_window_h": 4.0,
     "auto_protect_lawless_civilians": true,
@@ -38,25 +38,25 @@
       3,
       5,
       7,
-      10,
-      20
+      10
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": false,
+    "pirates_enabled": true,
     "pirate_tiers": [
       "scout",
-      "raider"
+      "raider",
+      "raider_elite"
     ],
-    "min_member_power": 900.0,
-    "min_target_hull": 85,
-    "rally_max_jumps": 8,
-    "rally_timeout_s": 600,
+    "min_member_power": 500.0,
+    "min_target_hull": 120,
+    "rally_max_jumps": 12,
+    "rally_timeout_s": 180,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 12,
+    "max_jumps": 8,
     "priority_species": [
       "pilot_whale",
       "bullionaut",
@@ -74,7 +74,8 @@
       "magnet_barnacle",
       "silica_borer"
     ],
-    "command_flagship_min_power": 150.0
+    "command_flagship_min_power": 150.0,
+    "max_forming_packs": 3
   },
   "solo": {
     "enabled": true,

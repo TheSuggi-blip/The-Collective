@@ -505,6 +505,7 @@ def main(argv=None):
                 time.sleep(TICK)
                 notes.append("unfit %s" % mid)
 
+        total_spent = [0]
         for mid, max_pr in plan["buy_fit"]:
             cr_before = get_credits()
             ok_b, _rb = goal("buy-items", {"items": [{"itemId": mid, "maxPrice": int(max_pr * 1.02) + 5, "maxQuantity": 1}]}, timeout=120)
@@ -525,6 +526,7 @@ def main(argv=None):
             try:
                 spent = max(0, cr_before - cr_after) if cr_before > 0 and cr_after >= 0 else int(max_pr)
                 if spent > 0:
+                    total_spent[0] += int(spent)
                     import gate as _gate_mod
                     _gate_mod.book_onetime(pilot, "fit_net %s" % mid, -int(spent), data=str(DATA))
             except Exception:
@@ -544,12 +546,13 @@ def main(argv=None):
         hb.set()
         after = get_credits()
         mins = round((time.time() - started) / 60.0, 1)
+        ot_val = -int(total_spent[0]) if "total_spent" in locals() and total_spent[0] > 0 else 0
         row = {
             "route": route_id, "kind": "fit_net", "pilot": pilot,
             "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
             "minutes": mins, "credits_before": before, "credits_after": after,
             "delta": after - before if before and after else 0,
-            "one_time": 1, "notes": notes[:10],
+            "one_time": ot_val, "notes": notes[:10],
         }
         runs = DATA / "routes" / "runs.jsonl"
         runs.parent.mkdir(parents=True, exist_ok=True)

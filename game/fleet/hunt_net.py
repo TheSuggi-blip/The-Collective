@@ -884,9 +884,16 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if hops is None or hops > max_j:
             continue
         prey_hull = float(species_hull.get(sp) or 90.0)
-        if prey_hull < min_thull and sp not in prio_sp and role != "predator":
+        if prey_hull < min_thull and role != "predator":
             continue
         threat = compute_target_threat(prey_hull, role=role, count_fighting=1)
+        # Packs hunt strictly STRONGER opponents than solo (never waste a 3/5/7/10 pack on a solo-able field!)
+        solo_ratio = float((policy.get("solo") or {}).get("min_power_ratio") or 1.35)
+        solo_ok = passes_combat_gate(ship_power, threat, solo_ratio, check_f9=False)[0] and (
+            f9 is None or f9_passes(f9, prey_hull, role, n=1)
+        )
+        if solo_ok:
+            continue
         sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
             continue
@@ -1012,16 +1019,32 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
                 if pilot in (pk.get("members") or []):
                     pk["members"] = [m for m in pk["members"] if m != pilot]
 
-            # Count active pack pilots
-            in_packs = sum(len(pk.get("members") or []) for pk in packs.values() if pk.get("state") in ("forming", "launched", "fighting"))
+            # Count active pack pilots (reserve desired_size for forming packs so pilots coalesce instead of fragmenting!)
+            in_packs_reserved = sum(
+                max(len(pk.get("members") or []), int(pk.get("desired_size") or 3))
+                if pk.get("state") == "forming" else len(pk.get("members") or [])
+                for pk in packs.values() if pk.get("state") in ("forming", "launched", "fighting")
+            )
+            forming_n = sum(1 for pk in packs.values() if pk.get("state") == "forming")
+            max_forming = max(1, int(pcfg.get("max_forming_packs") or 3))
             quota = max(3, int(round(max(12, active_military_n) * target_share)))
 
             # 1. Prefer joining an existing forming pack within rally_max_jumps
-            # Command Support Flagships prioritize larger packs (>=10 allow 2 support flagships, <10 allow 1) and take Pack Leader for leadership bonuses!
+            # Fill nearly-full packs FIRST (fewest slots remaining, then closest jump distance) so packs launch cleanly!
+            # Command Support Flagships prioritize larger packs (>=10 allow 2 support flagships, <10 allow 1) and take Pack Leader!
             sort_key = (
-                (lambda kv: (-int(kv[1].get("desired_size") or 3), -len(kv[1].get("members") or []), kv[0]))
+                (lambda kv: (
+                    -int(kv[1].get("desired_size") or 3),
+                    max(0, int(kv[1].get("desired_size") or 3) - len(kv[1].get("members") or [])),
+                    dists.get(kv[1].get("system"), 99),
+                    kv[0],
+                ))
                 if is_cmd
-                else (lambda kv: (-len(kv[1].get("members") or []), kv[0]))
+                else (lambda kv: (
+                    max(0, int(kv[1].get("desired_size") or 3) - len(kv[1].get("members") or [])),
+                    dists.get(kv[1].get("system"), 99),
+                    kv[0],
+                ))
             )
             for pid, pk in sorted(packs.items(), key=sort_key):
                 if pk.get("state") != "forming":
@@ -1045,13 +1068,35 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return dict(pk, pack_id=pid)
 
-            # 2. Otherwise create a new forming pack if under pack quota and targets exist
-            if in_packs >= quota or not pack_targets:
+            # 2. Otherwise create a new forming pack if under pack quota, under max_forming_packs, and targets exist
+            if in_packs_reserved >= quota or forming_n >= max_forming or not pack_targets:
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return None
 
             used_targets = {pk.get("target_key") for pk in packs.values() if pk.get("state") in ("forming", "launched", "fighting")}
-            chosen = next((t for t in pack_targets if t["key"] not in used_targets), None)
+            # Region feasibility for 3/5/7/10 packs: check live combat ships within rally_max_jumps when ships/ exists
+            combat_by_sys = {}
+            sdir = Path(data_dir) / "fleet" / "ships"
+            if sdir.is_dir():
+                for sp in sdir.glob("*.json"):
+                    sd = read_json(sp, {})
+                    nm = str(sd.get("name") or sd.get("username") or sp.stem)
+                    if nm.startswith(("drone-", "sentinel-")) or nm in cmd_ships:
+                        ss = str(sd.get("system") or "")
+                        if ss:
+                            combat_by_sys[ss] = combat_by_sys.get(ss, 0) + 1
+            chosen = None
+            for t in pack_targets:
+                if t["key"] in used_targets:
+                    continue
+                dsz = int(t.get("desired_size") or 3)
+                if combat_by_sys and dsz > 3:
+                    tdists = bfs_distances(world["adj"], str(t.get("system") or ""), max_hops=rally_max_j)
+                    nearby_mil = sum(cnt for s_id, cnt in combat_by_sys.items() if s_id in tdists)
+                    if nearby_mil < dsz:
+                        continue
+                chosen = t
+                break
             if not chosen:
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return None
@@ -1121,15 +1166,18 @@ def _raw(pilot, action, params=None, group="spacemolt"):
 
 def _goal(pilot, gtype, opts, timeout_s=240):
     q = urllib.parse.quote(pilot, safe="")
-    st, ans = _gate_call("POST", "/accounts/%s/goal" % q, {"goalType": gtype, "goalOptions": opts}, timeout=30)
-    if st not in (200, 201) or "error" in ans:
+    t_lim = max(30, int(timeout_s or 240))
+    st, ans = _gate_call("POST", "/accounts/%s/goal" % q, {"type": gtype, "options": opts}, timeout=t_lim)
+    if st not in (200, 201) or not isinstance(ans, dict) or "error" in ans:
         return False
-    end_t = time.time() + timeout_s
+    if "success" in ans:
+        return bool(ans.get("success"))
+    end_t = time.time() + t_lim
     while time.time() < end_t and not (DATA / "fleet" / "STOP").exists():
-        time.sleep(8)
         _, acc = _gate_call("GET", "/accounts/" + q, timeout=20)
         if not acc.get("hasExecutingGoal"):
             return True
+        time.sleep(6)
     return False
 
 
@@ -1156,8 +1204,13 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
             pass
         cur = pack_update(DATA, pid, lambda _p: None)
     if not cur or cur.get("state") != "launched":
-        # Rally timed out cleanly -- caller falls through to Solo Hunt with zero idle time!
-        pack_update(DATA, pid, lambda p: p.update(state="aborted") if p.get("state") == "forming" else None)
+        # Rally timed out cleanly -- remove self and abort forming pack, then fall through to Solo Hunt!
+        def _abort_forming(p):
+            if p.get("state") == "forming":
+                p["members"] = [m for m in (p.get("members") or []) if m != pilot]
+                if not p["members"] or time.time() >= rally_end:
+                    p["state"] = "aborted"
+        pack_update(DATA, pid, _abort_forming)
         return "rally_timeout"
 
     members = list(cur.get("members") or [])
@@ -1171,49 +1224,88 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
     arrive_timeout = float(pcfg.get("arrive_timeout_s") or 240)
     ranch_floor_hit = False
     started = time.time()
+    in_game_fleet = False
 
     try:
         # 2. Prepare: repair/refuel, set default_stance fire & combat_mode external
         _goal(pilot, "prepare-at-station", {"systemId": dock[0], "poiId": dock[1], "baseId": dock[2], "refuel": True}, timeout_s=180)
         _raw(pilot, "default_stance", {"stance": "fire"}, "spacemolt_battle")
         _gate_call("PATCH", "/accounts/%s/combat-mode" % q, {"mode": "external"})
-        time.sleep(11)
+        time.sleep(10)
 
-        # 3. Game Fleet for first 3 (indices 0, 1, 2); members 3..9 fly directly and join battle by target_id
-        if is_leader:
-            _raw(pilot, "create", {}, "spacemolt_fleet")
-            time.sleep(11)
-            _pid_map = {}
-            try:
-                _sc, _accs = _gate_call("GET", "/accounts")
-                for _a in (_accs.get("accounts") if isinstance(_accs, dict) else []):
-                    if isinstance(_a, dict) and _a.get("username") and _a.get("player_id"):
-                        _pid_map[str(_a["username"])] = str(_a["player_id"])
-            except Exception:
-                pass
-            for m in members[1:3]:
-                _raw(pilot, "invite", {"player_id": _pid_map.get(m, m)}, "spacemolt_fleet")
-                time.sleep(11)
-        elif my_idx in (1, 2):
-            time.sleep(12 * my_idx)
-            _raw(pilot, "accept", {}, "spacemolt_fleet")
-            time.sleep(11)
-
-        # 4. Travel to target system:poi and mark arrived
-        _goal(pilot, "navigate-to-system", {"targetSystemId": cur["system"]}, timeout_s=arrive_timeout)
-        _goal(pilot, "go-to-poi", {"targetPoiId": cur["poi"]}, timeout_s=90)
+        # 3. Travel to target system:poi FIRST so all members are undocked at the EXACT SAME POI before fleet invite!
+        ok_nav = _goal(pilot, "navigate-to-system", {"targetSystemId": cur["system"]}, timeout_s=arrive_timeout)
+        if not ok_nav:
+            ok_nav = _goal(pilot, "navigate-to-system", {"targetSystemId": cur["system"]}, timeout_s=120)
+        ok_poi = _goal(pilot, "go-to-poi", {"targetPoiId": cur["poi"]}, timeout_s=90)
+        if not ok_poi:
+            _raw(pilot, "undock", {}, "spacemolt")
+            time.sleep(10)
+            ok_poi = _goal(pilot, "go-to-poi", {"targetPoiId": cur["poi"]}, timeout_s=90)
         cur = pack_update(DATA, pid, lambda p: p.setdefault("arrived", {}).__setitem__(pilot, True))
 
-        # Wait for pack arrival
-        wait_end = time.time() + min(120.0, arrive_timeout)
+        # Wait for pack arrival at target POI
+        wait_end = time.time() + min(150.0, arrive_timeout)
         min_ready = max(2, int(math.ceil(len(members) * 0.75)))
         while cur and len(cur.get("arrived") or {}) < len(members) and time.time() < wait_end and not (DATA / "fleet" / "STOP").exists():
-            time.sleep(6)
+            time.sleep(5)
+            try:
+                os.utime(order_path)
+            except OSError:
+                pass
             cur = pack_update(DATA, pid, lambda _p: None)
         if not cur or len(cur.get("arrived") or {}) < min_ready:
             if is_leader:
                 pack_update(DATA, pid, lambda p: p.update(state="aborted", flee=True, flee_reason="arrival timeout"))
             return "pack_aborted"
+
+        # 4. Form native spacemolt_fleet AT the target POI (everyone undocked & co-located; overflow joins by target_id)
+        arrived_non_leader = [m for m in members if m != cur["leader"] and (cur.get("arrived") or {}).get(m)]
+        if is_leader:
+            _st_c, _sc_c, _ans_c = _raw(pilot, "create", {}, "spacemolt_fleet")
+            time.sleep(10)
+            if "error" not in (_ans_c or {}):
+                in_game_fleet = True
+                try:
+                    import escort_proto as _ep_p
+                except Exception:
+                    _ep_p = None
+                _invited = []
+                for m in arrived_non_leader:
+                    _pid32 = _ep_p.resolve_player_id(m) if _ep_p else m
+                    _st_i, _sc_i, _ans_i = _raw(pilot, "invite", {"player_id": _pid32}, "spacemolt_fleet")
+                    time.sleep(10)
+                    if "error" in (_ans_i or {}):
+                        # Capacity reached (3 base, higher with Leadership/command hull): remaining members join by target_id
+                        break
+                    _invited.append(m)
+                pack_update(DATA, pid, lambda p: p.update(fleet_invited=_invited, fleet_ready=True))
+                if _invited:
+                    _w_acc = time.time() + 25.0
+                    while time.time() < _w_acc and not (DATA / "fleet" / "STOP").exists():
+                        _c2 = pack_update(DATA, pid, lambda _p: None) or {}
+                        _fj = _c2.get("fleet_joined") or {}
+                        if all(_fj.get(m) for m in _invited):
+                            break
+                        time.sleep(3)
+            else:
+                pack_update(DATA, pid, lambda p: p.update(fleet_invited=[], fleet_ready=True))
+        elif pilot in arrived_non_leader:
+            _w_inv = time.time() + 55.0
+            while time.time() < _w_inv and not (DATA / "fleet" / "STOP").exists():
+                cur = pack_update(DATA, pid, lambda _p: None) or {}
+                if cur.get("state") in ("done", "aborted"):
+                    break
+                if pilot in (cur.get("fleet_invited") or []):
+                    _st_a, _sc_a, _ans_a = _raw(pilot, "accept", {}, "spacemolt_fleet")
+                    time.sleep(10)
+                    if "error" not in (_ans_a or {}):
+                        in_game_fleet = True
+                        pack_update(DATA, pid, lambda p: p.setdefault("fleet_joined", {}).__setitem__(pilot, True))
+                    break
+                if cur.get("fleet_ready"):
+                    break
+                time.sleep(2)
 
         # 5. Snapshot pre-existing wrecks & engage target
         _, wr_before, _ = _raw(pilot, "wrecks", {}, "spacemolt_salvage")
@@ -1297,14 +1389,18 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
         time.sleep(5)
         _, wr_after, _ = _raw(pilot, "wrecks", {}, "spacemolt_salvage")
         looted = 0
+        member_set = set(members)
         for w in wr_after.get("wrecks") or []:
-            if isinstance(w, dict) and w.get("id") not in before_ids and w.get("killer_name") == pilot and w.get("cargo"):
+            if not isinstance(w, dict) or w.get("id") in before_ids or not w.get("cargo"):
+                continue
+            kn = str(w.get("killer_name") or "")
+            if kn == pilot or (is_leader and kn in member_set):
                 _raw(pilot, "loot", {"wreck_id": w["id"]}, "spacemolt_salvage")
                 looted += 1
-                time.sleep(11)
-        print("RESULT %s: hunt_net pack %s (%s x%d @ %s:%s) | %.1f min | looted=%d" % (
+                time.sleep(10)
+        print("RESULT %s: hunt_net pack %s (%s x%d @ %s:%s) | %.1f min | fleet=%s | looted=%d" % (
             pilot, pid, cur.get("species"), len(members), cur["system"], cur["poi"],
-            (time.time() - started) / 60.0, looted), flush=True)
+            (time.time() - started) / 60.0, "yes" if in_game_fleet else "no", looted), flush=True)
         return "ranch_floor" if ranch_floor_hit else "pack_done"
     finally:
         if is_leader:
@@ -1313,6 +1409,11 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
             except Exception:
                 pass
             pack_update(DATA, pid, lambda p: p.update(state="done"))
+        elif in_game_fleet:
+            try:
+                _raw(pilot, "leave", {}, "spacemolt_fleet")
+            except Exception:
+                pass
         _raw(pilot, "default_stance", {"stance": "flee"}, "spacemolt_battle")
         _gate_call("PATCH", "/accounts/%s/combat-mode" % q, {"mode": "flee"})
         _goal(pilot, "prepare-at-station", {"systemId": dock[0], "poiId": dock[1], "baseId": dock[2], "refuel": True}, timeout_s=180)
@@ -1420,18 +1521,26 @@ def main(argv=None):
         ecfg = policy.get("escort") or {}
         is_sentinel = str(pilot).startswith("sentinel-")
         is_flagship = pilot in load_command_flagships(DATA)
-        escort_active = sum(1 for r in claims.values() if r.get("lane") == "escort")
-        base_cap = min(int(ecfg.get("max_ships") or 15), max(3, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
+        req_escort_active = sum(
+            1 for r in claims.values()
+            if r.get("lane") == "escort" and (str(r.get("key") or "").startswith(("escort:field:", "escort:convoy:")))
+        )
+        legacy_escort_active = sum(
+            1 for r in claims.values()
+            if r.get("lane") == "escort" and not (str(r.get("key") or "").startswith(("escort:field:", "escort:convoy:")))
+        )
+        base_cap = min(int(ecfg.get("max_ships") or 20), max(6, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
         escort_cap = base_cap + (4 if (is_sentinel or is_flagship) else 0)
+        legacy_cap = max(2, base_cap // 3)
         min_esc_pow = min(150.0, float(ecfg.get("min_power") or 350.0)) if (is_sentinel or is_flagship) else float(ecfg.get("min_power") or 350.0)
-        if ecfg.get("enabled", True) and escort_active < escort_cap and spow["power"] >= min_esc_pow:
+        if ecfg.get("enabled", True) and spow["power"] >= min_esc_pow:
             p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 12))
             try:
                 import escort_proto as _ep
                 _ereqs = _ep.list_escort_requests(DATA)
             except Exception:
                 _ep, _ereqs = None, []
-            if _ep and _ereqs:
+            if _ep and _ereqs and req_escort_active < escort_cap:
                 _ereqs_near = [r for r in _ereqs if (not ship_doc.get("system") or r.get("system") in p_dists) and len(r.get("escorts") or {}) < int(r.get("needed") or 3)]
                 _ereqs_near.sort(key=lambda r: (-int(r.get("priority") or 0), p_dists.get(r.get("system"), 99)))
                 for req in _ereqs_near:
@@ -1451,12 +1560,18 @@ def main(argv=None):
                         print("%s %s hunt_net: ESCORT PACK (%s %d/%d) -> %s (%s:%s)" % (
                             utc_now(), pilot, req["mode"], len(joined.get("escorts") or {}), need_n, rk, req["system"], req["poi"]
                         ), flush=True)
-                        _goal(pilot, "navigate-to-system", {"targetSystemId": req["system"]}, timeout_s=240)
+                        ok_nav = _goal(pilot, "navigate-to-system", {"targetSystemId": req["system"]}, timeout_s=240)
+                        if not ok_nav:
+                            ok_nav = _goal(pilot, "navigate-to-system", {"targetSystemId": req["system"]}, timeout_s=120)
                         if req.get("poi"):
-                            _goal(pilot, "go-to-poi", {"targetPoiId": req["poi"]}, timeout_s=90)
+                            ok_poi = _goal(pilot, "go-to-poi", {"targetPoiId": req["poi"]}, timeout_s=90)
+                            if not ok_poi:
+                                _raw(pilot, "undock", {}, "spacemolt")
+                                time.sleep(10)
+                                _goal(pilot, "go-to-poi", {"targetPoiId": req["poi"]}, timeout_s=90)
                         _ep.mark_escort_arrived(DATA, rk, pilot)
                         if req["mode"] == "convoy":
-                            _wait_f = time.time() + 35.0
+                            _wait_f = time.time() + 300.0
                             _joined_fleet = False
                             while time.time() < _wait_f and not (DATA / "fleet" / "STOP").exists():
                                 _crec = _ep.get_escort_request(DATA, rk)
@@ -1469,7 +1584,13 @@ def main(argv=None):
                                         _ep.mark_escort_in_fleet(DATA, rk, pilot)
                                         _joined_fleet = True
                                     break
-                                time.sleep(4)
+                                if _crec.get("convoy_started"):
+                                    break
+                                try:
+                                    os.utime(order_path)
+                                except OSError:
+                                    pass
+                                time.sleep(3)
                             if _joined_fleet:
                                 print("%s %s hunt_net: CONVOY FLEET LOCKED on %s (active defense)" % (utc_now(), pilot, rk), flush=True)
                                 _gate_call("PATCH", "/accounts/%s/combat-mode" % urllib.parse.quote(pilot, safe=""), {"mode": "fight"})
@@ -1514,8 +1635,12 @@ def main(argv=None):
                     finally:
                         _ep.release_escort_member(DATA, rk, pilot)
 
-            demands = detect_escort_demands(DATA, world, policy, claims)
+            demands = detect_escort_demands(DATA, world, policy, claims) if legacy_escort_active < legacy_cap else []
+            _covered_pilots = {str(r.get("requester") or "") for r in (_ereqs or []) if r.get("mode") == "convoy"}
+            _covered_systems = {str(r.get("system") or "") for r in (_ereqs or []) if r.get("mode") == "field"}
             for dem in demands:
+                if dem.get("follow") in _covered_pilots or dem.get("system") in _covered_systems:
+                    continue
                 if ship_doc.get("system") and dem["system"] not in p_dists:
                     continue
                 _, st_tup = nearest_station(world["adj"], world["stations_by_sys"], dem["system"], max_hops=6)

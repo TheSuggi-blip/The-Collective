@@ -18,12 +18,14 @@
     "sell_mode": "sell_order_or_bid",
     "instant_hit_bid_ratio": 0.9,
     "undercut_cr": 1,
-    "gift_to_bursar": false
+    "gift_to_bursar": false,
+    "allow_buy_inputs_docked": true
   },
   "logistics": {
     "enabled": true,
     "deposit_target": "faction_or_self",
     "use_needs_tsv": true,
-    "use_industrial_targets": true
+    "use_industrial_targets": true,
+    "allow_buy_inputs_docked": false
   }
 }

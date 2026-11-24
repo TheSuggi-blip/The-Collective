@@ -222,6 +222,32 @@ class EscortAndAutoNetTests(unittest.TestCase):
             self.assertEqual(ep.nearest_policed_system(adj, meta, "lawless_a"), "safe_emp")
             self.assertEqual(ep.nearest_policed_system(adj, meta, "safe_emp"), "safe_emp")
 
+    def test_three_concurrent_field_escorts_and_convoy_started_flag(self):
+        import escort_proto as ep
+        self.assertEqual(ep.MAX_FIELD_REQUESTS, 3)
+        with tempfile.TemporaryDirectory() as td:
+            for idx in (1, 2, 3):
+                r = ep.request_escort(td, f"field:sys{idx}:belt{idx}", "field", "mine-network",
+                                      "mine-network", f"sys{idx}", f"belt{idx}", needed=3, now_t=1000)
+                self.assertIsNotNone(r)
+            # 4th concurrent field request is capped at MAX_FIELD_REQUESTS=3
+            self.assertIsNone(ep.request_escort(td, "field:sys4:belt4", "field", "mine-network",
+                                                "mine-network", "sys4", "belt4", needed=3, now_t=1000))
+            ep.request_escort(td, "convoy:h2:c2", "convoy", "hauler-2", "haul-network", "law_x", "p1", needed=3, now_t=1000)
+            ep.mark_convoy_started(td, "convoy:h2:c2", now_t=1005)
+            rec = ep.get_escort_request(td, "convoy:h2:c2", now_t=1010)
+            self.assertTrue(rec.get("convoy_started"))
+
+    def test_hunt_net_goal_uses_type_and_options_and_craft_net_authoritative_empty(self):
+        h_src = (ROOT / "game" / "fleet" / "hunt_net.py").read_text(encoding="ascii")
+        self.assertNotIn('"goalType"', h_src)
+        self.assertNotIn('"goalOptions"', h_src)
+        self.assertIn('{"type": gtype, "options": opts}', h_src)
+        c_src = (ROOT / "game" / "fleet" / "craft_net.py").read_text(encoding="ascii")
+        self.assertIn("if stored is None:", c_src)
+        u_src = (ROOT / "game" / "fleet" / "upgrades.py").read_text(encoding="ascii")
+        self.assertIn("mode=ro&immutable=1", u_src)
+
 
 if __name__ == "__main__":
     unittest.main()

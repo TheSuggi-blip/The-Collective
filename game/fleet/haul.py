@@ -1112,14 +1112,15 @@ def main(argv=None):
                                     _invited.append(_epilot)
                                 if _invited:
                                     _ep.set_convoy_fleet(DATA, esc_key, pilot, _invited)
-                                    _wait_acc = time.time() + 25.0
+                                    _wait_acc = time.time() + 35.0
                                     while time.time() < _wait_acc and not stop_requested():
                                         _r2 = _ep.get_escort_request(DATA, esc_key) or {}
                                         _in_n = sum(1 for _p in _invited if ((_r2.get("escorts") or {}).get(_p) or {}).get("in_fleet"))
                                         if _in_n >= len(_invited):
                                             break
-                                        time.sleep(4)
+                                        time.sleep(3)
                                     say("convoy fleet locked with %d/%d escorts" % (len(_invited), len(_arrived_es)))
+                            _ep.mark_convoy_started(DATA, esc_key)
                         ok_d, msg_d = go_dock(dloc)
                         if ok_d:
                             save_market(dloc[2], dloc[0])

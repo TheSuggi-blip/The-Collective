@@ -70,7 +70,7 @@ def _connect_ro(data_dir):
     db = Path(data_dir) / "store" / "read.db"
     if not db.is_file():
         return None
-    conn = sqlite3.connect(f"file:{db}?mode=ro", uri=True, timeout=3.0)
+    conn = sqlite3.connect(f"file:{db}?mode=ro&immutable=1", uri=True, timeout=3.0)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -666,6 +666,18 @@ def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
 
 
 def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
+    # Hydrate blind fleet-engine sessions (empty location.system) before prepare-at-station so goals never hang!
+    try:
+        st_a, out_a = gate_mod.call("get", "/accounts/%s" % gate_mod.q(pilot), timeout=15)
+        if st_a == 200:
+            da = json.loads(out_a)
+            if da.get("hasExecutingGoal"):
+                return False, "A goal is already executing on this account. Try again shortly."
+            loc = ((da.get("state") or {}).get("location") or {})
+            if not str(loc.get("system") or ""):
+                _gate_raw(gate_mod, pilot, "get_status", {}, group="spacemolt")
+    except Exception:
+        pass
     try:
         status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
                                     {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
@@ -832,7 +844,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                         q_txt = _fmt_num(price) if price else "n/a"
                         r["note"] = "bought listed %s (%s cr vs quote %s)" % (hull, _fmt_num(list_price), q_txt)
                         row_changed = True
-                        print("UPGRADE bought %s: %s -> %s (%s cr, saved vs quote %s)" % (r["id"], pilot, hull, _fmt_num(list_price), q_txt))
+                        print("UPGRADE bought %s: %s -> %s (%s cr, saved vs quote %s)" % (r["id"], pilot, hull, _fmt_num(list_price), q_txt), flush=True)
                         return
 
             if not price:
@@ -859,7 +871,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                 r["state"], r["paid"], r["updated_at"], r["last_poll"] = "building", price, int(now), int(now)
                 r["note"] = "commissioned %s (%s cr)" % (hull, _fmt_num(price))
                 row_changed = True
-                print("UPGRADE commissioned %s: %s -> %s (%s cr)" % (r["id"], pilot, hull, _fmt_num(price)))
+                print("UPGRADE commissioned %s: %s -> %s (%s cr)" % (r["id"], pilot, hull, _fmt_num(price)), flush=True)
             else:
                 r["note"], r["updated_at"] = "commission failed: %s" % json.dumps(c_ans)[:90], int(now)
                 row_changed = True
@@ -947,7 +959,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
                     r.pop("ready_to_switch", None)
                     r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into %s @ %s" % (hull, base_id)
-                    print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id))
+                    print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id), flush=True)
                 else:
                     r["note"] = "switch failed: %s" % json.dumps(sw_ans)[:80]
             finally:
@@ -964,8 +976,11 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
         if n_w == 1:
             _process_funded_row(funded_batch[0])
         else:
-            with _cf.ThreadPoolExecutor(max_workers=n_w) as _pool:
-                list(_pool.map(_process_funded_row, funded_batch))
+            _pool = _cf.ThreadPoolExecutor(max_workers=n_w)
+            _futs = [_pool.submit(_process_funded_row, _row) for _row in funded_batch]
+            _rem = max(30.0, budget_s - (time.time() - t0) + 15.0)
+            _cf.wait(_futs, timeout=_rem)
+            _pool.shutdown(wait=False, cancel_futures=True)
     return 0
 
 

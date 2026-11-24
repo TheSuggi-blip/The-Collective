@@ -112,12 +112,20 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                     if float(bid or 0) > 0 and int(bq or 0) > 0:
                         prev_b, prev_q = global_bid.get(i_s, (0.0, 0))
                         global_bid[i_s] = (max(prev_b, float(bid)), prev_q + int(bq))
+            need_craft_caps = {}
             if "need_status" in tbls:
-                for (craft_s,) in con.execute("SELECT craft FROM need_status WHERE craft IS NOT NULL").fetchall():
+                ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
+                if "colour" in ns_cols:
+                    ns_rows = con.execute("SELECT craft FROM need_status WHERE craft IS NOT NULL AND LOWER(COALESCE(colour, '')) != 'green'").fetchall()
+                else:
+                    ns_rows = con.execute("SELECT craft FROM need_status WHERE craft IS NOT NULL").fetchall()
+                for (craft_s,) in ns_rows:
                     for part in str(craft_s).split(";"):
-                        m = re.match(r"\s*([a-z0-9_]+)\s+\d+", part.strip())
+                        m = re.match(r"\s*([a-z0-9_]+)\s+(\d+)", part.strip())
                         if m:
-                            need_crafts.add(m.group(1))
+                            iid_n, q_n = m.group(1), int(m.group(2))
+                            need_crafts.add(iid_n)
+                            need_craft_caps[iid_n] = max(need_craft_caps.get(iid_n, 0), q_n)
             if "holdings" in tbls:
                 for iid, tot in con.execute("SELECT item, COALESCE(SUM(units),0) FROM holdings GROUP BY item"):
                     if iid:
@@ -128,16 +136,19 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                         stock_by_item[str(iid)] = int(stk or 0)
                         if int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
                             need_crafts.add(str(iid))
+                            need_craft_caps[str(iid)] = max(need_craft_caps.get(str(iid), 0), int(keep))
         finally:
             con.close()
+    else:
+        need_craft_caps = {}
 
     dem_rel = str(policy.get("demand_file") or "game/craft-demand.json")
     dem_p = Path(dem_rel) if Path(dem_rel).is_absolute() else (Path(repo_root) / dem_rel)
     demand = read_json(dem_p, {})
     return {
         "recipes": recipes, "books_by_base": books_by_base, "global_bid": global_bid,
-        "item_vals": item_vals, "need_crafts": need_crafts, "stock_by_item": stock_by_item,
-        "demand": demand,
+        "item_vals": item_vals, "need_crafts": need_crafts, "need_craft_caps": need_craft_caps,
+        "stock_by_item": stock_by_item, "demand": demand,
     }
 
 
@@ -208,7 +219,7 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
     demand = world.get("demand") or {}
     stock_map = world.get("stock_by_item") or {}
     stored = {str(k): int(v or 0) for k, v in (stored_items or {}).items() if int(v or 0) > 0}
-    allow_buy = bool(policy.get("allow_buy_inputs_docked", True))
+    allow_buy = bool(sub.get("allow_buy_inputs_docked", policy.get("allow_buy_inputs_docked", True)))
     budget = min(
         max(0, int(credits or 0) - int(policy.get("min_wallet_keep_cr") or 15000)),
         int(policy.get("max_buy_spend_per_cycle_cr") or 25000),
@@ -217,14 +228,23 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
     est_fee = float(policy.get("max_fee_per_run_cr") or 1500) * 0.2
 
     ind_targets = set()
+    ind_caps = {}
     if is_log:
+        nc_caps = world.get("need_craft_caps") or {}
         if sub.get("use_needs_tsv", True):
-            ind_targets |= set(world.get("need_crafts") or set())
+            for iid in (world.get("need_crafts") or set()):
+                cap = int(nc_caps.get(str(iid)) or 0)
+                if cap <= 0 or stock_map.get(str(iid), 0) < cap:
+                    ind_targets.add(str(iid))
+                    if cap > 0:
+                        ind_caps[str(iid)] = max(ind_caps.get(str(iid), 0), cap)
         if sub.get("use_industrial_targets", True):
             for iid, cfg in (demand.get("industrial_targets") or {}).items():
                 cap = int((cfg or {}).get("cap") or 0)
                 if cap <= 0 or stock_map.get(str(iid), 0) < cap:
                     ind_targets.add(str(iid))
+                    if cap > 0:
+                        ind_caps[str(iid)] = max(ind_caps.get(str(iid), 0), cap)
 
     comm_targets = set((demand.get("commercial_targets") or {}).keys()) if is_trade else set()
     min_margin = float(sub.get("min_margin_pct") or 0.22)
@@ -292,31 +312,55 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
 
         if is_trade:
             local_b = book.get(out_item) or {}
-            bid = float(local_b.get("bid") or 0)
-            bq = int(local_b.get("bid_qty") or 0)
+            local_bid = float(local_b.get("bid") or 0)
+            local_bq = int(local_b.get("bid_qty") or 0)
+            bid, bq = local_bid, local_bq
+            # When spending cash on market inputs, REQUIRE a live LOCAL buyer bid so cash converts back to profit immediately!
             if bid <= 0:
+                if buys:
+                    continue
                 bid, bq = gbid.get(out_item, (0.0, 0))
             if bid <= 0 or bq < min_bq:
                 continue
+            if buys and local_bq > 0:
+                max_abs_runs = max(1, local_bq // max(1, out_qty))
+                if runs > max_abs_runs:
+                    runs = max_abs_runs
+                    buys = []
+                    tot_buy = 0
+                    for in_item, req_q in rec["inputs"]:
+                        short_q = max(0, req_q * runs - stored.get(in_item, 0))
+                        if short_q > 0:
+                            ask = int(round(float((book.get(in_item) or {}).get("ask") or 0)))
+                            buys.append((in_item, short_q, ask))
+                            tot_buy += short_q * ask
             rev_per_run = bid * out_qty
             prof_per_run = rev_per_run - cost_per_run - est_fee
             margin = prof_per_run / max(1.0, cost_per_run)
             if prof_per_run < min_profit or margin < min_margin:
                 continue
-            score = prof_per_run * runs * (1.25 if out_item in comm_targets else 1.0) * (1.2 if float(local_b.get("bid") or 0) > 0 else 1.0)
+            score = prof_per_run * runs * (1.25 if out_item in comm_targets else 1.0) * (1.2 if local_bid > 0 else 1.0)
             cand = {
                 "recipe": rec["id"], "makes": out_item, "per_run": out_qty, "runs": runs,
                 "buys": buys, "est_profit": round(prof_per_run * runs, 1), "margin_pct": round(margin * 100.0, 1),
-                "sell_price": int(round(bid)), "mode": "commercial", "score": round(score, 2),
+                "sell_price": int(round(bid)), "local_bid": int(round(local_bid)),
+                "mode": "commercial", "score": round(score, 2),
             }
         else:
+            cap_i = ind_caps.get(out_item, 0)
+            if cap_i > 0:
+                rem_need = max(0, cap_i - int(stock_map.get(out_item, 0)))
+                if rem_need <= 0:
+                    continue
+                cap_runs = max(1, (rem_need + max(1, out_qty) - 1) // max(1, out_qty))
+                runs = min(runs, cap_runs)
             prio_boost = 5.0 if out_item in (world.get("need_crafts") or set()) else 1.0
             stored_ratio = 1.0 if not buys else 0.6
             score = prio_boost * stored_ratio * runs * max(10.0, float(ivals.get(out_item) or 50.0))
             cand = {
                 "recipe": rec["id"], "makes": out_item, "per_run": out_qty, "runs": runs,
                 "buys": buys, "est_profit": 0.0, "margin_pct": 0.0,
-                "sell_price": 0, "mode": "industrial", "score": round(score, 2),
+                "sell_price": 0, "local_bid": 0, "mode": "industrial", "score": round(score, 2),
             }
         if best is None or cand["score"] > best["score"]:
             best = cand
@@ -450,7 +494,12 @@ def main(argv=None):
             return 0
 
     def get_live_stored(base_id):
-        d = _body(raw("view", {"station_id": base_id}, group="spacemolt_storage"))
+        ans = raw("view", {"station_id": base_id}, group="spacemolt_storage")
+        if not isinstance(ans, dict) or "error" in ans:
+            return None
+        d = _body(ans)
+        if not isinstance(d, dict) or ("items" not in d and "storage" not in d and "base_id" not in d):
+            return None
         rows = d.get("items") or d.get("storage") or []
         out = {}
         for r in rows if isinstance(rows, list) else []:
@@ -458,6 +507,7 @@ def main(argv=None):
                 out[str(r["item_id"])] = out.get(str(r["item_id"]), 0) + int(r.get("quantity") or 0)
         return out
 
+    onetime_booked = [0]
     try:
         before = get_credits()
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
@@ -468,7 +518,7 @@ def main(argv=None):
             time.sleep(30)
             return 0
         stored = get_live_stored(base_id)
-        if not stored:
+        if stored is None:
             import worldcache as _wc
             stor_all = _wc.read_json_cached(DATA / "stock" / "storage.json", {}, ttl_s=30.0)
             p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
@@ -489,20 +539,43 @@ def main(argv=None):
 
         print("%s %s craft_net: starting %dx %s (%s) at %s" % (utc_now(), pilot, int(job["runs"] * job["per_run"]), job["makes"], job["mode"], base_id), flush=True)
         # 1. Buy any short docked inputs via real buy-items goal & store them for workshop
+        buy_spent = 0
         for iid, qty, ask in job["buys"]:
+            cr_b0 = get_credits()
             ok_b, _rb = goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(ask * 1.02) + 2, "maxQuantity": int(qty)}]}, timeout=120)
             time.sleep(TICK)
+            cr_b1 = get_credits()
+            if cr_b0 > 0 and cr_b1 >= 0 and cr_b0 > cr_b1:
+                buy_spent += (cr_b0 - cr_b1)
             if not ok_b:
+                if buy_spent > 0:
+                    gate.book_onetime(pilot, "craft_net input stock %s" % iid, -int(buy_spent), data=str(DATA))
+                    onetime_booked[0] -= int(buy_spent)
                 notes.append("buy err %s" % iid)
                 _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
                 return 0
             raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
             time.sleep(TICK)
 
-        # 2. Execute docked craft (exact route_run.py wire schema: group='spacemolt', quantity=runs*per_run)
-        r_c = raw("craft", {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}, group="spacemolt")
+        # 2. Dry-run quote check + execute docked craft (exact route_run.py wire schema: quantity=runs*per_run)
+        asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+        q_c = _body(raw("craft", dict(asked_c, dry_run=True), group="spacemolt"))
+        q_fee = float(q_c.get("credits_total") or 0)
+        max_fee_tot = float(policy.get("max_fee_per_run_cr") or 1500) * max(1, int(job["runs"]))
+        if q_c.get("have_inputs") is False or (q_fee > 0 and q_fee > max_fee_tot):
+            if buy_spent > 0:
+                gate.book_onetime(pilot, "craft_net input stock %s" % job["makes"], -int(buy_spent), data=str(DATA))
+                onetime_booked[0] -= int(buy_spent)
+            notes.append("quote refuse %s (inputs=%s fee=%d)" % (job["recipe"], q_c.get("have_inputs"), int(q_fee)))
+            _stamp_craft_cooldown("%s:%s" % (pilot, job["recipe"]), 1800, data_dir=DATA)
+            _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
+            return 0
+        r_c = raw("craft", asked_c, group="spacemolt")
         time.sleep(TICK)
         if "error" in r_c:
+            if buy_spent > 0:
+                gate.book_onetime(pilot, "craft_net input stock %s" % job["makes"], -int(buy_spent), data=str(DATA))
+                onetime_booked[0] -= int(buy_spent)
             notes.append("craft err %s: %s" % (job["recipe"], str(r_c.get("error") or "")[:60]))
             _stamp_craft_cooldown("%s:%s" % (pilot, job["recipe"]), 1800, data_dir=DATA)
             _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
@@ -512,10 +585,29 @@ def main(argv=None):
 
         # 3. Strict P5 post-craft handling
         if job["mode"] == "commercial":
-            raw("create_sell_order", {"item_id": job["makes"], "quantity": made_qty, "price_each": max(1, job["sell_price"])}, group="spacemolt_market")
-            time.sleep(TICK)
-            notes.append("listed %dx @ %d" % (made_qty, job["sell_price"]))
+            sold_now = False
+            if int(job.get("local_bid") or 0) > 0:
+                raw("withdraw", {"item_id": job["makes"], "quantity": made_qty, "target": "self"}, group="spacemolt_storage")
+                time.sleep(TICK)
+                r_s = raw("sell", {"item_id": job["makes"], "quantity": made_qty}, group="spacemolt_market")
+                time.sleep(TICK)
+                if "error" not in r_s:
+                    sold_now = True
+                    notes.append("sold %dx @ ~%d" % (made_qty, job["local_bid"]))
+                else:
+                    raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+            if not sold_now:
+                if buy_spent > 0:
+                    gate.book_onetime(pilot, "craft_net listed stock %s" % job["makes"], -int(buy_spent), data=str(DATA))
+                    onetime_booked[0] -= int(buy_spent)
+                raw("create_sell_order", {"item_id": job["makes"], "quantity": made_qty, "price_each": max(1, job["sell_price"])}, group="spacemolt_market")
+                time.sleep(TICK)
+                notes.append("listed %dx @ %d" % (made_qty, job["sell_price"]))
         else:
+            if buy_spent > 0:
+                gate.book_onetime(pilot, "craft_net industrial stock %s" % job["makes"], -int(buy_spent), data=str(DATA))
+                onetime_booked[0] -= int(buy_spent)
             raw("withdraw", {"item_id": job["makes"], "quantity": made_qty, "target": "self"}, group="spacemolt_storage")
             time.sleep(TICK)
             r_d = raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
@@ -533,7 +625,7 @@ def main(argv=None):
             "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
             "minutes": mins, "credits_before": before, "credits_after": after,
             "delta": after - before if before and after else 0,
-            "one_time": 0, "notes": notes[:10],
+            "one_time": onetime_booked[0], "notes": notes[:10],
         }
         runs_p = DATA / "routes" / "runs.jsonl"
         runs_p.parent.mkdir(parents=True, exist_ok=True)

@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 DEFAULT_TTL_S = 1800
-MAX_FIELD_REQUESTS = 1
+MAX_FIELD_REQUESTS = 3
 MAX_CONVOY_REQUESTS = 4
 
 
@@ -385,6 +385,25 @@ def set_convoy_fleet(data_dir, key, leader_pilot, invited_pilots=None, now_t=Non
             return None
         rec["fleet_leader"] = str(leader_pilot)
         rec["fleet_invited"] = invited
+        rec["convoy_started"] = True
+        rec["updated_at"] = int(now_t)
+        reqs[str(key)] = rec
+        _write_json(req_p, {"updated_at": int(now_t), "requests": reqs})
+        return rec
+
+    return _with_lock(data_dir, _op)
+
+
+def mark_convoy_started(data_dir, key, now_t=None):
+    """Signal that the convoy leader finished fleet setup so overflow escorts can start following immediately."""
+    now_t = time.time() if now_t is None else float(now_t)
+
+    def _op(req_p):
+        reqs = _clean_requests_unlocked(_read_json(req_p, {}), now_t)
+        rec = reqs.get(str(key))
+        if not rec or not rec.get("active", True):
+            return None
+        rec["convoy_started"] = True
         rec["updated_at"] = int(now_t)
         reqs[str(key)] = rec
         _write_json(req_p, {"updated_at": int(now_t), "requests": reqs})

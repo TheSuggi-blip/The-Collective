@@ -98,6 +98,25 @@ class HuntNetTests(unittest.TestCase):
             self.assertEqual(last["state"], "launched")
             self.assertEqual(len(last["members"]), need_sz)
 
+            # Verify max_forming_packs coalescing prevents fragmented 1/3 deadlocks
+            pol2 = json.loads(json.dumps(pol))
+            pol2["packs"]["max_forming_packs"] = 1
+            pol2["packs"]["target_share"] = 0.5
+            p_a = hunt_net.pack_try_join_or_create(tmp, "drone-10", "sys_a", spow, targets, w, pol2, 40, now_t=now_t + 1)
+            self.assertEqual(p_a["state"], "forming")
+            # A pilot out of rally range cannot open a 2nd forming pack when max_forming_packs=1
+            p_far = hunt_net.pack_try_join_or_create(tmp, "drone-11", "sys_isolated", spow, targets, w, pol2, 40, now_t=now_t + 1)
+            self.assertIsNone(p_far)
+            # Packs strictly exclude solo-able herds (no overlap with solo fields!)
+            pack_keys = {t["place_key"] for t in targets if t["mode"] == "wildlife"}
+            self.assertNotIn("sys_a:poi_soft", pack_keys)
+            # A strong T2 ship that can solo a 120-hull cauldronback does NOT form a pack on it
+            t2_doc = {"name": "drone-99", "system": "sys_a", "max_hull": 200, "max_shield": 250, "armor": 8, "tier": 2,
+                      "modules": [{"type": "pulse_laser_iii"}, {"type": "pulse_laser_iii"}, {"type": "pulse_laser_iii"}]}
+            t2_pow = hunt_net.compute_ship_power(t2_doc, weps)
+            t2_packs = hunt_net.score_pack_targets(t2_doc, t2_pow, w, pol, {}, {})
+            self.assertNotIn("sys_b:poi_cauldron", {t["place_key"] for t in t2_packs})
+
     def test_solo_f38_floor_ranch_exclusion_and_cooldown(self):
         weps = self._weps()
         t0_doc = {"name": "drone-9", "system": "sys_a", "max_hull": 75, "max_shield": 80, "armor": 3, "tier": 0, "modules": [{"type": "pulse_laser_i"}]}

@@ -86,6 +86,39 @@ class TestCraftNet(unittest.TestCase):
             craft_net._stamp_craft_cooldown("hauler-19:smelt_steel", 600, data_dir=data)
             self.assertFalse(craft_net.has_craft_job("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world, stor_cache=stor))
 
+    def test_logistics_no_market_buy_and_need_cap_and_trade_local_bid_gate(self):
+        pol = {
+            "enabled": True, "max_runs_per_cycle": 5, "max_fee_per_run_cr": 500, "min_wallet_keep_cr": 10000,
+            "allow_buy_inputs_docked": True, "max_buy_spend_per_cycle_cr": 25000,
+            "trade": {"enabled": True, "allow_buy_inputs_docked": True, "min_margin_pct": 0.22, "min_profit_cr": 150, "min_bid_qty": 3},
+            "logistics": {"enabled": True, "allow_buy_inputs_docked": False, "use_needs_tsv": True, "use_industrial_targets": True},
+        }
+        world = {
+            "recipes": {
+                "make_cab": {"id": "make_cab", "name": "Make Cabin", "facility_only": False,
+                             "inputs": [("titanium_alloy", 4)], "outputs": [("economy_passenger_cabin", 1)]},
+                "grow_sp": {"id": "grow_sp", "name": "Grow Sunspindle", "facility_only": False,
+                            "inputs": [("water_ice", 5)], "outputs": [("sunspindle", 10)]},
+            },
+            "books_by_base": {"b1": {"titanium_alloy": {"ask": 500, "ask_qty": 50}, "water_ice": {"ask": 10, "ask_qty": 200}}},
+            "global_bid": {"sunspindle": (200.0, 100)},
+            "item_vals": {"titanium_alloy": 500.0, "economy_passenger_cabin": 5000.0, "water_ice": 10.0, "sunspindle": 150.0},
+            "need_crafts": {"economy_passenger_cabin"},
+            "need_craft_caps": {"economy_passenger_cabin": 1},
+            "stock_by_item": {"economy_passenger_cabin": 3},
+            "demand": {},
+        }
+        # 1. Logistics refuses to buy inputs off market AND refuses once stock (3) >= cap (1)
+        self.assertIsNone(craft_net.pick_craft_job("Logistics", "b1", {}, 50000, world, pol))
+        self.assertIsNone(craft_net.pick_craft_job("Logistics", "b1", {"titanium_alloy": 20}, 50000, world, pol))
+        # 2. Trade refuses to spend cash buying inputs when local station bid == 0 (only global bid exists)
+        self.assertIsNone(craft_net.pick_craft_job("Trade", "b1", {}, 50000, world, pol))
+        # 3. Trade accepts when local station HAS live bid >= min_bid_qty covering margin!
+        world["books_by_base"]["b1"]["sunspindle"] = {"bid": 200.0, "bid_qty": 50}
+        tj = craft_net.pick_craft_job("Trade", "b1", {}, 50000, world, pol)
+        self.assertIsNotNone(tj)
+        self.assertEqual(tj["local_bid"], 200)
+
 
 if __name__ == "__main__":
     unittest.main()
