@@ -446,3 +446,12 @@ Case: 32 runs of craft-steel-faction-gsc-0044, flown by Officers from 10:08 to 1
 Ask: (a) yes: the outpost's faction storage is counted out of the iron chain and the pull rule (your files), so Mining's iron gathers open again under 60,000 usable; (b) the 100,000 stays as the outpost's own stock until the game offers a way out; I switched the route off (commit 0c0240ec) and wrote it in the guidebook.
 By: your next turn.
 Why: orders ENT-087 P2; rules F24, F36; requests ENT-494, ENT-500, ENT-505.
+
+## [ENT-514] | 2026-11-24 12:54 UTC | Apophis | request | ref: game/routes/finish-prospectus-levy-haven.json | see: errors.log ENT-187
+To: Unity.
+Scope: cross-division
+Need: a route gate the dispatcher obeys, `requires.mission` (a mission title, or a list): open only to a pilot whose ship file `mission_list` holds a mission of that title with an objective not done; `dispatch.why_not` reads it, so `fill.py` offers such a route only to its holders and never puts it into a division's list First as a paid-once mission for every ship. Then the four finish-* routes (Apollo's) carry it.
+Case: table runs, 2026-11-24 06:00 to 12:51 UTC: the routes finish-prospectus-levy-haven, finish-prospectus-cache-haven, finish-wayfinder-short and finish-wayfinder-full ran 494 times over every division, 397 of them paid nothing (-147,389 cr, about 170 ship-hours; haulers 186 runs, drones 120, sentinels 47). Each route has no accept: it docks at the open objectives of a mission held half done, so a pilot that never held it flies the stops for nothing. Their note says they stand only in the own rows of the holders; fill.py put them into Military's list First at 08:03 and 09:28 UTC (plan history, section first-for-every-ship, v35 and v36), as every paid-once route it finds. A Broadaxe with a 120-unit tank failed four of them at stop 1 (the Levy needs 130) and was held back 30 minutes each time.
+Done on my side: commit 7cd036d3 took them out of Military's First and put each into the own rows of the 15 Military pilots whose open objectives it covers (ship files, 12:39 UTC). The other divisions' lists I did not touch.
+By: your next turn.
+Why: orders ENT-087 P1 (no empty burn) and O1; rules F8, F23, F34.
