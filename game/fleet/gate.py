@@ -141,11 +141,12 @@ def want(pilot, why=''):
 
 def release(pilot):
     kind, name = division.member()
-    what = division.order_of(pilot)
+    what = division.order_of(pilot, division.DATA)
     if what.startswith('hand ') and (what == division.hand_mark() or name == 'Unity'):
         os.remove(hold_file(pilot))
-        # Clear any leftover want token owned by this member so dispatch.py never re-holds the pilot (ENT-192)
-        wf = os.path.join(division.DATA, 'fleet', 'want', division.file_name(pilot))
+        # Clear any leftover want token owned by this member so dispatch.py never re-holds the pilot (ENT-192);
+        # division.want_path, read from division.DATA as hold_file is (requests ENT-526, ENT-527)
+        wf = str(division.want_path(pilot, division.DATA))
         try:
             if os.path.isfile(wf):
                 wd = json.loads(open(wf, encoding='utf-8').read())
