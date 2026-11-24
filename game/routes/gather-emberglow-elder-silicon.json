@@ -30,5 +30,14 @@
    "silver_ore"
   ]
  },
- "lift_to": 1
+ "lift_to": 1,
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 2,
+  "minutes": 18,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
+  "hours": 12,
+  "last_run": "2026-11-24T00:32:01Z"
+ }
 }
