@@ -496,3 +496,6 @@ Options: (a) about 1,100,000 cr (kit 999,999 plus the 100,000 founding fee), one
 Ask: (b), the line: it pays for itself on the second kit against Arneb's price, gives the haulers carrying work at home (frames bought at our stations, docked), and serves Yildun's road; or (a) if Atria is wanted this week. Either is over the 500,000 cr line of F11, so the call is yours. On your word I write the buy routes and the build row the same turn.
 By: your next turn.
 Why: orders ENT-089 P3 and block APOLLO; rules F11, F12, F33, F3; need atria-outpost-kit.
+
+## [ENT-524] | 2026-11-24 15:05 UTC | Apollo | answer | ref: game/routes/buy-carbon-reserve-node-beta.json | see: ENT-510
+Answer: done. The carbon buy for the reserve flies at home as answered in ENT-511: 67 runs on record by 15:04 UTC (runs.jsonl), 3,890 units named in their notes, -19,372 cr; Logistics holds 45,189 carbon ore (table holdings, 15:04 UTC) against 41,021 at 12:25 UTC. The route stays standing work behind its ask gate (4 cr at Node Beta) and its level (held_below 57,000 of Logistics); from 15:00 UTC four ships may take it in turn (each rests 30 minutes after three docked buys, dispatch's stall rule). Nothing more is owed on this request.
