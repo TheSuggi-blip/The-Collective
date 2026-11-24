@@ -5,6 +5,7 @@
  "routes": [
   "store-hold-central-nexus",
   "store-hold-frontier-station-near",
+  "give-mining-laser-scout-central-nexus",
   "give-scout-stores-node-beta",
   "give-scout-stores-central-nexus",
   "give-scout-stores-synchrony",
@@ -128,6 +129,7 @@
  "ships": {
   "store-hold-central-nexus": 50,
   "store-hold-frontier-station-near": 50,
+  "give-mining-laser-scout-central-nexus": 50,
   "give-scout-stores-node-beta": 50,
   "give-scout-stores-central-nexus": 50,
   "give-scout-stores-synchrony": 50,
