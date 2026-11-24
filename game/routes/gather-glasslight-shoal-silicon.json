@@ -16,12 +16,12 @@
  },
  "measured": {
   "date": "2026-11-24",
-  "runs": 8,
-  "minutes": 90,
-  "credits_per_run": -230,
-  "cph_per_ship": -180,
+  "runs": 5,
+  "minutes": 91,
+  "credits_per_run": -580,
+  "cph_per_ship": -410,
   "hours": 12,
-  "last_run": "2026-11-24T02:03:47Z"
+  "last_run": "2026-11-24T16:26:03Z"
  },
  "jettison_gangue": [
   "iron_ore",

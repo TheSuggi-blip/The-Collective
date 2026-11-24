@@ -16,12 +16,12 @@
  },
  "measured": {
   "date": "2026-11-24",
-  "runs": 2,
-  "minutes": 147,
-  "credits_per_run": -880,
-  "cph_per_ship": -360,
+  "runs": 5,
+  "minutes": 158,
+  "credits_per_run": -1140,
+  "cph_per_ship": -440,
   "hours": 12,
-  "last_run": "2026-11-24T08:47:23Z"
+  "last_run": "2026-11-24T16:43:54Z"
  },
  "gift": {
   "to": "hauler",

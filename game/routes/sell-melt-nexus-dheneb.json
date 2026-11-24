@@ -42,5 +42,14 @@
     "crystal_melt"
    ]
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 6,
+  "minutes": 25,
+  "credits_per_run": 77520,
+  "cph_per_ship": 164930,
+  "hours": 12,
+  "last_run": "2026-11-24T17:30:13Z"
+ }
 }

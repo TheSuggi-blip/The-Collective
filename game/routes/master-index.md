@@ -17,12 +17,12 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 97 | 23 | 74 | mission-last-known-position-crimson: 8,030 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 19 | 5 | 14 | sell-ember-experiment-dheneb: 333,190 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 97 | 51 | 46 | not measured yet |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 97 | 23 | 74 | finish-five-capitals-sol: 9,720 cr a run |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 21 | 5 | 16 | sell-loot-at-dheneb: 262,770 cr per ship-hour |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 93 | 52 | 41 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 38 | 17 | 21 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 669 | 126 | 534 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 5 | 1 | 4 | need-melt-crucible: -440 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 669 | 126 | 534 | mission-old-charts-sol: 14,280 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 7 | 0 | 7 | sell-ember-nexus-dheneb: -420 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 62 | 19 | 43 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
 | All | | 987 | 242 | 736 | |
 

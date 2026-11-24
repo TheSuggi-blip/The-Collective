@@ -6,5 +6,14 @@
  "policy": "game/mine-policy.json",
  "minutes": 45,
  "max_ships": 6,
- "standing": true
+ "standing": true,
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 5,
+  "minutes": 47,
+  "credits_per_run": -370,
+  "cph_per_ship": -470,
+  "hours": 12,
+  "last_run": "2026-11-24T17:10:23Z"
+ }
 }

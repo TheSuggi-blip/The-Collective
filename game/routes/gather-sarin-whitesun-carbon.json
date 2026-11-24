@@ -32,5 +32,14 @@
    "platinum_ore",
    "silver_ore"
   ]
+ },
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 1,
+  "minutes": 191,
+  "credits_per_run": -1240,
+  "cph_per_ship": -390,
+  "hours": 12,
+  "last_run": "2026-11-24T14:05:36Z"
  }
 }

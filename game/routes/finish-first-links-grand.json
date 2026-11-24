@@ -63,5 +63,12 @@
    ],
    "redock": true
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 6,
+  "minutes": 10,
+  "credits_per_run": 2580,
+  "cph_per_ship": 15590
+ }
 }

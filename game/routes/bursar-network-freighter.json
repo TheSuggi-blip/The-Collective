@@ -9,5 +9,14 @@
  "standing": true,
  "requires": {
   "min_cargo": 151
+ },
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 58,
+  "minutes": 30,
+  "credits_per_run": -420,
+  "cph_per_ship": -1060,
+  "hours": 12,
+  "last_run": "2026-11-24T17:36:03Z"
  }
 }

@@ -49,10 +49,10 @@
   "empire": "nebula"
  },
  "measured": {
-  "date": "2026-11-23",
-  "runs": 17,
-  "minutes": 49,
-  "credits_per_run": 2880,
-  "cph_per_ship": 3670
+  "date": "2026-11-24",
+  "runs": 35,
+  "minutes": 48,
+  "credits_per_run": 3190,
+  "cph_per_ship": 4020
  }
 }
