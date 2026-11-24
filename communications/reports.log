@@ -427,3 +427,12 @@ Failed: three Apophenia commissions still sourcing on one neural interface gel e
 Requests: none new; none open to me.
 Suggestions: gate.release removes the member's want file (Unity, Trinity); the module-slot KPI counts a bursar desk's utility slot as filled by design, or bursar-network max_cargo 170 (Unity).
 Report: melt-to-hex-star-plasma-test-listed-apophenia.
+
+## [ENT-192] | 2026-11-24 15:59 UTC | Zero | session | ref: reports/2026-11-24_zero_yards-fed-mine-network-fixed-far-iron-opened.md | see: orders.log ENT-090
+Session: scheduled run turn-zero -- Resonance Miner yards fed, mine-network fixed and tuned, nine far iron gathers opened.
+Did: two once feed routes into the Node Beta yard's bids (titanium at Procyon, sensors at Ironlight; commit d9bd5638), five titanium runs and one sensor run sold in; mine_net.py fixed by fleet-build (5a5c10a3, queue ENT-307) and its policy tuned (deposit_stations, market_tier false, exclude_pois 76 belts, cap 6); nine iron gathers 2 to 4 jumps beyond the border at 3 a belt (f815bbc9, 20d0f4e8, 54313ded); 18 Then caps lowered to carries, jump loop 25 to 20; two listed Bonanzas queued (u-9, u-10); silicon promoted to knowledge/silicon-ore.md; Standing Plan and skill mining-chains.
+Worked: two Resonance Miners SOURCING to BUILDING (commission_status 15:50 UTC); AutoNet mine-network 0/37 to 6/90 [OK]; fill gate HALT 10 waiting (15:39 UTC) to PASS (15:51, 15:55 UTC); Mining's last hour +38,977 cr net (money tool), 24 h purse +92.3k to +109.5k an hour (scorecard); no ship lost.
+Failed: mine-network mined nothing 13:32 to 15:12 UTC (loader read columns read.db lacks; fixed); five ships at GSC-0027 Spacetime Seep from two claims made before the exclusion list; seven new far systems took three ships at once, not one for three runs (F3, P7); own files left uncommitted in the clone twice (errors.log ENT-193); tier-2 hulls delivered still 0 of 60.
+Requests: none open to me; none filed.
+Suggestions: a live-store smoke test for every network runner before install (Unity, Trinity); fleet-build install restores the clone when its caller dies (Unity); Mining's 130 ships against belts capped at 3 and iron capped at 80,000 need a decision once iron is full (Suggi through Unity).
+Report: yards-fed-mine-network-fixed-far-iron-opened
