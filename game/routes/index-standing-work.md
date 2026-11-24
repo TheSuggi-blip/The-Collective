@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 673.
+Routes: 674.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -578,6 +578,7 @@ Routes: 673.
 | [gather-gsc-0031-belt](gather-gsc-0031-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at GSC-0031 Belt (beyond the border, 3 jumps from Synchrony Hub) into storage there | up to 3 ships, empty hold, standing work | 6 | 50 | -380 | -510 | 2026-11-24 |
 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work | 136 | 47 | 0 | 0 | 2026-11-22 |
 | [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at Forgotten Tailings (GSC-0044) into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work | 46 | 46 | 0 | 0 | 2026-11-23 |
+| [gather-gsc-0049-belt](gather-gsc-0049-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test of one ship: iron at GSC-0049 Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | mine | beyond the border, 5 jumps | A test: nickel and platinum ore gathered at GSC-0049 Platinum-Group Reef (lawless) into storage at Node Beta Industrial Station (four jumps) | up to 1 ships, empty hold, standing work | 4 | 96 | -430 | -270 | 2026-11-24 |
 | [gather-harborlight-leavings-train](gather-harborlight-leavings-train.json) | mine | beyond the border, 10 jumps | A test: Mining-skill work for Solarian-born miners: ore of Harborlight Prospector's Leavings into storage at Procyon Colonial Station (two jumps, by Markab) | up to 3 ships, empty hold, born solarian, standing work | 45 | 42 | -380 | -530 | 2026-11-23 |
 | [gather-intercrus-alloy-remnants](gather-intercrus-alloy-remnants.json) | mine | beyond the border, 7 jumps | Standing work, a test: iron at Intercrus Alloy Remnants (beyond the border, 4 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | 6 | 47 | -330 | -420 | 2026-11-24 |
