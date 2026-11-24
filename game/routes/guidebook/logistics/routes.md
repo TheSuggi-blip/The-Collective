@@ -9,6 +9,7 @@ A free hauler takes the first open route of First, its own routes, Then (`plan.p
 - Own: `finish-*` routes in the rows of the pilots whose ship file holds that mission half done (no accept, hand-in at the last stop); `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, closed at the reserve max, F36); `@train-hauler`.
 - Docked steel where the miners' iron lies: receivers per station (`handover.py receivers set|add`), the station's `craft-steel-logistics-<station>` first in their rows. The outpost's faction iron: `craft-steel-faction-gsc-0044`, off until a hauler's role carries manage_treasury.
 - Corridors (`far_ok`, once, standing, `in_system`, `skip_if_booked`, `skills_below` corporation_management 7 so the builder stays home): Then `join-sol-sirius` (Frontier, Haven, Iron Reach to the Sol hub); own rows only `join-sol-loop-home` (home to Sol for the loop); older capital joins stay in rows and lists.
+- The loop's end at Nexus Prime: Then `craft-steel-bought-iron-central-nexus` (iron bought at the 1 to 2 cr ask, steel by hand, stored; a buy with a craft is craft work, a buy alone is trade).
 - Hulls (F17): a bigger hold waits for a board that pays it (tests.md).
 - An engine restart cuts runs at stop 1: a cut once run is no try and rests `retry_minutes`.
 - What would change it: the loop's missions booked by every pilot (then home crafts); a role that may withdraw faction iron; a board contract to a policed station; jobs on our Notice Board.
