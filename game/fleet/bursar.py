@@ -488,6 +488,19 @@ def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
     return others
 
 
+def _is_excess_buy(listed_here, tot_need, other_q, max_units):
+    """True when open buy units at one station exceed this pilot's fleet-wide share."""
+    listed_here = int(listed_here or 0)
+    if listed_here <= 0:
+        return False
+    tot_need = int(tot_need or 0)
+    if tot_need <= 0:
+        return True
+    other_q = int(other_q or 0)
+    allowed_here = max(0, min(tot_need - other_q, int(max_units or 200)))
+    return listed_here > max(allowed_here, int(allowed_here * 1.25))
+
+
 def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, catalog_vals, credits, policy, fleet_open_buys=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
@@ -570,21 +583,24 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             if isinstance(extra, str) and extra not in want_items and extra not in excl_buy:
                 want_items[extra] = max_units
         f_open = fleet_open_buys if isinstance(fleet_open_buys, dict) else {}
+        cancelled_buy_iids = set()
         if buy_cfg.get("unwind_excess", True):
             for iid, mine in sorted(own_buy.items()):
                 tot_need = int(want_items.get(iid) or 0)
                 other_q = int(f_open.get(iid) or 0)
-                allowed_here = max(0, min(tot_need - other_q, max_units)) if tot_need > 0 else 0
                 listed_here = sum(int(o.get("remaining") or 0) for o in mine)
-                if tot_need <= 0 or (fleet_open_buys is not None and listed_here > max(allowed_here, int(allowed_here * 1.25)) and other_q >= tot_need):
+                if tot_need <= 0 or (fleet_open_buys is not None and _is_excess_buy(listed_here, tot_need, other_q, max_units)):
                     for o in mine:
                         if o.get("order_id"):
                             actions.append(("buy_cancel", iid, o["order_id"]))
                     own_buy[iid] = []
+                    cancelled_buy_iids.add(iid)
         used_buy_ords = 0
         for iid, need_qty in sorted(want_items.items(), key=lambda kv: (-int(kv[1]), kv[0])):
             if used_buy_ords >= max_buy_ords or cash_avail <= 0:
                 break
+            if iid in cancelled_buy_iids:
+                continue
             other_q = int(f_open.get(iid) or 0)
             fleet_rem = max(0, int(need_qty) - other_q)
             if fleet_rem <= 0 and not (own_buy.get(iid) or []):
@@ -789,7 +805,11 @@ def main(argv=None):
         if (not buy_pol.get("enabled", True) and buy_pol.get("unwind_when_off", True)) or (buy_pol.get("enabled", True) and buy_pol.get("unwind_excess", True)):
             open_n0, _, _ = load_needs_and_reserves(REPO, DATA)
             excl0 = set(str(x) for x in (buy_pol.get("exclude_buy_items") or []))
+            max_u0 = int(buy_pol.get("max_units_per_order") or 200)
             want0 = {k: v for k, v in (open_n0 or {}).items() if k not in excl0} if buy_pol.get("use_needs_tsv", True) else {}
+            for extra0 in buy_pol.get("extra_items") or []:
+                if isinstance(extra0, str) and extra0 not in want0 and extra0 not in excl0:
+                    want0[extra0] = max_u0
             first = raw("view_orders", {}, group="spacemolt_market")
             n_buy, at = order_stations(body(first).get("hint") or first.get("error") or "")
             for st_id in at if n_buy > 0 else []:
@@ -797,9 +817,17 @@ def main(argv=None):
                 brows = [o for o in rows if isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy" and int(o.get("remaining") or 0) > 0]
                 if not brows:
                     continue
-                sync_fleet_buys(DATA, pilot, st_id, rows)
-                if not buy_pol.get("enabled", True) or any(str(o.get("item_id") or "") not in want0 for o in brows):
+                other0 = sync_fleet_buys(DATA, pilot, st_id, rows)
+                if not buy_pol.get("enabled", True):
                     unwind_bases.add(st_id)
+                else:
+                    by_iid = {}
+                    for o in brows:
+                        iid = str(o.get("item_id") or "")
+                        if iid:
+                            by_iid[iid] = by_iid.get(iid, 0) + int(o.get("remaining") or 0)
+                    if any(_is_excess_buy(lq, want0.get(iid, 0), other0.get(iid, 0), max_u0) for iid, lq in by_iid.items()):
+                        unwind_bases.add(st_id)
             if unwind_bases:
                 notes.append("unwind %d" % len(unwind_bases))
         claim = claim_station(DATA, REPO, pilot, ship_doc, policy, explicit_station=explicit_station,

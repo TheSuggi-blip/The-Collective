@@ -173,6 +173,17 @@ class BursarEngineTests(unittest.TestCase):
             self.assertEqual([a for a in acts3 if a[0] == "buy_create"], [])
             acts4 = bursar.plan_bursar_actions(book, {}, [{"order_id": "old1", "item_id": "closed_item", "side": "buy", "remaining": 50, "price_each": 50}], {"cobalt_ink": 276}, set(), {}, 200000, pol, fleet_open_buys=other3)
             self.assertIn(("buy_cancel", "closed_item", "old1"), acts4)
+            # Legacy duplicate buy order (other_q=200, listed=200, need=276 -> allowed=76) cancels and defers repost to next poll
+            self.assertTrue(bursar._is_excess_buy(200, 276, 200, 200))
+            self.assertFalse(bursar._is_excess_buy(76, 276, 200, 200))
+            self.assertFalse(bursar._is_excess_buy(200, 276, 0, 200))
+            acts5 = bursar.plan_bursar_actions(
+                book, {}, [{"order_id": "dup1", "item_id": "cobalt_ink", "side": "buy", "remaining": 200, "price_each": 100}],
+                {"cobalt_ink": 276}, set(), {"cobalt_ink": 100}, 200000, pol, fleet_open_buys={"cobalt_ink": 200},
+            )
+            self.assertIn(("buy_cancel", "cobalt_ink", "dup1"), acts5)
+            self.assertEqual([a for a in acts5 if a[0] == "buy_create" and a[1] == "cobalt_ink"], [])
+
 
 if __name__ == "__main__":
     unittest.main()

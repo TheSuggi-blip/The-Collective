@@ -208,7 +208,9 @@ class PickTests(Tree):
         sold = dict(gather, sell=[{"item": "ore", "min_price": 1}])
         self.assertEqual([self.routes.standing(r) for r in (loop, gather, sold, dict(routes["rays"], standing=True), routes["rays"])], [True, True, False, True, False])
         self.assertEqual((self.routes.stage(gather), self.routes.stage(sold)), ("service", "test"))
-        self.assertEqual([self.dispatch.judged(r) for r in (gather, loop, sold, routes["rays"])], [False, False, True, True])
+        fit_r = {"id": "fit-x", "kind": "circuit", "stops": [{"at": "s:p:b", "fit": "mining_laser_i"}]}
+        unfit_r = {"id": "strip-x", "kind": "circuit", "stops": [{"at": "s:p:b", "unfit": "mining_laser_i"}]}
+        self.assertEqual([self.dispatch.judged(r) for r in (gather, loop, fit_r, unfit_r, sold, routes["rays"])], [False, False, False, False, True, True])
         stamp = lambda ago: time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(self.now - ago))
         lost = [{"route": rid, "pilot": "drone-%d" % n, "started": stamp(600 * n), "minutes": 5, "credits_before": 9000, "credits_after": 8900}
                 for rid in ("open", "rays") for n in (1, 2, 3)]

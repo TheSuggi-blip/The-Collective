@@ -1387,11 +1387,11 @@ def pirate_reason(system, state):
 
 
 def judged(route):
-    """True for a route whose runs must pay: not the census, not park, not a fitting (a tool is bought once), not
+    """True for a route whose runs must pay: not the census, not park, not a fitting/unfitting (a tool is fitted or stripped once), not
     standing work (it trains or gathers: its fuel is its price, routes.py `standing`)."""
     if route.get("park") or route.get("kind") == "census" or routefiles.standing(route):
         return False
-    return not any(isinstance(stop, dict) and stop.get("fit") for stop in route.get("stops") or [])
+    return not any(isinstance(stop, dict) and (stop.get("fit") or stop.get("unfit")) for stop in route.get("stops") or [])
 
 
 RUNNER_FAULT = ("not docked for the sale", "crashed: ", "loop not started")      # notes of a run the runner failed: it says nothing about the route
