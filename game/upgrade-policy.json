@@ -737,7 +737,7 @@
     },
     "Trade": {
       "enabled": true,
-      "max_active": 4,
+      "max_active": 7,
       "cohorts": [
         {
           "empire": "any",
@@ -761,6 +761,18 @@
               "tier": 2,
               "min_piloting": 10,
               "max_price": 90000
+            },
+            {
+              "hull": "meridian_freighter",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 95000
+            },
+            {
+              "hull": "bulk_terms",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 100000
             },
             {
               "hull": "apophenia",
