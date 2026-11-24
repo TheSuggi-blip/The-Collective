@@ -418,3 +418,12 @@ Failed: 50 miners (38 Solarian- or Nebula-born) took the seep that carries 3 whe
 Requests: ENT-481, ENT-482 (answers to Apophis), ENT-483 (to Unity: a jettison_gangue key in dispatch.py).
 Suggestions: fill.py's pass also lowers a standing cap to carries when its field nears the floor (Unity's call).
 Report: six-silicon-carbon-tests-full-outpost-rows-cut-seep-spill.
+
+## [ENT-167] | 2026-11-24 00:44 UTC | Apollo | session | ref: reports/2026-11-24_apollo_krynn-blood-forge-corridor-hiring-board-at-experiment.md | see: orders.log ENT-084
+Session: scheduled run turn-apollo -- Krynn Blood Forge corridor, waiting haulers 80 to 16; a Hiring Board raised at The Experiment.
+Did: join-krynn-bloodforge (any birth not paid Blood Forge Requisition, 7,000 cr) in the list Then, cap 60, retry_minutes 15; caps Strategic Readiness 15->30, Request for Records 3->8; steel at Procyon and Nova Terra added to craft-reserve (cap 2 each); Hiring Board at The Experiment by build.py (75,000 cr from the treasury, 75 plate, 25 boards), the Desk upgrade queued in a background catch row; Standing Plan, knowledge and skill updated.
+Worked: waiting haulers 80 (00:06 UTC) -> 35 (00:21) -> 16 (00:34); all six bases ready; Hiring Board ready 00:29 UTC; plan check PASS; guide check PASS.
+Failed: fill gate HALT, 18 haulers waiting at 00:43 UTC (their Krynn rewards booked, no class work open there); an engine restart at 00:27 UTC cut 50 joins at stop 1 (Account not found); the builder left between the two build steps, so the Desk waits on its catch; a typed time in a template note (errors.log ENT-169); member limit after the build not measured.
+Requests: none.
+Suggestions: a keep flag for standing keep-stock needs (briefing READY prompt); a queue.log notice before a planned engine restart; a read-only member limit refreshed after a faction build.
+Report: krynn-blood-forge-corridor-hiring-board-at-experiment.
