@@ -18,8 +18,8 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 90 | 23 | 67 | mission-last-known-position-crimson: 8,030 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 17 | 8 | 9 | sell-noble-at-first-step: 828,000 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 156 | 49 | 107 | not measured yet |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 20 | 8 | 12 | sell-noble-at-first-step: 828,000 cr per ship-hour |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 153 | 49 | 104 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 37 | 17 | 20 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 526 | 111 | 415 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 13 | 5 | 8 | need-ember-gland-krynn: 0 cr per ship-hour |
