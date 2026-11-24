@@ -1,32 +1,31 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table fields; the mine-network policy file; data/intel/sightings.jsonl; commission_status.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; table fields; game/mine-policy.json; mine_net dry run (score_belt_candidates); commission_status; list_ships.
 
-Turn of orders ENT-090 (3 ships a belt; iron short again under 60,000
-usable, the outpost's iron counted out; P7 smart networks). A free
-miner takes the list First, its own routes, then Then.
+Turn of orders ENT-090 (3 ships a belt; iron short under 60,000 usable;
+P7 smart networks). A free miner takes First, its own routes, then Then.
 
 | Route | Ships | For |
 |---|---|---|
-| `resonance-parts-*` (titanium at Procyon, sensors at Ironlight) | 3 / 1, once | the Node Beta yard's own sourcing bids |
-| slot routes, `give-miner-stores-<station>`, once missions | by asks, 3, by route | slots filled; stores to receivers; paid once |
-| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 (test) | far carbon below the 4 cr buy a unit |
-| Solarian and Nebula rows; `@reserve-prism` / `@reserve-hamal` | 1 to 3 | carbon, silicon; nickel, gold, fragments full |
-| Then: gives; `mine-network` | 6 (test) | belts no static route holds |
-| Then: home iron gathers; nine far iron gathers 2 to 4 jumps out | 3 a belt | iron to 80,000 |
+| `fit-t2-lasers-lhs-1140`, `fit-liminal-lasers-lhs-1140` | 2, once | fill a new hull's empty utility slots |
+| `resonance-parts-*` (titanium standing, F22 build work) | 3 / 1, once | the Node Beta yard's sourcing bids |
+| slot routes, `give-miner-stores-<station>`, once missions | by asks, 3 | slots; stores to receivers; paid once |
+| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 | far carbon; closed while carbon is full |
+| Solarian and Nebula rows; `@reserve-prism` / `@reserve-hamal` | 1 to 3 | silicon; carbon, nickel, gold full |
+| Then: gives; `mine-network` | 9 | belts no static route holds; iron first |
+| Then: home and far iron gathers 2 to 4 jumps out | 3 a belt | iron to 80,000 |
 | Then: copper-iron and regional belts; `train-jumps-miner`; park | 1 to 3; 20 | Piloting under 10 |
 
-`mine-network` deposits only at the give stations (`deposit_stations`),
-mines only what the reserve lacks (`market_tier` false) and skips every
-belt of the plan's own routes (`exclude_pois`, so a belt never takes a
-fourth ship). Every mine route has a floor (`min_left`); a belt under it
-closes while its census is fresh. The silicon fields near us read under
-their floors; GSC-0007 waits on its pirate reading.
+`mine-network` deposits only at the give stations, mines only what the
+reserve or a craft demand lacks (`market_tier` false; craft demand less
+what the fleet holds), skips the plan's own belts and may enter only the
+lawless systems in `allow_lawless_systems` (each proven by static runs
+without a loss). Every mine route has a floor (`min_left`).
 
-What would change it: iron at its max of 80,000 (the pull rule closes
-every iron gather and the veterans need other work); mine-network's
-runs; the Resonance Miners' fuel per run once built.
+What would change it: iron at its max of 80,000; the Resonance Miners'
+ore and fuel per run once switched and fitted; a pirate read in atlas or
+intercrus (take it out of the policy list).
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
