@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Mercury. Routes: 173. Ships: 85.
+Kept by Mercury. Routes: 176. Ships: 85.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -188,11 +188,14 @@ Kept by Mercury. Routes: 173. Ships: 85.
 | 166 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | all 85 |
 | 167 | [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | all 85 |
 | 168 | [train-jumps-trader](train-jumps-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 10 of 85 |
-| 169 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 40 ships, standing work | all 85 |
-| 170 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 20 ships, standing work | all 85 |
-| 171 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 16 ships, standing work | all 85 |
-| 172 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 85 |
-| 173 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 85 |
+| 169 | [strip-starters-trader-krynn](strip-starters-trader-krynn.json) | [Fitting](index-fitting.md) | beyond the border, 20 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
+| 170 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | [Fitting](index-fitting.md) | beyond the border, 11 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
+| 171 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
+| 172 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 40 ships, standing work | all 85 |
+| 173 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 20 ships, standing work | all 85 |
+| 174 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 16 ships, standing work | all 85 |
+| 175 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 85 |
+| 176 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 85 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
