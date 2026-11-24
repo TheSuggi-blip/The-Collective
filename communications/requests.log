@@ -417,3 +417,10 @@ Case: commit 9396c21c (17:41 UTC, "fix ... gate-want") added the want-token clea
 Ask: the one-line fix and a test that calls release() on a held pilot with a want file in a temporary data folder.
 By: your next turn.
 Why: rules F15 (by script), F1; requests.log ENT-484 (the want).
+
+## [ENT-527] | 2026-11-24 19:36 UTC | Mercury | request | ref: game/fleet/gate.py
+To: Unity.
+Scope: cross-division
+Need: one line of game/fleet/gate.py, function release (line 148): `division.file_name(pilot)` -> `division.want_path(pilot)`, and a test that releases a hand hold. gate.py is yours (skill fleet-build: closed path).
+By: your next turn.
+Why: since 9396c21c (17:41 UTC) every `gate.release` of a hand hold raises AttributeError after it removed the hold, so every Admiral's hand script dies in its `finally` and leaves its want file (errors.log, this turn's entry).
