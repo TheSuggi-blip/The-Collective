@@ -122,7 +122,8 @@ Status: proven. Updated: 2026-11-24. Evidence: game/fleet/gate.py; the game's he
   stripped module is given by a second route (errors.log ENT-178).
 - `requires.in_system` waits for chance: a once-per-pilot chore at one
   station took 1 of 18 scouts from 09:30 to 11:05 UTC, then 3 in five
-  minutes on `max_jumps` 2. in_system is for the docked watch.
+  minutes on `max_jumps` 2. in_system is for the docked watch. A strip
+  route is `standing`: the loss stop exempts `fit`, never `unfit`.
 
 ### A gate on a fresh read is open on an old one
 Status: proven. Updated: 2026-11-22. Evidence: route mission-cracking-the-shell-central (its runs); data/wildlife/gsc_0041.json; admirals.log ENT-095.
