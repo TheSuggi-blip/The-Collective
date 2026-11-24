@@ -6,8 +6,10 @@
   "poll_interval_s": 120,
   "min_cash_keep": 20000,
   "buy": {
-    "enabled": false,
-    "max_escrow_per_station": 15000,
+    "enabled": true,
+    "unwind_when_off": true,
+    "unwind_excess": true,
+    "max_escrow_per_station": 0,
     "max_orders_per_station": 4,
     "max_units_per_order": 200,
     "max_unit_price_ratio": 0.9,
@@ -19,7 +21,8 @@
       "copper_ore",
       "carbon_ore",
       "nitrogen_ice",
-      "water_ice"
+      "water_ice",
+      "steel_plate"
     ]
   },
   "sell": {
@@ -34,5 +37,6 @@
     "428b353757ef4100317abd39cbdb79bf"
   ],
   "priority_stations": [],
-  "exclude_strongholds": true
+  "exclude_strongholds": true,
+  "note": "2026-11-24 (Trinity, Suggi approved): re-enabled buy lane with fleet-wide open-buy cap (bursar_buys.json) + excess auto-unwind; steel_plate excluded for Logistics reserve buys (ENT-504)."
 }

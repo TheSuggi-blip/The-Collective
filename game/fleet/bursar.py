@@ -436,7 +436,59 @@ def load_needs_and_reserves(repo_root, data):
     return open_needs, reserved, catalog_vals
 
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, catalog_vals, credits, policy):
+def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
+    """Record pilot open buy units at base_id in data/fleet/bursar_buys.json; return {item: qty_by_others}."""
+    now_t = time.time() if now_t is None else float(now_t)
+    fdir = Path(data) / "fleet"
+    fdir.mkdir(parents=True, exist_ok=True)
+    lock_path = fdir / "bursar_buys.lock"
+    ledger_path = fdir / "bursar_buys.json"
+    my_items = {}
+    for o in own_orders or []:
+        if isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy":
+            rem = int(o.get("remaining") or o.get("quantity") or 0)
+            iid = str(o.get("item_id") or "")
+            if iid and rem > 0:
+                my_items[iid] = my_items.get(iid, 0) + rem
+    others = {}
+    with open(lock_path, "a+", encoding="utf-8") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            doc = read_json(ledger_path, {})
+            entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+            cleaned = {}
+            for p_nm, bases in entries.items():
+                if not isinstance(bases, dict):
+                    continue
+                kept_b = {}
+                for b_id, rec in bases.items():
+                    if isinstance(rec, dict) and (now_t - float(rec.get("at") or 0)) <= ttl_s:
+                        im = rec.get("items")
+                        if isinstance(im, dict) and im:
+                            kept_b[str(b_id)] = {"at": int(rec.get("at") or now_t), "items": {str(k): int(v) for k, v in im.items() if int(v or 0) > 0}}
+                if kept_b:
+                    cleaned[str(p_nm)] = kept_b
+            if pilot and base_id:
+                p_map = cleaned.setdefault(str(pilot), {})
+                if my_items:
+                    p_map[str(base_id)] = {"at": int(now_t), "items": my_items}
+                else:
+                    p_map.pop(str(base_id), None)
+                    if not p_map:
+                        cleaned.pop(str(pilot), None)
+            for p_nm, bases in cleaned.items():
+                for b_id, rec in bases.items():
+                    if p_nm == str(pilot) and b_id == str(base_id):
+                        continue
+                    for iid, qty in (rec.get("items") or {}).items():
+                        others[iid] = others.get(iid, 0) + int(qty or 0)
+            write_json(ledger_path, {"updated_at": int(now_t), "entries": cleaned})
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
+    return others
+
+
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, catalog_vals, credits, policy, fleet_open_buys=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -517,10 +569,26 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
         for extra in buy_cfg.get("extra_items") or []:
             if isinstance(extra, str) and extra not in want_items and extra not in excl_buy:
                 want_items[extra] = max_units
+        f_open = fleet_open_buys if isinstance(fleet_open_buys, dict) else {}
+        if buy_cfg.get("unwind_excess", True):
+            for iid, mine in sorted(own_buy.items()):
+                tot_need = int(want_items.get(iid) or 0)
+                other_q = int(f_open.get(iid) or 0)
+                allowed_here = max(0, min(tot_need - other_q, max_units)) if tot_need > 0 else 0
+                listed_here = sum(int(o.get("remaining") or 0) for o in mine)
+                if tot_need <= 0 or (fleet_open_buys is not None and listed_here > max(allowed_here, int(allowed_here * 1.25)) and other_q >= tot_need):
+                    for o in mine:
+                        if o.get("order_id"):
+                            actions.append(("buy_cancel", iid, o["order_id"]))
+                    own_buy[iid] = []
         used_buy_ords = 0
         for iid, need_qty in sorted(want_items.items(), key=lambda kv: (-int(kv[1]), kv[0])):
             if used_buy_ords >= max_buy_ords or cash_avail <= 0:
                 break
+            other_q = int(f_open.get(iid) or 0)
+            fleet_rem = max(0, int(need_qty) - other_q)
+            if fleet_rem <= 0 and not (own_buy.get(iid) or []):
+                continue
             row = (book or {}).get(iid)
             if not isinstance(row, dict):
                 continue
@@ -555,7 +623,7 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             for o in mine:
                 if int(o.get("price_each") or 0) != price and o.get("order_id"):
                     actions.append(("buy_modify", iid, o["order_id"], price))
-            more = min(max(0, min(int(need_qty), max_units) - listed), int(cash_avail // price))
+            more = min(max(0, min(fleet_rem, max_units) - listed), int(cash_avail // price))
             if more > 0:
                 actions.append(("buy_create", iid, more, price))
                 cash_avail -= more * price
@@ -718,13 +786,19 @@ def main(argv=None):
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
         unwind_bases = set()
         buy_pol = policy.get("buy") or {}
-        if not buy_pol.get("enabled", True) and buy_pol.get("unwind_when_off", True):
+        if (not buy_pol.get("enabled", True) and buy_pol.get("unwind_when_off", True)) or (buy_pol.get("enabled", True) and buy_pol.get("unwind_excess", True)):
+            open_n0, _, _ = load_needs_and_reserves(REPO, DATA)
+            excl0 = set(str(x) for x in (buy_pol.get("exclude_buy_items") or []))
+            want0 = {k: v for k, v in (open_n0 or {}).items() if k not in excl0} if buy_pol.get("use_needs_tsv", True) else {}
             first = raw("view_orders", {}, group="spacemolt_market")
             n_buy, at = order_stations(body(first).get("hint") or first.get("error") or "")
             for st_id in at if n_buy > 0 else []:
                 rows = body(raw("view_orders", {"station_id": st_id}, group="spacemolt_market")).get("orders") or []
-                if any(isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy"
-                       and int(o.get("remaining") or 0) > 0 for o in rows):
+                brows = [o for o in rows if isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "buy" and int(o.get("remaining") or 0) > 0]
+                if not brows:
+                    continue
+                sync_fleet_buys(DATA, pilot, st_id, rows)
+                if not buy_pol.get("enabled", True) or any(str(o.get("item_id") or "") not in want0 for o in brows):
                     unwind_bases.add(st_id)
             if unwind_bases:
                 notes.append("unwind %d" % len(unwind_bases))
@@ -770,7 +844,8 @@ def main(argv=None):
                         eff_pol.setdefault("buy", {})["enabled"] = False
                 except Exception:
                     pass
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol)
+                fleet_open_buys = sync_fleet_buys(DATA, pilot, base_id, orders_resp)
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break
@@ -813,6 +888,11 @@ def main(argv=None):
                         time.sleep(TICK)
                         say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
                         acted += 1
+                if any(a[0] in ("buy_create", "buy_cancel") for a in acts):
+                    try:
+                        sync_fleet_buys(DATA, pilot, base_id, body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or [])
+                    except Exception:
+                        pass
             except SystemExit:
                 raise
             except Exception as err:

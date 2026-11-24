@@ -66,5 +66,23 @@ class HaulEngineTests(unittest.TestCase):
             self.assertTrue(haul.claim_job(tmp, "hauler-2", job["job_key"], now_t=now_t))
 
 
+    def test_sell_bid_claim_fresh_books_and_freight_hold_cap(self):
+        now_t = time.time()
+        entries = [{"id": "c1", "origin_base_id": "base_a", "destination_base_id": "base_b", "base_reward": 2000, "collateral": 1000, "volume": 100}]
+        self.assertIsNone(haul.pick_freight_contract(entries, "sys_a", self.base_map, self.lanes, haul.DEFAULT_POLICY, 20000, False, {}, set(), hold_cap=65))
+        self.assertIsNotNone(haul.pick_freight_contract(entries, "sys_a", self.base_map, self.lanes, haul.DEFAULT_POLICY, 20000, False, {}, set(), hold_cap=120))
+        stale = [
+            {"base": "base_a", "item": "control_node", "ask": 100, "ask_qty": 30, "bid": 80, "bid_qty": 10, "t": now_t - 3600},
+            {"base": "base_b", "item": "control_node", "ask": 200, "ask_qty": 10, "bid": 160, "bid_qty": 30, "t": now_t - 60},
+        ]
+        self.assertIsNone(haul.pick_arbitrage_job(stale, self.base_map, self.lanes, "sys_a", 30, 10000, haul.DEFAULT_POLICY, set(), now_t=now_t))
+        fresh = [
+            {"base": "base_a", "item": "control_node", "ask": 100, "ask_qty": 30, "bid": 80, "bid_qty": 10, "t": now_t - 60},
+            {"base": "base_b", "item": "control_node", "ask": 200, "ask_qty": 10, "bid": 160, "bid_qty": 30, "t": now_t - 60},
+        ]
+        j = haul.pick_arbitrage_job(fresh, self.base_map, self.lanes, "sys_a", 30, 10000, haul.DEFAULT_POLICY, set(), now_t=now_t)
+        self.assertEqual(j["job_key"], "arb-bid:base_b:control_node")
+        self.assertIsNone(haul.pick_arbitrage_job(fresh, self.base_map, self.lanes, "sys_a", 30, 10000, haul.DEFAULT_POLICY, {"arb-bid:base_b:control_node"}, now_t=now_t))
+
 if __name__ == "__main__":
     unittest.main()

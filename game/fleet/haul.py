@@ -51,7 +51,7 @@ DEFAULT_POLICY = {
     "min_total_profit": 600,
     "max_collateral": 15000,
     "fuel_reserve_cr": 6000,
-    "max_book_age_minutes": 180,
+    "max_book_age_minutes": 30,
     "max_buy_spend_cr": 35000,
     "min_margin_pct": 0.20,
     "partners_first": True,
@@ -150,6 +150,56 @@ def load_base_map(data):
     return out
 
 
+def load_stronghold_bases(data):
+    out = set()
+    db = Path(data) / "store" / "read.db"
+    if not db.is_file():
+        return out
+    con = None
+    try:
+        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        if {"places", "stations"} <= tbls:
+            for base_id, sys_id in con.execute(
+                "SELECT p.base, p.system FROM places p JOIN stations s ON LOWER(s.system)=LOWER(p.system) "
+                "WHERE COALESCE(p.base,'')!='' AND (LOWER(COALESCE(s.kind,'')) LIKE '%stronghold%' OR LOWER(COALESCE(s.name,'')) LIKE '%stronghold%')"
+            ).fetchall():
+                out.add(str(base_id))
+                out.add(str(sys_id))
+    except sqlite3.Error:
+        pass
+    finally:
+        if con is not None:
+            con.close()
+    return out
+
+
+def pilot_has_protected_fund(data, pilot):
+    try:
+        import upgrades as _upg
+        if pilot in _upg.protected_pilots(data):
+            return True
+    except Exception:
+        pass
+    funds = read_json(Path(data) / "fleet" / "funds.json", [])
+    now_t = time.time()
+    for r in funds if isinstance(funds, list) else []:
+        if isinstance(r, dict) and str(r.get("pilot") or "") == str(pilot):
+            st = str(r.get("state") or "")
+            if st == "open" or (st == "given" and float(r.get("until") or 0) > now_t):
+                return True
+    return False
+
+
+def docked_bursar_at(data, base_id, now_t=None):
+    now_t = time.time() if now_t is None else float(now_t)
+    claims = read_json(Path(data) / "fleet" / "bursar_claims.json", {})
+    rec = claims.get(str(base_id)) if isinstance(claims, dict) else None
+    if isinstance(rec, dict) and rec.get("pilot") and (now_t - float(rec.get("at") or 0)) < 2400:
+        return str(rec["pilot"])
+    return ""
+
+
 def neutral_partner_tags(data):
     """{tag_upper: faction_name} of active Neutral Pact diplomatic partners."""
     dip = read_json(Path(data) / "comms" / "diplomacy.json", {})
@@ -226,7 +276,7 @@ def release_job(data, pilot):
             fcntl.flock(lf, fcntl.LOCK_UN)
 
 
-def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, neutral_tags, claimed_keys):
+def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, neutral_tags, claimed_keys, hold_cap=None, exclude_bases=None):
     """Pure selector: returns best safe eligible freight contract dict or None."""
     policed = bool(policy.get("policed_only", True))
     max_pick = int(policy.get("max_jumps_pickup") or 12)
@@ -249,7 +299,11 @@ def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash,
         dloc = base_map.get(dest)
         if not oloc or not dloc:
             continue
+        if exclude_bases and (orig in exclude_bases or dest in exclude_bases or oloc[0] in exclude_bases or dloc[0] in exclude_bases):
+            continue
         if policed and (not oloc[3] or not dloc[3]):
+            continue
+        if hold_cap is not None and int(hold_cap) < int(c.get('volume') or c.get('cargo_size') or 100):
             continue
         if c.get("requires_hazmat") and not has_hazmat:
             continue
@@ -291,7 +345,7 @@ def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash,
     return best[1] if best else None
 
 
-def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None):
+def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None):
     """Pure selector: returns best safe fresh cross-station arbitrage job dict or None."""
     now_t = time.time() if now_t is None else now_t
     policed = bool(policy.get("policed_only", True))
@@ -299,7 +353,7 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
     max_del = int(policy.get("max_jumps_delivery") or 25)
     min_cpj = float(policy.get("min_cr_per_jump") or 80)
     min_tot = float(policy.get("min_total_profit") or 600)
-    max_age_s = float(policy.get("max_book_age_minutes") or 180) * 60.0
+    max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
     max_spend = min(float(policy.get("max_buy_spend_cr") or 35000), max(0.0, float(avail_cash)))
     min_margin = float(policy.get("min_margin_pct") or 0.20)
     if hold_cap < 1 or max_spend < 100:
@@ -310,6 +364,8 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
         b_id = str(r.get("base") or "")
         loc = base_map.get(b_id)
         if not loc or (policed and not loc[3]):
+            continue
+        if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
             continue
         t = float(r.get("t") or 0)
         if t > 0 and (now_t - t) > max_age_s:
@@ -330,7 +386,7 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_p < ask_p * (1.0 + min_margin):
                     continue
-                jkey = "arb:%s:%s:%s" % (iid, ab, bb)
+                jkey = "arb-bid:%s:%s" % (bb, iid)
                 if jkey in claimed_keys:
                     continue
                 p_hops = _bfs_hops(lanes, cur_sys, aloc[0]) if cur_sys and lanes else 0
@@ -491,6 +547,7 @@ def main(argv=None):
     stop_files = (DATA / "fleet" / "host" / "stop" / pilot, DATA / "fleet" / "host" / "stop" / ship_file_name(pilot))
     started = time.time()
     notes = []
+    inv_cost = [0]
 
     def say(msg):
         print("%s | %s | %s" % (utc_now(), pilot, msg), flush=True)
@@ -575,7 +632,7 @@ def main(argv=None):
             "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
             "minutes": mins, "credits_before": before, "credits_after": after,
             "delta": after - before if before and after else 0,
-            "one_time": 0, "notes": notes[:12],
+            "one_time": 0, "inventory_cost": inv_cost[0], "notes": notes[:12],
         }
         runs = DATA / "routes" / "runs.jsonl"
         runs.parent.mkdir(parents=True, exist_ok=True)
@@ -602,7 +659,8 @@ def main(argv=None):
         hold_cap = max(10, int(ship_doc.get("cargo_capacity") or 100) - int(ship_doc.get("cargo_used") or 0))
         mods = [str(m).lower() for m in (ship_doc.get("modules") or [])]
         has_hazmat = any("hazmat" in m for m in mods)
-        avail_cash = max(0, before - int(policy.get("fuel_reserve_cr") or 6000))
+        avail_cash = 0 if pilot_has_protected_fund(DATA, pilot) else max(0, before - int(policy.get("fuel_reserve_cr") or 6000))
+        strongholds = load_stronghold_bases(DATA) if policy.get("exclude_strongholds", True) else set()
         lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
         completed = 0
 
@@ -666,7 +724,7 @@ def main(argv=None):
                         entries = cached.get("entries") or []
                 ntags = neutral_partner_tags(DATA)
                 claimed = active_claimed_keys(DATA)
-                pick = pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, ntags, claimed)
+                pick = pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash, has_hazmat, ntags, claimed, hold_cap=hold_cap, exclude_bases=strongholds)
                 if pick and claim_job(DATA, pilot, pick["job_key"]):
                     cid, oloc, dloc = pick["cid"], pick["origin"], pick["dest"]
                     say("freight %s: %s -> %s (%d cr, %dj+%dj%s)" % (
@@ -755,14 +813,25 @@ def main(argv=None):
                         notes.append("arb sold %d %s %s->%s" % (sell_q, iid, bloc[2], sloc[2]))
                         rem_q = get_cargo().get(iid, 0)
                         if rem_q > 0:
-                            raw("deposit", {"item_id": iid, "quantity": rem_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
-                            time.sleep(TICK)
+                            inv_cost[0] += int(round(rem_q * live_ask))
+                            bp = docked_bursar_at(DATA, sloc[2])
+                            if bp and bp != pilot and "error" not in raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": rem_q}, group="spacemolt_social"):
+                                time.sleep(TICK)
+                            else:
+                                raw("deposit", {"item_id": iid, "quantity": rem_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
                     else:
-                        # Bid slipped: deposit safely for local Bursar rather than panic-selling at a loss
-                        raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
-                        time.sleep(TICK)
-                        say("arb %s bid slipped (%s < cost %s): stored %d at %s for Bursar" % (iid, live_bid, live_ask, got, sloc[2]))
-                        notes.append("arb stored %d %s at %s" % (got, iid, sloc[2]))
+                        inv_cost[0] += int(round(got * live_ask))
+                        bp = docked_bursar_at(DATA, sloc[2])
+                        if bp and bp != pilot and "error" not in raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": got}, group="spacemolt_social"):
+                            time.sleep(TICK)
+                            say("arb %s bid slipped: gifted %d to Bursar %s at %s (cost %d cr)" % (iid, got, bp, sloc[2], int(round(got * live_ask))))
+                            notes.append("arb->bursar %d %s (cost %d)" % (got, iid, int(round(got * live_ask))))
+                        else:
+                            raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            say("arb %s bid slipped: stored %d at %s (cost %d cr)" % (iid, got, sloc[2], int(round(got * live_ask))))
+                            notes.append("arb stored %d %s (cost %d)" % (got, iid, int(round(got * live_ask))))
                     completed += 1
 
             elif lane == "internal_supply":

@@ -155,5 +155,24 @@ class BursarEngineTests(unittest.TestCase):
             self.assertFalse(c3.get("unwind"))
 
 
+    def test_fleet_wide_buy_cap_prevents_duplication(self):
+        book = {"cobalt_ink": {"best_buy": 100, "best_buy_qty": 20, "best_sell": 160, "best_sell_qty": 50}}
+        pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+        pol["buy"]["enabled"] = True
+        pol["buy"]["max_escrow_per_station"] = 0
+        pol["buy"]["max_units_per_order"] = 200
+        with tempfile.TemporaryDirectory() as tmp:
+            bursar.sync_fleet_buys(tmp, "trader-1", "base_a", [{"item_id": "cobalt_ink", "side": "buy", "remaining": 200}])
+            other2 = bursar.sync_fleet_buys(tmp, "trader-2", "base_b", [])
+            self.assertEqual(other2.get("cobalt_ink"), 200)
+            acts2 = bursar.plan_bursar_actions(book, {}, [], {"cobalt_ink": 276}, set(), {"cobalt_ink": 100}, 200000, pol, fleet_open_buys=other2)
+            self.assertEqual([(a[0], a[1], a[2]) for a in acts2 if a[0] == "buy_create"], [("buy_create", "cobalt_ink", 76)])
+            bursar.sync_fleet_buys(tmp, "trader-2", "base_b", [{"item_id": "cobalt_ink", "side": "buy", "remaining": 76}])
+            other3 = bursar.sync_fleet_buys(tmp, "trader-3", "base_c", [])
+            acts3 = bursar.plan_bursar_actions(book, {}, [], {"cobalt_ink": 276}, set(), {"cobalt_ink": 100}, 200000, pol, fleet_open_buys=other3)
+            self.assertEqual([a for a in acts3 if a[0] == "buy_create"], [])
+            acts4 = bursar.plan_bursar_actions(book, {}, [{"order_id": "old1", "item_id": "closed_item", "side": "buy", "remaining": 50, "price_each": 50}], {"cobalt_ink": 276}, set(), {}, 200000, pol, fleet_open_buys=other3)
+            self.assertIn(("buy_cancel", "closed_item", "old1"), acts4)
+
 if __name__ == "__main__":
     unittest.main()

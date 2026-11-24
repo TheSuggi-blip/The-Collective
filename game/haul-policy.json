@@ -1,18 +1,20 @@
 {
   "policed_only": true,
-  "max_jumps_pickup": 18,
-  "max_jumps_delivery": 25,
-  "min_cr_per_jump": 50,
-  "min_total_profit": 400,
-  "max_collateral": 15000,
+  "exclude_strongholds": true,
+  "max_jumps_pickup": 16,
+  "max_jumps_delivery": 35,
+  "min_cr_per_jump": 60,
+  "min_total_profit": 500,
+  "max_collateral": 25000,
   "fuel_reserve_cr": 6000,
-  "max_book_age_minutes": 180,
-  "max_buy_spend_cr": 35000,
-  "min_margin_pct": 0.2,
+  "max_book_age_minutes": 30,
+  "max_buy_spend_cr": 30000,
+  "min_margin_pct": 0.25,
   "partners_first": true,
   "lanes": [
     "active_freight",
     "public_freight",
+    "arbitrage",
     "internal_supply"
   ],
   "home_bases": [
@@ -20,5 +22,5 @@
     "central_nexus",
     "the_experiment_research_station"
   ],
-  "note": "Apollo 2026-11-24 10:01 UTC: lane arbitrage taken out for haulers (orders ENT-086 P5, requests ENT-504: a buy that feeds a sale stays Trade's). Its runs 08:50-09:55 UTC bought goods that mostly found no bid on arrival (runs.jsonl: 40 'arb stored' runs -76,167 cr; 18 'arb sold' runs +18,714 cr) and scattered haulers into far empires."
+  "note": "2026-11-24 (Trinity, Suggi approved): restored Bursar+Hauler fresh-book (<30m) arbitrage & public_freight combo after fixing haul.py ENT-302 bugs (claim by sell_base:item, 30m book age, hold_cap>=100 freight check, funded-pilot guard, Bursar handover + inventory_cost)."
 }
