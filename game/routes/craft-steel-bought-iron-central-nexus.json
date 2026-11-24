@@ -2,9 +2,9 @@
  "id": "craft-steel-bought-iron-central-nexus",
  "kind": "circuit",
  "title": "Steel plate smelted by hand at Central Nexus from iron ore bought there at 1 cr, kept in the pilot's storage for the reserve (Logistics' haulers, standing work at home)",
- "note": "Written by Apollo, 2026-11-24 07:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked, steel on iron; P2; rules F8, F23, F24, F36). At 07:30 UTC 13 haulers waited docked at Nexus Prime at the end of the paid Sol loop. Central Nexus asks 1 cr for iron ore x 24,400 (depth 132,696, table books 07:31 UTC): 10 ore a plate by hand is 10 cr a plate against the 18 cr plate ask, and the reserve is short of 36,466 steel plate (tool needs action=items 07:27 UTC). Each run: five loads of 65 ore bought and stored, then basic_iron_smelting in halving sizes from storage (stops copied from craft-steel-logistics-central-nexus), the plate stored: docked, no fuel, crafting XP. A circuit that buys and crafts is craft work (workclass.py), open to haulers. Standing; the reserve gate (F36) closes it at the steel max; requires.ask keeps it to the 1 cr ask. max_ships 3 for the first runs (F37). 2026-11-24 07:39 UTC (Apollo): the first three runs: 12/12 stops in 5 min, 325 iron bought at 1 cr, 32 of 32 steel plate made and stored, -325 cr each (RESULT lines 07:37 to 07:39 UTC). max_ships 3 -> 15: 13 haulers waited at Nexus Prime. The 1 cr ask held 24,400 units at 07:31 UTC, about 75 runs; requires.ask closes the route when it is gone.",
+ "note": "Written by Apollo, 2026-11-24 07:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked, steel on iron; P2; rules F8, F23, F24, F36). At 07:30 UTC 13 haulers waited docked at Nexus Prime at the end of the paid Sol loop. Central Nexus asks 1 cr for iron ore x 24,400 (depth 132,696, table books 07:31 UTC): 10 ore a plate by hand is 10 cr a plate against the 18 cr plate ask, and the reserve is short of 36,466 steel plate (tool needs action=items 07:27 UTC). Each run: five loads of 65 ore bought and stored, then basic_iron_smelting in halving sizes from storage (stops copied from craft-steel-logistics-central-nexus), the plate stored: docked, no fuel, crafting XP. A circuit that buys and crafts is craft work (workclass.py), open to haulers. Standing; the reserve gate (F36) closes it at the steel max; requires.ask keeps it to the 1 cr ask. max_ships 3 for the first runs (F37). 2026-11-24 07:39 UTC (Apollo): the first three runs: 12/12 stops in 5 min, 325 iron bought at 1 cr, 32 of 32 steel plate made and stored, -325 cr each (RESULT lines 07:37 to 07:39 UTC). max_ships 3 -> 15: 13 haulers waited at Nexus Prime. The 1 cr ask held 24,400 units at 07:31 UTC, about 75 runs; requires.ask closes the route when it is gone. 2026-11-24 07:41 UTC (Apollo): max_ships 15 -> 25 (10 more waited at Nexus Prime, why_closed.py: max_ships reached) and the ask gate 1 -> 2 cr (buy limit 3): the 1 cr ask carries about 75 runs, the book's depth was 132,696 units at 07:31 UTC; at 2 cr a plate costs 20 cr of ore.",
  "standing": true,
- "max_ships": 15,
+ "max_ships": 25,
  "requires": {
   "in_system": [
    "nexus_prime"
@@ -12,7 +12,7 @@
   "ask": {
    "item": "iron_ore",
    "base": "central_nexus",
-   "max_price": 1,
+   "max_price": 2,
    "min_qty": 325
   },
   "skills_below": {
@@ -26,7 +26,7 @@
     {
      "item": "iron_ore",
      "qty": 65,
-     "max_price": 2
+     "max_price": 3
     }
    ],
    "stop_on_failed_buy": true
@@ -41,7 +41,7 @@
     {
      "item": "iron_ore",
      "qty": 65,
-     "max_price": 2
+     "max_price": 3
     }
    ],
    "stop_on_failed_buy": true
@@ -56,7 +56,7 @@
     {
      "item": "iron_ore",
      "qty": 65,
-     "max_price": 2
+     "max_price": 3
     }
    ],
    "stop_on_failed_buy": true
@@ -71,7 +71,7 @@
     {
      "item": "iron_ore",
      "qty": 65,
-     "max_price": 2
+     "max_price": 3
     }
    ],
    "stop_on_failed_buy": true
@@ -86,7 +86,7 @@
     {
      "item": "iron_ore",
      "qty": 65,
-     "max_price": 2
+     "max_price": 3
     }
    ],
    "stop_on_failed_buy": true
