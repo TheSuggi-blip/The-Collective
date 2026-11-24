@@ -41,7 +41,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [command](plan-command.md) | Unity | 106 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
 | [drone](plan-drone.md) | Apophis | 356 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 110 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 5 | 95 |
-| [miner](plan-miner.md) | Zero | 141 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 5 | 130 |
+| [miner](plan-miner.md) | Zero | 160 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 5 | 130 |
 | [scout](plan-scout.md) | Oracle | 98 | store-hold-central-nexus > store-hold-frontier-station-near > give-scout-stores-node-beta | 5 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 356 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 36 |
 | [trader](plan-trader.md) | Mercury | 186 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 3 | 85 |
