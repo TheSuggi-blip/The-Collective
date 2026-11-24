@@ -2,7 +2,7 @@
  "id": "census-region-altais",
  "kind": "census",
  "title": "Read the Outer Rim home region, Altais and the systems within four jumps (and the places others work within six), every two hours: deposits, creatures, pirates, books, boards",
- "note": "Kept by Oracle; written 2026-11-22 23:30 UTC (orders.log ENT-068, block ORACLE: read the newborns' home regions first; P6: the newborns work where they were born). The systems whose nearest newborn capital is this one (game/map/galaxy.tsv lanes), moved out of the lists that held them so no system stands on two lists. Flown by the scouts born or stationed there (the plan file), chain 3 within 2 lanes, ending docked where it last read. Empty hold (rule F3). 2026-11-23 08:24 UTC (Oracle): max_ships 4 -> 6 (12 of 37 systems over 120 min at 08:18 UTC with 4 ships; the Rim scouts are local; orders ENT-081, block ORACLE: the newborns' home regions first). 2026-11-24 05:10 UTC (Oracle): emberglow joins from census-kit-herds (another division works there; 9 jumps from the capital; its silica-borer herd, a kit species, read here).",
+ "note": "Kept by Oracle; written 2026-11-22 23:30 UTC (orders.log ENT-068, block ORACLE: read the newborns' home regions first; P6: the newborns work where they were born). The systems whose nearest newborn capital is this one (game/map/galaxy.tsv lanes), moved out of the lists that held them so no system stands on two lists. Flown by the scouts born or stationed there (the plan file), chain 3 within 2 lanes, ending docked where it last read. Empty hold (rule F3). 2026-11-23 08:24 UTC (Oracle): max_ships 4 -> 6 (12 of 37 systems over 120 min at 08:18 UTC with 4 ships; the Rim scouts are local; orders ENT-081, block ORACLE: the newborns' home regions first). 2026-11-24 05:10 UTC (Oracle): emberglow joins from census-kit-herds (another division works there; 9 jumps from the capital; its silica-borer herd, a kit species, read here). 2026-11-24 11:14 UTC (Oracle, orders ENT-086 block ORACLE: the belts Mining spreads over need fresh field reads): sarin joins from census-far-1 (Mining's far carbon test belt whitesun_carbon; 12 jumps from the capital; turn check WORKED to). Back to census-far-1 when no plan of Mining names the belt.",
  "systems": [
   "altais",
   "distant_light",
@@ -41,7 +41,8 @@
   "sheliak",
   "titawin",
   "willowgate",
-  "emberglow"
+  "emberglow",
+  "sarin"
  ],
  "every_minutes": 120,
  "max_ships": 6,

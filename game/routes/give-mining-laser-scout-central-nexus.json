@@ -2,7 +2,7 @@
  "id": "give-mining-laser-scout-central-nexus",
  "kind": "circuit",
  "title": "A scout in nexus_prime gives the Mining Laser I it stored at Central Nexus to a miner receiver there",
- "note": "Written by Oracle 2026-11-24 09:37 UTC (requests.log ENT-490, ENT-492, ENT-506; orders ENT-086 P1, P5). The second step of strip-gift-mining-laser-scout-central-nexus: its first run (09:30 UTC) took the laser off (table ship_modules: the pulse laser alone left) and stored it, but no hand-over line followed (data/stock/handover.jsonl), as with Military's strip-mining-laser-sol, whose lasers reached the miners only by its separate give-mining-laser-sol-central (8 lines). The form of that route: one docked stop, the gift from the pilot's storage, requires.stored 1 unit at central_nexus (the storage book, about every 40 minutes), requires.in_system nexus_prime (no jump for it). In First: closed to every scout without a stored laser there.",
+ "note": "Written by Oracle 2026-11-24 09:37 UTC (requests.log ENT-490, ENT-492, ENT-506; orders ENT-086 P1, P5). The second step of strip-gift-mining-laser-scout-central-nexus: its first run (09:30 UTC) took the laser off (table ship_modules: the pulse laser alone left) and stored it, but no hand-over line followed (data/stock/handover.jsonl), as with Military's strip-mining-laser-sol, whose lasers reached the miners only by its separate give-mining-laser-sol-central (8 lines). The form of that route: one docked stop, the gift from the pilot's storage, requires.stored 1 unit at central_nexus (the storage book, about every 40 minutes), requires.in_system nexus_prime (no jump for it). In First: closed to every scout without a stored laser there. 2026-11-24 11:14 UTC (Oracle; scorecard ALARM module slots, orders P2 and the gift Zero said yes to, requests ENT-492): requires.in_system nexus_prime replaced by requires.max_jumps 2. Only 1 run in the 105 minutes after 09:30 UTC (runs table): a free scout is rarely inside Nexus Prime itself, so 17 of the 18 kept their lasers; within 2 jumps a home reader detours once (about four jumps of fuel) to hand its laser on.",
  "once": true,
  "max_ships": 5,
  "max_pilots": 30,
@@ -13,9 +13,7 @@
    "item": "mining_laser_i",
    "min": 1
   },
-  "in_system": [
-   "nexus_prime"
-  ]
+  "max_jumps": 2
  },
  "stops": [
   {

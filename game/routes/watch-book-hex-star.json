@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-hex-star",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Hex Star, Dheneb ([HEXC], a rival mega-hub) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 11:14 UTC (orders ENT-086 P1 and block ORACLE; MISSION.md: sub-3h book scans of the rival mega-hubs, Dheneb named; rule F8; skill intel-turn step 9: a station where scouts wait docked gets a watch route). At 11:06 UTC a scout stood docked and free at Hex Star (tool fill, status scout: 2 waiting, closed to every list of its own) and no watch route named Dheneb. A copy of watch-book-ironlight-refuge: one ship a station, since a second reads the same book; only a scout already in this system takes it (requires.in_system). Standing work, never judged on its pay (F22). The book of a neutral faction's station ([HEXC], neutral by agreement, no information exchanged either way, rulebook sec 14): read as any visitor reads it, never traded from here, which is Trade's work.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "dheneb"
+ },
+ "stops": [
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
