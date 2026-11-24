@@ -122,6 +122,10 @@
   {
    "what": "Read the envoy's replies through diplomacy.py threads twice a turn; beacons go out by themselves from 2026-11-25 03:33 and 09:26 UTC; replies to Unity as data",
    "when": "every turn"
+  },
+  {
+   "what": "Read the Survey Scanner II surveys (census-kit-herds): a faint signature resolved goes to Mining in queue.log",
+   "when": "next turn"
   }
  ],
  "ships": {
