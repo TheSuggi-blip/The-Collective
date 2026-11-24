@@ -1,36 +1,33 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 10:58 UTC; view_orders of 85 traders 10:37 UTC; bursar_claims.json; data/missions 10:43 UTC; errors.log Mercury 2026-11-24 (bursar buy lane).
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 13:23 UTC; ship files mission_list 13:05 UTC; orders_scan.py of 85 traders 13:06 UTC; table ship_listings 13:17 UTC; errors.log ENT-187, ENT-190.
 
-The plan file as set on 2026-11-24 at 11:10 UTC (orders ENT-086,
-block MERCURY):
+The plan file as set on 2026-11-24 at 13:35 UTC (orders ENT-087,
+block MERCURY of ENT-086):
 
 - First, every ship: the once line of every board; the Station Needs
-  (`need-melt-frontier`, `need-melt-crucible`, `need-ember-gland-*`),
-  each gated by `requires.stored` and `requires.posted` (the board read
-  by a docked ship of ours within 30 minutes holds the title), then the
-  far bids for stored loot.
-- Own rows: the join corridors, the capitals' lines, `@trade-sell >
-  @trade-craft`.
+  (`need-melt-*`, `need-ember-gland-*`), each gated by
+  `requires.stored` and `requires.posted`; the far bids for stored loot.
+- Own rows: a `finish-*` route only in the rows of the pilots whose
+  ship file holds that mission half done (it has no accept: a
+  non-holder flies its stops for nothing); then the join corridors,
+  the capitals' lines, `@trade-sell > @trade-craft`.
 - Then, gated to where each ship stands: starters stripped once, the
-  five Bursar desks, `bursar-network` (the engine, one trader an
-  Exchange station: 61 books less the Ross 248 station and the five
-  desks carry 55), steel from own iron, `train-jumps-trader` (Piloting
-  to 10 for the tier-2 hull, 15 ships), park.
+  five Bursar desks, `bursar-network` (one trader an Exchange
+  station, buy lane off, its old buy escrow cancelled where a bursar
+  docks), steel from own iron, `train-jumps-trader`, park.
 
-The engine's policy (`game/bursar-policy.json`, Trade's): buy lane off
-(a buy that only stores is Logistics', orders P5); player stations in
-lawless space kept, as a docked bursar stays where it stands (the trip
-home cost more fuel than its risk saved); stations in a system of the
-orders' Watch line excluded; the nearest station first. Its books and
-boards are what opens the Station Need routes.
+Hulls: a listed hull before a commission (`browse_ships` with
+`can_fly`, the skill's `buy_listed_hull.py`): Prayer (540 cargo,
+speed 3) for starters where one is listed, a listed tier-2 freighter
+(Baling Wire, Analysis, Apophenia) for Piloting 10. Commissions at
+The Experiment wait on yard materials; read `commission_status`
+before queueing more.
 
-What would change it: the buy escrow read back to 0 (the unwind lane
-cancels it where a bursar docks, live since 11:30 UTC);
-Station Need copies read for goods we hold (`needscan.py`); a buy lane
-with a fleet-wide cap; a HEXC supply contract that counts a part
-delivery.
+What would change it: the commissions sourced or cancelled; a lock
+on the upgrade queue (errors.log ENT-190); a buy lane with a
+fleet-wide cap; a HEXC supply contract carried by a 240+ cargo hull.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 
