@@ -33,11 +33,11 @@
  "lift_to": 1,
  "measured": {
   "date": "2026-11-24",
-  "runs": 4,
-  "minutes": 43,
-  "credits_per_run": -410,
-  "cph_per_ship": -590,
+  "runs": 8,
+  "minutes": 30,
+  "credits_per_run": -340,
+  "cph_per_ship": -570,
   "hours": 12,
-  "last_run": "2026-11-24T04:25:32Z"
+  "last_run": "2026-11-24T06:07:53Z"
  }
 }

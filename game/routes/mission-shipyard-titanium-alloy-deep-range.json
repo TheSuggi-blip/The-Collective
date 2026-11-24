@@ -52,14 +52,5 @@
    "at": "deep_range:deep_range_outpost:deep_range_outpost",
    "redock": true
   }
- ],
- "measured": {
-  "date": "2026-11-23",
-  "runs": 2,
-  "minutes": 16,
-  "credits_per_run": -24360,
-  "cph_per_ship": -89680,
-  "hours": 12,
-  "last_run": "2026-11-23T18:26:13Z"
- }
+ ]
 }
