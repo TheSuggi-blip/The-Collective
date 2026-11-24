@@ -38,7 +38,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 123 | finish-five-capitals-sol > voidborn-first-steps-board > voidborn-collective-provides | 0 | 9 |
+| [command](plan-command.md) | Unity | 58 | finish-five-capitals-sol > voidborn-first-steps-board > voidborn-collective-provides | 0 | -- |
 | [drone](plan-drone.md) | Apophis | 361 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 118 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
 | [miner](plan-miner.md) | Zero | 186 | fit-t2-lasers-lhs-1140 > fit-liminal-lasers-lhs-1140 > resonance-parts-procyon-titanium-node-beta | 4 | 130 |
