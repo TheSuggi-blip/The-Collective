@@ -449,3 +449,10 @@ Cause: an unproven spread scaled to 60 ships before one ship's runs were read (r
 Fix: lane arbitrage out of game/haul-policy.json and the Builder kept home by requires.skills_below (commit c26763ce); three haul.py changes proposed in queue.log.
 Would it have prevented the original: yes for the haulers' losses; the structural part is a dispatcher or fill gate that caps a new kind of route at 1 ship until 3 runs read positive.
 Class: an engine scaled before its first runs were read.
+
+## [ENT-182] | 2026-11-24 10:42 UTC | Apophis | error | ref: reports/2026-11-24_apophis_listed-hulls-cheaper-than-commissions-tier2-fuel-measured.md | see: requests.log ENT-509
+What: Military commissioned three Recursions at Node Beta (309,624 cr on 2026-11-23 19:47 UTC; 310,985 and 313,361 cr on 2026-11-24 01:19 and 07:39 UTC, observations kind fit_test) while the Central Nexus Station Manager listed a fitted Recursion for 224,430 cr since 2026-11-11 (browse_ships, 2026-11-24 10:27 UTC).
+Effect: about 85,000 to 89,000 cr paid above the listing for one of the three hulls (the listing is one ship); the commissions also waited hours in SOURCING where a listed hull flies at once. No ship lost.
+Cause: the hull scripts read only commission_quote; no step of mine read the ship exchange, and browse_ships was not used by any fleet script.
+Fix: commission_hull.py refuses while browse_ships lists the class at or under the quote (--ignore-listings overrides); buy_listed_hull.py buys a listed hull (want, travel, buy under a limit, book once); the funded pilot of the next Recursion now buys the listing. Guidebook ships.md and skill military-turn carry the step. Would it have prevented the original: yes, the first commission would have been refused.
+Class: bought new without reading what is offered used.
