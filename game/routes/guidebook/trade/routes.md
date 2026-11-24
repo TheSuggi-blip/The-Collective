@@ -3,7 +3,7 @@
 ### Standing Plan
 Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check; fill.py check trader 10:58 UTC; view_orders of 85 traders 10:37 UTC; bursar_claims.json; data/missions 10:43 UTC; errors.log Mercury 2026-11-24 (bursar buy lane).
 
-The plan file as set on 2026-11-24 at 11:00 UTC (orders ENT-086,
+The plan file as set on 2026-11-24 at 11:10 UTC (orders ENT-086,
 block MERCURY):
 
 - First, every ship: the once line of every board; the Station Needs
@@ -14,15 +14,17 @@ block MERCURY):
 - Own rows: the join corridors, the capitals' lines, `@trade-sell >
   @trade-craft`.
 - Then, gated to where each ship stands: starters stripped once, the
-  five Bursar desks, `bursar-network` (the engine, one trader a policed
-  Exchange station: 33 stations less the five desks carry 28), steel
-  from own iron, `train-jumps-trader` (Piloting to 10 for the tier-2
-  hull), park.
+  five Bursar desks, `bursar-network` (the engine, one trader an
+  Exchange station: 61 books less the Ross 248 station and the five
+  desks carry 55), steel from own iron, `train-jumps-trader` (Piloting
+  to 10 for the tier-2 hull, 15 ships), park.
 
 The engine's policy (`game/bursar-policy.json`, Trade's): buy lane off
-(a buy that only stores is Logistics', orders P5), policed stations
-only, the nearest station first. Its books and boards are what opens
-the Station Need routes.
+(a buy that only stores is Logistics', orders P5); player stations in
+lawless space kept, as a docked bursar stays where it stands (the trip
+home cost more fuel than its risk saved); stations in a system of the
+orders' Watch line excluded; the nearest station first. Its books and
+boards are what opens the Station Need routes.
 
 What would change it: the unwind lane installed (buy escrow back);
 Station Need copies read for goods we hold (`needscan.py`); a buy lane
