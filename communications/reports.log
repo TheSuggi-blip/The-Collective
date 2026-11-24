@@ -436,3 +436,12 @@ Failed: mine-network mined nothing 13:32 to 15:12 UTC (loader read columns read.
 Requests: none open to me; none filed.
 Suggestions: a live-store smoke test for every network runner before install (Unity, Trinity); fleet-build install restores the clone when its caller dies (Unity); Mining's 130 ships against belts capped at 3 and iron capped at 80,000 need a decision once iron is full (Suggi through Unity).
 Report: yards-fed-mine-network-fixed-far-iron-opened
+
+## [ENT-193] | 2026-11-24 16:26 UTC | Apophis | session | ref: reports/2026-11-24_apophis_hunt-network-was-blind-tier2-hulls-to-packs.md | see: orders.log ENT-089
+Session: scheduled run military-turn -- hunt-network was blind; tier-2 hulls moved to packs and escorts.
+Did: preflight PASS; hunt_net.py fixed by fleet-build (dd490e79: per-table store reads, live-schema test, F9 gauges on solo and packs, unloaded guns count 0; 2eb93ba5: our outpost no dock); one-pack test policy (0707020f); route hunt-network-packs for 4 Recursions and 3 Broadaxes (deff8718); home rounds routes at 1 cr (6a1627bd) and the Anvil route standing (c2d02e8c); @hunter by credits per XP (ea5c023a); one Broadaxe towed by hand; claim ENT-133; guidebook f7ff72fe and the Standing Plan entry.
+Worked: no ship lost; first escort flew 15:50 UTC; two whale packs forming at 16:21 UTC; fill gate PASS 16:21 UTC (drone, sentinel, 0 waiting).
+Failed: hunt-network found 0 herds from 13:32 to 15:29 UTC (errors.log ENT-194); Recursions on starter prey -7,950 cr a ship-hour; listed Broadaxes 0.6 and Cleavers 0.94 kills a run; tug.py missed a tier-2 hull at 4 fuel.
+Requests: none.
+Suggestions: tug.py should read a hull's own burn; every new runner tested on the store's own schema; upgrades view should show kills a run (queue.log ENT-308).
+Report: hunt-network-was-blind-tier2-hulls-to-packs.
