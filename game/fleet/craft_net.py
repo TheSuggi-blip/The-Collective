@@ -72,7 +72,7 @@ def load_craft_world(data_dir, repo_root, policy):
     if db.is_file():
         con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
         try:
-            tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
             if "recipes" in tbls and "recipe_inputs" in tbls and "recipe_outputs" in tbls:
                 for rid, nm, fo in con.execute("SELECT id, name, COALESCE(facility_only, 0) FROM recipes"):
                     recipes[str(rid)] = {"id": str(rid), "name": str(nm or rid), "facility_only": bool(fo), "inputs": [], "outputs": []}

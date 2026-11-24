@@ -227,14 +227,15 @@ class MineNetLiveSchemaTests(unittest.TestCase):
                 CREATE TABLE recipe_outputs (recipe TEXT, item TEXT, units INTEGER);
                 CREATE TABLE items (id TEXT, base_value REAL);
                 CREATE TABLE holdings (pilot TEXT, member TEXT, place TEXT, item TEXT, units INTEGER, t INTEGER, src TEXT);
-                CREATE TABLE supply_status (item TEXT, stock INTEGER, keep INTEGER);
+                CREATE TABLE supply_raw (item TEXT, stock INTEGER, keep INTEGER);
+                CREATE VIEW supply_status AS SELECT item, stock, keep FROM supply_raw;
                 INSERT INTO recipes VALUES ('r_ice', 'Coolant', 0), ('r_si', 'Chip', 0);
                 INSERT INTO recipe_inputs VALUES ('r_ice', 'water_ice', 10), ('r_si', 'silicon_ore', 10);
                 INSERT INTO recipe_outputs VALUES ('r_ice', 'coolant_cell', 1), ('r_si', 'microchip', 1);
                 INSERT INTO items VALUES ('water_ice', 56.0), ('silicon_ore', 56.0), ('iron_ore', 5.0);
                 INSERT INTO holdings VALUES ('m1', 'Zero', 'hub', 'water_ice', 67000, 1795500000, 'stock/storage.json');
                 INSERT INTO holdings VALUES ('m1', 'Zero', 'hub', 'iron_ore', 153000, 1795500000, 'stock/storage.json');
-                INSERT INTO supply_status VALUES ('iron_ore', 53000, 60000);
+                INSERT INTO supply_raw VALUES ('iron_ore', 53000, 60000);
             """)
             con.commit()
             con.close()
