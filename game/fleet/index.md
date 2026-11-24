@@ -1085,7 +1085,9 @@ Run by hand.
 ```
 wallet.py [check]            every wallet against the floors; HALT for a pilot under 3,000 cr
 wallet.py topup [--dry-run]  give each pilot under LOW credits up to TARGET from a rich ship of its division
-wallet.py sweep [--dry-run]  the part above KEEP_SHIP of the richest ships to the leader, the leader's into the treasury
+wallet.py sweep [--cash-only] [--dry-run]
+                             parallel sweep: seated members deposit directly to treasury; unseated gift to leader -> treasury
+wallet.py serve [--dry-run]  serve funds (lockbox or P2P), top-ups, seat & officer auto-queues, errands, and upgrades
 wallet.py fund <pilot[,pilot2...]> <credits> --why "<text>" [--hours H]
                              the treasury pays one or more pilots for a buy (own division for Admirals, uncapped above
                              500k treasury floor; any pilot for Unity); served every 5 min

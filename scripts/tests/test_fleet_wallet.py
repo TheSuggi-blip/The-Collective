@@ -429,5 +429,206 @@ class AdmiralSelfFundingTests(FundTests):
         self.assertEqual([r["state"] for r in w.funds(str(self.data))], ["given", "given"])
 
 
+
+
+class WalletFluidityUpgradeTests(FundTests):
+    """Parallel direct member deposits, decoupled sweep/serve, P2P mid-flight funding, multi-tier storage bases,
+    and self-healing auto-officer staffing (Suggi, 2026-11-24)."""
+
+    def test_seated_members_deposit_directly_in_parallel_and_cooldown_prevents_double_sweep(self):
+        w, now = self.wallet, time.time()
+        w.SWEEP_ENABLED = True
+        w.SHOW_WAIT = 0
+        w.SWEEP_WORKERS = 4
+        w.DIRECT_DEPOSIT_PER_PASS = 10
+        w.PER_PASS = 10
+        w.refresh = lambda p: None
+        w.treasury_read = lambda p: None
+        (self.data / "empire").mkdir(exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "faction": {"id": "fac-1", "leader": "Prime Directive", "treasury": 1000000},
+            "members": [
+                {"pilot": "Prime Directive", "role": "leader"},
+                {"pilot": "miner-1", "role": "member"},
+                {"pilot": "miner-2", "role": "member"},
+            ],
+            "facilities": [],
+        }), encoding="ascii")
+        bals = {"Prime Directive": 50000, "miner-1": 80000, "miner-2": 70000, "miner-3": 65000}
+
+        def write_fl():
+            ships = [{"name": n, "credits": c, "status": "connected", "docked": ""} for n, c in bals.items()]
+            (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+
+        write_fl()
+        lock = __import__("threading").Lock()
+        dep_calls, give_calls = [], []
+
+        def fake_dep(pilot, credits):
+            with lock:
+                dep_calls.append((pilot, credits))
+                bals[pilot] -= credits
+                rem = bals[pilot]
+                write_fl()
+            return True, json.dumps({"player": {"username": pilot, "credits": rem}})
+
+        def fake_give(donor, target, credits):
+            with lock:
+                give_calls.append((donor, target, credits))
+                bals[donor] -= credits
+                bals[target] += credits
+                rem = bals[donor]
+                write_fl()
+            return True, json.dumps({"player": {"username": donor, "credits": rem}})
+
+        w.deposit = fake_dep
+        w.give = fake_give
+        rc = w.sweep(str(self.data), now, False, cash_only=True)
+        self.assertEqual(rc, 0)
+        # miner-1 (50k) & miner-2 (40k) are seated -> direct deposit to faction!
+        # miner-3 (35k) is unseated -> gifted to Prime Directive -> Prime Directive deposits 35k!
+        self.assertEqual(sorted(dep_calls), [("Prime Directive", 35000), ("miner-1", 50000), ("miner-2", 40000)])
+        self.assertEqual(give_calls, [("miner-3", "Prime Directive", 35000)])
+        once = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        dep_rows = sorted((r[1], r[3]) for r in once if r[2] == w.DEPOSIT_TITLE)
+        self.assertEqual(dep_rows, [("Prime Directive", -35000), ("miner-1", -50000), ("miner-2", -40000)])
+        # Second pass immediately: miner-1/miner-2 on cooldown via recent_direct_deposits even if wallet refilled
+        bals["miner-1"] = 90000
+        write_fl()
+        dep_calls.clear()
+        give_calls.clear()
+        rc2 = w.sweep(str(self.data), now + 60, False, cash_only=True)
+        self.assertEqual(rc2, 0)
+        self.assertEqual(dep_calls, [])
+
+    def test_cut_direct_deposit_is_settled_once_on_next_pass(self):
+        w, now = self.wallet, time.time()
+        sent_at = int(now) - 120
+        (self.data / "fleet" / "sweep.jsonl").write_text(
+            json.dumps({"at": sent_at, "kind": "direct_deposit", "from": "miner-1", "to": "faction",
+                        "credits": 40000, "state": "sent", "wallets": {"miner-1": 70000}, "text": ""}) + "\n",
+            encoding="ascii",
+        )
+        ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now))
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({
+            "ships": [{"name": "Prime Directive", "credits": 50000, "state_at": ts},
+                      {"name": "miner-1", "credits": 30000, "state_at": ts}]
+        }), encoding="ascii")
+        waiting, failed = w.settle_direct_deposits(str(self.data), now, dry=False)
+        self.assertEqual((waiting, failed), ({}, 0))
+        once = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual([(r[0], r[1], r[3]) for r in once if r[2] == w.DEPOSIT_TITLE], [(sent_at, "miner-1", -40000)])
+        # Re-running settles nothing twice
+        waiting2, failed2 = w.settle_direct_deposits(str(self.data), now + 30, dry=False)
+        self.assertEqual((waiting2, failed2), ({}, 0))
+        once2 = json.loads((self.data / "fleet" / "onetime.json").read_text())
+        self.assertEqual(len([r for r in once2 if r[2] == w.DEPOSIT_TITLE]), 1)
+
+    def test_p2p_midflight_funding_fills_without_docked_officer_and_handles_partial(self):
+        w, now = self.wallet, time.time()
+        w.SHOW_WAIT = 0
+        w.SWEEP_WORKERS = 4
+        w.P2P_FUND_ENABLED = True
+        w.refresh = lambda p: None
+        (self.data / "empire").mkdir(exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "faction": {"id": "fac-1", "leader": "Prime Directive", "treasury": 2000000},
+            "members": [{"pilot": "Prime Directive", "role": "leader"}],
+            "facilities": [{"type": "faction_warehouse", "base": "keep_base", "status": "active"}],
+        }), encoding="ascii")
+        bals = {"Prime Directive": 50000, "drone-4": 20000, "miner-1": 150000, "miner-2": 130000, "miner-3": 100000}
+
+        def write_fl():
+            ships = [{"name": n, "credits": c, "status": "connected", "docked": ""} for n, c in bals.items()]
+            (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+
+        write_fl()
+        lock = __import__("threading").Lock()
+        sent_slices = []
+
+        def fake_give(donor, target, credits):
+            with lock:
+                sent_slices.append((donor, target, credits))
+                bals[donor] -= credits
+                bals[target] += credits
+                rem = bals[donor]
+                write_fl()
+            return True, json.dumps({"player": {"username": donor, "credits": rem}})
+
+        w.give = fake_give
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 200000, "P2P hull buy", 6, now, who="Unity"), 0)
+        rc = w.serve_funds(str(self.data), "Prime Directive", now, False)
+        self.assertEqual(rc, 0)
+        row = w.funds(str(self.data))[0]
+        self.assertEqual(row["state"], "given")
+        self.assertEqual(row.get("via"), "p2p")
+        self.assertEqual(sum(c for _d, _t, c in sent_slices), 200000)
+        # Verify partial fill deducts landed slice safely when one donor is in_battle
+        bals["miner-3"] = 90000
+        bals["miner-4"] = 90000
+        bals["drone-5"] = 10000
+        write_fl()
+        sent_slices.clear()
+
+        def partial_give(donor, target, credits):
+            if donor == "miner-4":
+                return False, '{"error":"in_battle"}'
+            return fake_give(donor, target, credits)
+
+        w.give = partial_give
+        self.assertEqual(w.add_fund(str(self.data), "drone-5", 100000, "Partial P2P", 6, now, who="Unity"), 0)
+        rc2 = w.serve_funds(str(self.data), "Prime Directive", now, False)
+        self.assertEqual(rc2, 0)
+        row2 = [r for r in w.funds(str(self.data)) if r["pilot"] == "drone-5"][0]
+        self.assertEqual(row2["state"], "open")
+        self.assertEqual(row2["credits"], 60000)  # miner-4 (60k) hit in_battle; miner-3 (40k) landed -> 60k left
+
+    def test_auto_queue_officers_and_upgraded_storage_tiers(self):
+        w, now = self.wallet, time.time()
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({
+            "Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"},
+            "Zero Point": {"admiral": "Unity", "division": "Command", "role": "command"},
+            "Mercurys Ledger": {"admiral": "Unity", "division": "Command", "role": "command"},
+        }), encoding="ascii")
+        (self.data / "empire").mkdir(exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "faction": {"id": "fac-1", "leader": "Prime Directive", "treasury": 2000000},
+            "members": [
+                {"pilot": "Prime Directive", "role": "leader"},
+                {"pilot": "Zero Point", "role": "member"},
+                {"pilot": "Mercurys Ledger", "role": "officer"},
+                {"pilot": "trader-5", "role": "member"},
+                {"pilot": "trader-11", "role": "member"},
+                {"pilot": "hauler-31", "role": "member"},
+                {"pilot": "miner-19", "role": "member"},
+                {"pilot": "hauler-3", "role": "builder"},
+            ],
+            "facilities": [
+                {"type": "faction_warehouse", "base": "base_alpha", "status": "active"},
+            ],
+        }), encoding="ascii")
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({
+            "ships": [
+                {"name": "Prime Directive", "credits": 50000, "docked": ""},
+                {"name": "Zero Point", "credits": 50000, "docked": ""},
+                {"name": "Mercurys Ledger", "credits": 50000, "docked": "base_alpha"},
+                {"name": "trader-5", "credits": 50000, "docked": "base_alpha"},
+                {"name": "trader-11", "credits": 50000, "docked": "base_alpha"},
+                {"name": "hauler-31", "credits": 50000, "docked": "base_alpha"},
+                {"name": "miner-19", "credits": 50000, "docked": "base_alpha"},
+                {"name": "hauler-3", "credits": 50000, "docked": "base_alpha"},
+            ]
+        }), encoding="ascii")
+        # Upgraded faction_warehouse base must be recognized by ready_withdrawer!
+        self.assertEqual(w.ready_withdrawer(str(self.data), "Prime Directive", request_stop=False), "Mercurys Ledger")
+        # auto_queue_officers queues Zero Point (flagship) + 1 docked trader (since Mercurys Ledger is 1st officer at base_alpha)
+        self.assertEqual(w.auto_queue_officers(str(self.data), now, dry=False), 0)
+        queued = [r["params"]["player_id"] for r in w.errands(str(self.data)) if r.get("action") == "promote"]
+        self.assertEqual(queued, ["Zero Point", "trader-11"])
+        # Calling again deduplicates cleanly (zero duplicates!)
+        self.assertEqual(w.auto_queue_officers(str(self.data), now + 60, dry=False), 0)
+        self.assertEqual(len(w.errands(str(self.data))), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -540,7 +540,7 @@ def _release_upgrade(data_dir, pilot, division_mod):
             pass
 
 
-def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=3, budget_s=45.0,
+def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=90.0,
                    gate_mod=None, wallet_mod=None, division_mod=None):
     """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
     now = float(time.time() if now is None else now)
@@ -770,7 +770,7 @@ def main(argv=None):
         ap = argparse.ArgumentParser(prog="upgrades.py serve")
         ap.add_argument("--data", default=data_default)
         ap.add_argument("--dry-run", action="store_true")
-        ap.add_argument("--max-actions", type=int, default=3)
+        ap.add_argument("--max-actions", type=int, default=15)
         a = ap.parse_args(argv[1:])
         return serve_upgrades(a.data, dry=a.dry_run, max_actions=a.max_actions)
     ap = argparse.ArgumentParser(description="Empire-specialized hull & module parallel upgrade planner.")
