@@ -193,6 +193,18 @@ class SurplusTests(unittest.TestCase):
             self.assertEqual(done.returncode, 0, done.stdout)
             self.assertIn("NO RESERVE FILE game/reserve.tsv: no targets, nothing kept, everything held is surplus", done.stdout.split("\n")[0])
 
+    def test_goods_at_an_outpost_of_ours_are_not_held_for_the_reserve_nor_surplus(self):
+        # requests.log ENT-513: no storage at an outpost, a faction withdraw there is refused; its goods count for nothing usable
+        (self.data / "empire").mkdir(parents=True, exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({"bases": [{"base": "far_base", "kind": "outpost"}]}), encoding="utf-8")
+        rows = self.rows()
+        self.assertEqual((rows["iron_ore"]["held"], rows["iron_ore"]["surplus"]), (50, 50))            # 30 at home_base and 20 aboard; far_base's 50 out
+        self.assertNotIn("laser", rows)                                                                 # its 2 lie at the outpost only
+        self.targets("facility\tlockbox\t1\t\n")                                     # 10 plate: 3 held at home_base (far_base's 1 out), 7 to make of 70 iron
+        ore = self.rows()["iron_ore"]
+        self.assertEqual((ore["held"], ore["reserved"], ore["surplus"], ore["at"]), (50, 50, 0, []))
+        self.assertEqual(self.result()["locked"], {"iron_ore": 50, "steel_plate": 1, "laser": 2})
+
     def test_the_reserve_is_taken_from_the_place_with_the_most_and_the_rest_is_surplus_where_it_lies(self):
         self.targets("facility\tlockbox\t1\t\n")
         ore = self.rows()["iron_ore"]

@@ -15,7 +15,8 @@
  "requires": {
   "skills_below": {
    "corporation_management": 7
-  }
+  },
+  "mission": "Frontier Wayfinder Circuit"
  },
  "stops": [
   {

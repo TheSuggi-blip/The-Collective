@@ -65,6 +65,7 @@ Stdlib only. ASCII only.
 """
 
 import calendar
+import json
 import math
 import os
 import sys
@@ -279,6 +280,19 @@ def why_text(labels, keep, kinds, kind, could=()):
     return "; ".join(parts)
 
 
+
+def locked_places(data):
+    """The places whose goods no pilot of ours can take out: our outposts (data/empire/empire.json `bases` of kind
+    outpost). An outpost offers no storage, so a faction withdraw there is refused (no_storage: Apollo's one-unit test
+    of 2026-11-24 12:14 UTC, requests.log ENT-513) and a craft there cannot reach it. What lies there stays in the
+    inventory and the tool stock; the reserve's held, its pull levels and the surplus leave it out (`locked`)."""
+    try:
+        state = json.loads((Path(data) / "empire" / "empire.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    bases = state.get("bases") if isinstance(state, dict) else None
+    return {str(b["base"]) for b in bases or [] if isinstance(b, dict) and b.get("base") and b.get("kind") == "outpost"}
+
 def surplus(data, root, cat=None, now=None):
     """The reserve and the surplus of every item held or asked for: {written, catalog, file, present, targets, errors, warnings,
     books: {read, oldest, age}, rows, totals, rule, choices (craftbook.choose: game/reserve-recipes.tsv, its rows and errors),
@@ -291,7 +305,14 @@ def surplus(data, root, cat=None, now=None):
     targets, errors, warnings, present = read_targets(Path(root) / FILE, cat)
     targets += needbook.targets(root, cat, warnings)    # the open needs of game/needs.tsv, in priority order (needs.py): one demand
     inv = craftbook.inventory(data, cat)
-    have = {r["id"]: r for g in inv["groups"] for r in g["rows"]}
+    have, locked, shut = {}, {}, locked_places(data)
+    for r in (r for g in inv["groups"] for r in g["rows"]):
+        out = sum(n for place, n in r["at"].items() if place in shut)      # what lies at an outpost: no withdraw there (ENT-513)
+        if out:
+            locked[r["id"]] = out
+            r = dict(r, units=r["units"] - out, at={place: n for place, n in r["at"].items() if place not in shut})
+        if r["units"] > 0:
+            have[r["id"]] = r
     held = {item: r["units"] for item, r in have.items()}
     top, labels, keep, kinds, levels = {}, {}, {}, set(), {}
     for t in targets:
@@ -351,7 +372,7 @@ def surplus(data, root, cat=None, now=None):
     return {"written": inv["written"], "catalog": cat["version"], "file": FILE, "present": present, "targets": targets, "errors": errors,
             "warnings": warnings, "books": {"read": read, "oldest": oldest, "age": age(oldest, now) if oldest else ""}, "rows": rows, "totals": totals,
             "rule": RULE, "choices": cat["choices"], "taken": craftbook.taken_lines(cat, {item: s["recipe"] for item, s in steps.items() if s["recipe"]}),
-            "levels": levels}
+            "levels": levels, "locked": locked}
 
 
 def first_line(title, res):

@@ -175,6 +175,18 @@ class ViewTests(Base):
         self.assertEqual((iron["change_24h"], rows["ice"]["change_24h"]), (None, None))         # one sample is no change
         self.assertEqual([r["chain"] for r in supply.read(str(self.data))["rows"]][:3], ["bad chain", "bunker", "iron"])   # broken, then the shortest
 
+    def test_a_fleet_chain_leaves_out_what_lies_at_an_outpost_and_the_outposts_own_chain_keeps_it(self):
+        # requests.log ENT-513: a faction withdraw at an outpost is refused (no storage there), so its goods feed no `fleet` chain;
+        # a Lockbox at a station (base_a here) is withdrawn from and still counts
+        write(self.data / "empire" / "empire.json", {"written_at": STAMP, "bases": [{"base": "base_o", "name": "Our Outpost", "system": "sys_b", "kind": "outpost"}],
+                                                     "faction_storage": [{"base": "base_o", "base_name": "Our Outpost", "item": "iron_ore", "units": 100, "read_at": STAMP},
+                                                                         {"base": "base_o", "base_name": "Our Outpost", "item": "fuel", "units": 6000, "read_at": STAMP},
+                                                                         {"base": "base_a", "base_name": "A Station", "item": "iron_ore", "units": 3, "read_at": STAMP}]})
+        self.one()
+        rows = self.rows()
+        self.assertEqual((rows["iron"]["stock"], rows["iron"]["status"]), (27, "short"))
+        self.assertEqual((rows["bunker"]["stock"], rows["bunker"]["status"]), (6000, "low"))      # keep 5,000: low below twice it
+
     def test_the_change_over_24_hours_is_read_from_the_hourly_samples_for_the_fleet_only(self):
         noon = store.epoch("2026-11-16T12:10:00Z")
         self.one(now=noon)
