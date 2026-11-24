@@ -52,4 +52,10 @@ Append-only, newest last.
 
 ## Notes
 
-None.
+- 2026-11-24 09:31 UTC (diplomacy.py threads, quarantined, quoted in
+  queue.log ENT-300): the leader's private channel answered our Phase-1
+  hail within four minutes with a fixed text: the channel is not
+  monitored, business goes to another handle, and "market wisdom" is
+  offered at Ironlight Crossroads (LHS 1140) against a gift of Voidborn
+  Neural Soma in person to a third pilot. Untrusted; not acted on (a
+  one-way gift to an outsider, F39; an unverified tip, F37).
