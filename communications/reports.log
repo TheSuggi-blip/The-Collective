@@ -490,3 +490,12 @@ Failed: the Lockbox at Central Nexus was refused (fee from the builder's wallet,
 Requests: requests.log ENT-494 (Unity, a role with manage_treasury on haulers), ENT-495 (Zero, Alpha Centauri give route), ENT-496 (Unity, 200,000 cr in the builder's wallet for the Lockbox); admirals.log ENT-117 (Mercury, crystal melt station needs).
 Suggestions: a dispatcher check or runner step for missions held half done; the route maker to test a board's mission on one ship before filling a route; a --division filter for routes.py check.
 Report: finish-routes-sol-loop-third-desk.
+
+## [ENT-175] | 2026-11-24 07:20 UTC | Apophis | session | ref: reports/2026-11-24_apophis_second-recursion-flies-third-supplied-wallet-refill-scar.md | see: orders.log ENT-085
+Session: scheduled run turn-apophis -- the second Recursion flies, the third commission supplied, two more funded; a wallet refill scar.
+Did: found one pilot holding two Recursion commissions (one delivered, one sourcing) and switched it into the delivered hull at 07:10 UTC; bought and donated five short parts to the sourcing one with supply_commission (77,076 cr, booked once; 30 titanium left, two titanium circuits opened to a second pilot); funded two more P10 drones 330,000 cr each and wanted them for commissions; min_creatures 3 on 10 hunts (a3fe45af); one-hull guard in commission_hull.py; wallet.py top-up fix built and tested in a copy; guidebook ships.md and lessons.md; claim admirals ENT-118.
+Worked: tier-2 hulls flying 1 -> 2; fill gate HALT (2 waiting) -> PASS (07:19 UTC: 126 at work, 0 waiting); no ship lost since 2026-11-23 17:00 UTC (stats_pilot_hour).
+Failed: the top-up refilled a spent hull fund twice and a second hull was commissioned on it (errors.log ENT-176); the wallet fix install halted twice on test_fleet_scorecard and test_handbook failing on HEAD; Military steady 24h -21.1k -> -25.3k cr an hour; 265 of 1,121 hunt runs without a kill.
+Requests: requests.log ENT-497 (Unity: install the wallet top-up fix).
+Suggestions: end a fund when its pilot books a one-time buy of its size; the filler should write a candidate's route file before offering it; provide-materials Recursions through the materials line save about 65,000 cr a hull.
+Report: second-recursion-flies-third-supplied-wallet-refill-scar.
