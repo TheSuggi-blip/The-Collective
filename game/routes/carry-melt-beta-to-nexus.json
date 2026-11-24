@@ -41,14 +41,5 @@
    "at": "nexus_prime:the_core:central_nexus",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-23",
-  "runs": 1,
-  "minutes": 17,
-  "credits_per_run": 2890,
-  "cph_per_ship": 10090,
-  "hours": 12,
-  "last_run": "2026-11-23T20:14:59Z"
- }
+ ]
 }

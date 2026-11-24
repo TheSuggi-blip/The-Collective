@@ -15,5 +15,14 @@
    "watch_minutes": 30,
    "watch_interval_minutes": 5
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 3,
+  "minutes": 30,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
+  "hours": 12,
+  "last_run": "2026-11-24T08:53:47Z"
+ }
 }

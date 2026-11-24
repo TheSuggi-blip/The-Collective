@@ -16,15 +16,6 @@
   "empire": "solarian"
  },
  "lift_to": 3,
- "measured": {
-  "date": "2026-11-23",
-  "runs": 38,
-  "minutes": 30,
-  "credits_per_run": -200,
-  "cph_per_ship": -380,
-  "hours": 12,
-  "last_run": "2026-11-23T10:53:59Z"
- },
  "gift": {
   "to": "hauler",
   "items": [
