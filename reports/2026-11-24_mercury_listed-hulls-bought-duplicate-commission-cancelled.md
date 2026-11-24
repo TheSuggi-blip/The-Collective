@@ -23,7 +23,9 @@ no bid against Logistics' steel, tier-2 hulls for the Piloting-10
 traders).
 
 Ships: 85 traders, none lost; fill gate for trader PASS at 13:03 and
-13:23 UTC (`fill.py check`, tool `fill`). Money (tool `fleet`
+13:23 UTC, HALT at 13:35 UTC (two freighters left out of
+`bursar-network` by its new cargo limit), PASS again at 13:49 and
+13:51 UTC (`fill.py check`, tool `fill`). Money (tool `fleet`
 view=money, 13:27 UTC): Trade's last hour reads net +680,113 cr,
 income 50,859 cr and costs -629,254 cr; the negative cost is mostly
 buy escrow coming back as bursars cancel their old orders, so it is
@@ -49,9 +51,10 @@ cr at 13:06 UTC (`orders_scan.py`, 85 pilots, 65 buy orders left).
    storage at The Experiment (55 silicate composite and 2 processing
    cores among them, both reserve needs).
 3. Prayer batch (rule F17): five starter traders standing where a
-   Prayer (540 cargo, speed 3) is listed got a buy script; one bought
-   at 3,240 cr by 13:25 UTC, three wait for their runs to end, one was
-   stopped because Frontier Station is a mobile capital.
+   Prayer (540 cargo, speed 3) is listed got a buy script; three
+   bought at 3,240, 3,312 and 3,412 cr (RESULT lines 13:25 to 13:50
+   UTC); one stopped because Frontier Station is a mobile capital, one
+   because the cheaper listing at its station went to another buyer.
 4. Finish routes (errors.log ENT-187, requests ENT-514):
    `finish-prospectus-levy-haven` left Trade's list First and went to
    the head of the own rows of the 22 traders whose ship files hold
@@ -60,7 +63,14 @@ cr at 13:06 UTC (`orders_scan.py`, 85 pilots, 65 buy orders left).
 5. First Links (errors.log ENT-189): nickel limit 130 -> 185 and
    `requires.ask` at Market Prime (ask 170 x 875, book 13:15 UTC),
    commit 71224fc3.
-6. Answered Apollo (admirals.log ENT-129): the seven stations where a
+6. Freighter traders: `bursar-network` now takes only hull tier 0
+   and cargo up to 150 (Trinity, 471a8446, Suggi approved), so two
+   freighters waited. New `bursar-network-freighter` (f0d50752): the
+   same docked duty for cargo over 150, 30-minute runs, last in the
+   list Then; both took it within two minutes. Lifts:
+   `finish-prospectus-levy-haven` 21 -> 43 (9c537f33, the trader
+   holders), Five Capitals 3 -> 4 (702913ec).
+7. Answered Apollo (admirals.log ENT-129): the seven stations where a
    trader receiver stands for the haulers' soma and ration lots, and
    the P0 and tier-2 listings for every division.
 
@@ -103,10 +113,9 @@ cr at 13:06 UTC (`orders_scan.py`, 85 pilots, 65 buy orders left).
 ## Suggestions
 
 - To Trinity and Unity (errors.log ENT-190): a lock around every
-  load-modify-save of `data/fleet/upgrade_queue.json`, or a save that
-  merges by entry id. Cost: one lock file in `upgrades.py`; owner
-  Trinity. Without it any hand edit inside a five-minute serve pass
-  is lost.
+  load-modify-save of `data/fleet/upgrade_queue.json`. Done by Trinity
+  at 13:38 UTC (bbe943d0, lock and merge), seven minutes after the
+  entry; next turn I read one cancel back after a serve pass.
 - To Unity: `fill.py fill --write` could leave `finish-*` routes (no
   accept) out of a list First; Apophis's requests ENT-514 asks a
   `requires.mission` gate, which would also cover Trade.
@@ -124,6 +133,10 @@ cr at 13:06 UTC (`orders_scan.py`, 85 pilots, 65 buy orders left).
 - `wallet.py fund` printed 'served at the next 5m pass while docked at
   a lockbox' and then 'no_storage' in `--show`: the condition is
   printed, but a turn cannot tell when a far pilot will meet it.
+- Trinity's bbe943d0 closed ENT-190 and the finish-route leak of
+  ENT-187 within the hour; a live edit of `fill.py` in the clone
+  failed with a SyntaxError for about two minutes before it (13:37
+  UTC), so `fill.py lift` failed once.
 - `comms.py post` refused my first errors entry because it named
   pilots; the message said what to change. Good gate.
 - `plan.py note` printed nothing on a first call through the shell;
