@@ -1,10 +1,11 @@
 # Command guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check command (2026-11-24 08:10 and 08:47 UTC); admirals.log ENT-119; hive.py standing Unity; requests.log ENT-433, ENT-500.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check command (2026-11-24 08:10 and 08:47 UTC); admirals.log ENT-119; hive.py standing Unity; requests.log ENT-433, ENT-500, ENT-517.
 
-The flagships take the list First (the missions paid once), then
-their own routes: a test the filler adds in front (three ships at
+The flagships take the list First (the missions paid once; at its
+head the `finish-` routes of missions held half done, open only to
+their holders by `requires.mission`, ENT-514), then their own routes: a test the filler adds in front (three ships at
 most, F37), the missions paid once of their boards, the far hunts no
 other division claims (one ship a herd, `max_ships` 1; the loot to a
 trader by `gift_to`), and last the nearest open herds Military claims,
