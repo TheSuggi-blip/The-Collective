@@ -75,11 +75,11 @@
  "far_ok": true,
  "measured": {
   "date": "2026-11-24",
-  "runs": 6,
-  "minutes": 11,
-  "credits_per_run": -250,
-  "cph_per_ship": -1360,
+  "runs": 9,
+  "minutes": 3,
+  "credits_per_run": -210,
+  "cph_per_ship": -1670,
   "hours": 12,
-  "last_run": "2026-11-24T01:19:15Z"
+  "last_run": "2026-11-24T05:30:34Z"
  }
 }

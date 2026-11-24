@@ -40,5 +40,14 @@
    "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 1,
+  "minutes": 19,
+  "credits_per_run": 135680,
+  "cph_per_ship": 428470,
+  "hours": 12,
+  "last_run": "2026-11-24T07:39:23Z"
+ }
 }

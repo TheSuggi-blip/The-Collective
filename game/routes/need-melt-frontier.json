@@ -67,5 +67,14 @@
    "store": "all"
   }
  ],
- "status": "off"
+ "status": "off",
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 2,
+  "minutes": 9,
+  "credits_per_run": 7180,
+  "cph_per_ship": 47060,
+  "hours": 12,
+  "last_run": "2026-11-24T07:42:29Z"
+ }
 }
