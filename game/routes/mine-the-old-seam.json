@@ -1,0 +1,11 @@
+{
+ "id": "mine-the-old-seam",
+ "kind": "mine",
+ "title": "The Old Seam: iron_ore; stored at Ironhearth Station (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 32 cr per ship-hour.",
+ "belt": "ironhearth:the_old_seam",
+ "station": "ironhearth:ironhearth_station:ironhearth_station",
+ "minutes": 46,
+ "max_ships": 3,
+ "lift_to": 3
+}

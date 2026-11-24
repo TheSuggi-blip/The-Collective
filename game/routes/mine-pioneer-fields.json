@@ -1,0 +1,14 @@
+{
+ "id": "mine-pioneer-fields",
+ "kind": "mine",
+ "title": "Pioneer Fields: iron_ore, copper_ore, titanium_ore; stored at The Core (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 2059 cr per ship-hour.",
+ "belt": "frontier:pioneer_fields",
+ "station": "nexus_prime:the_core:central_nexus",
+ "minutes": 90,
+ "max_ships": 3,
+ "lift_to": 3,
+ "keep_items": [
+  "titanium_ore"
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "id": "mine-82-eridani-belt",
+ "kind": "mine",
+ "title": "82 Eridani Belt: carbon_ore, tungsten_ore, platinum_ore, fury_crystal; stored at Echo Protocol Hub (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 1044 cr per ship-hour.",
+ "belt": "82_eridani:82_eridani_belt",
+ "station": "lilii_borea:56da4dcca499808b0e76ab482fdfa71c:d545d6ddb6c9ceab72fafc527a5e04b5",
+ "minutes": 90,
+ "max_ships": 3,
+ "lift_to": 3
+}

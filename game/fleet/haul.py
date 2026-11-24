@@ -79,6 +79,16 @@ def write_json(path, value):
     os.replace(tmp, path)
 
 
+def _call_json(method, path, payload=None, timeout=120):
+    st, txt = gate.call(method, path, payload, timeout=timeout)
+    if isinstance(txt, (dict, list)):
+        return st, txt
+    try:
+        return st, json.loads(txt or "{}")
+    except (TypeError, ValueError):
+        return st, {"error": str(txt)[:200]}
+
+
 def load_policy(policy_path=None):
     merged = json.loads(json.dumps(DEFAULT_POLICY))
     path = Path(policy_path) if policy_path else (ROOT / "haul-policy.json")
@@ -486,7 +496,7 @@ def main(argv=None):
         print("%s | %s | %s" % (utc_now(), pilot, msg), flush=True)
 
     def raw(action, params=None, group="spacemolt"):
-        _, d = gate.call("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
+        _, d = _call_json("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
         return d if isinstance(d, dict) else {}
 
     def body(d):
@@ -494,24 +504,36 @@ def main(argv=None):
         return sc if isinstance(sc, dict) else {}
 
     def get_state():
-        _, d = gate.call("GET", "/accounts/%s" % p_enc, timeout=60)
+        _, d = _call_json("GET", "/accounts/%s" % p_enc, timeout=60)
         return (d.get("state") or {}) if isinstance(d, dict) else {}
 
     def get_credits():
         return int(get_state().get("credits") or 0)
 
     def get_cargo():
-        _, rows = gate.call("GET", "/accounts/%s/state/cargo" % p_enc, timeout=60)
+        _, rows = _call_json("GET", "/accounts/%s/state/cargo" % p_enc, timeout=60)
         return {r.get("item_id"): int(r.get("quantity") or 0) for r in rows if isinstance(r, dict)} if isinstance(rows, list) else {}
+
+    def run_goal(gtype, options, tries=3, timeout=900):
+        waited = 0
+        ans = {}
+        while tries > 0:
+            st, ans = _call_json("POST", "/accounts/%s/goal" % p_enc, {"type": gtype, "options": options}, timeout=timeout)
+            if st == 200 and isinstance(ans, dict) and ans.get("success"):
+                return True, str(ans.get("message") or "")
+            err = str((ans.get("error") or ans.get("message") or st) if isinstance(ans, dict) else ans)
+            if "already executing" in err and waited < 30:
+                waited += 1
+                time.sleep(10)
+                continue
+            tries -= 1
+            time.sleep(10)
+        msg = str((ans.get("message") or ans.get("error") or "") if isinstance(ans, dict) else ans)[:100]
+        return False, msg
 
     def go_dock(loc):
         sys_id, poi_id, base_id = loc[0], loc[1], loc[2]
-        st, ans = gate.call("POST", "/accounts/%s/goal" % p_enc,
-                            {"goal": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
-                            timeout=900)
-        ok = (st == 200 and isinstance(ans, dict) and ans.get("ok"))
-        msg = "" if ok else str((ans or {}).get("error") or (ans or {}).get("output") or st)[:100]
-        return ok, msg
+        return run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
 
     def save_market(base_id, sys_id):
         items = [i for i in (body(raw("view_market", {}, group="spacemolt_market")).get("items") or []) if isinstance(i, dict)]
@@ -690,9 +712,7 @@ def main(argv=None):
                     release_job(DATA, pilot)
                     continue
                 had = get_cargo().get(iid, 0)
-                gate.call("POST", "/accounts/%s/goal" % p_enc,
-                          {"goal": "buy-items", "options": {"items": [{"itemId": iid, "maxPrice": int(round(live_ask * 1.02)), "maxQuantity": buy_q}]}},
-                          timeout=300)
+                run_goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(round(live_ask * 1.02)), "maxQuantity": buy_q}]}, tries=1, timeout=300)
                 got = get_cargo().get(iid, 0) - had
                 if got <= 0:
                     say("arb %s buy got 0 units at %s" % (iid, bloc[2]))

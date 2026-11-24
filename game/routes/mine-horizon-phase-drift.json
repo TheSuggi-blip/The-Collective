@@ -1,0 +1,11 @@
+{
+ "id": "mine-horizon-phase-drift",
+ "kind": "mine",
+ "title": "Horizon Phase Drift: iron_ore, copper_ore; stored at Void Gate Outpost (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 115 cr per ship-hour.",
+ "belt": "horizon:horizon_phase_drift",
+ "station": "void_gate:void_gate_outpost:void_gate_outpost",
+ "minutes": 90,
+ "max_ships": 3,
+ "lift_to": 3
+}

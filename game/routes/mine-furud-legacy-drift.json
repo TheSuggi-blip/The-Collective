@@ -1,0 +1,11 @@
+{
+ "id": "mine-furud-legacy-drift",
+ "kind": "mine",
+ "title": "Furud Legacy Drift: iron_ore, copper_ore; stored at Nova Terra Central (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -9 cr per ship-hour.",
+ "belt": "furud:furud_legacy_drift",
+ "station": "nova_terra:nova_terra_central:nova_terra_central",
+ "minutes": 59,
+ "max_ships": 3,
+ "lift_to": 3
+}

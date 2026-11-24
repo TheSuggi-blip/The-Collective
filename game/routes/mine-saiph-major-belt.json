@@ -1,0 +1,11 @@
+{
+ "id": "mine-saiph-major-belt",
+ "kind": "mine",
+ "title": "Saiph Major Belt: carbon_ore, fury_crystal; stored at Deep Range Outpost (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 142 cr per ship-hour.",
+ "belt": "valor:saiph_major_belt",
+ "station": "deep_range:deep_range_outpost:deep_range_outpost",
+ "minutes": 90,
+ "max_ships": 3,
+ "lift_to": 3
+}

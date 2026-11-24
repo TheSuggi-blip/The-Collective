@@ -1,0 +1,11 @@
+{
+ "id": "mine-sidelong-nebula",
+ "kind": "mine",
+ "title": "Sidelong Nebula: iron_ore, copper_ore; stored at The Experiment Research Station (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -32 cr per ship-hour.",
+ "belt": "pherkad:sidelong_nebula",
+ "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
+ "minutes": 80,
+ "max_ships": 3,
+ "lift_to": 3
+}

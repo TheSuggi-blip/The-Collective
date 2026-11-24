@@ -1,0 +1,11 @@
+{
+ "id": "mine-markeb-quantum-eddy",
+ "kind": "mine",
+ "title": "Markeb Quantum Eddy: iron_ore, copper_ore, quantum_fragments; stored at Void Gate Outpost (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 129 cr per ship-hour.",
+ "belt": "markeb:markeb_quantum_eddy",
+ "station": "void_gate:void_gate_outpost:void_gate_outpost",
+ "minutes": 70,
+ "max_ships": 3,
+ "lift_to": 3
+}

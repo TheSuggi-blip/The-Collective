@@ -95,6 +95,16 @@ def write_json(path, value):
     os.replace(tmp, path)
 
 
+def _call_json(method, path, payload=None, timeout=120):
+    st, txt = gate.call(method, path, payload, timeout=timeout)
+    if isinstance(txt, (dict, list)):
+        return st, txt
+    try:
+        return st, json.loads(txt or "{}")
+    except (TypeError, ValueError):
+        return st, {"error": str(txt)[:200]}
+
+
 def load_policy(policy_path=None):
     merged = json.loads(json.dumps(DEFAULT_POLICY))
     path = Path(policy_path) if policy_path else (ROOT / "bursar-policy.json")
@@ -159,7 +169,7 @@ def _static_bursar_bases(repo_root, orders):
     return counts
 
 
-def load_exchange_stations(data, policed_only=True):
+def load_exchange_stations(data, policed_only=True, exclude_strongholds=True):
     db = Path(data) / "store" / "read.db"
     stations = []
     if db.is_file():
@@ -169,9 +179,12 @@ def load_exchange_stations(data, policed_only=True):
             con.row_factory = sqlite3.Row
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
             if {"places", "systems"} <= tbls:
+                scols = {r[1] for r in con.execute("PRAGMA table_info(systems)").fetchall()}
+                strg_expr = "COALESCE(s.stronghold, 0)" if "stronghold" in scols else "0"
                 if "books" in tbls:
-                    rows = con.execute("""
+                    rows = con.execute(f"""
                         SELECT p.base, p.system, p.poi, COALESCE(s.empire, '') AS empire,
+                               {strg_expr} AS stronghold,
                                COALESCE(SUM(COALESCE(b.bid,0)*COALESCE(b.bid_qty,0) + COALESCE(b.ask,0)*COALESCE(b.ask_qty,0)), 0) AS depth,
                                MAX(COALESCE(b.t, 0)) AS book_t,
                                COUNT(b.item) AS items_n
@@ -182,8 +195,9 @@ def load_exchange_stations(data, policed_only=True):
                         GROUP BY p.base, p.system, p.poi, s.empire
                     """).fetchall()
                 else:
-                    rows = con.execute("""
+                    rows = con.execute(f"""
                         SELECT p.base, p.system, p.poi, COALESCE(s.empire, '') AS empire,
+                               {strg_expr} AS stronghold,
                                0 AS depth, 0 AS book_t, 0 AS items_n
                         FROM places p
                         LEFT JOIN systems s ON s.id = p.system
@@ -195,7 +209,12 @@ def load_exchange_stations(data, policed_only=True):
                     if not b or b in seen:
                         continue
                     emp = str(r["empire"] or "").strip().lower()
+                    if exclude_strongholds and int(r["stronghold"] or 0):
+                        continue
                     if policed_only and not emp:
+                        continue
+                    # When covering neutral non-stronghold hubs too, only staff stations that actually have an Exchange book
+                    if not emp and int(r["items_n"] or 0) <= 0:
                         continue
                     seen.add(b)
                     stations.append({
@@ -306,6 +325,8 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                     score += 100000.0
                 if b_id in priority:
                     score += 5000.0
+                if st["empire"]:
+                    score += 10000.0
                 if stay_emp and p_emp and st["empire"] == p_emp:
                     score += 2000.0
                 if st["items_n"] > 0:
@@ -549,7 +570,7 @@ def main(argv=None):
         print("%s | %s | %s" % (utc_now(), pilot, msg), flush=True)
 
     def raw(action, params=None, group="spacemolt"):
-        _, d = gate.call("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
+        _, d = _call_json("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
         return d if isinstance(d, dict) else {}
 
     def body(d):
@@ -557,12 +578,29 @@ def main(argv=None):
         return sc if isinstance(sc, dict) else {}
 
     def get_credits():
-        _, d = gate.call("GET", "/accounts/%s" % p_enc, timeout=60)
+        _, d = _call_json("GET", "/accounts/%s" % p_enc, timeout=60)
         return int(((d.get("state") or {}).get("credits")) or 0) if isinstance(d, dict) else 0
 
     def get_cargo():
-        _, rows = gate.call("GET", "/accounts/%s/state/cargo" % p_enc, timeout=60)
+        _, rows = _call_json("GET", "/accounts/%s/state/cargo" % p_enc, timeout=60)
         return {r.get("item_id"): int(r.get("quantity") or 0) for r in rows if isinstance(r, dict)} if isinstance(rows, list) else {}
+
+    def run_goal(gtype, options, tries=3):
+        waited = 0
+        ans = {}
+        while tries > 0:
+            st, ans = _call_json("POST", "/accounts/%s/goal" % p_enc, {"type": gtype, "options": options}, timeout=900)
+            if st == 200 and isinstance(ans, dict) and ans.get("success"):
+                return True, str(ans.get("message") or "")
+            err = str((ans.get("error") or ans.get("message") or st) if isinstance(ans, dict) else ans)
+            if "already executing" in err and waited < 30:
+                waited += 1
+                time.sleep(10)
+                continue
+            tries -= 1
+            time.sleep(10)
+        msg = str((ans.get("message") or ans.get("error") or "") if isinstance(ans, dict) else ans)[:120]
+        return False, msg
 
     def get_stored(base_id):
         d = body(raw("view_storage", {"station_id": base_id}, group="spacemolt_storage"))
@@ -646,12 +684,8 @@ def main(argv=None):
     say("claimed station %s (%s:%s)" % (base_id, sys_id, poi_id))
     notes.append("station %s" % base_id)
 
-    status, ans = gate.call("POST", "/accounts/%s/goal" % p_enc,
-                            {"goal": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
-                            timeout=900)
-    ok = (status == 200 and isinstance(ans, dict) and ans.get("ok"))
+    ok, msg = run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
     if not ok:
-        msg = str((ans or {}).get("error") or (ans or {}).get("output") or status)[:120]
         say("could not reach %s: %s" % (base_id, msg))
         notes.append("unreachable: %s" % msg[:60])
         return 0

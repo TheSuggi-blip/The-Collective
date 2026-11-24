@@ -1,0 +1,11 @@
+{
+ "id": "mine-pollux-outer-belt",
+ "kind": "mine",
+ "title": "Pollux Outer Belt: iron_ore; stored at Grand Exchange (F23 gather)",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 274 cr per ship-hour.",
+ "belt": "pollux:pollux_outer_belt",
+ "station": "haven:grand_exchange:grand_exchange_station",
+ "minutes": 90,
+ "max_ships": 3,
+ "lift_to": 3
+}
