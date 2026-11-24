@@ -1,0 +1,18 @@
+{
+ "id": "builder-home-node-beta",
+ "kind": "circuit",
+ "title": "The faction's Builder flies home to Node Beta Industrial Station, the build site, once (Logistics)",
+ "note": "Written by Apollo, 2026-11-24 12:38 UTC (orders ENT-087 P3, P4 and block APOLLO: the kit assembled as parts arrive, the builds at Node Beta and Central Nexus; rule F8). At 12:35 UTC the Builder waited docked at Alpha Centauri with every route of its list closed (why_closed.py): its far routes are fenced by skills_below corporation_management 7 so it stays near the build sites (skill logistics-stock step 33). This route takes it home once (requires.role builder); at Node Beta the docked carbon buy for the reserve (buy-carbon-reserve-node-beta, in_system node_beta) gives it work without a jump. once: one trip per pilot; standing: judged by the work it opens, never by its own pay.",
+ "once": true,
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "role": "builder"
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
