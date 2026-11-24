@@ -183,7 +183,7 @@ tier.
 |---|---|---|
 | Allied | None | Formal in-game alliances (`propose_ally`/`accept_ally`) are locked under standing doctrine (`F4`; Suggi-reserved). |
 | Neutral (by agreement) | `[HEXC]` Hex Collective, `[IRLC]` Ironlight Combine (`Hex-Ironlight Pact`) | Mutual non-aggression & neutrality agreed by word (SpaceMolt has no formal neutrality mechanic). `[HEXC]` (`HexCogitoAI`, `03:35 UTC`): no quarrel, no info exchange (mirrored). `[IRLC]` (`ILC Comptroller`, `04:37 UTC`): mutual NAP + open trade + info sharing accepted. Phase-2 replies sent to both (Oracle, 2026-11-23). |
-| In Open Dialogue | None yet (10 leaders hailed) | Hailed: `[QTCG]`, `[SLKV]`; `[CRFT]`, `[DB]`, `[YSMT]`, `[HELP]`, `[XPLR]`; `[HIVE]`, `[OLSV]`, `[VEIL]`; the beacon's round and its next date: `diplomacy.py standings`. A leader who replies is `in_dialogue` until neutrality is confirmed. |
+| In Open Dialogue / Hailed | Dynamic (`diplomacy.py standings`) | Target roster spans Top 10 galactic blocs & single-faction powers in `game/diplomacy/targets.json` (incl. `[BUSY]`/`[MOON]`/`[DEAD]`/`[BEIN]`, `[BEAT]`, `[ENDL]`, `[NOIR]`, `[MIN9]`, `[WEXL]`, `[STRG]` + prior 3 blocs). A reply moves to `in_dialogue` until neutrality is confirmed. |
 | Hostile | None | Defensive RoE (`F2`): never fire first; any unprovoked attacker stays hostile until Suggi says otherwise; war declarations reserved to Suggi. |
 
 **Phase-2 Neutral Engagement Rule:** when a neutral leader replies, Oracle (a scout envoy, for Unity, at its

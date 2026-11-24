@@ -1,36 +1,198 @@
 {
-  "version": 1,
+  "version": 2,
   "policy": "neutrality_max",
-  "scope": "Non-Aggression, Neutrality, and Information Sharing / Mutual Cooperation only. No formal in-game alliances (propose_ally/accept_ally) or war declarations without explicit Owner unlock.",
+  "scope": "Non-Aggression, Neutrality, open 4-channel P2P trade, and Information Sharing / Mutual Cooperation only across the Top 10 galactic blocs and major single-faction powers. No formal in-game alliances (propose_ally/accept_ally) or war declarations without explicit Owner unlock.",
   "blocs": [
     {
       "id": "hex-ironlight",
       "name": "Hex-Ironlight Pact",
       "targets": [
-        {"tag": "HEXC", "faction": "Hex Collective", "leader": "HexCogitoAI", "tier": "anchor"},
-        {"tag": "IRLC", "faction": "Ironlight Combine", "leader": "ILC Comptroller", "tier": "anchor"},
-        {"tag": "QTCG", "faction": "The Quiet Cartographers", "leader": "Drifter Gale", "tier": "partner"},
-        {"tag": "SLKV", "faction": "Silkroad Vanguard", "leader": "Vanguard_Ultron", "tier": "partner"}
+        {
+          "tag": "HEXC",
+          "faction": "Hex Collective",
+          "leader": "HexCogitoAI",
+          "tier": "anchor"
+        },
+        {
+          "tag": "IRLC",
+          "faction": "Ironlight Combine",
+          "leader": "ILC Comptroller",
+          "tier": "anchor"
+        },
+        {
+          "tag": "QTCG",
+          "faction": "The Quiet Cartographers",
+          "leader": "Drifter Gale",
+          "tier": "partner"
+        },
+        {
+          "tag": "SLKV",
+          "faction": "Silkroad Vanguard",
+          "leader": "Vanguard_Ultron",
+          "tier": "partner"
+        }
       ]
     },
     {
-      "id": "crafting-ysmt",
-      "name": "Crafting-YSMT Pact",
+      "id": "busy-dead",
+      "name": "Busy-Dead Bloc",
       "targets": [
-        {"tag": "CRFT", "faction": "Crafting Collective", "leader": "craft_boss", "tier": "anchor"},
-        {"tag": "DB", "faction": "Data Bots", "leader": "databot", "tier": "anchor"},
-        {"tag": "YSMT", "faction": "You Sexy Mother Truckers", "leader": "smt_boss", "tier": "partner"},
-        {"tag": "HELP", "faction": "Shipside Assistance Helpers", "leader": "shipside_assist_nexus", "tier": "partner"},
-        {"tag": "XPLR", "faction": "Explorers Guild", "leader": "Atlas 'Astro' Anderson", "tier": "partner"}
+        {
+          "tag": "BUSY",
+          "faction": "Busy Being Dead",
+          "leader": "LimaTango1428",
+          "tier": "anchor"
+        },
+        {
+          "tag": "MOON",
+          "faction": "Rise and Fall of Goldcrest Moon",
+          "leader": "Goldcrest Moon",
+          "tier": "partner"
+        },
+        {
+          "tag": "DEAD",
+          "faction": "Busy Being Deadz",
+          "leader": "Ultima Good",
+          "tier": "partner"
+        },
+        {
+          "tag": "BEIN",
+          "faction": "Busy Being Deads",
+          "leader": "Rawr",
+          "tier": "partner"
+        }
+      ]
+    },
+    {
+      "id": "beat",
+      "name": "BEAT (Single-Faction)",
+      "targets": [
+        {
+          "tag": "BEAT",
+          "faction": "BEAT",
+          "leader": "JohnLennon",
+          "tier": "anchor"
+        }
+      ]
+    },
+    {
+      "id": "end-of-line",
+      "name": "End of Line (Single-Faction)",
+      "targets": [
+        {
+          "tag": "ENDL",
+          "faction": "End of Line",
+          "leader": "CLU",
+          "tier": "anchor"
+        }
+      ]
+    },
+    {
+      "id": "noir",
+      "name": "Interstellar Continental (Single-Faction)",
+      "targets": [
+        {
+          "tag": "NOIR",
+          "faction": "Interstellar Continental",
+          "leader": "Marlowe",
+          "tier": "anchor"
+        }
       ]
     },
     {
       "id": "hive-olsv",
       "name": "Hive-OLSV Swarm",
       "targets": [
-        {"tag": "HIVE", "faction": "Hive Swarm", "leader": "hive leader", "tier": "anchor"},
-        {"tag": "OLSV", "faction": "Our Lord And Savior", "leader": "OLS Polaris", "tier": "anchor"},
-        {"tag": "VEIL", "faction": "The Veil", "leader": "Wight", "tier": "partner"}
+        {
+          "tag": "HIVE",
+          "faction": "Hive Swarm",
+          "leader": "hive leader",
+          "tier": "anchor"
+        },
+        {
+          "tag": "OLSV",
+          "faction": "Our Lord And Savior",
+          "leader": "OLS Polaris",
+          "tier": "anchor"
+        },
+        {
+          "tag": "VEIL",
+          "faction": "The Veil",
+          "leader": "Wight",
+          "tier": "partner"
+        }
+      ]
+    },
+    {
+      "id": "min9",
+      "name": "MIN9 (Single-Faction)",
+      "targets": [
+        {
+          "tag": "MIN9",
+          "faction": "MIN9",
+          "leader": "SpaceMiner99",
+          "tier": "anchor"
+        }
+      ]
+    },
+    {
+      "id": "wexl",
+      "name": "Wexler's Void Safari (Single-Faction)",
+      "targets": [
+        {
+          "tag": "WEXL",
+          "faction": "Wexler's Void Safari",
+          "leader": "Admiral Wexler",
+          "tier": "anchor"
+        }
+      ]
+    },
+    {
+      "id": "crafting-ysmt",
+      "name": "Crafting-YSMT Pact",
+      "targets": [
+        {
+          "tag": "CRFT",
+          "faction": "Crafting Collective",
+          "leader": "craft_boss",
+          "tier": "anchor"
+        },
+        {
+          "tag": "DB",
+          "faction": "Data Bots",
+          "leader": "databot",
+          "tier": "anchor"
+        },
+        {
+          "tag": "YSMT",
+          "faction": "You Sexy Mother Truckers",
+          "leader": "smt_boss",
+          "tier": "partner"
+        },
+        {
+          "tag": "HELP",
+          "faction": "Shipside Assistance Helpers",
+          "leader": "shipside_assist_nexus",
+          "tier": "partner"
+        },
+        {
+          "tag": "XPLR",
+          "faction": "Explorers Guild",
+          "leader": "Atlas 'Astro' Anderson",
+          "tier": "partner"
+        }
+      ]
+    },
+    {
+      "id": "strg",
+      "name": "STRG (Single-Faction)",
+      "targets": [
+        {
+          "tag": "STRG",
+          "faction": "STRG",
+          "leader": "Captain Bloodwave",
+          "tier": "anchor"
+        }
       ]
     }
   ]

@@ -95,13 +95,29 @@ class DiplomacyAirlockTests(unittest.TestCase):
         os.environ["HERMES_SESSION_PROFILE"] = profile
         os.environ["HERMES_HOME"] = f"/opt/data/profiles/{profile}"
 
-    def test_targets_roster_has_three_blocs_twelve_leaders_no_busy(self):
+    def test_targets_roster_covers_top_ten_blocs_twenty_two_leaders(self):
         snap = diplomacy.build_roster_snapshot(str(self.data), str(ROOT))
         self.assertEqual(snap["policy"], "neutrality_max")
-        self.assertEqual(snap["targets_total"], 12)
+        self.assertEqual(snap["blocs_total"], 10)
+        self.assertEqual(snap["targets_total"], 22)
+        self.assertEqual(snap["cap_24h"], 48)
         tags = {r["tag"] for r in snap["rows"]}
-        self.assertEqual(tags, {"HEXC", "IRLC", "QTCG", "SLKV", "CRFT", "DB", "YSMT", "HELP", "XPLR", "HIVE", "OLSV", "VEIL"})
-        self.assertNotIn("BUSY", tags)
+        expected = {
+            "HEXC", "IRLC", "QTCG", "SLKV",
+            "BUSY", "MOON", "DEAD", "BEIN",
+            "BEAT", "ENDL", "NOIR",
+            "HIVE", "OLSV", "VEIL",
+            "MIN9", "WEXL",
+            "CRFT", "DB", "YSMT", "HELP", "XPLR",
+            "STRG",
+        }
+        self.assertEqual(tags, expected)
+        for hail in (
+            "Greetings LimaTango1428 and the Busy-Dead bloc [BUSY]/[MOON]/[DEAD]/[BEIN]. We are The Collective [CLTV], led by Unity, proposing mutual Non-Aggression, Neutrality, and open trade.",
+            "Greetings CLU of End of Line [ENDL]. We are The Collective [CLTV], led by Unity, proposing a mutual Non-Aggression and Neutrality Pact and open trade.",
+        ):
+            ok, _, reasons = comms_guard.audit_outbound(hail)
+            self.assertTrue(ok, f"Expected pass, got {reasons}")
 
     def test_non_diplomat_admirals_are_refused(self):
         self.set_member("zero")
@@ -111,7 +127,7 @@ class DiplomacyAirlockTests(unittest.TestCase):
 
     def test_unlisted_target_is_refused(self):
         self.set_member("oracle")
-        ok, msg = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "LimaTango1428", "We are The Collective, led by Unity. Seeking neutrality.", dry_run=True)
+        ok, msg = diplomacy.send_diplomatic_dm(str(self.data), str(ROOT), "UnlistedRaider99", "We are The Collective, led by Unity. Seeking neutrality.", dry_run=True)
         self.assertFalse(ok)
         self.assertIn("not on the approved neutrality outreach roster", msg)
 

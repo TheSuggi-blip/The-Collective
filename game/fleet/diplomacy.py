@@ -13,7 +13,7 @@ WHAT: enforces Suggi's standing diplomatic boundaries in code so Unity (Command)
         4. Outbound OpSec scrubber (`comms_guard.audit_outbound`): blocks non-ASCII, >500 chars, out-of-character or
            infrastructure terms, secrets, file paths, fleet/treasury metrics, internal pilot IDs, or alliance/war offers.
         5. Anti-spam rate limits (under `data/comms/diplomacy.lock`): max 1 unanswered hail per leader per 24h; after
-           a reply, min 30m cooldown and max 4 DMs per leader per 24h; global fleet cap of 15 DMs per 24h.
+           a reply, min 30m cooldown and max 4 DMs per leader per 24h; global fleet cap of 48 DMs per 24h.
         6. Zero-trust inbound threads (`threads`): displays exchanges with mandatory `comms_guard.py` quarantine,
            CaMeL diplomatic stance extraction, and per-call dynamic random-nonce spotlighting.
 
@@ -66,7 +66,7 @@ UNANSWERED_COOLDOWN = 24 * 3600       # exact 24h spacing between robotic unansw
 MAX_UNANSWERED_HAILS = 3              # hard stop after 3 consecutive unanswered hails (3 days at exact same UTC time)
 REPLY_COOLDOWN = 30 * 60              # 30m minimum spacing even during active dialogue
 MAX_PER_TARGET_24H = 4                # hard anti-spam cap per leader per 24h
-MAX_GLOBAL_24H = 24                   # hard fleetwide anti-spam cap per 24h (12 daily beacons + replies)
+MAX_GLOBAL_24H = 48                   # hard fleetwide anti-spam cap per 24h (Top-10-bloc daily beacons + replies)
 MAX_ACTIVE_ENVOYS = 12                # priority scouts polled every pass by inbox.py
 DAY = 24 * 3600
 
@@ -595,7 +595,7 @@ def beacon_tick(data, root, sender_fn=call_gate_chat, now=None):
 
 
 def build_roster_snapshot(data, root, now=None):
-    """Structured snapshot of all 3 blocs / 12 leaders + live inbound/outbound stats (used by CLI and Station HUD)."""
+    """Structured snapshot of all configured target blocs & leaders + live inbound/outbound stats (CLI & Station HUD)."""
     now = time.time() if now is None else float(now)
     cfg, by_tag, _by_handle = load_targets(root)
     ledger = load_ledger(data)
@@ -603,8 +603,26 @@ def build_roster_snapshot(data, root, now=None):
     envoys = load_envoys(data)
 
     in_by_sender = {}
+    out_by_tag = {}
+    out_by_handle = {}
     for m in msgs:
-        if m.get("own") or m.get("channel") != "private":
+        if m.get("own"):
+            otag = norm_tag(m.get("tag"))
+            oto = str(m.get("to") or "").strip().lower()
+            ots = str(m.get("t") or m.get("seen_at") or "")
+            otxt = comms_guard.clean_ascii(m.get("text") or "", 180)
+            if otag:
+                ob = out_by_tag.setdefault(otag, {"count": 0, "t": "", "text": ""})
+                ob["count"] += 1
+                if ots >= ob["t"]:
+                    ob["t"], ob["text"] = ots, otxt
+            if oto:
+                ob2 = out_by_handle.setdefault(oto, {"count": 0, "t": "", "text": ""})
+                ob2["count"] += 1
+                if ots >= ob2["t"]:
+                    ob2["t"], ob2["text"] = ots, otxt
+            continue
+        if m.get("channel") != "private":
             continue
         snd = str(m.get("sender") or "").strip().lower()
         ts = str(m.get("t") or m.get("seen_at") or "")
@@ -614,10 +632,13 @@ def build_roster_snapshot(data, root, now=None):
             in_by_sender[snd] = {"t": ts, "stance": info["diplo_stance"], "risk": info["risk_level"], "pilot": m.get("pilot") or ""}
 
     sent_24h = sum(1 for r in (ledger.get("sent_log") or []) if now - float(r.get("ts") or 0) < DAY)
+    blocs_cfg = cfg.get("blocs") or []
     rows = []
     counts = {s: 0 for s in VALID_STATUSES}
-    for bloc in cfg.get("blocs") or []:
-        for t in bloc.get("targets") or []:
+    for bloc in blocs_cfg:
+        btargets = bloc.get("targets") or []
+        bsize = len(btargets)
+        for t in btargets:
             tag = norm_tag(t.get("tag"))
             leader = str(t.get("leader") or "").strip()
             st = ledger["factions"].get(tag) or {}
@@ -626,16 +647,20 @@ def build_roster_snapshot(data, root, now=None):
             if status == "hailed" and inbound and inbound["t"] > (st.get("last_sent_at") or ""):
                 status = "in_dialogue"
             counts[status] = counts.get(status, 0) + 1
+            out_info = out_by_tag.get(tag) or out_by_handle.get(leader.lower()) or {"count": 0, "t": "", "text": ""}
+            sent_cnt = max(int(st.get("sent_count") or 0), int(out_info["count"]))
             rows.append({
                 "bloc_id": bloc.get("id") or "",
                 "bloc": bloc.get("name") or "",
+                "bloc_size": bsize,
                 "tag": tag,
                 "faction": t.get("faction") or tag,
                 "leader": leader,
                 "tier": t.get("tier") or "partner",
                 "status": status,
                 "envoy": st.get("envoy") or "",
-                "sent_count": int(st.get("sent_count") or 0),
+                "sent_count": sent_cnt,
+                "last_out_text": out_info["text"],
                 "unanswered_hails": int(st.get("unanswered_hails") or 0),
                 "max_unanswered": MAX_UNANSWERED_HAILS,
                 "beacon_active": bool(st.get("beacon_active")),
@@ -646,9 +671,12 @@ def build_roster_snapshot(data, root, now=None):
                 "last_risk": inbound["risk"] if inbound else "clean",
                 "note": comms_guard.clean_ascii(st.get("note") or "", 140),
             })
+    contacted_total = sum(1 for r in rows if r.get("status") != "uncontacted" or int(r.get("sent_count") or 0) > 0)
     return {
         "policy": cfg.get("policy") or "neutrality_max",
+        "blocs_total": len(blocs_cfg),
         "targets_total": len(rows),
+        "contacted_total": contacted_total,
         "sent_24h": sent_24h,
         "cap_24h": MAX_GLOBAL_24H,
         "envoys": envoys,

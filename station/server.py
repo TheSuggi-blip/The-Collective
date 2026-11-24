@@ -2362,7 +2362,7 @@ def read_diplomacy_pacts():
         import diplomacy as _dp
         return _dp.build_roster_snapshot(str(FLEET.parent), str(REPO))
     except Exception:
-        return {"policy": "neutrality_max", "targets_total": 0, "sent_24h": 0, "cap_24h": 15, "envoys": [], "counts": {}, "rows": []}
+        return {"policy": "neutrality_max", "blocs_total": 0, "targets_total": 0, "contacted_total": 0, "sent_24h": 0, "cap_24h": 48, "envoys": [], "counts": {}, "rows": []}
 
 
 def read_comms_summary(our_pilots):
@@ -2370,8 +2370,12 @@ def read_comms_summary(our_pilots):
     bytes are parsed on each call (slashes ~3-10s full-file rescan to <5ms)."""
     msg_path = FLEET.parent / "comms" / "messages.jsonl"
     dip_path = FLEET.parent / "comms" / "diplomacy.json"
+    targets_path = REPO / "game" / "diplomacy" / "targets.json"
     with COMMS_LOCK:
-        dip_mtime = dip_path.stat().st_mtime if dip_path.is_file() else 0.0
+        dip_mtime = (
+            dip_path.stat().st_mtime if dip_path.is_file() else 0.0,
+            targets_path.stat().st_mtime if targets_path.is_file() else 0.0,
+        )
         if COMMS_MEM["pacts"] is None or dip_mtime != COMMS_MEM["dip_mtime"]:
             COMMS_MEM["pacts"] = read_diplomacy_pacts()
             COMMS_MEM["dip_mtime"] = dip_mtime
@@ -2484,8 +2488,8 @@ def read_comms_summary(our_pilots):
                 "npc_notices": len(npc_notices),
                 "quarantined": COMMS_MEM["quarantined"],
             },
-            "direct_in": direct_in[:30],
-            "sent_out": sent_out[:30],
+            "direct_in": direct_in[:120],
+            "sent_out": sent_out[:120],
             "local_radio": local_radio[:40],
             "npc_notices": npc_notices[:25],
             "pacts": pacts,
