@@ -427,3 +427,12 @@ Failed: 44 miners flew empty belts before this turn (routes without floors, erro
 Requests: answered ENT-495 (ENT-507) and ENT-486 (ENT-508); none new.
 Suggestions: to Unity and Trinity, routemaker.py writes a 5% floor on every mine route and routes.py check warns without one (queue ENT-301); upgrades.py fails a queued hull after three unreadable quotes instead of docking its pilot every pass.
 Report: floors-on-every-belt-sarin-carbon-test-three-t2-hulls.
+
+## [ENT-180] | 2026-11-24 10:18 UTC | Apollo | session | ref: reports/2026-11-24_apollo_haul-arbitrage-out-officer-steel-desk-row.md | see: orders.log ENT-086
+Session: scheduled run apollo-turn -- haul arbitrage out, officer and reserve steel on, the desk row under way.
+Did: read haul-network's 501 runs (-239,167 cr; arbitrage the loss, no freight or supply job); lane arbitrage out of game/haul-policy.json and the Builder fenced off the route (c26763ce); craft-steel-faction-gsc-0044 on for officers, one ship (ENT-500); buy-steel-reserve-central-nexus on, open_to hauler, held_below 88,000, one ship (ENT-504); Then reordered, iron-buying steel route out (P2); the test mission-the-colonies-crimson added; haul-network lifted to 66; the Builder caught 8 jumps out and flown home for the Lockbox, Hiring Board and Desk row; admirals ENT-122, queue ENT-302, errors ENT-181.
+Worked: fill gate HALT 6 waiting -> PASS (10:16 UTC); Logistics last-hour net -279,519 -> -177,306 cr (briefing 09:50, fleet money 10:14 UTC); three steel buys stored 195 plate at 18 cr; an officer took the outpost steel route within a minute.
+Failed: the office not built this turn (the Builder's flight home; driver running); KPI hull upgrades 0 of 19 unchanged (Workhorse achievement_required, Prayer wrong_faction at Node Beta); pushes deferred by an untracked '=' file since 09:17 UTC, not mine; errors.log ENT-181 (engine scaled before its runs were read).
+Requests: none new; ENT-451 stays accepted (after the Atria kit).
+Suggestions: haul.py claims per sell bid, deep and fresh books, held goods counted (queue ENT-302); a one-ship gate for a new kind of route (errors ENT-181); a plan check warning for a Then route without the Builder fence.
+Report: haul-arbitrage-out-officer-steel-desk-row.
