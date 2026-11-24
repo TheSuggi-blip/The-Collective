@@ -161,7 +161,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                     ('t0_hull', 'Starter', 0),
                     ('broadaxe', 'Broadaxe', 2),
                     ('dualism', 'Dualism', 2),
-                    ('prayer', 'Prayer', 1);
+                    ('floor_price', 'Floor Price', 1);
                 INSERT INTO ships VALUES
                     ('drone-1', 'Military', 'crimson', 't0_hull'),
                     ('sentinel-1', 'Military', 'voidborn', 't0_hull'),
@@ -177,7 +177,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 INSERT INTO ship_listings VALUES
                     ('broadaxe', 'crimson_hub', 95000, 1795500000),
                     ('dualism', 'crimson_hub', 66920, 1795500000),
-                    ('prayer', 'crimson_hub', 30000, 1795500000);
+                    ('floor_price', 'crimson_hub', 15000, 1795500000);
             """)
             con.commit()
             con.close()
@@ -196,7 +196,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             pilots_added = {a["pilot"]: a["hull"] for a in res["added"]}
             self.assertEqual(pilots_added.get("drone-1"), "broadaxe")
             self.assertEqual(pilots_added.get("sentinel-1"), "dualism")
-            self.assertEqual(pilots_added.get("trader-2"), "prayer")
+            self.assertEqual(pilots_added.get("trader-2"), "floor_price")
             self.assertNotIn("trader-1", pilots_added)
             self.assertNotIn("trader-3", pilots_added)
 
@@ -267,6 +267,78 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             # Cooldown suppresses immediate retry loops
             fit_net._stamp_fit_cooldown("hauler-19", 600, data_dir=data)
             self.assertIsNone(fit_net.needs_fit("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world))
+
+
+
+    def test_minmax_cohort_partition_t1_to_t3_climb_and_hull_locked_fits(self):
+        """Pilots stay locked in their exact specialty split across T1->T2->T3 and never cross-overwrite."""
+        pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
+        fpol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+
+        # 1. Exact 65/20/15 Mining partition with empire affinity (Nebula -> Gas, Solarian -> Ore, Voidborn -> Ice)
+        mining_ships = (
+            [{"pilot": f"miner-n-{i}", "division": "Mining", "empire": "nebula", "class": "prospect", "hull_id": "prospect", "tier": 0, "piloting": 12} for i in range(35)]
+            + [{"pilot": f"miner-s-{i}", "division": "Mining", "empire": "solarian", "class": "theoria", "hull_id": "theoria", "tier": 0, "piloting": 12} for i in range(35)]
+            + [{"pilot": f"miner-v-{i}", "division": "Mining", "empire": "voidborn", "class": "threshold", "hull_id": "threshold", "tier": 0, "piloting": 12} for i in range(60)]
+        )
+        amap = upgrades.assign_cohort_pilots(mining_ships, pol["divisions"]["Mining"]["cohorts"])
+        by_spec = {pol["divisions"]["Mining"]["cohorts"][i]["specialty"]: amap[i] for i in amap}
+        self.assertEqual((len(by_spec["ore_miner"]), len(by_spec["ice_harvester"]), len(by_spec["gas_harvester"])), (85, 26, 19))
+        self.assertTrue(all(s["empire"] == "nebula" for s in by_spec["gas_harvester"]))
+        self.assertEqual(sum(1 for s in by_spec["ore_miner"] if s["empire"] == "solarian"), 35)
+
+        # 2. T1 -> T2 progression MUST continue even after 100% of a specialty reaches T1 (fixes deficit<=0 stall bug)
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            repo = Path(tmp) / "repo"
+            (data / "store").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            (repo / "game").mkdir(parents=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE faction (treasury INTEGER);
+                CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, base TEXT);
+                CREATE TABLE hulls (id TEXT, name TEXT, tier INTEGER);
+                CREATE TABLE ships (pilot TEXT, division TEXT, empire TEXT, class TEXT);
+                CREATE TABLE ship_skills (pilot TEXT, skill TEXT, level INTEGER);
+                CREATE TABLE ship_listings (class_id TEXT, base TEXT, price INTEGER, t INTEGER);
+                INSERT INTO faction VALUES (12000000);
+                INSERT INTO systems VALUES ('s1', 'voidborn', 0);
+                INSERT INTO places VALUES ('s1', 'p1', 'hub1');
+                INSERT INTO hulls VALUES
+                    ('rime', 'Rime', 1),
+                    ('cold_storage', 'Cold Storage', 2),
+                    ('bonanza', 'Bonanza', 1),
+                    ('motherlode', 'Motherlode', 2);
+                INSERT INTO ships VALUES
+                    ('miner-1', 'Mining', 'voidborn', 'rime'),
+                    ('miner-2', 'Mining', 'solarian', 'bonanza');
+                INSERT INTO ship_skills VALUES ('miner-1', 'piloting', 15), ('miner-2', 'piloting', 15);
+                INSERT INTO ship_listings VALUES
+                    ('cold_storage', 'hub1', 150000, 1795500000),
+                    ('motherlode', 'hub1', 140000, 1795500000);
+            """)
+            con.commit()
+            con.close()
+            (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
+            res = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500100)
+            added_map = {a["pilot"]: a["hull"] for a in res["added"]}
+            # miner-1 (already T1 Ice Rime) MUST upgrade to T2 Ice Cold Storage, NEVER Ore Motherlode!
+            self.assertEqual(added_map.get("miner-1"), "cold_storage")
+            # miner-2 (already T1 Ore Bonanza) MUST upgrade to T2 Ore Motherlode, NEVER Ice Cold Storage!
+            self.assertEqual(added_map.get("miner-2"), "motherlode")
+
+        # 3. fit_net detect_by_hull + sentinel_detect_by_hull + off_role_by_specialty
+        self.assertEqual(fit_net.resolve_specialty("miner-99", "Mining", [], fpol, ship_class="rime"), "ice")
+        self.assertEqual(fit_net.resolve_specialty("miner-99", "Mining", [], fpol, ship_class="accretion"), "gas")
+        self.assertEqual(fit_net.resolve_specialty("sentinel-1", "Military", [], fpol, ship_class="triage"), "royal_guard_utility")
+        self.assertEqual(fit_net.resolve_specialty("sentinel-1", "Military", [], fpol, ship_class="bad_idea"), "royal_guard_escort")
+        self.assertEqual(fit_net.resolve_specialty("scout-1", "Intel", [], fpol, ship_class="absence"), "covert_recon")
+        self.assertEqual(fit_net.resolve_specialty("scout-1", "Intel", [], fpol, ship_class="peer_review"), "sensor_survey")
+        self.assertEqual(fit_net._module_slot_type("neural_disruptor"), "weapon")
+        self.assertEqual(fit_net._module_slot_type("deep_core_survey_scanner"), "utility")
+        self.assertEqual(fit_net._module_slot_type("hull_reinforcement_iii"), "defense")
 
 
 if __name__ == "__main__":

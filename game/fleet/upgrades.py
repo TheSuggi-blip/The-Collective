@@ -1010,6 +1010,125 @@ def _load_bursar_desk_pilots(data_dir):
     return desks
 
 
+
+def _emp_rank(empire, prefer_empires):
+    e = str(empire or "").lower()
+    prefs = [str(x).lower() for x in (prefer_empires or [])]
+    return prefs.index(e) if e in prefs else len(prefs) + 10
+
+
+def _largest_remainder_quotas(total, shares):
+    """Exact integer quotas summing to `total` (when sum(shares) <= 1.01), deterministic tie-break."""
+    if total <= 0 or not shares:
+        return [0] * len(shares)
+    s_sum = sum(max(0.0, float(x)) for x in shares)
+    if s_sum <= 0:
+        return [0] * len(shares)
+    if len(shares) == 1:
+        return [max(1, min(total, int(round(total * float(shares[0])))))]
+    norm = [max(0.0, float(x)) / (s_sum if s_sum > 1.01 else 1.0) for x in shares]
+    exact = [total * f for f in norm]
+    base = [int(v) for v in exact]
+    rem = max(0, min(total, int(round(sum(exact)))) - sum(base))
+    order = sorted(range(len(shares)), key=lambda i: (-(exact[i] - base[i]), -norm[i], i))
+    for i in order[:rem]:
+        base[i] += 1
+    return base
+
+
+def assign_cohort_pilots(div_ships, cohorts):
+    """Deterministically partition `div_ships` across `cohorts` preserving exact shares and locking existing hulls.
+
+    Cohorts sharing identical filter masks (`empire`, `pilot_prefix`, `exclude_prefix`, `include_pilots`,
+    `exclude_pilots`) form a mutually exclusive partition group so every pilot stays in ONE specialty lane
+    across T0 -> T1 -> T2 -> T3 -> T4 -> T5. Existing specialty hulls are locked first, then `prefer_pilots`,
+    then remaining quotas are filled by `assign_priority` and `prefer_empires` affinity.
+    """
+    assigned = {i: [] for i in range(len(cohorts))}
+    groups = {}
+    for idx, coh in enumerate(cohorts):
+        if not (coh.get("ladder") or []):
+            continue
+        emp_f = str(coh.get("empire") or "any").lower()
+        inc_pre = str(coh.get("pilot_prefix") or "")
+        exc_pre = str(coh.get("exclude_prefix") or "")
+        inc_t = tuple(sorted(str(x) for x in (coh.get("include_pilots") or [])))
+        exc_t = tuple(sorted(str(x) for x in (coh.get("exclude_pilots") or [])))
+        sig = (emp_f, inc_pre, exc_pre, inc_t, exc_t)
+        groups.setdefault(sig, []).append(idx)
+
+    for sig, idxs in groups.items():
+        emp_f, inc_pre, exc_pre, inc_t, exc_t = sig
+        inc_set, exc_set = set(inc_t), set(exc_t)
+        pool = [
+            s for s in div_ships
+            if (emp_f == "any" or s["empire"] == emp_f)
+            and (not inc_pre or s["pilot"].startswith(inc_pre))
+            and (not exc_pre or not s["pilot"].startswith(exc_pre))
+            and (not inc_set or s["pilot"] in inc_set)
+            and (not exc_set or s["pilot"] not in exc_set)
+        ]
+        if not pool:
+            continue
+        if len(idxs) == 1:
+            assigned[idxs[0]] = list(pool)
+            continue
+
+        quotas = _largest_remainder_quotas(len(pool), [float(cohorts[i].get("share") or 0.0) for i in idxs])
+        qmap = {idxs[k]: quotas[k] for k in range(len(idxs))}
+
+        # Map hulls that uniquely identify one specialty in this filter group
+        hull_owners = {}
+        for i in idxs:
+            for rung in (cohorts[i].get("ladder") or []):
+                h = str(rung.get("hull") or "").lower()
+                if h:
+                    hull_owners.setdefault(h, set()).add(i)
+            for lh in (cohorts[i].get("legacy_hulls") or []):
+                h = str(lh or "").lower()
+                if h:
+                    hull_owners.setdefault(h, set()).add(i)
+        unique_hull_owner = {h: next(iter(owners)) for h, owners in hull_owners.items() if len(owners) == 1}
+
+        taken = set()
+        # Pass 1a: lock pilots already flying a unique specialty hull into that lane (never overwrite specialties!)
+        for s in sorted(pool, key=lambda x: x["pilot"]):
+            owner = unique_hull_owner.get(str(s.get("hull_id") or "").lower())
+            if owner is not None:
+                assigned[owner].append(s)
+                taken.add(s["pilot"])
+
+        # Pass 1b: lock explicit `prefer_pilots` into their cohort while under quota
+        for i in idxs:
+            pref_p = set(str(x) for x in (cohorts[i].get("prefer_pilots") or []))
+            if not pref_p:
+                continue
+            for s in sorted(pool, key=lambda x: x["pilot"]):
+                if s["pilot"] in taken or s["pilot"] not in pref_p:
+                    continue
+                if len(assigned[i]) < qmap[i]:
+                    assigned[i].append(s)
+                    taken.add(s["pilot"])
+
+        # Pass 2: fill remaining quotas deterministically by assign_priority + birth-empire affinity
+        fill_order = sorted(
+            idxs,
+            key=lambda i: (int(cohorts[i].get("assign_priority", 50)), qmap[i], i),
+        )
+        for i in fill_order:
+            need = max(0, qmap[i] - len(assigned[i]))
+            if need <= 0:
+                continue
+            prefs = cohorts[i].get("prefer_empires") or []
+            rem = [s for s in pool if s["pilot"] not in taken]
+            rem.sort(key=lambda s: (_emp_rank(s["empire"], prefs), s["pilot"]))
+            for s in rem[:need]:
+                assigned[i].append(s)
+                taken.add(s["pilot"])
+
+    return assigned
+
+
 def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=None, dry=False, policy_path=None):
     """Policy-driven multi-empire, multi-specialty auto-enqueuer with hard Treasury floor & CapEx cap.
 
@@ -1151,81 +1270,88 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
         min_t0_reserve = int(dcfg.get("min_t0_bursar_reserve") or 0)
         t0_free_count = sum(1 for s in div_ships if s["tier"] == 0 and s["pilot"] not in active_pilots)
 
-        # Score each cohort by how under-represented its target specialty hulls currently are
+        # Deterministically partition pilots into their permanent specialty lanes & score T0->T5 upgrade need
         cohorts = list(dcfg.get("cohorts") or [])
+        assigned_map = assign_cohort_pilots(div_ships, cohorts)
         ranked_cohorts = []
         for idx, coh in enumerate(cohorts):
-            emp_f = str(coh.get("empire") or "any").lower()
-            inc_pre = str(coh.get("pilot_prefix") or "")
-            exc_pre = str(coh.get("exclude_prefix") or "")
-            inc_set = set(str(x) for x in (coh.get("include_pilots") or []))
-            exc_set = set(str(x) for x in (coh.get("exclude_pilots") or []))
-            share = float(coh.get("share") or 1.0)
             ladder = list(coh.get("ladder") or [])
-            if not ladder:
+            cohort_ships = assigned_map.get(idx) or []
+            if not ladder or not cohort_ships:
                 continue
-            cohort_ships = [
-                s for s in div_ships
-                if (emp_f == "any" or s["empire"] == emp_f)
-                and (not inc_pre or s["pilot"].startswith(inc_pre))
-                and (not exc_pre or not s["pilot"].startswith(exc_pre))
-                and (not inc_set or s["pilot"] in inc_set)
-                and (not exc_set or s["pilot"] not in exc_set)
-            ]
-            if not cohort_ships:
+            rungs_allowed = [r for r in ladder if 1 <= int(r.get("tier") or 1) <= max_auto_tier]
+            if not rungs_allowed:
                 continue
-            target_hulls = {str(x.get("hull") or "").lower() for x in ladder}
-            have_n = sum(1 for s in cohort_ships if s["hull_id"] in target_hulls or s["pilot"] in active_pilots)
-            target_n = max(1, int(round(len(cohort_ships) * share)))
-            deficit = target_n - have_n
-            ranked_cohorts.append((deficit, -idx, coh, cohort_ships))
+            t0_need = sum(
+                1 for s in cohort_ships
+                if s["tier"] == 0 and s["pilot"] not in active_pilots and s["pilot"] not in bursar_desks
+            )
+            upg_need = sum(
+                1 for s in cohort_ships
+                if s["pilot"] not in active_pilots and s["pilot"] not in bursar_desks
+                and any(int(r.get("tier") or 1) > s["tier"] and s["piloting"] >= int(r.get("min_piloting") or 0) for r in rungs_allowed)
+            )
+            if upg_need <= 0:
+                continue
+            t0_frac = float(t0_need) / float(max(1, len(cohort_ships)))
+            ranked_cohorts.append((t0_frac, upg_need, -idx, coh, cohort_ships))
         ranked_cohorts.sort(reverse=True)
 
-        for deficit, _neg_i, coh, cohort_ships in ranked_cohorts:
+        for _t0_frac, _upg_need, _neg_i, coh, cohort_ships in ranked_cohorts:
             if len(added) >= max_new or spend_24h >= cap_24h or active_by_div.get(div_name, 0) >= div_cap:
                 break
-            if deficit <= 0:
-                continue
-            # Prefer highest affordable tier rung with an eligible pilot & bargain listing
-            ladder_sorted = sorted(coh.get("ladder") or [], key=lambda x: (-int(x.get("tier") or 0), int(x.get("max_price") or 0)))
-            picked = None
-            for rung in ladder_sorted:
-                hid = str(rung.get("hull") or "").lower()
+            # Group ladder rungs by tier descending (T5 -> T1 <= max_auto_tier); pick cheapest live bargain per tier
+            rungs_by_tier = {}
+            for r_idx, rung in enumerate(coh.get("ladder") or []):
                 rtier = int(rung.get("tier") or 1)
-                rpil = int(rung.get("min_piloting") or 0)
-                rmax = int(rung.get("max_price") or 0)
-                if not hid or rtier > max_auto_tier or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
-                    continue
-                # Find eligible 3-part station listing if listed_only
-                l_station = None
-                l_price = rmax
-                if listed_only:
-                    cand_l = [
-                        (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
-                        if pr <= rmax and (hid, st3, pr) not in used_listings
+                if 1 <= rtier <= max_auto_tier:
+                    rungs_by_tier.setdefault(rtier, []).append((r_idx, rung))
+            pref_set = set(str(x) for x in (coh.get("prefer_pilots") or []))
+            pref_emps = coh.get("prefer_empires") or []
+            emp_first = bool(coh.get("empire_first_pick", False))
+            picked = None
+            for rtier in sorted(rungs_by_tier.keys(), reverse=True):
+                tier_cands = []
+                for r_idx, rung in rungs_by_tier[rtier]:
+                    hid = str(rung.get("hull") or "").lower()
+                    rpil = int(rung.get("min_piloting") or 0)
+                    rmax = int(rung.get("max_price") or 0)
+                    if not hid or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
+                        continue
+                    l_station = None
+                    l_price = rmax
+                    if listed_only:
+                        cand_l = [
+                            (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
+                            if pr <= rmax and (hid, st3, pr) not in used_listings
+                        ]
+                        if not cand_l:
+                            continue
+                        l_price, l_station = cand_l[0]
+                    else:
+                        l_station = base_to_station.get("node_beta_industrial_station", "")
+                        if not l_station:
+                            continue
+                    elig = [
+                        s for s in cohort_ships
+                        if s["pilot"] not in active_pilots
+                        and s["pilot"] not in bursar_desks
+                        and s["tier"] < rtier
+                        and s["piloting"] >= rpil
+                        and not (min_t0_reserve > 0 and s["tier"] == 0 and t0_free_count <= min_t0_reserve)
                     ]
-                    if not cand_l:
+                    if not elig:
                         continue
-                    l_price, l_station = cand_l[0]
-                else:
-                    l_station = base_to_station.get("node_beta_industrial_station", "")
-                    if not l_station:
-                        continue
-                # Pick highest-piloting eligible non-Bursar pilot currently below rtier
-                elig = [
-                    s for s in cohort_ships
-                    if s["pilot"] not in active_pilots
-                    and s["pilot"] not in bursar_desks
-                    and s["tier"] < rtier
-                    and s["piloting"] >= rpil
-                    and not (min_t0_reserve > 0 and s["tier"] == 0 and t0_free_count <= min_t0_reserve)
-                ]
-                if not elig:
-                    continue
-                pref_set = set(str(x) for x in (coh.get("prefer_pilots") or []))
-                elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, -s["piloting"], s["tier"], s["pilot"]))
-                picked = (elig[0], hid, l_station, min(rmax, int(l_price * 1.02) + 500), l_price, str(coh.get("specialty") or ""))
-                break
+                    if emp_first:
+                        elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, _emp_rank(s["empire"], pref_emps), -s["piloting"], s["tier"], s["pilot"]))
+                    else:
+                        elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, -s["piloting"], _emp_rank(s["empire"], pref_emps), s["tier"], s["pilot"]))
+                    tier_cands.append((l_price, r_idx, elig[0], hid, l_station, min(rmax, int(l_price * 1.02) + 500)))
+                if tier_cands:
+                    tier_cands.sort(key=lambda x: (x[0], x[1]))
+                    lp_best, _ri, ps_best, hid_best, st_best, mp_best = tier_cands[0]
+                    picked = (ps_best, hid_best, st_best, mp_best, lp_best, str(coh.get("specialty") or ""))
+                    break
 
             if not picked:
                 continue

@@ -106,6 +106,10 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, 
         for spec_name, hull_list in (dspec.get("flagship_detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
                 return str(spec_name)
+    if is_sent and cls_l:
+        for spec_name, hull_list in (dspec.get("sentinel_detect_by_hull") or {}).items():
+            if cls_l in {str(x).lower() for x in (hull_list or [])}:
+                return str(spec_name)
     if cls_l and not is_sent and not is_fg:
         for spec_name, hull_list in (dspec.get("detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
@@ -227,11 +231,11 @@ def _module_slot_type(mod_id, item_slots=None):
     m = str(mod_id or "").lower()
     if item_slots and m in item_slots:
         return item_slots[m]
-    if any(k in m for k in ("remote_armor_repair", "repair_arm", "hospital", "sickbay", "ecm_jammer", "jammer", "dampener", "target_painter", "drone_bay", "refueling_pump", "maintenance_bay", "crew_armory", "fuel_optimizer", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "cargo_expander", "cabin")):
+    if any(k in m for k in ("remote_armor_repair", "repair_arm", "hospital", "sickbay", "ecm_jammer", "jammer", "dampener", "target_painter", "drone_bay", "refueling_pump", "maintenance_bay", "crew_armory", "fuel_optimizer", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "deep_core_extractor", "tracking_computer", "cargo_expander", "cabin")):
         return "utility"
-    if any(k in m for k in ("pulse_laser", "beam_laser", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "flak", "em_disruptor", "emp_", "blood_reaver", "phase_disruptor", "system_disabler")):
+    if any(k in m for k in ("pulse_laser", "beam_laser", "focused_beam", "ion_blaster", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "flak", "em_disruptor", "emp_", "neural_disruptor", "blood_reaver", "phase_disruptor", "system_disabler")):
         return "weapon"
-    if any(k in m for k in ("shield", "armor", "regenerative_armor", "nanite_hull", "hull_plate", "point_defense")):
+    if any(k in m for k in ("shield", "armor", "regenerative_armor", "nanite_hull", "hull_plate", "hull_reinforcement", "point_defense")):
         return "defense"
     return "utility"
 
@@ -262,8 +266,10 @@ def plan_ship_fit(ship_doc, world, policy):
     is_bursar = pilot in (world.get("bursar_pilots") or set())
     specialty = resolve_specialty(pilot, division, fitted, policy, is_bursar=is_bursar, ship_class=cls_key)
 
-    # 1. Off-role modules to strip
+    # 1. Off-role modules to strip (division-level + specialty-level so hull-locked fits clean wrong-resource tools)
     off_set = {str(x).lower() for x in ((policy.get("off_role_modules") or {}).get(division) or [])}
+    spec_off = {str(x).lower() for x in ((((policy.get("specialties") or {}).get(division) or {}).get("off_role_by_specialty") or {}).get(specialty) or [])}
+    off_set |= spec_off
     to_unfit = sorted({m for m in fitted if m in off_set}) if policy.get("strip_off_role", True) else []
 
     # 2. Remaining fitted count per slot type after stripping off-role modules

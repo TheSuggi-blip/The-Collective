@@ -1,6 +1,6 @@
 {
   "_owner": "All 5 Admirals & Unity",
-  "_doc": "Policy for dynamic multi-specialty module auto-fitting (game/fleet/fit_net.py). Deterministically matches each pilot's division + specialty (ore/ice/gas, brawler/ewar/tank, freight/passenger, bursar/mobile, recon), strips off-role starter modules, and upgrades empty/lower-tier slots at safe policed stations <= max_price.",
+  "_doc": "Min-max hull-locked module auto-fitting policy (game/fleet/fit_net.py). Every T1-T5 hull in every division resolves deterministically via detect_by_hull / sentinel_detect_by_hull / flagship_detect_by_hull to its exact matching module loadout, stripping off-role and wrong-resource modules automatically.",
   "enabled": true,
   "policed_only": true,
   "max_jumps": 6,
@@ -108,7 +108,13 @@
     "hull_reinforcement_iii": 5000,
     "afterburner_iii": 5000,
     "remote_armor_repairer_iii": 16000,
-    "tracking_computer_iii": 48000
+    "tracking_computer_iii": 48000,
+    "deep_core_survey_scanner": 24000,
+    "cloaking_device_ii": 45000,
+    "plasma_afterburner": 8500,
+    "field_hospital": 65000,
+    "advanced_drone_bay": 12000,
+    "neural_disruptor": 18000
   },
   "specialties": {
     "Mining": {
@@ -126,6 +132,79 @@
           15
         ]
       ],
+      "detect_by_hull": {
+        "ore": [
+          "all_mine",
+          "archimedes",
+          "bedrock",
+          "bonanza",
+          "bonanza_king",
+          "claim_jumper",
+          "deep_resonance",
+          "deep_survey",
+          "eldorado",
+          "excavation",
+          "harmonic",
+          "liminal",
+          "lithosphere",
+          "manifold",
+          "maul",
+          "motherlode",
+          "paydirt",
+          "pithead",
+          "ravager",
+          "repo_man",
+          "resonance_miner",
+          "rock_eater",
+          "siege_breaker",
+          "siege_drill",
+          "tellurian"
+        ],
+        "ice": [
+          "frost_dividend",
+          "frostbite",
+          "rime",
+          "glacius",
+          "cold_storage",
+          "absolute_zero",
+          "hoarfrost",
+          "brain_freeze",
+          "permafrost",
+          "ice_dividend",
+          "cryogenic_survey",
+          "absolute_entropy",
+          "ice_trawler",
+          "thermal_lance",
+          "glacialis",
+          "verglas",
+          "frost_venture",
+          "cold_comfort",
+          "cryoclast",
+          "cryo_industrial"
+        ],
+        "gas": [
+          "yield",
+          "accretion",
+          "aether",
+          "reaver",
+          "spit_and_prayer",
+          "revenue",
+          "billhook",
+          "nebulous",
+          "nebulae",
+          "atmospheric_sampler",
+          "phase_collector",
+          "gas_tanker",
+          "gas_trawler",
+          "gas_raider",
+          "exosphere",
+          "influx",
+          "accumulator",
+          "lungful",
+          "marauder",
+          "rift_siphon"
+        ]
+      },
       "detect_by_module": {
         "ice": [
           "ice_harvester_i",
@@ -138,6 +217,20 @@
           "gas_harvester_ii",
           "gas_harvester_iii",
           "gas_harvester_iv"
+        ]
+      },
+      "off_role_by_specialty": {
+        "ore": [
+          "ice_harvester_i",
+          "gas_harvester_i"
+        ],
+        "ice": [
+          "mining_laser_i",
+          "gas_harvester_i"
+        ],
+        "gas": [
+          "mining_laser_i",
+          "ice_harvester_i"
         ]
       },
       "loadouts": {
@@ -219,6 +312,128 @@
           40
         ]
       ],
+      "detect_by_hull": {
+        "brawler": [
+          "cleaver",
+          "axiom",
+          "paradox",
+          "no_refunds",
+          "broadaxe",
+          "recursion",
+          "theorem",
+          "gauntlet",
+          "junkyard_dog",
+          "warmaul",
+          "insurance_fraud",
+          "hells_bells",
+          "annihilation",
+          "dialectic",
+          "crimson_devastator",
+          "axiomata",
+          "free_radical",
+          "annihilator",
+          "armageddon",
+          "opus_magna",
+          "first_step_dreadnought"
+        ],
+        "ewar": [
+          "apeiron",
+          "precept",
+          "corollary",
+          "syllogism",
+          "census",
+          "falchion",
+          "bad_influence",
+          "penumbra",
+          "concordance",
+          "quorum",
+          "aporia",
+          "palinode",
+          "consensus",
+          "paradox_engine",
+          "plausible_deniability",
+          "symposium",
+          "overmind"
+        ],
+        "flak_tank": [
+          "buckler",
+          "underwriter",
+          "mandate",
+          "bad_idea",
+          "trebuchet",
+          "dualism",
+          "tariff",
+          "bastille",
+          "vanguard",
+          "voidborn_singularity",
+          "voidborn_event_horizon",
+          "membrane",
+          "portcullis",
+          "overlord",
+          "apotheosis",
+          "hegemon"
+        ]
+      },
+      "sentinel_detect_by_hull": {
+        "royal_guard_escort": [
+          "vigil",
+          "mandate",
+          "paradox",
+          "axiom",
+          "bad_idea",
+          "trebuchet",
+          "theorem",
+          "recursion",
+          "dualism",
+          "collateral",
+          "quorum",
+          "bastille",
+          "aporia",
+          "voidborn_singularity",
+          "portcullis",
+          "paradox_engine",
+          "voidborn_event_horizon",
+          "axiomata",
+          "apotheosis",
+          "subjugator"
+        ],
+        "royal_guard_utility": [
+          "precept",
+          "overhead",
+          "apeiron",
+          "last_warning",
+          "franchise",
+          "scrutiny",
+          "census",
+          "triage",
+          "benefit",
+          "duct_tape_special",
+          "postulate",
+          "syllogism",
+          "anamnesis",
+          "penumbra",
+          "remedy",
+          "anvil",
+          "concordance",
+          "gestalt",
+          "continuity",
+          "last_chance",
+          "warranty",
+          "warrant",
+          "panacea",
+          "cauterizer",
+          "encyclopedia",
+          "good_enough",
+          "superposition",
+          "pantheon",
+          "consensus",
+          "pleroma",
+          "fundament",
+          "overmind",
+          "exchange",
+          "symposium"
+        ]
+      },
       "detect_by_module": {},
       "loadouts": {
         "brawler": {
@@ -245,6 +460,7 @@
           ],
           "utility": [
             "tracking_computer_iii",
+            "plasma_afterburner",
             "afterburner_iii",
             "afterburner_ii",
             "expanded_fuel_tank"
@@ -253,6 +469,7 @@
         "ewar": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "focused_beam_iii",
             "ion_blaster_iii",
             "emp_missile_launcher",
@@ -270,12 +487,13 @@
             "armor_plate_iii"
           ],
           "utility": [
+            "ecm_jammer",
             "tracking_computer_iii",
-            "afterburner_iii",
             "sensor_dampener",
             "target_painter_ii",
             "target_painter_i",
-            "warp_disruptor"
+            "warp_disruptor",
+            "afterburner_iii"
           ]
         },
         "flak_tank": {
@@ -299,8 +517,8 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "afterburner_iii",
             "warp_disruptor",
+            "afterburner_iii",
             "expanded_fuel_tank",
             "afterburner_ii"
           ]
@@ -324,17 +542,19 @@
           ],
           "utility": [
             "tracking_computer_iii",
+            "plasma_afterburner",
             "afterburner_iii",
             "ship_scanner_iii",
+            "warp_disruptor",
             "expanded_fuel_tank",
             "afterburner_ii",
-            "warp_disruptor",
             "ship_scanner_ii"
           ]
         },
         "royal_guard_utility": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "ion_blaster_iii",
             "em_disruptor_i",
             "pulse_laser_iii",
@@ -351,18 +571,21 @@
           ],
           "utility": [
             "remote_armor_repairer_iii",
-            "afterburner_iii",
+            "field_hospital",
+            "shipboard_sickbay",
+            "advanced_drone_bay",
+            "combat_drone_bay",
             "remote_armor_repairer_ii",
             "target_painter_ii",
-            "target_painter_i",
             "sensor_dampener",
-            "expanded_fuel_tank",
-            "afterburner_ii"
+            "afterburner_iii",
+            "expanded_fuel_tank"
           ]
         },
         "command_ewar_tac": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
@@ -381,13 +604,13 @@
           ],
           "utility": [
             "tracking_computer_iii",
-            "afterburner_iii",
+            "ecm_jammer",
             "target_painter_ii",
             "target_painter_i",
-            "ecm_jammer",
             "sensor_dampener",
             "ship_scanner_iii",
             "ship_scanner_ii",
+            "afterburner_iii",
             "cloaking_device_i",
             "expanded_fuel_tank"
           ]
@@ -412,12 +635,12 @@
           ],
           "utility": [
             "remote_armor_repairer_iii",
-            "afterburner_iii",
+            "ship_maintenance_bay",
             "remote_armor_repairer_ii",
             "repair_arm",
             "refueling_pump",
-            "ship_maintenance_bay",
             "ecm_jammer",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
@@ -437,13 +660,13 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "remote_armor_repairer_iii",
-            "afterburner_iii",
             "fleet_hospital",
-            "remote_armor_repairer_ii",
+            "field_hospital",
+            "remote_armor_repairer_iii",
             "shipboard_sickbay",
+            "remote_armor_repairer_ii",
             "ecm_jammer",
-            "cloaking_device_i",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
@@ -465,20 +688,21 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "afterburner_iii",
+            "advanced_drone_bay",
             "combat_drone_bay",
             "light_drone_bay",
+            "tracking_computer_iii",
             "target_painter_ii",
-            "target_painter_i",
             "crew_armory",
             "ecm_jammer",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
         "command_stealth_ewar": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
@@ -496,16 +720,16 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "afterburner_iii",
             "phase_cloaking_device",
+            "cloaking_device_ii",
             "cloaking_device_i",
             "ecm_jammer",
             "sensor_dampener",
             "target_painter_ii",
-            "target_painter_i",
             "ship_scanner_iii",
             "warp_disruptor",
+            "plasma_afterburner",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         }
@@ -530,27 +754,6 @@
         "Solar Mandate": "command_stealth_ewar"
       },
       "flagship_detect_by_hull": {
-        "command_stealth_ewar": [
-          "dirk",
-          "arbitrage",
-          "dust_devil",
-          "interstice",
-          "parallax",
-          "silent_tide",
-          "catharsis",
-          "palimpsest",
-          "insider",
-          "need_to_know"
-        ],
-        "command_medical": [
-          "apeiron",
-          "triage",
-          "anamnesis",
-          "homeward",
-          "continuity",
-          "panacea",
-          "cauterizer"
-        ],
         "command_ewar_tac": [
           "precept",
           "census",
@@ -558,30 +761,66 @@
           "bad_influence",
           "penumbra",
           "concordance",
-          "polymath",
           "palinode",
           "consensus",
-          "magnate"
+          "paradox_engine",
+          "symposium"
         ],
         "command_logi_rep": [
           "vigil",
           "scrutiny",
-          "lone_star",
           "remedy",
           "anvil",
-          "palisade",
+          "warranty",
+          "encyclopedia",
           "good_enough",
-          "repatriator"
+          "arsenal",
+          "fundament"
+        ],
+        "command_medical": [
+          "apeiron",
+          "triage",
+          "benefit",
+          "anamnesis",
+          "tourniquet",
+          "continuity",
+          "last_chance",
+          "panacea",
+          "cauterizer",
+          "pleroma"
         ],
         "command_carrier_screen": [
           "overhead",
           "franchise",
           "postulate",
           "cudgel",
+          "swarm_boss",
           "tariff",
           "gestalt",
+          "pantheon",
           "superposition",
-          "pantheon"
+          "paramount",
+          "overlord",
+          "ascendancy",
+          "exchange",
+          "overmind"
+        ],
+        "command_stealth_ewar": [
+          "absence",
+          "dirk",
+          "arbitrage",
+          "dust_devil",
+          "interstice",
+          "parallax",
+          "silent_tide",
+          "catharsis",
+          "probable_cause",
+          "solipsism",
+          "palimpsest",
+          "plausible_deniability",
+          "insider",
+          "need_to_know",
+          "controlled_chaos"
         ]
       },
       "flagship_mix": [
@@ -614,6 +853,50 @@
           15
         ]
       ],
+      "detect_by_hull": {
+        "freight": [
+          "analysis",
+          "apophenia",
+          "baling_wire",
+          "bulk_terms",
+          "caravan",
+          "compendium",
+          "conglomerate",
+          "dimensional_fold",
+          "dividend",
+          "enterprise",
+          "floor_price",
+          "fold_hauler",
+          "frankenhauler",
+          "junk_convoy",
+          "leverage",
+          "liability",
+          "logistics_prime",
+          "meridian_freighter",
+          "portfolio",
+          "prayer",
+          "ransack",
+          "war_wagon"
+        ],
+        "passenger": [
+          "nebula_tender",
+          "loose_change",
+          "futures",
+          "fugue",
+          "consortium",
+          "omnibus",
+          "pennon",
+          "reticence",
+          "muster",
+          "midlife_crisis",
+          "promenade",
+          "cloister",
+          "treasury",
+          "concordia",
+          "premiere",
+          "liquidity_event"
+        ]
+      },
       "detect_by_module": {
         "passenger": [
           "economy_passenger_cabin",
@@ -624,7 +907,8 @@
         "freight": {
           "utility": [
             "cargo_expander_iii",
-            "cargo_expander_ii"
+            "cargo_expander_ii",
+            "fuel_optimizer"
           ],
           "defense": [
             "quantum_shield_iv",
@@ -638,7 +922,7 @@
           "utility": [
             "business_passenger_cabin",
             "economy_passenger_cabin",
-            "cargo_expander_ii"
+            "fuel_optimizer"
           ],
           "defense": [
             "quantum_shield_iv",
@@ -657,6 +941,37 @@
           100
         ]
       ],
+      "detect_by_hull": {
+        "bursar": [
+          "threshold",
+          "prospect",
+          "theoria"
+        ],
+        "mobile": [
+          "analysis",
+          "apophenia",
+          "baling_wire",
+          "bulk_terms",
+          "caravan",
+          "compendium",
+          "conglomerate",
+          "dimensional_fold",
+          "dividend",
+          "enterprise",
+          "floor_price",
+          "fold_hauler",
+          "frankenhauler",
+          "junk_convoy",
+          "leverage",
+          "liability",
+          "logistics_prime",
+          "meridian_freighter",
+          "portfolio",
+          "prayer",
+          "ransack",
+          "war_wagon"
+        ]
+      },
       "detect_by_module": {},
       "loadouts": {
         "bursar": {
@@ -666,7 +981,8 @@
         "mobile": {
           "utility": [
             "cargo_expander_iii",
-            "cargo_expander_ii"
+            "cargo_expander_ii",
+            "fuel_optimizer"
           ],
           "defense": [
             "quantum_shield_iv",
@@ -677,29 +993,95 @@
           ]
         }
       },
-      "detect_by_hull": {
-        "bursar": [
-          "threshold",
-          "prospect",
-          "theoria"
-        ]
-      },
-      "_note": "Mercury 2026-11-24: tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (bursar-network max_cargo 150, max_hull_tier 0): no fit, so an expander never takes a desk off its station between runs; every bigger hull is mobile."
+      "_note": "Tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (no fit); every T1-T4 mobile trader hull is shielded bulk freight."
     },
     "Intel": {
       "mix": [
         [
-          "recon",
-          100
+          "covert_recon",
+          60
+        ],
+        [
+          "sensor_survey",
+          40
         ]
       ],
-      "detect_by_module": {},
+      "detect_by_hull": {
+        "covert_recon": [
+          "absence",
+          "dirk",
+          "qualia",
+          "arbitrage",
+          "terms_and_conditions",
+          "dust_devil",
+          "interstice",
+          "parallax",
+          "catharsis",
+          "probable_cause",
+          "solipsism",
+          "palimpsest",
+          "need_to_know",
+          "insider"
+        ],
+        "sensor_survey": [
+          "venture",
+          "crimson_stiletto",
+          "warranty_void",
+          "lemma",
+          "eigenstate",
+          "scrutiny",
+          "census",
+          "prospectus",
+          "hysteresis",
+          "empirica",
+          "hypothesis",
+          "confluence",
+          "peer_review",
+          "survey_vessel",
+          "perihelion",
+          "perigee",
+          "noumenon",
+          "observatorium",
+          "manifest_destiny",
+          "praecursor",
+          "going_dark",
+          "omniscience"
+        ]
+      },
+      "detect_by_module": {
+        "covert_recon": [
+          "phase_cloaking_device",
+          "cloaking_device_ii",
+          "cloaking_device_i"
+        ]
+      },
       "loadouts": {
-        "recon": {
+        "covert_recon": {
           "utility": [
+            "phase_cloaking_device",
+            "cloaking_device_ii",
+            "cloaking_device_i",
             "ship_scanner_iii",
+            "plasma_afterburner",
             "afterburner_iii",
-            "survey_scanner_ii"
+            "afterburner_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
+          ]
+        },
+        "sensor_survey": {
+          "utility": [
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
+            "ship_scanner_iii",
+            "fuel_optimizer",
+            "afterburner_iii",
+            "afterburner_ii"
           ],
           "defense": [
             "quantum_shield_iv",
@@ -720,27 +1102,6 @@
         "Solar Mandate": "command_stealth_ewar"
       },
       "detect_by_hull": {
-        "command_stealth_ewar": [
-          "dirk",
-          "arbitrage",
-          "dust_devil",
-          "interstice",
-          "parallax",
-          "silent_tide",
-          "catharsis",
-          "palimpsest",
-          "insider",
-          "need_to_know"
-        ],
-        "command_medical": [
-          "apeiron",
-          "triage",
-          "anamnesis",
-          "homeward",
-          "continuity",
-          "panacea",
-          "cauterizer"
-        ],
         "command_ewar_tac": [
           "precept",
           "census",
@@ -748,30 +1109,66 @@
           "bad_influence",
           "penumbra",
           "concordance",
-          "polymath",
           "palinode",
           "consensus",
-          "magnate"
+          "paradox_engine",
+          "symposium"
         ],
         "command_logi_rep": [
           "vigil",
           "scrutiny",
-          "lone_star",
           "remedy",
           "anvil",
-          "palisade",
+          "warranty",
+          "encyclopedia",
           "good_enough",
-          "repatriator"
+          "arsenal",
+          "fundament"
+        ],
+        "command_medical": [
+          "apeiron",
+          "triage",
+          "benefit",
+          "anamnesis",
+          "tourniquet",
+          "continuity",
+          "last_chance",
+          "panacea",
+          "cauterizer",
+          "pleroma"
         ],
         "command_carrier_screen": [
           "overhead",
           "franchise",
           "postulate",
           "cudgel",
+          "swarm_boss",
           "tariff",
           "gestalt",
+          "pantheon",
           "superposition",
-          "pantheon"
+          "paramount",
+          "overlord",
+          "ascendancy",
+          "exchange",
+          "overmind"
+        ],
+        "command_stealth_ewar": [
+          "absence",
+          "dirk",
+          "arbitrage",
+          "dust_devil",
+          "interstice",
+          "parallax",
+          "silent_tide",
+          "catharsis",
+          "probable_cause",
+          "solipsism",
+          "palimpsest",
+          "plausible_deniability",
+          "insider",
+          "need_to_know",
+          "controlled_chaos"
         ]
       },
       "mix": [
@@ -813,6 +1210,7 @@
         "command_ewar_tac": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
@@ -831,13 +1229,13 @@
           ],
           "utility": [
             "tracking_computer_iii",
-            "afterburner_iii",
+            "ecm_jammer",
             "target_painter_ii",
             "target_painter_i",
-            "ecm_jammer",
             "sensor_dampener",
             "ship_scanner_iii",
             "ship_scanner_ii",
+            "afterburner_iii",
             "cloaking_device_i",
             "expanded_fuel_tank"
           ]
@@ -862,12 +1260,12 @@
           ],
           "utility": [
             "remote_armor_repairer_iii",
-            "afterburner_iii",
+            "ship_maintenance_bay",
             "remote_armor_repairer_ii",
             "repair_arm",
             "refueling_pump",
-            "ship_maintenance_bay",
             "ecm_jammer",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
@@ -887,13 +1285,13 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "remote_armor_repairer_iii",
-            "afterburner_iii",
             "fleet_hospital",
-            "remote_armor_repairer_ii",
+            "field_hospital",
+            "remote_armor_repairer_iii",
             "shipboard_sickbay",
+            "remote_armor_repairer_ii",
             "ecm_jammer",
-            "cloaking_device_i",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
@@ -915,20 +1313,21 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "afterburner_iii",
+            "advanced_drone_bay",
             "combat_drone_bay",
             "light_drone_bay",
+            "tracking_computer_iii",
             "target_painter_ii",
-            "target_painter_i",
             "crew_armory",
             "ecm_jammer",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
         "command_stealth_ewar": {
           "weapon": [
             "emp_pulse_iii",
+            "neural_disruptor",
             "focused_beam_iii",
             "emp_missile_launcher",
             "em_disruptor_i",
@@ -946,16 +1345,16 @@
             "armor_plate_iii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "afterburner_iii",
             "phase_cloaking_device",
+            "cloaking_device_ii",
             "cloaking_device_i",
             "ecm_jammer",
             "sensor_dampener",
             "target_painter_ii",
-            "target_painter_i",
             "ship_scanner_iii",
             "warp_disruptor",
+            "plasma_afterburner",
+            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         }
