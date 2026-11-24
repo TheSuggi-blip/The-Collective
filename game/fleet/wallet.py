@@ -83,6 +83,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import fcntl
 import json
 import os
+import signal
 import sys
 import threading
 import time
@@ -1746,28 +1747,76 @@ def served(name, step, *args, result=True):
     return (out or 0) if result else 0
 
 
+def _acquire_serve_lock(data):
+    """Non-blocking exclusive flock on data/fleet/wallet-serve.lock so concurrent serve passes never race."""
+    lock_p = Path(data) / "fleet" / "wallet-serve.lock"
+    lock_p.parent.mkdir(parents=True, exist_ok=True)
+    fh = open(lock_p, "a+", encoding="ascii")
+    try:
+        fcntl.flock(fh, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        fh.close()
+        return None
+    return fh
+
+
 def serve(data, now, dry):
     """Run all non-sweep service queues in isolation (funds/P2P, top-ups, seat & officer auto-queues, seats,
-    errands, upgrades) so slow admin steps never starve cash sweeping or treasury deposits."""
-    fleet, leader = ships(data), leader_of(data)
-    if leader not in fleet:
-        print("SERVE | the leader %s holds no wallet reading in the fleet file" % leader)
-        return 1
-    failed = 0
-    failed = served("fund", serve_funds, data, leader, now, dry) or failed
-    failed = served("top-up", serve_topups, data, leader, now, dry) or failed
-    failed = served("seat queue", auto_queue_seats, data, now, dry, result=False) or failed
-    failed = served("officer queue", auto_queue_officers, data, now, dry, result=False) or failed
-    failed = served("seat", serve_seats, data, leader, now, dry, result=False) or failed
-    failed = served("errand", serve_errands, data, leader, now, dry) or failed
+    errands, upgrades) so slow admin steps never starve cash sweeping or deposits."""
+    lock_fh = None if dry else _acquire_serve_lock(data)
+    if not dry and lock_fh is None:
+        return 0
     try:
-        import upgrades as _upg
-        _upg.serve_upgrades(data, now=now, dry=dry)
-    except Exception as error:                  # errors.log ENT-171: a step that fails on every pass is printed, never swallowed
-        print("HALT: the upgrade queue's step failed: %s: %s" % (type(error).__name__, str(error)[:200]))
-        failed = 1
-    return failed
+        fleet, leader = ships(data), leader_of(data)
+        if leader not in fleet:
+            print("SERVE | the leader %s holds no wallet reading in the fleet file" % leader)
+            return 1
+        failed = 0
+        failed = served("fund", serve_funds, data, leader, now, dry) or failed
+        failed = served("top-up", serve_topups, data, leader, now, dry) or failed
+        failed = served("seat queue", auto_queue_seats, data, now, dry, result=False) or failed
+        failed = served("officer queue", auto_queue_officers, data, now, dry, result=False) or failed
+        failed = served("seat", serve_seats, data, leader, now, dry, result=False) or failed
+        failed = served("errand", serve_errands, data, leader, now, dry) or failed
+        try:
+            import upgrades as _upg
+            _upg.serve_upgrades(data, now=now, dry=dry)
+        except Exception as error:
+            print("HALT: the upgrade queue's step failed: %s: %s" % (type(error).__name__, str(error)[:200]))
+            failed = 1
+        return failed
+    finally:
+        if lock_fh is not None:
+            try:
+                fcntl.flock(lock_fh, fcntl.LOCK_UN)
+                lock_fh.close()
+            except OSError:
+                pass
 
+
+def serve_daemon(data, every=60, dry=False):
+    """Lightweight persistent service loop for wallet.py serve (zero idle CPU, single-instance lock)."""
+    every = max(15, int(every or 60))
+    stop_flag = []
+
+    def _on_sig(_sig, _frame):
+        stop_flag.append(1)
+
+    signal.signal(signal.SIGTERM, _on_sig)
+    signal.signal(signal.SIGINT, _on_sig)
+    print("wallet: serving every %d s (pid %d)" % (every, os.getpid()), flush=True)
+    while not stop_flag:
+        if not (Path(data) / "fleet" / "STOP").exists():
+            try:
+                serve(data, time.time(), dry)
+            except Exception as error:
+                print("wallet: pass error: %s: %s" % (type(error).__name__, str(error)[:200]), flush=True)
+            sys.stdout.flush()
+        end_wait = time.time() + every
+        while not stop_flag and time.time() < end_wait:
+            time.sleep(min(1.0, max(0.05, end_wait - time.time())))
+    print("wallet: stopped cleanly", flush=True)
+    return 0
 
 def sweep(data, now, dry, cash_only=False):
     """One pass of the sweep: parallel direct seated-member deposits to treasury, parallel unseated gifts to leader,
@@ -2093,9 +2142,13 @@ def main(argv=None):
         return rc
     if verb == "serve":
         dry = "--dry-run" in args
+        daemon = "--daemon" in args
+        every = int(args[args.index("--every") + 1]) if "--every" in args and args.index("--every") + 1 < len(args) else 60
         kind, who = division.member()
         if not dry and not (who == "Unity" or kind == "service"):
             sys.exit("REFUSED: a real serve pass is the Fleet Admiral's or the five-minute job's; use --dry-run")
+        if daemon:
+            return serve_daemon(data, every=every, dry=dry)
         return serve(data, now, dry)
     if verb == "sweep":
         dry = "--dry-run" in args

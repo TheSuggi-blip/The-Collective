@@ -201,5 +201,23 @@ class UpgradeQueueTests(unittest.TestCase):
         self.assertIsNotNone(dispatch.upgrade_hold_needed("drone-2", self.data, 2010))
 
 
+
+    def test_stale_upgrade_hold_reclaimed_and_small_fuel_spend_still_funded(self):
+        rc, lines = upgrades.queue_add(self.data, "Apophis", "recursion", "node_beta:poi:node_beta_base", 370000,
+                                       pilots="drone-1", now=1000)
+        self.assertEqual(rc, 0, lines)
+        rows = upgrades.load_queue(self.data)
+        rows[0]["state"] = "funding"
+        upgrades.save_queue(self.data, rows)
+        self._write_fleet({"drone-1": ("Military", 389700), "drone-2": ("Military", 400000), "miner-1": ("Mining", 400000)})
+        (self.data / "fleet" / "orders" / "drone-1.json").write_text(
+            json.dumps({"pilot": "drone-1", "what": upgrades.UPGRADE_HOLD}), encoding="ascii")
+        gate, wal, div = FakeGate(quote_price=350000, delivered=False), FakeWallet(), FakeDivision()
+        upgrades.serve_upgrades(self.data, now=1060, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        after = upgrades.load_queue(self.data)[0]
+        self.assertEqual(after["state"], "building")
+        self.assertEqual(after["paid"], 350000)
+
+
 if __name__ == "__main__":
     unittest.main()

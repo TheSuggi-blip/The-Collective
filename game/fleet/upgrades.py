@@ -251,7 +251,8 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
 
 # ---- Autonomous Batch Hull-Upgrade Queue (F12 / F17 / F37) ----
 
-UPGRADE_FLOOR = 20000          # minimum wallet kept after commissioning a hull
+UPGRADE_FLOOR = 20000
+UPGRADE_READY_FLOOR = 10000    # funding->funded tolerance for normal fuel spend while waiting          # minimum wallet kept after commissioning a hull
 UPGRADE_POLL_S = 600           # seconds between read-only list_ships checks while building
 UPGRADE_FUND_TIMEOUT = 48 * 3600
 UPGRADE_HOLD = "hand upgrade"
@@ -583,7 +584,8 @@ def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
 
 
 def _try_hold_upgrade(data_dir, pilot, now, division_mod):
-    if division_mod.order_of(pilot, data_dir):
+    cur = division_mod.order_of(pilot, data_dir)
+    if cur and cur != UPGRADE_HOLD:
         return False
     p = Path(data_dir) / "fleet" / "orders" / (pilot + ".json")
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -649,7 +651,8 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                         r["note"], r["updated_at"] = "fund deferred (cap/floor)", int(now)
                     changed = True
         elif st0 == "funding":
-            if credits >= need_cr:
+            ready_cr = int(r.get("max_price") or 0) + UPGRADE_READY_FLOOR
+            if credits >= ready_cr:
                 r["state"], r["updated_at"], r["note"] = "funded", int(now), "funds arrived"
                 changed = True
             elif now - float(r.get("created_at") or now) > UPGRADE_FUND_TIMEOUT:
@@ -735,7 +738,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     r["state"], r["updated_at"], r["note"] = "failed", int(now), "quote %s > max %s" % (_fmt_num(price), _fmt_num(r["max_price"]))
                     changed = True
                     continue
-                if credits - price < UPGRADE_FLOOR:
+                if credits - price < UPGRADE_READY_FLOOR:
                     r["state"], r["updated_at"], r["note"] = "queued", int(now), "need more credits for quote %s" % _fmt_num(price)
                     changed = True
                     continue

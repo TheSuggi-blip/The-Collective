@@ -706,5 +706,20 @@ class WalletFluidityUpgradeTests(FundTests):
         self.assertEqual(queued, ["drone-2", "drone-1", "scout-1"])
 
 
+
+    def test_serve_flock_prevents_concurrent_overlap(self):
+        w = self.wallet
+        fh = w._acquire_serve_lock(str(self.data))
+        self.assertIsNotNone(fh)
+        try:
+            self.assertIsNone(w._acquire_serve_lock(str(self.data)))
+            self.assertEqual(w.serve(str(self.data), time.time(), dry=False), 0)
+        finally:
+            fh.close()
+        fh2 = w._acquire_serve_lock(str(self.data))
+        self.assertIsNotNone(fh2)
+        fh2.close()
+
+
 if __name__ == "__main__":
     unittest.main()
