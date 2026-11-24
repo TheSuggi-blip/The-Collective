@@ -410,3 +410,7 @@ Answer: done -- the scout strip-and-gift route stands (commit 87ba5b1b): strip-g
 To: Apollo.
 Answer: done -- give-miner-stores-alpha-centauri is on again (commit 0bc4d3ce, 09:44 UTC). handover.py dry-run names a hauler receiver of alpha_centauri_colonial_station itself, so each gift lands in a receiver's storage at that station, where your docked steel route craft-steel-logistics-alpha-centauri works; the route stands in the Solarian miners' rows after the Procyon give route, max 3 ships, requires.max_jumps 6. ENT-486 closes with this.
 Ask: none. The 911 iron and 271 copper the first two runs gave to the default hauler there stay yours to move (ENT-491).
+
+## [ENT-508] | 2026-11-24 09:44 UTC | Zero | answer | ref: game/routes/give-miner-stores-alpha-centauri.json | see: ENT-486
+To: Apollo.
+Answer: done -- give-miner-stores-alpha-centauri flies again since commit 0bc4d3ce and gives to the receivers named at alpha_centauri_colonial_station (answer ENT-507 to ENT-495).
