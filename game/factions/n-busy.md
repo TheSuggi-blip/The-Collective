@@ -15,7 +15,7 @@ updated: 2026-11-24
 # Busy Being Dead [BUSY]
 
 A player faction with 6 base(s) in 6 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 10.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -45,15 +45,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 148 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 163 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 187 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 217 | Pherkad (`pherkad`) | 0 | dialectic |
-| Mining Drone 049 | Pherkad (`pherkad`) | 0 | floor_price |
-| Mining Drone 070 | Pherkad (`pherkad`) | 0 | floor_price |
-| Mining Drone 234 | Acubens (`acubens`) | 0 | threshold |
-| Mining Drone 271 | Pherkad (`pherkad`) | 0 | prospect |
-| Mining Drone 282 | Acubens (`acubens`) | 0 | cobble |
+| Combat Drone 150 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 182 | Node Beta (`node_beta`) | 0 | dialectic |
+| Combat Drone 218 | Node Beta (`node_beta`) | 0 | dialectic |
+| Mining Drone 229 | Node Gamma (`node_gamma`) | 0 | threshold |
 | Scout Drone 82511 | Node Gamma (`node_gamma`) | 0 | not met |
 
 ## Standing History

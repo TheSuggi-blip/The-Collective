@@ -36,7 +36,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Private Rain | station | Crosshaven (`crosshaven`) | lawless | 16 | thriving |
 | The Whisper Point | station | GSC-0034 (`gsc_0034`) | lawless | 16 | thriving |
 | Cryo Zenith | station | Saiph (`saiph`) | lawless | 16 | thriving |
-| The Zero Point Nexus | station | Kornephoros (`kornephoros`) | lawless | 17 | struggling |
+| The Zero Point Nexus | station | Kornephoros (`kornephoros`) | lawless | 17 | critical |
 
 ## Pilots in Our Space
 
