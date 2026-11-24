@@ -15,7 +15,7 @@ updated: 2026-11-24
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 22.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -42,28 +42,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | The Experiment (`the_experiment`) | 0 | workhorse |
-| 13170464db5eef0043ae9f5e | Synchrony (`synchrony`) | 0 | workhorse |
-| 188cd6f1e31ebd97644f56e2 | Hamal (`hamal`) | 0 | workhorse |
-| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
-| 395530a76c237308aaa5b1dc | Hamal (`hamal`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | workhorse |
-| 404cabdaa14cd583b3a3cc98 | Synchrony (`synchrony`) | 0 | workhorse |
-| 49be043857c5616dc5baa8b4 | Node Alpha (`node_alpha`) | 0 | workhorse |
-| 4c671b9675ba73f0025d603d | Synchrony (`synchrony`) | 0 | deep_survey |
-| 5766f7c87c7f84b6893abd7e | Hamal (`hamal`) | 0 | workhorse |
-| 6a73495396afc7768a08118f | Acubens (`acubens`) | 0 | workhorse |
-| 6d3e8d906d454ef5c87b6e4c | Synchrony (`synchrony`) | 0 | workhorse |
-| 75bbbd91a1584939b84b0a01 | Node Gamma (`node_gamma`) | 0 | runner |
-| 80ec580ea701fcce02ad0a02 | Node Alpha (`node_alpha`) | 0 | workhorse |
-| 907a7ad5fc57ac61d6e57ad4 | Synchrony (`synchrony`) | 0 | workhorse |
-| ac55ba07be5a48456875b4ff | Node Beta (`node_beta`) | 0 | workhorse |
-| cf4b7e30a1bd46d6579db7e7 | Hamal (`hamal`) | 0 | workhorse |
-| dd23b0ca1cc14350d2b0b023 | Node Alpha (`node_alpha`) | 0 | workhorse |
-| e3a724a14758022cda8c123e | Synchrony (`synchrony`) | 0 | workhorse |
-| f4fb0d5cfa446f5ef0f33b3f | Synchrony (`synchrony`) | 0 | workhorse |
-| f8c3f4c38ee48a37ee21926b | Hamal (`hamal`) | 0 | workhorse |
-| hiver | Node Alpha (`node_alpha`) | 0 | bonanza |
+| 0637bfdf8ba6a997093332c9 | Node Beta (`node_beta`) | 0 | futures |
+| 16d6873a069d1726d6bccaf5 | Node Beta (`node_beta`) | 0 | workhorse |
+| 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| 721dd9c50961cdb453bf284b | Node Alpha (`node_alpha`) | 0 | runner |
+| ac55ba07be5a48456875b4ff | Hamal (`hamal`) | 0 | workhorse |
+| ba6ca244f9215d9ee62431df | Synchrony (`synchrony`) | 0 | workhorse |
+| cb9f390ad124b910d6bb336c | Synchrony (`synchrony`) | 0 | workhorse |
+| cf4b7e30a1bd46d6579db7e7 | Node Beta (`node_beta`) | 0 | workhorse |
+| ddac9c7dba6b0465e059d88b | Node Beta (`node_beta`) | 0 | workhorse |
+| hiver | Synchrony (`synchrony`) | 0 | workhorse |
 
 ## Standing History
 

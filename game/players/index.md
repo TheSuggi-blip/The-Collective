@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Pilots We Know
 
 Built by `scripts/intel-index.py` from the pilot files of this folder;
-never edited by hand. Files listed: 30. The format of a pilot file:
+never edited by hand. Files listed: 31. The format of a pilot file:
 `BLUEPRINT.md`.
 
 ## Hostile
@@ -44,6 +44,7 @@ None filed.
 | ILC Solder | medium | outerrim | IRLC | 2026-11-16 | 2026-11-16 | [n-ilc_solder.md](n-ilc_solder.md) |
 | JackSparrow | medium | crimson | ENDL | 2026-11-15 | 2026-11-15 | [n-jacksparrow.md](n-jacksparrow.md) |
 | MasterChief | medium | crimson | ENDL | 2026-11-15 | 2026-11-15 | [n-masterchief.md](n-masterchief.md) |
+| Mead-brewer | medium | outerrim | HEXC | 2026-11-24 | 2026-11-24 | [n-mead-brewer.md](n-mead-brewer.md) |
 | NovaExidosRim | medium | outerrim | none | 2026-11-15 | 2026-11-15 | [n-novaexidosrim.md](n-novaexidosrim.md) |
 | ObekT-MCP | medium | solarian | OBKT | 2026-11-16 | 2026-11-16 | [n-obekt-mcp.md](n-obekt-mcp.md) |
 | VoltFix | medium | voidborn | HEXC | 2026-11-22 | 2026-11-22 | [n-voltfix.md](n-voltfix.md) |
