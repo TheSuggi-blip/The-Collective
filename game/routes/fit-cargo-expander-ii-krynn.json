@@ -1,0 +1,35 @@
+{
+ "id": "fit-cargo-expander-ii-krynn",
+ "kind": "circuit",
+ "title": "A Cargo Expander II into an empty utility slot of a trader docked at the War Citadel (Krynn), bought there",
+ "note": "Written by Mercury, 2026-11-24 07:28 UTC (orders ENT-085 block MERCURY: close the <80% alarms, F40; rule F17: T2+ modules in parallel batches). The scorecard's module alarm for Trade: 390 empty slots, 0.3% fitted (hive.py briefing 07:01 UTC); our 85 traders carry 3 modules in all (table ship_modules 07:27 UTC). The War Citadel asks 1,421 x 26 for cargo_expander_ii (table books 07:26 UTC), where 42 traders stand docked: no fuel to fit. One per ship, 26 ships at most (the ask's depth), about 37,000 cr in all; requires.ask closes it when the ask is gone. The form of fit-cargo-expander-factory-belt (33 runs). The next batch, Cargo Expander I at the Grand Exchange (500 x 895) or Confederacy Central Command (292 x 494), waits for this one's first runs.",
+ "once": true,
+ "max_ships": 10,
+ "max_pilots": 26,
+ "min_credits": 10500,
+ "requires": {
+  "docked_at": "crimson_war_citadel",
+  "without_module": [
+   "cargo_expander_ii"
+  ],
+  "ask": {
+   "item": "cargo_expander_ii",
+   "base": "crimson_war_citadel",
+   "max_price": 1430,
+   "min_qty": 1,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "fit": [
+    {
+     "module": "cargo_expander_ii",
+     "max_price": 1450,
+     "count": 1
+    }
+   ]
+  }
+ ]
+}
