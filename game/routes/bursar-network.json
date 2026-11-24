@@ -1,10 +1,19 @@
 {
-  "id": "bursar-network",
-  "kind": "bursar",
-  "title": "Dynamic Station Bursar network: 1 trader per policed Exchange station (live book refresh, bottleneck buy_order, surplus sell_order)",
-  "note": "Policy-driven dynamic Bursar network governed by game/bursar-policy.json (Mercury/Unity). Each trader atomically claims 1 unstaffed Exchange station (preferring current dock and own empire), refreshes market & mission books at 0 fuel, posts wholesale buy_order walls for open needs.tsv bottlenecks, and liquidates unreserved surplus without self-undercutting.",
-  "policy": "game/bursar-policy.json",
+ "id": "bursar-network",
+ "kind": "bursar",
+ "title": "Dynamic Station Bursar network: 1 trader per policed Exchange station (live book refresh, bottleneck buy_order, surplus sell_order)",
+ "note": "Policy-driven dynamic Bursar network governed by game/bursar-policy.json (Mercury/Unity). Each trader atomically claims 1 unstaffed Exchange station (preferring current dock and own empire), refreshes market & mission books at 0 fuel, posts wholesale buy_order walls for open needs.tsv bottlenecks, and liquidates unreserved surplus without self-undercutting.",
+ "policy": "game/bursar-policy.json",
+ "minutes": 30,
+ "max_ships": 56,
+ "standing": true,
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 164,
   "minutes": 30,
-  "max_ships": 56,
-  "standing": true
+  "credits_per_run": -9090,
+  "cph_per_ship": -18180,
+  "hours": 12,
+  "last_run": "2026-11-24T10:43:06Z"
+ }
 }

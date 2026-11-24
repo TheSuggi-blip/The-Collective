@@ -13,5 +13,14 @@
  ],
  "min_left": {
   "titanium_ore": 1200
+ },
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 3,
+  "minutes": 94,
+  "credits_per_run": -1050,
+  "cph_per_ship": -680,
+  "hours": 12,
+  "last_run": "2026-11-24T10:32:43Z"
  }
 }

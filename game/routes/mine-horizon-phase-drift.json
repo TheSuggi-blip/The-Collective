@@ -10,5 +10,14 @@
  "lift_to": 3,
  "min_left": {
   "copper_ore": 5000
+ },
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 3,
+  "minutes": 95,
+  "credits_per_run": -450,
+  "cph_per_ship": -290,
+  "hours": 12,
+  "last_run": "2026-11-24T10:34:58Z"
  }
 }

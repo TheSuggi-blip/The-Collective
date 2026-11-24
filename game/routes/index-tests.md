@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 89.
+Routes: 90.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Routes: 89.
 | [carry-melt-beta-to-nexus](carry-melt-beta-to-nexus.json) | circuit | home space | Crystal melt stored by Trade at Node Beta carried to the Central Nexus bid and sold there | up to 1 ships, with 10 crystal_melt stored at node_beta_industrial_station, while central_nexus bids 2000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-null-matter-beta-to-nexus](carry-null-matter-beta-to-nexus.json) | circuit | home space | Stored null matter carried from Node Beta to the Central Nexus bid at 200 cr or more | up to 1 ships, with 1 null_matter stored at node_beta_industrial_station, while central_nexus bids 200 cr for null_matter | TBD | TBD | TBD | TBD | -- |
 | [carry-null-matter-synchrony-nexus](carry-null-matter-synchrony-nexus.json) | circuit | home space | Stored null matter carried from Synchrony Hub to the Central Nexus bid (2 jumps) | up to 1 ships, with 30 null_matter stored at synchrony_hub, while central_nexus bids 150 cr for null_matter | TBD | TBD | TBD | TBD | -- |
+| [carry-palladium-nexus-to-gamma](carry-palladium-nexus-to-gamma.json) | circuit | home space | Stored palladium_ore carried from central_nexus to the node_gamma_relay_station bid at 300 cr or more | up to 1 ships, with 5 palladium_ore stored at central_nexus, while node_gamma_relay_station bids 270 cr for palladium_ore | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-beta-to-gamma](carry-soma-beta-to-gamma.json) | circuit | home space | Stored neural soma carried from Node Beta to the Node Gamma bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 320 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-node-beta-node-alpha](carry-soma-node-beta-node-alpha.json) | circuit | home space | Stored neural soma carried one jump from Node Beta to the Node Alpha soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_alpha_processing_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-node-beta-node-gamma](carry-soma-node-beta-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Node Beta to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at node_beta_industrial_station, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
