@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 85 | 23 | 62 | mission-last-known-position-crimson: 7,970 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 89 | 23 | 66 | mission-last-known-position-crimson: 7,970 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 15 | 8 | 7 | sell-noble-at-first-step: 828,000 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 157 | 48 | 109 | not measured yet |
-| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 33 | 16 | 17 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
+| [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 36 | 17 | 19 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 522 | 111 | 411 | craft-sell-oxygen-alpha-centauri: 20,960 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 14 | 6 | 8 | need-ember-gland-krynn: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 60 | 19 | 41 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 886 | 231 | 655 | |
+| All | | 893 | 232 | 661 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 231 | 1 | 196 | 1 | 20 | 13 | 3 |
-| beyond the border | 655 | 24 | 203 | 7 | 312 | 109 | 29 |
+| home space | 232 | 1 | 197 | 1 | 20 | 13 | 3 |
+| beyond the border | 661 | 24 | 209 | 7 | 312 | 109 | 29 |
 
 ## Plans by Role
 

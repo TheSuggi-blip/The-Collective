@@ -1,0 +1,54 @@
+{
+ "id": "recursion2-parts-ironlight-silicate-node-beta",
+ "kind": "circuit",
+ "title": "Once: buy 28 silicate composite at Ironlight Crossroads and sell them into the second Recursion yard bid at Node Beta",
+ "note": "Written by Apophis 2026-11-24 01:23 UTC. The second Recursion was commissioned for credits at Node Beta at 01:19:46 UTC (310,985 cr, SOURCING; commission_hull.py RESULT). commission_status lists short phase_matrix 2, silicate_composite 55, titanium_alloy 30, void_condensate 5; the yard bids for them (table books 01:22 UTC: 976 x 4, 439 x 55, 824 x 30, 639 x 10). The first hull went SOURCING -> BUILDING within half an hour on the same kind of route (recursion-parts-*, 2026-11-23, about 4,000 cr). open_to drone and sentinel (F23, the Admiral's exception as in recursion-parts-*): goods of our own hull commission sold into the yard's own sourcing bids; once, one ship, every buy booked once. Ironlight ask read 01:22 UTC: silicate 494 x 300. About 13,830 cr out, 12,290 back.",
+ "once": true,
+ "max_ships": 1,
+ "max_pilots": 1,
+ "min_credits": 16000,
+ "open_to": [
+  "drone",
+  "sentinel"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "max_jumps": 10,
+  "ask": {
+   "item": "silicate_composite",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 546,
+   "min_qty": 28,
+   "max_age_minutes": 120
+  },
+  "bid": {
+   "item": "silicate_composite",
+   "base": "node_beta_industrial_station",
+   "min_price": 420,
+   "min_qty": 28
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "buy": [
+    {
+     "item": "silicate_composite",
+     "qty": 28,
+     "max_price": 546,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "sell": [
+    {
+     "item": "silicate_composite",
+     "min_price": 420
+    }
+   ]
+  }
+ ]
+}
