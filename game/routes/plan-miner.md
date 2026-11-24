@@ -198,3 +198,4 @@ Planned:
 | What | When |
 |---|---|
 | read the Sarin carbon test's first results (carbon a run, minutes, fuel) against the 4 cr carbon ask in Crimson space and Apollo's answer to requests ENT-510; end the far carbon wing or keep it | next turn |
+| read the three Resonance Miners' delivery and switch (upgrades.py queue show); measure their fuel per run against a Threshold on the same field before any further hull (requests ENT-509) | next turn |
