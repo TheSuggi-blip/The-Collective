@@ -138,12 +138,18 @@ Status: proven. Updated: 2026-11-22. Evidence: table runs (census, 24 h to 23:25
   before capping, never after.
 
 ### A newborn's hold closes its own census
-Status: proven. Updated: 2026-11-23. Evidence: fill.py status scout (03:19 UTC: 'hold not empty' 6); stash.py (03:40 UTC: 20 fuel cells stored from each of 6 Outer Rim scouts).
+Status: proven. Updated: 2026-11-24. Evidence: fill.py status scout (2026-11-23 03:19 UTC: 'hold not empty' 6; 2026-11-24 05:05 UTC: 2); stash.py (2026-11-23 03:40 UTC); dispatch.py (`goods > 5`); table ship_cargo (2026-11-24 05:07 UTC).
 
 - The region lists carry `requires.empty_hold`; a mission reward or kit
   left aboard (fuel cells, probes) closes every census to its scout, and
   the gate names it waiting. The HOLDS line lists them: store what lies
   aboard (stash.py) the same turn; a ship in space is docked first.
+- The gate counts five units as nothing (`goods > 5`): only a scout with
+  two rewards aboard is shut. Every store route has a reach (empire,
+  max_jumps): Voidborn scouts ending the frontier missions at Altais
+  (8 units, 17 jumps from Central Nexus) had none open. A store route
+  where the missions end (store-hold-frontier-station-near) fixes it by
+  script; a store route others plan with is never widened for us.
 - A census docked nowhere went home to Central Nexus, across the galaxy
   for a newborn of another empire (a foreign station: `Access denied`);
   with --stay it now ends at the nearest station with fuel (census.py

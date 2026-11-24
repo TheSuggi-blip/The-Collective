@@ -1,9 +1,10 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
-- First, every scout: store-hold-central-nexus, give-scout-stores-*,
+- First, every scout: store-hold-central-nexus, then
+  store-hold-frontier-station-near (any empire, 6 jumps), give-scout-stores-*,
   the Survey Scanner II fit (one ship, tests.md), the missions paid
   once and the Voidborn chain (F34, F35). No census in First or Then: a
   census is open to a pilot of another empire wherever it reads.
