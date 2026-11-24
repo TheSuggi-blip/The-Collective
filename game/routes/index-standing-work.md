@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 650.
+Routes: 651.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -253,6 +253,7 @@ Routes: 650.
 | [watch-book-ramens-rest](watch-book-ramens-rest.json) | circuit | beyond the border, 15 jumps | Zero-fuel docked watch: a scout already docked at Ramens Rest at Last Light (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 33 | 5 | 0 | 0 | 2026-11-23 |
 | [watch-book-starfall](watch-book-starfall.json) | circuit | beyond the border, 18 jumps | Zero-fuel docked watch: a scout already docked at Starfall Salvage Station (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 6 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-the-levy](watch-book-the-levy.json) | circuit | beyond the border, 20 jumps | Zero-fuel docked watch: a scout already docked at The Levy Customs Station (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 38 | 5 | 0 | 0 | 2026-11-23 |
+| [watch-book-treasure-cache](watch-book-treasure-cache.json) | circuit | beyond the border, 24 jumps | Zero-fuel docked watch: a scout already docked at Treasure Cache Trading Post (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-unknown-edge](watch-book-unknown-edge.json) | circuit | beyond the border, 16 jumps | Zero-fuel docked watch: a scout already docked at Unknown Edge Waystation (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 53 | 5 | 0 | -20 | 2026-11-24 |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-garnet-belt](guard-garnet-belt.json) | guard | beyond the border, 5 jumps | Guard at Garnet Belt, the site Mining and Intel name for the first outpost, while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |

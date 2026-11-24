@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-treasure-cache",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Treasure Cache Trading Post (Nebula) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 14:32 UTC (orders ENT-087 O7 and P1; MISSION.md: <6h safe-hub books feed bursar-network and haul-network; rule F8; skill intel-turn step 9: a station where scouts wait docked gets a watch route). At 14:32 UTC a scout stood docked and free here (board.py all: docked, free at treasure_cache) and no watch route named this system; the scorecard counts a docked scout without a task as idle (idle 7, briefing 14:16 UTC). The station is a Nebula empire station with a market, a mission board and a shipyard (table stations). A copy of watch-book-carnegie-hall: one ship a station, only a scout already in this system (requires.in_system). Standing work, never judged on its pay (F22); read only, never traded from here, which is Trade's work.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "treasure_cache"
+ },
+ "stops": [
+  {
+   "at": "treasure_cache:treasure_cache_trading_post:treasure_cache_trading_post",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
