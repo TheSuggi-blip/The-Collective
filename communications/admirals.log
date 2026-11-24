@@ -426,3 +426,8 @@ Why: orders ENT-089 block APOPHIS: hunt-network's first packs and escorts, ammun
 ## [ENT-135] | 2026-11-24 18:39 UTC | Zero | claim | ref: game/mine-policy.json | see: orders.log ENT-090
 Claims: the iron ore of gsc_0049:gsc_0049_belt, keid:keid_belt and amberfall:amberfall_belt (one-ship tests: gather-gsc-0049-belt, gather-keid-belt, gather-amberfall-belt); mine-network's belts in atlas and intercrus (allow_lawless_systems; per run in data/fleet/mine_claims.json, three a belt). Ore only; herds there stay Military's.
 Why: orders ENT-090 block ZERO: iron gathers open under 60,000 usable iron (45,281 of keep 60,000, supply show 17:35 UTC), every iron belt of the plan at three ships.
+
+## [ENT-136] | 2026-11-24 19:04 UTC | Apophis | claim | ref: game/hunt-policy-packs.json | see: ENT-133
+Releases: ENT-133
+Claims: everything ENT-133 claimed except the magnet-barnacle herd of hunt-kit-frontier-pioneer-fields-magnet-barnacle (no Military ship flies it now: the kit is assembled only in a facility we do not own, requests.log ENT-523); the herds of hunt-the-dim-lantern-veil-ray and hunt-toi-2257-gas-pocket-cinder-sylph kept for their return (off for danger: pirate packs read at their own POIs); and new: strip-missile-launcher-central-nexus (3 at a time, once a pilot, the own rows of the armed listed hulls only) and the standard rounds box ask of Central Nexus it buys four of.
+Why: orders ENT-090 block APOPHIS (ammunition with every armed hull bought; read the first packs); rules F9, F22, F37.
