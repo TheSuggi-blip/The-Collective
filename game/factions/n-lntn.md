@@ -9,7 +9,7 @@ faction: The Pale Lanterns
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # The Pale Lanterns [LNTN]
@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | GlowMoth | Daily feed, factions |
-| Members | 4 | Daily feed, factions |
+| Members | 5 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |

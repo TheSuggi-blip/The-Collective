@@ -22,11 +22,11 @@ Pilots of it in our space in the last 24 hours: 0.
 | Field | Value | Source |
 |---|---|---|
 | Leader | OLS Polaris | Daily feed, factions |
-| Members | 536 | Daily feed, factions |
+| Members | 600 | Daily feed, factions |
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 572 | Public event stream |
+| Pilots carrying the tag on the public event stream | 373 | Public event stream |
 
 ## Bases
 

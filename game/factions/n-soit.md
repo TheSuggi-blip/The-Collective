@@ -22,8 +22,8 @@ Pilots of it in our space in the last 24 hours: 11.
 | Field | Value | Source |
 |---|---|---|
 | Leader | KellyDiote | Daily feed, factions |
-| Members | 20 | Daily feed, factions |
-| Allies | AURC, NVPT, OKLM, SGC., SOLS | Daily feed, factions |
+| Members | 84 | Daily feed, factions |
+| Allies | OKLM, SGC. | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
 | Pilots carrying the tag on the public event stream | 79 | Public event stream |

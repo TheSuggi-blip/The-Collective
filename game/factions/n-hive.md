@@ -15,14 +15,14 @@ updated: 2026-11-24
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | hive leader | Daily feed, factions |
-| Members | 189 | Daily feed, factions |
+| Members | 190 | Daily feed, factions |
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -40,7 +40,14 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| 0376cb910189c29811104e6c | Synchrony (`synchrony`) | 0 | runner |
+| 636c1957c2349e4e27ec7db0 | Hamal (`hamal`) | 0 | deep_survey |
+| 721dd9c50961cdb453bf284b | Pherkad (`pherkad`) | 0 | runner |
+| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
+| f4fb0d5cfa446f5ef0f33b3f | Node Gamma (`node_gamma`) | 0 | workhorse |
+| fdd4d2a524b48e0478b85d38 | The Experiment (`the_experiment`) | 0 | workhorse |
 
 ## Standing History
 
