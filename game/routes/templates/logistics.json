@@ -26,13 +26,15 @@
     "craft-steel-logistics-node-beta",
     "craft-steel-logistics-synchrony-hub",
     "craft-steel-logistics-central-nexus",
+    "craft-steel-logistics-procyon",
+    "craft-steel-logistics-nova-terra",
     "craft-piping-plate-node-beta"
    ],
    "trains": [
     "crafting",
     "refining"
    ],
-   "note": "2026-11-22 15:56 UTC Apollo: boards from stored silicon first (silicon binds the 23,808 short), gold wiring to 1,860, then steel (5,238 to make) and piping. Each opens only on the pilot's own stored inputs, so the receivers craft docked."
+   "note": "2026-11-24 00:26 UTC Apollo: the Procyon and Nova Terra steel routes added: haulers hold 2,477 and 1,457 iron ore there besides the receivers (table holdings 00:13 UTC); each opens only on the pilot's own stored iron (100 or more)."
   },
   "outpost-supply": {
    "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
