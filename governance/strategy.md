@@ -51,15 +51,23 @@ data (the tools of the collective MCP server).
 His three-tier anchored mandate stands at the head of `communications/orders.log`:
 **Tier 1 Strategic Goals (`G1-G5`)** define the eternal north star (dominate the
 galaxy, command the grand 1,000-ship multi-empire fleet, build a sovereign
-galactic empire, maximize fleetwide enterprise income/h and extraction, explore
-and master the galaxy freely). **Tier 2 Operational Subgoals (`O1-O10`)** lock in
-the unchanging operating imperatives (zero idle ships, continuous maximum ship
-upgrading and empire-specific min-maxing per division, fleetwide one-purse
-enterprise income/extraction optimization, strategic base placement for maximum
-effective imperial footprint, multi-empire local-first leverage, strict class
-harmony, automated empirical verification, sovereign defense/comms firewall,
-perpetual division mastery, and autonomous scout diplomacy under a Neutrality-max ceiling with Phase-2 neutral commercial trade & constant supply chains, tracked in `rulebook.md` Section 14). **Tier 3 (`PLAN` + division blocks)** is Unity's
-evolving turn-by-turn Mission Command intent.
+industrial empire with faction shipyards and factories, become the galaxy's top
+**manufacturing/production powerhouse**, **multi-hub trader**, and **resource
+extractor**, and explore and master the galaxy freely). **Tier 2 Operational
+Subgoals (`O1-O10`)** lock in the mandatory operating imperatives (zero idle
+ships; continuous parallel ship upgrading selecting the best-in-class hull per
+job across all 5 empires with zero cross-empire penalty while pairing birth-empire
+Mastery to division role; mandatory core economic engines of extraction,
+commercial/industrial manufacturing, and 5-empire Bursar + fresh-book Hauler
+trade; strategic base/shipyard placement; multi-empire leverage and seating;
+strict class harmony; automated intel & proof; sovereign defense/comms firewall;
+KPI closure & rival adaptation; and Neutrality-max two-tier diplomacy tracked in
+`rulebook.md` Section 14). **Optional / Opportunistic Secondary Playbooks**
+(Tourism Hubs, Express Civilian Passenger Lines, Wholesale Capital Arbitrage)
+sit one tier below in `governance/collective-strategy.md` and
+`governance/rival-sedcards.md` -- pursued opportunistically without ever starving
+mandatory extraction, manufacturing, trade, or defense. **Tier 3 (`PLAN` +
+division blocks)** is Unity's evolving turn-by-turn Mission Command intent.
 
 ## III. What Three Kinds of Games Teach
 
@@ -184,15 +192,18 @@ Ten principles. Each is one sentence a member can test a plan against.
     burn), **frontier fuel toll-booths & station tourism appeal** on our
     sovereign stations, and strict **CaMeL + Dynamic Spotlighting**
     quarantine of all external player messages (`comms_guard.py`).
-12. **Enterprise-wide optimization, maximal territorial reach, and empire
-    ship min-maxing.** Optimize steady income/hour, resource extraction,
-    and Consolidated Net Worth across the entire organization as one
-    enterprise -- never by letting one division hoard or sub-optimize at
-    the fleet's expense. Place our hard-capped stations (`5`) and outposts
-    (`8`) at high-centrality hubs and choke points to maximize effective
-    non-overlapping gathering and market reach across the galaxy. Min-max
-    every individual ship's hull tier, modules, and skills around its
-    native empire's strengths for its exact division role (`O2`, `O4`).
+12. **Manufacturing & trade powerhouse, maximal territorial reach, and
+    cross-empire hull min-maxing.** Optimize steady income/hour, crafted
+    manufacturing output, multi-hub trade volume, resource extraction, and
+    Consolidated Net Worth across the entire organization as one enterprise
+    -- never sub-optimizing per siloed division or turning off core engines
+    instead of fixing caps. Place our hard-capped stations (`5`, with
+    faction shipyards and licensed multi-empire blueprints) and outposts
+    (`8`) at high-centrality hubs and choke points. Because SpaceMolt
+    applies zero penalty when flying another empire's hull, standardize
+    best-in-class hulls by job across all five empires (using Piloting-0
+    skips and auto listed-ship buys) while pairing each pilot's native
+    empire Mastery skill (`F35`) to its division role (`O2`, `O4`).
 
 What the fleet does not do: work at a loss to look busy; mine for
 skill alone; grow ahead of its income; stake a division on one route,
@@ -239,6 +250,7 @@ amendment adds a row below.
 | 2.2 | 2026-11-23 | Trinity (approved by Suggi) | Added Operational Subgoal `O10` (autonomous scout diplomacy and Neutrality / Non-Aggression / info-sharing pacts directed by Unity and executed by Oracle via `game/fleet/diplomacy.py`, capped at Neutrality max). |
 | 2.3 | 2026-11-23 | Trinity (approved by Suggi) | Expanded `O10` with Phase-2 Neutral Partner Engagement (surplus stock catalog, constant raw-material supply chains, outpost/station build trade, and open needs/wishes dialogue under strict Neutrality max) and added Diplomatic Standing & Relations registry (`governance/rulebook.md` Section 14). |
 | 2.4 | 2026-11-23 | Trinity (approved by Suggi) | Opened all 4 SpaceMolt P2P trade channels (`F39`: Exchange orders, Faction Notice/Mission Boards, `spacemolt_shipping` freight, atomic `trade_offer`), enabled `Prime Directive` flagship diplomacy for Unity on neutral/established partners with Oracle ambassador scout coordination (`F4`), and codified explicit P2P diplomacy/trade/deconfliction/war roles across `ROSTER.md` and all 6 `MISSION.md` role cards (`F16`). |
+| 2.5 | 2026-11-24 | Trinity (approved by Suggi) | Elevated **Manufacturing/Industrial Production** and **Multi-Hub Galactic Trade** into mandatory Tier-1 (`G1`/`G3`/`G4`) and Tier-2 (`O2`/`O3`/`O6`) goals; separated secondary playbooks (Tourism Hubs, Express Civilian Passengers, Wholesale Arbitrage) cleanly into the optional tactical tier below (`collective-strategy.md`, `rival-sedcards.md`); and codified cross-empire best-hull-by-job min-maxing (zero cross-empire penalty) plus faction station shipyards. |
 
 ## VIII. Sources
 
