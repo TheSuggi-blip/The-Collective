@@ -2,11 +2,11 @@
  "id": "gather-gliese-876-belt-carbon",
  "kind": "mine",
  "title": "A test: carbon ore of Gliese 876 Belt into storage at Synchrony Hub (five jumps, lawless)",
- "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Gliese 876 Belt read carbon 3,034 of 18,000 (richness 30), iron 6,688 (45), nickel 487 (table fields, 1.3 h old at 23:37 UTC), lawless, five jumps from Synchrony Hub by Pherkad, Wolf 1061, GSC-0031 and GSC-0021; no pirate line on that road in 24 h; Korr Fortress (a pirate station) stands three jumps off the road. The carbon share of a load is what this test measures (a mixed field). One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-24 05:48 UTC (Zero): requires.empire voidborn taken out, max_jumps 12 kept: 31 of the 35 Nebula-born miners stand in Voidborn space (table ships), and the distance, not the birth, is what fences a far ship off.",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Gliese 876 Belt read carbon 3,034 of 18,000 (richness 30), iron 6,688 (45), nickel 487 (table fields, 1.3 h old at 23:37 UTC), lawless, five jumps from Synchrony Hub by Pherkad, Wolf 1061, GSC-0031 and GSC-0021; no pirate line on that road in 24 h; Korr Fortress (a pirate station) stands three jumps off the road. The carbon share of a load is what this test measures (a mixed field). One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-24 05:48 UTC (Zero): requires.empire voidborn taken out, max_jumps 12 kept: 31 of the 35 Nebula-born miners stand in Voidborn space (table ships), and the distance, not the birth, is what fences a far ship off. 2026-11-24 05:57 UTC (Zero): max_ships 1 -> 4: carries 1 +26 (fill.py status miner 05:35 UTC); carbon short 28,858 (surplus.py reserve).",
  "belt": "gliese_876:gliese_876_belt",
  "station": "synchrony:synchrony_hub:synchrony_hub",
  "minutes": 150,
- "max_ships": 1,
+ "max_ships": 4,
  "standing": true,
  "min_left": {
   "carbon_ore": 1000
