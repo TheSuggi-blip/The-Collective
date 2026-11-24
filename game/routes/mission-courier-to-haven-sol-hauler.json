@@ -1,11 +1,11 @@
 {
  "id": "mission-courier-to-haven-sol-hauler",
  "kind": "circuit",
- "title": "Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange: a Nebula-born hauler's paid way home",
- "note": "Written by Apollo, 2026-11-24 06:24 UTC: a hauler copy of Trade's mission-courier-to-haven-sol (Mercury, 2026-11-23: 1 run, +5,690 cr; the silver is handed out on accept). Orders ENT-085 block APOLLO and P6; rule F34. Nebula-born haulers stand at Sol with Sol's once lines paid (table ships 06:24 UTC). requires.empire nebula: Haven is their capital.",
+ "title": "Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange at Haven (haulers of every birth)",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC: a hauler copy of Trade's mission-courier-to-haven-sol (Mercury, 2026-11-23: 1 run, +5,690 cr; the silver is handed out on accept). Orders ENT-085 block APOLLO and P6; rule F34. Nebula-born haulers stand at Sol with Sol's once lines paid (table ships 06:24 UTC). requires.empire nebula: Haven is their capital. 2026-11-24 06:43 UTC (Apollo): open to every birth: Sol's board offers courier_to_haven to an Outer Rim-born hauler too (get_missions this turn), and Haven's gold ask (40 x 107, table books) opens The Diplomatic Pouch back through Sol to Nexus Prime (mission-diplomatic-pouch-haven-gold). max_ships 12 -> 30.",
  "far_ok": true,
  "once": true,
- "max_ships": 12,
+ "max_ships": 30,
  "one_time": [
   "Courier to Haven"
  ],
@@ -13,7 +13,6 @@
   "Courier to Haven"
  ],
  "requires": {
-  "empire": "nebula",
   "empty_hold": true,
   "max_jumps": 3,
   "skills_below": {

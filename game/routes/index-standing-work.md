@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 539.
+Routes: 540.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -210,7 +210,8 @@ Routes: 539.
 | [join-sol-sirius](join-sol-sirius.json) | circuit | beyond the border, 10 jumps | Join Sol: haulers paid out at Frontier, Haven and Iron Reach gather at Sol Central, the hub one jump from Alpha Centauri's iron and five from our outpost | once per pilot, up to 45 ships, empty hold, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [join-sol-trader](join-sol-trader.json) | circuit | beyond the border, 10 jumps | A trader whose home trade is full joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 70 ships, standing work | 48 | 14 | -220 | one-time | 2026-11-23 |
 | [load-plasma-ammo-nova-terra](load-plasma-ammo-nova-terra.json) | circuit | beyond the border, 8 jumps | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
-| [mission-courier-to-haven-sol-hauler](mission-courier-to-haven-sol-hauler.json) | circuit | beyond the border, 21 jumps | Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange: a Nebula-born hauler's paid way home | once per pilot, up to 12 ships, empty hold, born nebula, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
+| [mission-courier-to-haven-sol-hauler](mission-courier-to-haven-sol-hauler.json) | circuit | beyond the border, 21 jumps | Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange at Haven (haulers of every birth) | once per pilot, up to 30 ships, empty hold, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
+| [mission-diplomatic-pouch-haven-gold](mission-diplomatic-pouch-haven-gold.json) | circuit | beyond the border, 21 jumps | The Diplomatic Pouch: 3,000 cr once from Sol Central, 5 gold ore bought at Haven, accepted at Sol and delivered to Central Nexus (a paid way home from Haven) | once per pilot, up to 21 ships, from 5,000 cr, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [mission-old-charts-sol](mission-old-charts-sol.json) | circuit | beyond the border, 11 jumps | Gathering the Old Charts: 3,500 cr once at Sol Central: the charts collected at Alpha Centauri, 5 circuit boards bought at Sol delivered to Sirius Observatory | once per pilot, up to 8 ships, empty hold, from 5,000 cr, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [mission-sirius-expedition-sol](mission-sirius-expedition-sol.json) | circuit | beyond the border, 10 jumps | Sirius Expedition: 1,500 cr once at Sol Central, Sirius visited and back (haulers near Sol) | once per pilot, up to 40 ships, under corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 14 | 2 | -40 | -270 | 2026-11-24 |
