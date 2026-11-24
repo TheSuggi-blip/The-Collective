@@ -1,0 +1,41 @@
+{
+ "id": "buy-autocannon-rounds-the-anvil",
+ "kind": "circuit",
+ "title": "Autocannon ammunition for the listed Cleavers and Broadaxes: standard rounds boxes at The Anvil Arsenal",
+ "note": "Written by Apophis, 2026-11-24 13:05 UTC (orders ENT-087 O2 and block APOPHIS: hulls batched by listing). The Cleavers and Broadaxes listed by the Crimson Empire Treasury come with autocannons, a railgun or a missile launcher at 0 rounds (get_ship of a Cleaver bought 13:00 UTC: autocannon_i 0/500, missile_launcher_i 0/8); a hunt with an empty magazine and no ammunition aboard ends without a fight (hunt.py reload_if_low). One standard rounds box fully loads any autocannon magazine (catalog); The Anvil Arsenal asks 6 cr with 9,398 units (books 13:03 UTC). Four boxes per pilot, once: two load the guns at the next hunt, two spare; 500 rounds last many hunts. open_to drone and sentinel (rule F23, the Admiral's exception): the class guard reads a buy circuit as trade, but this is ammunition for the ship's own fitted weapons; nothing is sold. Booked once.",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 20,
+ "min_credits": 5000,
+ "requires": {
+  "module": [
+   "autocannon_i",
+   "autocannon_ii"
+  ],
+  "ask": {
+   "item": "standard_rounds_box",
+   "base": "the_anvil_arsenal",
+   "max_price": 15,
+   "min_qty": 20,
+   "max_age_minutes": 180
+  }
+ },
+ "stops": [
+  {
+   "at": "the_anvil:the_anvil_arsenal:the_anvil_arsenal",
+   "buy": [
+    {
+     "item": "standard_rounds_box",
+     "qty": 4,
+     "max_price": 15,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  }
+ ],
+ "open_to": [
+  "drone",
+  "sentinel"
+ ]
+}
