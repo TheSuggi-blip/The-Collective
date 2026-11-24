@@ -20,7 +20,7 @@ Kept by Unity. Routes: 111. Ships: 9.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
-| 1 | [finish-five-capitals-sol](finish-five-capitals-sol.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 2 ships | all 9 |
+| 1 | [finish-five-capitals-sol](finish-five-capitals-sol.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 3 ships | all 9 |
 | 2 | [voidborn-first-steps-board](voidborn-first-steps-board.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 3 ships | all 9 |
 | 3 | [voidborn-collective-provides](voidborn-collective-provides.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 10 jumps | once per pilot, up to 4 ships, empty hold, after the reward Network Expansion | all 9 |
 | 4 | [voidborn-signal-protocol](voidborn-signal-protocol.json) | [Once per Pilot](index-once-per-pilot.md) | home space | once per pilot, up to 20 ships, after the reward The Collective Provides | all 9 |

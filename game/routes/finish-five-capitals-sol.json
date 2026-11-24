@@ -2,10 +2,10 @@
  "id": "finish-five-capitals-sol",
  "kind": "circuit",
  "title": "Five Capitals Diplomatic Circuit finished: return to Sol Central (15,000 cr once, held at 5 of 6)",
- "note": "Written by Unity, 2026-11-24 14:20 UTC (orders ENT-087 P1: no empty burn; requests.log ENT-514: a finish route carries requires.mission). The ship files (data/fleet/ships, mission_list, read 14:16 UTC) show Five Capitals Diplomatic Circuit at 83% on two flagships of the command group: the five pouches verified, only `Return to Sol Central with verification logs` open; the route that accepts it (mission-five-capitals-diplomatic-circuit-confederacy) is closed to them by the region rule. One stop: dock at Sol Central. Open only to a pilot holding the mission (dispatch requires.mission), so it never flies empty.",
+ "note": "Written by Unity, 2026-11-24 14:20 UTC (orders ENT-087 P1: no empty burn; requests.log ENT-514: a finish route carries requires.mission). The ship files (data/fleet/ships, mission_list, read 14:16 UTC) show Five Capitals Diplomatic Circuit at 83% on two flagships of the command group: the five pouches verified, only `Return to Sol Central with verification logs` open; the route that accepts it (mission-five-capitals-diplomatic-circuit-confederacy) is closed to them by the region rule. One stop: dock at Sol Central. Open only to a pilot holding the mission (dispatch requires.mission), so it never flies empty. 2026-11-24 15:10 UTC (fill.py, Unity): max_ships 2 -> 3.",
  "once": true,
  "far_ok": true,
- "max_ships": 2,
+ "max_ships": 3,
  "one_time": [
   "Five Capitals Diplomatic Circuit"
  ],
