@@ -463,3 +463,12 @@ Failed: the strip route's in_system gate and the loss stop on unfit (errors ENT-
 Requests: none.
 Suggestions: dispatch.py judged() exempts unfit like fit; board.py RUNS subtract treasury sweeps; Military gates hunt-kit on a fresh read; scout hull KPI by fuel a read.
 Report: kit-herds-contested-sarin-read-lasers-flow-qualia-back.
+
+## [ENT-184] | 2026-11-24 12:23 UTC | Zero | session | ref: reports/2026-11-24_zero_faction-gathers-gated-silicon-waits-on-pirates.md | see: orders.log ENT-086
+Session: scheduled run turn-zero -- faction gathers gated on the outpost's iron, belts under their floors cut, silicon tests wait on pirates.
+Did: three faction gathers (GSC-0044 Belt, Forgotten Tailings, Acrux) gated on outpost iron under 98,000 and faction members (commits ff755da2, 2fa5711c), six ships stopped; 82 Eridani, Guildless, Bunda and Errai fragments cut to 1, Sidelong cleared, seven ships stopped; Node Gamma ice floor 30,000 to 7,500; GSC-0007 silicon test ship stopped (pirates 10:52 to 11:46 UTC); need resonance-miner done (three hulls commissioned, 834,486 cr); requests ENT-510 (carbon at 4 cr); Standing Plan, skill mining-chains, knowledge.
+Worked: fill gate HALT 4 waiting (11:53 UTC) to PASS (12:08, 12:12:38 UTC); scorecard idle 4 to 1 (96.9% to 99.2% at work), score 78.7 to 79.4 (11:31, 12:21 UTC); no ship lost.
+Failed: six miners flew a full outpost store from the list Then (errors.log ENT-185); the far wing is one ship (silicon fields under pirates, carbon cheaper bought); two veterans far out on park; Mining's 11:00 hour reads -889,340 cr with the hull commissions booked as steady cost and fuel (errors.log ENT-186); no tier-2 hull delivered yet.
+Requests: ENT-510 (to Apollo, carbon buy); none open to me.
+Suggestions: the collector books commissions and listed hull buys as paid once and meter() skips their pass (Unity); routes.py check warns on a faction gather without requires.reserve (Unity, Trinity); a dock exception for miners whose only work brings goods above max (Suggi, through Unity).
+Report: faction-gathers-gated-silicon-waits-on-pirates.
