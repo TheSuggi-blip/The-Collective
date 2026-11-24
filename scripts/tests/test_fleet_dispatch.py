@@ -1449,6 +1449,10 @@ class PostedAndRoleTests(Tree):
         r_hn = {"id": "hunt-network", "kind": "hunt_net", "title": "t", "minutes": 45, "max_ships": 95, "policy": "game/hunt-policy.json"}
         self.assertIn("mine_net.py", " ".join(self.dispatch.command(r_mn, "miner-9", None, self.root)))
         self.assertIn("hunt_net.py", " ".join(self.dispatch.command(r_hn, "drone-9", None, self.root)))
+        # ENT-187 / ENT-514: requires.mission opens only to pilots holding that incomplete mission
+        r_fin = {"id": "finish-levy", "kind": "circuit", "title": "t", "once": True, "stops": [{"at": "s:p:b"}], "requires": {"mission": "Prospectus Levy"}}
+        self.assertIn("does not hold mission", self.dispatch.why_not(dict(pilot_t, missions=[]), "finish-levy", r_fin, st1)[0])
+        self.assertIsNone(self.dispatch.why_not(dict(pilot_t, missions=["prospectus levy"]), "finish-levy", r_fin, st1)[0])
 
 
 if __name__ == "__main__":

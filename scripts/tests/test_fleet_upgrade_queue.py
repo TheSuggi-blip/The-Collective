@@ -269,5 +269,29 @@ class UpgradeQueueTests(unittest.TestCase):
             self.assertEqual(rows[0][1:], ["miner-47", "Resonance_miner hull commissioned", -277941])
 
 
+    def test_merge_save_preserves_concurrent_cancels_and_adds_ent190(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            now = 1795500000
+            initial = [
+                {"id": "u-1", "pilot": "trader-1", "division": "Trade", "hull": "apophenia", "state": "funded", "updated_at": now},
+                {"id": "u-2", "pilot": "trader-2", "division": "Trade", "hull": "apophenia", "state": "funded", "updated_at": now},
+            ]
+            upgrades.save_queue(tmp, initial)
+            # Simulate serve_upgrades snapshot
+            snap = upgrades.load_queue(tmp)
+            # Concurrently Admiral cancels u-1 and adds u-3 on disk!
+            disk = upgrades.load_queue(tmp)
+            disk[0]["state"] = "cancelled"
+            disk.append({"id": "u-3", "pilot": "trader-3", "division": "Trade", "hull": "apophenia", "state": "queued", "updated_at": now + 5})
+            upgrades.save_queue(tmp, disk)
+            # Serve pass writes back snap with u-2 updated to note='polling'
+            snap[1]["note"] = "polling"
+            upgrades.save_queue(tmp, snap, merge=True)
+            after = {r["id"]: r for r in upgrades.load_queue(tmp)}
+            self.assertEqual(after["u-1"]["state"], "cancelled")
+            self.assertEqual(after["u-2"]["note"], "polling")
+            self.assertIn("u-3", after)
+
+
 if __name__ == "__main__":
     unittest.main()

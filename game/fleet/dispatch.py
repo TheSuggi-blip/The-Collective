@@ -1072,6 +1072,12 @@ def why_not(pilot, rid, route, state):
         return "hold not empty", None
     if req.get("hold") and pilot.get("goods", 0) <= 5:                                      # a route that stores what is aboard: not for a pilot that carries nothing
         return "nothing aboard", None
+    want_mis = req.get("mission")
+    if want_mis:
+        m_list = [str(x).strip().lower() for x in (want_mis if isinstance(want_mis, (list, tuple)) else [want_mis]) if str(x).strip()]
+        p_mis = set(str(x).strip().lower() for x in (pilot.get("missions") or []))
+        if m_list and not any(m in p_mis for m in m_list):
+            return "does not hold mission %s" % (", ".join(m_list[:2])), None
     want_role = req.get("role")                                                             # requests ENT-494: a faction role (Officer for a withdraw)
     if want_role:
         roles = [str(x).lower() for x in (want_role if isinstance(want_role, (list, tuple)) else [want_role]) if x]
@@ -1260,6 +1266,7 @@ def pilot_of(ship, named, data, ammo):
             "speed": int(ship.get("speed") or detail.get("speed") or 0),
             "cargo_capacity": int(ship.get("cargo_capacity") or detail.get("cargo_capacity") or 0),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
+            "missions": [str(m.get("title") or "").strip().lower() for m in (detail.get("mission_list") or []) if isinstance(m, dict) and int(m.get("percent") or 0) < 100 and m.get("title")],
             "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)
                        for k, v in (detail.get("skills") or {}).items() if isinstance(v, (dict, int))} if isinstance(detail.get("skills"), dict) else {},
             "goods": sum(int(c.get("quantity") or 0) for c in detail.get("cargo") or [] if isinstance(c, dict) and c.get("item") not in ammo)

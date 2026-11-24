@@ -304,6 +304,8 @@ def check(root):
             errors.append(where + "`requires.skills_below` must be {skill: level}")
         if "modules_below" in need and not pos_counts(need["modules_below"]):
             errors.append(where + "`requires.modules_below` must be {module_id: count >= 1}")
+        if "mission" in need and not ((isinstance(need["mission"], str) and need["mission"].strip()) or (isinstance(need["mission"], list) and need["mission"] and all(isinstance(m, str) and m.strip() for m in need["mission"]))):
+            errors.append(where + "`requires.mission` must be a non-empty mission title or list of titles")
         if "any_module" in need and not (isinstance(need["any_module"], list) and need["any_module"] and all(isinstance(m, str) and m for m in need["any_module"])):
             errors.append(where + "`requires.any_module` must be a non-empty list of module ids")
         if "module" in need and not ((isinstance(need["module"], str) and need["module"]) or pos_counts(need["module"])

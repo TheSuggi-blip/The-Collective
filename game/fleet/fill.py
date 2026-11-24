@@ -154,6 +154,14 @@ def buys(route):
     return any(isinstance(stop, dict) and stop.get("buy") for stop in route.get("stops") or [])
 
 
+def is_holder_only_finish(rid, route):
+    """True for finish-* or requires.mission routes meant only for pilots already holding an open mission (ENT-187)."""
+    if str(rid or "").startswith("finish-"):
+        return True
+    req = route.get("requires") if isinstance(route, dict) and isinstance(route.get("requires"), dict) else {}
+    return bool(req.get("mission"))
+
+
 def unfits(route):
     """True for a route with a stop that unfits a module: such a route is in a plan by its Admiral's word only, never
     added by this script (Zero, requests ENT-466: the five-minute pass put Military's strip route into the miners' list
@@ -603,7 +611,7 @@ def read_role(seen, role, floor=500, tests=8):
         if danger:                                                # Q75 (2): a place set off for danger is never offered
             refused.append((rid, danger))
             continue
-        if buys(route) or unfits(route):                          # it buys goods or unfits a module: in a plan by its Admiral's word only, never by this script
+        if buys(route) or unfits(route) or is_holder_only_finish(rid, route):                          # it buys goods or unfits a module: in a plan by its Admiral's word only, never by this script
             if rid not in plan:
                 by_hand.append((value, rid))
             continue
@@ -646,7 +654,7 @@ def read_role(seen, role, floor=500, tests=8):
             continue
         if route.get("once") and refused_to(seen, rid, role):
             continue
-        if buys(route) or unfits(route):                          # a gap is flown once by hand, with one load (errors.log ENT-027); a fit change is its Admiral's (ENT-466)
+        if buys(route) or unfits(route) or is_holder_only_finish(rid, route):                          # a gap is flown once by hand, with one load (errors.log ENT-027); a fit change is its Admiral's (ENT-466)
             by_hand.append((cand["per_ship_hour"], rid))
             continue
         if sells_short(seen, route):                              # a test that sells what the reserve lacks is no test of ours (ENT-213)

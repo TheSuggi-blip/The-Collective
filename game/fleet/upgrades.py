@@ -18,6 +18,7 @@ Usage:
   python3 -I -B game/fleet/upgrades.py [--who all|Unity|Zero|Mercury|Apollo|Apophis|Oracle]
 """
 import argparse
+import fcntl
 import json
 import os
 import re
@@ -311,12 +312,53 @@ def load_queue(data_dir):
         return []
 
 
-def save_queue(data_dir, rows):
+def _queue_lock(data_dir):
     p = queue_file(data_dir)
     p.parent.mkdir(parents=True, exist_ok=True)
-    tmp = p.with_name(p.name + ".tmp")
-    tmp.write_text(json.dumps(rows, indent=1) + "\n", encoding="ascii")
-    os.replace(tmp, p)
+    return open(str(p) + ".lock", "a+", encoding="ascii")
+
+
+def save_queue(data_dir, rows, merge=False):
+    """Atomically write upgrade_queue.json under exclusive lock; merge=True preserves concurrent adds & cancels (ENT-190)."""
+    p = queue_file(data_dir)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with _queue_lock(data_dir) as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            final_rows = list(rows)
+            if merge and p.is_file():
+                try:
+                    disk = json.loads(p.read_text(encoding="utf-8"))
+                    if not isinstance(disk, list):
+                        disk = []
+                except (OSError, ValueError):
+                    disk = []
+                upd_by_id = {str(r.get("id")): r for r in rows if isinstance(r, dict) and r.get("id")}
+                merged = []
+                seen = set()
+                for dr in disk:
+                    if not isinstance(dr, dict):
+                        continue
+                    rid = str(dr.get("id") or "")
+                    seen.add(rid)
+                    ur = upd_by_id.get(rid)
+                    if ur is None:
+                        # Newly added by an Admiral during serve pass: preserve it!
+                        merged.append(dr)
+                    elif dr.get("state") == "cancelled" and ur.get("state") not in ("building", "done"):
+                        # Concurrently cancelled by an Admiral during serve pass: honor cancel!
+                        merged.append(dr)
+                    else:
+                        merged.append(ur)
+                for ur in rows:
+                    if isinstance(ur, dict) and str(ur.get("id") or "") not in seen:
+                        merged.append(ur)
+                final_rows = merged
+            tmp = p.with_name("%s.%d.tmp" % (p.name, os.getpid()))
+            tmp.write_text(json.dumps(final_rows, indent=1) + "\n", encoding="ascii")
+            os.replace(tmp, p)
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
 
 
 def protected_pilots(data_dir):
@@ -518,7 +560,7 @@ def queue_add(data_dir, who, hull_id, station, max_price, count=5, role=None, em
         next_num += 1
         rows.append(entry)
         added.append(entry)
-    save_queue(data_dir, rows)
+    save_queue(data_dir, rows, merge=True)
     lines = ["UPGRADE QUEUE ADDED | batch %s | %d pilot(s) -> %s @ %s (max %s cr, by %s)" % (
         batch_id, len(added), hull_clean, ":".join(parts), _fmt_num(max_price), who)]
     for e in added:
@@ -548,7 +590,7 @@ def queue_cancel(data_dir, who, target, now=None):
             hits.append(r["id"])
     if not hits:
         return 1, ["REFUSED: no cancellable (queued/funding/funded) entry matched %r" % (target,)]
-    save_queue(data_dir, rows)
+    save_queue(data_dir, rows, merge=True)
     return 0, ["UPGRADE QUEUE CANCELLED | %d entry(s): %s" % (len(hits), ", ".join(hits))]
 
 
@@ -713,7 +755,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                 r["state"], r["updated_at"], r["note"] = "failed", int(now), "funding timeout (48h)"
                 changed = True
     if changed and not dry:
-        save_queue(data_dir, rows)
+        save_queue(data_dir, rows, merge=True)
         changed = False
 
     # Phase 2: prioritize pilots already docked at target shipyard, then same system, then travelling
@@ -757,11 +799,15 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                 print("would commission %s: %s -> %s @ %s (max %s cr)" % (r["id"], pilot, hull, base_id, _fmt_num(r["max_price"])))
                 actions += 1
                 continue
+            live_row = next((x for x in load_queue(data_dir) if isinstance(x, dict) and x.get("id") == r.get("id")), None)
+            if live_row and live_row.get("state") in ("cancelled", "done", "building"):
+                r.update(live_row)
+                continue
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
                 _request_pilot_stop(data_dir, pilot)
                 r["note"], r["updated_at"] = "waiting for active run to end (stop sent)", int(now)
                 if not dry:
-                    save_queue(data_dir, rows)
+                    save_queue(data_dir, rows, merge=True)
                 continue
             actions += 1
             try:
@@ -845,7 +891,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             finally:
                 _release_upgrade(data_dir, pilot, division_mod)
                 if changed and not dry:
-                    save_queue(data_dir, rows)
+                    save_queue(data_dir, rows, merge=True)
                     changed = False
 
         elif state == "building":
@@ -889,11 +935,11 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             finally:
                 _release_upgrade(data_dir, pilot, division_mod)
                 if changed and not dry:
-                    save_queue(data_dir, rows)
+                    save_queue(data_dir, rows, merge=True)
                     changed = False
 
     if changed and not dry:
-        save_queue(data_dir, rows)
+        save_queue(data_dir, rows, merge=True)
     return 0
 
 
