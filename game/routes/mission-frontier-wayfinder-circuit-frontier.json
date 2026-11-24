@@ -2,8 +2,8 @@
  "id": "mission-frontier-wayfinder-circuit-frontier",
  "kind": "circuit",
  "title": "Frontier Wayfinder Circuit: 4000 cr, +530 XP at Mobile Capital",
- "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr, sale 0 cr, +530 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 08:12 UTC (Apophis): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:35 UTC (Apophis): the station `frontier:mobile_capital:frontier_station` is the Mobile Capital, a moving station; it stands in altais now (table places, stations.mobile 1), and every run that named `frontier` ended 'Travel to mobile_capital failed: It's called a Mobile Capital' (route logs, 16 lines): 2 place(s) moved to altais. 2026-11-24 02:00 UTC (Apollo): max_ships 3 -> 10: haulers paid out at Krynn and Sol join Frontier on join-rim-debris for it; each pilot takes its own copy.",
- "max_ships": 10,
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 4000 cr, sale 0 cr, +530 XP. Test with one ship first. Added as a test by fill.py on 2026-11-22 08:12 UTC (Apophis): up to 3 ships, one result each, until 3 runs are read (rule F37). 2026-11-23 00:35 UTC (Apophis): the station `frontier:mobile_capital:frontier_station` is the Mobile Capital, a moving station; it stands in altais now (table places, stations.mobile 1), and every run that named `frontier` ended 'Travel to mobile_capital failed: It's called a Mobile Capital' (route logs, 16 lines): 2 place(s) moved to altais. 2026-11-24 02:00 UTC (Apollo): max_ships 3 -> 10: haulers paid out at Krynn and Sol join Frontier on join-rim-debris for it; each pilot takes its own copy. 2026-11-24 02:47 UTC (Apollo): max_ships 10 -> 20: haulers of join-rim-debris wait at Frontier with only the Wayfinder unpaid, closed by the cap (why_closed.py).",
+ "max_ships": 20,
  "stops": [
   {
    "at": "altais:mobile_capital:frontier_station",
