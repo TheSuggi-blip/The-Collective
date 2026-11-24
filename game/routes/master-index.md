@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 14 | 7 | 7 | sell-noble-at-first-step: 828,000 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 156 | 49 | 107 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 33 | 16 | 17 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 500 | 109 | 391 | hunt-gsc-0004-gas-pocket-cinder-sylph: 50,270 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 518 | 109 | 409 | hunt-gsc-0004-gas-pocket-cinder-sylph: 50,270 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 16 | 6 | 10 | need-ember-gland-krynn: 0 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 56 | 19 | 37 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 860 | 229 | 631 | |
+| [Off](index-off.md) | Written down, not flown. | 60 | 19 | 41 | voidborn-first-steps: 4,020 cr per ship-hour |
+| All | | 882 | 229 | 653 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
 | home space | 229 | 1 | 195 | 1 | 19 | 13 | 3 |
-| beyond the border | 631 | 24 | 201 | 7 | 290 | 109 | 29 |
+| beyond the border | 653 | 24 | 201 | 7 | 312 | 109 | 29 |
 
 ## Plans by Role
 

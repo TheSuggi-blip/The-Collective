@@ -1,0 +1,22 @@
+{
+ "id": "hunt-misthollow-gas-pocket-drift-ray",
+ "kind": "hunt",
+ "title": "drift_ray at misthollow_gas_pocket, one hunter, loot to a trader receiver at nova_terra_central",
+ "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 5 drift_ray at rustpoint:rustpoint_belt (table herds, census 2026-11-23 17:14 UTC), 5 jumps from antares where a parked ship stands; hull 45, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 3 leave 2 (F38). gift_to trader at nova_terra_central, 4 jumps (P5). One ship; standing work.",
+ "place": "rustpoint:rustpoint_belt",
+ "species": [
+  "drift_ray"
+ ],
+ "sell_at": "nova_terra:nova_terra_central:nova_terra_central",
+ "min_bid": 5000,
+ "kills": 3,
+ "minutes": 45,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}

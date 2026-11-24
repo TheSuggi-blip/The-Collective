@@ -2,7 +2,7 @@
  "id": "hunt-patience-field-patina-grazer",
  "kind": "hunt",
  "title": "patina_grazer at patience_field; loot stored at Nova Terra Central",
- "note": "2026-11-22 00:16 UTC (Apophis): standing work beyond the border for drones the home herds do not employ (rule F23: work saturated at home goes further out; fill.py status 00:05 UTC: 10 drones waiting, every home herd at one hunter). Patina grazer: hull 60, one ship passes both gauges (gauges.py species). From routemaker.py: patina_grazer at patience_field; loot sold at Nova Terra Central | estimate +143 cr per ship-hour, +68 cr a run of 29 minutes | new rests on: {\"place\": \"barnards_star:patience_field\", \"herd\": 7, \"hull\": 60, \"loot_a_kill\": {\"creature_carapace\": 1.5, \"raw_xeno_meat\": 1.0}, \"learned_from_runs\": 3, \"sold_at\": \"nova_terra_central\", \"jumps\": 3, \"four_kills\": [\"raw_xeno_meat 4.0 units for 196 cr (depth at the best price)\"]} ! the herd's count is stale (read 2026-11-17T19:03:32Z) ! lawless space: no police at barnards_star A test (rule F3): one ship, an empty hold, it leaves for a pirate (`alone` pirates). Loot stored (min_bid 5000): carapace and meat; gift_to trader for strict classes (queue.log ENT-200, ENT-201).",
+ "note": "2026-11-22 00:16 UTC (Apophis): standing work beyond the border for drones the home herds do not employ (rule F23: work saturated at home goes further out; fill.py status 00:05 UTC: 10 drones waiting, every home herd at one hunter). Patina grazer: hull 60, one ship passes both gauges (gauges.py species). From routemaker.py: patina_grazer at patience_field; loot sold at Nova Terra Central | estimate +143 cr per ship-hour, +68 cr a run of 29 minutes | new rests on: {\"place\": \"barnards_star:patience_field\", \"herd\": 7, \"hull\": 60, \"loot_a_kill\": {\"creature_carapace\": 1.5, \"raw_xeno_meat\": 1.0}, \"learned_from_runs\": 3, \"sold_at\": \"nova_terra_central\", \"jumps\": 3, \"four_kills\": [\"raw_xeno_meat 4.0 units for 196 cr (depth at the best price)\"]} ! the herd's count is stale (read 2026-11-17T19:03:32Z) ! lawless space: no police at barnards_star A test (rule F3): one ship, an empty hold, it leaves for a pirate (`alone` pirates). Loot stored (min_bid 5000): carapace and meat; gift_to trader for strict classes (queue.log ENT-200, ENT-201). 2026-11-24 00:46 UTC (Apophis): status off for deconfliction with a Neutral partner (rules F2, F4; orders ENT-084 block APOPHIS: never hunt an animal bearing another faction's tag): barnards_star is a [HEXC] system with a ranch (admirals.log ENT-113) and [HEXC] ranches patina grazers (Aspidiske loss, errors.log ENT-165). A partner pilot joined our fight at the Aspidiske ranch and a drone was lost there (errors.log ENT-165). It wakes only on a Unity-approved boundary (game/factions/n-<tag>.md).",
  "place": "barnards_star:patience_field",
  "species": [
   "patina_grazer"
@@ -28,5 +28,6 @@
   "cph_per_ship": -720,
   "hours": 12,
   "last_run": "2026-11-23T14:13:15Z"
- }
+ },
+ "status": "off"
 }

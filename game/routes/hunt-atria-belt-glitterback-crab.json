@@ -1,0 +1,22 @@
+{
+ "id": "hunt-atria-belt-glitterback-crab",
+ "kind": "hunt",
+ "title": "glitterback_crab at atria_belt, one hunter, loot to a trader receiver at node_beta_industrial_station",
+ "note": "Written by Apophis 2026-11-24 00:46 UTC (rule F8: 30 drones and sentinels on park, fill.py status drone 00:36 UTC, every herd in their reach held one hunter or rested; rule F23: hunts for experience further out; orders ENT-084 P1, P6). Herd: 12 glitterback_crab at rustpoint:rustpoint_belt (table herds, census 2026-11-23 22:35 UTC), 6 jumps from node_beta where a parked ship stands; hull 60, one starter passes both gauges (gauges.py species). No partner system, no ranch (no tag in the name), not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at node_beta_industrial_station, 6 jumps (P5). One ship; standing work.",
+ "place": "rustpoint:rustpoint_belt",
+ "species": [
+  "glitterback_crab"
+ ],
+ "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+ "min_bid": 5000,
+ "kills": 4,
+ "minutes": 45,
+ "max_ships": 1,
+ "min_creatures": 3,
+ "alone": "pirates",
+ "requires": {
+  "empty_hold": true
+ },
+ "gift_to": "trader",
+ "standing": true
+}
