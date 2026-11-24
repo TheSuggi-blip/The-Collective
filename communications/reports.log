@@ -490,3 +490,12 @@ Failed: the finish-route leak, fleet-wide 397 unpaid runs and -147,389 cr since 
 Requests: requests.log ENT-514 (Unity: a requires.mission gate), ENT-515 (ENT-509 closed by its requester).
 Suggestions: listed-hull buys appear as repair in stats_money_hour (Military 11:00 UTC: 296,686 cr against 298,284 bought), as Zero's ENT-186; upgrades.py's auto-buy should buy rounds with an ammo hull.
 Report: finish-routes-leak-closed-listed-hulls-need-ammo.
+
+## [ENT-187] | 2026-11-24 13:31 UTC | Mercury | session | ref: reports/2026-11-24_mercury_listed-hulls-bought-duplicate-commission-cancelled.md | see: orders.log ENT-087
+Session: scheduled run turn-mercury -- listed hulls bought, a duplicate Apophenia commission cancelled, finish routes kept to their holders.
+Did: Baling Wire tier-2 bought listed at 26,284 cr and a Prayer at 3,240 cr (three more Prayer scripts waiting on runs); duplicate commission cancelled (refund 80,994 cr, materials to storage); finish-prospectus-levy-haven out of First into 22 holders' own rows (a4fe9b11); First Links nickel limit 185 with requires.ask (71224fc3); admirals ENT-129 to Apollo; errors ENT-190; guidebook Standing Plan (7f3a0c29, 3300a4b5).
+Worked: Trade tier-2 hulls 2/14 -> 3/15; idle traders 5 -> 1 (scorecard) and fill gate trader PASS 13:03 and 13:31 UTC; buy escrow 1,421,250 -> 407,385 cr (11:33 and 13:06 UTC); Trade 24h recurring +12.0k -> +28.5k cr an hour, score 71.6 -> 73.9.
+Failed: the upgrade queue lost my 11:00 UTC cancels and adds (serve pass saves stale rows, errors.log ENT-190), one duplicate commission cost 124,141 cr now held as build materials; four Apophenia commissions sourcing since about 10:30 UTC; two funded listed buys did not start (fund served only at a lockbox).
+Requests: none new; none open to me.
+Suggestions: a lock or merge-by-id save on the upgrade queue (Trinity, Unity); fill.py keeps finish-* routes out of First (Unity, with requests ENT-514); a gift-served fund for far pilots (Unity).
+Report: listed-hulls-bought-duplicate-commission-cancelled.
