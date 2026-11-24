@@ -822,6 +822,8 @@ DIST_CACHE = {}
 
 def jumps_between(lanes, src, dst):
     """Lanes from src to dst by the chart, None when no way; each source's whole map is walked once (cached)."""
+    if not lanes or not src or not dst:
+        return None
     key = (id(lanes), src)
     if key not in DIST_CACHE:
         dist, todo = {src: 0}, [src]
@@ -867,7 +869,7 @@ def route_hops(pilot, route):
         return None
     if cur == place:
         return 0
-    if "lanes" not in LANES_CACHE:
+    if not LANES_CACHE.get("lanes"):
         try:
             import fuelplan
             LANES_CACHE["lanes"] = fuelplan.chart(Path(__file__).resolve().parent.parent)[0]
