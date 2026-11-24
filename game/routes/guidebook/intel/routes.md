@@ -21,7 +21,8 @@ Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); 
   census-worked-far (180 min), the roads. Two readers hold the home
   list first, one the watch (gaps over the hour otherwise).
 - Lasers: a Voidborn scout whose missions that mine are flown gives
-  its Mining Laser I to Mining at Central Nexus (own routes first).
+  its Mining Laser I to Mining at Central Nexus (within 2 jumps).
+  Nebula scouts keep theirs: their boards offer missions that mine.
 - The scanner scouts: a far list first (1440 min), then @reader.
 - Explorers: their road (census-north, -east, -south, 170 min; the
   north road first for six), census-worked-far, their far list.
@@ -30,7 +31,7 @@ Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); 
   carries a faction's tag is never prey (hunt.py).
 - census-roads (960 min, four ships): no never-read system is left.
 - Then: the docked book watch (watch-book-*, one scout a station, 0
-  fuel), then park.
+  fuel; Hex Star too), then park.
 - Changed by: a WORKED, SITES or FRESH HALT, a road pirate, a once
   mission (queue.log), an order naming herds or places.
 
