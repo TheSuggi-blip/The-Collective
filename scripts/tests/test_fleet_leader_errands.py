@@ -135,6 +135,30 @@ class LeaderErrandQueueTests(unittest.TestCase):
         self.assertIsNone(act4)
 
 
+class ErrandCallTests(LeaderErrandQueueTests):
+    def test_an_errand_call_goes_through_the_gate_and_reads_its_answer(self):
+        # 2026-11-24 02:13 UTC: the first live errand (a promote) raised NameError: name 'gate' is not defined in
+        # errand_raw, which ended every sweep pass at the errand step while the leader stood docked; the tests had
+        # replaced errand_raw itself, so the real call was never run
+        import gate
+        sent = []
+
+        def fake_call(method, path, body=None, timeout=None):
+            sent.append((method, path, body))
+            return 200, json.dumps({"result": "Promoted hauler-1 to officer"})
+
+        with mock.patch.object(gate, "call", side_effect=fake_call):
+            ok, text = wallet.errand_raw("Prime Directive", "spacemolt_faction_admin", "promote",
+                                         {"player_id": "hauler-1", "role_id": "officer"})
+        self.assertTrue(ok, text)
+        self.assertIn("Promoted", text)
+        self.assertEqual(sent[0][0], "post")
+        self.assertEqual(sent[0][2]["action"], "promote")
+        with mock.patch.object(gate, "call", return_value=(200, json.dumps({"error": {"code": "no_permission"}}))):
+            ok2, text2 = wallet.errand_raw("Prime Directive", "spacemolt_faction_admin", "promote", {"player_id": "x", "role_id": "officer"})
+        self.assertFalse(ok2)
+
+
 class SweepStepErrorTests(LeaderErrandQueueTests):
     def test_an_upgrade_step_that_raises_is_printed_and_fails_the_pass(self):
         # errors.log ENT-171: wallet.sweep wrapped serve_upgrades in `except Exception: pass`, so a TypeError on every

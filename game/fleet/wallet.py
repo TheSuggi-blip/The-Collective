@@ -1280,6 +1280,7 @@ def format_errands(data):
 
 def errand_raw(pilot, group, action, params):
     """Send one validated leader-only faction call through the gate; (ok, text)."""
+    import gate                                 # as every other caller in this file: no module-level import (2026-11-24 02:13 UTC NameError)
     status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
                                {"toolGroup": group, "action": action, "params": params}, timeout=60)
     try:
