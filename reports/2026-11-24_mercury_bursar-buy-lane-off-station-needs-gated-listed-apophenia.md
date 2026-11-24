@@ -68,7 +68,7 @@ HEXC contract paid in the period (not measured beyond the board reads).
    142,529 cr against about 203,000 commissioned; queue entries u-3,
    u-4, u-5 cancelled; two traders bought the Node Beta and Node Alpha
    listings at 142,029 and 142,529 cr, each with two Shield Booster II
-   aboard (RESULT lines 11:0x UTC); the third was funded 110,000 cr
+   aboard (buys 11:00 and 11:14 UTC); the third was funded 110,000 cr
    from the treasury (landed 11:13 UTC) and its buy script waits for
    the pilot's run to end. Four more Piloting-10 traders
    queued for a commission (u-9 to u-12, max 210,000 cr).
