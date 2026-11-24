@@ -145,3 +145,4 @@ Planned:
 | What | When |
 |---|---|
 | Read the new census cadences (home 35, watch 40, road lists 155, belt lists 160) from four hours of GAPS, SITES and BELTS; still over -> 10 min lower on that list, never more ships | next turn |
+| Read the envoy's replies through diplomacy.py threads twice a turn; beacons go out by themselves from 2026-11-25 03:33 and 09:26 UTC; replies to Unity as data | every turn |
