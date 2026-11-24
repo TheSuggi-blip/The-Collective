@@ -1,0 +1,37 @@
+{
+ "id": "strip-gift-mining-laser-scout-central-nexus",
+ "kind": "circuit",
+ "title": "A Voidborn scout in nexus_prime strips its off-role Mining Laser I docked at Central Nexus and gives it to a miner receiver there",
+ "note": "Written by Oracle 2026-11-24 09:22 UTC (orders ENT-086 block ORACLE and P1, P5; scorecard trigger Module Slots: 49 of 50 scouts carry off-role starters; rules F17 strip off-role starters in parallel batches, F23 scouts never gather, F24 surplus offered to another division). Zero said yes (requests.log ENT-490, answered ENT-492): three Nebula-born miner receivers stand at central_nexus (data/fleet/receivers.json); the lasers stay in their storage as Mining's spares, no buy at about 1,600 cr. The form of Military's strip-mining-laser-sol: one docked stop, unfit then store all, the gift from the pilot's storage, gated by requires.in_system (no jump for it). Given only in the own routes of the Voidborn scouts whose three Voidborn missions that mine (First Steps in the Void, The Collective Provides, Iron Supply Run) were flown (runs.jsonl, this turn), so no own-empire mission that mines loses its laser (F35); Outer Rim scouts keep theirs for Scraping By (a mine stop), Nebula scouts until their boards are read. The pulse laser stays: the scouts hunt on the way (F9).",
+ "once": true,
+ "max_ships": 10,
+ "max_pilots": 30,
+ "min_credits": 3000,
+ "requires": {
+  "any_module": [
+   "mining_laser_i"
+  ],
+  "in_system": [
+   "nexus_prime"
+  ],
+  "empire": "voidborn"
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "unfit": [
+    "mining_laser_i"
+   ],
+   "store": "all",
+   "gift": [
+    {
+     "to": "miner",
+     "items": [
+      "mining_laser_i"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
