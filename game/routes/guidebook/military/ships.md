@@ -52,6 +52,24 @@ Status: proven. Updated: 2026-11-24. Evidence: commission_quote Central Nexus 20
 - The pirate hulls `small_claims` (240 hull, 3 weapons) and `larder` (460
   hull, 3 weapons) name no Piloting gate.
 
+### Listed Hulls and Tier-2 Fuel
+Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026-11-24 10:27 UTC; table runs 2026-11-24 (Recursion against starters); game/rules/05-galaxy.md (Travel).
+
+- Read the ship exchange before a commission: `browse_ships` with
+  `all_stations: true` and `class_id` (free, any docked or flying pilot;
+  `can_fly: true` checks Piloting, reputation and fit). Station Managers
+  and empire treasuries list fitted hulls at fixed prices: a Recursion at
+  Central Nexus for 224,430 cr (the credits-only quote: 313,273), Broadaxes
+  of the Crimson treasury at Iron Reach and The Anvil for 36,927 cr with
+  five modules, flyable by a Voidborn Piloting-11 pilot.
+  `buy_listed_ship` works docked at the listing's station; the old ship
+  stays stored there. Script: skill military-turn, buy_listed_hull.py.
+- A tier-2 hull burns five to fifteen times a starter's fuel on the same
+  hunt (jump fuel goes by ship scale and speed): the Recursion -5,002 cr an
+  hour against -382 to -602 for starters; same route, same kills (the herd
+  floor caps them). Put tier-2 hulls on work a starter cannot do: kit herds
+  above the gauges, pilot whales, pirate formations.
+
 ### Multi-Empire Ship Catalog (Voidborn, Crimson, Solarian)
 Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/crimson.md; game/catalog/ships/solarian.md; hive.py guide military.
 
