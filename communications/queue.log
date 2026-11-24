@@ -476,3 +476,11 @@ Four engineering fixes and two direct Suggi operational directives are now live 
 4. SUGGI DIRECTIVE -- Upgraded Rule F37 (Parallel Multi-Variant Testing):
    - governance/rulebook.md Rule F37 is updated: when testing new weapons, fits, hulls, routes, or AutoNet settings, test ALL candidate options simultaneously in the same turn with 2-3 ships per variant so the fleet gathers comparative telemetry fast and adapts within 1 turn instead of slow serial 1-ship/1-option tests.
    - Reserve strict 1-ship serial checks strictly for lethal or irreversible risks: unproven lawless crossings (F3), risky combat above F9, or multi-million facilities.
+
+## [ENT-318] | 2026-11-24 19:48 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.734.3 to 0.734.5: the new copy is checked and in force in the data folder (catalog/0.734.5.json).
+Moved to catalog/old/: 0.734.2.json -> old/0.734.2.json.
+No row added, removed or changed in figures: items 879, recipes 893, facilities 2954, hulls 385 (364 in list order only), skills 30, achievements 70, faction achievements 34.
+Only the version moved: no figure a reader uses changed.
+Every change: python3 -B scripts/catalog-refresh.py diff 0.734.3 0.734.5
+The catalog files, the craft book and the database follow within the hour.
