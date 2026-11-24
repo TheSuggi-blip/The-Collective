@@ -1,0 +1,64 @@
+{
+ "id": "mission-workshop-production-run-grand",
+ "kind": "circuit",
+ "title": "Workshop Production Run at the Grand Exchange (Haven): 3,500 cr once; five batches of purified argon made by hand from argon gas bought there, kept in storage",
+ "note": "Written by Mercury, 2026-11-24 01:43 UTC (orders ENT-084 block MERCURY and P6: newborns' paying home work first; F8: three Nebula-born traders waited docked at the Grand Exchange, fill.py status trader 01:40 UTC; F34 tier 2). The Grand Exchange board (table missions 01:35 UTC): Workshop Production Run, crafting, 3,500 cr, 'Craft 5 items using any recipe' (template workshop_production_run). The form of mission-workshop-production-run-alpha (41 runs, +1,290 a run, 2026-11-23): accept, buy, five craft runs, store. The book (table books 01:35 UTC): argon_gas asked 3 cr x 14,840, the cheapest input of a hand recipe there; purify_argon 5 argon -> 3 purified argon, 25 argon about 76 cr; the output is a reserve good (pull.json: full), so it is stored, never sold. Node Beta's board offers the mission to its own empire only ('not offered' to other births, runs.jsonl 01:27 to 01:31 UTC): requires.empire nebula. A test of three (the three waiting), the first runs read before a lift.",
+ "once": true,
+ "max_ships": 3,
+ "min_credits": 3200,
+ "one_time": [
+  "Workshop Production Run"
+ ],
+ "skip_if_booked": [
+  "Workshop Production Run"
+ ],
+ "requires": {
+  "empire": "nebula",
+  "max_jumps": 2,
+  "ask": {
+   "item": "argon_gas",
+   "base": "grand_exchange_station",
+   "max_price": 3,
+   "min_qty": 30
+  }
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "accept": [
+    "workshop_production_run"
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "only_if_active": [
+    "Workshop Production Run"
+   ],
+   "buy": [
+    {
+     "item": "argon_gas",
+     "qty": 25,
+     "max_price": 4,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "purify_argon",
+     "runs": 5,
+     "per_run": 3,
+     "makes": "purified_argon",
+     "inputs": [
+      "argon_gas"
+     ]
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}

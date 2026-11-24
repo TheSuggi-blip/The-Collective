@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 522.
+Routes: 523.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -149,6 +149,7 @@ Routes: 522.
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 108 | 16 | -250 | -880 | 2026-11-22 |
 | [census-worked-far](census-worked-far.json) | census | beyond the border, 29 jumps | Read the places beyond our roads where the other divisions fly now, every three hours: deposits, creatures, pirates, order books, mission boards | up to 10 ships, empty hold | 190 | 19 | -80 | -260 | 2026-11-23 |
 | [bursar-desk-alpha](bursar-desk-alpha.json) | circuit | beyond the border, 11 jumps | Station Bursar desk at Alpha Centauri Colonial Station: oxygen made into liquid oxygen by hand, the pilot's own surplus liquid oxygen and liquid nitrogen listed under the station's asks, a 15-minute docked watch | up to 20 ships, standing work | TBD | TBD | TBD | TBD | -- |
+| [bursar-desk-grand](bursar-desk-grand.json) | circuit | beyond the border, 21 jumps | Station Bursar desk at the Grand Exchange (Haven): the pilot's own surplus mining enhancers and survey probes listed under the station's asks, a 30-minute docked watch | up to 10 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [bursar-desk-krynn](bursar-desk-krynn.json) | circuit | beyond the border, 20 jumps | Station Bursar desk at the Crimson War Citadel (Krynn): neon made into ionized neon by hand, the pilot's own surplus liquid nitrogen, ionized neon and liquid oxygen listed under the station's asks, a 15-minute docked watch | up to 40 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [carry-nitrogen-alpha-to-sol](carry-nitrogen-alpha-to-sol.json) | circuit | beyond the border, 11 jumps | Nitrogen ice bought at Alpha Centauri, made into liquid nitrogen there by hand, sold into Sol Central's deep bid one jump on | up to 30 ships, while confederacy_central_command bids 4 cr for liquid_nitrogen, while alpha_centauri_colonial_station asks 1 cr or less for nitrogen_ice, standing work | 167 | 10 | 70 | 410 | 2026-11-23 |
 | [craft-armor-own-first-step](craft-armor-own-first-step.json) | circuit | beyond the border, 18 jumps | Armor plate made by hand at First Step from all of the trader's own stored creature carapace in one visit, kept in its storage there for the reserve | up to 2 ships, with 30 creature_carapace stored at first_step_memorial_station, standing work | 14 | 25 | -120 | -410 | 2026-11-22 |

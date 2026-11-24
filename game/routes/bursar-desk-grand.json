@@ -1,0 +1,33 @@
+{
+ "id": "bursar-desk-grand",
+ "kind": "circuit",
+ "title": "Station Bursar desk at the Grand Exchange (Haven): the pilot's own surplus mining enhancers and survey probes listed under the station's asks, a 30-minute docked watch",
+ "note": "Written by Mercury, 2026-11-24 01:43 UTC (orders ENT-084 block MERCURY: no trader waits docked, F8; P6: standing class work where the newborns stand; F39). Three Nebula-born traders waited docked at the Grand Exchange (fill.py status trader 01:40 UTC) with no 1 cr input of a hand recipe there (table books 01:35 UTC: argon 3, neon 10, nitrogen ice 13). The book: mining_enhancer asked 495 x 1, no bid; mining_survey_probe asked 180 x 29, bid 2 x 156. Both are surplus (stock view=surplus 01:41 UTC: mining enhancer 250 held, 0 reserved, 78 at the Grand Exchange). Listed at 450 and 160, floors 100 and 10, never under a bid; no undercut_pct (our own asks would undercut each other). Docked, no buy, no fuel: a run costs nothing; fills come later, outside the run's credits (contracts.log).",
+ "standing": true,
+ "far_ok": true,
+ "max_ships": 10,
+ "requires": {
+  "docked_at": "grand_exchange_station"
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "sell_order": [
+    {
+     "item": "mining_enhancer",
+     "qty": 10,
+     "price": 450,
+     "floor": 100
+    },
+    {
+     "item": "mining_survey_probe",
+     "qty": 10,
+     "price": 160,
+     "floor": 10
+    }
+   ],
+   "watch_minutes": 30
+  }
+ ]
+}
