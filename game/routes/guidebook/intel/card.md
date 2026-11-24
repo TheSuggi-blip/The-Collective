@@ -1,46 +1,45 @@
 # Intel guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-24. Evidence: hive.py levels Oracle; the plan file (tool plan, show); MISSION.md.
+Status: proven. Updated: 2026-11-24. Evidence: governance/strategy.md (v2.5); read.db tables hulls, ship_listings; hive.py levels Oracle; MISSION.md.
 
-The scout class in short (rule F14): about a third explorers, the rest
-readers (Suggi, 2026-11-17: ten of thirty); the count now: FLEET.md
-and hive.py upgrades intel, by empire. Levels now: the tool fleet,
-view=levels, member Oracle. Fits: ships.md; the census lists and the
-plan: routes.md; what is under test: tests.md; the traps: lessons.md.
+Intel is the fleet's Recon & Diplomatic Cost Center across three birth
+empires (Voidborn, Outer Rim, Nebula; live counts in `hive.py upgrades
+intel`). Core mandate: keep galaxy market books, resource fields,
+wildlife herds, rival bases, and wormholes `<3h` fresh in `read.db`
+(alongside `ledger.py`'s automatic 15-min `ship_listings` scan), track
+rival surges (`rivals.py`), and run Phase-1 diplomatic hails & scout
+envoys behind `comms_guard.py` / `diplomacy.py` (F4, O10).
 
 ### Ships
-Status: proven. Updated: 2026-11-24. Evidence: data/fleet/ships/; catalog table hulls; table ship_modules; browse_ships all_stations (2026-11-21); scouting/<system>.json `survey`; hive.py upgrades intel; ships.md.
+Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; tests.md.
 
-- Tier 0, by empire: voidborn the Threshold (speed 1, hold 65, tank 95,
-  two utility slots), outerrim the Cobble, nebula the Prospect; Mining
-  Laser I and Pulse Laser I aboard, stance flee. The Mining Laser I
-  stays while the pilot's own-empire missions that mine are open (F35).
-- Fit next: a survey scanner in the second utility slot (who carries one:
-  table ship_modules; Survey Scanner I has no seller, the II is fitted at
-  Central Nexus). A ship with a scanner surveys every system it reads
-  (census.py). Then a Mining Survey Probe for the faint signatures
-  (tests.md), then Ship Scanner I.
-- Next hull: tier 1 needs no Piloting (voidborn Qualia, Eigenstate;
-  outerrim Warranty Void; nebula Venture). The Qualia test is closed:
-  over three times the fuel a read, no second one (tests.md). Tier 2 at
-  Piloting 10 (Confluence; Dust Devil, Terms and Conditions; Prospectus,
-  Arbitrage) is judged by fuel a read, never bought for Piloting alone.
-- Style: read and leave, hold empty beyond the border (rule F3), never
-  fire first (F2), hunt on the way only what passes both gauges of F9,
-  pirates by F27 with a test first.
+- Cross-empire rule (`05-galaxy.md`): flying another empire's hull
+  carries **zero penalty** and keeps the pilot's native empire bonus.
+  Judge every scout hull by **fuel per read and speed** (`tests.md`),
+  buying listed bargains via `ship_listings` / `upgrades.py` when ROI
+  clears.
+- Tier 0 starters: Voidborn Threshold (65c, 2U), Outer Rim Cobble,
+  Nebula Prospect. Keep starter Mining Laser I only while own-empire
+  mining storylines remain open (F35), then strip & gift to Mining.
+- Tier 1 (Piloting 0): Crimson `Crimson Stiletto` (spd 6, 2U),
+  Solarian `Lemma` (spd 5, 3U), Outer Rim `Warranty Void` (spd 5),
+  Nebula `Venture` (80c). (Note: `Qualia` failed fuel test in tests.md.)
+- Tier 2 (Piloting 10): Nebula `Prospectus` (spd 5, 80c, 3U),
+  Voidborn `Confluence` (120c, 4U), Solarian `Empirica` (125c, 5U).
+- Tier 3 (Piloting 20): Nebula `Survey Vessel` (305c, 5U), Solarian
+  `Perigee` (270c, 6U), Voidborn `Noumenon` (215c, 5U).
+- Fit: `survey_scanner_ii` (every system surveyed on census), Mining
+  Survey Probe for faint signatures, `shield_booster_ii`. Empty hold
+  beyond the border (F3), never fire first (F2).
 
 ### Skills
-Status: proven. Updated: 2026-11-21. Evidence: catalog table skills (column training); hive.py levels Oracle; table ship_skills.
-
-In the order a scout levels them. Levels and XP an hour: hive.py levels
-Oracle; per pilot: table ship_skills.
+Status: proven. Updated: 2026-11-24. Evidence: catalog table skills; hive.py levels Oracle; table ship_skills.
 
 | Skill | Why | What trains it | Next goal |
 |---|---|---|---|
-| Exploration | +1% survey power a level | a pilot's own first visit to a system, about 5 XP | median 4 |
-| Navigation | -1% fuel and jump time a level | every jump of every census | median 7 |
-| Piloting | hull tiers at 10, 20, 30, 50 | every route; missions | 10 |
-| Scanning | +1% scanner effect a level | survey_system only (a scanner aboard) | 2 on the scanner scouts |
-| Xenobiology, Weapons, Gunnery | molt value, damage | the scouts' hunt routes | not set |
-| Mining, Deep Core Mining | not the class's | the gather fallback only | none |
+| Exploration | +1% survey power/level | first visits to new systems | median 4+ |
+| Navigation | -1% fuel and jump time/level | census jump loops | median 7+ |
+| Piloting | hull tiers 10/20/30/50 | routes and missions | 10+ |
+| Scanning | +1% scanner effect/level | `survey_system` with scanner fitted | 2+ |
+| Empire Mastery (F35) | Voidborn Mastery / Outer Rim Survival / Nebula Attunement | own-empire missions (list First) | 1+ |

@@ -17,6 +17,12 @@ building materials), and (4) wholesale procurement (including
 ### Ships
 Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings, books; game/fleet/upgrades.py.
 
+- Cross-empire rule (`05-galaxy.md`): flying another empire's hull
+  carries **zero penalty** and keeps native empire bonuses -- pick the
+  best hull by job (`Prayer`/`Ledger`/`Floor Price`/`Apophenia`).
+- Policy rule (`O3`): tune fleet-wide caps in `bursar-policy.json`
+  (`bursar_buys.json` caps fleet open buys at `needs.tsv` short) rather
+  than turning core buy/sell lanes off.
 - Tier 0 starters across Voidborn, Nebula, Solarian, Outer Rim, and
   Crimson (cargo 45-65) should skip straight to Piloting-0 bulk hulls
   without waiting for Piloting 10: `Floor Price` (400c, P0), `Ledger`

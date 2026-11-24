@@ -300,6 +300,39 @@ MMO sandbox.
 
 ---
 
+### Mandatory Core Engines vs. Optional Secondary Playbooks (`strategy.md` v2.5)
+
+To match Suggi's updated Tier-1 (`G1-G5`) and Tier-2 (`O1-O10`) mandate, our 8-Strategy Matrix is
+explicitly tiered so opportunistic tactics never starve core enterprise output:
+
+- **Mandatory Core Engines (Tier 1 & Tier 2 -- always active; tune caps, never turn off):**
+  1. **Raw Resource Extraction** (Mining: wide galactic spread `<=3/belt`, `15%` default floor,
+     scarce veins feeding our own chains).
+  2. **Manufacturing & Production Powerhouse** (Trade zero-fuel **commercial crafting** for profit
+     & rival buy-walls; Logistics zero-fuel **industrial building-material crafting** for bases,
+     modules, and fleet kits).
+  3. **5-Empire Multi-Hub Trade & Bursar-Hauler Combo** (Trade `bursar-network` with fleet-wide
+     `bursar_buys.json` unit caps + undercut sell ladders refreshing books every 2 min, paired with
+     Logistics `haul-network` fresh `<30m` bid-locked arbitrage, `>=100c` `spacemolt_shipping`, and
+     4-channel P2P trade).
+  4. **Sovereign Expansion, Shipyards & Defensive Deterrence** (5 stations with licensed
+     multi-empire faction shipyards `outfitting_bay` -> `fabrication_yard` -> `grand_shipworks`,
+     8 outposts, 1,000-ship fleet, PvE/pirate combat & defensive RoE).
+- **Optional / Opportunistic Secondary Playbooks (Tactical tier below -- pursue via `P3 MENU`):**
+  - **Sovereign Tourism & Gourmet Hubs** (once sovereign stations stand),
+  - **Express Civilian Passenger Lines** (`passenger-` routes on P0 `Runner`/`Futures` with cabins),
+  - **Opportunistic Wholesale Capital Arbitrage** (e.g., buying wholesale `station_core` ~13M cr
+    or deep rival surplus dumps whenever prices beat internal craft cost).
+
+### Cross-Empire Hull Standardization (Zero Penalty) & Station Shipyards
+
+Verified in `game/rules/05-galaxy.md`: **flying another empire's hull carries zero stat penalty**,
+and a pilot's native empire bonus (`+12%` shield, Mastery skills) applies to *whatever* hull they
+fly. Therefore The Collective **standardizes the best hull per job across all five empires** rather
+than locking pilots to birth-empire lines, using `upgrades.py` (`ship_listings` auto `buy_listed_ship`)
+today and **licensed in-house construction at our own station shipyards** once our first full station
+is placed.
+
 ## 4. Rival Playbooks Adopted vs. Countered (Our 8-Strategy Matrix)
 
 The Collective continuously benchmarks top galactic factions via `governance/rival-sedcards.md`

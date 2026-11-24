@@ -1,54 +1,50 @@
 # Military guidebook -- the Class Card (card.md)
 
 ### Class Card
-Status: proven. Updated: 2026-11-24. Evidence: hive.py upgrades military; table ship_modules; table hulls (the live catalog); MISSION.md.
+Status: proven. Updated: 2026-11-24. Evidence: governance/strategy.md (v2.5); hive.py upgrades military; read.db tables hulls, ship_listings; MISSION.md.
 
-The Military class in short (rule F14): the `drone-` ships of three birth
-empires (Voidborn, Crimson, Solarian; the counts: hive.py upgrades
-military) and the `sentinel-` ships the Fleet Admiral lends until Piloting
-20 (rule F10). The role (MISSION.md): the fleet's fighting arm. It guards
-and escorts from our stations outward, hunts wildlife, farms NPC pirates in
-formations (F9, F27), fights the wars Suggi declares, and brings the fleet
-into fighting shape: weapons, fits, groups, hulls. Levels: the tool fleet,
-view=levels, member Apophis. Hulls and fits: ships.md; work: routes.md;
-tests: tests.md; pirates, raids, guards: topic-pirates.md.
+Military is the fleet's Combat & Security Center across three birth
+empires (Voidborn, Crimson, Solarian; live counts in `hive.py upgrades
+military`) plus `sentinel-` Royal Guard ships lent until Piloting 20
+(rule F10). Core mandate: protect sovereign stations & industrial
+lines, fan across PvE herds (`1-2/herd`, 2 left, F9/F38), farm NPC
+pirate packs in focused 5-8 ship formations (F27), hold defensive RoE
+(F2: never fire first at players/empires), and gift combat loot inward
+to Trade/Logistics (P5).
 
 ### Ships
-Status: proven. Updated: 2026-11-24. Evidence: table hulls; table ship_modules; the live catalog (modules); ships.md; tests.md entry Weapon fits.
+Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; game/fleet/upgrades.py.
 
-- Tier 0 by birth empire, speed 1 each: Voidborn Threshold (hull 75,
-  shield 80, 1 weapon, 2 defence, 2 utility); Crimson Shard (110 / 40,
-  armor 8, 2 weapons, 1 defence, 1 utility); Solarian Theoria (100 / 55,
-  1 weapon, 1 defence, 3 utility). Each starts with Pulse Laser I and a
-  Mining Laser I, which a hunter never uses: stripped by route
-  (strip-mining-laser-*).
-- Fit order: the Pulse Laser III first (proven on 85 to 95 hull), then a
-  Shield Booster II in a free defence slot (proven: one kills a pilot whale
-  alone). Armor plates carry a speed penalty: one ship tests first.
-- Tier 2 at Piloting 10: Voidborn Recursion (3 weapons, speed 4), Crimson
-  Broadaxe and Halberd (4 weapons), Solarian Theorem (3 weapons). The
-  credits-only commission waits on its yard's bids; materials provided cost
-  less (ships.md).
-- The gauges (rule F9, gauges.py): prey above one ship's firepower or
-  toughness waits for a better weapon, boosters or a group.
-- Style: one hunter to a herd, two animals left (F38); never the first
-  shot at a player or an empire's ship (F2); flee under 60 percent hull or
-  when a stranger joins; guards and escorts only from our stations outward,
-  never in the first ring (F33).
+- Cross-empire rule (`05-galaxy.md`): flying another empire's hull
+  carries **zero penalty** and keeps the pilot's native empire bonus
+  (a Voidborn pilot in a Crimson `Broadaxe` keeps +12% shields &
+  Voidborn Mastery!). Always pick the best combat hull by role and let
+  `upgrades.py queue add` auto-buy cheaper listed ships via
+  `ship_listings` (instant delivery, 37-90% below commission).
+- Tier 0 starters: Voidborn Threshold (1W/2D/2U), Crimson Shard
+  (2W/1D/1U, armor 8), Solarian Theoria (1W/1D/3U). Strip starter
+  Mining Laser I (`strip-mining-laser-*`).
+- Tier 1 (Piloting 0): Crimson `Cleaver` (3W, 156H), Voidborn
+  `Paradox` (2W/2D, 130S), Solarian `Axiom` (2W/1D/2U).
+- Tier 2 (Piloting 10): Crimson `Broadaxe` (4W/1D/2U, ~37k listed!)
+  & `Halberd` (4W/2D, 339H) for peak DPS; Voidborn `Recursion`
+  (3W/2D/2U, spd 4, 150S); Solarian `Theorem` (3W/2D/3U); Crimson
+  `Trebuchet` (850H/6D) for tanking.
+- Tier 3 (Piloting 20): Solarian `Dialectic` (5W/3D/3U, 520H/280S --
+  galactic PvE meta), Crimson `Warmaul` (5W, 680H), Voidborn
+  `Annihilation` (4W/4D, 430S), Solarian `Quorum` (4W/3D/4U).
+- Fit order: `pulse_laser_iii` first, then `shield_booster_ii/iv` or
+  `armor_plate_iii` (watch armor speed penalty). Flee <60% hull.
 
 ### Skills
-Status: proven. Updated: 2026-11-21. Evidence: catalog table skills; hive.py levels Apophis; hive.py stats xp --member Apophis.
-
-In the order they are levelled; levels and XP an hour: hive.py levels
-Apophis.
+Status: proven. Updated: 2026-11-24. Evidence: catalog table skills; hive.py levels Apophis; hive.py stats xp --member Apophis.
 
 | Skill | Why | What trains it | Next goal |
 |---|---|---|---|
-| Gunnery, Weapons, Tactics | +1% damage, crit, accuracy a level | firing and kills: every hunt | 6 / 4 / 5 |
-| Xenobiology | +1% molt goods a level | kills, by the prey's tier | 5 |
-| Piloting | tier 2 at 10, tier 3 at 20 | flying, jumps, fights, missions | 10 |
-| Voidborn Mastery | +1% energy damage a level | Voidborn missions only (F35) | 1 |
-| Navigation | -1% fuel and jump time a level | the far hunts and sales | 5 |
-| Shields, Armor | capacity, hull | taking hits; not measured how | -- |
-| Leadership | fleet capacity (3) | leading a game fleet | groups |
-| Crafting | -- | the fallback crafts | -- |
+| Gunnery, Weapons, Tactics | +1% damage, crit, accuracy/level | firing and kills on every hunt | 6 / 4 / 5+ |
+| Xenobiology | +1% molt loot value/level | wildlife kills by tier | 5+ |
+| Piloting | T2 at 10, T3 at 20 | flying, fights, missions | 10->20 |
+| Empire Mastery (F35) | Voidborn Mastery / Crimson Fury / Solarian Doctrine | own-empire missions (list First) | 1+ |
+| Navigation | -1% jump fuel and time/level | far hunts & patrols | 5+ |
+| Shields, Armor | tank capacity & resistance | taking hits in combat | 2+ |
+| Leadership | fleet group capacity | leading pirate/escort formations | groups |

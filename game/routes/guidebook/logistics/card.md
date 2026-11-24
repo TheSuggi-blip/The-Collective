@@ -16,6 +16,15 @@ outpost, lockbox, and station construction.
 ### Ships
 Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings, books; game/fleet/upgrades.py.
 
+- Cross-empire rule (`05-galaxy.md`): flying another empire's hull
+  carries **zero penalty** and keeps native empire bonuses -- pick the
+  best hull by job (`Prayer`/`Ledger`/`Floor Price`/`Congregation` for
+  100c+ `spacemolt_shipping` freight; `Runner`/`Futures` for optional
+  express passengers).
+- Policy rule (`O3`): `haul.py` runs fresh-book (`<30m`) Bursar-combo
+  arbitrage (claimed by `sell_base:item` + Bursar handover fallback)
+  and `spacemolt_shipping` (requires >=100c hold) -- tune caps rather
+  than disabling core lanes.
 - Tier 0 starters across Voidborn, Nebula, Solarian, Outer Rim, and
   Crimson: batch-skip immediately to Piloting-0 bulk freighters via
   `upgrades.py queue add` (auto-buys cheaper listed ships from
