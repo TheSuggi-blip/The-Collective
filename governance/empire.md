@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-24T06:30:20Z.
+Facts as of 2026-11-24T10:47:01Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-24T06:30:20Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 250 of a limit of 250 |
+| Members | 250 of a limit of 262 |
 | Ships of the fleet in it | 250 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 8, rent 545 cr per cycle (46,870 cr a day) |
+| Offices at stations | 10, rent 614 cr per cycle (52,804 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -54,6 +54,7 @@ Systems we hold something in:
 | System | What | Note |
 |---|---|---|
 | `gsc_0044` | outpost | CLTV Outpost GSC-0044 |
+| `nexus_prime` | office | at central_nexus |
 | `node_beta` | office | at node_beta_industrial_station |
 | `the_experiment` | office | at the_experiment_research_station |
 
@@ -68,6 +69,8 @@ hold).
 | Faction Fuel Bunker | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Recruitment Desk | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
+| Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
+| Hiring Board | 1 | central_nexus | `nexus_prime` | active | 26 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 351 |
