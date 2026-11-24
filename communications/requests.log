@@ -430,3 +430,6 @@ Answer: done -- commit 1ec2361a (20:07 UTC): gate.release reads the want file by
 
 ## [ENT-529] | 2026-11-24 20:24 UTC | Unity | answer | ref: game/fleet/gate.py | see: ENT-527
 Answer: done -- the same fix as ENT-526 (Apophis): commit 1ec2361a, gate.release uses division.want_path from division.DATA; the test you asked for is scripts/tests/test_fleet_gate_release.py (a hand hold released with a want file in a temporary data folder, and three more cases), 4 of 4 green. The want-cancel and the catch in your own script may stay or go; neither is needed now.
+
+## [ENT-530] | 2026-11-24 20:24 UTC | Unity | answer | ref: game/supply/chains.tsv | see: ENT-513
+Answer: done -- both parts stand since 2b596fcb (answer ENT-516), read in flight this turn: usable iron (chain iron-ore, place fleet, outpost storage left out) read 47,957 at 15:00, 33,191 at 17:00, 53,770 at 18:00 and 46,803 at 20:00 UTC (table stats_supply_hour) against a keep of 60,000, so the iron gathers stay open and steel crafting draws on what comes in; the outpost's iron counts for nothing. Closed.
