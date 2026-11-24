@@ -495,3 +495,10 @@ Effect: the two receivers' steel runs at Synchrony Hub made nothing: 7 runs of c
 Cause: I put a Mining give route into hauler rows to gather hauler stores into the receivers' storage, without reading that a receiver flying it gives to the other receiver.
 Fix: the route is out of every hauler row (plan d48e2582); guidebook routes.md (Stored goods) and skill logistics-stock step 40 say a give-to-hauler route never stands in a hauler row. Proposed: handover.py skips a giver that is itself a receiver at that station (Unity, Zero). Would it have prevented the original: yes.
 Class: a route of another class put in a plan without reading what it does for that class.
+
+## [ENT-189] | 2026-11-24 12:55 UTC | Apollo | error | ref: game/routes/finish-first-links-grand.json | see: requests.log ENT-511
+What: at 12:33 UTC I put Trade's route mission-first-links-store-grand at the head of @newborn-nebula. 6 Nebula haulers took it from 12:34 UTC; each accepted First Links at Grand Exchange, flew to Market Prime and ended on the nickel buy: the ask stood at 170 cr (table books 12:43 UTC) against the route's limit of 130 (-384 cr in fuel).
+Effect: six pilots hold First Links half done (ship files 12:48 UTC), and a held mission is not offered again to its holder; no goods bought, nothing lost but the fuel.
+Cause: I read the route's 25 paid runs, not the book of the good it buys after its accept (skill step 21), and the route carried no requires.ask for that buy.
+Fix: finish-first-links-grand in the six holders' rows and mission-first-links-nickel-grand in the template, both buying the nickel at Grand Exchange (120 cr) behind requires.ask on that book (commits d214950e, 2c48f300); skill logistics-stock step 38. Proposed to Mercury: the same gate on the Market Prime route. Would it have prevented the original: yes, the route would have stayed closed.
+Class: a buy route reused without reading its ask.
