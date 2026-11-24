@@ -6,8 +6,10 @@ WHAT:
   Each miner dynamically discovers unsaturated resource belts (>= min_left_pct, default 15%)
   from `read.db:fields`, matches its exact fitted harvesting tool (`mining_laser_*` -> ore,
   `ice_harvester_*` -> ice, `gas_harvester_*` -> gas), runs global optimal `(pilot, belt)`
-  assignment prioritizing (1) open `needs.tsv` / `supply_chains` shortages while hard-skipping
-  full reserves, (2) high-margin market yields, and (3) ultra-low-burn XP fallback belts.
+  assignment prioritizing (1) open needs (`need_status.gather`, priority <= needs_max_priority) /
+  `supply_chains` shortages while hard-skipping full reserves (`routes/pull.json` marks), (2) market
+  goods with a bid >= market_min_bid whose bids take more than the fleet holds, valued at that bid,
+  and (3) ultra-low-burn XP fallback belts (every other good, within xp_fallback_max_jumps).
   Claims the belt atomically in `data/fleet/mine_claims.json` (<= max_per_belt, auto-scaled
   down on low-headroom belts), delegates execution to `mine.py` with live in-flight floor
   monitoring (`--min-left-pct`), stamps a belt cooldown immediately if the floor is hit,
@@ -60,6 +62,8 @@ DEFAULT_POLICY = {
     "deposit_mode": "personal",
     "deposit_stations": [],
     "market_tier": True,
+    "market_min_bid": 5.0,
+    "needs_max_priority": 2,
     "gift_surplus_to_trader": False,
     "priority_resources": [],
     "rest_seconds_when_empty": 120,
@@ -180,6 +184,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
     item_vals = {}
     shortages = {}
     full_items = set()
+    market_world = None
 
     if db_path.exists():
         try:
@@ -265,13 +270,46 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     if iid and keep > 0 and stk < keep:
                         shortages[iid] = max(shortages.get(iid, 0), keep - stk)
 
+            def _market():
+                # What a market good sells for: the best bid at market_min_bid or more and the units those bids
+                # take, less what the fleet already holds (2026-11-24: copper held 792,590 against 106 units bid).
+                min_bid = float(policy.get("market_min_bid") or 5.0)
+                for iid, bid, depth in cur.execute(
+                        "SELECT item, MAX(bid), SUM(bid_qty) FROM books WHERE bid >= ? GROUP BY item", (min_bid,)):
+                    if iid and bid:
+                        market[str(iid)] = [float(bid), int(depth or 0)]
+                market_read[0] = True
+
+            def _held():
+                for iid, units in cur.execute("SELECT item, SUM(units) FROM inventory GROUP BY item"):
+                    if iid:
+                        held[str(iid)] = int(units or 0)
+
+            def _needs():
+                # The open needs' raw shortfalls (need_status.gather: "uranium_ore 2,304, thorium_ore 1,200").
+                max_p = int(policy.get("needs_max_priority") or 2)
+                for pr, gather in cur.execute("SELECT priority, gather FROM need_status WHERE gather IS NOT NULL"):
+                    if int(pr or 9) > max_p:
+                        continue
+                    for iid, units in re.findall(r"([a-z0-9_]+) ([0-9][0-9,]*)", str(gather or "")):
+                        shortages[iid] = max(shortages.get(iid, 0), int(units.replace(",", "")))
+
+            market = {}
+            market_read = [False]
+            held = {}
             for label, table, fn in (("lanes", "lanes", _lanes), ("systems", "systems", _systems),
                                      ("stations", "places", _stations), ("fields", "fields", _fields),
                                      ("pirates", "observations", _pirates), ("items", "items", _items),
-                                     ("books", "books", _books), ("supply", "supply_status", _supply)):
+                                     ("books", "books", _books), ("supply", "supply_status", _supply),
+                                     ("market", "books", _market), ("held", "inventory", _held),
+                                     ("needs", "need_status", _needs)):
                 if table in tbls:
                     _read(label, fn)
             conn.close()
+            if market_read[0]:
+                for iid, rec in market.items():
+                    rec[1] -= held.get(iid, 0)
+                market_world = market
 
     allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
     if allow:
@@ -281,22 +319,25 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
             sys_id, poi_id, base_id = spec.split(":")
             stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
 
-    needs_tsv = Path(repo_root) / "game" / "needs.tsv"
-    if needs_tsv.exists():
-        try:
-            for ln in needs_tsv.read_text(encoding="ascii", errors="replace").splitlines()[1:]:
-                cols = ln.split("\t")
-                if len(cols) >= 5 and cols[0].strip() and not cols[0].startswith("#"):
-                    status = cols[4].strip().lower() if len(cols) > 4 else ""
-                    if status in ("done", "closed", "cancelled"):
-                        continue
-                    item = cols[1].strip()
-                    need_q = int(float(cols[2] or 0))
-                    have_q = int(float(cols[3] or 0))
-                    if item and need_q > have_q:
-                        shortages[item] = max(shortages.get(item, 0), need_q - have_q)
-        except (OSError, ValueError):
-            pass
+    # The needs' raw shortfalls come from need_status (_needs above): game/needs.tsv holds refs and units of whole
+    # targets (id, project, division, kind, ref, ...), not raw goods short, and its old reading here never matched.
+
+    # Full: every good the reserve's pull marks full (routes/pull.json, rule F36); a market good without a bid that
+    # pays and takes more than we hold is no market good either (score_belt_candidates reads world["market"]).
+    # A good the pull marks open is gathered up to its max (rule F36: made while short, stopped at max).
+    pull = read_json(Path(data_dir) / "routes" / "pull.json", {})
+    for iid, rec in ((pull.get("items") or {}) if isinstance(pull, dict) else {}).items():
+        if not isinstance(rec, dict):
+            continue
+        if rec.get("full") and iid not in shortages:
+            full_items.add(str(iid))
+        elif not rec.get("full"):
+            try:
+                room = int(rec.get("max") or 0) - int(rec.get("held") or 0)
+            except (TypeError, ValueError):
+                room = 0
+            if room > 0:
+                shortages[str(iid)] = max(shortages.get(str(iid), 0), room)
 
     for extra in policy.get("priority_resources") or []:
         if isinstance(extra, str) and extra.strip():
@@ -326,7 +367,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
     _res_world = {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
-        "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand,
+        "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand, "market": market_world,
         "data_dir": str(data_dir), "allow_escort_request": True,
         "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
     }
@@ -503,6 +544,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     full_items = world["full_items"]
     craft_demand = world.get("craft_demand") or {}
     item_vals = world["item_vals"]
+    market = world.get("market")
     stations_by_sys = world["stations_by_sys"]
 
     dists = bfs_distances(adj, p_sys, max_hops=max_jumps) if p_sys else {}
@@ -546,6 +588,10 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
         is_craft = bool(policy.get("craft_demand_tier", True) and res in craft_demand and not is_deficit)
         is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft)
+        mkt = market.get(res) if market is not None else None
+        if skip_full and market is not None and not (is_deficit or is_craft or is_full):
+            # No bid at market_min_bid or more, or the fleet holds what those bids take: training ore only.
+            is_full = not mkt or mkt[1] <= 0
         if _in_pirate_sys:
             _esc_ok = False
             try:
@@ -583,6 +629,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         elif not is_full:
             tier = "market"
             tier_mult = 2.0
+            if mkt:
+                uval = max(1.0, mkt[0])   # what it sells for, never the catalog's base value
         else:
             tier = "xp_fallback"
             tier_mult = 0.25
@@ -680,6 +728,26 @@ def _heartbeat(order_path, every=60):
     return stop_ev
 
 
+NO_BELT_NOTE = "no belt matched policy/tools: not reached"
+
+
+def record_no_belt(data_dir, pilot, route_id, started, now_t=None):
+    """One run row for a run that found no belt: the dispatcher rests (route, pilot) after three of them in a row
+    (dispatch.stalled_reason, `not reached`), so the ship takes the next route of its list instead of resting here
+    unseen (2026-11-24: ships without a belt re-took mine-network every two minutes and wrote no row)."""
+    now_t = time.time() if now_t is None else float(now_t)
+    row = {"route": route_id, "kind": "mine", "pilot": pilot,
+           "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)),
+           "minutes": round(max(0.0, now_t - float(started)) / 60.0, 1), "credits_before": None, "credits_after": None,
+           "delta": 0, "one_time": 0, "ore": 0, "sold": {}, "notes": [NO_BELT_NOTE]}
+    path = Path(data_dir) / "routes" / "runs.jsonl"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as handle:
+        fcntl.flock(handle, fcntl.LOCK_EX)
+        handle.write(json.dumps(row, separators=(",", ":")) + "\n")
+    return row
+
+
 def main(argv=None):
     args = sys.argv[1:] if argv is None else list(argv)
     if not args or args[0].startswith("--"):
@@ -728,9 +796,11 @@ def main(argv=None):
                 break
         if not chosen:
             print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, int(policy.get("rest_seconds_when_empty") or 120)), flush=True)
-            end_nap = time.time() + float(policy.get("rest_seconds_when_empty") or 120)
+            started = time.time()
+            end_nap = started + float(policy.get("rest_seconds_when_empty") or 120)
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
                 time.sleep(min(20.0, max(1.0, end_nap - time.time())))
+            record_no_belt(DATA, pilot, route_id, started)
             return 0
 
         print("%s %s mine_net: claimed %s (%s, %s, %dJ->belt, %dJ->%s, score=%.1f)" % (
