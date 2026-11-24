@@ -2,13 +2,13 @@
  "id": "hunt-albireo-fading-ember-belt-grazer",
  "kind": "hunt",
  "title": "belt_grazer at albireo_fading_ember; loot to the trader at The Rampart Checkpoint (newborn region work, Krynn)",
- "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 4 jumps from krynn). Herd by the census in table herds (read 00:20 UTC): belt_grazer 4. Two animals are left of each species (rule F38): kills 2, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Rampart Checkpoint, 1 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "note": "Written by Apophis 2026-11-23 04:12 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the dispatcher sends a pilot of another empire no further than 6 jumps; this place stands 4 jumps from krynn). Herd by the census in table herds (read 00:20 UTC): belt_grazer 4. Two animals are left of each species (rule F38): kills 2, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Rampart Checkpoint, 1 jumps away (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37). Apophis 2026-11-24 10:32 UTC: min_bid 50 -> 5000, its loot holds creature_carapace, which the reserve lacks (short 873; reserve_hunts.py, rule F24): every drop is kept, none sold.",
  "place": "albireo:albireo_fading_ember",
  "species": [
   "belt_grazer"
  ],
  "sell_at": "the_rampart:the_rampart_checkpoint:the_rampart_checkpoint",
- "min_bid": 50,
+ "min_bid": 5000,
  "kills": 2,
  "minutes": 40,
  "max_ships": 1,

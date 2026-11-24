@@ -2,14 +2,14 @@
  "id": "hunt-wasat-glazeknot-cluster-belt-grazer",
  "kind": "hunt",
  "title": "belt_grazer, patina_grazer at glazeknot_cluster; loot to the trader at The Crucible Garrison (newborn region work, Krynn, far_ok)",
- "note": "Written by Apophis 2026-11-23 04:47 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the home region within 6 jumps is hunted to its herds' line (fill.py status 04:47 UTC: herd below, the place rests), so this route carries far_ok (rule F23: a class saturated at home goes further; orders P6: far only by far_ok); this place stands 7 jumps from krynn). Herd by the census in table herds (read 22:19 UTC): patina_grazer 3, belt_grazer 12. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Crucible Garrison, 5 jumps away, where the hunts of this system already dock (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37).",
+ "note": "Written by Apophis 2026-11-23 04:47 UTC for the newborn pilots of Military (orders ENT-071, P6: their class's work where they were born; the home region within 6 jumps is hunted to its herds' line (fill.py status 04:47 UTC: herd below, the place rests), so this route carries far_ok (rule F23: a class saturated at home goes further; orders P6: far only by far_ok); this place stands 7 jumps from krynn). Herd by the census in table herds (read 22:19 UTC): patina_grazer 3, belt_grazer 12. Two animals are left of each species (rule F38): kills 5, min_creatures kills + 2. Species pass both gauges of one typical drone (gauges.py species). One hunter to the place. Docks and hands its loot to the trader receiver at The Crucible Garrison, 5 jumps away, where the hunts of this system already dock (strict classes, P5). Lawless or foreign space: alone against pirates, empty hold (F3). A test of three results (F37). Apophis 2026-11-24 10:32 UTC: min_bid 50 -> 5000, its loot holds creature_carapace, which the reserve lacks (short 873; reserve_hunts.py, rule F24): every drop is kept, none sold.",
  "place": "wasat:glazeknot_cluster",
  "species": [
   "belt_grazer",
   "patina_grazer"
  ],
  "sell_at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
- "min_bid": 50,
+ "min_bid": 5000,
  "kills": 5,
  "minutes": 40,
  "max_ships": 1,

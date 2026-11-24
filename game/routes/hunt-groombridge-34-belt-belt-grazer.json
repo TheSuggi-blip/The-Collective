@@ -2,14 +2,14 @@
  "id": "hunt-groombridge-34-belt-belt-grazer",
  "kind": "hunt",
  "title": "belt_grazer, patina_grazer at groombridge_34_belt; loot to the trader where it docks (Voidborn drones, home herds full)",
- "note": "Written by Apophis 2026-11-23 09:31 UTC (orders ENT-081, block APOPHIS; rule F23: the home herds are all taken, fill.py status drone reads max_ships reached or herd below on every home hunt, so the class takes its work further out). Herd by the census (table herds, read 08:01 UTC): belt_grazer 12, patina_grazer 5. Two animals left of each species (rule F38): kills 5, min_creatures kills + 2. Every species passes both gauges of one typical drone (gauges.py species). One hunter a place. 8 jumps from home; it docks at the station nearest the place where our hunts already dock (7 jumps) and hands its loot to the trader receiver (strict classes, P5). Lawless or foreign space: alone against pirates, an empty hold (F3). Standing work for experience; a test of three results (F37).",
+ "note": "Written by Apophis 2026-11-23 09:31 UTC (orders ENT-081, block APOPHIS; rule F23: the home herds are all taken, fill.py status drone reads max_ships reached or herd below on every home hunt, so the class takes its work further out). Herd by the census (table herds, read 08:01 UTC): belt_grazer 12, patina_grazer 5. Two animals left of each species (rule F38): kills 5, min_creatures kills + 2. Every species passes both gauges of one typical drone (gauges.py species). One hunter a place. 8 jumps from home; it docks at the station nearest the place where our hunts already dock (7 jumps) and hands its loot to the trader receiver (strict classes, P5). Lawless or foreign space: alone against pirates, an empty hold (F3). Standing work for experience; a test of three results (F37). Apophis 2026-11-24 10:32 UTC: min_bid 50 -> 5000, its loot holds creature_carapace, which the reserve lacks (short 873; reserve_hunts.py, rule F24): every drop is kept, none sold.",
  "place": "groombridge_34:groombridge_34_belt",
  "species": [
   "belt_grazer",
   "patina_grazer"
  ],
  "sell_at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
- "min_bid": 50,
+ "min_bid": 5000,
  "kills": 5,
  "minutes": 40,
  "max_ships": 1,
