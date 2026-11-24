@@ -2,14 +2,14 @@
  "id": "craft-steel-faction-gsc-0044",
  "kind": "circuit",
  "title": "Steel plate smelted at our outpost GSC-0044 from the faction's iron ore there (withdraw from: faction), put back into the faction's storage (Logistics' haulers)",
- "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO: 'the officer stands: write the steel route on the outpost's faction iron (withdraw, from: faction)'). The faction's storage at the outpost holds 100,000 iron ore (tool stock 06:05 UTC). status off: a withdraw from the faction's storage needs manage_treasury, and no hauler's role carries it: spacemolt_faction info read this turn from a hauler: Leader and Officer have it, Builder (the one hauler with a role) and Member do not (requests.log, this turn, to Unity). Also untested: a hand recipe at an outpost (no personal storage, craft from the hold). On when a role with manage_treasury stands on haulers: one ship first, one run, its RESULT line read. Each run: the hold filled with faction iron (keep 0), basic_iron_smelting in halving sizes from the hold, the plates and what is left stored back into the faction's storage.",
- "status": "off",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC (orders ENT-085 block APOLLO: 'the officer stands: write the steel route on the outpost's faction iron (withdraw, from: faction)'). The faction's storage at the outpost holds 100,000 iron ore (tool stock 06:05 UTC). status off: a withdraw from the faction's storage needs manage_treasury, and no hauler's role carries it: spacemolt_faction info read this turn from a hauler: Leader and Officer have it, Builder (the one hauler with a role) and Member do not (requests.log, this turn, to Unity). Also untested: a hand recipe at an outpost (no personal storage, craft from the hold). On when a role with manage_treasury stands on haulers: one ship first, one run, its RESULT line read. Each run: the hold filled with faction iron (keep 0), basic_iron_smelting in halving sizes from the hold, the plates and what is left stored back into the faction's storage. 2026-11-24 10:03 UTC (Apollo): on by Unity's answer requests.log ENT-500 and ENT-505: requires.role officer (the dispatcher sends it only to an Officer, empire.json; Officers hold manage_treasury); one ship, one run first, its RESULT line read before any lift (rule F37).",
  "standing": true,
  "max_ships": 1,
  "requires": {
   "skills_below": {
    "corporation_management": 7
-  }
+  },
+  "role": "officer"
  },
  "stops": [
   {
