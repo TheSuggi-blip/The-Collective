@@ -15,14 +15,5 @@
    "at": "nexus_prime:the_core:central_nexus",
    "redock": true
   }
- ],
- "measured": {
-  "date": "2026-11-24",
-  "runs": 29,
-  "minutes": 4,
-  "credits_per_run": -110,
-  "cph_per_ship": -720,
-  "hours": 12,
-  "last_run": "2026-11-23T23:17:30Z"
- }
+ ]
 }

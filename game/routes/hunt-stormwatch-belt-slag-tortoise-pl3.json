@@ -19,14 +19,5 @@
   "module": "pulse_laser_iii",
   "empty_hold": true
  },
- "gift_to": "hauler",
- "measured": {
-  "date": "2026-11-22",
-  "runs": 28,
-  "minutes": 18,
-  "credits_per_run": -150,
-  "cph_per_ship": -450,
-  "hours": 12,
-  "last_run": "2026-11-22T18:38:35Z"
- }
+ "gift_to": "hauler"
 }

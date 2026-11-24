@@ -108,14 +108,5 @@
     "liquid_nitrogen"
    ]
   }
- ],
- "measured": {
-  "date": "2026-11-23",
-  "runs": 426,
-  "minutes": 8,
-  "credits_per_run": -160,
-  "cph_per_ship": -1190,
-  "hours": 12,
-  "last_run": "2026-11-23T22:58:07Z"
- }
+ ]
 }

@@ -71,5 +71,14 @@
    "at": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-24",
+  "runs": 1,
+  "minutes": 7,
+  "credits_per_run": -60,
+  "cph_per_ship": -500,
+  "hours": 12,
+  "last_run": "2026-11-24T10:58:13Z"
+ }
 }
