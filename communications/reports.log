@@ -427,3 +427,12 @@ Failed: fill gate HALT, 18 haulers waiting at 00:43 UTC (their Krynn rewards boo
 Requests: none.
 Suggestions: a keep flag for standing keep-stock needs (briefing READY prompt); a queue.log notice before a planned engine restart; a read-only member limit refreshed after a faction build.
 Report: krynn-blood-forge-corridor-hiring-board-at-experiment.
+
+## [ENT-168] | 2026-11-24 01:20 UTC | Apophis | session | ref: reports/2026-11-24_apophis_far-herds-generator-scar-pirate-formation-flies.md | see: orders.log ENT-084
+Session: scheduled run military-turn -- parked ships back at work, a generator scar fixed at the root, the first pirate formation flies.
+Did: 22 one-hunter herds within 6 jumps into @hunter (30 ships on park -> 0); 36 hunt files corrected to their true places (80d261ee, 4b74617d) and 11 ships stopped from a 23-jump trip; give-drone-stores loop fixed (31 runs, -2,660 cr; 9eb4c3f3); 4 hunts at partner ranches off; Zubenelhakrabi silica-borer kit test (b18dda35); group_hunt.py --pirate built and flown (three Laser III ships); second Recursion commission script has its pilot (01:13 UTC); guidebook (9dfe80c1); claim admirals.log ENT-115.
+Worked: drone and sentinel gates PASS (fill.py check 01:14 UTC: 131 ships, 109 at work, 0 waiting); 0 ships lost in the period; Military 24 h recurring -31.6k/h -> -21.1k/h, accrual -18.6k/h -> -1.8k/h (fleet money).
+Failed: two scratch generators wrote one place into 36 hunt files (errors.log ENT-170; route_commit.py now refuses it); the fill pass put a hauler's Krynn corridor trip into my First list and eight ships took it before my drop; Recursion #2 still not commissioned at 01:19 UTC.
+Requests: requests.log ENT-484 (Unity: a hold at a run's end for hand scripts).
+Suggestions: the gate line should count ships on park; fill.py should keep another class's far_ok corridor trips out of combat plans.
+Report: far-herds-generator-scar-pirate-formation-flies.
