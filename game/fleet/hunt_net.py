@@ -293,6 +293,42 @@ def compute_target_threat(max_hull, max_shield=0.0, role="grazer", count_fightin
     return {"threat": round(threat, 1), "ehp": round(raw_ehp * role_mult, 1), "raw_ehp": round(raw_ehp, 1), "dps": round(edps, 1), "raw_hull": float(max_hull or 60.0)}
 
 
+def f9_gauge(ship_doc, items):
+    """(firepower, toughness) of one ship by gauges.py, the measure of rule F9; a weapon that fires ammunition
+    (catalog `ammo_type`) counts only while the hold carries ammunition (an empty magazine fires nothing:
+    Plasma Cannon II, 2026-11-22). None when gauges.py cannot be read."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import gauges
+    except ImportError:
+        return None
+    cargo = ship_doc.get("cargo") or []
+    if isinstance(cargo, dict):
+        held = [k for k, v in cargo.items() if v]
+    else:
+        held = [str(c.get("item") or c.get("item_id") or c.get("id") or c.get("type") or "") if isinstance(c, dict) else str(c) for c in cargo]
+    has_ammo = any((items.get(h) or {}).get("category") == "ammo" for h in held)
+    mods = []
+    for m in ship_doc.get("modules") or []:
+        tid = str((m.get("type") or m.get("id") or "") if isinstance(m, dict) else m)
+        if (items.get(tid) or {}).get("ammo_type") and not has_ammo:
+            continue
+        mods.append(m)
+    found = gauges.gauges_of(dict(ship_doc, modules=mods), items)
+    return (found["firepower"], found["toughness"])
+
+
+def f9_passes(f9, prey_hull, role="grazer", n=1):
+    """Rule F9 for a side of n ships of one gauge: (firepower, toughness) against a creature's hull and weight
+    (a predator weighs twice its hull). True when f9 is None (no gauge read: the caller decides)."""
+    if f9 is None:
+        return True
+    import gauges
+    weight = float(prey_hull) * (gauges.PREDATOR_WEIGHT if str(role) == "predator" else 1)
+    ok_f, ok_t = gauges.fits((n * f9[0], n * f9[1]), float(prey_hull), weight)
+    return ok_f and ok_t
+
+
 def passes_combat_gate(side_power_dict, target_threat_dict, min_power_ratio, check_f9=True):
     """Percentage combat-power ratio check (+ anti-glass-cannon DPS & EHP floor)."""
     if side_power_dict["power"] <= 0 or side_power_dict["dps"] <= 0:
@@ -307,7 +343,7 @@ def passes_combat_gate(side_power_dict, target_threat_dict, min_power_ratio, che
     return True, round(ratio, 2)
 
 
-def choose_pack_size(avg_member_power, target_threat_dict, min_power_ratio, sizes=(3, 5, 8, 10)):
+def choose_pack_size(avg_member_power, target_threat_dict, min_power_ratio, sizes=(3, 5, 8, 10), f9=None, prey_hull=None, role="grazer"):
     """Choose smallest pack size from [3, 5, 8, 10] whose combined fighting power clears min_power_ratio & F9."""
     if avg_member_power["power"] <= 0 or avg_member_power["dps"] <= 0:
         return None
@@ -319,7 +355,7 @@ def choose_pack_size(avg_member_power, target_threat_dict, min_power_ratio, size
             "ehp": avg_member_power["ehp"] * sz,
         }
         ok_g, _ratio = passes_combat_gate(comb, target_threat_dict, min_power_ratio, check_f9=True)
-        if ok_g:
+        if ok_g and (prey_hull is None or f9_passes(f9, prey_hull, role, n=sz)):
             return sz
     return None
 
@@ -365,58 +401,71 @@ def load_combat_world(data_dir, repo_root, policy, now_t=None):
     species_loot_val = {}
 
     if db_path.exists():
+        # Each table is read on its own: one query that fails (a column the store does not
+        # have) must not leave the herds, the docks and the pirate reads empty with it.
+        # (2026-11-24: `SELECT id, system, poi FROM stations` failed on the store's schema and
+        # every pilot found 0 herds and 0 packs.)
         try:
             conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True)
-            cur = conn.cursor()
-            tbls = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
-            if "lanes" in tbls:
-                for a, b in cur.execute("SELECT a, b FROM lanes"):
-                    adj.setdefault(a, set()).add(b)
-                    adj.setdefault(b, set()).add(a)
-            if "systems" in tbls:
-                for sid, emp, sh in cur.execute("SELECT id, empire, stronghold FROM systems"):
-                    systems[sid] = {"empire": str(emp or "").lower(), "stronghold": bool(sh)}
-            if "stations" in tbls:
-                for st_id, sys_id, poi_id in cur.execute("SELECT id, system, poi FROM stations WHERE system IS NOT NULL AND poi IS NOT NULL"):
-                    stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, st_id))
-            if "herds" in tbls:
-                for sys_id, poi_id, cr, name, role, cnt, ts in cur.execute(
-                    "SELECT system, poi, creature, name, role, count, t FROM herds WHERE count > 0"
-                ):
-                    nm = str(name or "")
-                    if nm.startswith("[") and not nm.startswith("[CLTV]"):
-                        ranch_pois.add("%s:%s" % (sys_id, poi_id))
-                        continue
-                    herds.append({
-                        "system": str(sys_id), "poi": str(poi_id), "species": str(cr),
-                        "name": nm, "role": str(role or "grazer").lower(),
-                        "count": int(cnt or 0), "t": float(ts or 0),
-                    })
-            if "observations" in tbls:
-                cutoff = now_t - float(policy.get("pirate_avoid_hours") or 6.0) * 3600.0
-                for (subj,) in cur.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
-                    if subj:
-                        pirates.add(str(subj))
-                for (subj,) in cur.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'ranch'"):
-                    if subj:
-                        s = str(subj)
-                        if ":" in s:
-                            ranch_pois.add(s)
-                            ranch_systems.add(s.split(":")[0])
-                        else:
-                            ranch_systems.add(s)
-            if "bases" in tbls:
-                p_tags = set(str(x).upper() for x in (policy.get("partner_factions") or []))
-                bcols = {r[1] for r in cur.execute("PRAGMA table_info(bases)").fetchall()}
-                if {"system", "faction_tag"} <= bcols:
-                    for bsys, tag in cur.execute("SELECT system, faction_tag FROM bases WHERE faction_tag IS NOT NULL"):
-                        if str(tag or "").upper() in p_tags and bsys:
-                            ranch_systems.add(str(bsys))
-            if "items" in tbls:
-                pass
-            conn.close()
         except sqlite3.Error:
-            pass
+            conn = None
+        if conn is not None:
+            cur = conn.cursor()
+
+            def _rows(sql, params=()):
+                try:
+                    return cur.execute(sql, params).fetchall()
+                except sqlite3.Error as exc:
+                    print("hunt_net: store read failed (%s): %s" % (exc, sql[:60]), file=sys.stderr, flush=True)
+                    return []
+
+            p_tags = set(str(x).upper() for x in (policy.get("partner_factions") or []))
+            for a, b in _rows("SELECT a, b FROM lanes"):
+                adj.setdefault(a, set()).add(b)
+                adj.setdefault(b, set()).add(a)
+            for sid, emp, sh in _rows("SELECT id, empire, stronghold FROM systems"):
+                systems[sid] = {"empire": str(emp or "").lower(), "stronghold": bool(sh)}
+            # Player stations (table stations: name, system, tag): a foreign one is no dock of
+            # ours, and a partner's station marks its system as theirs (never hunted there).
+            foreign_docks = set()
+            for nm, sys_id, tag in _rows("SELECT name, system, tag FROM stations WHERE system IS NOT NULL"):
+                tg = str(tag or "").upper()
+                if tg and tg != "CLTV":
+                    foreign_docks.add((str(sys_id), str(nm or "")))
+                if tg in p_tags:
+                    ranch_systems.add(str(sys_id))
+            # Docks: every place with a base (table places), our own and the empires' stations.
+            for sys_id, poi_id, base_id, nm in _rows(
+                "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
+            ):
+                if (str(sys_id), str(nm or "")) in foreign_docks:
+                    continue
+                stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
+            for sys_id, poi_id, cr, name, role, cnt, ts in _rows(
+                "SELECT system, poi, creature, name, role, count, t FROM herds WHERE count > 0"
+            ):
+                nm = str(name or "")
+                if nm.startswith("[") and not nm.startswith("[CLTV]"):
+                    ranch_pois.add("%s:%s" % (sys_id, poi_id))
+                    continue
+                herds.append({
+                    "system": str(sys_id), "poi": str(poi_id), "species": str(cr),
+                    "name": nm, "role": str(role or "grazer").lower(),
+                    "count": int(cnt or 0), "t": float(ts or 0),
+                })
+            cutoff = now_t - float(policy.get("pirate_avoid_hours") or 6.0) * 3600.0
+            for (subj,) in _rows("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
+                if subj:
+                    pirates.add(str(subj))
+            for (subj,) in _rows("SELECT DISTINCT subject FROM observations WHERE kind = 'ranch'"):
+                if subj:
+                    s_ = str(subj)
+                    if ":" in s_:
+                        ranch_pois.add(s_)
+                        ranch_systems.add(s_.split(":")[0])
+                    else:
+                        ranch_systems.add(s_)
+            conn.close()
 
     # Enrich live creature max_hull and pirate_list from recent wildlife files
     wdir = Path(data_dir) / "wildlife"
@@ -596,7 +645,7 @@ def release_hunt_claim(data_dir, pilot, cooldown_key=None, cooldown_minutes=90, 
             fcntl.flock(lf, fcntl.LOCK_UN)
 
 
-def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None):
+def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None, f9=None):
     """Score all eligible wild grazer herds for solo hunting, gated by percentage combat power ratio."""
     now_t = time.time() if now_t is None else float(now_t)
     scfg = policy.get("solo") or {}
@@ -652,7 +701,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         prey_hull = float(species_hull.get(sp) or 70.0)
         threat = compute_target_threat(prey_hull, role="grazer", count_fighting=1)
         ok_g, ratio = passes_combat_gate(ship_power, threat, min_ratio, check_f9=True)
-        if not ok_g:
+        if not ok_g or not f9_passes(f9, prey_hull, "grazer", n=1):
             continue
 
         st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5)
@@ -681,7 +730,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     return out
 
 
-def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None):
+def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None, f9=None):
     """Discover tough wildlife herds & pirate systems suited for 3/5/8/10-ship packs."""
     now_t = time.time() if now_t is None else float(now_t)
     pcfg = policy.get("packs") or {}
@@ -728,7 +777,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if prey_hull < min_thull and sp not in prio_sp and role != "predator":
             continue
         threat = compute_target_threat(prey_hull, role=role, count_fighting=1)
-        sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes)
+        sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
             continue
         st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6)
@@ -766,7 +815,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             phull = float(pir.get("max_hull") or pir.get("hull") or 100.0)
             pshield = float(pir.get("max_shield") or pir.get("shield") or 40.0)
             threat = compute_target_threat(phull, pshield, role="pirate", count_fighting=1)
-            sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes)
+            sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
             st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6)
@@ -1199,6 +1248,15 @@ def main(argv=None):
         ship_doc["name"] = pilot
         wep_cat, boost_cat = load_weapon_catalog(DATA)
         spow = compute_ship_power(ship_doc, wep_cat, boost_cat)
+        try:
+            import gauges
+            f9 = f9_gauge(ship_doc, gauges.load_items(DATA))
+        except Exception:
+            f9 = None
+        if f9 is None:
+            print("RESULT %s: hunt_net %s | no F9 gauge read (gauges.py): no hunt" % (pilot, route_id), flush=True)
+            time.sleep(60)
+            return 0
         world = load_combat_world(DATA, REPO, policy)
         claims, cooldowns = load_hunt_claims(DATA, policy)
 
@@ -1237,7 +1295,7 @@ def main(argv=None):
                     return rc
 
         # --- LANE 2: COORDINATED GROUP PACKS (3 / 5 / 8 / 10 SHIPS, ~20-30% SHARE) ---
-        pack_targets = score_pack_targets(ship_doc, spow, world, policy, claims, cooldowns)
+        pack_targets = score_pack_targets(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
         pack = pack_try_join_or_create(DATA, pilot, str(ship_doc.get("system") or ""), spow, pack_targets, world, policy, active_mil)
         if pack:
             print("%s %s hunt_net: PACK lane -> %s (%s x%d @ %s:%s, leader=%s)" % (
@@ -1252,7 +1310,7 @@ def main(argv=None):
             # Rally timed out -> cleanly fall through to Lane 3 solo hunting!
 
         # --- LANE 3 & 4: SOLO OPTIMAL HERD HUNTING (POWER-RATIO GATED + F38 RANCH FLOOR) ---
-        cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns)
+        cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
         chosen = None
         for cand in cands:
             if claim_hunt_key_atomic(DATA, pilot, cand["key"], "solo", policy, max_per_key=1):
