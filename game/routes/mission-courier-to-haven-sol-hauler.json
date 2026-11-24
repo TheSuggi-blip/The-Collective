@@ -1,0 +1,34 @@
+{
+ "id": "mission-courier-to-haven-sol-hauler",
+ "kind": "circuit",
+ "title": "Courier to Haven: 5,000 cr once at Sol Central, the diplomatic silver delivered to the Grand Exchange: a Nebula-born hauler's paid way home",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC: a hauler copy of Trade's mission-courier-to-haven-sol (Mercury, 2026-11-23: 1 run, +5,690 cr; the silver is handed out on accept). Orders ENT-085 block APOLLO and P6; rule F34. Nebula-born haulers stand at Sol with Sol's once lines paid (table ships 06:24 UTC). requires.empire nebula: Haven is their capital.",
+ "far_ok": true,
+ "once": true,
+ "max_ships": 12,
+ "one_time": [
+  "Courier to Haven"
+ ],
+ "skip_if_booked": [
+  "Courier to Haven"
+ ],
+ "requires": {
+  "empire": "nebula",
+  "empty_hold": true,
+  "max_jumps": 3,
+  "skills_below": {
+   "corporation_management": 7
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "accept": [
+    "courier_to_haven"
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station"
+  }
+ ]
+}

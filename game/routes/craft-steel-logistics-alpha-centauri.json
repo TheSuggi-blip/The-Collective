@@ -1,0 +1,76 @@
+{
+ "id": "craft-steel-logistics-alpha-centauri",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Alpha Centauri Colonial Station from all of the pilot's own stored iron ore in one visit, kept in its storage there for the reserve (Logistics' haulers)",
+ "note": "Written by Apollo, 2026-11-24 06:24 UTC (requests.log ENT-486; Zero's give-miner-stores-alpha-centauri, written 05:48 UTC, off until a hauler receiver is named here; orders ENT-085 P2: iron to steel where it lies). Miners' storage at Alpha Centauri held 11,250 iron ore (Zero's note, storage book 05:47 UTC). Receivers named this turn (handover.py receivers, data/fleet/receivers.json): two haulers standing at Sol, 1 jump away. Stops copied from craft-steel-logistics-confederacy: basic_iron_smelting in halving sizes, 128 to 1 runs (10 iron ore a plate, by hand). Standing work; opens on 100 iron stored there by the pilot, closes at the steel max (F36). far_ok: Solarian space.",
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "alpha_centauri_colonial_station",
+   "item": "iron_ore",
+   "min": 100
+  }
+ },
+ "max_ships": 2,
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": "all"
+  }
+ ],
+ "far_ok": true
+}
