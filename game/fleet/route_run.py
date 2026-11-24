@@ -119,6 +119,26 @@ def order(what):
     os.replace(tmp, ORDER)
 
 
+def heartbeat(path, every=60):
+    """Keep the run's order file fresh while a long goal blocks the run: the engine's goal call returns only at the end
+    of a leg, and a leg of more than 20 minutes without a word left the file untouched, so division.order_of and the
+    dispatcher read the pilot as free while this run still flew it (2026-11-24: a 22-jump leg, a catch took the pilot
+    in flight). A daemon thread touches the file every `every` seconds; it never creates the file, and dies with the run."""
+    import os as _os
+    import threading
+    tick = threading.Event()                          # its wait keeps real time, apart from any clock a test sets
+
+    def beat():
+        while not tick.wait(every):
+            try:
+                _os.utime(path)
+            except OSError:
+                pass
+    worker = threading.Thread(target=beat, name='order-heartbeat', daemon=True)
+    worker.start()
+    return worker
+
+
 def order_done():
     try:
         ORDER.unlink()
@@ -727,6 +747,7 @@ done, onetime, notes, reached = [], [0], [], 0
 skipped = 0                                          # stops passed over because none of their missions is held
 first = int(sys.argv[sys.argv.index('--from') + 1]) - 1 if '--from' in sys.argv else 0
 order('circuit ' + ROUTE['id'])
+heartbeat(ORDER)
 atexit.register(order_done)
 CRASH, FINISHED = [], []
 

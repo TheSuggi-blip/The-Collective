@@ -1000,5 +1000,27 @@ class ShippingStepTests(unittest.TestCase):
             self.assertEqual(len(bad), 3, bad)
             self.assertEqual([e for e in errs if "ship-ok" in e], [])
 
+
+class OrderHeartbeatTests(unittest.TestCase):
+    def test_a_long_goal_keeps_the_order_file_fresh_and_a_gone_file_is_not_made_again(self):
+        import os
+        import time
+        space = functions("heartbeat")
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "pilot.json"
+            path.write_text("{}", encoding="ascii")
+            old = time.time() - 3600
+            os.utime(path, (old, old))
+            space["heartbeat"](path, every=0.05)
+            time.sleep(0.3)
+            self.assertGreater(path.stat().st_mtime, old + 3000)
+            path.unlink()
+            time.sleep(0.2)
+            self.assertFalse(path.exists())
+
+    def test_the_run_starts_the_heartbeat_after_its_order(self):
+        source = (FLEET / "route_run.py").read_text(encoding="ascii")
+        self.assertIn("order('circuit ' + ROUTE['id'])\nheartbeat(ORDER)\n", source)
+
 if __name__ == "__main__":
     unittest.main()
