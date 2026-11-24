@@ -15,7 +15,7 @@ updated: 2026-11-24
 # Soit [SOIT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 24 jump(s) away, in Longshore (`longshore`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -26,13 +26,13 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | AURC, NVPT, OKLM, SGC., SOLS | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 8 | Public event stream |
+| Pilots carrying the tag on the public event stream | 79 | Public event stream |
 
 ## Bases
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Atlantis | station | Longshore (`longshore`) | lawless | 24 | thriving |
+| Atlantis | station | Longshore (`longshore`) | lawless | 24 | operational |
 
 ## Pilots in Our Space
 
@@ -40,10 +40,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Aqua Nan | Node Beta (`node_beta`) | 0 | bonanza |
+| Cadavre Exquis | Node Beta (`node_beta`) | 0 | bonanza |
 | Casian Drel | Node Beta (`node_beta`) | 0 | theoria |
 | Coma Idyllique | Node Beta (`node_beta`) | 0 | bonanza |
+| Crex Nullyn | Node Beta (`node_beta`) | 0 | archimedes |
 | Jesus Crie | Node Beta (`node_beta`) | 0 | bonanza |
+| Juno Drev | Node Beta (`node_beta`) | 0 | archimedes |
+| Lyra Keth | Node Beta (`node_beta`) | 0 | archimedes |
+| Palin Dromes | Node Beta (`node_beta`) | 0 | bonanza |
 | Selection Naturelle | Node Beta (`node_beta`) | 0 | bonanza |
+| Zara Vexyn | Node Beta (`node_beta`) | 0 | archimedes |
 
 ## Standing History
 
