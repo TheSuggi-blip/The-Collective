@@ -1,32 +1,34 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show; fill.py status trader 01:05 and 01:17 UTC; table books 01:10 UTC; stock view=surplus 01:11 UTC; orders ENT-084; contracts.log ENT-006.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show; fill.py status trader 07:03 and 07:33 UTC; view_orders of four desk pilots 07:05 UTC (contracts.log ENT-008); data/missions and table books 06:50 to 07:23 UTC; route tool runs 07:23 to 07:37 UTC.
 
-The plan file as set on 2026-11-24 at 01:15 UTC (orders ENT-084, block
-MERCURY: capital crafts under 500 cr a ship-hour; no trader waits):
+The plan file as set on 2026-11-24 at 07:40 UTC (orders ENT-085,
+block MERCURY):
 
-- First, every ship: the once line of every board (Voidborn chain,
-  Federation, Sol, Rim, Krynn, Nova Terra, Alpha Centauri, Blood Forge,
-  the Station Needs) and the Blood Forge corridor (Logistics' route).
+- First, every ship: the once line of every board; the Station Needs
+  and the far bids for stored loot, each gated by `requires.stored` so
+  only a holder goes (`need-ember-gland-crucible`, `need-melt-crucible`,
+  `need-melt-frontier`, `sell-ember-first-step-dheneb`,
+  `sell-ember-synchrony-dheneb`); Krynn's Workshop Production Run (39
+  traders without it, 10 at a time); a Cargo Expander II for the
+  traders docked at Krynn (the ask's 26).
 - Own rows: the join corridors, the capitals' lines, `@trade-sell >
-  @trade-craft`, the loop for the home Voidborn.
-- Then, every ship, gated to where it stands: the off-role starters
-  stripped once (`strip-starters-trader-*`), the Workshop Production
-  Run at Haven for the Nebula-born, the Bursar desks
-  `bursar-desk-krynn` (`docked_at`), `bursar-desk-alpha` (`max_jumps`
-  1, takes Sol's ships), `bursar-desk-experiment` (`max_jumps` 3),
-  `bursar-desk-grand` (no craft: lists only), steel, park.
+  @trade-craft`.
+- Then, gated to where each ship stands: the starters stripped once,
+  the Bursar desks (Krynn, Alpha Centauri, The Experiment, Haven, Nova
+  Terra), steel, park.
 
-A desk run: store the hold, buy 60 to 64 of a 1 cr gas, one craft of
-8 to 10 runs (neon or oxygen; never a good of the pull record, which
-closes the route at its max), list the pilot's own surplus under the
-station's ask and above every bid, a 15-minute watch. About 18 minutes
-and 65 cr a run; once the 1 cr ask is gone it lists and watches free.
+The desks' listings filled nothing in six hours (contracts.log
+ENT-008); they stay while under 500 cr a ship-hour (Krynn 0, Alpha
+about 230, The Experiment about 220). Krynn's desk ships earn no XP
+(no neon ask): the Workshop Production Run gives each a paid craft.
 
-What would change it: fills read at the desks (contracts.log); a paying
-trade or mission at a capital; a good the reserve holds back is never
-listed (reservecheck); a T2 hull per Piloting-10 trader.
+What would change it: a fill at a desk; a refill of the Hex Star
+gland bid (5,367 x 30) or a new Station Need for a good we hold
+(scan `data/missions` against table holdings each turn); the
+Apophenia queue (five Piloting-10 traders, about 203,000 cr each at
+The Experiment).
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 

@@ -1,20 +1,13 @@
 # Trade guidebook -- Lessons (lessons.md)
 
 ### How this guidebook is kept
-Status: proven. Updated: 2026-11-16. Evidence: migrated from guidebook/trade.md, the text above its first section.
+Status: proven. Updated: 2026-11-24. Evidence: migrated from guidebook/trade.md, the text above its first section.
 
-Kept by Mercury; read by every member. What the Trade division
-learned about its routes, its levelling and its ships, so that every
-ship born later starts where the others stand. Started by the Fleet
-Admiral on 2026-11-15 from the runs so far; from here Mercury writes it,
-at the end of every turn.
-
-- A figure comes from `python3 -B game/fleet/routes.py measure` or from a
-  run's RESULT line, and carries its date. A number no record holds is
-  written `not measured`.
-- The plan in force is the division's plan file
-  (`/srv/collective/data/plans/plan-trade.md`); every route with its
-  figure is in `game/routes/master-index.md` and its sub-indexes.
+Kept by Mercury at the end of every turn, read by every member: what
+Trade learned about its routes, levelling and ships. A figure comes
+from `routes.py measure` or a RESULT line, with its date; a number no
+record holds is `not measured`. The plan in force is
+`/srv/collective/data/plans/plan-trade.md`.
 
 ### Crafting by Hand: the Calls
 Status: proven. Updated: 2026-11-21. Evidence: the hand calls of 2026-11-15 21:21 to 21:34 UTC and 2026-11-16 18:37 UTC (requests.log ENT-030, ENT-161).
@@ -31,10 +24,6 @@ answer read; a route's craft step is built from it (route_run.py).
 | Output to the hold | `withdraw {item_id, quantity}` (spacemolt_storage) | with `source: storage, target: self` it is refused |
 | Sell | `view_market` first, then `sell {item_id, quantity}` (main group) | takes the bids level by level |
 
-The runner's craft stop made 2 control nodes from four bought inputs in
-about two minutes (assemble_control_node at The Experiment, 2026-11-16
-18:37 UTC, -1,196 cr with the fuel).
-
 ### Station Inputs Bought (plan step P4)
 Status: proven. Updated: 2026-11-21. Evidence: the buys of 2026-11-16 (onetime bookings); the tool fleet view=supply 2026-11-21 19:42 UTC.
 
@@ -47,12 +36,7 @@ with another pilot as `target` moves goods into that pilot's storage at
 the same station. Booked as money paid once (`gate.book_onetime`).
 
 - Iron ore, 2026-11-16: 24,442 units at Central Nexus for 24,686 cr in
-  one call; gathered iron cost about 1.0 cr a unit over 6,229 runs (the
-  tool fleet, view=supply, 2026-11-21).
-- Silicon ore, 2026-11-16: 75 units at 420 cr for the board crafter.
-- Not bought: carbon ore at 4 cr in depth (it pairs 12 to 2 with silicon
-  for boards, and silicon is the limit); steel plate at 18 cr in depth at
-  Node Alpha (gathered iron makes a plate for about 10 cr).
+  one call; gathered iron cost about 1.0 cr a unit (fleet view=supply).
 - The view `fleet`, view=supply, prints per reserve good the gathered cost
   against the best ask: read it before any stock buy.
 
@@ -78,7 +62,7 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-016, ENT-028; the 
   ask" came from one 52 cr buy, where rounding explains it too.
 
 ### Routes, plans and the clone
-Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-035, ENT-039, ENT-106; requests.log ENT-148, ENT-216, ENT-457; sell-loot-at-krynn; the skill trade-books.
+Status: proven. Updated: 2026-11-24. Evidence: errors.log ENT-035, ENT-039, ENT-106; requests.log ENT-148, ENT-216, ENT-457; sell-loot-at-krynn; fill.commit's route gate 07:38 UTC; the skill trade-books.
 
 - A file in the clone is live before it is committed, and the hourly
   measure pass commits a modified route under its own name: draft in
@@ -96,7 +80,10 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log ENT-035, ENT-039, ENT-
   data/routes/logs the same turn (a crashed runner writes no row).
 - Each turn the reserve first: a target met between turns kept 27 traders
   gathering for two hours (errors.log ENT-106).
-- Read the plan file's `## ` headings once a turn.
+- `routes.py index` by hand defers the plan's repository copy 15
+  minutes (index debounce): fill.py reads that copy, the dispatcher
+  flies by assign.json at once; a route just put into First or Then
+  is missing to `fill.py check` until the five-minute job writes it.
 - A mission board file (data/missions) is one pilot's: before a once
   route is written from it, read `get_missions` of one pilot of the
   route's empire (Scouting the Lanes: 4 of 4 runs not offered).
