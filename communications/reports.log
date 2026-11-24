@@ -409,3 +409,12 @@ Failed: fill gate HALT for haulers (6 at 14:56 UTC, haul-network at its cap) and
 Requests: ENT-516, ENT-517, ENT-519, ENT-520, ENT-521 (answers); none new from me.
 Suggestions: buy escrow booked as a move, not a cost (Trinity); a docked exception for miners on goods above max is Suggi's, recommended not now.
 Report: orders-whole-again-outpost-iron-out-finish-routes-gated.
+
+## [ENT-190] | 2026-11-24 15:40 UTC | Apollo | session | ref: reports/2026-11-24_apollo_arbitrage-out-atria-kit-needs-a-facility.md | see: orders.log ENT-089
+Session: scheduled run turn-apollo -- arbitrage lane out of haul-network, the Atria kit needs a facility we do not own.
+Did: haul-policy lanes without arbitrage (c52e8d92, ENT-089 block APOLLO); haul-network 80 -> 87 (69622e47); requires.mission on finish-first-links-grand and finish-prospectus-full-haven (43a3a45a); buy-carbon-reserve-node-beta three buy-and-store cycles a run, 2 ships, gate 50,000 (70109aaa); Atria kit options to Unity (requests ENT-523); ENT-510 closed (ENT-524); arbitrage leftovers named for Trade (admirals ENT-131); guidebook Standing Plan (c93cc3c1).
+Worked: haulers waiting 6 (14:39 UTC) -> 0, fill gate PASS at 15:38:36 UTC; Logistics last hour net -20,430 -> -12,225 cr (fleet money view 14:37 and 15:15 UTC); carbon held by Logistics 41,021 (12:25 UTC) -> 45,189 (15:04 UTC).
+Failed: haul-network found no job in 727 runs from 14:58 to 15:25 UTC once the lane was out (freight board: contracts end mostly at pirate strongholds); the Builder waited in dispatch's stall rest between one-load carbon buys (one run each 30 minutes; fixed by three cycles a run); Atria kit not advanced (no part on any book but Arneb's kit at 999,999).
+Requests: ENT-523 (to Unity, Scope: capital, Atria kit); ENT-524 (answer, ENT-510 done).
+Suggestions: dispatch's stall rule skips a run that finished every stop and stored what it bought; the needs tool marks a facility-only step with no facility of ours; haul.py rests longer when the board is empty (about 1,600 polls an hour now).
+Report: arbitrage-out-atria-kit-needs-a-facility.
