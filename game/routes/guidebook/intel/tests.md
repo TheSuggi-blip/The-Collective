@@ -39,7 +39,7 @@ Status: test. Updated: 2026-11-23. Evidence: tables fields, stats_refill (kind f
 - Open: a hidden deposit behind the faint signatures (next entry).
 
 ### Survey beyond the border
-Status: test. Updated: 2026-11-23. Evidence: scouting/<system>.json `survey`; route fit-survey-scanner-ii-central-nexus; craftbook.py item survey_scanner_ii.
+Status: test. Updated: 2026-11-24. Evidence: scouting/<system>.json `survey` (82 systems, 2026-11-24 14:2x UTC); route fit-survey-scanner-ii-central-nexus; data/market books; catalog survey_scanner_ii.
 
 - Survey Scanner I (survey power 30) revealed no hidden deposit; 20
   systems answer "1 faint signature(s) that your scanner cannot
@@ -49,6 +49,12 @@ Status: test. Updated: 2026-11-23. Evidence: scouting/<system>.json `survey`; ro
   place of its off-role Mining Laser I; census.py surveys with it. Its
   surveys of faint-signature systems decide a second one; a find goes
   to Mining in queue.log.
+- 2026-11-24: of 82 systems surveyed, two revealed a hidden POI, the
+  first (Ravenspire 12:00, Amberfall 13:46 UTC; which scanner is not on
+  record); six still answer a faint signature (Alzirr, Bnki, Marfik,
+  Nightveil, Saclateni, Windmere). Scanner II asks: 6 units at 4
+  stations, 14,000 to 25,239 cr, none at Central Nexus; made only in a
+  facility (build_survey_scanner_ii). No batch until II resolves one.
 - Next if it resolves nothing: a probe step in census.py (use_item
   mining_survey_probe, +30 survey power for 10 ticks, then survey).
 

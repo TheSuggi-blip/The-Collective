@@ -1,37 +1,34 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check and status; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
 
-- First, every scout: store-hold-central-nexus, then
-  store-hold-frontier-station-near (any empire, 6 jumps), give-scout-stores-*,
-  the Survey Scanner II fit (one ship, tests.md), the missions paid
-  once and the Voidborn chain (F34, F35). No census in First or Then: a
-  census is open to a pilot of another empire wherever it reads.
-- Newborn scouts: their capital's region only, @outerrim (Altais) and
-  @nebula (Haven): census-region-<capital> (120 min) and its ring
-  (360 min), then the far lists nearest their capital, then the roads.
-  Sol and Krynn (180 min) go to Voidborn readers, Krynn three.
+- First, every scout: the store routes (Central Nexus, frontier station
+  near), give-scout-stores-*, the Survey Scanner II fit (one ship,
+  tests.md), the missions paid once and the Voidborn chain (F34, F35).
+  No census in First or Then: a census is open to any empire's pilot.
+- Newborn scouts: their capital's region, @outerrim (Altais) and
+  @nebula (Haven): census-region-<capital> (120 min), its ring (360
+  min), then the far lists, the roads. The Outer Rim scouts take
+  census-north after their region (the cohort nearest it). Sol and
+  Krynn (180 min) go to Voidborn readers.
 - The kit's herds (orders P3): census-kit-herds (360 min, three ships)
-  reads the far places of the five species, the region lists the near
-  ones. hive.py herds <species,...>: a place at 3 or more goes to
-  Military in admirals.log the same turn; tagged herds: file_ranches.py.
-- Readers (@reader): census-voidborn (home, 45 min, five), the outpost
-  watch (50 min), census-worked (120 min), census-frontier (170 min),
-  census-worked-far (180 min), the roads. Two readers hold the home
-  list first, one the watch (gaps over the hour otherwise).
-- Lasers: a Voidborn scout whose missions that mine are flown gives
-  its Mining Laser I to Mining at Central Nexus (within 2 jumps).
-  Nebula scouts keep theirs: their boards offer missions that mine.
-- The scanner scouts: a far list first (1440 min), then @reader.
-- Explorers: their road (census-north, -east, -south, 170 min; the
-  north road first for six), census-worked-far, their far list.
+  reads the far places of the five species. hive.py herds: a place at 3
+  or more goes to Military in admirals.log the same turn; tagged herds:
+  file_ranches.py.
+- Readers (@reader): census-voidborn (home, 45 min), the outpost watch
+  (50 min), census-worked (120), census-frontier (170), census-worked-far
+  (180), the roads.
+- Lasers: a Voidborn scout whose missions that mine are flown gives its
+  Mining Laser I to Mining at Central Nexus (within 2 jumps).
+- Explorers: their road (census-north, -east, -south, 170 min),
+  census-worked-far, their far list (1440 min).
 - Hunters: one reader a hunt, one hunter a herd (F9), every scout hunt
-  gifts to a trader (P5); a hunt another claims drops; a herd that
-  carries a faction's tag is never prey (hunt.py).
+  gifts to a trader (P5); a hunt another claims drops; a tagged herd is
+  never prey (hunt.py).
 - census-roads (960 min, four ships): no never-read system is left.
-- Then: the docked book watch (watch-book-*, one scout a station, 0
-  fuel; Hex Star too), then park.
+- Then: the docked book watch (watch-book-*, one scout a station where
+  scouts wait docked, 0 fuel), then park.
 - Changed by: a WORKED, SITES or FRESH HALT, a road pirate, a once
   mission (queue.log), an order naming herds or places.
 
