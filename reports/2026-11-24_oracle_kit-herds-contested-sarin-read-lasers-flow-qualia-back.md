@@ -18,7 +18,7 @@ Period: since `reports/2026-11-24_oracle_five-kit-herds-belts-gate-laser-strip-e
 
 Ships: 50 scouts, 45 at work and 5 docked (tool fleet, view money, 11:50 UTC); none lost, none grounded; wallets under 3,000 cr: 0 (turn check SHIPS, 11:05 UTC). Credits: Intel wallets 1,539,991 cr; last hour net -20,565 cr an hour (income 6,006, costs 26,571, metered fuel 26,197); 24 hours: purse +58,907 cr an hour, recurring -18,409, paid once +77,316 (same read). The fleet's 24-hour steady net read -173,544 cr an hour.
 
-Output: places fresh under 3 hours 1,548 of 2,321 (66.7%) at preflight (hive.py briefing, 11:00 UTC) and 1,576 of 2,322 (67.9%) at 11:50 UTC (hive.py scorecard). Division score 63.1 to 56.4 on the same two reads (see Problems). Fill gate, last line at 11:53 UTC: `PASS: 4 docked scout(s) on watch with no due census or open scout work`.
+Output: places fresh under 3 hours 1,548 of 2,321 (66.7%) at preflight (hive.py briefing, 11:00 UTC) and 1,576 of 2,322 (67.9%) at 11:50 UTC (hive.py scorecard). Division score 63.1 to 56.4 on the same two reads (see Problems). Fill gate, last line at 11:57:42 UTC: `PASS: 3 docked scout(s) on watch with no due census or open scout work`.
 
 ## Activities
 
