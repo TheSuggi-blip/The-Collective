@@ -133,7 +133,7 @@ Kept by Apollo. Routes: 115. Ships: 95.
 | 111 | [join-sol-records](join-sol-records.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 61 ships, empty hold, under corporation_management 7, standing work | all 95 |
 | 112 | [join-rim-debris](join-rim-debris.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | once per pilot, up to 30 ships, empty hold, under corporation_management 7, standing work | all 95 |
 | 113 | [join-krynn-bloodforge](join-krynn-bloodforge.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 60 ships, empty hold, under corporation_management 7, standing work | all 95 |
-| 114 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 80 ships, under corporation_management 7, standing work | all 95 |
+| 114 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 87 ships, under corporation_management 7, standing work | all 95 |
 | 115 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
