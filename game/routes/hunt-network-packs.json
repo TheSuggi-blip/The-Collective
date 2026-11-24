@@ -1,0 +1,11 @@
+{
+ "id": "hunt-network-packs",
+ "kind": "hunt_net",
+ "title": "Tier-2 hulls: hunt-network's pack and escort lanes only (no solo, no fallback): rest docked between packs",
+ "note": "Written by Apophis, 2026-11-24 15:38 UTC (orders ENT-089 P1 and block APOPHIS: hunt-network's first packs and escorts). The tier-2 hulls burn five to fifteen times a starter's fuel on the same prey (guidebook ships: Listed Hulls and Tier-2 Fuel); on the fallback hunts the four Recursions read -7,950 cr a ship-hour over 46 runs for 2.63 kills a run (runs.jsonl, 6 hours to 15:36 UTC). This route runs hunt_net.py with game/hunt-policy-packs.json: a pack (rule F9 for the pack by gauges.py) or an escort, else a rest of 120 s where the ship stands. Standing work (kind hunt_net): never judged by its pay; read by kills, packs and fuel each turn.",
+ "policy": "game/hunt-policy-packs.json",
+ "minutes": 45,
+ "max_ships": 8,
+ "pirates_ok": true,
+ "standing": true
+}
