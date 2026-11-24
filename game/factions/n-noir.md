@@ -68,3 +68,9 @@ Append-only, newest last.
   this office." No gift asked, no other handle named. Our Phase-2
   answer went at 17:05 UTC (peace, open trade by markets or fair swap,
   their steady needs, their fields, counsel welcome; queue.log).
+- 2026-11-24 17:09 UTC (diplomacy.py threads, risk clean): Friday
+  again: peace, open trade and no quarrel noted; goods, quantities,
+  prices and territory are "the desk above mine", and an answer, if
+  any, comes down through that office. Counsel offered: "keep your own
+  market data, and don't sign anything you haven't read twice." NOIR
+  names no field and no need on the record.
