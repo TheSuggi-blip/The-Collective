@@ -162,7 +162,7 @@ Kept by Zero. Routes: 165. Ships: 130.
 | 140 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
 | 141 | [gather-mekbuda-shardflash-silicon](gather-mekbuda-shardflash-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
 | 142 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 143 | [mine-almach-stray-facets](mine-almach-stray-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 24 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 143 | [mine-almach-stray-facets](mine-almach-stray-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 24 jumps | up to 3 ships, empty hold, standing work | all 130 |
 | 144 | [mine-pioneer-fields](mine-pioneer-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 3 ships, standing work | all 130 |
 | 145 | [mine-82-eridani-belt](mine-82-eridani-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
 | 146 | [mine-theta-proxima-belt](mine-theta-proxima-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 3 ships, standing work | all 130 |
