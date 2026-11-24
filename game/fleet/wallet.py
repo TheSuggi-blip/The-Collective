@@ -141,8 +141,9 @@ P2P_FUND_MAX = 400000          # max single-pilot amount filled via mid-flight P
 P2P_MAX_DONORS = 8             # max parallel rich donors contributing to one P2P fund
 P2P_MIN_SLICE = 10000          # minimum donor excess slice worth transferring in P2P funding
 STORAGE_FACILITY_TYPES = frozenset(("faction_lockbox", "faction_warehouse", "faction_depot", "faction_stronghold"))
-LOCKBOX_OFFICERS_PER_BASE = 2  # target seated Officers stationed/docked at each active Faction Storage base
-MAX_AUTO_OFFICERS = 25         # global cap on total auto-promoted Officers + leader
+LOCKBOX_OFFICERS_PER_BASE = 4  # target seated Officers stationed/docked at each active Faction Storage base
+MIN_OFFICERS_PER_DIVISION = 4  # minimum seated Officers per division (all 6 divisions covered for cross-division banking & ops)
+MAX_AUTO_OFFICERS = 50         # global cap on total auto-promoted Officers + leader
 # The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
 # ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
@@ -1619,6 +1620,48 @@ def auto_queue_officers(data, now, dry=False):
         for _prio, p in cands[:min(need, room)]:
             to_queue.append((p, "auto-officer: docked lockbox banker at %s" % base))
             officers.add(p)
+            room -= 1
+
+    # Priority 3: guarantee every division holds at least MIN_OFFICERS_PER_DIVISION seated Officers
+    role_to_div = {
+        "command": "Command", "miner": "Mining", "trader": "Trade",
+        "hauler": "Logistics", "drone": "Military", "sentinel": "Military", "scout": "Intel",
+    }
+
+    def _div_of(pilot_name):
+        s = fleet.get(pilot_name) or {}
+        d = str(s.get("division") or "").strip()
+        if d:
+            return d
+        return role_to_div.get(dispatch.role_of(pilot_name, named), "")
+
+    div_counts = {}
+    for p in officers:
+        d = _div_of(p)
+        if d:
+            div_counts[d] = div_counts.get(d, 0) + 1
+    for div_name in ("Command", "Mining", "Trade", "Logistics", "Military", "Intel"):
+        if room <= 0:
+            break
+        need = MIN_OFFICERS_PER_DIVISION - div_counts.get(div_name, 0)
+        if need <= 0:
+            continue
+        cands = []
+        for p, role in seated.items():
+            if role != "member" or p in officers:
+                continue
+            if _div_of(p) != div_name:
+                continue
+            s = fleet.get(p) or {}
+            if s.get("status", "connected") != "connected":
+                continue
+            is_docked = 0 if str(s.get("docked") or "") else 1
+            cands.append((is_docked, p))
+        cands.sort()
+        for _dk, p in cands[:min(need, room)]:
+            to_queue.append((p, "auto-officer: %s division officer & treasury access" % div_name))
+            officers.add(p)
+            div_counts[div_name] = div_counts.get(div_name, 0) + 1
             room -= 1
 
     if not to_queue:

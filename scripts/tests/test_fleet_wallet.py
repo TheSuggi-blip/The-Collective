@@ -664,13 +664,46 @@ class WalletFluidityUpgradeTests(FundTests):
         }), encoding="ascii")
         # Upgraded faction_warehouse base must be recognized by ready_withdrawer!
         self.assertEqual(w.ready_withdrawer(str(self.data), "Prime Directive", request_stop=False), "Mercurys Ledger")
-        # auto_queue_officers queues Zero Point (flagship) + 1 docked trader (since Mercurys Ledger is 1st officer at base_alpha)
+        # auto_queue_officers queues Zero Point (flagship), fills up to LOCKBOX_OFFICERS_PER_BASE=4 docked bankers
+        # at base_alpha (trader-11, trader-5, hauler-31), and guarantees division coverage (miner-19 for Mining)
+        self.assertEqual(w.MAX_AUTO_OFFICERS, 50)
+        self.assertEqual(w.LOCKBOX_OFFICERS_PER_BASE, 4)
+        self.assertEqual(w.MIN_OFFICERS_PER_DIVISION, 4)
         self.assertEqual(w.auto_queue_officers(str(self.data), now, dry=False), 0)
         queued = [r["params"]["player_id"] for r in w.errands(str(self.data)) if r.get("action") == "promote"]
-        self.assertEqual(queued, ["Zero Point", "trader-11"])
+        self.assertEqual(queued, ["Zero Point", "trader-11", "trader-5", "hauler-31", "miner-19"])
         # Calling again deduplicates cleanly (zero duplicates!)
         self.assertEqual(w.auto_queue_officers(str(self.data), now + 60, dry=False), 0)
-        self.assertEqual(len(w.errands(str(self.data))), 2)
+        self.assertEqual(len(w.errands(str(self.data))), 5)
+
+    def test_auto_queue_officers_covers_military_and_intel_divisions(self):
+        w, now = self.wallet, time.time()
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({
+            "Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"},
+        }), encoding="ascii")
+        (self.data / "empire").mkdir(exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "faction": {"id": "fac-1", "leader": "Prime Directive", "treasury": 2000000},
+            "members": [
+                {"pilot": "Prime Directive", "role": "leader"},
+                {"pilot": "drone-1", "role": "member"},
+                {"pilot": "drone-2", "role": "member"},
+                {"pilot": "scout-1", "role": "member"},
+            ],
+            "facilities": [],
+        }), encoding="ascii")
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({
+            "ships": [
+                {"name": "Prime Directive", "division": "Command", "credits": 50000, "docked": ""},
+                {"name": "drone-1", "division": "Military", "credits": 50000, "docked": ""},
+                {"name": "drone-2", "division": "Military", "credits": 50000, "docked": "node_beta"},
+                {"name": "scout-1", "division": "Intel", "credits": 50000, "docked": "central_nexus"},
+            ]
+        }), encoding="ascii")
+        self.assertEqual(w.auto_queue_officers(str(self.data), now, dry=False), 0)
+        queued = [r["params"]["player_id"] for r in w.errands(str(self.data)) if r.get("action") == "promote"]
+        # Docked Military drone-2 promoted before undocked drone-1, plus Intel scout-1
+        self.assertEqual(queued, ["drone-2", "drone-1", "scout-1"])
 
 
 if __name__ == "__main__":
