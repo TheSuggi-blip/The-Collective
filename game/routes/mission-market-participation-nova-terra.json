@@ -2,7 +2,7 @@
  "id": "mission-market-participation-nova-terra",
  "kind": "circuit",
  "title": "Market Participation: Buying and Selling at Nova Terra Central: 1,000 cr each, once per pilot; 10 argon gas bought at 1 cr, 10 of the pilot's own plasma gas sold into the 25 cr bid",
- "note": "Written by Mercury, 2026-11-24 07:25 UTC (orders ENT-085 block MERCURY and P6: paying work where the ship stands; F8: a trader waited docked at Nova Terra Central, fill.py check 07:22 UTC). The board (data/missions 07:23 UTC): Market Participation: Buying (buy 10 items, 1,000 cr, template market_participation_buying) and Selling (sell 10 items, 1,000 cr, market_participation_selling). The book (table books 07:23 UTC): argon_gas asked 1 x 132,825; plasma_gas bid 25 x 83,854. Plasma gas is surplus (stock view=surplus 07:10 UTC: 633 held, none reserved; 138 in a trader's storage here). The form of mission-market-participation-alpha (39 runs in 24 hours). The argon is stored. One ship first.",
+ "note": "Written by Mercury, 2026-11-24 07:25 UTC (orders ENT-085 block MERCURY and P6: paying work where the ship stands; F8: a trader waited docked at Nova Terra Central, fill.py check 07:22 UTC). The board (data/missions 07:23 UTC): Market Participation: Buying (buy 10 items, 1,000 cr, template market_participation_buying) and Selling (sell 10 items, 1,000 cr, market_participation_selling). The book (table books 07:23 UTC): argon_gas asked 1 x 132,825; plasma_gas bid 25 x 83,854. Plasma gas is surplus (stock view=surplus 07:10 UTC: 633 held, none reserved; 138 in a trader's storage here). The form of mission-market-participation-alpha (39 runs in 24 hours). The argon is stored. One ship first. Set off 07:36 UTC: its first run read both missions 'not offered' to a pilot born Voidborn (Nova Terra's board offers them to its own empire only, as Node Beta's Workshop Production Run); it sold 10 plasma for 250 cr.",
  "once": true,
  "max_ships": 1,
  "min_credits": 3200,
@@ -69,5 +69,6 @@
    "at": "nova_terra:nova_terra_central:nova_terra_central",
    "store": "all"
   }
- ]
+ ],
+ "status": "off"
 }
