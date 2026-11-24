@@ -29,8 +29,8 @@ Status: proven. Updated: 2026-11-22. Evidence: intel turn check ROADS, OFFLIST, 
   as none) ages unseen (Sol and six more, 718 to 8,958 min, 2026-11-22):
   OFFLIST names it; it moves onto census-roads.
 - A list behind lists that always hold a due system is never reached
-  (census-roads: no run 00:55 to 11:25 UTC 2026-11-22, 57 systems past
-  480 min): give it ships of its own; UNFLOWN HALTs on it.
+  (census-roads, 2026-11-22: no run in ten hours): give it ships of its
+  own; UNFLOWN HALTs on it.
 
 ### Read every place the orders name against its cadence
 Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.log ENT-083.
