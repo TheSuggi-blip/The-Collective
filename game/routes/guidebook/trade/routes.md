@@ -1,30 +1,30 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: plan.py show; fill.py status trader 18:25 and 19:03 UTC; table books 18:43 UTC; reservecheck.py 19:11 UTC; orders ENT-083.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show; fill.py status trader 01:05 and 01:17 UTC; table books 01:10 UTC; stock view=surplus 01:11 UTC; orders ENT-084; contracts.log ENT-006.
 
-The plan file as set on 2026-11-23 at 19:11 UTC (orders ENT-083, block
-MERCURY: the traders left at the capitals take standing work there):
+The plan file as set on 2026-11-24 at 01:15 UTC (orders ENT-084, block
+MERCURY: capital crafts under 500 cr a ship-hour; no trader waits):
 
 - First, every ship: the once line of every board (Voidborn chain,
-  Federation, Sol, Rim, Krynn, Nova Terra, Alpha Centauri); Blood Forge
-  Requisition at Krynn (7,000 once, a test of three); the ember gland
-  Station Need at Krynn and its carry from The Crucible.
+  Federation, Sol, Rim, Krynn, Nova Terra, Alpha Centauri, Blood Forge,
+  the Station Needs) and the Blood Forge corridor (Logistics' route).
 - Own rows: the join corridors, the capitals' lines, `@trade-sell >
-  @trade-craft`, as before.
-- Then, every ship, each route gated to where the ship stands: docked
-  crafts at the War Citadel (`docked_at`: nitrogen sold into the 1 cr
-  bid, neon kept, oxygen sold), the nitrogen carry Alpha Centauri ->
-  Sol (`max_jumps` 4), neon kept at The Experiment for the home ships
-  (`max_jumps` 3), steel, the loop, park.
+  @trade-craft`, the loop for the home Voidborn.
+- Then, every ship, gated to where it stands: the Bursar desks
+  `bursar-desk-krynn` (`docked_at`), `bursar-desk-alpha` (`max_jumps`
+  1, takes Sol's ships), `bursar-desk-experiment` (`max_jumps` 3),
+  steel, park.
 
-What it carries: a craft of bought gas as many as the station's ask
-holds; the 1 cr bids drain, then the output is stored; the third craft
-stop keeps a 20-minute docked watch to halve the burn.
+A desk run: store the hold, buy 60 to 64 of a 1 cr gas, one craft of
+8 to 10 runs (neon or oxygen; never a good of the pull record, which
+closes the route at its max), list the pilot's own surplus under the
+station's ask and above every bid, a 15-minute watch. About 18 minutes
+and 65 cr a run; once the 1 cr ask is gone it lists and watches free.
 
-What would change it: a paying trade or mission at a capital; the
-runner choosing a Station Need copy by its size; a good the reserve
-holds back (reservecheck FLAG) is never sold by a craft.
+What would change it: fills read at the desks (contracts.log); a paying
+trade or mission at a capital; a good the reserve holds back is never
+listed (reservecheck); a T2 hull per Piloting-10 trader.
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
 

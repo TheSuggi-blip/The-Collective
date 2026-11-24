@@ -150,3 +150,17 @@ accepts by title the first copy posted (`accept: [{title, needs}]`):
 `needs` at the largest copy seen makes any copy completable. Read the
 boards (table missions) for stored goods before a sell route; a
 reservecheck FLAG still holds a good back.
+
+### A docked craft's cost is its craft runs per hour
+Status: test. Updated: 2026-11-24. Evidence: hive.py briefing 01:01 UTC (craft-sell-neon-krynn -1,089, craft-sell-oxygen-krynn -2,760 cr a ship-hour); route logs of bursar-desk-krynn and bursar-desk-alpha 01:16 to 01:18 UTC; pull.json; contracts.log ENT-006.
+
+A docked craft costs its inputs and nothing else, so its cost per
+ship-hour is the crafts it runs in an hour: three buy-and-craft stops in
+8 minutes cost over 1,000 cr a ship-hour. One craft stop and a desk
+watch (`watch_minutes`, 0 fuel) set the cost: 60 neon at 1 cr and a
+15-minute watch is about 65 cr a run of 18 minutes. A craft whose output
+stands in the pull record (`pull.json` items: liquid nitrogen, purified
+argon) is closed at its max; craft one outside it (ionized neon, liquid
+oxygen). The same stop lists the pilot's own surplus (`sell_order`)
+under the station's ask: no `undercut_pct` where many of our ships list
+one good, or they undercut each other to the floor.
