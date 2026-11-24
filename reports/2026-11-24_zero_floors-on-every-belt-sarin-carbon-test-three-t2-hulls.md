@@ -44,10 +44,11 @@ mining).
   within 12 jumps, max 1. It heads the own routes of the 23 laser-only
   Voidborn veterans.
 - Orders ENT-086, spread over the belts of Then with no empty burn: 27
-  mine routes of the plan had no field floor. 44 miners flew belts read at
-  0 to 1,500 units of their main good within 3.2 hours (table fields,
+  mine routes of the plan had no field floor. 44 miners flew 19 belts
+  whose main good read under 5% of its field within 3.2 hours: 0 to 849
+  units on 17, 2,541 and 4,667 on Horizon and Furud Legacy (table fields,
   table ships). Each route got `min_left` on its main good, 5% of the
-  field (commit 24c7e419), and 19 closed at once. 29 miners on the
+  field (commit 24c7e419), and those 19 closed at once. 29 miners on the
   emptiest belts were stopped (stop_pilot.py). At 09:56 UTC 12 were
   storing their holds at Grand Exchange and 17 flew paid-once missions or
   the reopened copper-iron gathers (table ships, 09:56 UTC).
@@ -144,7 +145,7 @@ mining).
   emptied belt. Every mine route in a plan carries `min_left` on its main
   good, and a route another hand wires into the plan is read for it
   each turn. Record: table fields and ships, 09:50 to 09:56 UTC (27
-  routes, 44 miners on belts read 0 to 1,500); commit 24c7e419. Change:
+  routes, 44 miners on 19 belts under a 5% floor); commit 24c7e419. Change:
   every turn lists the plan's mine routes against their fields before
   sizing. Fleet takeaway: a route maker that writes mine routes writes
   their floor too. Kept in knowledge/iron-gathering.md (workspace).
