@@ -161,14 +161,16 @@ def _load_pirate_threat_safe(data_dir, hours):
 
 def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
     """Load star graph, systems, stations, fields, pirates, reserves, needs, and item values from read.db & TSVs."""
-    use_cache = (now_t is None)
-    now_t = time.time() if now_t is None else float(now_t)
-    ck = (str(data_dir), str(repo_root), str(policy.get("pirate_avoid_hours")), bool(policy.get("craft_demand_tier", True)))
-    if use_cache:
-        with _CACHE_LOCK:
-            hit = _WORLD_CACHE.get(ck)
-            if hit and (now_t - hit[0]) < 20.0:
-                return hit[1]
+    if now_t is None:
+        import worldcache as _wc
+        ck = ("mine_world", str(data_dir), str(repo_root), _wc.db_sig(data_dir),
+              str(policy.get("pirate_avoid_hours")), bool(policy.get("craft_demand_tier", True)))
+        return _wc.cached(ck, 25.0, lambda: _load_graph_and_world_uncached(data_dir, repo_root, policy, time.time()))
+    return _load_graph_and_world_uncached(data_dir, repo_root, policy, float(now_t))
+
+
+def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
+    use_cache = False
     db_path = Path(data_dir) / "store" / "read.db"
     adj = {}
     systems = {}
@@ -181,7 +183,8 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
 
     if db_path.exists():
         try:
-            conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True)
+            import worldcache as _wc
+            conn = _wc.ro_db(db_path)
         except sqlite3.Error:
             conn = None
         if conn is not None:
@@ -369,14 +372,15 @@ def load_claims_state(data_dir, policy, now_t=None):
 
 def count_static_mine_orders(repo_root, data_dir, now_t=None, order_fresh_s=1200.0):
     """Count active static `mine <route_id>` ships per belt from data/fleet/orders/*.json."""
-    use_cache = (now_t is None)
-    now_t = time.time() if now_t is None else float(now_t)
-    sck = (str(repo_root), str(data_dir))
-    if use_cache:
-        with _CACHE_LOCK:
-            hit = _STATIC_CACHE.get(sck)
-            if hit and (now_t - hit[0]) < 15.0:
-                return dict(hit[1])
+    if now_t is None:
+        import worldcache as _wc
+        return dict(_wc.cached(("mine_static", str(repo_root), str(data_dir)), 15.0,
+                               lambda: _count_static_mine_orders_uncached(repo_root, data_dir, time.time(), order_fresh_s)))
+    return _count_static_mine_orders_uncached(repo_root, data_dir, float(now_t), order_fresh_s)
+
+
+def _count_static_mine_orders_uncached(repo_root, data_dir, now_t, order_fresh_s):
+    use_cache = False
     odir = Path(data_dir) / "fleet" / "orders"
     rdir = Path(repo_root) / "game" / "routes"
     if not odir.is_dir() or not rdir.is_dir():

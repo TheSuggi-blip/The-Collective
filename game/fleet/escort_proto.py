@@ -81,7 +81,14 @@ def bfs_path(adj, src, dst, max_hops=45):
 
 def load_pirate_threat(data_dir, hours=6.0, now_t=None):
     """Return {system_id: {'count': int, 'raiders': int, 'elites': int, 'last_t': float}} from read.db observations."""
-    now_t = time.time() if now_t is None else float(now_t)
+    if now_t is None:
+        import worldcache as _wc
+        return _wc.cached(("ep_pirates", str(data_dir), _wc.db_sig(data_dir), float(hours)), 20.0,
+                          lambda: _load_pirate_threat_uncached(data_dir, hours, time.time()))
+    return _load_pirate_threat_uncached(data_dir, hours, float(now_t))
+
+
+def _load_pirate_threat_uncached(data_dir, hours, now_t):
     cutoff = now_t - float(hours or 6.0) * 3600.0
     db = Path(data_dir) / "store" / "read.db"
     out = {}
@@ -89,7 +96,7 @@ def load_pirate_threat(data_dir, hours=6.0, now_t=None):
         return out
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
         if "observations" in tbls:
             for subj, note, t in con.execute(
@@ -120,7 +127,14 @@ def load_pirate_threat(data_dir, hours=6.0, now_t=None):
 
 def load_recent_raids(data_dir, hours=24.0, now_t=None):
     """Return set of system_ids with recent raid observations."""
-    now_t = time.time() if now_t is None else float(now_t)
+    if now_t is None:
+        import worldcache as _wc
+        return _wc.cached(("ep_raids", str(data_dir), _wc.db_sig(data_dir), float(hours)), 20.0,
+                          lambda: _load_recent_raids_uncached(data_dir, hours, time.time()))
+    return _load_recent_raids_uncached(data_dir, hours, float(now_t))
+
+
+def _load_recent_raids_uncached(data_dir, hours, now_t):
     cutoff = now_t - float(hours or 24.0) * 3600.0
     db = Path(data_dir) / "store" / "read.db"
     raids = set()
@@ -128,7 +142,7 @@ def load_recent_raids(data_dir, hours=24.0, now_t=None):
         return raids
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
         if "observations" in tbls:
             for (subj,) in con.execute(

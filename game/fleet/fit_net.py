@@ -151,6 +151,15 @@ def _bfs(adj, start, max_hops):
 
 def load_fit_world(data_dir, policy):
     """Load lanes, safe policed stations, hulls slot counts, and live module asks from read.db."""
+    import worldcache as _wc
+    mp = (policy or {}).get("max_price") or {}
+    mp_sig = tuple(sorted((str(k), int(v)) for k, v in mp.items() if isinstance(v, (int, float))))
+    bc_sig = _wc.file_sig(Path(data_dir) / "fleet" / "bursar_claims.json")
+    ck = ("fit_world", str(data_dir), _wc.db_sig(data_dir), bc_sig, mp_sig)
+    return _wc.cached(ck, 25.0, lambda: _load_fit_world_uncached(data_dir, policy))
+
+
+def _load_fit_world_uncached(data_dir, policy):
     db = Path(data_dir) / "store" / "read.db"
     adj = {}
     stations = {}       # base_id -> (system, poi, base_id, policed)
@@ -165,7 +174,8 @@ def load_fit_world(data_dir, policy):
             if isinstance(rec, dict) and rec.get("pilot"):
                 bursar_pilots.add(str(rec["pilot"]))
     if db.is_file():
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc
+        con = _wc.ro_db(db, timeout=3.0)
         try:
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
             if "lanes" in tbls:
@@ -472,6 +482,8 @@ def main(argv=None):
             notes.append("already fitted")
             return 0
 
+        print("%s %s fit_net: flying to %s (%dJ, unfit=%d, buy=%d, spec=%s)" % (
+            utc_now(), pilot, plan["base"], plan["hops"], len(plan["unfit"]), len(plan["buy_fit"]), plan["specialty"]), flush=True)
         ok_d, _ans = goal("prepare-at-station", {"systemId": plan["system"], "poiId": plan["poi"], "baseId": plan["base"], "refuel": True}, timeout=240)
         if not ok_d:
             notes.append("dock failed at %s" % plan["base"])
@@ -500,8 +512,17 @@ def main(argv=None):
             if not ok_b:
                 notes.append("buy err %s" % mid)
                 continue
+            st_after = get_status_body()
+            cargo_rows = (st_after.get("ship") or {}).get("cargo") or st_after.get("cargo") or []
+            have_mid = any(
+                isinstance(c, dict) and str(c.get("item_id") or c.get("item") or "").lower() == str(mid).lower() and int(c.get("quantity") or 0) >= 1
+                for c in cargo_rows
+            )
+            cr_after = int((st_after.get("player") or {}).get("credits") or 0)
+            if not have_mid:
+                notes.append("sold out %s" % mid)
+                continue
             try:
-                cr_after = get_credits()
                 spent = max(0, cr_before - cr_after) if cr_before > 0 and cr_after >= 0 else int(max_pr)
                 if spent > 0:
                     import gate as _gate_mod
@@ -516,7 +537,7 @@ def main(argv=None):
                 notes.append("install err %s" % mid)
             else:
                 notes.append("fit %s@%d" % (mid, max_pr))
-        had_err = any(n.startswith(("buy err", "install err", "dock failed")) for n in notes)
+        had_err = any(n.startswith(("buy err", "install err", "dock failed", "sold out")) for n in notes)
         _stamp_fit_cooldown(pilot, 1200 if had_err else 300, data_dir=DATA)
         return 0
     finally:

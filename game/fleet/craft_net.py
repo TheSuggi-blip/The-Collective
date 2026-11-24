@@ -61,6 +61,14 @@ def ship_file_name(pilot):
 
 def load_craft_world(data_dir, repo_root, policy):
     """Load workshop recipes, inputs, outputs, live books, need_status, and craft-demand."""
+    import worldcache as _wc
+    dem_f = str((policy or {}).get("demand_file") or "game/craft-demand.json")
+    ck = ("craft_world", str(data_dir), str(repo_root), _wc.db_sig(data_dir), dem_f,
+          _wc.file_sig(Path(repo_root) / dem_f))
+    return _wc.cached(ck, 25.0, lambda: _load_craft_world_uncached(data_dir, repo_root, policy))
+
+
+def _load_craft_world_uncached(data_dir, repo_root, policy):
     db = Path(data_dir) / "store" / "read.db"
     recipes = {}        # rid -> {id, name, facility_only, inputs: [(item, qty)], outputs: [(item, qty)]}
     books_by_base = {}  # base -> {item: {bid, bid_qty, ask, ask_qty}}
@@ -70,7 +78,8 @@ def load_craft_world(data_dir, repo_root, policy):
     stock_by_item = {}
 
     if db.is_file():
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc
+        con = _wc.ro_db(db, timeout=3.0)
         try:
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
             if "recipes" in tbls and "recipe_inputs" in tbls and "recipe_outputs" in tbls:
@@ -460,7 +469,8 @@ def main(argv=None):
             return 0
         stored = get_live_stored(base_id)
         if not stored:
-            stor_all = read_json(DATA / "stock" / "storage.json", {})
+            import worldcache as _wc
+            stor_all = _wc.read_json_cached(DATA / "stock" / "storage.json", {}, ttl_s=30.0)
             p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
             stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
         world = load_craft_world(DATA, REPO, policy)
@@ -477,6 +487,7 @@ def main(argv=None):
                     pass
             return 0
 
+        print("%s %s craft_net: starting %dx %s (%s) at %s" % (utc_now(), pilot, int(job["runs"] * job["per_run"]), job["makes"], job["mode"], base_id), flush=True)
         # 1. Buy any short docked inputs via real buy-items goal & store them for workshop
         for iid, qty, ask in job["buys"]:
             ok_b, _rb = goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(ask * 1.02) + 2, "maxQuantity": int(qty)}]}, timeout=120)

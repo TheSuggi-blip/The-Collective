@@ -175,12 +175,19 @@ def _static_bursar_bases(repo_root, orders):
 
 
 def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False):
+    import worldcache as _wc
+    ck = ("bursar_stations", str(data), _wc.db_sig(data), bool(policed_only), bool(exclude_strongholds),
+          bool(exclude_pirates), float(pirate_avoid_hours or 6.0), bool(include_empty_neutral))
+    return _wc.cached(ck, 25.0, lambda: _load_exchange_stations_uncached(data, policed_only, exclude_strongholds, exclude_pirates, pirate_avoid_hours, include_empty_neutral))
+
+
+def _load_exchange_stations_uncached(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False):
     db = Path(data) / "store" / "read.db"
     stations = []
     if db.is_file():
         con = None
         try:
-            con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+            import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
             con.row_factory = sqlite3.Row
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
             pirate_sys = set()
@@ -427,12 +434,18 @@ def release_claim(data, pilot):
 
 
 def load_needs_and_reserves(repo_root, data):
+    import worldcache as _wc
+    ck = ("bursar_needs", str(repo_root), str(data), _wc.db_sig(data), _wc.file_sig(Path(repo_root) / "game" / "reserve.tsv"))
+    return _wc.cached(ck, 25.0, lambda: _load_needs_and_reserves_uncached(repo_root, data))
+
+
+def _load_needs_and_reserves_uncached(repo_root, data):
     open_needs, reserved, catalog_vals = {}, set(PROTECTED_ITEMS), {}
     db = Path(data) / "store" / "read.db"
     if db.is_file():
         con = None
         try:
-            con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+            import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
             if "contract_candidates" in tbls:
                 for (short_s,) in con.execute("SELECT short_items FROM contract_candidates WHERE short_items IS NOT NULL").fetchall():

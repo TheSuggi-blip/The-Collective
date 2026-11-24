@@ -127,13 +127,18 @@ def _bfs_hops(lanes, src, dst):
 
 def load_base_map(data):
     """{base_id: (system, poi, base_id, empire)} from read.db places+systems."""
+    import worldcache as _wc
+    return _wc.cached(("haul_base_map", str(data), _wc.db_sig(data)), 25.0, lambda: _load_base_map_uncached(data))
+
+
+def _load_base_map_uncached(data):
     out = {}
     db = Path(data) / "store" / "read.db"
     if not db.is_file():
         return out
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         if {"places", "systems"} <= tbls:
             for sys_id, poi_id, base_id, emp in con.execute("""
@@ -151,13 +156,18 @@ def load_base_map(data):
 
 
 def load_stronghold_bases(data):
+    import worldcache as _wc
+    return _wc.cached(("haul_strongholds", str(data), _wc.db_sig(data)), 25.0, lambda: _load_stronghold_bases_uncached(data))
+
+
+def _load_stronghold_bases_uncached(data):
     out = set()
     db = Path(data) / "store" / "read.db"
     if not db.is_file():
         return out
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         if {"places", "stations"} <= tbls:
             for base_id, sys_id in con.execute(
@@ -722,12 +732,17 @@ def _heartbeat(order_path, every=60):
 
 
 def _load_books(data):
+    import worldcache as _wc
+    return _wc.cached(("haul_books", str(data), _wc.db_sig(data)), 25.0, lambda: _load_books_uncached(data))
+
+
+def _load_books_uncached(data):
     db = Path(data) / "store" / "read.db"
     if not db.is_file():
         return []
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         con.row_factory = sqlite3.Row
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         if "books" not in tbls:
@@ -751,7 +766,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
     open_needs = set()
     con = None
     try:
-        con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
+        import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
         for tbl_nm in ("need_status", "contract_candidates"):
             if tbl_nm in tbls:
@@ -1011,7 +1026,7 @@ def main(argv=None):
                 try:
                     _db = Path(DATA) / "store" / "read.db"
                     if _db.is_file():
-                        _c = sqlite3.connect("file:%s?mode=ro" % _db, uri=True, timeout=3.0)
+                        import worldcache as _wc; _c = _wc.ro_db(_db, timeout=3.0)
                         try:
                             for _sid, _emp, _sh in _c.execute("SELECT id, COALESCE(empire,''), COALESCE(stronghold,0) FROM systems"):
                                 _s_meta[str(_sid)] = {"empire": str(_emp or ""), "stronghold": bool(_sh)}

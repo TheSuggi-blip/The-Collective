@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 76.
+folder; never edited by hand. Scripts listed: 77.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -103,6 +103,7 @@ folder; never edited by hand. Scripts listed: 76.
 | `wallet.py` | No ship of ours goes broke: a ship whose wallet runs low is given credits by a rich ship of its division. | By hand |
 | `watchdog.py` | Check whether the fleet is advancing across turns or stuck in loops, bottlenecks, or idle states. | By hand |
 | `workclass.py` | Whose work a route is: the work class of every route and the classes each role flies | By hand |
+| `worldcache.py` | Process-wide single-flight TTL cache & immutable read.db opener for threaded runhost runners. | By hand |
 
 ## How to Call Each
 
@@ -1224,4 +1225,17 @@ workclass.py sales                          the dry run of the sale rule: the ro
                                             on, per class and per Admiral (whose role plans name them for a role that
                                             is not the traders'), each with the roles it would be closed to
 --data <dir>   the unit's data folder whose switch is read (default FLEET_DATA_ROOT or /srv/collective/data)
+```
+
+### `worldcache.py`
+
+Process-wide single-flight TTL cache & immutable read.db opener for threaded runhost
+runners.
+
+Run by hand.
+
+```
+import worldcache
+con = worldcache.ro_db(db_path)
+world = worldcache.cached(("mine_world", str(data), worldcache.db_sig(data)), 25.0, _load)
 ```

@@ -395,7 +395,15 @@ def nearest_station(adj, stations_by_sys, sys_id, max_hops=6):
 
 def load_combat_world(data_dir, repo_root, policy, now_t=None):
     """Load graph, systems, stations, herds, wildlife hull/pirate reads, ranches, pirates, needs, and loot values."""
-    now_t = time.time() if now_t is None else float(now_t)
+    if now_t is None:
+        import worldcache as _wc
+        ck = ("hunt_world", str(data_dir), str(repo_root), _wc.db_sig(data_dir),
+              str((policy or {}).get("pirate_avoid_hours")), str((policy or {}).get("herd_stale_hours")))
+        return _wc.cached(ck, 25.0, lambda: _load_combat_world_uncached(data_dir, repo_root, policy, time.time()))
+    return _load_combat_world_uncached(data_dir, repo_root, policy, float(now_t))
+
+
+def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
     db_path = Path(data_dir) / "store" / "read.db"
     adj, systems, stations_by_sys = {}, {}, {}
     herds = []
@@ -413,7 +421,8 @@ def load_combat_world(data_dir, repo_root, policy, now_t=None):
         # (2026-11-24: `SELECT id, system, poi FROM stations` failed on the store's schema and
         # every pilot found 0 herds and 0 packs.)
         try:
-            conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True)
+            import worldcache as _wc
+            conn = _wc.ro_db(db_path)
         except sqlite3.Error:
             conn = None
         if conn is not None:
@@ -534,7 +543,8 @@ def load_combat_world(data_dir, repo_root, policy, now_t=None):
     _db_b = Path(data_dir) / "store" / "read.db"
     if _db_b.is_file():
         try:
-            c2 = sqlite3.connect("file:%s?mode=ro" % _db_b, uri=True, timeout=3.0)
+            import worldcache as _wc
+            c2 = _wc.ro_db(_db_b, timeout=3.0)
             if "bases" in {r[0] for r in c2.execute("SELECT name FROM sqlite_master WHERE type='table'")}:
                 for b_id, sys_id, poi_id, knd in c2.execute("SELECT base, system, poi, kind FROM bases WHERE system IS NOT NULL"):
                     owned_bases.append({"base": str(b_id), "system": str(sys_id), "poi": str(poi_id or b_id), "kind": str(knd or "outpost")})
