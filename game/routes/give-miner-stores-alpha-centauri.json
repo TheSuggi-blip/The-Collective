@@ -1,0 +1,49 @@
+{
+ "id": "give-miner-stores-alpha-centauri",
+ "kind": "circuit",
+ "title": "A miner gives its stores at Alpha Centauri Colonial Station: iron, copper and the reserve's ores to the hauler there (docked steel, strict classes)",
+ "note": "Written by Zero, 2026-11-24 05:48 UTC: requests.log ENT-486 (Apollo): miners' storage at Alpha Centauri held 11,250 iron ore and 4,082 copper ore (data/stock/storage.json, book of 2026-11-24T05:47:42Z); Apollo names the hauler receiver there (handover.py receivers) and writes the docked steel route. Copied from give-miner-stores-procyon: one stop, docked, the hold stored, then one gift from storage to the hauler. requires.stored: any one of the goods, 50 or more, in the pilot's own storage here; requires.max_jumps 6: only a ship near this station takes it. Orders ENT-085 P2 (iron to steel where it lies), P5; rules F23, F24, F36.",
+ "max_ships": 3,
+ "requires": {
+  "stored": {
+   "at": "alpha_centauri_colonial_station",
+   "items": [
+    "iron_ore",
+    "copper_ore",
+    "steel_plate",
+    "copper_piping",
+    "carbon_ore",
+    "silicon_ore",
+    "nickel_ore",
+    "gold_ore",
+    "platinum_ore"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 6
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "store": "all",
+   "gift": [
+    {
+     "to": "hauler",
+     "items": [
+      "iron_ore",
+      "copper_ore",
+      "steel_plate",
+      "copper_piping",
+      "carbon_ore",
+      "silicon_ore",
+      "nickel_ore",
+      "gold_ore",
+      "platinum_ore"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

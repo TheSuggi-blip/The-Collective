@@ -2,7 +2,7 @@
  "id": "gather-mekbuda-shardflash-silicon",
  "kind": "mine",
  "title": "A test: silicon ore of Shardflash Belt (Mekbuda) into storage at Factory Belt Manufacturing Hub (eight jumps, lawless)",
- "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Shardflash Belt read silicon 560 of 20,000 at richness 42 and nothing else (table fields, 5.3 h old at 23:37 UTC), lawless, eight jumps from Factory Belt; no pirate line in 24 h; Thane Keep (pirates) stands four jumps from it. A small field: one ship reads whether it regrows. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift).",
+ "note": "Written by Zero, 2026-11-23 23:45 UTC (orders ENT-084, block ZERO: cut gathers of ore above its max; the freed hours test silicon and carbon fields, one ship first; rules F3, F23, F24, F37). Shardflash Belt read silicon 560 of 20,000 at richness 42 and nothing else (table fields, 5.3 h old at 23:37 UTC), lawless, eight jumps from Factory Belt; no pirate line in 24 h; Thane Keep (pirates) stands four jumps from it. A small field: one ship reads whether it regrows. One ship, hold empty, three results before a lift (F3, F37); stores everything, sells nothing (F24, P5); each run gives the reserve's ores of its hold and of the pilot's storage there to the station's hauler (gift). 2026-11-24 05:48 UTC (Zero): jettison_gangue iron_ore and copper_ore (orders ENT-085 block ZERO; requests ENT-487; rule F12 allows it on scarce veins): iron and copper go overboard while mining, so a load is the field's silicon and no iron (above its max) comes home.",
  "belt": "mekbuda:shardflash_belt",
  "station": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
  "minutes": 150,
@@ -30,5 +30,9 @@
    "silver_ore"
   ]
  },
- "lift_to": 1
+ "lift_to": 1,
+ "jettison_gangue": [
+  "iron_ore",
+  "copper_ore"
+ ]
 }

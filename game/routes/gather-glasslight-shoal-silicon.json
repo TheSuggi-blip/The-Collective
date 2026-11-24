@@ -2,7 +2,7 @@
  "id": "gather-glasslight-shoal-silicon",
  "kind": "mine",
  "title": "A test: silicon ore gathered at Glasslight Shoal (Clearwater, lawless) into storage at Node Beta for the faction's circuit boards",
- "note": "Written by Apollo, 2026-11-17 08:45 UTC (orders.log ENT-032, block APOLLO (4): the 125 circuit boards of the two offices; rules F3, F13). The route maker's candidate mine-glasslight-shoal sells the silicon at Node Beta at 32 cr; this route stores it instead: 2 silicon ore and 12 carbon ore make 3 circuit boards by hand (carbon_arc_circuit_etching), and Central Nexus asks silicon at 420 cr (book of 07:53 UTC). The field read 322 silicon ore of 20,000 at richness 40 (scouting/clearwater.json, 2026-11-17 08:15 UTC): the first silicon field our readings show with ore in it (admirals.log ENT-003 found none). The way: 9 jumps from Node Beta, 8 of them lawless (GSC-0050, Brachium, Nightveil, Marfik, Regor, Groombridge 34, Innes 40), out with an empty hold (rule F13). One ship until its first RESULT line is read; min_left keeps one load in the field. Mining gathers silicon where a field has it (its block): Mining may claim the field, and this route then leaves the hauler plan.",
+ "note": "Written by Apollo, 2026-11-17 08:45 UTC (orders.log ENT-032, block APOLLO (4): the 125 circuit boards of the two offices; rules F3, F13). The route maker's candidate mine-glasslight-shoal sells the silicon at Node Beta at 32 cr; this route stores it instead: 2 silicon ore and 12 carbon ore make 3 circuit boards by hand (carbon_arc_circuit_etching), and Central Nexus asks silicon at 420 cr (book of 07:53 UTC). The field read 322 silicon ore of 20,000 at richness 40 (scouting/clearwater.json, 2026-11-17 08:15 UTC): the first silicon field our readings show with ore in it (admirals.log ENT-003 found none). The way: 9 jumps from Node Beta, 8 of them lawless (GSC-0050, Brachium, Nightveil, Marfik, Regor, Groombridge 34, Innes 40), out with an empty hold (rule F13). One ship until its first RESULT line is read; min_left keeps one load in the field. Mining gathers silicon where a field has it (its block): Mining may claim the field, and this route then leaves the hauler plan. 2026-11-24 05:48 UTC (Zero): jettison_gangue iron_ore and copper_ore (orders ENT-085 block ZERO; requests ENT-487; rule F12 allows it on scarce veins): iron and copper go overboard while mining, so a load is the field's silicon and no iron (above its max) comes home.",
  "belt": "clearwater:glasslight_shoal",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 90,
@@ -22,5 +22,9 @@
   "cph_per_ship": -180,
   "hours": 12,
   "last_run": "2026-11-24T02:03:47Z"
- }
+ },
+ "jettison_gangue": [
+  "iron_ore",
+  "copper_ore"
+ ]
 }
