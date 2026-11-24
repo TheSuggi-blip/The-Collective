@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-24T13:30:36Z.
+Facts as of 2026-11-24T19:14:25Z.
 
 ## 1. The Faction
 
@@ -30,7 +30,7 @@ Facts as of 2026-11-24T13:30:36Z.
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
 | Members | 275 of a limit of 275 |
-| Ships of the fleet in it | 275 of 500 |
+| Ships of the fleet in it | 274 of 499 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
 | Offices at stations | 10, rent 653 cr per cycle (56,158 cr a day) |
@@ -104,7 +104,7 @@ list of stations. Where a base is built is Suggi's decision.
 
 ## 5. What The Faction Can Build
 
-Every faction facility of the game's catalog (0.734.2), line by line and
+Every faction facility of the game's catalog (0.734.3), line by line and
 tier by tier. A higher tier is an upgrade of the one before it and
 replaces its rent. Rent is due every 100 ticks (about 17 minutes) at a
 station that is not ours; at our own station or outpost it is none. The
