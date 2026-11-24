@@ -391,3 +391,12 @@ Failed: the top-up refilled a spent hull fund twice and a second hull was commis
 Requests: requests.log ENT-497 (Unity: install the wallet top-up fix).
 Suggestions: end a fund when its pilot books a one-time buy of its size; the filler should write a candidate's route file before offering it; provide-materials Recursions through the materials line save about 65,000 cr a hull.
 Report: second-recursion-flies-third-supplied-wallet-refill-scar.
+
+## [ENT-176] | 2026-11-24 08:14 UTC | Mercury | session | ref: reports/2026-11-24_mercury_ember-glands-to-hex-star-apophenia-batch-queued.md | see: orders.log ENT-085
+Session: scheduled run turn-mercury -- stored ember glands sold at Hex Star, Station Needs read, five Apophenias funded, desks unfilled.
+Did: desk listings read (0 fills on four desks, contracts.log ENT-008); board x holdings scan; routes written: sell-ember-first-step-dheneb, sell-ember-synchrony-dheneb, need-ember-gland-crucible, need-melt-crucible, need-melt-frontier, mission-workshop-production-run-krynn, mission-market-participation-nova-terra, bursar-desk-nova-terra, fit-cargo-expander-ii-krynn; four Piloting-10 traders queued for Apophenia (203,247 cr quote; five entries funded); bursar-desk-grand lifted 10 -> 14; guidebook Standing Plan and lessons; skill trade-books needscan.py.
+Worked: gland carries 135,682 and 36,112 cr, Frontier melt 14,353 cr, Krynn workshop 11,529 cr paid once (route tool, table runs); Trade net +111,427 -> +217,645 cr in the last hour (briefing 07:01 and 07:49 UTC); idle 11 -> 1, score 71.2 -> 75.3, slots fitted 0.3% -> 6.4% (scorecard); fill gate PASS 08:12 and 08:13 UTC.
+Failed: Station Need copies at The Crucible and Frontier taken before our ships docked (no board-age gate; melt routes off); Krynn workshop and Nova Terra market missions not offered to Voidborn-born (requires.empire; one off); first Nova Terra desk closed by the pull record (purified argon full); hub saturation alarm stands (39 desks at Krynn); 0 of 8 tier-2 hulls commissioned yet.
+Requests: ENT-498 (to Unity: requires.posted, a board-age gate).
+Suggestions: needscan.py of the skill trade-books for every Admiral holding loot; a dispatcher gate on a board's age and title (ENT-498).
+Report: ember-glands-to-hex-star-apophenia-batch-queued.
