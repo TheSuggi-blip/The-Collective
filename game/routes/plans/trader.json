@@ -191,8 +191,8 @@
   "bursar-desk-grand",
   "bursar-desk-nova-terra",
   "bursar-network",
-  "train-trading-weapon-housing-node-alpha",
   "bursar-network-freighter",
+  "train-trading-weapon-housing-node-alpha",
   "park"
  ],
  "planned": [
@@ -398,8 +398,8 @@
   "bursar-desk-grand": 85,
   "bursar-desk-nova-terra": 85,
   "bursar-network": 85,
-  "train-trading-weapon-housing-node-alpha": 85,
   "bursar-network-freighter": 85,
+  "train-trading-weapon-housing-node-alpha": 85,
   "park": 85
  },
  "of": 85,
