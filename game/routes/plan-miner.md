@@ -163,7 +163,7 @@ Kept by Zero. Routes: 164. Ships: 130.
 | 141 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
 | 142 | [mine-almach-stray-facets](mine-almach-stray-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 24 jumps | up to 1 ships, empty hold, standing work | all 130 |
 | 143 | [mine-pioneer-fields](mine-pioneer-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 3 ships, standing work | all 130 |
-| 144 | [mine-82-eridani-belt](mine-82-eridani-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 3 ships, standing work | all 130 |
+| 144 | [mine-82-eridani-belt](mine-82-eridani-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
 | 145 | [mine-theta-proxima-belt](mine-theta-proxima-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 3 ships, standing work | all 130 |
 | 146 | [mine-markab-belt](mine-markab-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 3 ships, standing work | all 130 |
 | 147 | [mine-deep-range-mineral-fields](mine-deep-range-mineral-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
