@@ -1,27 +1,27 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-23. Evidence: the plan file (tool plan, show; applied 2026-11-23T23:47:46Z); fill.py check miner; table runs; table fields; table faction_storage; tool market silicon_ore; data/fleet/orders.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; data/fleet/orders; table ship_skills; table fields; table ship_modules.
 
-Turn of 2026-11-23 23:30 UTC (orders ENT-084). A free miner takes the list
-First, its own routes, then the list Then.
+Turn of orders ENT-085 (iron only where a ship's training needs it). A free
+miner takes the list First, its own routes, then the list Then.
 
 | Route | Ships | For |
 |---|---|---|
-| slot routes: Laser II and III at Ironlight, second and third Laser I at Sol (own stored Laser I first), Cargo Expander at Factory Belt; strip-only in Nexus Prime (claimed, admirals ENT-114) | by asks | every utility slot filled |
-| `give-miner-stores-<station>` | 3 each | stores to the receivers |
+| slot routes (Laser II and III at Ironlight, second and third Laser I at Sol, Cargo Expander at Factory Belt; strip-only in Nexus Prime, admirals ENT-114) | by asks | every utility slot filled |
+| `give-miner-stores-<station>` | 3 each | stores to the receivers (Alpha Centauri off until its receiver stands) |
 | once missions | by route | paid once per pilot |
-| seated rows: no faction gather while the outpost holds iron at its 100,000 limit | -- | the templates below |
-| newborn rows first: store-hold at Sol Central or the Grand Exchange | 35 each | a loaded hold stored at home |
-| Solarian rows: gives, missions, then the Furud carbon test, Lacaille, Markab, Nihal, Harborlight, Electra (gift to the hauler) | 1, 6, 6, 12, 6, 6 | iron to docked steel; the Mining skill |
-| Nebula rows: gives, missions, the Edasich, GSC-0007 and Mekbuda silicon tests, then Bunda, Khambalia, Alrakis (20 jumps: strays fly home) | 1 each, 3, 18, 14 | silicon; iron to docked steel |
-| `@reserve-prism` / `@reserve-hamal` | 1 each | the Emberglow silicon and Gliese 876 carbon tests, then carbon, nickel, silicon, quantum fragments |
-| Then | shared | gives, seep 3, Pherkad 3, Schedar 5, Hamal (training for ships with no other work), home-sol-central, `train-jumps-miner`, park |
+| Solarian rows: gives, missions, Furud carbon, Lacaille, Markab, Nihal, Harborlight, Electra | 3, 6, 6, 12, 6, 6 | carbon; Mining skill |
+| Nebula rows: gives, missions, Edasich, GSC-0007, Mekbuda silicon, Bunda, Khambalia, Alrakis | 2, 1, 1, 3, 18, 14 | silicon; Mining skill |
+| `@reserve-prism` / `@reserve-hamal` | 1 to 4 | carbon (Gliese 4, Jishui 2), silicon (Emberglow 3), nickel, quantum fragments |
+| Then | shared | gives; seep 3; Pherkad 3; Node Gamma nitrogen ice 10 (zero jumps, Ice Harvester); Schedar 13; Hamal 30; Okab 25; home-sol-central; `train-jumps-miner`; park |
 
-What would change it: a silicon test's three results (stations bid 386
-to 539 cr a unit, 2026-11-23); a route key for jettisoned gangue
-(requests ENT-483) for the mixed silicon fields; the outpost's iron
-drawn below 100,000; iron under its max of 80,000.
+Silicon gathers carry `jettison_gangue` (iron, copper). Miners at Mining
+10 and above take every iron-free route before the iron of Then; the
+miners under 10 train on Hamal and Okab instead of the jump loop.
+
+What would change it: Hamal and Schedar at their iron floors (hours);
+the Node Gamma ice runs' cost and XP; iron under its max of 80,000.
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
 
