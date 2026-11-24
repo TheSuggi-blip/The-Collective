@@ -103,6 +103,7 @@
   "watch-book-deep-range",
   "watch-book-starfall",
   "watch-book-ironlight-refuge",
+  "watch-book-hex-star",
   "park"
  ],
  "planned": [
@@ -228,6 +229,7 @@
   "watch-book-deep-range": 50,
   "watch-book-starfall": 50,
   "watch-book-ironlight-refuge": 50,
+  "watch-book-hex-star": 50,
   "park": 50
  },
  "of": 50,
