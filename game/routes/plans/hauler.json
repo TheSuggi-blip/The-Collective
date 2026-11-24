@@ -127,6 +127,10 @@
   {
    "what": "read finish-first-links-grand (six holders) and mission-first-links-nickel-grand: paid runs and the nickel ask at Grand Exchange",
    "when": "next turn"
+  },
+  {
+   "what": "read the carbon buy at Node Beta against its gate (57,000 of Logistics) and the Builder's docked runs there",
+   "when": "next turn"
   }
  ],
  "ships": {

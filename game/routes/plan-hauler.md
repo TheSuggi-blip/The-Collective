@@ -153,3 +153,4 @@ Planned:
 |---|---|
 | read the answer to requests ENT-513 (the outpost's faction iron out of the iron chain and the pull rule) and Mining's iron gathers after it | next turn |
 | read finish-first-links-grand (six holders) and mission-first-links-nickel-grand: paid runs and the nickel ask at Grand Exchange | next turn |
+| read the carbon buy at Node Beta against its gate (57,000 of Logistics) and the Builder's docked runs there | next turn |
