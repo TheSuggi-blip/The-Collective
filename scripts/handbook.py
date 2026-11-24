@@ -109,7 +109,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "hull_readiness", "stats_pilot_hour", "stats_pilot_last")),
     ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions")),
     ("Money", ("stats_money_hour", "division_pnl_24h")),
-    ("Markets", ("books", "ladders", "moves", "market_hour", "contract_candidates")),
+    ("Markets", ("books", "ladders", "ship_listings", "moves", "market_hour", "contract_candidates")),
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),

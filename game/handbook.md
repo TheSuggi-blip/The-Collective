@@ -36,7 +36,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Ships and pilots, `game/handbook/ships-and-pilots.md`: ships, ship_skills, ship_modules, ship_cargo, fleet_positions, hull_readiness, stats_pilot_hour, stats_pilot_last
 - Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
 - Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
-- Markets, `game/handbook/markets.md`: books, ladders, moves, market_hour, contract_candidates
+- Markets, `game/handbook/markets.md`: books, ladders, ship_listings, moves, market_hour, contract_candidates
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
@@ -46,7 +46,6 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
-- Other, `game/handbook/other.md`: ship_listings
 
 ## How the data flows
 

@@ -28,6 +28,18 @@ now: the price ladder of an item at a station, every bid and ask step with its u
 - Units bid at 100 cr or more, per item: `SELECT item, SUM(qty) FROM ladders WHERE side = 'bid' AND price >= 100 GROUP BY item ORDER BY 2 DESC`
 - Items with a ladder per station: `SELECT base, COUNT(DISTINCT item) FROM ladders GROUP BY base`
 
+## ship_listings
+
+now: galaxy-wide player and shipyard ship listings across all stations, refreshed every 15 min by ledger.py (market/ship_listings.json)
+
+- Kind: snapshot
+- Columns: listing_id, ship_id, class_id, ship_name, category, tier, base, base_name, price, seller, listed_at, t, src; one row per listing_id
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `ship_listings`, data/market/ship_listings.json
+- Cheapest listed hull per class across the galaxy: `SELECT class_id, MIN(price) AS min_price, base, COUNT(*) AS avail FROM ship_listings WHERE price > 0 GROUP BY class_id ORDER BY min_price LIMIT 25`
+- Listed ships under 150,000 cr with cargo >= 250: `SELECT sl.class_id, h.cargo, h.piloting_required, sl.price, sl.base FROM ship_listings sl JOIN hulls h ON h.id = sl.class_id WHERE sl.price > 0 AND sl.price <= 150000 AND h.cargo >= 250 ORDER BY sl.price LIMIT 20`
+- Cheapest listed combat hulls by tier: `SELECT sl.class_id, sl.tier, MIN(sl.price) AS min_price, sl.base FROM ship_listings sl WHERE sl.category = 'Combat' AND sl.price > 0 GROUP BY sl.class_id ORDER BY sl.tier, min_price`
+
 ## moves
 
 history: one row per change of an item's best bid or ask at a station (market/history.jsonl), the raw rows of --keep-days days
