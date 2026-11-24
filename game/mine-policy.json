@@ -93,9 +93,7 @@
     "valor:saiph_major_belt",
     "yildun:neverworld_carbon"
   ],
-  "exclude_resources": [
-    "water_ice"
-  ],
+  "exclude_resources": [],
   "pirate_avoid_hours": 6.0,
   "max_jumps": 10,
   "max_station_jumps": 4,

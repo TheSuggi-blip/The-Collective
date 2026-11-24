@@ -293,5 +293,27 @@ class UpgradeQueueTests(unittest.TestCase):
             self.assertIn("u-3", after)
 
 
+    def test_building_rows_polled_before_funded_docks_ent196(self):
+        """A travelling pilot's building row is polled before a docked pilot's funded row (ENT-196)."""
+        now = 1795500000
+        ships = [
+            {"name": "miner-1", "division": "Mining", "credits": 400000, "status": "connected", "docked": "", "system": "other", "in_combat": False},
+            {"name": "drone-2", "division": "Military", "credits": 400000, "status": "connected", "docked": "node_beta_base", "system": "node_beta", "in_combat": False},
+        ]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+        rows = [
+            {"id": "u-1", "pilot": "drone-2", "division": "Military", "hull": "recursion", "station": "node_beta:poi:node_beta_base",
+             "max_price": 370000, "state": "funded", "created_at": now - 600, "updated_at": now - 600},
+            {"id": "u-2", "pilot": "miner-1", "division": "Mining", "hull": "resonance_miner", "station": "node_beta:poi:node_beta_base",
+             "max_price": 300000, "state": "building", "created_at": now - 7200, "updated_at": now - 3600, "last_poll": now - 3600},
+        ]
+        upgrades.save_queue(self.data, rows)
+        gate, wal, div = FakeGate(), FakeWallet(), FakeDivision()
+        upgrades.serve_upgrades(self.data, now=now, max_actions=2, gate_mod=gate, wallet_mod=wal, division_mod=div)
+        self.assertGreaterEqual(len(gate.calls), 2)
+        self.assertIn("miner-1", gate.calls[0][1])
+        self.assertEqual((gate.calls[0][2] or {}).get("action"), "list_ships")
+
+
 if __name__ == "__main__":
     unittest.main()

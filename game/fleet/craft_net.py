@@ -109,6 +109,10 @@ def load_craft_world(data_dir, repo_root, policy):
                         m = re.match(r"\s*([a-z0-9_]+)\s+\d+", part.strip())
                         if m:
                             need_crafts.add(m.group(1))
+            if "holdings" in tbls:
+                for iid, tot in con.execute("SELECT item, COALESCE(SUM(units),0) FROM holdings GROUP BY item"):
+                    if iid:
+                        stock_by_item[str(iid)] = int(tot or 0)
             if "supply_status" in tbls:
                 for iid, stk, keep in con.execute("SELECT item, COALESCE(stock,0), COALESCE(keep,0) FROM supply_status"):
                     if iid:

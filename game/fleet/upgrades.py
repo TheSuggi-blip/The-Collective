@@ -758,18 +758,19 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
         save_queue(data_dir, rows, merge=True)
         changed = False
 
-    # Phase 2: prioritize pilots already docked at target shipyard, then same system, then travelling
+    # Phase 2: poll/switch building rows before new funded docks (ENT-196), then docked -> same system -> travelling
     def _dock_prio(row):
+        st_rank = 0 if row.get("state") == "building" else 1
         parts = str(row.get("station") or "").split(":")
         if len(parts) != 3:
-            return (9, str(row.get("id") or ""))
+            return (st_rank, 9, str(row.get("id") or ""))
         info = pmap.get(str(row.get("pilot") or ""))
         sh = info[2] if info else {}
         if str(sh.get("docked") or "") == parts[2]:
-            return (0, str(row.get("id") or ""))
+            return (st_rank, 0, str(row.get("id") or ""))
         if str(sh.get("system") or "") == parts[0]:
-            return (1, str(row.get("id") or ""))
-        return (2, str(row.get("id") or ""))
+            return (st_rank, 1, str(row.get("id") or ""))
+        return (st_rank, 2, str(row.get("id") or ""))
 
     for r in sorted(active, key=_dock_prio):
         if time.time() - t0 > budget_s:

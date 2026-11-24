@@ -123,8 +123,11 @@ install)
   [ $script -eq 1 ] && [ $test -eq 0 ] && { echo "HALT: a changed script under game/fleet/ comes with its test: name a path under scripts/tests/ too"; exit 1; }
   cd "$R" || exit 1
   LIMIT=${FLEET_BUILD_LIMIT:-1500}                   # seconds the install may take from its copy on: its own timeout (ENT-115)
-  LOCKDIR="/srv/collective/data/fleet"
-  [ -d "$LOCKDIR" ] || LOCKDIR="${TMPDIR:-/tmp}"
+  if [ "$R" = "/srv/collective/the-collective" ] && [ -d "/srv/collective/data/fleet" ]; then
+    LOCKDIR="/srv/collective/data/fleet"
+  else
+    LOCKDIR="$R/.git"
+  fi
   LOCKF="$LOCKDIR/git_commit.lock"
   INFLIGHT="$LOCKDIR/fleet_build_inflight.json"
   exec 9>"$LOCKF"

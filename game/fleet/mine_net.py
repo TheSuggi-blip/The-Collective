@@ -536,15 +536,19 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             "cap": cap, "hops": hops, "st_hops": st_hops,
             "station": "%s:%s:%s" % st_tup, "tier": tier, "score": round(score, 2),
         }
+        _tr = _TIER_RANK.get(tier, 9)
         prev = by_poi.get(belt_key)
-        if prev is None or cand["score"] > prev["score"]:
+        if prev is None or (_tr, -cand["score"]) < (_TIER_RANK.get(prev["tier"], 9), -prev["score"]):
             by_poi[belt_key] = cand
 
-    return sorted(by_poi.values(), key=lambda c: (-c["score"], c["hops"], c["belt_key"]))
+    return sorted(by_poi.values(), key=lambda c: (_TIER_RANK.get(c["tier"], 9), -c["score"], c["hops"], c["belt_key"]))
+
+
+_TIER_RANK = {"deficit": 0, "craft_demand": 1, "market": 2, "xp_fallback": 3}
 
 
 def assign_optimal_mines(pilots_info, world, policy, claims, cooldowns, now_t=None):
-    """Global greedy optimal assignment of available miners -> belts (closest/highest-priority wins)."""
+    """Global greedy optimal assignment of available miners -> belts (strict tier rank, then score/hops)."""
     now_t = time.time() if now_t is None else float(now_t)
     triples = []
     caps = {}
@@ -557,10 +561,10 @@ def assign_optimal_mines(pilots_info, world, policy, claims, cooldowns, now_t=No
         pname = str(pinfo.get("name") or "")
         for c in score_belt_candidates(pinfo, world, policy, claims, cooldowns, now_t=now_t)[:25]:
             caps[c["belt_key"]] = c["cap"]
-            triples.append((c["score"], -c["hops"], pname, c))
-    triples.sort(key=lambda x: (-x[0], -x[1], x[2], x[3]["belt_key"]))
+            triples.append((_TIER_RANK.get(c["tier"], 9), -c["score"], c["hops"], pname, c))
+    triples.sort(key=lambda x: (x[0], x[1], x[2], x[3], x[4]["belt_key"]))
     assigned = {}
-    for _sc, _nh, pname, cand in triples:
+    for _tr, _nsc, _h, pname, cand in triples:
         if pname in assigned:
             continue
         bk = cand["belt_key"]

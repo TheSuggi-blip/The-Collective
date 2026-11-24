@@ -208,5 +208,76 @@ class MineNetLiveSchemaTests(unittest.TestCase):
         cands = mine_net.score_belt_candidates({"name": "miner-1", "system": "s1", "modules": ["mining_laser_i"]}, world, pol, {}, {})
         self.assertEqual([c["tier"] for c in cands], ["deficit", "craft_demand", "market"])
 
+    def test_holdings_deduction_and_strict_deficit_over_high_price_craft_demand(self):
+        """Holdings stock suppresses stocked craft raw inputs (water_ice), and low-price deficit strictly beats high-price craft_demand."""
+        import sqlite3
+        from pathlib import Path
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "game" / "fleet"))
+        import craft_net
+
+        with tempfile.TemporaryDirectory() as td:
+            data, repo = Path(td) / "data", Path(td) / "repo"
+            (data / "store").mkdir(parents=True)
+            (repo / "game").mkdir(parents=True)
+            db = data / "store" / "read.db"
+            con = sqlite3.connect(str(db))
+            con.executescript("""
+                CREATE TABLE recipes (id TEXT, name TEXT, facility_only INTEGER);
+                CREATE TABLE recipe_inputs (recipe TEXT, item TEXT, units INTEGER);
+                CREATE TABLE recipe_outputs (recipe TEXT, item TEXT, units INTEGER);
+                CREATE TABLE items (id TEXT, base_value REAL);
+                CREATE TABLE holdings (pilot TEXT, member TEXT, place TEXT, item TEXT, units INTEGER, t INTEGER, src TEXT);
+                CREATE TABLE supply_status (item TEXT, stock INTEGER, keep INTEGER);
+                INSERT INTO recipes VALUES ('r_ice', 'Coolant', 0), ('r_si', 'Chip', 0);
+                INSERT INTO recipe_inputs VALUES ('r_ice', 'water_ice', 10), ('r_si', 'silicon_ore', 10);
+                INSERT INTO recipe_outputs VALUES ('r_ice', 'coolant_cell', 1), ('r_si', 'microchip', 1);
+                INSERT INTO items VALUES ('water_ice', 56.0), ('silicon_ore', 56.0), ('iron_ore', 5.0);
+                INSERT INTO holdings VALUES ('m1', 'Zero', 'hub', 'water_ice', 67000, 1795500000, 'stock/storage.json');
+                INSERT INTO holdings VALUES ('m1', 'Zero', 'hub', 'iron_ore', 153000, 1795500000, 'stock/storage.json');
+                INSERT INTO supply_status VALUES ('iron_ore', 53000, 60000);
+            """)
+            con.commit()
+            con.close()
+            (repo / "game" / "craft-demand.json").write_text(json.dumps({
+                "enabled": True, "auto_discover_profitable": False,
+                "raw_input_caps": {"water_ice": 30000, "silicon_ore": 15000},
+                "industrial_targets": {"coolant_cell": {"cap": 500}, "microchip": {"cap": 500}},
+            }), encoding="ascii")
+            cw = craft_net.load_craft_world(str(data), str(repo), {"demand_file": "game/craft-demand.json"})
+            self.assertEqual(cw["stock_by_item"]["water_ice"], 67000)
+            self.assertEqual(cw["stock_by_item"]["iron_ore"], 53000)  # supply_status usable overrides raw holdings
+            raw_dem = craft_net.expand_demand_raw_inputs(cw)
+            self.assertNotIn("water_ice", raw_dem)
+            self.assertIn("silicon_ore", raw_dem)
+
+        # Low-value 5 cr deficit (iron_ore) MUST beat high-value 56 cr craft_demand (silicon_ore)
+        world = {
+            "adj": {"s1": {"s2"}, "s2": {"s1"}},
+            "systems": {"s1": {"empire": "voidborn", "stronghold": False}},
+            "stations_by_sys": {"s1": [("s1", "st1", "b1")]},
+            "fields": [
+                {"system": "s1", "poi": "p_craft", "resource": "silicon_ore", "remaining": 9000, "max_remaining": 10000},
+                {"system": "s1", "poi": "p_def", "resource": "iron_ore", "remaining": 9000, "max_remaining": 10000},
+                {"system": "s1", "poi": "p_mixed", "resource": "silicon_ore", "remaining": 9000, "max_remaining": 10000},
+                {"system": "s1", "poi": "p_mixed", "resource": "iron_ore", "remaining": 9000, "max_remaining": 10000},
+            ],
+            "pirates": set(),
+            "item_vals": {"silicon_ore": 56.0, "iron_ore": 5.0},
+            "shortages": {"iron_ore": 7000},
+            "craft_demand": {"silicon_ore": 15000},
+            "full_items": set(),
+        }
+        pol = dict(mine_net.DEFAULT_POLICY, market_tier=True, craft_demand_tier=True)
+        cands = mine_net.score_belt_candidates({"name": "miner-1", "system": "s1", "modules": ["mining_laser_i"]}, world, pol, {}, {})
+        self.assertEqual([c["tier"] for c in cands], ["deficit", "deficit", "craft_demand"])
+        mixed = next(c for c in cands if c["poi"] == "p_mixed")
+        self.assertEqual(mixed["resource"], "iron_ore")
+        assigned = mine_net.assign_optimal_mines(
+            [{"name": "miner-1", "system": "s1", "modules": ["mining_laser_i"]}], world, pol, {}, {}
+        )
+        self.assertEqual(assigned["miner-1"]["tier"], "deficit")
+        self.assertEqual(assigned["miner-1"]["resource"], "iron_ore")
+
+
 if __name__ == "__main__":
     unittest.main()
