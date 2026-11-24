@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 
 DEFAULT_TTL_S = 1800
-MAX_FIELD_REQUESTS = 2
+MAX_FIELD_REQUESTS = 1
 MAX_CONVOY_REQUESTS = 4
 
 
@@ -225,7 +225,7 @@ def request_escort(data_dir, key, mode, requester, guards, system, poi, needed=3
                    priority=90, ttl_s=DEFAULT_TTL_S, now_t=None):
     """Create or refresh an escort request atomically. Returns the stored request dict or None if capped."""
     now_t = time.time() if now_t is None else float(now_t)
-    needed = max(1, min(10, int(needed or 3)))
+    needed = max(1, min(5 if mode == "field" else 10, int(needed or 3)))
 
     def _op(req_p):
         reqs = _clean_requests_unlocked(_read_json(req_p, {}), now_t)

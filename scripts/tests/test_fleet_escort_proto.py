@@ -150,6 +150,27 @@ class EscortAndAutoNetTests(unittest.TestCase):
             bases = [s["base"] for s in sts]
             self.assertEqual(bases, ["b_good"])
 
+    def test_mine_net_never_requests_field_escort_into_elite_warzone(self):
+        with tempfile.TemporaryDirectory() as td:
+            world = {
+                "adj": {"s1": {"s2"}, "s2": {"s1"}},
+                "systems": {"s1": {"empire": "voidborn", "stronghold": False}},
+                "stations_by_sys": {"s1": [("s1", "st1", "b1")]},
+                "fields": [{"system": "s1", "poi": "merak_a", "resource": "iron_ore", "remaining": 8000, "max_remaining": 10000}],
+                "pirates": {"s1"},
+                "pirate_threat": {"s1": {"count": 7, "raiders": 0, "elites": 7}},
+                "item_vals": {"iron_ore": 10.0},
+                "shortages": {"iron_ore": 5000},
+                "craft_demand": {},
+                "full_items": set(),
+                "data_dir": td,
+                "allow_escort_request": True,
+            }
+            pol = dict(mine_net.DEFAULT_POLICY, request_escort_for_pirate_deficits=True)
+            cands = mine_net.score_belt_candidates({"name": "miner-1", "system": "s1", "modules": ["mining_laser_i"]}, world, pol, {}, {})
+            self.assertEqual(cands, [])
+            self.assertEqual(escort_proto.list_escort_requests(td), [])
+
     def test_guard_follows_haul_and_mine_net(self):
         self.assertIn("haul", guard.FOLLOWED)
         self.assertIn("mine_net", guard.FOLLOWED)

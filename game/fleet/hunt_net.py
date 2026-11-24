@@ -1173,8 +1173,16 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
         if is_leader:
             _raw(pilot, "create", {}, "spacemolt_fleet")
             time.sleep(11)
+            _pid_map = {}
+            try:
+                _sc, _accs = _gate_call("GET", "/accounts")
+                for _a in (_accs.get("accounts") if isinstance(_accs, dict) else []):
+                    if isinstance(_a, dict) and _a.get("username") and _a.get("player_id"):
+                        _pid_map[str(_a["username"])] = str(_a["player_id"])
+            except Exception:
+                pass
             for m in members[1:3]:
-                _raw(pilot, "invite", {"player_id": m}, "spacemolt_fleet")
+                _raw(pilot, "invite", {"player_id": _pid_map.get(m, m)}, "spacemolt_fleet")
                 time.sleep(11)
         elif my_idx in (1, 2):
             time.sleep(12 * my_idx)

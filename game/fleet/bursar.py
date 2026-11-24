@@ -297,14 +297,31 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 exclude.add(str(_bk))
     priority = set(str(x) for x in (policy.get("priority_stations") or []))
 
+    # Preload read-only world inputs OUTSIDE bursar_claims.lock (3000x faster, eliminates lock pileups!)
+    orders = _fresh_orders(data, now_t)
+    static_counts = _static_bursar_bases(repo_root, orders)
+    stations = []
+    lanes = {}
+    if not explicit_station:
+        stations = load_exchange_stations(
+            data,
+            policed_only=bool(policy.get("policed_only", True)),
+            exclude_strongholds=bool(policy.get("exclude_strongholds", True)),
+            exclude_pirates=bool(policy.get("exclude_pirates", True)),
+            pirate_avoid_hours=float(policy.get("pirate_avoid_hours") or 6.0),
+            include_empty_neutral=bool(policy.get("include_empty_neutral_stations", False)),
+        )
+        try:
+            lanes = fuelplan.chart(Path(repo_root) / "game")[0]
+        except Exception:
+            lanes = {}
+
     with open(lock_path, "a+", encoding="utf-8") as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)
         try:
             claims = read_json(claims_path, {})
             if not isinstance(claims, dict):
                 claims = {}
-            orders = _fresh_orders(data, now_t)
-            static_counts = _static_bursar_bases(repo_root, orders)
             cleaned = {}
             for b_id, rec in claims.items():
                 if not isinstance(rec, dict):
@@ -329,21 +346,9 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 write_json(claims_path, cleaned)
                 return None
 
-            stations = load_exchange_stations(
-                data,
-                policed_only=bool(policy.get("policed_only", True)),
-                exclude_strongholds=bool(policy.get("exclude_strongholds", True)),
-                exclude_pirates=bool(policy.get("exclude_pirates", True)),
-                pirate_avoid_hours=float(policy.get("pirate_avoid_hours") or 6.0),
-                include_empty_neutral=bool(policy.get("include_empty_neutral_stations", False)),
-            )
             if not stations:
                 write_json(claims_path, cleaned)
                 return None
-            try:
-                lanes = fuelplan.chart(Path(repo_root) / "game")[0]
-            except Exception:
-                lanes = {}
 
             cur_sys = str((pilot_info or {}).get("system") or "")
             cur_base = str((pilot_info or {}).get("base") or (pilot_info or {}).get("docked") or "")

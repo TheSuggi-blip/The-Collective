@@ -146,6 +146,11 @@ def bfs_distances(adj, start_sys, max_hops=18):
     return dist
 
 
+_CACHE_LOCK = threading.Lock()
+_WORLD_CACHE = {}   # (data_dir, repo_root, pol_sig) -> (ts, world)
+_STATIC_CACHE = {}  # (repo_root, data_dir) -> (ts, counts)
+
+
 def _load_pirate_threat_safe(data_dir, hours):
     try:
         import escort_proto as _ep
@@ -156,7 +161,14 @@ def _load_pirate_threat_safe(data_dir, hours):
 
 def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
     """Load star graph, systems, stations, fields, pirates, reserves, needs, and item values from read.db & TSVs."""
+    use_cache = (now_t is None)
     now_t = time.time() if now_t is None else float(now_t)
+    ck = (str(data_dir), str(repo_root), str(policy.get("pirate_avoid_hours")), bool(policy.get("craft_demand_tier", True)))
+    if use_cache:
+        with _CACHE_LOCK:
+            hit = _WORLD_CACHE.get(ck)
+            if hit and (now_t - hit[0]) < 20.0:
+                return hit[1]
     db_path = Path(data_dir) / "store" / "read.db"
     adj = {}
     systems = {}
@@ -308,13 +320,17 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
                     if tup not in lst:
                         lst.append(tup)
 
-    return {
+    _res_world = {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
         "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand,
         "data_dir": str(data_dir), "allow_escort_request": True,
         "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
     }
+    if use_cache:
+        with _CACHE_LOCK:
+            _WORLD_CACHE[ck] = (now_t, _res_world)
+    return _res_world
 
 
 def nearest_station(adj, stations_by_sys, belt_sys, max_hops=4):
@@ -353,7 +369,14 @@ def load_claims_state(data_dir, policy, now_t=None):
 
 def count_static_mine_orders(repo_root, data_dir, now_t=None, order_fresh_s=1200.0):
     """Count active static `mine <route_id>` ships per belt from data/fleet/orders/*.json."""
+    use_cache = (now_t is None)
     now_t = time.time() if now_t is None else float(now_t)
+    sck = (str(repo_root), str(data_dir))
+    if use_cache:
+        with _CACHE_LOCK:
+            hit = _STATIC_CACHE.get(sck)
+            if hit and (now_t - hit[0]) < 15.0:
+                return dict(hit[1])
     odir = Path(data_dir) / "fleet" / "orders"
     rdir = Path(repo_root) / "game" / "routes"
     if not odir.is_dir() or not rdir.is_dir():
@@ -378,6 +401,9 @@ def count_static_mine_orders(repo_root, data_dir, now_t=None, order_fresh_s=1200
         bk = route_belt[rid]
         if bk:
             counts[bk] = counts.get(bk, 0) + 1
+    if use_cache:
+        with _CACHE_LOCK:
+            _STATIC_CACHE[sck] = (now_t, dict(counts))
     return counts
 
 
@@ -482,6 +508,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             claimed_counts[bk] = claimed_counts.get(bk, 0) + 1
 
     by_poi = {}
+    _deferred_escorts = []
     for f in world["fields"]:
         sys_id = f["system"]
         poi_id = f["poi"]
@@ -518,17 +545,13 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 import escort_proto as _ep
                 _esc_dir = world.get("data_dir") or DATA
                 if is_deficit and policy.get("request_escort_for_pirate_deficits", True):
-                    if _ep.is_field_escorted(_esc_dir, sys_id, poi_id, now_t=now_t):
-                        _esc_ok = True
-                    elif world.get("allow_escort_request", False):
-                        _pt = (world.get("pirate_threat") or {}).get(sys_id) or {"count": 1, "raiders": 0, "elites": 0}
-                        _need = _ep.needed_escorts_for_threat(_pt.get("count", 1), _pt.get("raiders", 0), _pt.get("elites", 0), lawless=not is_policed)
-                        _ep.request_escort(
-                            _esc_dir, "field:%s:%s" % (sys_id, poi_id), "field", "mine-network",
-                            "mine-network", sys_id, poi_id, needed=max(3, _need),
-                            threat_systems=[sys_id], resource=res,
-                            reason="pirate_sighted_deficit_belt", priority=88, now_t=now_t,
-                        )
+                    _pt = (world.get("pirate_threat") or {}).get(sys_id) or {"count": 1, "raiders": 0, "elites": 0}
+                    # Never lure unarmed miners into elite warzones (>=1 elite or >=5 raiders)
+                    if int(_pt.get("elites") or 0) == 0 and int(_pt.get("raiders") or 0) < 5 and int(_pt.get("count") or 0) <= 4:
+                        if _ep.is_field_escorted(_esc_dir, sys_id, poi_id, now_t=now_t):
+                            _esc_ok = True
+                        elif world.get("allow_escort_request", False):
+                            _deferred_escorts.append((hops, sys_id, poi_id, res, is_policed, _pt))
             except Exception:
                 _esc_ok = False
             if not _esc_ok:
@@ -573,7 +596,22 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if prev is None or (_tr, -cand["score"]) < (_TIER_RANK.get(prev["tier"], 9), -prev["score"]):
             by_poi[belt_key] = cand
 
-    return sorted(by_poi.values(), key=lambda c: (_TIER_RANK.get(c["tier"], 9), -c["score"], c["hops"], c["belt_key"]))
+    ranked = sorted(by_poi.values(), key=lambda c: (_TIER_RANK.get(c["tier"], 9), -c["score"], c["hops"], c["belt_key"]))
+    # Request a field escort ONLY when 0 safe pirate-free deficit belts are available for this pilot!
+    if _deferred_escorts and not any(c["tier"] == "deficit" for c in ranked):
+        try:
+            import escort_proto as _ep
+            _deferred_escorts.sort(key=lambda x: x[0])
+            _hops0, _s0, _p0, _r0, _pol0, _pt0 = _deferred_escorts[0]
+            _need0 = min(5, max(3, _ep.needed_escorts_for_threat(_pt0.get("count", 1), _pt0.get("raiders", 0), 0, lawless=not _pol0)))
+            _ep.request_escort(
+                world.get("data_dir") or DATA, "field:%s:%s" % (_s0, _p0), "field", "mine-network",
+                "mine-network", _s0, _p0, needed=_need0, threat_systems=[_s0], resource=_r0,
+                reason="pirate_sighted_deficit_belt", priority=88, now_t=now_t,
+            )
+        except Exception:
+            pass
+    return ranked
 
 
 _TIER_RANK = {"deficit": 0, "craft_demand": 1, "market": 2, "xp_fallback": 3}
@@ -674,7 +712,7 @@ def main(argv=None):
         cands = score_belt_candidates(ship_doc, world, policy, claims, cooldowns, static_counts=static_counts)
         chosen = None
         for cand in cands:
-            if claim_belt_atomic(DATA, pilot, cand["belt_key"], cand["cap"], policy, repo_root=REPO):
+            if claim_belt_atomic(DATA, pilot, cand["belt_key"], cand["cap"], policy, static_counts=static_counts, repo_root=REPO):
                 chosen = cand
                 claimed_belt = cand["belt_key"]
                 break
