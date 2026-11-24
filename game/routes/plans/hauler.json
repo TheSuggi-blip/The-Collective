@@ -95,6 +95,7 @@
   "join-nova-hauler",
   "join-rim-hauler",
   "train-jumps-hauler",
+  "join-krynn-bloodforge",
   "park"
  ],
  "planned": [
@@ -212,6 +213,7 @@
   "join-nova-hauler": 39,
   "join-rim-hauler": 63,
   "train-jumps-hauler": 8,
+  "join-krynn-bloodforge": 95,
   "park": 95
  },
  "of": 95,

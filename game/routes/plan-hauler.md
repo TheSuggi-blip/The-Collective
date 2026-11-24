@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apollo. Routes: 93. Ships: 95.
+Kept by Apollo. Routes: 94. Ships: 95.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -112,7 +112,8 @@ Kept by Apollo. Routes: 93. Ships: 95.
 | 90 | [join-nova-hauler](join-nova-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, standing work | 39 of 95 |
 | 91 | [join-rim-hauler](join-rim-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 17 jumps | once per pilot, up to 15 ships, empty hold, born voidborn, nebula, standing work | 63 of 95 |
 | 92 | [train-jumps-hauler](train-jumps-hauler.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 8 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | 8 of 95 |
-| 93 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
+| 93 | [join-krynn-bloodforge](join-krynn-bloodforge.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 40 ships, empty hold, standing work | all 95 |
+| 94 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 95 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
 
