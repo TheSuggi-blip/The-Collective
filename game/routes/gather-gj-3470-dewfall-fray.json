@@ -2,11 +2,11 @@
  "id": "gather-gj-3470-dewfall-fray",
  "kind": "mine",
  "title": "Standing work, a test: iron and copper ore at GJ 3470 Dewfall Fray (beyond the border, one jump past Hamal) into storage at Node Beta, for the reserve and for craft-piping-node-beta",
- "note": "Written by Mercury, 2026-11-17 11:54 UTC (orders ENT-036, block MERCURY; rules F8, F13, F23). The home gather fields of the trader plan stood at their floors at 11:31 UTC (fill.py status trader). Dewfall Fray read 99,999 iron ore, 100,000 copper ore and 671 null matter (census of 10:27 UTC, table fields); GJ 3470 is 3 jumps from Node Beta by Acubens and Hamal, the last jump lawless; no pirate on our record there (observations, kind pirate). A test beyond the border: one ship, empty hold out, until its first RESULT line is read; no lift_to until then, so no script widens it first. min_left keeps 20,000 iron in the field. 2026-11-17 14:44 UTC (fill.py, Unity): max_ships 1 -> 13.",
+ "note": "Written by Mercury, 2026-11-17 11:54 UTC (orders ENT-036, block MERCURY; rules F8, F13, F23). The home gather fields of the trader plan stood at their floors at 11:31 UTC (fill.py status trader). Dewfall Fray read 99,999 iron ore, 100,000 copper ore and 671 null matter (census of 10:27 UTC, table fields); GJ 3470 is 3 jumps from Node Beta by Acubens and Hamal, the last jump lawless; no pirate on our record there (observations, kind pirate). A test beyond the border: one ship, empty hold out, until its first RESULT line is read; no lift_to until then, so no script widens it first. min_left keeps 20,000 iron in the field. 2026-11-17 14:44 UTC (fill.py, Unity): max_ships 1 -> 13. 2026-11-24 06:06 UTC (Zero): max_ships 13 -> 10 and into the Mining list Then behind Okab: the last ore fallback for miners with lasers only once Hamal and Schedar stand at their iron floors (rule F8 over the iron line of orders ENT-085, reported); iron 99,999 and copper 100,000 of 100,000 (table fields 05:01 UTC).",
  "belt": "gj_3470:dewfall_fray",
  "station": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
  "minutes": 45,
- "max_ships": 13,
+ "max_ships": 10,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
