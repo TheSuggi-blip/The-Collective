@@ -481,3 +481,12 @@ Failed: no pack launched yet (quota of 3 filled by three singletons); gate.relea
 Requests: ENT-526 (to Unity, gate.release).
 Suggestions: hunt.py closes to the shortest reach that can fire; routes.py check refuses a stop off the map with a moving-station exemption; upgrade rungs on measured kills.
 Report: armed-listed-hulls-could-not-fight-pack-lane-retuned.
+
+## [ENT-198] | 2026-11-24 19:59 UTC | Mercury | session | ref: reports/2026-11-24_mercury_stuck-apophenias-supplied-sacs-to-hex-star-listed-t2-ladder.md | see: orders.log ENT-090
+Session: scheduled run turn-mercury -- stuck Apophenia commissions supplied by their owners, caustic sacs sold at Hex Star, listed tier-2 freighters queued.
+Did: supply_commission.py (owner buys one neural gel at Central Nexus, 1,771 cr, donates at the yard): one commission sourcing -> building and 75,885 cr earmark refunded, two owners in flight; upgrade-policy Trade max_active 4 -> 7 with Meridian Freighter and Bulk Terms rungs (76860014), two listed Meridians queued; fit-policy Trade tier-0 hulls pinned to the bursar loadout, fit-network first (65b2c601); carry-sac-beta-to-hex-star on (8b47df1c), first run +81,972 cr in 14.3 min; craft-network on three test rows; contracts ENT-010; guidebook Standing Plan (6acb5abd).
+Worked: Trade last hour net +143,613 cr; 24-hour recurring +66.5k -> +73.1k cr an hour; buy escrow 71,009 cr over 33 buys, all within the net short; fill gate trader PASS at 19:03, 19:45 and 19:58 UTC.
+Failed: first gel script used the wrong tool group for buy and a non-owner donation (not_yours), no credits lost; gate.release crashes after removing the hold since 9396c21c (errors.log ENT-199); a stale building queue row held Trade's auto-upgrade lane shut; score 80.5 -> 79.1 with held ships counted idle.
+Requests: requests.log ENT-527 to Unity (gate.release fix); none open to me.
+Suggestions: upgrades.py cancels a building row whose commission_status lists none and reports a sourcing row's missing good with its ask; craft_net prices output at the crafting station's bid (Unity, Trinity).
+Report: stuck-apophenias-supplied-sacs-to-hex-star-listed-t2-ladder.
