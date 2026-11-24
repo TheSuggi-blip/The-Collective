@@ -418,3 +418,12 @@ Failed: the strip stop's gift gave nothing, route_run gives before it unfits (er
 Requests: requests.log ENT-506 (done to ENT-490); queue.log ENT-299 (stray file `=` blocks pushes), ENT-300 (NOIR).
 Suggestions: routes.py check warns on unfit and gift of one item in one stop (ENT-178); Unity decides NOIR's envoy and status; scout hull KPI by fuel a read.
 Report: five-kit-herds-belts-gate-laser-strip-eleven-hails.
+
+## [ENT-179] | 2026-11-24 10:04 UTC | Zero | session | ref: reports/2026-11-24_zero_floors-on-every-belt-sarin-carbon-test-three-t2-hulls.md | see: orders.log ENT-086
+Session: scheduled run turn-zero -- floors on every belt, a far carbon test at Sarin, three tier-2 hulls queued.
+Did: give-miner-stores-alpha-centauri on (receivers at the station, ENT-495); one-ship gather-sarin-whitesun-carbon for the laser-only veterans (given at Ramen's Rest; Muphrid not written, Minkar on the pirate watch); min_left on 27 mine routes, 19 closed, 29 miners on empty belts stopped and re-sent; six copper-rich gathers floored on copper (iron above max); three Resonance Miners queued at Node Beta, max 300,000 each; Standing Plan, FLEET.md, skill mining-chains, knowledge.
+Worked: requests to me 1 open and 1 accepted to 0 and 0; miners on belts read 0 to 1,500 units 44 to 15 (table ships 09:52 and 09:56 UTC); fill gate PASS at 09:58:16 and 10:01:13 UTC, 130 of 130 at work; tier-2 hull queue 0 to 3 (funding).
+Failed: 44 miners flew empty belts before this turn (routes without floors, errors.log ENT-179); Mining steady net of the last hour -42,852 to -46,265 cr; Muphrid silicon not tested.
+Requests: answered ENT-495 (ENT-507) and ENT-486 (ENT-508); none new.
+Suggestions: to Unity and Trinity, routemaker.py writes a 5% floor on every mine route and routes.py check warns without one (queue ENT-301); upgrades.py fails a queued hull after three unreadable quotes instead of docking its pilot every pass.
+Report: floors-on-every-belt-sarin-carbon-test-three-t2-hulls.
