@@ -2,7 +2,7 @@
  "id": "mission-first-links-store-grand",
  "kind": "circuit",
  "title": "First Links: 4,000 cr once per pilot at Grand Exchange; nickel bought at Market Prime and stored at Cargo Lanes, copper wiring bought at Cargo Lanes and handed in at Market Prime",
- "note": "2026-11-23 04:49 UTC (Mercury): the replacement of mission-first-links-grand, whose first form (goods carried through each target, not stored) lost two runs and rests on them (dispatch: at a loss, 2 runs). Orders ENT-071, P6, rule F34 tier 2. Grand Exchange's board: First Links, 4,000 cr, 25 Trading and 15 Navigation XP, 60 Piloting XP: 8 copper wiring to Market Prime Exchange, 10 nickel ore to Cargo Lanes Freight Depot; no goods given. The game reads a delivery objective live at the station the pilot stands in (hand test 04:20 to 04:29 UTC: nickel in own storage at Cargo Lanes 10/10 [DONE], wiring aboard at Market Prime 8/8 [DONE], complete_mission +4,000 cr; a second pilot the same way +4,000 cr at 04:43 UTC). So: nickel bought at Market Prime (101 x 77), stored at Cargo Lanes, wiring bought there (13 x 4,125), handed in on docking at Market Prime. About 1,130 cr of goods with the tax. requires.empire nebula; min_credits 4,300. One ship first; lifted on three results (F37: the two hand completions and one run). 2026-11-23 06:07 UTC (Mercury): nickel's ask at Market Prime rose from 101 to 124 x 239 (book 05:58 UTC), so twelve runs from 05:01 UTC ended on the failed buy at limit 104 (-30 cr each); the limit is 130 (the ask x 1.01 and room), wiring 16. Lifted to 3 ships: two hand completions proved the stored form; about 1,440 cr of goods against 4,000 paid. 2026-11-23 06:29 UTC (Mercury): three route runs paid 4,000 each (one_time 2,650 net of goods, runs.jsonl 06:08 to 06:09 UTC): the third result (F37); lifted to 8 ships (nickel's ask 239 deep at 124 covers about 23 pilots).",
+ "note": "2026-11-23 04:49 UTC (Mercury): the replacement of mission-first-links-grand, whose first form (goods carried through each target, not stored) lost two runs and rests on them (dispatch: at a loss, 2 runs). Orders ENT-071, P6, rule F34 tier 2. Grand Exchange's board: First Links, 4,000 cr, 25 Trading and 15 Navigation XP, 60 Piloting XP: 8 copper wiring to Market Prime Exchange, 10 nickel ore to Cargo Lanes Freight Depot; no goods given. The game reads a delivery objective live at the station the pilot stands in (hand test 04:20 to 04:29 UTC: nickel in own storage at Cargo Lanes 10/10 [DONE], wiring aboard at Market Prime 8/8 [DONE], complete_mission +4,000 cr; a second pilot the same way +4,000 cr at 04:43 UTC). So: nickel bought at Market Prime (101 x 77), stored at Cargo Lanes, wiring bought there (13 x 4,125), handed in on docking at Market Prime. About 1,130 cr of goods with the tax. requires.empire nebula; min_credits 4,300. One ship first; lifted on three results (F37: the two hand completions and one run). 2026-11-23 06:07 UTC (Mercury): nickel's ask at Market Prime rose from 101 to 124 x 239 (book 05:58 UTC), so twelve runs from 05:01 UTC ended on the failed buy at limit 104 (-30 cr each); the limit is 130 (the ask x 1.01 and room), wiring 16. Lifted to 3 ships: two hand completions proved the stored form; about 1,440 cr of goods against 4,000 paid. 2026-11-23 06:29 UTC (Mercury): three route runs paid 4,000 each (one_time 2,650 net of goods, runs.jsonl 06:08 to 06:09 UTC): the third result (F37); lifted to 8 ships (nickel's ask 239 deep at 124 covers about 23 pilots). 2026-11-24 13:15 UTC (Mercury): nickel's ask at Market Prime stood at 170 (table books 12:43 UTC) against the limit 130, so six Nebula haulers ended on the buy holding First Links half done (errors.log ENT-189). Limit 185 (an ask up to about 183 with the 1% tax); requires.ask nickel_ore at Market Prime at 180 or under, 10 units, book read within 180 minutes: about 1,850 cr of goods against 4,000 paid.",
  "once": true,
  "max_ships": 8,
  "min_credits": 4300,
@@ -13,7 +13,14 @@
   "First Links"
  ],
  "requires": {
-  "empire": "nebula"
+  "empire": "nebula",
+  "ask": {
+   "item": "nickel_ore",
+   "base": "market_prime_exchange",
+   "max_price": 180,
+   "min_qty": 10,
+   "max_age_minutes": 180
+  }
  },
  "stops": [
   {
@@ -31,7 +38,7 @@
     {
      "item": "nickel_ore",
      "qty": 10,
-     "max_price": 130,
+     "max_price": 185,
      "one_time": true
     }
    ],
