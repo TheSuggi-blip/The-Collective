@@ -229,3 +229,4 @@ Planned:
 | What | When |
 |---|---|
 | read craft-network's first three runs on each of the three test rows (job, margin, what sold) before any lift | next turn |
+| read the three Apophenia commissions at The Experiment after the owners supplied one neural gel each; the upgrade service switches them | next turn |
