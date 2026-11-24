@@ -1,30 +1,31 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; table fields; game/mine-policy.json; mine_net dry run (score_belt_candidates); commission_status; list_ships.
+Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; table runs (mine-network, fit-network); routes/pull.json; mine_net dry run on read.db; queue.log ENT-324.
 
-Turn of orders ENT-090 (3 ships a belt; iron short under 60,000 usable;
+Turn of orders ENT-091 (iron short of its 60,000 keep; P1 pay for itself;
 P7 smart networks). A free miner takes First, its own routes, then Then.
 
 | Route | Ships | For |
 |---|---|---|
-| `fit-t2-lasers-lhs-1140`, `fit-liminal-lasers-lhs-1140` | 2, once | fill a new hull's empty utility slots |
-| `resonance-parts-*` (titanium standing, F22 build work) | 3 / 1, once | the Node Beta yard's sourcing bids |
-| slot routes, `give-miner-stores-<station>`, once missions | by asks, 3 | slots; stores to receivers; paid once |
-| laser-only veterans: `gather-sarin-whitesun-carbon` first | 1 | far carbon; closed while carbon is full |
-| Solarian and Nebula rows; `@reserve-prism` / `@reserve-hamal` | 1 to 3 | silicon; carbon, nickel, gold full |
-| Then: gives; `mine-network` | 9 | belts no static route holds; iron first |
-| Then: home and far iron gathers 2 to 4 jumps out | 3 a belt | iron to 80,000 |
-| Then: copper-iron and regional belts; `train-jumps-miner`; park | 1 to 3; 20 | Piloting under 10 |
+| fit and slot routes, `resonance-parts-*`, gives, once missions | by asks | slots, yard parts, stores, paid once |
+| `fit-network` (end of First) | all; skips a fitted ship | Mining mix ore 100: lasers stay lasers |
+| `mine-network` (end of First) | up to 130 | deficits (iron to 80,000), market goods, training ore |
+| own rows: `@reserve-prism`, `@reserve-hamal`, empire rows | by the pull | silicon; carbon, nickel, gold, platinum full |
+| Then: iron gathers 2 to 4 jumps out; lawless iron tests | 3 a belt; 1 | iron to 80,000 |
+| Then: regional belts; `train-jumps-miner`; park | 1 to 3; 20 | last |
 
-`mine-network` deposits only at the give stations, mines only what the
-reserve or a craft demand lacks (`market_tier` false; craft demand less
-what the fleet holds), skips the plan's own belts and may enter only the
-lawless systems in `allow_lawless_systems` (each proven by static runs
-without a loss). Every mine route has a floor (`min_left`).
+mine-network (policy game/mine-policy.json) mines a reserve deficit
+first (the pull's open raw goods up to their max, need_status gather),
+then a market good only where a bid of 10 cr or more takes more than the
+fleet holds (handed to traders), else training ore within 3 jumps. About
+half the division finds no belt (dry run 75 of 130): such a run writes a
+row, three in a row rest the pair 30 min, and the ship flies the static
+iron gathers of Then. Deposits only at give stations; lawless only in
+`allow_lawless_systems` (atlas, intercrus).
 
-What would change it: iron at its max of 80,000; the Resonance Miners'
-ore and fuel per run once switched and fitted; a pirate read in atlas or
+What would change it: iron at 80,000 (most ships then train near home);
+a held good gaining a 10 cr bid with depth; a pirate read in atlas or
 intercrus (take it out of the policy list).
 
 ### Drains and carries of stored goods (kind `circuit`)
