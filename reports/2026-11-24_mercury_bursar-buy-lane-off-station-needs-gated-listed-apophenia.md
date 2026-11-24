@@ -10,7 +10,7 @@ links:
   - reports/2026-11-24_unity_posted-role-gates-five-answers-lift-commits-fixed.md
 ---
 
-# Trade -- Bursar Buy Lane Stopped at 1.51M Escrow, Station Needs Gated, a Listed Apophenia Bought
+# Trade -- Bursar Buy Lane Stopped at 1.51M Escrow, Station Needs Gated, Two Listed Apophenias Bought
 
 ## Situation
 
@@ -28,8 +28,8 @@ view=money); of the difference 1,510,265 cr stood in buy escrow at
 10:37 UTC (`view_orders` of all 85 traders), money parked in orders,
 not spent. Trade's last-hour steady net read -864,768 cr at 10:30 UTC
 and -940,430 cr at 11:02 UTC, with metered fuel 66,785 and 254,797 cr
-an hour; the faction treasury 8,849,613 -> 9,133,000 cr. Output: one
-tier-2 hull bought from a listing; four Station Need routes gated and
+an hour; the faction treasury 8,849,613 -> 9,133,000 cr. Output: two
+tier-2 hulls bought from listings; four Station Need routes gated and
 back on; the engine's policy rewritten three times; no Station Need or
 HEXC contract paid in the period (not measured beyond the board reads).
 
@@ -66,10 +66,11 @@ HEXC contract paid in the period (not measured beyond the board reads).
    melt there, so its route now withdraws where it stands.
 5. Hulls (admirals ENT-124): three Apophenia listings at 141,529 to
    142,529 cr against about 203,000 commissioned; queue entries u-3,
-   u-4, u-5 cancelled; one trader bought the Node Beta listing at
-   142,029 cr with two Shield Booster II aboard (RESULT line); one is
-   held at Node Alpha with 234,776 cr; the third was funded 110,000 cr
-   from the treasury and waits for it. Four more Piloting-10 traders
+   u-4, u-5 cancelled; two traders bought the Node Beta and Node Alpha
+   listings at 142,029 and 142,529 cr, each with two Shield Booster II
+   aboard (RESULT lines 11:0x UTC); the third was funded 110,000 cr
+   from the treasury (landed 11:13 UTC) and its buy script waits for
+   the pilot's run to end. Four more Piloting-10 traders
    queued for a commission (u-9 to u-12, max 210,000 cr).
 
 ## Problems
@@ -99,7 +100,7 @@ HEXC contract paid in the period (not measured beyond the board reads).
   orders. Next turn: `orders_scan.py` again, escrow before -> after.
 - Read the first runs of need-melt-frontier (19,462 cr posting) and
   the other three Station Need routes under `requires.posted`.
-- Finish the two remaining listed Apophenias, read the first runs of
+- Finish the third listed Apophenia (Node Gamma), read the first runs of
   the bought hull (fuel per jump against cargo carried) before the
   four queued commissions are served, and `browse_ships` again for
   cheaper listings.
