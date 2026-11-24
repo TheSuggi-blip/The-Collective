@@ -180,6 +180,10 @@
   {
    "what": "silicon: GSC-0007 waits while pirates stand there (three sightings 10:52-11:46 UTC), Muphrid and Hadar while raider elites stand on the Muphrid road; read the watch and the census",
    "when": "each turn"
+  },
+  {
+   "what": "read the outpost's faction storage iron (the GSC-0044 gathers open under 98,000) and the Node Gamma ice belt against its new 7,500 floor",
+   "when": "next turn"
   }
  ],
  "ships": {
