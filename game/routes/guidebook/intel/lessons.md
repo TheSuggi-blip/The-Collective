@@ -40,16 +40,21 @@ Status: proven. Updated: 2026-11-21. Evidence: intel turn check SITES; reports.l
   read within 180 minutes: move it onto a road list before the commit.
 
 ### Read where the fleet works now
-Status: proven. Updated: 2026-11-22. Evidence: intel turn check WORKED (2026-11-21 19:40 UTC, 2026-11-22 19:27 UTC); game/routes/census-worked-far.json.
+Status: proven. Updated: 2026-11-24. Evidence: intel turn check WORKED (2026-11-21 19:40 UTC, 2026-11-22 19:27 UTC), BELTS (2026-11-24); game/routes/census-worked-far.json.
 
 - After the pause of 2026-11-18 to 11-21 the other divisions flew in 39
   systems that only the 480-minute explorer lists read: Military's hunts
   and their sell stations, Mining's far fields. The dispatcher's pirate
   stop (six hours, F27) and a mine route's min_left rest on a census.
 - WORKED names every system where ships of other divisions fly now and
-  no list reads within 180 minutes: move it onto census-worked-far. A
-  route paid once (`once: true`) only passes through: WORKED prints its
-  systems apart, unjudged (the Solarian five, two turns of 2026-11-22).
+  no list reads within 180 minutes: move it onto the region list of the
+  capital nearest it by lanes (the WORKED to line); census-worked-far is
+  flown from home, so a far system there pulls a home reader 10 to 17
+  jumps (2026-11-23). A route paid once only passes through: WORKED
+  prints its systems apart, unjudged.
+- WORKED sees only where ships fly now; a belt in a plan nobody flies
+  yet waits on an old read (GSC-0007, 360-minute kit list, 281 minutes,
+  2026-11-24). BELTS judges every belt of Mining's plan by its list.
 - After any pause every reading is stale at once: the home list first,
   then where ships fly, then the roads; judge the gaps from the next
   reads, not the first hour.
@@ -150,15 +155,6 @@ Status: proven. Updated: 2026-11-24. Evidence: fill.py status scout (2026-11-23 
   for a newborn of another empire (a foreign station: `Access denied`);
   with --stay it now ends at the nearest station with fuel (census.py
   end_stop, 2026-11-23).
-
-### A worked system goes to the list of the capital nearest it
-Status: proven. Updated: 2026-11-23. Evidence: intel turn check WORKED 08:17 UTC (4 systems at 960 and 1440 min); table lanes (5 to 6 jumps from Krynn or Sol, 10 to 17 from home); commit 709f1f4f; WORKED PASS 08:33 UTC (105 systems).
-
-- Where other divisions work far from home (the newborns' hunts and
-  gathers), census-worked-far is the wrong list: it is flown from home,
-  so each read pulls a home reader 10 to 17 jumps. Move the system to
-  the region list of the capital nearest it by lanes; the check's
-  `WORKED to` line names that list.
 
 ### A field asked for is answered with the books too
 Status: proven. Updated: 2026-11-23. Evidence: requests.log ENT-435, ENT-443; tables fields, stats_refill, books.

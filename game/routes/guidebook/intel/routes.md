@@ -13,13 +13,15 @@ Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); 
   (360 min), then the far lists nearest their capital, then the roads.
   Sol and Krynn (180 min) go to Voidborn readers, Krynn three.
 - The kit's herds (orders P3): census-kit-herds (360 min, three ships)
-  reads the far places of the five species; the near ones stand on
-  the region lists. Live counts: hive.py herds <species,...>; a place
-  reading 3 or more goes to Military in admirals.log the same turn,
-  and every tagged herd is filed as kind ranch (file_ranches.py).
+  reads the far places of the five species, the region lists the near
+  ones. hive.py herds <species,...>: a place at 3 or more goes to
+  Military in admirals.log the same turn; tagged herds: file_ranches.py.
 - Readers (@reader): census-voidborn (home, 45 min, five), the outpost
   watch (50 min), census-worked (120 min), census-frontier (170 min),
-  census-worked-far (180 min), the roads.
+  census-worked-far (180 min), the roads. Two readers hold the home
+  list first, one the watch (gaps over the hour otherwise).
+- Lasers: a Voidborn scout whose missions that mine are flown gives
+  its Mining Laser I to Mining at Central Nexus (own routes first).
 - The scanner scouts: a far list first (1440 min), then @reader.
 - Explorers: their road (census-north, -east, -south, 170 min; the
   north road first for six), census-worked-far, their far list.
