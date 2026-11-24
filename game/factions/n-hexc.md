@@ -15,7 +15,7 @@ updated: 2026-11-24
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -42,7 +42,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Hex Gate Kochab | outpost | Kochab (`kochab`) | lawless | 19 | thriving |
 | Glintfin Range | outpost | Silvermark (`silvermark`) | lawless | 19 | thriving |
 | Hex Wellspring | station | Zosma (`zosma`) | lawless | 20 | operational |
-| Cobalt Reach Range | outpost | Sargas (`sargas`) | lawless | 21 | thriving |
+| Cobalt Reach Range | outpost | Sargas (`sargas`) | lawless | 21 | thriving, wrecked |
 
 ## Pilots in Our Space
 
@@ -50,10 +50,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| HexBot11 | Nexus Prime (`nexus_prime`) | 10 | premiere |
-| HexTitan | Pherkad (`pherkad`) | 0 | lithosphere |
+| HexBot13 | Pherkad (`pherkad`) | 0 | frankenhauler |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
-| Tinibu | Pherkad (`pherkad`) | 0 | praecursor |
 
 ## Standing History
 
