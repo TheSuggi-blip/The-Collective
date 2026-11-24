@@ -409,3 +409,12 @@ Failed: freshness HALTs (home longest gap 107 min, Azha 213, Mirach 204, Avior 1
 Requests: none.
 Suggestions: Unity: a tagged-animals column in the store's herds table (queue ENT-280); one employment definition for scorecard and fill gate.
 Report: herds-verb-installed-six-ranches-filed-newborn-book-watch.
+
+## [ENT-166] | 2026-11-24 00:10 UTC | Zero | session | ref: reports/2026-11-24_zero_six-silicon-carbon-tests-full-outpost-rows-cut-seep-spill.md | see: orders.log ENT-084
+Session: scheduled run turn-zero -- six silicon and carbon tests, the full outpost's faction gathers cut from the seated rows, a restart spill onto the GSC-0027 seep stopped.
+Did: six one-ship gathers (carbon at Furud and Gliese 876, silicon at Emberglow, Edasich, GSC-0007 and Mekbuda; b4c0a157); 20 seated rows off the outpost's faction gathers (outpost iron at its 100,000 limit); fallback caps lowered to carries (seep 50 -> 3, Pherkad 125 -> 3, Hamal 20 -> 10, then 30 for idle veterans); Nebula home gathers at 20 jumps of reach; 8 far seep runs stopped; claim admirals ENT-114; guidebook Standing Plan.
+Worked: requests to me 1 open + 1 accepted -> 0 + 0; fill gate PASS at about 00:02 and 00:05 UTC; Mining steady net -40,751 -> -28,962 cr an hour (fleet money, the hour to 23:31 and to 00:00 UTC); three of the six tests flying by 23:58 UTC.
+Failed: 50 miners (38 Solarian- or Nebula-born) took the seep that carries 3 when the run host restarted, its cap left at 50 (errors.log ENT-168); tier-2 hulls still 0 of 57 eligible.
+Requests: ENT-481, ENT-482 (answers to Apophis), ENT-483 (to Unity: a jettison_gangue key in dispatch.py).
+Suggestions: fill.py's pass also lowers a standing cap to carries when its field nears the floor (Unity's call).
+Report: six-silicon-carbon-tests-full-outpost-rows-cut-seep-spill.
