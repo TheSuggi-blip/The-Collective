@@ -11,10 +11,12 @@ MERCURY: capital crafts under 500 cr a ship-hour; no trader waits):
   the Station Needs) and the Blood Forge corridor (Logistics' route).
 - Own rows: the join corridors, the capitals' lines, `@trade-sell >
   @trade-craft`, the loop for the home Voidborn.
-- Then, every ship, gated to where it stands: the Bursar desks
+- Then, every ship, gated to where it stands: the off-role starters
+  stripped once (`strip-starters-trader-*`), the Workshop Production
+  Run at Haven for the Nebula-born, the Bursar desks
   `bursar-desk-krynn` (`docked_at`), `bursar-desk-alpha` (`max_jumps`
   1, takes Sol's ships), `bursar-desk-experiment` (`max_jumps` 3),
-  steel, park.
+  `bursar-desk-grand` (no craft: lists only), steel, park.
 
 A desk run: store the hold, buy 60 to 64 of a 1 cr gas, one craft of
 8 to 10 runs (neon or oxygen; never a good of the pull record, which
