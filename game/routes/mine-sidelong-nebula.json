@@ -2,10 +2,13 @@
  "id": "mine-sidelong-nebula",
  "kind": "mine",
  "title": "Sidelong Nebula: iron_ore, copper_ore; stored at The Experiment Research Station (F23 gather)",
- "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -32 cr per ship-hour.",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -32 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left copper_ore 5,000 (5% of the field's 100,000, its main good): the route had no floor and its field read 7,376 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
  "belt": "pherkad:sidelong_nebula",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 80,
  "max_ships": 3,
- "lift_to": 3
+ "lift_to": 3,
+ "min_left": {
+  "copper_ore": 5000
+ }
 }

@@ -2,7 +2,7 @@
  "id": "mine-epsilon-eridani-ice-fields",
  "kind": "mine",
  "title": "Epsilon Eridani Ice Fields: water_ice, nitrogen_ice; stored at Sirius Observatory Station",
- "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2938 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). Sirius Observatory Station (Solarian, 9 jumps from home) bids water ice 34 cr, 36 units at its best price, about 92 an hour (routemaker.py, 23:01 UTC, 46 books read 21:49 to 23:04 UTC); five candidates sell into this one bid, so one ship only. The field was read 2026-11-17 16:33 UTC (40,380 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not at Sirius, so this sells nothing the stores could. Hold empty on the way out (rule F3). 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes.",
+ "note": "Written by routemaker.py from the field's and the book's readings; an estimate of 2938 cr per ship-hour, not a measurement. A test: one ship. 2026-11-21 23:12 UTC (Zero): taken as a one-ship test by orders.log ENT-059, block ZERO (what buyers pay for, beyond our systems; rules F3, F22). Sirius Observatory Station (Solarian, 9 jumps from home) bids water ice 34 cr, 36 units at its best price, about 92 an hour (routemaker.py, 23:01 UTC, 46 books read 21:49 to 23:04 UTC); five candidates sell into this one bid, so one ship only. The field was read 2026-11-17 16:33 UTC (40,380 water ice): a guess until this run reads it. Our stored water ice lies at home stations, not at Sirius, so this sells nothing the stores could. Hold empty on the way out (rule F3). 2026-11-21 23:17 UTC (Zero): `gift` to the trader Trade names for this station, of the goods this route sells (water_ice), for the strict classes (queue.log ENT-200, Suggi's D244): with data/fleet/strict-classes-on the run hands them over instead of selling; off, nothing changes. 2026-11-24 09:52 UTC (Zero): min_left nitrogen_ice 2,500 (5% of the field's 50,000, its main good): the route had no floor and its field read 22,215 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
  "belt": "epsilon_eridani:epsilon_eridani_ice_fields",
  "station": "sirius:sirius_observatory_station:sirius_observatory_station",
  "minutes": 47,
@@ -25,5 +25,8 @@
   "cph_per_ship": -490,
   "hours": 12,
   "last_run": "2026-11-24T08:00:35Z"
+ },
+ "min_left": {
+  "nitrogen_ice": 2500
  }
 }

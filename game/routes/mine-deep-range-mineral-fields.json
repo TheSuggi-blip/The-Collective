@@ -2,10 +2,13 @@
  "id": "mine-deep-range-mineral-fields",
  "kind": "mine",
  "title": "Deep Range Mineral Fields: carbon_ore, platinum_ore, osmium_ore; stored at Echo Protocol Hub (F23 gather)",
- "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 890 cr per ship-hour.",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value 890 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left carbon_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 849 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
  "belt": "deep_range:deep_range_mineral_fields",
  "station": "lilii_borea:56da4dcca499808b0e76ab482fdfa71c:d545d6ddb6c9ceab72fafc527a5e04b5",
  "minutes": 90,
  "max_ships": 3,
- "lift_to": 3
+ "lift_to": 3,
+ "min_left": {
+  "carbon_ore": 1500
+ }
 }

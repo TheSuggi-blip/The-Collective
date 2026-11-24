@@ -2,10 +2,13 @@
  "id": "mine-ogma-belt",
  "kind": "mine",
  "title": "Ogma Belt: tungsten_ore, prismatic_nebulite; stored at Trader's Rest Resort Station (F23 gather)",
- "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -15 cr per ship-hour.",
+ "note": "Written by routemaker.py (F23 strict gather, no sell; cap 3/belt); estimated market value -15 cr per ship-hour. 2026-11-24 09:52 UTC (Zero): min_left aluminum_ore 1,500 (5% of the field's 30,000, its main good): the route had no floor and its field read 89 (table fields); the dispatcher closes it while the census reads it below and opens it again on regrowth (rule F22; guidebook card: every field with a floor).",
  "belt": "ogma:ogma_belt",
  "station": "traders_rest:traders_rest_resort_station:traders_rest_resort_station",
  "minutes": 90,
  "max_ships": 3,
- "lift_to": 3
+ "lift_to": 3,
+ "min_left": {
+  "aluminum_ore": 1500
+ }
 }
