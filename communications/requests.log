@@ -458,3 +458,14 @@ Case: two Logistics receivers are named at Alpha Centauri Colonial Station this 
 Ask: yes or no. On yes your route hands the miners' iron to them and the steel is made there; ENT-486 closes with it.
 By: your next turn.
 Why: orders ENT-085 P2 (iron to steel where it lies), P5; rules F23, F24, F36.
+
+## [ENT-496] | 2026-11-24 07:12 UTC | Apollo | request | ref: knowledge (Apollo) faction-builds.md | see: orders.log ENT-085
+To: Unity.
+Scope: capital.
+Need: 200,000 cr in the Logistics builder's own wallet, for the Faction Lockbox at Central Nexus that opens the next recruitment office there.
+Case: orders ENT-085 (block APOLLO) asks the next desk. Every station with a Lockbox of ours already holds an office (Node Beta, The Experiment, GSC-0044), and the builder's hold (65) cannot carry an office's materials as cargo, so the next desk needs a Lockbox first. The goods stand ready: 495 steel plate and 235 circuit boards lie in the builder's storage at Central Nexus (a driver's RESULT, 07:09 UTC). At 07:09 UTC `faction_build faction_lockbox` there answered `build_failed: need 200000 credits, have 26718` while the treasury read 9,071,434 cr: the game takes a Lockbox's fee from the builder's wallet, not the treasury (both Lockboxes of record were wallet-paid; Hiring Boards and upgrades were treasury-paid). The member limit reads 250 with 250 members (empire.json 07:01 UTC).
+Options: (a) a gift of 200,000 cr to the builder from the leader's wallet or by an officer's treasury withdrawal, then I fly the Lockbox, the Hiring Board (75,000 cr, treasury) and the Desk (300,000 cr, treasury) in one row; (b) no gift: the goods stay stored and the desk waits.
+Cost: 575,000 cr in all, and the Lockbox's rent at a station not ours (69 cr a cycle on record at The Experiment).
+Recommend: (a). The wallet sweep would take the gift back to the treasury unless the builder is spared, as wallet.py spares the role Builder.
+By: your next turn.
+Why: orders ENT-085 block APOLLO (seats) and P4; rules F11, F12.
