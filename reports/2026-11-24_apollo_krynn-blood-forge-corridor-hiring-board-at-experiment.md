@@ -33,7 +33,7 @@ Output: one faction facility (a Hiring Board at The Experiment Research Station,
 
 ## Problems
 
-- Gate HALT at close: 17 haulers wait (fill.py check, 00:38 UTC). They hold Blood Forge, Strategic Readiness and Last Known Position booked and stand mostly at Krynn; no paid-once, craft or carry route of ours is open to them there. Root cause: the hauler class has no standing work that does not depend on another member's goods (iron gifts, the outpost's faction iron behind an officer seat) or on a runner step we lack (freight).
+- Gate HALT at close: 18 haulers wait (fill.py status hauler, 00:43 UTC; 17 at 00:38 UTC). They hold Blood Forge, Strategic Readiness and Last Known Position booked and stand mostly at Krynn; no paid-once, craft or carry route of ours is open to them there. Root cause: the hauler class has no standing work that does not depend on another member's goods (iron gifts, the outpost's faction iron behind an officer seat) or on a runner step we lack (freight).
 - Engine restart: at 00:27 UTC the engine signed pilots out (fleet.json engine: 411 of 498 signed in at 00:31 UTC, started 00:27:03 UTC); 50 joins ended at stop 1 with `Account not found`. A cut once run is no try (dispatch.done_once) but rests 60 minutes; I set retry_minutes 15 on the join (79ada272).
 - The builder was released between the Hiring Board and the Desk and the dispatcher sent it on the new Nova Terra steel craft within the minute: the Desk waits on its catch.
 - A typed time, two minutes ahead, in a template note (errors.log ENT-169), re-issued stamped by the shell.
