@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 160.
+Routes: 161.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,6 +83,7 @@ Routes: 160.
 | [mission-shipyard-titanium-alloy-deep-range](mission-shipyard-titanium-alloy-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Titanium Alloy at Deep Range Outpost: 25 bought at Frontier Station, delivered for 26,133 cr (Outer Rim haulers) | up to 1 ships, from 27,361 cr, born outerrim, while frontier_station asks 960 cr or less for titanium_alloy | TBD | TBD | TBD | TBD | -- |
 | [need-ember-gland-crucible](need-ember-gland-crucible.json) | circuit | beyond the border, 20 jumps | Station Need: Ember Gland at The Crucible Garrison filled from the pilot's glands stored at Krynn (2 jumps), about 5,600 cr a gland | up to 1 ships, with 10 ember_gland stored at crimson_war_citadel | TBD | TBD | TBD | TBD | -- |
 | [need-melt-crucible](need-melt-crucible.json) | circuit | beyond the border, 20 jumps | Station Need: Crystal Melt at The Crucible Garrison filled from the pilot's melt stored there, about 890 cr a melt | up to 1 ships, with 12 crystal_melt stored at the_crucible_garrison | TBD | TBD | TBD | TBD | -- |
+| [need-melt-frontier](need-melt-frontier.json) | circuit | beyond the border, 18 jumps | Station Need: Crystal Melt at Frontier Station filled from the pilot's melt stored at First Step (about 2 jumps), and up to 3 sold into its 3,618 bid | up to 1 ships, with 15 crystal_melt stored at first_step_memorial_station | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-experiment](outpost-kit-ironlight-to-experiment.json) | circuit | beyond the border, 6 jumps | The first outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at The Experiment Research Station, our border station two jumps from the site Mining and Intel name | up to 1 ships, 1 pilots in all, empty hold, from 155,000 cr | TBD | TBD | TBD | TBD | -- |
 | [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 152,000 cr, while 784309214f105860a16a0c100a70eb14 asks 148663 cr or less for outpost_kit | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-first-step-dheneb](sell-ember-first-step-dheneb.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from First Step Memorial Station to the Hex Star bid (Dheneb, lawless), up to 30 a run | up to 1 ships, with 6 ember_gland stored at first_step_memorial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 4000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
