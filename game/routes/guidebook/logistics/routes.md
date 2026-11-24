@@ -1,18 +1,17 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show (applied 2026-11-24 06:33 UTC); fill.py status and check hauler 06:04 to 06:52 UTC; why_closed.py; ship files (mission_list); orders.log ENT-085 (block APOLLO); runs of 06:27 to 06:47 UTC.
+Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check (applied 2026-11-24 10:06 UTC); fill.py status and check hauler 10:04 to 10:09 UTC; runs.jsonl of haul-network 08:50 to 09:55 UTC; requests.log ENT-500, ENT-504; orders.log ENT-086 (block APOLLO).
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), then Sol's paid loop: `mission-old-charts-sol` (boards bought at Sol), `mission-courier-to-haven-sol-hauler` (every birth), `mission-diplomatic-pouch-haven-gold` (gold bought at Haven, home to Nexus Prime).
-- Own: `finish-*` routes in the rows of the pilots whose ship file holds that mission half done (no accept, hand-in at the last stop); `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts on own inputs, closed at the reserve max, F36); `@train-hauler`.
-- Docked steel where the miners' iron lies: receivers per station (`handover.py receivers set|add`), the station's `craft-steel-logistics-<station>` first in their rows. The outpost's faction iron: `craft-steel-faction-gsc-0044`, off until a hauler's role carries manage_treasury.
-- Corridors (`far_ok`, once, standing, `in_system`, `skip_if_booked`, `skills_below` corporation_management 7 so the builder stays home): Then `join-sol-sirius` (Frontier, Haven, Iron Reach to the Sol hub); own rows only `join-sol-loop-home` (home to Sol for the loop); older capital joins stay in rows and lists.
-- The loop's end at Nexus Prime: Then `craft-steel-bought-iron-central-nexus` (iron bought at the 1 to 2 cr ask, steel by hand, stored; a buy with a craft is craft work, a buy alone is trade).
-- Hulls (F17): a bigger hold waits for a board that pays it (tests.md).
-- An engine restart cuts runs at stop 1: a cut once run is no try and rests `retry_minutes`.
-- What would change it: the loop's missions booked by every pilot (then home crafts); a role that may withdraw faction iron; a board contract to a policed station; jobs on our Notice Board.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), Sol's paid loop, then the `finish-*` routes of missions held half done.
+- Own: `finish-*` in the holders' rows; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows.
+- Then: `craft-steel-faction-gsc-0044` (the outpost's faction iron, `requires.role` officer, one ship first), `buy-steel-reserve-central-nexus` (docked buy that only stores, `open_to` hauler by ENT-504, max 20 cr, closed by `held_below` steel 90,000 of Logistics), the far joins (`skills_below` corporation_management 7 so the Builder stays home), `haul-network`, `park`.
+- `haul-network` (haul.py, game/haul-policy.json): lanes freight and internal supply only. Its arbitrage lane lost 239,167 cr in its first hour and is Trade's class (orders P5): out since 2026-11-24 10:01 UTC. A Threshold or Cobble carries no freight package (100 cargo).
+- Buying iron for steel is off the plan while iron stands over its max (orders P2).
+- Hulls (F17): Prayer (540, Outer Rim yards) waits for work that fills its hold; Workhorse and Ledger are prestige hulls (achievement_required).
+- What would change it: freight a hull can carry; the officer route's first RESULT; Trade's word on the goods left in hauler holds.
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
