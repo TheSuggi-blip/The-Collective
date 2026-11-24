@@ -84,5 +84,57 @@ class MineNetTests(unittest.TestCase):
         self.assertEqual(assigned["miner-2"]["belt_key"], "sys_b:belt_carbon")
 
 
+class MineNetLiveSchemaTests(unittest.TestCase):
+    """The store's own tables (2026-11-24): stations has no id or poi column; places maps a station to its base;
+    supply_status carries the stock. A schema fault in one table must not leave the fields unread."""
+
+    def _db(self, tmp):
+        import sqlite3
+        (Path(tmp) / "store").mkdir()
+        con = sqlite3.connect(str(Path(tmp) / "store" / "read.db"))
+        con.executescript("""
+            CREATE TABLE lanes (a TEXT, b TEXT, src TEXT);
+            CREATE TABLE systems (id TEXT, name TEXT, x REAL, y REAL, empire TEXT, home INT, stronghold INT, jumps INT, src TEXT);
+            CREATE TABLE stations (name TEXT, kind TEXT, system TEXT, tag TEXT, faction TEXT, empire TEXT, condition TEXT,
+                                   services TEXT, wrecked INT, mobile INT, src TEXT);
+            CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, class TEXT, base TEXT, x REAL, y REAL, t REAL, src TEXT);
+            CREATE TABLE fields (system TEXT, poi TEXT, resource TEXT, remaining INT, max_remaining INT, richness REAL, t REAL, src TEXT);
+            CREATE TABLE supply_status (chain TEXT, item TEXT, place TEXT, keep INT, stock INT, status TEXT);
+            INSERT INTO lanes VALUES ('sys_a', 'sys_b', ''), ('sys_a', 'sys_c', '');
+            INSERT INTO systems VALUES ('sys_a', 'A', 0, 0, 'voidborn', 0, 0, 0, ''), ('sys_b', 'B', 0, 0, 'voidborn', 0, 0, 1, ''),
+                                       ('sys_c', 'C', 0, 0, 'voidborn', 0, 0, 1, '');
+            INSERT INTO stations VALUES ('Store A', 'station', 'sys_a', '', '', 'voidborn', '', 'market,storage,refuel', 0, 0, ''),
+                                        ('Their Outpost', 'outpost', 'sys_c', '', '', '', '', '', 0, 0, '');
+            INSERT INTO places VALUES ('sys_a', 'st_a', 'station', 'Store A', '', 'base_a', 0, 0, 0, ''),
+                                      ('sys_c', 'st_c', 'station', 'Their Outpost', '', 'base_c', 0, 0, 0, ''),
+                                      ('sys_b', 'belt_iron', 'asteroid_belt', 'Belt', '', '', 0, 0, 0, '');
+            INSERT INTO fields VALUES ('sys_b', 'belt_iron', 'iron_ore', 90000, 100000, 40, 1, ''),
+                                      ('sys_b', 'belt_iron', 'copper_ore', 90000, 100000, 30, 1, '');
+            INSERT INTO supply_status VALUES ('iron-ore', 'iron_ore', 'fleet', 60000, 49000, 'short');
+        """)
+        con.commit()
+        con.close()
+
+    def test_live_schema_reads_fields_stations_and_supply(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._db(tmp)
+            pol = dict(mine_net.DEFAULT_POLICY)
+            w = mine_net.load_graph_and_world(tmp, tmp, pol, now_t=time.time())
+            self.assertEqual(len(w["fields"]), 2)
+            self.assertEqual(w["stations_by_sys"], {"sys_a": [("sys_a", "st_a", "base_a")]})
+            self.assertEqual(w["shortages"].get("iron_ore"), 11000)
+
+    def test_deposit_allowlist_and_market_tier_off(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self._db(tmp)
+            pol = dict(mine_net.DEFAULT_POLICY, deposit_stations=["sys_b:st_b:base_b"], market_tier=False)
+            w = mine_net.load_graph_and_world(tmp, tmp, pol, now_t=time.time())
+            self.assertEqual(w["stations_by_sys"], {"sys_b": [("sys_b", "st_b", "base_b")]})
+            pilot = {"name": "miner-1", "system": "sys_a", "tier": 0, "modules": [{"type": "mining_laser_i"}]}
+            cands = mine_net.score_belt_candidates(pilot, w, pol, {}, {})
+            self.assertEqual([(c["resource"], c["tier"], c["station"]) for c in cands],
+                             [("iron_ore", "deficit", "sys_b:st_b:base_b")])
+
+
 if __name__ == "__main__":
     unittest.main()

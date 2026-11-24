@@ -58,6 +58,8 @@ DEFAULT_POLICY = {
     "allow_xp_fallback": True,
     "xp_fallback_max_jumps": 2,
     "deposit_mode": "personal",
+    "deposit_stations": [],
+    "market_tier": True,
     "gift_surplus_to_trader": False,
     "priority_resources": [],
     "rest_seconds_when_empty": 120,
@@ -160,22 +162,47 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
     if db_path.exists():
         try:
             conn = sqlite3.connect("file:%s?mode=ro" % db_path, uri=True)
+        except sqlite3.Error:
+            conn = None
+        if conn is not None:
             cur = conn.cursor()
-            tbls = {r[0] for r in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
-            if "lanes" in tbls:
+
+            def _read(label, fn):
+                # One table's fault (a renamed column) costs that table only, never the fields (2026-11-24: the
+                # stations query named columns the store does not have and the fields were never read).
+                try:
+                    fn()
+                except sqlite3.Error as exc:
+                    print("mine_net: %s not read: %s" % (label, exc), file=sys.stderr)
+
+            tbls = set()
+            _read("tables", lambda: tbls.update(r[0] for r in cur.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table', 'view')").fetchall()))
+
+            def _lanes():
                 for a, b in cur.execute("SELECT a, b FROM lanes"):
                     adj.setdefault(a, set()).add(b)
                     adj.setdefault(b, set()).add(a)
-            if "systems" in tbls:
+
+            def _systems():
                 for sid, emp, sh in cur.execute("SELECT id, empire, stronghold FROM systems"):
                     systems[sid] = {"empire": str(emp or "").lower(), "stronghold": bool(sh)}
-            if "stations" in tbls:
-                for st_id, sys_id, poi_id in cur.execute("SELECT id, system, poi FROM stations WHERE system IS NOT NULL AND poi IS NOT NULL"):
-                    stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, st_id))
-            elif "places" in tbls:
-                for sys_id, poi_id, base_id in cur.execute("SELECT system, poi, base FROM places WHERE base IS NOT NULL AND base != ''"):
+
+            def _stations():
+                # places: (system, poi, base) of every station; stations: its kind and services by name, where the
+                # names match. A station read without storage, or not of kind station, is no place to deposit.
+                info = {}
+                if "stations" in tbls:
+                    for name, kind, services in cur.execute("SELECT name, kind, services FROM stations"):
+                        info[str(name or "")] = (str(kind or ""), str(services or ""))
+                for sys_id, poi_id, base_id, name in cur.execute(
+                        "SELECT system, poi, base, name FROM places WHERE kind = 'station' AND base IS NOT NULL AND base != ''"):
+                    kind, services = info.get(str(name or ""), ("station", "storage"))
+                    if kind != "station" or "storage" not in services.split(","):
+                        continue
                     stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
-            if "fields" in tbls:
+
+            def _fields():
                 for sys_id, poi_id, res, rem, mx, rich, ts in cur.execute(
                     "SELECT system, poi, resource, remaining, max_remaining, richness, t FROM fields WHERE remaining > 0"
                 ):
@@ -184,41 +211,49 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
                         "remaining": int(rem or 0), "max_remaining": int(mx or 0),
                         "richness": float(rich or 1.0), "t": float(ts or 0),
                     })
-            if "observations" in tbls:
+
+            def _pirates():
                 cutoff = now_t - float(policy.get("pirate_avoid_hours") or 6.0) * 3600.0
                 for (subj,) in cur.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
                     if subj:
                         pirates.add(str(subj))
-            if "items" in tbls:
+
+            def _items():
                 cols = {r[1] for r in cur.execute("PRAGMA table_info(items)").fetchall()}
                 vcol = "base_value" if "base_value" in cols else ("value" if "value" in cols else None)
                 if vcol:
                     for iid, val in cur.execute("SELECT id, %s FROM items" % vcol):
                         if iid and val:
                             item_vals[str(iid)] = float(val)
-            if "books" in tbls:
+
+            def _books():
                 for iid, bid in cur.execute("SELECT item, MAX(best_buy) FROM books WHERE best_buy > 0 GROUP BY item"):
                     if iid and bid:
                         item_vals[str(iid)] = max(item_vals.get(str(iid), 0.0), float(bid))
-            if "supply_chains" in tbls:
-                scols = {r[1] for r in cur.execute("PRAGMA table_info(supply_chains)").fetchall()}
-                if {"item", "keep", "stock"} <= scols:
-                    max_col = "max_stock" if "max_stock" in scols else ("cap" if "cap" in scols else None)
-                    q = "SELECT item, stock, keep%s FROM supply_chains" % ((", " + max_col) if max_col else "")
-                    for row in cur.execute(q):
-                        iid = str(row[0] or "")
-                        stk = int(row[1] or 0)
-                        keep = int(row[2] or 0)
-                        mx = int(row[3] or 0) if len(row) > 3 and row[3] else 0
-                        if not iid:
-                            continue
-                        if keep > 0 and stk < keep:
-                            shortages[iid] = max(shortages.get(iid, 0), keep - stk)
-                        if mx > 0 and stk >= mx:
-                            full_items.add(iid)
+
+            def _supply():
+                # supply_status carries the stock beside the keep (supply_chains has no stock column).
+                for iid, stk, keep in cur.execute("SELECT item, stock, keep FROM supply_status"):
+                    iid = str(iid or "")
+                    stk, keep = int(stk or 0), int(keep or 0)
+                    if iid and keep > 0 and stk < keep:
+                        shortages[iid] = max(shortages.get(iid, 0), keep - stk)
+
+            for label, table, fn in (("lanes", "lanes", _lanes), ("systems", "systems", _systems),
+                                     ("stations", "places", _stations), ("fields", "fields", _fields),
+                                     ("pirates", "observations", _pirates), ("items", "items", _items),
+                                     ("books", "books", _books), ("supply", "supply_status", _supply)):
+                if table in tbls:
+                    _read(label, fn)
             conn.close()
-        except sqlite3.Error:
-            pass
+
+    allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
+    if allow:
+        # The Admiral's list of deposit stations (system:poi:base): only where a give route of ours collects.
+        stations_by_sys = {}
+        for spec in allow:
+            sys_id, poi_id, base_id = spec.split(":")
+            stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
 
     needs_tsv = Path(repo_root) / "game" / "needs.tsv"
     if needs_tsv.exists():
@@ -427,6 +462,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         else:
             tier = "xp_fallback"
             tier_mult = 0.25
+        if tier == "market" and not policy.get("market_tier", True):
+            continue
 
         headroom_bonus = min(2.0, max(0.5, rem / 10000.0))
         fuel_pen = 35.0 * hops + 25.0 * st_hops
