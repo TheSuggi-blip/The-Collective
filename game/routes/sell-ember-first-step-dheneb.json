@@ -1,0 +1,44 @@
+{
+ "id": "sell-ember-first-step-dheneb",
+ "kind": "circuit",
+ "title": "Stored ember glands carried from First Step Memorial Station to the Hex Star bid (Dheneb, lawless), up to 30 a run",
+ "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids; no trader waits docked, F8). Hex Star (Dheneb) bids 5,367 cr x 30 for ember glands (table books 07:07 UTC; 5,281 to 5,379 since 06:02 UTC); every home and First Step bid is 480. Our traders' own storage at First Step holds 65 glands (storage book 07:06 UTC), two of the three waiting traders stand docked there. Same form as sell-ember-experiment-dheneb (2 runs, 80,395 and 52,324 cr): withdraw at most the bid's depth, sell at 4,000 or more, what is left stored at Hex Star for sell-loot-at-dheneb. Road 15 jumps, 8 lawless (gsc_0046 to ridgecrest, proxima_centauri, dheneb): no pirate on our sightings of the last 24 hours on any of them (data/intel/sightings.jsonl 07:12 UTC). One ship: the bid is one buyer.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "ember_gland",
+   "min": 6
+  },
+  "bid": {
+   "item": "ember_gland",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 4000,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "withdraw": [
+    {
+     "item": "ember_gland",
+     "qty": 30
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "sell": [
+    {
+     "item": "ember_gland",
+     "min_price": 4000
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all"
+  }
+ ]
+}

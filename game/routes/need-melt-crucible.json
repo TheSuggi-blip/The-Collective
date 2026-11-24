@@ -1,0 +1,80 @@
+{
+ "id": "need-melt-crucible",
+ "kind": "circuit",
+ "title": "Station Need: Crystal Melt at The Crucible Garrison filled from the pilot's melt stored there, about 890 cr a melt",
+ "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). The Crucible Garrison posts Station Need: Crystal Melt for 7 melt (6,206 cr), 3 (2,718) and 2 (1,768) (board read 06:50 UTC), 12 melt for 10,692 cr; it bids 54 for melt. A trader's own storage there holds 36 melt and that trader stands docked at Krynn, 2 jumps away (storage book 07:06 UTC). Three accept-and-redock pairs, largest need first (need-ember-gland-krynn form); what is left is stored there, the pilot ends at Krynn. One ship.",
+ "max_ships": 1,
+ "far_ok": true,
+ "requires": {
+  "stored": {
+   "at": "the_crucible_garrison",
+   "item": "crystal_melt",
+   "min": 12
+  },
+  "max_jumps": 3
+ },
+ "stops": [
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 12
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "accept": [
+    {
+     "title": "Station Need: Crystal Melt",
+     "needs": {
+      "crystal_melt": 7
+     }
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "accept": [
+    {
+     "title": "Station Need: Crystal Melt",
+     "needs": {
+      "crystal_melt": 3
+     }
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "accept": [
+    {
+     "title": "Station Need: Crystal Melt",
+     "needs": {
+      "crystal_melt": 2
+     }
+    }
+   ]
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "store": "all"
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "id": "sell-ember-synchrony-dheneb",
+ "kind": "circuit",
+ "title": "Stored ember glands carried from Synchrony Hub to the Hex Star bid (Dheneb, lawless), up to 30 a run",
+ "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). Hex Star (Dheneb) bids 5,367 cr x 30 for ember glands (table books 07:07 UTC); Synchrony bids 480. Our traders' storage at Synchrony Hub holds 55 glands (storage book 07:06 UTC). Same form as sell-ember-experiment-dheneb (2 runs, 80,395 and 52,324 cr): at most the bid's depth withdrawn, sold at 4,000 or more, the rest stored at Hex Star. Road 9 jumps, 6 lawless (gsc_0041, antares, gsc_0033, bluerift, proxima_centauri, dheneb): no pirate on our sightings of the last 24 hours (07:12 UTC). Behind sell-ember-first-step-dheneb in the list First: both sell into the one bid, requires.bid closes this one when the bid is gone.",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "synchrony_hub",
+   "item": "ember_gland",
+   "min": 6
+  },
+  "bid": {
+   "item": "ember_gland",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 4000,
+   "min_qty": 5
+  }
+ },
+ "stops": [
+  {
+   "at": "synchrony:synchrony_hub:synchrony_hub",
+   "withdraw": [
+    {
+     "item": "ember_gland",
+     "qty": 30
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "sell": [
+    {
+     "item": "ember_gland",
+     "min_price": 4000
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all"
+  }
+ ]
+}
