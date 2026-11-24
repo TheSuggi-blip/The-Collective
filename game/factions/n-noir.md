@@ -74,3 +74,8 @@ Append-only, newest last.
   any, comes down through that office. Counsel offered: "keep your own
   market data, and don't sign anything you haven't read twice." NOIR
   names no field and no need on the record.
+- 2026-11-24 17:36 UTC: the envoy's closing note asked for no answer.
+  17:39 UTC (diplomacy.py threads, risk clean, stance none), Friday:
+  "Acknowledged. The file's open on the desk; word will come down
+  through this office if NOIR has any." Not answered; the thread rests
+  until that office writes (orders ENT-091; queue.log ENT-322).
