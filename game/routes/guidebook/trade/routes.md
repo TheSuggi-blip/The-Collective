@@ -26,7 +26,8 @@ home cost more fuel than its risk saved); stations in a system of the
 orders' Watch line excluded; the nearest station first. Its books and
 boards are what opens the Station Need routes.
 
-What would change it: the unwind lane installed (buy escrow back);
+What would change it: the buy escrow read back to 0 (the unwind lane
+cancels it where a bursar docks, live since 11:30 UTC);
 Station Need copies read for goods we hold (`needscan.py`); a buy lane
 with a fleet-wide cap; a HEXC supply contract that counts a part
 delivery.
