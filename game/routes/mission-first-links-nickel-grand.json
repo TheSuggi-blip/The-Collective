@@ -1,0 +1,66 @@
+{
+ "id": "mission-first-links-nickel-grand",
+ "kind": "circuit",
+ "title": "First Links: 4,000 cr once per pilot at Grand Exchange; nickel bought at Grand Exchange and stored at Cargo Lanes, copper wiring bought at Cargo Lanes and handed in at Market Prime",
+ "note": "Written by Apollo, 2026-11-24 12:46 UTC, copied from mission-first-links-store-grand (Trade). Market Prime asked 170 cr x 883 for nickel ore at 12:43 UTC against this mission's limit of 130 (table books), and six runs of mission-first-links-store-grand from 12:34 UTC accepted First Links and ended on the failed buy (runs.jsonl); Grand Exchange, where it is accepted, asked 120 cr x 742 (depth 8,002, 12:43 UTC). The nickel is bought there instead; the rest is Trade's form (Mercury), unchanged: nickel stored at Cargo Lanes, copper wiring bought there, handed in at Market Prime. Accept first, then the buy (skill logistics-stock step 32). One_time and skip_if_booked First Links.",
+ "once": true,
+ "max_ships": 8,
+ "min_credits": 4300,
+ "one_time": [
+  "First Links"
+ ],
+ "skip_if_booked": [
+  "First Links"
+ ],
+ "requires": {
+  "empire": "nebula"
+ },
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "accept": [
+    "first_links"
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "only_if_active": [
+    "First Links"
+   ],
+   "buy": [
+    {
+     "item": "nickel_ore",
+     "qty": 10,
+     "max_price": 130,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "cargo_lanes:cargo_lanes_freight_depot:cargo_lanes_freight_depot",
+   "only_if_active": [
+    "First Links"
+   ],
+   "store": [
+    "nickel_ore"
+   ],
+   "buy": [
+    {
+     "item": "copper_wiring",
+     "qty": 8,
+     "max_price": 16,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "market_prime:market_prime_exchange:market_prime_exchange",
+   "only_if_active": [
+    "First Links"
+   ],
+   "redock": true
+  }
+ ]
+}
