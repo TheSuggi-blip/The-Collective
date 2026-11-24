@@ -10,26 +10,7 @@
   "pirate_avoid_hours": 6.0,
   "policed_only": false,
   "allow_lawless_min_power": 350.0,
-  "exclude_systems": [
-    "70_ophiuchi",
-    "acrux",
-    "atlas",
-    "botein",
-    "cedarhold",
-    "celaeno",
-    "diadem",
-    "garnet",
-    "gsc_0044",
-    "hatysa",
-    "intercrus",
-    "kepler_442",
-    "kitalpha",
-    "lacaille_8760",
-    "lanternwick",
-    "nembus",
-    "theemin",
-    "zubenelhakrabi"
-  ],
+  "exclude_systems": [],
   "exclude_pois": [],
   "exclude_species": [],
   "partner_factions": [
@@ -105,6 +86,5 @@
     "max_jumps": 6
   },
   "rest_seconds_when_empty": 120,
-  "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results.",
-  "_stopgap": "Apophis 2026-11-24 15:48 UTC: exclude_systems holds the 18 systems whose nearest dock is our outpost GSC-0044 (no storage, its fuel bunker a supply chain, requests ENT-513) until the hunt_net fix that drops outposts from the docks is installed; then emptied."
+  "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5)."
 }
