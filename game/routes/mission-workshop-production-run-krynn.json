@@ -1,0 +1,84 @@
+{
+ "id": "mission-workshop-production-run-krynn",
+ "kind": "circuit",
+ "title": "Workshop Production Run at the War Citadel (Krynn): 3,500 cr once; five batches of coolant fluid made by hand from liquid nitrogen and purified water bought there",
+ "note": "Written by Mercury, 2026-11-24 07:19 UTC (orders ENT-085 block MERCURY: close the <80% alarms, F40; F23: the Krynn desk ships earned no XP since 02:00 UTC, their neon craft finds no neon ask: 'neon_gas: not bought; craft ionize_neon_gas: no inputs', route bursar-desk-krynn; F34 tier 2, paid once). The War Citadel's board (data/missions 07:06 UTC): Workshop Production Run, crafting, 3,500 cr, template workshop_production_run, craft 5 items by any recipe. 39 of the 42 traders docked there have no such reward booked (data/fleet/onetime.json 07:19 UTC). The book (table books 07:08 UTC): liquid_nitrogen asked 8 x 10,058, purified_water 52 x 11,620; synthesize_coolant_fluid 3 nitrogen + 2 water -> 3 coolant, five runs about 650 cr; the War Citadel bids 262 x 7 for coolant, sold at 200 or more, the rest stored. The form of mission-workshop-production-run-grand (10 runs, 3,420 a run). Whether the board offers it to pilots not born Crimson is not known (Node Beta's offers it to its own empire only): one ship first, its RESULT read before a lift.",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 3200,
+ "one_time": [
+  "Workshop Production Run"
+ ],
+ "skip_if_booked": [
+  "Workshop Production Run"
+ ],
+ "requires": {
+  "max_jumps": 2,
+  "ask": [
+   {
+    "item": "liquid_nitrogen",
+    "base": "crimson_war_citadel",
+    "max_price": 10,
+    "min_qty": 15
+   },
+   {
+    "item": "purified_water",
+    "base": "crimson_war_citadel",
+    "max_price": 60,
+    "min_qty": 10
+   }
+  ]
+ },
+ "stops": [
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all",
+   "accept": [
+    "workshop_production_run"
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "only_if_active": [
+    "Workshop Production Run"
+   ],
+   "buy": [
+    {
+     "item": "liquid_nitrogen",
+     "qty": 15,
+     "max_price": 11,
+     "one_time": true
+    },
+    {
+     "item": "purified_water",
+     "qty": 10,
+     "max_price": 61,
+     "one_time": true
+    }
+   ],
+   "stop_on_failed_buy": true,
+   "craft": [
+    {
+     "recipe": "synthesize_coolant_fluid",
+     "runs": 5,
+     "per_run": 3,
+     "makes": "coolant_fluid",
+     "inputs": [
+      "liquid_nitrogen",
+      "purified_water"
+     ]
+    }
+   ],
+   "sell": [
+    {
+     "item": "coolant_fluid",
+     "min_price": 200
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": "all"
+  }
+ ]
+}
