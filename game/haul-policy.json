@@ -21,5 +21,9 @@
     "central_nexus",
     "the_experiment_research_station"
   ],
-  "note": "2026-11-24 (Trinity, Suggi approved): restored Bursar+Hauler fresh-book (<30m) arbitrage & public_freight combo after fixing haul.py ENT-302 bugs (claim by sell_base:item, 30m book age, hold_cap>=100 freight check, funded-pilot guard, Bursar handover + inventory_cost). | 2026-11-24 14:53 UTC (Apollo, orders.log ENT-089 block APOLLO: 'haul-network carries freight and supply, no arbitrage'; P5 and requests.log ENT-504: a buy that feeds a sale is Trade's): arbitrage lane out of lanes. Its last 4 hours (runs.jsonl): 122 sales +117,860 cr, 52 buys stored -224,909 cr (bids slipped), 3,022 of 3,203 runs 'no eligible job'."
+  "note": "2026-11-24 (Trinity, Suggi approved): restored Bursar+Hauler fresh-book (<30m) arbitrage & public_freight combo after fixing haul.py ENT-302 bugs (claim by sell_base:item, 30m book age, hold_cap>=100 freight check, funded-pilot guard, Bursar handover + inventory_cost). | 2026-11-24 14:53 UTC (Apollo, orders.log ENT-089 block APOLLO: 'haul-network carries freight and supply, no arbitrage'; P5 and requests.log ENT-504: a buy that feeds a sale is Trade's): arbitrage lane out of lanes. Its last 4 hours (runs.jsonl): 122 sales +117,860 cr, 52 buys stored -224,909 cr (bids slipped), 3,022 of 3,203 runs 'no eligible job'.",
+  "allow_escorted_lawless": true,
+  "escort_min_reward_cr": 15000,
+  "escort_rally_timeout_s": 240,
+  "never_trust_lawless_player_solo": true
 }

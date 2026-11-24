@@ -389,13 +389,45 @@ def main(argv=None):
     notes = []
     before = 0
 
-    def raw(action, params=None, group="spacemolt_ship"):
-        return gate.raw(pilot, action, params or {}, group=group)
+    p_enc = gate.q(pilot)
+
+    def _parse(text):
+        try:
+            d = json.loads(text) if isinstance(text, str) else text
+            return d if isinstance(d, dict) else {}
+        except ValueError:
+            return {}
+
+    def _body(d):
+        if not isinstance(d, dict):
+            return {}
+        for k in ("structuredContent", "result", "data"):
+            if isinstance(d.get(k), dict):
+                return d[k]
+        return d
+
+    def raw(action, params=None, group="spacemolt"):
+        st, txt = gate.call("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
+        d = _parse(txt)
+        if st >= 400 and "error" not in d:
+            d["error"] = "http %d" % st
+        return d
+
+    def goal(kind, options, timeout=240):
+        st, txt = gate.call("POST", "/accounts/%s/goal" % p_enc, {"type": kind, "options": options}, timeout=timeout)
+        d = _parse(txt)
+        ok = (200 <= st < 300) and bool(d.get("success", True)) and not d.get("error")
+        return ok, d
+
+    def get_status_body():
+        try:
+            return _body(raw("get_status", {}, group="spacemolt"))
+        except Exception:
+            return {}
 
     def get_credits():
         try:
-            r = raw("get_status", {}, group="spacemolt")
-            return int(((r.get("result") or r).get("player") or {}).get("credits") or 0)
+            return int((get_status_body().get("player") or {}).get("credits") or 0)
         except Exception:
             return 0
 
@@ -411,27 +443,31 @@ def main(argv=None):
             notes.append("already fitted")
             return 0
 
-        # Dock at target station
-        ans = gate.goal(pilot, "prepare-at-station", {"systemId": plan["system"], "poiId": plan["poi"], "baseId": plan["base"], "refuel": True}, timeout=240)
-        if not (isinstance(ans, dict) and ans.get("success", True) and not ans.get("error")):
+        ok_d, _ans = goal("prepare-at-station", {"systemId": plan["system"], "poiId": plan["poi"], "baseId": plan["base"], "refuel": True}, timeout=240)
+        if not ok_d:
             notes.append("dock failed at %s" % plan["base"])
             return 0
 
-        # 1. Strip off-role starter modules
         for mid in plan["unfit"]:
-            r_un = raw("uninstall_mod", {"module_id": mid}, group="spacemolt_ship")
+            st_b = get_status_body()
+            live_mods = (st_b.get("ship") or {}).get("modules") or st_b.get("modules") or []
+            inst_id = mid
+            for lm in live_mods:
+                if isinstance(lm, dict) and str(lm.get("type_id") or lm.get("type") or "").lower() == str(mid).lower():
+                    inst_id = lm.get("module_id") or lm.get("id") or mid
+                    break
+            r_un = raw("uninstall_mod", {"module_id": inst_id}, group="spacemolt")
             time.sleep(TICK)
             if "error" not in r_un:
                 raw("deposit", {"item_id": mid, "quantity": 1, "target": "self", "source": "cargo"}, group="spacemolt_storage")
                 time.sleep(TICK)
                 notes.append("unfit %s" % mid)
 
-        # 2. Buy & fit upgraded modules
         for mid, max_pr in plan["buy_fit"]:
             cr_before = get_credits()
-            r_buy = raw("buy", {"item_id": mid, "quantity": 1, "max_price": int(max_pr * 1.02) + 5}, group="spacemolt_market")
+            ok_b, _rb = goal("buy-items", {"items": [{"itemId": mid, "maxPrice": int(max_pr * 1.02) + 5, "maxQuantity": 1}]}, timeout=120)
             time.sleep(TICK)
-            if "error" in r_buy:
+            if not ok_b:
                 notes.append("buy err %s" % mid)
                 continue
             try:
@@ -442,7 +478,7 @@ def main(argv=None):
                     _gate_mod.book_onetime(pilot, "fit_net %s" % mid, -int(spent), data=str(DATA))
             except Exception:
                 pass
-            r_ins = raw("install_mod", {"module_id": mid}, group="spacemolt_ship")
+            r_ins = raw("install_mod", {"module_id": mid}, group="spacemolt")
             time.sleep(TICK)
             if "error" in r_ins:
                 raw("deposit", {"item_id": mid, "quantity": 1, "target": "self", "source": "cargo"}, group="spacemolt_storage")

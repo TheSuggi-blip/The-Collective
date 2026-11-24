@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 75.
+folder; never edited by hand. Scripts listed: 76.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -46,6 +46,7 @@ folder; never edited by hand. Scripts listed: 75.
 | `docs_export.py` | Copies an allowlist of each member's own files into the data folder, where the store mirrors them into its tables docs and doc_versions: every member's soul, mission, learnings and knowledge, readable by every member from the database. | By hand |
 | `docs_handbook.py` | The reader of the store's handbook (game/handbook.md and game/handbook/<subject>.md, written from the code by scripts/handbook.py): its contents and how the data flows, or the sections of one topic: a table or view, a subject, or a word. | By hand |
 | `empire.py` | Keep the picture of our empire: the faction and its limit, the bases and offices we own, the systems they stand in, the sites we may build on, and what the faction can build next. | By hand |
+| `escort_proto.py` | Unified proactive Convoy & Field Escort Pack protocol (haul.py + mine_net.py <-> hunt_net.py). | By hand |
 | `factionbook.py` | The faction's storage in the storage book: the entry `Faction` of data/stock/storage.json, so that the tools stock, surplus.py and the table holdings count what lies in the Lockboxes and at our outposts. | By hand |
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fit_net.py` | Dynamic Multi-Specialty Module Auto-Fitter (`fit-network`, game/fit-policy.json). | By hand |
@@ -365,6 +366,17 @@ empire.py dismantle <pilot> <facility_id> [--dry-run]   safely dismantle a facti
 empire.py check
 --root <dir>   the repository's root (default: two folders above this file)
 --data <dir>   the unit's data folder (default /srv/collective/data)
+```
+
+### `escort_proto.py`
+
+Unified proactive Convoy & Field Escort Pack protocol (haul.py + mine_net.py <->
+hunt_net.py).
+
+Run by hand.
+
+```
+Imported as a shared library by haul.py, mine_net.py, and hunt_net.py (no standalone CLI).
 ```
 
 ### `factionbook.py`

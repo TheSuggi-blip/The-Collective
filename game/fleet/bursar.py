@@ -188,13 +188,18 @@ def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, ex
                 cutoff = time.time() - float(pirate_avoid_hours or 6.0) * 3600.0
                 for pr in con.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
                     if pr[0]:
-                        pirate_sys.add(str(pr[0]))
+                        pirate_sys.add(str(pr[0]).split(":", 1)[0])
+            outpost_names = set()
+            if "stations" in tbls:
+                for st_sys, st_nm, st_kind, st_tag in con.execute("SELECT system, name, COALESCE(kind,''), COALESCE(tag,'') FROM stations"):
+                    if str(st_kind or "").lower() == "outpost" or (str(st_tag or "") and str(st_tag or "").upper() != "CLTV" and str(st_kind or "").lower() != "station"):
+                        outpost_names.add((str(st_sys or ""), str(st_nm or "")))
             if {"places", "systems"} <= tbls:
                 scols = {r[1] for r in con.execute("PRAGMA table_info(systems)").fetchall()}
                 strg_expr = "COALESCE(s.stronghold, 0)" if "stronghold" in scols else "0"
                 if "books" in tbls:
                     rows = con.execute(f"""
-                        SELECT p.base, p.system, p.poi, COALESCE(s.empire, '') AS empire,
+                        SELECT p.base, p.system, p.poi, COALESCE(p.name, '') AS pname, COALESCE(s.empire, '') AS empire,
                                {strg_expr} AS stronghold,
                                COALESCE(SUM(COALESCE(b.bid,0)*COALESCE(b.bid_qty,0) + COALESCE(b.ask,0)*COALESCE(b.ask_qty,0)), 0) AS depth,
                                MAX(COALESCE(b.t, 0)) AS book_t,
@@ -207,7 +212,7 @@ def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, ex
                     """).fetchall()
                 else:
                     rows = con.execute(f"""
-                        SELECT p.base, p.system, p.poi, COALESCE(s.empire, '') AS empire,
+                        SELECT p.base, p.system, p.poi, COALESCE(p.name, '') AS pname, COALESCE(s.empire, '') AS empire,
                                {strg_expr} AS stronghold,
                                0 AS depth, 0 AS book_t, 0 AS items_n
                         FROM places p
@@ -218,6 +223,8 @@ def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, ex
                 for r in rows:
                     b = str(r["base"] or "")
                     if not b or b in seen:
+                        continue
+                    if (str(r["system"] or ""), str(r["pname"] or "")) in outpost_names:
                         continue
                     emp = str(r["empire"] or "").strip().lower()
                     if exclude_strongholds and int(r["stronghold"] or 0):
@@ -283,6 +290,11 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
     max_per = max(1, int(policy.get("max_per_station") or 1))
     ttl = max(1800, int(float(policy.get("cycle_minutes") or 30) * 60 * 2.5))
     exclude = set(str(x) for x in (policy.get("exclude_stations") or []))
+    blk_doc = read_json(fdir / "bursar_blocked.json", {})
+    if isinstance(blk_doc, dict):
+        for _bk, _buntil in blk_doc.items():
+            if float(_buntil or 0) > now_t:
+                exclude.add(str(_bk))
     priority = set(str(x) for x in (policy.get("priority_stations") or []))
 
     with open(lock_path, "a+", encoding="utf-8") as lf:
@@ -784,7 +796,7 @@ def main(argv=None):
         return False, msg
 
     def get_stored(base_id):
-        d = body(raw("view_storage", {"station_id": base_id}, group="spacemolt_storage"))
+        d = body(raw("view", {"station_id": base_id}, group="spacemolt_storage"))
         rows = d.get("items") or d.get("storage") or []
         out = {}
         for r in rows if isinstance(rows, list) else []:
@@ -900,6 +912,14 @@ def main(argv=None):
         if not ok:
             say("could not reach %s: %s" % (base_id, msg))
             notes.append("unreachable: %s" % msg[:60])
+            if "access denied" in str(msg or "").lower() or "forbidden" in str(msg or "").lower():
+                _bp = DATA / "fleet" / "bursar_blocked.json"
+                _bd = read_json(_bp, {})
+                if not isinstance(_bd, dict):
+                    _bd = {}
+                _bd = {k: v for k, v in _bd.items() if float(v or 0) > time.time()}
+                _bd[str(base_id)] = int(time.time() + 86400)
+                write_json(_bp, _bd)
             return 0
 
         until = started + max(2.0, minutes) * 60.0

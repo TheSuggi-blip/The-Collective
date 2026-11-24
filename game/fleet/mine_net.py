@@ -146,6 +146,14 @@ def bfs_distances(adj, start_sys, max_hops=18):
     return dist
 
 
+def _load_pirate_threat_safe(data_dir, hours):
+    try:
+        import escort_proto as _ep
+        return _ep.load_pirate_threat(data_dir, hours=hours)
+    except Exception:
+        return {}
+
+
 def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
     """Load star graph, systems, stations, fields, pirates, reserves, needs, and item values from read.db & TSVs."""
     now_t = time.time() if now_t is None else float(now_t)
@@ -304,6 +312,8 @@ def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
         "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand,
+        "data_dir": str(data_dir), "allow_escort_request": True,
+        "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
     }
 
 
@@ -476,8 +486,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         sys_id = f["system"]
         poi_id = f["poi"]
         belt_key = "%s:%s" % (sys_id, poi_id)
-        if sys_id in excl_sys or sys_id in pirates or belt_key in excl_pois or poi_id in excl_pois:
+        if sys_id in excl_sys or belt_key in excl_pois or poi_id in excl_pois:
             continue
+        _in_pirate_sys = sys_id in pirates
         if cooldowns.get(belt_key, 0) > now_t:
             continue
         smeta = systems.get(sys_id, {})
@@ -501,6 +512,27 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
         is_craft = bool(policy.get("craft_demand_tier", True) and res in craft_demand and not is_deficit)
         is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft)
+        if _in_pirate_sys:
+            _esc_ok = False
+            try:
+                import escort_proto as _ep
+                _esc_dir = world.get("data_dir") or DATA
+                if is_deficit and policy.get("request_escort_for_pirate_deficits", True):
+                    if _ep.is_field_escorted(_esc_dir, sys_id, poi_id, now_t=now_t):
+                        _esc_ok = True
+                    elif world.get("allow_escort_request", False):
+                        _pt = (world.get("pirate_threat") or {}).get(sys_id) or {"count": 1, "raiders": 0, "elites": 0}
+                        _need = _ep.needed_escorts_for_threat(_pt.get("count", 1), _pt.get("raiders", 0), _pt.get("elites", 0), lawless=not is_policed)
+                        _ep.request_escort(
+                            _esc_dir, "field:%s:%s" % (sys_id, poi_id), "field", "mine-network",
+                            "mine-network", sys_id, poi_id, needed=max(3, _need),
+                            threat_systems=[sys_id], resource=res,
+                            reason="pirate_sighted_deficit_belt", priority=88, now_t=now_t,
+                        )
+            except Exception:
+                _esc_ok = False
+            if not _esc_ok:
+                continue
         if not is_policed:
             lawless_ok = (not policed_only) or (sys_id in allow_sys) or (p_tier >= lawless_min_t) or (allow_lawless_def and is_deficit)
             if not lawless_ok:

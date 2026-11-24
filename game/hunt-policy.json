@@ -21,19 +21,19 @@
   "gift_to": "trader",
   "escort": {
     "enabled": true,
-    "max_ships": 1,
+    "max_ships": 15,
     "max_fleet_share": 0.15,
     "threat_window_h": 4.0,
     "auto_protect_lawless_civilians": true,
     "protect_pilots": [],
     "protect_places": [],
-    "max_jumps": 10,
-    "min_power": 1500.0,
+    "max_jumps": 12,
+    "min_power": 350.0,
     "minutes": 45
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.02,
+    "target_share": 0.15,
     "sizes": [
       3,
       5,

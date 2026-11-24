@@ -1397,16 +1397,61 @@ def main(argv=None):
                 print('%s %s hunt_net: WAR WING lane 0 -> %s (%s:%s)' % (utc_now(), pilot, wjob['key'], wjob['system'], wjob['poi']), flush=True)
                 return subprocess.run(wcmd, check=False).returncode
 
-        # --- LANE 1: ON-DEMAND ESCORT & PROTECTION (Royal Guard sentinels get priority slots) ---
+        # --- LANE 1: ON-DEMAND CONVOY & FIELD ESCORT PACKS (3/5/7/10 nearest Military + Flagship/Sentinels) ---
         ecfg = policy.get("escort") or {}
         is_sentinel = str(pilot).startswith("sentinel-")
+        is_flagship = pilot in load_command_flagships(DATA)
         escort_active = sum(1 for r in claims.values() if r.get("lane") == "escort")
-        base_cap = min(int(ecfg.get("max_ships") or 12), max(1, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
-        escort_cap = base_cap + (4 if is_sentinel else 0)
-        min_esc_pow = min(200.0, float(ecfg.get("min_power") or 350.0)) if is_sentinel else float(ecfg.get("min_power") or 350.0)
+        base_cap = min(int(ecfg.get("max_ships") or 15), max(3, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
+        escort_cap = base_cap + (4 if (is_sentinel or is_flagship) else 0)
+        min_esc_pow = min(150.0, float(ecfg.get("min_power") or 350.0)) if (is_sentinel or is_flagship) else float(ecfg.get("min_power") or 350.0)
         if ecfg.get("enabled", True) and escort_active < escort_cap and spow["power"] >= min_esc_pow:
+            p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 12))
+            try:
+                import escort_proto as _ep
+                _ereqs = _ep.list_escort_requests(DATA)
+            except Exception:
+                _ep, _ereqs = None, []
+            if _ep and _ereqs:
+                _ereqs_near = [r for r in _ereqs if (not ship_doc.get("system") or r.get("system") in p_dists) and len(r.get("escorts") or {}) < int(r.get("needed") or 3)]
+                _ereqs_near.sort(key=lambda r: (-int(r.get("priority") or 0), p_dists.get(r.get("system"), 99)))
+                for req in _ereqs_near:
+                    rk = str(req["key"])
+                    _, st_tup = nearest_station(world["adj"], world["stations_by_sys"], req["system"], max_hops=6)
+                    if not st_tup:
+                        continue
+                    need_n = max(1, int(req.get("needed") or 3))
+                    joined = _ep.join_escort(DATA, rk, pilot, power=spow["power"], is_flagship=is_flagship)
+                    if not joined:
+                        continue
+                    if not claim_hunt_key_atomic(DATA, pilot, "escort:" + rk, "escort", policy, max_per_key=need_n):
+                        _ep.release_escort_member(DATA, rk, pilot)
+                        continue
+                    claimed_key = "escort:" + rk
+                    try:
+                        print("%s %s hunt_net: ESCORT PACK (%s %d/%d) -> %s (%s:%s)" % (
+                            utc_now(), pilot, req["mode"], len(joined.get("escorts") or {}), need_n, rk, req["system"], req["poi"]
+                        ), flush=True)
+                        _goal(pilot, "navigate-to-system", {"targetSystemId": req["system"]}, timeout_s=240)
+                        if req.get("poi"):
+                            _goal(pilot, "go-to-poi", {"targetPoiId": req["poi"]}, timeout_s=90)
+                        _ep.mark_escort_arrived(DATA, rk, pilot)
+                        cmd = [
+                            sys.executable, "-I", "-B", str(ROOT / "fleet" / "guard.py"),
+                            pilot, req["system"], req.get("poi") or req["system"],
+                            "--guards", req.get("guards") or ("haul-network" if req["mode"] == "convoy" else "mine-network"),
+                            "--station", "%s:%s:%s" % st_tup,
+                            "--minutes", str(int(ecfg.get("minutes") or minutes)),
+                            "--route", route_id,
+                        ]
+                        if req["mode"] == "convoy" and req.get("requester"):
+                            cmd += ["--follow", str(req["requester"])]
+                        rc = subprocess.run(cmd, check=False).returncode
+                        return rc
+                    finally:
+                        _ep.release_escort_member(DATA, rk, pilot)
+
             demands = detect_escort_demands(DATA, world, policy, claims)
-            p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 10))
             for dem in demands:
                 if ship_doc.get("system") and dem["system"] not in p_dists:
                     continue
@@ -1493,11 +1538,15 @@ def main(argv=None):
             cmd += ["--gift-to", str(policy["gift_to"])]
 
         proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        stranger_cd = False
         for line in proc.stdout or ():
             sys.stdout.write(line)
             sys.stdout.flush()
             if "ranch floor kept" in line or "no free grazer here" in line:
                 cooldown_key = chosen["key"]
+            elif "a ship that is not ours was at the place" in line:
+                cooldown_key = chosen["key"]
+                stranger_cd = True
         proc.wait()
         return proc.returncode or 0
     finally:
@@ -1506,7 +1555,7 @@ def main(argv=None):
             release_hunt_claim(
                 DATA, pilot,
                 cooldown_key=cooldown_key,
-                cooldown_minutes=float(policy.get("cooldown_minutes") or 90),
+                cooldown_minutes=(20.0 if ("stranger_cd" in locals() and stranger_cd) else float(policy.get("cooldown_minutes") or 90)),
                 policy=policy,
             )
         try:

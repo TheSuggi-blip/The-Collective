@@ -211,6 +211,20 @@ def neutral_partner_tags(data):
     return out
 
 
+def _unwrap_contract(entry):
+    """Unwrap nested spacemolt_shipping list_all entry `{contract: {...}, eligible: ...}` safely."""
+    if not isinstance(entry, dict):
+        return None
+    inner = entry.get("contract")
+    if isinstance(inner, dict):
+        flat = dict(inner)
+        for wk in ("eligible", "deadline_ticks", "recovery_ticks", "target_ticks"):
+            if wk in entry and wk not in flat:
+                flat[wk] = entry[wk]
+        return flat
+    return entry
+
+
 def extract_shipments(resp):
     if not isinstance(resp, dict):
         return []
@@ -218,7 +232,12 @@ def extract_shipments(resp):
     for k in ("shipments", "contracts", "active", "entries", "items"):
         v = sc.get(k)
         if isinstance(v, list):
-            return [x for x in v if isinstance(x, dict)]
+            out = []
+            for x in v:
+                u = _unwrap_contract(x)
+                if isinstance(u, dict):
+                    out.append(u)
+            return out
     return []
 
 
@@ -414,21 +433,39 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
     return assigned
 
 
-def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags, claimed_keys, exclude_bases=None):
-    """Global greedy 1-to-1 optimal matcher across available >=100c haulers and public freight contracts."""
+def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags, claimed_keys,
+                           exclude_bases=None, systems_meta=None, pirate_threat=None, raid_systems=None):
+    """Global greedy 1-to-1 optimal matcher across available >=100c haulers and public freight contracts.
+
+    Security invariants (Suggi, 2026-11-24):
+      - Pirate strongholds are HARD-BLOCKED on endpoints AND every intermediate hop.
+      - Zero blind trust for neutral/friend/player contracts into lawless space (could be decoys/traps).
+      - Any route crossing lawless or pirate-sighted space requires `allow_escorted_lawless`,
+        reward >= `escort_min_reward_cr`, no recent raid, and a 3/5/7/10-ship Military Convoy Escort Pack.
+    """
     if not peers or not entries:
         return {}
+    import escort_proto as _ep
     policed = bool(policy.get("policed_only", True))
+    allow_esc = bool(policy.get("allow_escorted_lawless", False))
+    esc_min_rew = float(policy.get("escort_min_reward_cr") or 15000)
     max_pick = int(policy.get("max_jumps_pickup") or 12)
     max_del = int(policy.get("max_jumps_delivery") or 25)
     min_cpj = float(policy.get("min_cr_per_jump") or 80)
     min_tot = float(policy.get("min_total_profit") or 600)
     max_col = float(policy.get("max_collateral") or 15000)
     partners_first = bool(policy.get("partners_first", True))
+    sh_set = set(exclude_bases or ())
+    sys_meta = systems_meta if isinstance(systems_meta, dict) else {loc[0]: {"empire": loc[3]} for loc in (base_map or {}).values() if isinstance(loc, (list, tuple)) and len(loc) >= 4}
+    p_threat = pirate_threat or {}
+    raids = raid_systems or set()
 
     scored = []
-    for c in entries:
+    for raw_c in entries:
+        c = _unwrap_contract(raw_c)
         if not isinstance(c, dict):
+            continue
+        if c.get("eligible") is False:
             continue
         cid = str(c.get("id") or c.get("shipment_id") or "")
         if not cid or ("freight:" + cid) in claimed_keys:
@@ -438,19 +475,28 @@ def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags
         oloc, dloc = base_map.get(orig), base_map.get(dest)
         if not oloc or not dloc:
             continue
-        if exclude_bases and (orig in exclude_bases or dest in exclude_bases or oloc[0] in exclude_bases or dloc[0] in exclude_bases):
+        if orig in sh_set or dest in sh_set or oloc[0] in sh_set or dloc[0] in sh_set:
             continue
-        if policed and (not oloc[3] or not dloc[3]):
-            continue
-        col = float(c.get("collateral") or 0)
+        col = float(c.get("collateral") or c.get("failure_debt") or 0)
         rew = float(c.get("base_reward") or c.get("reward_escrow") or c.get("reward") or 0)
         if col > max_col or rew < min_tot:
             continue
-        d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else int(c.get("jumps") or 1)
-        if d_hops is None or d_hops > max_del:
+        d_path = _ep.bfs_path(lanes, oloc[0], dloc[0], max_hops=max_del) if lanes else [oloc[0], dloc[0]]
+        if d_path is None:
+            continue
+        d_hops = max(0, len(d_path) - 1) if lanes else int(c.get("jumps") or 1)
+        if d_hops > max_del:
+            continue
+        d_risk = _ep.assess_path_threat(d_path, sys_meta, sh_set, p_threat, raids)
+        if d_risk["stronghold_hit"] or d_risk["raid_hit"]:
             continue
         req_vol = int(c.get("volume") or c.get("cargo_size") or 100)
-        blob = (str(c.get("shipper_tag") or "") + " " + str(c.get("recipient_tag") or "") + " " + str(c.get("shipper_name") or "")).upper()
+        shipper = c.get("shipper") if isinstance(c.get("shipper"), dict) else {}
+        recip = c.get("recipient") if isinstance(c.get("recipient"), dict) else {}
+        blob = " ".join(str(x or "") for x in (
+            c.get("shipper_tag"), c.get("recipient_tag"), c.get("shipper_name"),
+            shipper.get("name"), recip.get("name"),
+        )).upper()
         partner = next((tag for tag in (neutral_tags or {}) if tag and tag in blob), "")
         for peer in peers:
             p_nm = str(peer["pilot"])
@@ -459,8 +505,25 @@ def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags
             if c.get("requires_hazmat") and not peer.get("has_hazmat"):
                 continue
             p_sys = str(peer.get("system") or "")
-            p_hops = _bfs_hops(lanes, p_sys, oloc[0]) if p_sys and lanes else 0
-            if p_hops is None or p_hops > max_pick:
+            p_path = _ep.bfs_path(lanes, p_sys, oloc[0], max_hops=max_pick) if (p_sys and lanes) else [oloc[0]]
+            if p_path is None:
+                continue
+            p_hops = max(0, len(p_path) - 1) if (p_sys and lanes) else 0
+            if p_hops > max_pick:
+                continue
+            full_path = p_path + d_path[1:]
+            risk = _ep.assess_path_threat(full_path, sys_meta, sh_set, p_threat, raids)
+            if risk["stronghold_hit"] or risk["raid_hit"]:
+                continue
+            is_contested = bool(risk["lawless_hops"] or risk["pirate_hops"] or not oloc[3] or not dloc[3])
+            needs_escort = False
+            escort_needed = 0
+            if is_contested:
+                if not allow_esc or rew < esc_min_rew:
+                    continue
+                needs_escort = True
+                escort_needed = max(3, int(risk["needed"] or 3))
+            elif policed and (not oloc[3] or not dloc[3]):
                 continue
             tot_hops = max(1, p_hops + d_hops)
             cpj = rew / tot_hops
@@ -471,6 +534,8 @@ def assign_optimal_freight(entries, base_map, lanes, peers, policy, neutral_tags
                 "job_key": "freight:" + cid, "cid": cid, "pkg_id": str(c.get("package_id") or ""),
                 "origin": oloc, "dest": dloc, "reward": int(round(rew)),
                 "pickup_hops": p_hops, "delivery_hops": d_hops, "partner": partner,
+                "needs_escort": needs_escort, "escort_needed": escort_needed,
+                "threat_systems": sorted(set(risk["lawless_hops"] + risk["pirate_hops"])),
             }))
 
     scored.sort(key=lambda x: (x[0], x[1], x[2], x[3]), reverse=True)
@@ -939,42 +1004,89 @@ def main(argv=None):
                 ntags = neutral_partner_tags(DATA)
                 claimed = active_claimed_keys(DATA)
                 peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
-                pick = assign_optimal_freight(entries, base_map, lanes, peers, policy, ntags, claimed, exclude_bases=strongholds).get(pilot)
+                import escort_proto as _ep
+                _p_thr = _ep.load_pirate_threat(DATA, hours=6.0)
+                _r_sys = _ep.load_recent_raids(DATA, hours=24.0)
+                _s_meta = {}
+                try:
+                    _db = Path(DATA) / "store" / "read.db"
+                    if _db.is_file():
+                        _c = sqlite3.connect("file:%s?mode=ro" % _db, uri=True, timeout=3.0)
+                        try:
+                            for _sid, _emp, _sh in _c.execute("SELECT id, COALESCE(empire,''), COALESCE(stronghold,0) FROM systems"):
+                                _s_meta[str(_sid)] = {"empire": str(_emp or ""), "stronghold": bool(_sh)}
+                        finally:
+                            _c.close()
+                except Exception:
+                    pass
+                pick = assign_optimal_freight(
+                    entries, base_map, lanes, peers, policy, ntags, claimed,
+                    exclude_bases=strongholds, systems_meta=_s_meta, pirate_threat=_p_thr, raid_systems=_r_sys,
+                ).get(pilot)
                 if pick and claim_job(DATA, pilot, pick["job_key"]):
                     cid, oloc, dloc = pick["cid"], pick["origin"], pick["dest"]
-                    say("freight %s: %s -> %s (%d cr, %dj+%dj%s)" % (
+                    say("freight %s: %s -> %s (%d cr, %dj+%dj%s%s)" % (
                         cid[:8], oloc[2], dloc[2], pick["reward"], pick["pickup_hops"], pick["delivery_hops"],
-                        " partner=" + pick["partner"] if pick["partner"] else ""))
-                    ok_o, msg_o = go_dock(oloc)
-                    if not ok_o:
-                        notes.append("freight orig err: %s" % msg_o[:40])
-                        release_job(DATA, pilot)
-                        continue
-                    save_market(oloc[2], oloc[0])
-                    acc = raw("accept", {"shipment_id": cid, "carrier": "player"}, group="spacemolt_shipping")
-                    time.sleep(TICK)
-                    if "error" in acc or (isinstance(body(acc), dict) and body(acc).get("error")):
-                        say("freight accept %s refused" % cid[:8])
-                        notes.append("freight accept refused")
-                        release_job(DATA, pilot)
-                        continue
-                    pkg_item = pick["pkg_id"] if pick["pkg_id"].startswith("package:") else ("package:" + pick["pkg_id"])
-                    raw("withdraw", {"item_id": pkg_item, "quantity": 1}, group="spacemolt_storage")
-                    time.sleep(TICK)
-                    if not get_cargo().get(pkg_item):
-                        raw("return", {"shipment_id": cid}, group="spacemolt_shipping")
+                        " partner=" + pick["partner"] if pick["partner"] else "",
+                        " escort=%d" % pick["escort_needed"] if pick.get("needs_escort") else ""))
+                    esc_key = ""
+                    try:
+                        if pick.get("needs_escort"):
+                            esc_key = "convoy:%s:%s" % (pilot, pick["job_key"])
+                            need_n = max(3, int(pick.get("escort_needed") or 3))
+                            _ep.request_escort(
+                                DATA, esc_key, "convoy", pilot, route_id,
+                                oloc[0], oloc[1], needed=need_n, dest_system=dloc[0],
+                                threat_systems=pick.get("threat_systems") or [],
+                                reason="contested_freight", priority=95,
+                            )
+                        ok_o, msg_o = go_dock(oloc)
+                        if not ok_o:
+                            notes.append("freight orig err: %s" % msg_o[:40])
+                            release_job(DATA, pilot)
+                            continue
+                        if esc_key:
+                            rally_end = time.time() + float(policy.get("escort_rally_timeout_s") or 240)
+                            ready_ok = False
+                            while time.time() < rally_end and not stop_requested():
+                                _rec = _ep.get_escort_request(DATA, esc_key)
+                                if _rec and _ep.escort_ready_count(_rec) >= int(_rec.get("needed") or 3):
+                                    ready_ok = True
+                                    break
+                                time.sleep(10)
+                            if not ready_ok:
+                                say("convoy escort rally timeout (%s); aborting contested freight" % cid[:8])
+                                notes.append("convoy escort timeout")
+                                release_job(DATA, pilot)
+                                continue
+                        save_market(oloc[2], oloc[0])
+                        acc = raw("accept", {"shipment_id": cid, "carrier": "player"}, group="spacemolt_shipping")
                         time.sleep(TICK)
-                        notes.append("freight withdraw failed, returned")
-                        release_job(DATA, pilot)
-                        continue
-                    ok_d, msg_d = go_dock(dloc)
-                    if ok_d:
-                        save_market(dloc[2], dloc[0])
-                        del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
+                        if "error" in acc or (isinstance(body(acc), dict) and body(acc).get("error")):
+                            say("freight accept %s refused" % cid[:8])
+                            notes.append("freight accept refused")
+                            release_job(DATA, pilot)
+                            continue
+                        pkg_item = pick["pkg_id"] if pick["pkg_id"].startswith("package:") else ("package:" + pick["pkg_id"])
+                        raw("withdraw", {"item_id": pkg_item, "quantity": 1}, group="spacemolt_storage")
                         time.sleep(TICK)
-                        say("freight delivered %s -> %s (+%d cr%s)" % (cid[:8], dloc[2], pick["reward"], " ERR" if "error" in del_r else ""))
-                        notes.append("freight %s +%d cr" % (cid[:8], pick["reward"]))
-                        completed += 1
+                        if not get_cargo().get(pkg_item):
+                            raw("return", {"shipment_id": cid}, group="spacemolt_shipping")
+                            time.sleep(TICK)
+                            notes.append("freight withdraw failed, returned")
+                            release_job(DATA, pilot)
+                            continue
+                        ok_d, msg_d = go_dock(dloc)
+                        if ok_d:
+                            save_market(dloc[2], dloc[0])
+                            del_r = raw("deliver", {"shipment_id": cid}, group="spacemolt_shipping")
+                            time.sleep(TICK)
+                            say("freight delivered %s -> %s (+%d cr%s)" % (cid[:8], dloc[2], pick["reward"], " ERR" if "error" in del_r else ""))
+                            notes.append("freight %s +%d cr" % (cid[:8], pick["reward"]))
+                            completed += 1
+                    finally:
+                        if esc_key:
+                            _ep.clear_escort_request(DATA, esc_key)
 
             elif lane == "arbitrage":
                 books_rows = _load_books(DATA)

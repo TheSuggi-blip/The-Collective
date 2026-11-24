@@ -330,6 +330,26 @@ def _option(args, flag, default=""):
     return args[args.index(flag) + 1] if flag in args and args.index(flag) + 1 < len(args) else default
 
 
+def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=None, world_cache=None, stor_cache=None):
+    """Fast 0ms dispatcher check: True iff `pilot` is docked at a station with an executable craft job."""
+    if not isinstance(ship_doc, dict):
+        return False
+    base_id = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+    div = str(ship_doc.get("division") or "")
+    if not base_id or div not in ("Trade", "Logistics"):
+        return False
+    pol_p = Path(policy_path) if policy_path else (Path(repo_root) / "game" / "craft-policy.json")
+    pol = read_json(pol_p, {})
+    if not pol or not pol.get("enabled", True):
+        return False
+    world = world_cache if world_cache is not None else load_craft_world(data_dir, repo_root, pol)
+    stor_all = stor_cache if stor_cache is not None else read_json(Path(data_dir) / "stock" / "storage.json", {})
+    p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
+    stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
+    credits = int(ship_doc.get("credits") or 0)
+    return pick_craft_job(div, base_id, stored, credits, world, pol) is not None
+
+
 def main(argv=None):
     args = sys.argv[1:] if argv is None else list(argv)
     if not args or args[0].startswith("--"):
@@ -352,15 +372,51 @@ def main(argv=None):
     notes = []
     before = 0
 
-    def raw(action, params=None, group="spacemolt_crafting"):
-        return gate.raw(pilot, action, params or {}, group=group)
+    p_enc = gate.q(pilot)
+
+    def _parse(text):
+        try:
+            d = json.loads(text) if isinstance(text, str) else text
+            return d if isinstance(d, dict) else {}
+        except ValueError:
+            return {}
+
+    def _body(d):
+        if not isinstance(d, dict):
+            return {}
+        for k in ("structuredContent", "result", "data"):
+            if isinstance(d.get(k), dict):
+                return d[k]
+        return d
+
+    def raw(action, params=None, group="spacemolt"):
+        st, txt = gate.call("POST", "/accounts/%s/raw" % p_enc, {"toolGroup": group, "action": action, "params": params or {}}, timeout=120)
+        d = _parse(txt)
+        if st >= 400 and "error" not in d:
+            d["error"] = "http %d" % st
+        return d
+
+    def goal(kind, options, timeout=180):
+        st, txt = gate.call("POST", "/accounts/%s/goal" % p_enc, {"type": kind, "options": options}, timeout=timeout)
+        d = _parse(txt)
+        ok = (200 <= st < 300) and bool(d.get("success", True)) and not d.get("error")
+        return ok, d
 
     def get_credits():
         try:
-            r = raw("get_status", {}, group="spacemolt")
-            return int(((r.get("result") or r).get("player") or {}).get("credits") or 0)
+            r = _body(raw("get_status", {}, group="spacemolt"))
+            return int((r.get("player") or {}).get("credits") or 0)
         except Exception:
             return 0
+
+    def get_live_stored(base_id):
+        d = _body(raw("view", {"station_id": base_id}, group="spacemolt_storage"))
+        rows = d.get("items") or d.get("storage") or []
+        out = {}
+        for r in rows if isinstance(rows, list) else []:
+            if isinstance(r, dict) and r.get("item_id"):
+                out[str(r["item_id"])] = out.get(str(r["item_id"]), 0) + int(r.get("quantity") or 0)
+        return out
 
     try:
         before = get_credits()
@@ -369,14 +425,17 @@ def main(argv=None):
         base_id = str(ship_doc.get("base") or ship_doc.get("docked") or "")
         if not base_id:
             notes.append("not docked")
-            time.sleep(60)
+            time.sleep(30)
             return 0
-        stor_all = read_json(DATA / "stock" / "storage.json", {})
-        stored = ((stor_all.get("pilots") or {}).get(pilot) or {}).get(base_id) or {}
+        stored = get_live_stored(base_id)
+        if not stored:
+            stor_all = read_json(DATA / "stock" / "storage.json", {})
+            p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
+            stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
         world = load_craft_world(DATA, REPO, policy)
         job = pick_craft_job(div, base_id, stored, before, world, policy)
         if not job:
-            watch_s = float(policy.get("idle_watch_minutes") or 15) * 60.0
+            watch_s = min(300.0, float(policy.get("idle_watch_minutes") or 5) * 60.0)
             notes.append("docked watch %dm (no recipe)" % max(1, int(round(watch_s / 60.0))))
             end_nap = time.time() + watch_s
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists():
@@ -387,18 +446,18 @@ def main(argv=None):
                     pass
             return 0
 
-        # 1. Buy any short docked inputs & store them for workshop
+        # 1. Buy any short docked inputs via real buy-items goal & store them for workshop
         for iid, qty, ask in job["buys"]:
-            r_b = raw("buy", {"item_id": iid, "quantity": qty, "max_price": int(ask * 1.02) + 2}, group="spacemolt_market")
+            ok_b, _rb = goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(ask * 1.02) + 2, "maxQuantity": int(qty)}]}, timeout=120)
             time.sleep(TICK)
-            if "error" in r_b:
+            if not ok_b:
                 notes.append("buy err %s" % iid)
                 return 0
-            raw("deposit", {"item_id": iid, "quantity": qty, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+            raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
             time.sleep(TICK)
 
-        # 2. Execute docked craft
-        r_c = raw("craft", {"recipe_id": job["recipe"], "count": job["runs"]}, group="spacemolt_crafting")
+        # 2. Execute docked craft (exact route_run.py wire schema: group='spacemolt', quantity=runs*per_run)
+        r_c = raw("craft", {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}, group="spacemolt")
         time.sleep(TICK)
         if "error" in r_c:
             notes.append("craft err %s" % job["recipe"])

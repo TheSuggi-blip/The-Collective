@@ -1050,6 +1050,30 @@ def why_not(pilot, rid, route, state):
                 return "already fitted (no off-role modules or affordable upgrade nearby)", None
         except Exception:
             return "fit_net check unavailable", None
+    if route["kind"] == "craft_net":
+        try:
+            import craft_net as _cn
+            _repo_r = Path(state.get("root") or Path(__file__).resolve().parent.parent).parent
+            _data_d = state.get("data") or Path("/srv/collective/data")
+            _pol_p = Path(str(route.get("policy") or "game/craft-policy.json"))
+            if not _pol_p.is_absolute():
+                _pol_p = _repo_r / _pol_p
+            _cpol = state.get("_craft_pol")
+            if _cpol is None:
+                _cpol = _cn.read_json(_pol_p, {})
+                state["_craft_pol"] = _cpol
+            _cw = state.get("_craft_world")
+            if _cw is None:
+                _cw = _cn.load_craft_world(_data_d, _repo_r, _cpol)
+                state["_craft_world"] = _cw
+            _sc = state.get("_craft_stor")
+            if _sc is None:
+                _sc = _cn.read_json(Path(_data_d) / "stock" / "storage.json", {})
+                state["_craft_stor"] = _sc
+            if not _cn.has_craft_job(pilot.get("name", ""), pilot, data_dir=_data_d, repo_root=_repo_r, policy_path=_pol_p, world_cache=_cw, stor_cache=_sc):
+                return "no docked craft job available", None
+        except Exception:
+            return "craft_net check unavailable", None
     place = None
     if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
         folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one

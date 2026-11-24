@@ -47,8 +47,8 @@ LOOK_EVERY = 60              # seconds between two looks at the place
 HULL_FLOOR = 0.6             # under this share of its hull the guard leaves (the fleet's stance: no fight it did not choose)
 GONE_LOOKS = 2               # looks in a row without the guarded order: a pilot between two runs of the route carries none for one dispatcher pass
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
-PLACED = ('mine', 'hunt')    # the kinds a guard keeps (routes.py PLACES); a route's id is its file name, so one of the marks is the guarded route's own
-FOLLOWED = PLACED + ('circuit',)   # with --follow the guarded pilot may also fly a circuit (the escort; requests ENT-226)
+PLACED = ('mine', 'hunt', 'mine_net')    # the kinds a guard keeps (routes.py PLACES + mine_net field escorts)
+FOLLOWED = PLACED + ('circuit', 'haul', 'craft_net')   # with --follow also tracks haul/mine_net/craft_net convoys
 
 
 def stamp(moment):
