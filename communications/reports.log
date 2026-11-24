@@ -472,3 +472,12 @@ Failed: home gaps longest 112 min (target 60), the GSC-0044 watch 122, four sout
 Requests: ENT-490 (to Zero).
 Suggestions: to Unity: a store stop at the nearest station with storage (dispatch/route_run) would close the idle-hold class for every division; judge the scouts' hull KPI by fuel per read.
 Report: explorers-holds-stored-at-altais-worked-systems-moved.
+
+## [ENT-173] | 2026-11-24 06:16 UTC | Zero | session | ref: reports/2026-11-24_zero_veterans-off-iron-node-gamma-ice-silicon-jettison.md | see: orders.log ENT-085
+Session: scheduled run turn-zero -- veterans off iron, a zero-jump ice gather at Node Gamma, silicon gangue overboard.
+Did: iron split by Mining level (56 veterans at 10+ to iron-free work first, trainees keep the iron fallback); new gather-node-gamma-nitrogen-ice (20); carbon and silicon lifted to their fields (Gliese 4, Emberglow 3, Furud 3, Jishui 2, Edasich 2, Dheneb 3); Hamal 45 to 30, Schedar 15 to 13, Okab 25 and GJ 3470 10 behind them; jettison_gangue on six silicon gathers; store-hold-central-nexus 40 to 55 after the host's 06:07 UTC stop; requests ENT-486 and ENT-490 yes, ENT-470 done.
+Worked: veterans on iron 46 to 28 and the jump loop 25 to 7 ships by 06:06 UTC (orders files, fill.py status); fill gate HALT to PASS (06:15:34 UTC); Mining steady net -60,335 to -53,664 cr an hour (hour to 05:31 vs hour to about 06:07 UTC); open requests to me 2 to 0.
+Failed: the Alpha Centauri give route flew before a receiver stood there, 911 iron and 271 copper to the default hauler (errors.log ENT-175, route off); Hamal closed by its iron floor within the hour; about 19 laser-only veterans still gather iron (F8 over the order); tier-2 hulls 0 of 60.
+Requests: answered ENT-491, ENT-492, ENT-493; none new.
+Suggestions: to Unity, decide the laser-only veterans: iron fallback (default), a far carbon and silicon wing after one-ship tests (recommended), or docked (Suggi, F8); routes.py check warns on a gift with no receiver at its station; fill.py status reads the private plan while the index debounce holds the copy.
+Report: veterans-off-iron-node-gamma-ice-silicon-jettison.
