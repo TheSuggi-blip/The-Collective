@@ -2,10 +2,10 @@
  "id": "haul-network",
  "kind": "haul",
  "title": "Dynamic Logistics Hauler network: auto-picks safe Freight Board contracts, verified cross-station arbitrage, and internal empire supply",
- "note": "Policy-driven autonomous hauler runner governed by game/haul-policy.json (Apollo/Mercury/Unity). Resumes active freight first, then picks the best unclaimed safe Freight Board contract (spacemolt_shipping, Neutral partners prioritized), verified cross-station Exchange arbitrage (re-checking live book before buying), or internal needs.tsv supply haul. Apollo 2026-11-24 10:01 UTC: requires.skills_below corporation_management 7 keeps the faction's Builder (the one pilot of that level) at the build sites (skill logistics-stock step 33); arbitrage lane off in the policy (P5). 2026-11-24 10:07 UTC (fill.py, Apollo): max_ships 60 -> 66. 2026-11-24 12:39 UTC (fill.py, Apollo): max_ships 66 -> 76.",
+ "note": "Policy-driven autonomous hauler runner governed by game/haul-policy.json (Apollo/Mercury/Unity). Resumes active freight first, then picks the best unclaimed safe Freight Board contract (spacemolt_shipping, Neutral partners prioritized), verified cross-station Exchange arbitrage (re-checking live book before buying), or internal needs.tsv supply haul. Apollo 2026-11-24 10:01 UTC: requires.skills_below corporation_management 7 keeps the faction's Builder (the one pilot of that level) at the build sites (skill logistics-stock step 33); arbitrage lane off in the policy (P5). 2026-11-24 10:07 UTC (fill.py, Apollo): max_ships 60 -> 66. 2026-11-24 12:39 UTC (fill.py, Apollo): max_ships 66 -> 76. 2026-11-24 13:05 UTC (fill.py, Apollo): max_ships 76 -> 80.",
  "policy": "game/haul-policy.json",
  "minutes": 45,
- "max_ships": 76,
+ "max_ships": 80,
  "standing": true,
  "measured": {
   "date": "2026-11-24",
