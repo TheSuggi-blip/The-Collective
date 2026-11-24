@@ -2,8 +2,8 @@
  "id": "hunt-garnet-belt-glitterback-crab",
  "kind": "hunt",
  "title": "glitterback_crab at garnet_belt, one hunter, loot to a trader receiver at the_experiment_research_station",
- "note": "Written by Apophis 2026-11-23 19:22 UTC (rule F8: six drones waited, fill.py status drone 19:19 UTC, every home herd at one hunter; rule F23: hunts for experience where the ships stand; orders ENT-083 P1, P6). Herd: 8 glitterback_crab at seginus:seginus_haze (table herds, census 2026-11-23 18:43 UTC), 2 jumps from the_experiment; hull 60, one typical drone passes both gauges (gauges.py species). Not a partner base system, not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at the_experiment_research_station, 2 jumps (P5). One ship; standing work.",
- "place": "seginus:seginus_haze",
+ "note": "Written by Apophis 2026-11-23 19:22 UTC (rule F8: six drones waited, fill.py status drone 19:19 UTC, every home herd at one hunter; rule F23: hunts for experience where the ships stand; orders ENT-083 P1, P6). Herd: 8 glitterback_crab at seginus:seginus_haze (table herds, census 2026-11-23 18:43 UTC), 2 jumps from the_experiment; hull 60, one typical drone passes both gauges (gauges.py species). Not a partner base system, not in the orders Watch, no pirate observation in 24 h. kills 4 leave 2 (F38). gift_to trader at the_experiment_research_station, 2 jumps (P5). One ship; standing work. 2026-11-24 01:00 UTC (Apophis): place corrected from seginus:seginus_haze to garnet:garnet_belt: the generator of 2026-11-23 19:22 UTC wrote the last place of its loop into every file (errors.log, this turn); runs flown since then hunted at Seginus, 18 jumps out.",
+ "place": "garnet:garnet_belt",
  "species": [
   "glitterback_crab"
  ],
