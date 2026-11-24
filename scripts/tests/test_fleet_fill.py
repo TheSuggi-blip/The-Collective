@@ -401,6 +401,23 @@ class WriteTests(Tree):
         self.assertEqual(self.git("status", "--porcelain"), "")
 
 
+class IndexDebounceTests(Tree):
+    """Zero's and Mercury's reports of 2026-11-24: fill.py lift refused every lift and plan.py apply left the
+    repository's copy behind, because commit() deferred the index for FLEET_INDEX_DEBOUNCE seconds after any index
+    write and the route gate then found that index stale. A commit that changes what the index shows writes it."""
+
+    def test_a_lift_within_the_debounce_window_writes_the_index_and_commits(self):
+        os.environ["FLEET_INDEX_DEBOUNCE"] = "900"
+        self.addCleanup(os.environ.pop, "FLEET_INDEX_DEBOUNCE", None)
+        route = json.loads((self.root / "routes" / "ice.json").read_text())
+        route["max_ships"] = 7
+        ok, said = self.fill.commit(str(self.root), str(self.data), "Zero", {"routes/ice.json": json.dumps(route, indent=1) + "\n"}, "ice to 7")
+        self.assertTrue(ok, said)
+        self.assertEqual(json.loads((self.root / "routes" / "ice.json").read_text())["max_ships"], 7)
+        self.assertEqual(self.fill.routefiles.check(str(self.root))[0], [])
+        self.assertEqual(self.git("status", "--porcelain"), "")
+
+
 class ReserveTests(Tree):
     """requests ENT-213 (Zero) and Military's report of 2026-11-17: fill.py wrote tests that sold silicon, iron and nickel the
     reserve is short of, and its hourly job put an armor-plate sale into a drone's routes (rule F24)."""
