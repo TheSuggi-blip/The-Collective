@@ -428,11 +428,20 @@ def main(argv=None):
 
         # 2. Buy & fit upgraded modules
         for mid, max_pr in plan["buy_fit"]:
+            cr_before = get_credits()
             r_buy = raw("buy", {"item_id": mid, "quantity": 1, "max_price": int(max_pr * 1.02) + 5}, group="spacemolt_market")
             time.sleep(TICK)
             if "error" in r_buy:
                 notes.append("buy err %s" % mid)
                 continue
+            try:
+                cr_after = get_credits()
+                spent = max(0, cr_before - cr_after) if cr_before > 0 and cr_after >= 0 else int(max_pr)
+                if spent > 0:
+                    import gate as _gate_mod
+                    _gate_mod.book_onetime(pilot, "fit_net %s" % mid, -int(spent), data=str(DATA))
+            except Exception:
+                pass
             r_ins = raw("install_mod", {"module_id": mid}, group="spacemolt_ship")
             time.sleep(TICK)
             if "error" in r_ins:

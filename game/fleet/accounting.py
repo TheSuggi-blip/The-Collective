@@ -485,10 +485,10 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             mins = _num(r[3])
             cr = _num(r[4])
             ot = _num(r[5])
-            if route in all_once:
+            if route in all_once or kind == "fit_net":
                 d = _div_of_pilot(pilot, pilot_div)
                 once_direct_by_div[d] = once_direct_by_div.get(d, 0.0) + cr
-                if route in fit_once:
+                if route in fit_once or kind == "fit_net":
                     capex_fit_direct_cr += cr
                 else:
                     once_mission_direct_cr += cr
