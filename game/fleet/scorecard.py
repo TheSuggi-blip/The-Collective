@@ -796,15 +796,17 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             if "ships" in tables:
                 has_hulls = "hulls" in tables
                 has_skills = "ship_skills" in tables
-                q = """
+                hull_cols = {r[1] for r in conn.execute("PRAGMA table_info(hulls)").fetchall()} if has_hulls else set()
+                cat_expr = "LOWER(COALESCE(h.category, '')) AS hull_cat" if "category" in hull_cols else "'' AS hull_cat"
+                q = (f"""
                     SELECT s.pilot, s.division, LOWER(COALESCE(NULLIF(s.empire,''), 'voidborn')) AS emp,
                            COALESCE(h.tier, 0) AS tier,
-                           LOWER(COALESCE(h.category, '')) AS hull_cat,
+                           {cat_expr},
                            COALESCE(sk.level, 0) AS piloting
                     FROM ships s
                     LEFT JOIN hulls h ON h.id = s.class OR h.name = s.class
                     LEFT JOIN ship_skills sk ON sk.pilot = s.pilot AND sk.skill = 'piloting'
-                """ if (has_hulls and has_skills) else "SELECT pilot, division, 'voidborn' AS emp, 0 AS tier, '' AS hull_cat, 0 AS piloting FROM ships"
+                """) if (has_hulls and has_skills) else "SELECT pilot, division, 'voidborn' AS emp, 0 AS tier, '' AS hull_cat, 0 AS piloting FROM ships"
                 for r in conn.execute(q).fetchall():
                     div = r["division"] or "Command"
                     if r["pilot"]:

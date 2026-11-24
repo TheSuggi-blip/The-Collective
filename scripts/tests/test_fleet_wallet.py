@@ -238,6 +238,49 @@ class FundTests(unittest.TestCase):
         held = w.funded(str(self.data), now)
         self.assertEqual(w.plan_gifts([(n, c - held.get(n, 0), o) for n, c, o in rows], {}), [])     # no top-up from a fund
 
+    def test_a_spent_fund_draws_no_top_up_and_a_poor_funded_pilot_gets_only_the_normal_one(self):
+        """A fund given for a hull and spent on it stays `held` for its hours; the top-up must not refill the pilot
+        to the fund's size from donors and the treasury (a pilot so refilled commissioned a second hull)."""
+        w, now = self.wallet, time.time()
+        held = {"drone-4": 400000}
+        rows = [("drone-4", 110000, "Apophis"), ("drone-9", 900000, "Apophis")]          # the hull bought: 110,000 left
+        self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [])               # neither receiver nor donor
+        rows = [("drone-4", 5000, "Apophis"), ("drone-9", 900000, "Apophis")]
+        self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [("drone-9", "drone-4", w.TARGET - 5000)])
+        rows = [("drone-4", 410000, "Apophis"), ("drone-9", 2000, "Apophis")]             # unspent: its fund is no gift
+        self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [])
+        rows = [("drone-4", 2000, "Apophis"), ("drone-9", 900000, "Apophis")]             # no fund: as before
+        self.assertEqual(w.topup_view(rows, {}, {}), rows)
+
+    def test_officer_self_withdrawal_marks_fund_given_without_self_gift(self):
+        """When a promoted Officer withdraws its own queued fund (e.g. trader-6), serve_funds must mark the row given
+        immediately without calling give(actor, actor, ...) which SpaceMolt rejects with invalid_target."""
+        w, now = self.wallet, time.time()
+        self.put(docked=False)
+        (self.data / "empire").mkdir(parents=True, exist_ok=True)
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "members": [{"pilot": "trader-6", "role": "officer"}],
+            "facilities": [{"type": "faction_storage", "base_id": "base_alpha", "active": True}],
+        }))
+        fleet = json.loads((self.data / "fleet" / "fleet.json").read_text())
+        fleet["ships"].append({"name": "trader-6", "credits": 40000, "docked": "base_alpha", "poi": "base_alpha"})
+        fleet["ships"].append({"name": "trader-3", "credits": 20000, "docked": "base_alpha", "poi": "base_alpha"})
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps(fleet))
+        w.write_funds(str(self.data), [
+            {"pilot": "drone-0", "credits": 1000, "why": "prior", "hours": 6, "at": int(now) - 3600,
+             "state": "given", "probed": {"ok": True}},
+        ])
+        w.add_fund(str(self.data), "trader-6", 180000, "upgrade apophenia", 48, now)
+        w.add_fund(str(self.data), "trader-3", 170000, "upgrade apophenia", 48, now)
+        self.assertEqual(w.serve_funds(str(self.data), "Prime Directive", now, False), 0)
+        give_calls = [c for c in self.calls if c[0] == "give"]
+        self.assertEqual(give_calls, [("give", "trader-6", "trader-3", 170000)])
+        rows = {r["pilot"]: r for r in w.funds(str(self.data))}
+        self.assertEqual(rows["trader-6"]["state"], "given")
+        self.assertEqual(rows["trader-3"]["state"], "given")
+        self.assertEqual(w.withdrawn(str(self.data)), 0)
+        self.assertEqual(w.funded(str(self.data), now).get("trader-6"), 180000)
+
     def test_a_withdrawal_whose_gift_failed_stays_with_the_leader_and_is_given_next_pass(self):
         w, now = self.wallet, time.time()
         self.put(docked=True)

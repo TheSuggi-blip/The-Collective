@@ -309,7 +309,7 @@ class Reader(unittest.TestCase):
         self.assertIn("handbook", server.TOOLS["docs"]["args"]["view"]["enum"])
         self.assertIn("view=handbook", server.TOOLS["docs"]["text"])
         self.assertIn("topic", server.TOOLS["docs"]["args"])
-        self.assertEqual(len(server.TOOLS), 26)                                                   # 22nd: needs, 23rd: stop, 24th: fund, 25th: upgrades, 26th: errand (2026-11-24)
+        self.assertEqual(len(server.TOOLS), 28)                                                   # 22nd: needs, 23rd: stop, 24th: fund, 25th: upgrades, 26th: errand, 27th: dismantle, 28th: game_docs (2026-11-24)
 
     def test_the_briefing_points_to_the_handbook(self):
         hive = load("hive_handbook_test", FLEET / "hive.py")

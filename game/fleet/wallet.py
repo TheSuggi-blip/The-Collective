@@ -186,6 +186,19 @@ def recent(data, now):
     return out
 
 
+def topup_view(rows, held, owes):
+    """The rows plan_gifts reads: a fund for a buy (held) and credits withdrawn for others (owes) are no donor's to
+    give, but they never make a receiver: a pilot is topped up on what it holds itself, under LOW. A fund spent on its
+    hull stays held for its hours; read as a debt it refilled the buyer to the fund's size from donors and the
+    treasury, and a second hull was commissioned on it (2026-11-24, errors.log)."""
+    out = []
+    for name, credits, owner in rows:
+        kept = held.get(name, 0) + owes.get(name, 0)
+        free = credits - kept
+        out.append((name, free if free >= LOW or not kept else min(credits, LOW), owner))
+    return out
+
+
 def plan_gifts(rows, given):
     """[(donor, pilot, credits)]: for each pilot under LOW, lowest first, the richest ship of its division that keeps
     KEEP after giving the whole need (up to TARGET); else the richest of the command group. When no single ship can
@@ -972,6 +985,12 @@ def serve_funds(data, leader, now, dry):
             break
         actor = str(r.get("withdrawer") or leader)
         pilot, credits = r["pilot"], int(r["credits"])
+        if pilot == actor:
+            r.update(state="given", given_at=int(time.time()),
+                     note="officer self-withdrawal: funds already in pilot wallet")
+            print("FUND given: %s %s cr (%s), by its own withdrawal; the sweep leaves it for %s hours"
+                  % (actor, format(credits, ","), r.get("why"), r.get("hours") or FUND_HOURS))
+            continue
         ok, text = give(actor, pilot, credits)
         if not ok:
             r["note"] = "gift: %s" % text
@@ -2065,7 +2084,7 @@ def main(argv=None):
     given = dict(recent(data, now), **{name: at for name, at in flying.items() if name})
     given.update({name: now for name in awaiting_treasury(data) if name and name not in given})   # the treasury serves it
     held, owes = funded(data, now), owed(data)                  # a fund for a buy, and credits withdrawn for others, are no donor's to give
-    gifts = [(d, p, c) for d, p, c in plan_gifts([(n, c - held.get(n, 0) - owes.get(n, 0), o) for n, c, o in rows], given) if d not in flying]
+    gifts = [(d, p, c) for d, p, c in plan_gifts(topup_view(rows, held, owes), given) if d not in flying]
     done, failed = [], []
     for donor, pilot, credits in gifts:
         if "--dry-run" in args:
