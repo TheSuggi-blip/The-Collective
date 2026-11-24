@@ -2,7 +2,7 @@
  "id": "buy-autocannon-rounds-central-nexus",
  "kind": "circuit",
  "title": "Autocannon ammunition at home: standard rounds boxes at Central Nexus",
- "note": "Written by Apophis, 2026-11-24 15:57 UTC (orders ENT-089 block APOPHIS: ammunition with every armed hull bought). Central Nexus asks 1 cr a standard rounds box (books 15:55 UTC: Central Nexus 141,779 units, Node Beta 14,123), against 6 at The Anvil, which a listed Broadaxe with a 120-fuel tank cannot reach (two runs 'stop 1 not reached', 15:31 UTC). One box fully loads an autocannon magazine (catalog); four a pilot, once: two load the guns at the next hunt, two spare. open_to drone and sentinel (rule F23, the Admiral's exception: ammunition for the ship's own fitted guns, nothing sold). Standing: judged by kills, not by its fuel. Booked once.",
+ "note": "Written by Apophis, 2026-11-24 15:57 UTC (orders ENT-089 block APOPHIS: ammunition with every armed hull bought). Central Nexus asks 1 cr a standard rounds box (books 15:55 UTC: Central Nexus 141,779 units, Node Beta 14,123), against 6 at The Anvil, which a listed Broadaxe with a 120-fuel tank cannot reach (two runs 'stop 1 not reached', 15:31 UTC). One box fully loads an autocannon magazine (catalog); four a pilot, once: two load the guns at the next hunt, two spare. open_to drone and sentinel (rule F23, the Admiral's exception: ammunition for the ship's own fitted guns, nothing sold). Standing: judged by kills, not by its fuel. Booked once. 2026-11-24 18:47 UTC (Apophis): the stop named the POI central_nexus, which does not exist (the station stands at the_core, as in 161 other route files): eight runs from 16:40 to 17:31 UTC ended \"stop 1 not reached\" after 31 minutes each (runs.jsonl). Stop fixed.",
  "once": true,
  "standing": true,
  "max_ships": 3,
@@ -23,7 +23,7 @@
  },
  "stops": [
   {
-   "at": "nexus_prime:central_nexus:central_nexus",
+   "at": "nexus_prime:the_core:central_nexus",
    "buy": [
     {
      "item": "standard_rounds_box",

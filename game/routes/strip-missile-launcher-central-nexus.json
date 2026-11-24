@@ -1,0 +1,45 @@
+{
+ "id": "strip-missile-launcher-central-nexus",
+ "kind": "circuit",
+ "title": "A drone with a Missile Launcher I or a Railgun I and autocannons strips the launcher at Central Nexus, stores it, and takes four rounds boxes",
+ "note": "Written by Apophis 2026-11-24 18:47 UTC (orders ENT-090 block APOPHIS: ammunition with every armed hull bought). Cause found: the listed Cleavers flew 26 hunts since 12:00 UTC with 0 kills (runs table, the three Cleavers). hunt.py advances only while the prey stands beyond the battle's \"Max weapon reach\"; a Missile Launcher I reaches 6 (catalog 0.734.3) and a fight starts at distance 6, so the ship never closes; its launcher holds no missiles (reload with a rounds box: wrong_ammo_type, a Cleaver's hunt log 18:28 to 18:39 UTC) and the autocannons reach 2. Without the launcher the largest reach is the autocannons' 2 and hunt.py closes in. Railgun I (reach 5, no slugs aboard) the same. Docked stop: unfit, store only the stripped modules (never store all: it would store the rounds), buy four standard rounds boxes (1 cr at Central Nexus, books 15:55 UTC), once. Put in the own rows of the ships that carry the launcher, never First (the flagships fly the sentinel plan's lists). Test (F37): three hunts of a stripped Cleaver read kills before any more are bought.",
+ "once": true,
+ "max_ships": 3,
+ "max_pilots": 10,
+ "min_credits": 3000,
+ "requires": {
+  "any_module": [
+   "missile_launcher_i",
+   "railgun_i"
+  ],
+  "module": [
+   "autocannon_i",
+   "autocannon_ii"
+  ]
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "unfit": [
+    "missile_launcher_i",
+    "railgun_i"
+   ],
+   "store": [
+    "missile_launcher_i",
+    "railgun_i"
+   ],
+   "buy": [
+    {
+     "item": "standard_rounds_box",
+     "qty": 4,
+     "max_price": 3,
+     "one_time": true
+    }
+   ]
+  }
+ ],
+ "open_to": [
+  "drone",
+  "sentinel"
+ ]
+}

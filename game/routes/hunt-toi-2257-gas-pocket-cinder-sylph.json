@@ -2,7 +2,7 @@
  "id": "hunt-toi-2257-gas-pocket-cinder-sylph",
  "kind": "hunt",
  "title": "cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star",
- "note": "Written by routemaker.py from the herd's count, the loot of 46 runs of ours and the order book; an estimate of 8165 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 13:50 UTC (Unity): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes.",
+ "note": "Written by routemaker.py from the herd's count, the loot of 46 runs of ours and the order book; an estimate of 8165 cr per hunter-hour, not a measurement. A test: one ship, the ranching rules kept. Added as a test by fill.py on 2026-11-17 13:50 UTC (Unity): one ship until its first RESULT line is read. 2026-11-22 00:08 UTC (Apophis): gift_to trader (queue.log ENT-200, ENT-201: strict classes, Suggi D244): with the switch on, the loot goes into the trader named for sell_at; off, nothing changes. 2026-11-24 18:47 UTC (Apophis): off for danger (rules F9, F22): a pirate pack at the hunt's own POI (observations kind pirate: 3 pirate_kael ships of 200 hull at toi_2257:toi_2257_gas_pocket, 15:11 UTC; pirate_places.py --hours 12). A solo starter flees a stranger but not a pack that opens fire first. Back on when a census reads the POI clear.",
  "place": "toi_2257:toi_2257_gas_pocket",
  "species": [
   "cinder_sylph"
@@ -26,5 +26,6 @@
   "hours": 12,
   "last_run": "2026-11-24T10:16:36Z"
  },
- "gift_to": "trader"
+ "gift_to": "trader",
+ "status": "off"
 }
