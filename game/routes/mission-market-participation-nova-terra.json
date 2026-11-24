@@ -1,0 +1,73 @@
+{
+ "id": "mission-market-participation-nova-terra",
+ "kind": "circuit",
+ "title": "Market Participation: Buying and Selling at Nova Terra Central: 1,000 cr each, once per pilot; 10 argon gas bought at 1 cr, 10 of the pilot's own plasma gas sold into the 25 cr bid",
+ "note": "Written by Mercury, 2026-11-24 07:25 UTC (orders ENT-085 block MERCURY and P6: paying work where the ship stands; F8: a trader waited docked at Nova Terra Central, fill.py check 07:22 UTC). The board (data/missions 07:23 UTC): Market Participation: Buying (buy 10 items, 1,000 cr, template market_participation_buying) and Selling (sell 10 items, 1,000 cr, market_participation_selling). The book (table books 07:23 UTC): argon_gas asked 1 x 132,825; plasma_gas bid 25 x 83,854. Plasma gas is surplus (stock view=surplus 07:10 UTC: 633 held, none reserved; 138 in a trader's storage here). The form of mission-market-participation-alpha (39 runs in 24 hours). The argon is stored. One ship first.",
+ "once": true,
+ "max_ships": 1,
+ "min_credits": 3200,
+ "one_time": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "skip_if_booked": [
+  "Market Participation: Buying",
+  "Market Participation: Selling"
+ ],
+ "requires": {
+  "max_jumps": 2,
+  "stored": {
+   "at": "nova_terra_central",
+   "item": "plasma_gas",
+   "min": 10
+  },
+  "ask": {
+   "item": "argon_gas",
+   "base": "nova_terra_central",
+   "max_price": 1,
+   "min_qty": 10
+  },
+  "bid": {
+   "item": "plasma_gas",
+   "base": "nova_terra_central",
+   "min_price": 22,
+   "min_qty": 10
+  }
+ },
+ "stops": [
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "accept": [
+    "market_participation_buying",
+    "market_participation_selling"
+   ]
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "withdraw": [
+    {
+     "item": "plasma_gas",
+     "qty": 10
+    }
+   ],
+   "sell": [
+    {
+     "item": "plasma_gas",
+     "min_price": 22
+    }
+   ],
+   "buy": [
+    {
+     "item": "argon_gas",
+     "qty": 10,
+     "max_price": 2,
+     "one_time": true
+    }
+   ]
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": "all"
+  }
+ ]
+}

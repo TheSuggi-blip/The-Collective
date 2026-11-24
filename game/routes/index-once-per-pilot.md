@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 91.
+Routes: 92.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -74,6 +74,7 @@ Routes: 91.
 | [mission-market-participation-alpha](mission-market-participation-alpha.json) | circuit | beyond the border, 11 jumps | Market Participation: Buying and Selling at Alpha Centauri: 1,000 cr each, once per pilot; 32 oxygen gas bought, made into 12 liquid oxygen and sold there | once per pilot, up to 6 ships, from 3,200 cr, while alpha_centauri_colonial_station bids 5 cr for liquid_oxygen, while alpha_centauri_colonial_station asks 1 cr or less for oxygen_gas | 37 | 2 | 620 | one-time | 2026-11-23 |
 | [mission-market-participation-frontier](mission-market-participation-frontier.json) | circuit | beyond the border, 17 jumps | Market Participation: Buying and Selling at Frontier Station: 1,000 cr each, once per pilot; ten copper ore bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while frontier_station bids 1 cr for copper_ore | 71 | 0 | 290 | one-time | 2026-11-23 |
 | [mission-market-participation-grand](mission-market-participation-grand.json) | circuit | beyond the border, 21 jumps | Market Participation: Buying and Selling at Grand Exchange: 1,000 cr each, once per pilot; ten liquid nitrogen bought and sold back there | once per pilot, up to 3 ships, from 3,200 cr, while grand_exchange_station bids 1 cr for liquid_nitrogen | 56 | 2 | 1,750 | one-time | 2026-11-23 |
+| [mission-market-participation-nova-terra](mission-market-participation-nova-terra.json) | circuit | beyond the border, 8 jumps | Market Participation: Buying and Selling at Nova Terra Central: 1,000 cr each, once per pilot; 10 argon gas bought at 1 cr, 10 of the pilot's own plasma gas sold into the 25 cr bid | once per pilot, up to 1 ships, from 3,200 cr, with 10 plasma_gas stored at nova_terra_central, while nova_terra_central bids 22 cr for plasma_gas, while nova_terra_central asks 1 cr or less for argon_gas | TBD | TBD | TBD | TBD | -- |
 | [mission-request-for-records-confederacy](mission-request-for-records-confederacy.json) | circuit | beyond the border, 20 jumps | Request for Records: 6000 cr, +610 XP at Sol Central | once per pilot, up to 61 ships | 139 | 54 | 4,890 | one-time | 2026-11-24 |
 | [mission-scraping-by-frontier](mission-scraping-by-frontier.json) | circuit | beyond the border, 17 jumps | Scraping By: 1,000 cr once and Outer Rim Survival XP; accept at Frontier Station, mine 15 copper ore at The Telescope (one jump), hand in at Frontier Station | once per pilot, up to 1 ships, empty hold, born outerrim | 62 | 3 | 220 | one-time | 2026-11-23 |
 | [mission-strategic-readiness-assessment-crimson](mission-strategic-readiness-assessment-crimson.json) | circuit | beyond the border, 21 jumps | Strategic Readiness Assessment: 4000 cr at War Citadel | once per pilot, up to 30 ships | 317 | 31 | 2,460 | one-time | 2026-11-23 |
