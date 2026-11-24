@@ -93,7 +93,9 @@
     "valor:saiph_major_belt",
     "yildun:neverworld_carbon"
   ],
-  "exclude_resources": [],
+  "exclude_resources": [
+    "water_ice"
+  ],
   "pirate_avoid_hours": 6.0,
   "max_jumps": 10,
   "max_station_jumps": 4,
@@ -122,7 +124,7 @@
     "nova_terra:nova_terra_central:nova_terra_central"
   ],
   "market_tier": false,
-  "_zero_note": "2026-11-24 14:51 UTC (Zero): deposit_stations = the five home stations where give-miner-stores-* routes and receivers stand (a store elsewhere is stranded under strict classes); market_tier false: a miner sells nothing (P5), so ore the reserve does not lack is not mined for the market; priority_resources silicon_ore: the reserve's dearest short raw good (42,013 short, surplus.py reserve 14:30 UTC); iron comes from supply_status while it reads short. 2026-11-24 15:20 UTC (Zero): exclude_pois = the 76 belts the plan's own mine routes work (mine_net counts only its own claims, so a belt of a static route would take a fourth ship against the 3-a-belt cap); deposit_stations widened to the Nebula and Solarian stations where give-miner-stores-* routes stand; lawless_min_tier 1 -> 9 (no lawless belt for a tier-1 hull in a test). 2026-11-24 17:47 UTC (Zero): allow_lawless_systems atlas and intercrus: two systems beyond the border where our static iron gathers (gather-atlas-belt, gather-intercrus-alloy-remnants) flew 6 runs each in 4 h without a loss, census under 1 h old and no pirate read in 6 h; each holds free iron belts of 100,000 (atlas:gossamer_null, intercrus:intercrus_belt, intercrus:sootfall_belt) while no policed iron belt within 10 jumps stands above its floor and outside the plan's own belts (dry run: 0 candidates for two resting network pilots). Iron is the reserve's short good (45,281 of keep 60,000, supply show). No other lawless system opens until its census and runs are read (F3).",
+  "_zero_note": "2026-11-24 14:51 UTC (Zero): deposit_stations = the five home stations where give-miner-stores-* routes and receivers stand (a store elsewhere is stranded under strict classes); market_tier false: a miner sells nothing (P5), so ore the reserve does not lack is not mined for the market; priority_resources silicon_ore: the reserve's dearest short raw good (42,013 short, surplus.py reserve 14:30 UTC); iron comes from supply_status while it reads short. 2026-11-24 15:20 UTC (Zero): exclude_pois = the 76 belts the plan's own mine routes work (mine_net counts only its own claims, so a belt of a static route would take a fourth ship against the 3-a-belt cap); deposit_stations widened to the Nebula and Solarian stations where give-miner-stores-* routes stand; lawless_min_tier 1 -> 9 (no lawless belt for a tier-1 hull in a test). 2026-11-24 17:47 UTC (Zero): allow_lawless_systems atlas and intercrus: two systems beyond the border where our static iron gathers (gather-atlas-belt, gather-intercrus-alloy-remnants) flew 6 runs each in 4 h without a loss, census under 1 h old and no pirate read in 6 h; each holds free iron belts of 100,000 (atlas:gossamer_null, intercrus:intercrus_belt, intercrus:sootfall_belt) while no policed iron belt within 10 jumps stands above its floor and outside the plan's own belts (dry run: 0 candidates for two resting network pilots). Iron is the reserve's short good (45,281 of keep 60,000, supply show). No other lawless system opens until its census and runs are read (F3). 2026-11-24 18:28 UTC (Zero): exclude_resources water_ice, a stand-in until the mine_net fix (craft demand less table inventory) is installed: the craft tier asked 30,000 water ice while the fleet holds 66,663 (tool stock 17:46 UTC) and the far 56 cr bid (93 deep) scored it over short iron; two installs halted on test_fleet_build_trap.py, which passes alone. Take it out when the fix stands.",
   "craft_demand_tier": true,
   "allow_bursar_dropoffs": false
 }
