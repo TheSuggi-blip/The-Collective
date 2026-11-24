@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 19.
+Routes: 20.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -25,6 +25,7 @@ Routes: 19.
 | [carry-lead-beta-to-sirius](carry-lead-beta-to-sirius.json) | circuit | beyond the border, 9 jumps | Stored lead ore carried from Node Beta to Sirius Observatory Station and sold into its bid at 35 cr or more | up to 1 ships, with 30 lead_ore stored at node_beta_industrial_station, while sirius_observatory_station bids 35 cr for lead_ore | 13 | 24 | 3,550 | 9,430 | 2026-11-23 |
 | [carry-melt-nexus-to-frontier](carry-melt-nexus-to-frontier.json) | circuit | beyond the border, 17 jumps | Crystal melt stored by Trade at Central Nexus carried to the station bid at Frontier Station (Outer Rim, a moving station) and sold there | up to 1 ships, with 10 crystal_melt stored at central_nexus, while frontier_station bids 3500 cr for crystal_melt | 3 | 37 | 16,160 | 26,020 | 2026-11-24 |
 | [carry-melt-sirius-to-experiment](carry-melt-sirius-to-experiment.json) | circuit | beyond the border, 9 jumps | Stored crystal_melt carried from sirius_observatory_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while the_experiment_research_station bids 1000 cr for crystal_melt | 1 | 21 | 1,090 | 3,110 | 2026-11-24 |
+| [need-melt-frontier](need-melt-frontier.json) | circuit | beyond the border, 17 jumps | Station Need: Crystal Melt at Frontier Station filled from the pilot's melt stored there, and up to 3 sold into its bid at 3,000 or more | up to 1 ships, with 4 crystal_melt stored at frontier_station | 2 | 9 | 7,180 | 47,060 | 2026-11-24 |
 | [sell-ember-experiment-dheneb](sell-ember-experiment-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from The Experiment Research Station to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at the_experiment_research_station, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | 2 | 12 | 66,360 | 333,190 | 2026-11-24 |
 | [sell-ember-first-step-dheneb](sell-ember-first-step-dheneb.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from First Step Memorial Station to the Hex Star bid (Dheneb, lawless), up to 30 a run | up to 1 ships, with 6 ember_gland stored at first_step_memorial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 4000 cr for ember_gland | 3 | 25 | 61,450 | 135,710 | 2026-11-24 |
 | [sell-ember-hexstar-krynn](sell-ember-hexstar-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Hex Star (Dheneb) to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while crimson_war_citadel bids 5000 cr for ember_gland | 4 | 30 | 5,420 | 10,980 | 2026-11-24 |

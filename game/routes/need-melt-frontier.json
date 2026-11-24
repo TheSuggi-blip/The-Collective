@@ -1,25 +1,30 @@
 {
  "id": "need-melt-frontier",
  "kind": "circuit",
- "title": "Station Need: Crystal Melt at Frontier Station filled from the pilot's melt stored at First Step (about 2 jumps), and up to 3 sold into its 3,618 bid",
- "note": "Written by Mercury, 2026-11-24 07:22 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids; no trader waits docked, F8). Frontier Station (a moving capital, at Distant Light, book read 07:20 UTC) posts Station Need: Crystal Melt, 2 melt for 8,321 cr (board 07:03 UTC; a 10-melt copy for 41,607 cr stood there at 06:28 UTC, admirals.log ENT-117), and bids 3,618 x 3 for melt (table books 07:08 UTC); every other bid we read is 54 to 1,018. A trader waiting docked at First Step holds 79 melt in its storage there (storage book 07:06 UTC). The runner finds the station where it stands now (mobile.locate). Two accept-and-redock pairs (the largest copy seen first), then the bid at 3,000 or more, the rest stored at Frontier Station. One ship. Set off 07:46 UTC: the 2-melt copy was gone when the first run docked (07:40 UTC, 'not on the board'); the board read at 07:41 UTC holds no Crystal Melt need. The run sells up to 3 into the 3,618 bid and stores the rest at Frontier Station.",
+ "title": "Station Need: Crystal Melt at Frontier Station filled from the pilot's melt stored there, and up to 3 sold into its bid at 3,000 or more",
+ "note": "Written by Mercury, 2026-11-24 07:22 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids; no trader waits docked, F8). Frontier Station (a moving capital, at Distant Light, book read 07:20 UTC) posts Station Need: Crystal Melt, 2 melt for 8,321 cr (board 07:03 UTC; a 10-melt copy for 41,607 cr stood there at 06:28 UTC, admirals.log ENT-117), and bids 3,618 x 3 for melt (table books 07:08 UTC); every other bid we read is 54 to 1,018. A trader waiting docked at First Step holds 79 melt in its storage there (storage book 07:06 UTC). The runner finds the station where it stands now (mobile.locate). Two accept-and-redock pairs (the largest copy seen first), then the bid at 3,000 or more, the rest stored at Frontier Station. One ship. Set off 07:46 UTC: the 2-melt copy was gone when the first run docked (07:40 UTC, 'not on the board'); the board read at 07:41 UTC holds no Crystal Melt need. The run sells up to 3 into the 3,618 bid and stores the rest at Frontier Station. 2026-11-24 10:46 UTC (Mercury, requests ENT-503): our traders now hold 102 melt in their storage at Frontier Station itself (storage book 10:44 UTC); its board (read 10:43 UTC by a docked ship of ours) posts Station Need: Crystal Melt, 4 melt for 19,462 cr (4,866 a melt; bid 3,285). The carry from First Step is gone: the route withdraws 10 where it stands, two accept-and-redock pairs, up to 3 into the bid at 3,000 or more, the rest stored there. requires.posted (30 minutes) opens it only while the board posts the title. One ship.",
  "max_ships": 1,
  "far_ok": true,
  "requires": {
   "stored": {
-   "at": "first_step_memorial_station",
+   "at": "frontier_station",
    "item": "crystal_melt",
-   "min": 15
+   "min": 4
   },
-  "max_jumps": 3
+  "max_jumps": 3,
+  "posted": {
+   "base": "frontier_station",
+   "title": "Station Need: Crystal Melt",
+   "max_age_minutes": 30
+  }
  },
  "stops": [
   {
-   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "at": "distant_light:mobile_capital:frontier_station",
    "withdraw": [
     {
      "item": "crystal_melt",
-     "qty": 15
+     "qty": 10
     }
    ]
   },
@@ -44,7 +49,7 @@
     {
      "title": "Station Need: Crystal Melt",
      "needs": {
-      "crystal_melt": 2
+      "crystal_melt": 4
      }
     }
    ]
@@ -67,7 +72,6 @@
    "store": "all"
   }
  ],
- "status": "off",
  "measured": {
   "date": "2026-11-24",
   "runs": 2,

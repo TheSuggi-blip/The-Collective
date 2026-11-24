@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 7.
+Routes: 8.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -23,3 +23,4 @@ Routes: 7.
 | [carry-melt-first-step-to-experiment](carry-melt-first-step-to-experiment.json) | circuit | beyond the border, 18 jumps | Stored crystal_melt carried from first_step_memorial_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 20 crystal_melt stored at first_step_memorial_station, while the_experiment_research_station bids 1000 cr for crystal_melt | 1 | 26 | -220 | -510 | 2026-11-24 |
 | [need-ember-gland-crucible](need-ember-gland-crucible.json) | circuit | beyond the border, 20 jumps | Station Need: Ember Gland at The Crucible Garrison filled from the pilot's glands stored at Krynn (2 jumps), about 5,600 cr a gland | up to 1 ships, with 10 ember_gland stored at crimson_war_citadel | 1 | 30 | -350 | -690 | 2026-11-24 |
 | [need-ember-gland-krynn](need-ember-gland-krynn.json) | circuit | beyond the border, 20 jumps | Station Need: Ember Gland at the War Citadel (Krynn) filled from the pilot's own glands stored there, about 8,100 cr a gland | up to 1 ships, with 3 ember_gland stored at crimson_war_citadel | 9 | 1 | -30 | -1,280 | 2026-11-24 |
+| [need-melt-crucible](need-melt-crucible.json) | circuit | beyond the border, 20 jumps | Station Need: Crystal Melt at The Crucible Garrison filled from the pilot's melt stored there, about 890 cr a melt | up to 1 ships, with 12 crystal_melt stored at the_crucible_garrison | 1 | 10 | -80 | -440 | 2026-11-24 |

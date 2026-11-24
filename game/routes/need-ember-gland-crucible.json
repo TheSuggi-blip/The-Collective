@@ -2,7 +2,7 @@
  "id": "need-ember-gland-crucible",
  "kind": "circuit",
  "title": "Station Need: Ember Gland at The Crucible Garrison filled from the pilot's glands stored at Krynn (2 jumps), about 5,600 cr a gland",
- "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). The Crucible Garrison posts Station Need: Ember Gland for 10 glands (56,361 cr), 2 (11,072) and 1 (5,607) (board read 06:50 UTC), 13 glands for 73,040 cr; its bid is 480 and the best bid anywhere 5,367 (Hex Star). A trader's storage at Krynn holds 13 glands (storage book 07:06 UTC). The runner accepts the first copy posted under the title once the hold has the stop's `needs`; each redock hands one copy in, so three accept-and-redock pairs fill the three copies largest need first (the Krynn form, need-ember-gland-krynn, proven by hand 2026-11-23). Risk: a new copy larger than the glands left could be accepted half-filled; read the first RESULT. What is left is stored at The Crucible. Krynn to The Crucible 2 jumps, Crimson space. One ship.",
+ "note": "Written by Mercury, 2026-11-24 07:16 UTC (orders ENT-085 block MERCURY: sell handed goods at or above the bids). The Crucible Garrison posts Station Need: Ember Gland for 10 glands (56,361 cr), 2 (11,072) and 1 (5,607) (board read 06:50 UTC), 13 glands for 73,040 cr; its bid is 480 and the best bid anywhere 5,367 (Hex Star). A trader's storage at Krynn holds 13 glands (storage book 07:06 UTC). The runner accepts the first copy posted under the title once the hold has the stop's `needs`; each redock hands one copy in, so three accept-and-redock pairs fill the three copies largest need first (the Krynn form, need-ember-gland-krynn, proven by hand 2026-11-23). Risk: a new copy larger than the glands left could be accepted half-filled; read the first RESULT. What is left is stored at The Crucible. Krynn to The Crucible 2 jumps, Crimson space. One ship. 2026-11-24 10:46 UTC (Mercury, orders ENT-086 block MERCURY, requests ENT-503): requires.posted set, the route opens only while the station board, read by a docked ship of ours within 30 minutes, posts the title; switched back on.",
  "max_ships": 1,
  "far_ok": true,
  "requires": {
@@ -10,6 +10,11 @@
    "at": "crimson_war_citadel",
    "item": "ember_gland",
    "min": 10
+  },
+  "posted": {
+   "base": "the_crucible_garrison",
+   "title": "Station Need: Ember Gland",
+   "max_age_minutes": 30
   }
  },
  "stops": [
