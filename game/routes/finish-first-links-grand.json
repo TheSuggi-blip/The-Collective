@@ -2,7 +2,7 @@
  "id": "finish-first-links-grand",
  "kind": "circuit",
  "title": "First Links finished by the pilots that hold it half done: nickel bought at Grand Exchange, stored at Cargo Lanes, copper wiring bought there, handed in at Market Prime (no accept)",
- "note": "Written by Apollo, 2026-11-24 12:46 UTC (skill logistics-stock step 35: a mission held half done is no longer offered to its holder, so a route that accepts it aborts). Market Prime asked 170 cr x 883 for nickel ore at 12:43 UTC against this mission's limit of 130 (table books), and six runs of mission-first-links-store-grand from 12:34 UTC accepted First Links and ended on the failed buy (runs.jsonl); Grand Exchange, where it is accepted, asked 120 cr x 742 (depth 8,002, 12:43 UTC). The nickel is bought there instead; the rest is Trade's form (Mercury), unchanged: nickel stored at Cargo Lanes, copper wiring bought there, handed in at Market Prime. Only in the holders' own rows; once, far_ok, skip_if_booked First Links.",
+ "note": "Written by Apollo, 2026-11-24 12:46 UTC (skill logistics-stock step 35: a mission held half done is no longer offered to its holder, so a route that accepts it aborts). Market Prime asked 170 cr x 883 for nickel ore at 12:43 UTC against this mission's limit of 130 (table books), and six runs of mission-first-links-store-grand from 12:34 UTC accepted First Links and ended on the failed buy (runs.jsonl); Grand Exchange, where it is accepted, asked 120 cr x 742 (depth 8,002, 12:43 UTC). The nickel is bought there instead; the rest is Trade's form (Mercury), unchanged: nickel stored at Cargo Lanes, copper wiring bought there, handed in at Market Prime. Only in the holders' own rows; once, far_ok, skip_if_booked First Links. 2026-11-24 12:51 UTC (Apollo): requires.ask nickel_ore at Grand Exchange 128 with 10 units: the route stays closed while the ask stands above what the buy pays (130 with the 1% tax), so no pilot accepts First Links and then fails the buy (errors.log, this turn).",
  "once": true,
  "far_ok": true,
  "max_ships": 8,
@@ -13,7 +13,13 @@
   "First Links"
  ],
  "requires": {
-  "empire": "nebula"
+  "empire": "nebula",
+  "ask": {
+   "item": "nickel_ore",
+   "base": "grand_exchange_station",
+   "max_price": 128,
+   "min_qty": 10
+  }
  },
  "stops": [
   {
