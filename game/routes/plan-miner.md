@@ -197,7 +197,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read gather-sarin-whitesun-carbon: carbon a run, minutes and fuel against Yildun's 390 ore for -1,016 cr; lift to the laser-only wing or drop | next turn |
-| read the hull queue (upgrades.py queue show): the three Resonance Miners' price, build and switch; fit their four utility slots; next batch only on their first runs | next turn |
-| read the floored regional belts against their census; read where the stopped miners went (fill.py status miner) and the jump loop's size | next turn |
-| Muphrid silicon stays unwritten while Minkar stands on the pirate watch; fluorine (Regor, GSC-0024) waits for uranium and thorium fields of the station core | when the watch or the census changes |
+| read the Sarin carbon test's first results (carbon a run, minutes, fuel) against the 4 cr carbon ask in Crimson space and Apollo's answer to requests ENT-510; end the far carbon wing or keep it | next turn |
