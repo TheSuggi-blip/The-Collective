@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-23T22:33:36Z.
+Facts as of 2026-11-24T01:04:46Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-23T22:33:36Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 200 of a limit of 200 |
-| Ships of the fleet in it | 200 of 500 |
+| Members | 209 of a limit of 225 |
+| Ships of the fleet in it | 209 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 6, rent 506 cr per cycle (43,516 cr a day) |
+| Offices at stations | 7, rent 545 cr per cycle (46,870 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -70,6 +70,7 @@ hold).
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 351 |
+| Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 39 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 
 ## 4. Sites
