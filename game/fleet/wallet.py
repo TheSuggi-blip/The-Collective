@@ -1358,6 +1358,19 @@ def serve_errands(data, leader, now, dry):
         release_sweep(data, leader)
     return failed
 
+def served(name, step, *args, result=True):
+    """One served step of the sweep (funds, top-ups, seats, errands): an exception is printed as a HALT line and fails
+    the pass instead of ending it, so the steps after it, the gifts and the deposit still run (errors.log ENT-173: a
+    NameError in the errand step and a timeout of a seat's join each ended whole passes on 2026-11-24).
+    1 on an exception; else the step's own answer (`result`) or 0."""
+    try:
+        out = step(*args)
+    except Exception as error:
+        print("HALT: the sweep's %s step failed: %s: %s" % (name, type(error).__name__, str(error)[:200]))
+        return 1
+    return (out or 0) if result else 0
+
+
 def sweep(data, now, dry):
     """One pass of the sweep: at most PER_PASS gifts to the leader, then the leader's deposit. 0, or 1 when a call failed."""
     fleet, leader = ships(data), leader_of(data)
@@ -1373,11 +1386,11 @@ def sweep(data, now, dry):
     elif waiting:
         print("would settle: the deposit of %s cr sent at %s UTC" % (format(int(waiting.get("credits") or 0), ","), time.strftime("%H:%M", time.gmtime(waiting["at"]))))
     flying, unsettled = settle_gifts(data, "gift", now, dry)    # Q75: a gift a cut pass left `sent`, settled before any new one
-    failed = serve_funds(data, leader, now, dry) or failed or unsettled   # orders ENT-063: the treasury pays one pilot for a buy
-    failed = serve_topups(data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
-    auto_queue_seats(data, now, dry)
-    serve_seats(data, leader, now, dry)
-    failed = serve_errands(data, leader, now, dry) or failed
+    failed = served("fund", serve_funds, data, leader, now, dry) or failed or unsettled   # orders ENT-063: the treasury pays one pilot for a buy
+    failed = served("top-up", serve_topups, data, leader, now, dry) or failed     # requests ENT-380 ff.: the treasury tops up pilots no ship can give to
+    failed = served("seat queue", auto_queue_seats, data, now, dry, result=False) or failed
+    failed = served("seat", serve_seats, data, leader, now, dry, result=False) or failed
+    failed = served("errand", serve_errands, data, leader, now, dry) or failed
     _upg_skip = set()
     try:
         import upgrades as _upg

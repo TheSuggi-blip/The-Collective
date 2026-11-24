@@ -174,6 +174,21 @@ class SweepStepErrorTests(LeaderErrandQueueTests):
         self.assertIn("HALT: the upgrade queue's step failed: TypeError", out.getvalue())
         self.assertEqual(rc, 1)
 
+    def test_a_served_step_that_raises_is_a_halt_line_and_the_steps_after_it_still_run(self):
+        # 2026-11-24 02:59 UTC: a seat's join timed out (TimeoutError from gate.call) and ended the whole pass: the
+        # errands, the upgrade queue, the gifts and the deposit of that pass did not run
+        import io
+        import contextlib
+        import upgrades
+        self._write_fleet(docked="")
+        out = io.StringIO()
+        with mock.patch.object(wallet, "serve_seats", side_effect=TimeoutError("timed out")), \
+                mock.patch.object(upgrades, "serve_upgrades") as later, contextlib.redirect_stdout(out):
+            rc = wallet.sweep(str(self.data), 1795480000, True)
+        self.assertIn("HALT: the sweep's seat step failed: TimeoutError: timed out", out.getvalue())
+        self.assertTrue(later.called)                     # the pass went on past the failed step
+        self.assertEqual(rc, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
