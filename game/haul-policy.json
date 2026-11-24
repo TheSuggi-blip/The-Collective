@@ -13,12 +13,12 @@
   "lanes": [
     "active_freight",
     "public_freight",
-    "arbitrage",
     "internal_supply"
   ],
   "home_bases": [
     "node_beta_industrial_station",
     "central_nexus",
     "the_experiment_research_station"
-  ]
+  ],
+  "note": "Apollo 2026-11-24 10:01 UTC: lane arbitrage taken out for haulers (orders ENT-086 P5, requests ENT-504: a buy that feeds a sale stays Trade's). Its runs 08:50-09:55 UTC bought goods that mostly found no bid on arrival (runs.jsonl: 40 'arb stored' runs -76,167 cr; 18 'arb sold' runs +18,714 cr) and scattered haulers into far empires."
 }
