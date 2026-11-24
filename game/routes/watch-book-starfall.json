@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-starfall",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Starfall Salvage Station (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 05:15 UTC (orders ENT-085, P1 and block ORACLE: the newborns' home regions; rule F8). The Outer Rim scouts stand docked here between region reads when every list of theirs reads all its systems within its cadence (fill.py status scout, 05:13 UTC: census-region-altais, census-far-1, census-east and census-roads `every system read`); this watch gives a docked scout zero-fuel work with an output: fresh book readings and the mission board for Trade and Logistics. A copy of watch-book-cargo-lanes: one ship a station, since a second reads the same book; only a scout already in this system takes it (requires.in_system). Standing work, never judged on its pay (F22).",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "starfall"
+ },
+ "stops": [
+  {
+   "at": "starfall:starfall_salvage_station:starfall_salvage_station",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 526.
+Routes: 528.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -217,7 +217,9 @@ Routes: 526.
 | [watch-book-factory-belt](watch-book-factory-belt.json) | circuit | beyond the border, 23 jumps | Zero-fuel docked watch: a scout already docked at Factory Belt Manufacturing Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 26 | 5 | 150 | 790 | 2026-11-24 |
 | [watch-book-gold-run](watch-book-gold-run.json) | circuit | beyond the border, 19 jumps | Zero-fuel docked watch: a scout already docked at Gold Run Extraction Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 13 | 5 | 0 | 0 | 2026-11-23 |
 | [watch-book-grand-exchange](watch-book-grand-exchange.json) | circuit | beyond the border, 21 jumps | Zero-fuel docked watch: a scout already docked at Grand Exchange Station (Nebula capital) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
+| [watch-book-ironlight-refuge](watch-book-ironlight-refuge.json) | circuit | beyond the border, 22 jumps | Zero-fuel docked watch: a scout already docked at Ironlight Refuge, GSC-0026 ([IRLC], a partner's station) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-ramens-rest](watch-book-ramens-rest.json) | circuit | beyond the border, 15 jumps | Zero-fuel docked watch: a scout already docked at Ramens Rest at Last Light (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 33 | 5 | 0 | 0 | 2026-11-23 |
+| [watch-book-starfall](watch-book-starfall.json) | circuit | beyond the border, 18 jumps | Zero-fuel docked watch: a scout already docked at Starfall Salvage Station (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-the-levy](watch-book-the-levy.json) | circuit | beyond the border, 20 jumps | Zero-fuel docked watch: a scout already docked at The Levy Customs Station (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 38 | 5 | 0 | 0 | 2026-11-23 |
 | [watch-book-unknown-edge](watch-book-unknown-edge.json) | circuit | beyond the border, 16 jumps | Zero-fuel docked watch: a scout already docked at Unknown Edge Waystation (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 53 | 5 | 0 | -20 | 2026-11-24 |
 | [guard-achernar-belt](guard-achernar-belt.json) | guard | beyond the border, 4 jumps | Guard at Achernar Belt while ships of ours gather there; docks at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
