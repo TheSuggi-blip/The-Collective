@@ -32,7 +32,7 @@ def table(conn, species, now, hours=72.0, keep=2):
     """{species: [row, ...]} with row = dict(system, poi, now, most, age_min, jumps, law, pirates, battles, huntable),
     nearest first, then the larger herd."""
     marks = ",".join("?" * len(species))
-    seen = conn.execute("SELECT what, system, poi, MAX(last), MAX(first) FROM reading_day WHERE what IN (%s) "
+    seen = conn.execute("SELECT what, system, poi, MAX(last), MAX(first) FROM reading_day WHERE kind = 'herd' AND what IN (%s) "
                         "GROUP BY what, system, poi" % marks, list(species)).fetchall()
     count = {(c, s, p): n for c, s, p, n in conn.execute(
         "SELECT creature, system, poi, count FROM herds WHERE creature IN (%s)" % marks, list(species))}

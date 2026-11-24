@@ -289,6 +289,14 @@ def check(root):
                 errors.append(where + "`jettison_gangue` is allowed only on `mine` routes")
             elif not (isinstance(jg, list) and jg and all(isinstance(x, str) and x.strip() and "," not in x for x in jg)):
                 errors.append(where + "`jettison_gangue` must be a non-empty list of item ids")
+        if "keep_items" in route:
+            ki = route["keep_items"]
+            if kind != "mine":
+                errors.append(where + "`keep_items` is allowed only on `mine` routes")
+            elif not (isinstance(ki, list) and ki and all(isinstance(x, str) and x.strip() and "," not in x for x in ki)):
+                errors.append(where + "`keep_items` must be a non-empty list of item ids")
+        if "jettison_gangue" in route and "keep_items" in route:
+            errors.append(where + "use either `jettison_gangue` (blocklist) or `keep_items` (whitelist), not both")
         need = route.get("requires") if isinstance(route.get("requires"), dict) else {}
         if need.get("hold") and need.get("empty_hold"):
             errors.append(where + "`requires.hold` and `requires.empty_hold` together close the route to every pilot")

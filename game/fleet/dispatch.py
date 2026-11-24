@@ -1169,7 +1169,8 @@ def command(route, pilot, argument, root):
         return (base + [route["belt"], route["station"], "--minutes", str(route.get("minutes", 45)), "--route", route["id"]] + (["--sell-items", sell] if sell else [])
                 + (["--deposit", "faction"] if route.get("deposit") == "faction" else [])
                 + (["--gift", json.dumps(route["gift"], sort_keys=True)] if route.get("gift") else [])     # r22: the hand-over (handover.py)
-                + (["--jettison-gangue", ",".join(route["jettison_gangue"])] if route.get("jettison_gangue") else []))
+                + (["--jettison-gangue", ",".join(route["jettison_gangue"])] if route.get("jettison_gangue") else [])
+                + (["--keep-items", ",".join(route["keep_items"])] if route.get("keep_items") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
         follow = argument.get("follow") if isinstance(argument, dict) else None
         spot = argument.get("place") if isinstance(argument, dict) else argument

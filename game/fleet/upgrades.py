@@ -46,6 +46,14 @@ DIV_CATEGORIES = {
     "Intel": ("Exploration", "Covert", "Support"),
     "Command": ("Combat", "Combat Support", "Commercial", "Exploration"),
 }
+DIV_TOP_MODULES = {
+    "Mining": ("mining_laser_iii", "mining_laser_ii", "ice_harvester_ii", "gas_harvester_ii", "cargo_expander_ii", "cargo_expander_i"),
+    "Military": ("pulse_laser_iii", "pulse_laser_ii", "shield_booster_ii", "armor_plate_ii", "shield_recharger_ii"),
+    "Trade": ("cargo_expander_ii", "cargo_expander_i", "shield_booster_ii"),
+    "Logistics": ("cargo_expander_ii", "cargo_expander_i", "shield_booster_ii"),
+    "Intel": ("survey_scanner_ii", "survey_scanner_i", "shield_booster_ii"),
+    "Command": ("pulse_laser_iii", "shield_booster_ii", "armor_plate_ii", "cargo_expander_ii"),
+}
 EMPIRE_EDGES = {
     "voidborn": "shields/EWAR/stealth",
     "solarian": "mining slots/accuracy",
@@ -178,6 +186,19 @@ def render_upgrades(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, who="all", no
                 lines.append(
                     f"  Modules  : {fit}/{mx} slots filled ({100.0*fit/mx:.1f}%) | {int(mod_row['t2_ships'] or 0)} ships with T2+ modules | {int(mod_row['off_ships'] or 0)} ships carry off-role starter modules (strip via `unfit` + batch `fit`)"
                 )
+            if "books" in tables and div in DIV_TOP_MODULES:
+                wanted_mods = DIV_TOP_MODULES[div]
+                ph_m = ",".join("?" for _ in wanted_mods)
+                m_rows = conn.execute(
+                    f"SELECT item, MIN(ask) AS min_ask, SUM(ask_qty) AS qty FROM books WHERE item IN ({ph_m}) AND ask > 0 GROUP BY item",
+                    list(wanted_mods),
+                ).fetchall()
+                m_map = {str(r["item"]): (int(r["min_ask"] or 0), int(r["qty"] or 0)) for r in m_rows}
+                hints = [f"{mid} @ {_fmt_num(m_map[mid][0])} cr ({m_map[mid][1]} avail)" for mid in wanted_mods if mid in m_map]
+                if hints:
+                    lines.append(
+                        f"  Top T2/T3 Exchange Mods (prefer T2/T3 over Tier-1 swaps): {', '.join(hints[:4])}"
+                    )
 
             # Query candidate T1 (Piloting 0) & T2 hulls matching division categories & active empires (or neutral)
             cats = DIV_CATEGORIES.get(div, ("Industrial", "Commercial"))
@@ -300,7 +321,7 @@ def _hull_info(data_dir, hull_id):
         return None
     try:
         r = conn.execute(
-            "SELECT id, name, tier, COALESCE(piloting_required, 0) AS pil, LOWER(COALESCE(faction, 'neutral')) AS fac "
+            "SELECT id, name, tier, COALESCE(category, '') AS category, COALESCE(piloting_required, 0) AS pil, LOWER(COALESCE(faction, 'neutral')) AS fac "
             "FROM hulls WHERE LOWER(id) = ? OR LOWER(name) = ? LIMIT 1",
             (hull_id.lower(), hull_id.lower()),
         ).fetchone()
@@ -378,6 +399,14 @@ def queue_add(data_dir, who, hull_id, station, max_price, count=5, role=None, em
     hinfo = _hull_info(data_dir, hull_clean)
     if hinfo:
         hull_clean = str(hinfo["id"]).lower()
+        hcat = str(hinfo.get("category") or "").strip()
+        if caller_div != "all" and hcat:
+            allowed_cats = DIV_CATEGORIES.get(caller_div, ())
+            if allowed_cats and hcat.lower() not in {c.lower() for c in allowed_cats}:
+                return 1, [
+                    "REFUSED: hull %s (category=%s) does not match %s's allowed categories (%s) -- use a role-matched hull or ask Unity for override"
+                    % (hull_clean, hcat, caller_div, ", ".join(allowed_cats))
+                ]
     req_pil = max(int(min_piloting or 0), int(hinfo["pil"]) if hinfo else 0)
 
     chosen = []

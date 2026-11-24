@@ -211,6 +211,69 @@ def option(args, name, default):
     return args[args.index(name) + 1] if name in args else default
 
 
+_PROTECTED_ITEMS = frozenset({"fuel", "fuel_cell", "antimatter_containment_cell"})
+_PROTECTED_TOKENS = ("ammo", "probe", "repair_kit", "beacon", "laser", "harvester", "scanner", "booster", "expander", "shield", "armor", "torpedo", "missile", "rounds", "outpost_kit", "station_core")
+_RAW_SUFFIXES = ("_ore", "_ice", "_gas", "_crystal", "_dust", "_shale", "_sand", "_residue", "_fragments")
+
+
+def load_raw_mineables(data_dir):
+    """Return the set of catalog mineable raw ore/ice/gas item IDs from the latest catalog snapshot."""
+    import glob as _glob
+    cat_dir = os.path.join(str(data_dir), "catalog")
+    files = sorted(f for f in _glob.glob(os.path.join(cat_dir, "*.json")) if os.path.basename(f)[0].isdigit())
+    raw = set()
+    if files:
+        try:
+            with open(files[-1], encoding="utf-8") as fh:
+                cat = json.load(fh)
+            items = cat.get("items") or {}
+            vals = items.values() if isinstance(items, dict) else items
+            for x in vals:
+                if isinstance(x, dict) and str(x.get("category") or "").lower() in ("ore", "raw", "mineral"):
+                    iid = str(x.get("id") or "").strip()
+                    if iid and iid not in _PROTECTED_ITEMS:
+                        raw.add(iid)
+        except (OSError, ValueError):
+            pass
+    return raw
+
+
+def _is_protected(item_id):
+    cid = str(item_id or "").strip().lower()
+    if not cid or cid in _PROTECTED_ITEMS or cid.startswith("fuel_"):
+        return True
+    return any(tok in cid for tok in _PROTECTED_TOKENS)
+
+
+def pick_jettison(cargo_rows, gangue=(), keep_items=(), used_ratio=0.0, raw_ids=None):
+    """Choose [(item_id, qty), ...] to jettison while undocked on a belt.
+    Supports both blocklist mode (`gangue`: drop named unwanted byproducts) and whitelist mode
+    (`keep_items`: keep only target resources, drop every other raw mined ore/ice/gas).
+    Never jettisons fuel, ammo, modules, kits, or antimatter containment cells.
+    Drops once qty >= 5 (or >= 1 when cargo hold is >= 80% full) so multi-byproduct belts never clog small holds."""
+    gset = {str(x).strip() for x in (gangue or ()) if str(x).strip()}
+    kset = {str(x).strip() for x in (keep_items or ()) if str(x).strip()}
+    if not gset and not kset:
+        return []
+    rset = set(raw_ids) if raw_ids else set()
+    min_qty = 1 if float(used_ratio or 0.0) >= 0.80 else 5
+    drops = []
+    for row in cargo_rows or ():
+        if not isinstance(row, dict):
+            continue
+        cid = str(row.get("item_id") or "").strip()
+        qty = int(row.get("quantity") or 0)
+        if not cid or qty < min_qty or _is_protected(cid):
+            continue
+        if kset:
+            is_raw = (cid in rset) or cid.endswith(_RAW_SUFFIXES)
+            if is_raw and cid not in kset:
+                drops.append((cid, qty))
+        elif cid in gset:
+            drops.append((cid, qty))
+    return drops
+
+
 def main():
     args = sys.argv[1:]
     pilot, belt, station = args[0], args[1].split(":"), args[2].split(":")
@@ -273,6 +336,9 @@ def main():
         say("mining loop at %s, ore to %s: %s %s" % (belt[1], station[2], status, str(answer.get("error") or "started")[:100]))
         notes = [] if status in (200, 201) and "error" not in answer else ["loop not started"]
         gangue = [g.strip() for g in option(args, "--jettison-gangue", "").split(",") if g.strip()]
+        keep_items = [k.strip() for k in option(args, "--keep-items", "").split(",") if k.strip()]
+        raw_mineables = load_raw_mineables(DATA) if keep_items else None
+        jettisoned = {}
         while not notes and time.time() - started < minutes * 60 and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
             time.sleep(30)
             try:
@@ -280,14 +346,18 @@ def main():
             except OSError:
                 pass
             loop_state = call("GET", "/accounts/%s/loop" % quoted)[1]
-            if gangue and loop_state.get("running"):
+            if (gangue or keep_items) and loop_state.get("running"):
                 try:
                     st_acc = (call("GET", "/accounts/" + quoted)[1].get("state") or {})
                     if not st_acc.get("docked_at_base"):
-                        for c_row in (st_acc.get("ship") or {}).get("cargo") or []:
-                            cid, cqty = c_row.get("item_id"), int(c_row.get("quantity") or 0)
-                            if cid in gangue and cqty >= 10:
-                                call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": "spacemolt", "action": "jettison", "params": {"item_id": cid, "quantity": cqty}})
+                        sh = st_acc.get("ship") or {}
+                        cap = float(sh.get("cargo_capacity") or sh.get("cargo_max") or 0)
+                        used = float(sh.get("cargo_used") or sum(int(r.get("quantity") or 0) for r in (sh.get("cargo") or []) if isinstance(r, dict)))
+                        ratio = (used / cap) if cap > 0 else 0.0
+                        for cid, cqty in pick_jettison(sh.get("cargo") or [], gangue=gangue, keep_items=keep_items, used_ratio=ratio, raw_ids=raw_mineables):
+                            st_j, ans_j = call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": "spacemolt", "action": "jettison", "params": {"item_id": cid, "quantity": cqty}})
+                            if st_j in (200, 201) and "error" not in ans_j:
+                                jettisoned[cid] = jettisoned.get(cid, 0) + cqty
                 except Exception:
                     pass
             if not loop_state.get("running"):
@@ -296,6 +366,8 @@ def main():
         stopped = leave.code if isinstance(leave.code, str) and leave.code else "stopped"
         notes.append(stopped)
         say("told to stop (%s): the loop is ended and the row written; nothing is sold or stored" % stopped)
+    if jettisoned:
+        say("jettisoned gangue: " + ", ".join("%s x%d" % (k, v) for k, v in sorted(jettisoned.items())))
     call("DELETE", "/accounts/%s/loop" % quoted)
     for _ in range(0 if stopped else 40):                # let the step in flight end; a stopped run leaves at once
         account = call("GET", "/accounts/" + quoted)[1]

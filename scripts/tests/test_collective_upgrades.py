@@ -794,5 +794,89 @@ class NeedsAutoSatisfyAndLoopTests(unittest.TestCase):
             self.assertIn("concentration_systems", t)
             self.assertIn("est_income_h", t)
 
+
+class RoleAlignmentAndJettisonTests(unittest.TestCase):
+    def test_mine_pick_jettison_supports_blocklist_whitelist_protection_and_high_fill(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("mine_mod_test", str(ROOT / "game" / "fleet" / "mine.py"))
+        mmod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mmod)
+
+        cargo = [
+            {"item_id": "gold_ore", "quantity": 6},
+            {"item_id": "nickel_ore", "quantity": 7},
+            {"item_id": "copper_ore", "quantity": 3},
+            {"item_id": "iron_ore", "quantity": 12},
+            {"item_id": "fuel_cell", "quantity": 15},
+            {"item_id": "antimatter_containment_cell", "quantity": 8},
+            {"item_id": "mining_laser_iii", "quantity": 1},
+        ]
+        # Blocklist mode at normal fill: drops >=5 matching gangue only, never fuel/protected
+        b_drops = mmod.pick_jettison(cargo, gangue=["iron_ore", "copper_ore", "fuel_cell"], used_ratio=0.40)
+        self.assertEqual(b_drops, [("iron_ore", 12)])
+
+        # Whitelist mode (keep_items=['gold_ore']) at normal fill: keeps gold + protected, drops nickel/iron >=5
+        w_drops = mmod.pick_jettison(cargo, keep_items=["gold_ore"], used_ratio=0.40, raw_ids={"gold_ore", "nickel_ore", "copper_ore", "iron_ore"})
+        self.assertEqual(w_drops, [("nickel_ore", 7), ("iron_ore", 12)])
+
+        # Whitelist mode at >=80% full hold: also flushes small residual junk >=1 (copper x3) while preserving gold + protected
+        w_full = mmod.pick_jettison(cargo, keep_items=["gold_ore"], used_ratio=0.85, raw_ids={"gold_ore", "nickel_ore", "copper_ore", "iron_ore"})
+        self.assertEqual(w_full, [("nickel_ore", 7), ("copper_ore", 3), ("iron_ore", 12)])
+
+    def test_routes_and_dispatch_validate_and_forward_keep_items(self):
+        import dispatch as _disp
+        import routes as _rts
+        r_ok = {
+            "id": "gather-gold-keep", "kind": "mine", "division": "Mining",
+            "belt": "sol:sol_belt", "station": "sol:sol_central:sol_central",
+            "keep_items": ["gold_ore", "platinum_ore"],
+        }
+        cmd = _disp.command(r_ok, "miner-1", None, str(ROOT / "game"))
+        self.assertIn("--keep-items", cmd)
+        self.assertEqual(cmd[cmd.index("--keep-items") + 1], "gold_ore,platinum_ore")
+
+        # Setting both jettison_gangue and keep_items is rejected by route validation
+        r_both = dict(r_ok, jettison_gangue=["iron_ore"])
+        with tempfile.TemporaryDirectory() as td:
+            rdir = Path(td) / "game" / "routes"
+            rdir.mkdir(parents=True)
+            (rdir / "gather-gold-keep.json").write_text(json.dumps(r_both), encoding="ascii")
+            errs, _n = _rts.check(str(Path(td) / "game"))
+            self.assertTrue(any("not both" in e for e in errs), errs)
+
+    def test_upgrades_queue_add_refuses_off_role_hull_for_admiral_but_allows_role_match_and_unity(self):
+        import sqlite3
+        import upgrades as _upg
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "store").mkdir()
+            (d / "fleet").mkdir()
+            con = sqlite3.connect(str(d / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE hulls (id TEXT, name TEXT, tier INT, category TEXT, piloting_required INT, faction TEXT);
+                CREATE TABLE ships (pilot TEXT, division TEXT, role TEXT, empire TEXT, class TEXT, credits INT);
+                CREATE TABLE ship_skills (pilot TEXT, skill TEXT, level INT);
+                INSERT INTO hulls VALUES ('recursion', 'Recursion', 2, 'Combat', 10, 'voidborn');
+                INSERT INTO hulls VALUES ('resonance_miner', 'Resonance Miner', 2, 'Industrial', 10, 'voidborn');
+                INSERT INTO ships VALUES ('miner-1', 'Mining', 'miner', 'voidborn', 'Threshold', 50000);
+                INSERT INTO ship_skills VALUES ('miner-1', 'piloting', 12);
+            """)
+            con.commit()
+            con.close()
+            (d / "fleet" / "fleet.json").write_text(json.dumps({"ships": [{"name": "miner-1", "division": "Mining", "credits": 50000}]}), encoding="ascii")
+
+            # Mining Admiral Zero cannot queue a Combat Recursion hull
+            rc_bad, lines_bad = _upg.queue_add(str(d), "Zero", "recursion", "node_beta:node_beta_st:node_beta_st", 400000, count=1)
+            self.assertEqual(rc_bad, 1)
+            self.assertTrue(any("does not match Mining's allowed categories" in ln for ln in lines_bad), lines_bad)
+
+            # Mining Admiral Zero CAN queue an Industrial Resonance Miner hull
+            rc_ok, lines_ok = _upg.queue_add(str(d), "Zero", "resonance_miner", "node_beta:node_beta_st:node_beta_st", 400000, count=1)
+            self.assertEqual(rc_ok, 0, lines_ok)
+
+            # Unity retains fleetwide Command override
+            rc_u, lines_u = _upg.queue_add(str(d), "Unity", "recursion", "node_beta:node_beta_st:node_beta_st", 400000, pilots="miner-2")
+            self.assertEqual(rc_u, 0, lines_u)
+
 if __name__ == "__main__":
     unittest.main()

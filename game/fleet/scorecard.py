@@ -38,6 +38,14 @@ DATA_DEFAULT = "/srv/collective/data"
 REPO_DEFAULT = "/srv/collective/the-collective"
 
 DIVISIONS = ("Command", "Mining", "Trade", "Logistics", "Military", "Intel")
+DIV_HULL_CATEGORIES = {
+    "Mining": {"industrial"},
+    "Trade": {"commercial", "industrial"},
+    "Logistics": {"commercial", "industrial"},
+    "Military": {"combat", "combat support"},
+    "Intel": {"exploration", "covert", "support"},
+    "Command": {"combat", "combat support", "commercial", "exploration"},
+}
 MEMBER_TO_DIV = {
     "unity": "Command",
     "command": "Command",
@@ -720,7 +728,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     ship_divs_map = {}
     field_sat = {}
     hulls_by_div = {d: {"total": 0, "t1_plus": 0, "t2_plus": 0, "eligible_p10": 0, "upgraded_eligible": 0,
-                        "near_p10": 0, "max_piloting": 0, "sum_piloting": 0.0, "empires": {}} for d in DIVISIONS}
+                        "off_role_hulls": 0, "near_p10": 0, "max_piloting": 0, "sum_piloting": 0.0, "empires": {}} for d in DIVISIONS}
     mods_by_div = {d: {"ships": 0, "fitted_slots": 0, "max_slots": 0, "t2_mod_ships": 0, "off_role_ships": 0}
                    for d in DIVISIONS}
     pb_by_div = {}
@@ -791,11 +799,12 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 q = """
                     SELECT s.pilot, s.division, LOWER(COALESCE(NULLIF(s.empire,''), 'voidborn')) AS emp,
                            COALESCE(h.tier, 0) AS tier,
+                           LOWER(COALESCE(h.category, '')) AS hull_cat,
                            COALESCE(sk.level, 0) AS piloting
                     FROM ships s
                     LEFT JOIN hulls h ON h.id = s.class OR h.name = s.class
                     LEFT JOIN ship_skills sk ON sk.pilot = s.pilot AND sk.skill = 'piloting'
-                """ if (has_hulls and has_skills) else "SELECT pilot, division, 'voidborn' AS emp, 0 AS tier, 0 AS piloting FROM ships"
+                """ if (has_hulls and has_skills) else "SELECT pilot, division, 'voidborn' AS emp, 0 AS tier, '' AS hull_cat, 0 AS piloting FROM ships"
                 for r in conn.execute(q).fetchall():
                     div = r["division"] or "Command"
                     if r["pilot"]:
@@ -806,19 +815,24 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     tr = int(_num(r["tier"]))
                     pil = int(_num(r["piloting"]))
                     emp = str(r["emp"] or "voidborn")
+                    hcat = str(r["hull_cat"] or "").strip().lower()
+                    allowed_cats = DIV_HULL_CATEGORIES.get(div, set())
+                    role_hull_ok = (not hcat) or (not allowed_cats) or (hcat in allowed_cats)
                     h["total"] += 1
                     h["sum_piloting"] += pil
                     if pil > h["max_piloting"]:
                         h["max_piloting"] = pil
                     h["empires"][emp] = h["empires"].get(emp, 0) + 1
-                    if tr >= 1:
+                    if tr >= 1 and not role_hull_ok:
+                        h["off_role_hulls"] += 1
+                    if tr >= 1 and role_hull_ok:
                         h["t1_plus"] += 1
-                    if tr >= 2:
+                    if tr >= 2 and role_hull_ok:
                         h["t2_plus"] += 1
                     req_t = _tier_required_for_piloting(pil)
                     if req_t >= 2:
                         h["eligible_p10"] += 1
-                        if tr >= req_t:
+                        if tr >= req_t and role_hull_ok:
                             h["upgraded_eligible"] += 1
                     elif pil >= 8:
                         h["near_p10"] += 1
