@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 669.
+Routes: 671.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -114,6 +114,7 @@ Routes: 669.
 | [train-navigation-trader](train-navigation-trader.json) | circuit | home space | Navigation for traders one level short of Signal Fragments: five jumps through our own stations, nothing carried | up to 20 ships, under navigation 3, standing work | TBD | TBD | TBD | TBD | -- |
 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | circuit | home space | Trading trained docked at Node Alpha: weapon housings bought at its ask and sold back into its bid at the same station, no jump | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-central-nexus](watch-book-central-nexus.json) | circuit | home space | Zero-fuel docked watch: a scout already docked at Central Nexus (Voidborn capital) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 5 | 30 | 0 | 0 | 2026-11-24 |
+| [watch-book-node-beta](watch-book-node-beta.json) | circuit | home space | Zero-fuel docked watch: a scout already docked at Node Beta Industrial Station saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [escort-voidborn-conductive-lattice](escort-voidborn-conductive-lattice.json) | guard | home space | Escort: follows one pilot of ours on the Node Beta chain (silver bought at Ironlight Crossroads in LHS 1140, beyond the border); docks at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-acubens-shadow-pocket-belt-grazer](hunt-acubens-shadow-pocket-belt-grazer.json) | hunt | home space | belt_grazer at acubens_shadow_pocket, one hunter, loot to a trader receiver at node_beta_industrial_station | up to 1 ships, empty hold, standing work | 3 | 36 | -240 | -410 | 2026-11-24 |
 | [hunt-cryogenic-reserve-hollow-pilgrim](hunt-cryogenic-reserve-hollow-pilgrim.json) | hunt | home space | hollow_pilgrim at cryogenic_reserve; loot sold at Synchrony Hub | up to 3 ships, standing work | TBD | TBD | TBD | TBD | -- |
@@ -258,6 +259,7 @@ Routes: 669.
 | [watch-book-the-levy](watch-book-the-levy.json) | circuit | beyond the border, 20 jumps | Zero-fuel docked watch: a scout already docked at The Levy Customs Station (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 38 | 5 | 0 | 0 | 2026-11-23 |
 | [watch-book-treasure-cache](watch-book-treasure-cache.json) | circuit | beyond the border, 24 jumps | Zero-fuel docked watch: a scout already docked at Treasure Cache Trading Post (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 4 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-unknown-edge](watch-book-unknown-edge.json) | circuit | beyond the border, 16 jumps | Zero-fuel docked watch: a scout already docked at Unknown Edge Waystation (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 12 | 30 | 0 | 0 | 2026-11-24 |
+| [watch-book-zosma](watch-book-zosma.json) | circuit | beyond the border, 20 jumps | Zero-fuel docked watch: a scout already docked at the Zosma station saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [craft-network](craft-network.json) | craft_net | -- | Dynamic zero-fuel docked manufacturing (Trade commercial profit crafting + Logistics industrial crafting) | up to 40 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [fit-network](fit-network.json) | fit_net | -- | Dynamic multi-specialty module auto-fitter (strips off-role starters and fills open slots <= max_price) | up to 40 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [fit-network-scout-test](fit-network-scout-test.json) | fit_net | -- | Test of fit-network on one scout: strip the off-role starters and fit what the hull's CPU and power take (game/fit-policy.json, Intel recon) | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |

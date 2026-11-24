@@ -21,17 +21,17 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 21 | 5 | 16 | sell-loot-at-dheneb: 262,770 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 93 | 52 | 41 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 38 | 17 | 21 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 669 | 126 | 534 | mission-old-charts-sol: 14,280 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 671 | 127 | 535 | mission-old-charts-sol: 14,280 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 7 | 0 | 7 | sell-ember-nexus-dheneb: -420 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 62 | 19 | 43 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 987 | 242 | 736 | |
+| All | | 989 | 243 | 737 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | bursar | census | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| home space | 242 | 0 | 1 | 205 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 3 |
-| beyond the border | 736 | 0 | 24 | 254 | 0 | 0 | 7 | 0 | 312 | 0 | 139 | 0 | 29 |
+| home space | 243 | 0 | 1 | 206 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 3 |
+| beyond the border | 737 | 0 | 24 | 255 | 0 | 0 | 7 | 0 | 312 | 0 | 139 | 0 | 29 |
 | not on the chart | 9 | 2 | 0 | 0 | 1 | 2 | 0 | 1 | 0 | 2 | 0 | 1 | -- |
 
 ## Plans by Role

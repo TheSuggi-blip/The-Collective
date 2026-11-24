@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-zosma",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at the Zosma station saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 17:39 UTC. The form of watch-book-central-nexus (zero-fuel docked watch, market_poll every 5 minutes for 30 minutes, one ship a station, only a scout already in the system). A scout waited docked at Zosma with no census due (fill.py status scout, 17:37:53 UTC); Zosma is one of the rival hubs whose books MISSION.md asks read under 3 hours.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "zosma"
+ },
+ "stops": [
+  {
+   "at": "zosma:abd3b90fdfb39304f5996c8bfaf7645d:8f8c70ee692d37d78dc7741e053e0f87",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}

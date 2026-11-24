@@ -1,0 +1,19 @@
+{
+ "id": "watch-book-node-beta",
+ "kind": "circuit",
+ "title": "Zero-fuel docked watch: a scout already docked at Node Beta Industrial Station saves its order book and mission board every 5 minutes for 30 minutes",
+ "note": "Kept by Oracle; written 2026-11-24 17:39 UTC. The form of watch-book-central-nexus (zero-fuel docked watch, market_poll every 5 minutes for 30 minutes, one ship a station, only a scout already in the system). Four scouts waited docked at Node Beta with no census due (fill.py status scout, 17:37:53 UTC); the yard there bids for the parts of our hull commissions (admirals.log ENT-132), so its book feeds Mining and Logistics.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "in_system": "node_beta"
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "market_poll": true,
+   "watch_minutes": 30,
+   "watch_interval_minutes": 5
+  }
+ ]
+}
