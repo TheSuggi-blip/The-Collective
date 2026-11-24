@@ -245,5 +245,29 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertIn("floor", res2.get("skipped", ""))
 
 
+    def test_pilot_of_compat_and_cooldown(self):
+        import tempfile, time
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            pol = {"enabled": True, "policed_only": True, "max_jumps": 4, "min_wallet_keep_cr": 10000,
+                   "strip_off_role": True, "off_role_modules": {"Logistics": ["pulse_laser_i"]},
+                   "max_price": {"cargo_expander_ii": 2500},
+                   "specialties": {"Logistics": {"mix": [["freight", 100]], "loadouts": {"freight": {"utility": ["cargo_expander_ii"]}}}}}
+            pol_p = data / "fit-policy.json"
+            pol_p.write_text(json.dumps(pol), encoding="ascii")
+            world = {"adj": {"s1": set()}, "stations": {"b1": ("s1", "p1", "b1", True)},
+                     "hulls": {"threshold": {"tier": 1, "weapon": 1, "defense": 2, "utility": 2, "cpu": 100, "power": 100}},
+                     "asks": {"cargo_expander_ii": [(1500, "b1", 5)]}, "item_slots": {"cargo_expander_ii": "utility"},
+                     "bursar_pilots": set(), "mod_cost": {}}
+            # Simulate dispatch.pilot_of() minimal dict (role + hull, missing division/class)
+            pilot_doc = {"name": "hauler-19", "role": "hauler", "hull": "Threshold", "system": "s1", "credits": 25000, "modules": []}
+            plan = fit_net.needs_fit("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world)
+            self.assertIsNotNone(plan)
+            self.assertEqual(plan["buy_fit"][0][0], "cargo_expander_ii")
+            # Cooldown suppresses immediate retry loops
+            fit_net._stamp_fit_cooldown("hauler-19", 600, data_dir=data)
+            self.assertIsNone(fit_net.needs_fit("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world))
+
+
 if __name__ == "__main__":
     unittest.main()

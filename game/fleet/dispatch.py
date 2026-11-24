@@ -1303,7 +1303,9 @@ def pilot_of(ship, named, data, ammo):
     """What the rule needs to know of one pilot, from its row in fleet.json and its live file: role, wallet, docked, modules, goods aboard."""
     name = ship.get("name") or ""
     detail = read_json(Path(data) / "fleet" / "ships" / ship_file(name), {})
-    return {"name": name, "role": role_of(name, named), "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
+    _div = ship.get("division") or detail.get("division") or ""
+    _cls = ship.get("class") or detail.get("class") or detail.get("ship_class") or ""
+    return {"name": name, "role": role_of(name, named), "division": _div, "class": _cls, "credits": ship.get("credits", 0), "docked": bool(ship.get("docked")),
             "empire": ship.get("empire") or detail.get("empire"), "system": ship.get("system") or detail.get("system"),
             "base": ship.get("base") or detail.get("base") or detail.get("docked_at")
             or (ship.get("docked") if isinstance(ship.get("docked"), str) else "") or "",     # requests ENT-447/448: fleet.json names the station in `docked`

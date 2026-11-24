@@ -330,13 +330,39 @@ def _option(args, flag, default=""):
     return args[args.index(flag) + 1] if flag in args and args.index(flag) + 1 < len(args) else default
 
 
+def _craft_cooldowns(data_dir=DATA):
+    cd = read_json(Path(data_dir) / "fleet" / "craft_cooldown.json", {})
+    if not isinstance(cd, dict):
+        return {}
+    now = time.time()
+    return {k: v for k, v in cd.items() if isinstance(v, (int, float)) and v > now}
+
+
+def _stamp_craft_cooldown(key, seconds, data_dir=DATA):
+    p = Path(data_dir) / "fleet" / "craft_cooldown.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lk = Path(data_dir) / "fleet" / "craft_cooldown.lock"
+    with open(lk, "a+", encoding="utf-8") as lfh:
+        fcntl.flock(lfh, fcntl.LOCK_EX)
+        cd = _craft_cooldowns(data_dir=data_dir)
+        cd[str(key)] = round(time.time() + float(seconds), 1)
+        write_json(p, cd)
+
+
 def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=None, world_cache=None, stor_cache=None):
     """Fast 0ms dispatcher check: True iff `pilot` is docked at a station with an executable craft job."""
     if not isinstance(ship_doc, dict):
         return False
-    base_id = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+    dock_raw = ship_doc.get("docked")
+    base_id = str(ship_doc.get("base") or (dock_raw if isinstance(dock_raw, str) else "") or "")
     div = str(ship_doc.get("division") or "")
+    if not div:
+        _rm = {"trader": "Trade", "hauler": "Logistics"}
+        div = _rm.get(str(ship_doc.get("role") or "").lower(), "")
     if not base_id or div not in ("Trade", "Logistics"):
+        return False
+    cd = _craft_cooldowns(data_dir=data_dir)
+    if str(pilot) in cd:
         return False
     pol_p = Path(policy_path) if policy_path else (Path(repo_root) / "game" / "craft-policy.json")
     pol = read_json(pol_p, {})
@@ -347,7 +373,12 @@ def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=No
     p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
     stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
     credits = int(ship_doc.get("credits") or 0)
-    return pick_craft_job(div, base_id, stored, credits, world, pol) is not None
+    job = pick_craft_job(div, base_id, stored, credits, world, pol)
+    if not job:
+        return False
+    if ("%s:%s" % (pilot, job.get("recipe") or "")) in cd:
+        return False
+    return True
 
 
 def main(argv=None):
@@ -452,6 +483,7 @@ def main(argv=None):
             time.sleep(TICK)
             if not ok_b:
                 notes.append("buy err %s" % iid)
+                _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
                 return 0
             raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
             time.sleep(TICK)
@@ -460,7 +492,9 @@ def main(argv=None):
         r_c = raw("craft", {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}, group="spacemolt")
         time.sleep(TICK)
         if "error" in r_c:
-            notes.append("craft err %s" % job["recipe"])
+            notes.append("craft err %s: %s" % (job["recipe"], str(r_c.get("error") or "")[:60]))
+            _stamp_craft_cooldown("%s:%s" % (pilot, job["recipe"]), 1800, data_dir=DATA)
+            _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
             return 0
         made_qty = job["runs"] * job["per_run"]
         notes.append("crafted %dx %s (%s)" % (made_qty, job["makes"], job["mode"]))

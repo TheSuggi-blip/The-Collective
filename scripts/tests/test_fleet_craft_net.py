@@ -65,5 +65,27 @@ class TestCraftNet(unittest.TestCase):
             self.assertEqual(l_job["sell_price"], 0)
 
 
+    def test_pilot_of_compat_and_cooldown(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            pol = {"enabled": True, "max_runs_per_cycle": 5, "max_fee_per_run_cr": 500, "min_wallet_keep_cr": 10000,
+                   "allow_buy_inputs_docked": False,
+                   "logistics": {"enabled": True, "use_needs_tsv": True, "use_industrial_targets": True}}
+            pol_p = data / "craft-policy.json"
+            pol_p.write_text(json.dumps(pol), encoding="ascii")
+            world = {"recipes": {"smelt_steel": {"id": "smelt_steel", "name": "Smelt Steel", "facility_only": False,
+                                                  "inputs": [("iron_ore", 4)], "outputs": [("steel_plate", 1)]}},
+                     "books_by_base": {}, "global_bid": {}, "item_vals": {"iron_ore": 5.0, "steel_plate": 40.0},
+                     "need_crafts": {"steel_plate"}, "stock_by_item": {}, "demand": {}}
+            stor = {"pilots": {"hauler-19": {"stations": {"b1": {"iron_ore": 20}}}}}
+            # Simulate dispatch.pilot_of() minimal dict (docked=True bool, base='b1', role='hauler', no division)
+            pilot_doc = {"name": "hauler-19", "role": "hauler", "docked": True, "base": "b1", "credits": 25000}
+            self.assertTrue(craft_net.has_craft_job("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world, stor_cache=stor))
+            # Cooldown suppresses retry loops on failed craft
+            craft_net._stamp_craft_cooldown("hauler-19:smelt_steel", 600, data_dir=data)
+            self.assertFalse(craft_net.has_craft_job("hauler-19", pilot_doc, data_dir=data, policy_path=pol_p, world_cache=world, stor_cache=stor))
+
+
 if __name__ == "__main__":
     unittest.main()

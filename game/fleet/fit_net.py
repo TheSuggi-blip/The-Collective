@@ -236,6 +236,9 @@ def plan_ship_fit(ship_doc, world, policy):
         return None
     pilot = str(ship_doc.get("name") or ship_doc.get("pilot") or "")
     division = str(ship_doc.get("division") or "")
+    if not division:
+        _rm = {"miner": "Mining", "trader": "Trade", "hauler": "Logistics", "drone": "Military", "sentinel": "Military", "scout": "Intel", "command": "Command"}
+        division = _rm.get(str(ship_doc.get("role") or "").lower(), "")
     if not pilot or not division:
         return None
     cur_sys = str(ship_doc.get("system") or "")
@@ -243,7 +246,7 @@ def plan_ship_fit(ship_doc, world, policy):
     min_keep = int(policy.get("min_wallet_keep_cr") or 10000)
     budget = max(0, credits - min_keep)
     fitted = [i for i in (_mod_id(m) for m in (ship_doc.get("modules") or []) if m) if i]
-    cls_key = str(ship_doc.get("class") or ship_doc.get("ship_class") or "").lower()
+    cls_key = str(ship_doc.get("class") or ship_doc.get("ship_class") or ship_doc.get("hull") or "").lower()
     hspec = (world.get("hulls") or {}).get(cls_key) or {"tier": 0, "weapon": 1, "defense": 1, "utility": 1}
 
     is_bursar = pilot in (world.get("bursar_pilots") or set())
@@ -339,11 +342,37 @@ def plan_ship_fit(ship_doc, world, policy):
     return best
 
 
+def _fit_cooldown_active(pilot, data_dir=DATA):
+    cd = read_json(Path(data_dir) / "fleet" / "fit_cooldown.json", {})
+    if isinstance(cd, dict):
+        until = float(cd.get(str(pilot)) or 0)
+        if until > time.time():
+            return True
+    return False
+
+
+def _stamp_fit_cooldown(pilot, seconds, data_dir=DATA):
+    p = Path(data_dir) / "fleet" / "fit_cooldown.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lk = Path(data_dir) / "fleet" / "fit_cooldown.lock"
+    with open(lk, "a+", encoding="utf-8") as lfh:
+        fcntl.flock(lfh, fcntl.LOCK_EX)
+        cd = read_json(p, {})
+        if not isinstance(cd, dict):
+            cd = {}
+        now = time.time()
+        cd = {k: v for k, v in cd.items() if isinstance(v, (int, float)) and v > now}
+        cd[str(pilot)] = round(now + float(seconds), 1)
+        write_json(p, cd)
+
+
 def needs_fit(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=None, world_cache=None):
     """Fast open-gate predicate for dispatch.py: returns fit plan dict if pilot needs fitting now, else None."""
     pol_p = Path(policy_path) if policy_path else (Path(repo_root) / "game" / "fit-policy.json")
     policy = read_json(pol_p, {})
     if not policy or not policy.get("enabled", True):
+        return None
+    if _fit_cooldown_active(pilot, data_dir=data_dir):
         return None
     doc = dict(ship_doc or {})
     doc["name"] = pilot
@@ -446,11 +475,12 @@ def main(argv=None):
         ok_d, _ans = goal("prepare-at-station", {"systemId": plan["system"], "poiId": plan["poi"], "baseId": plan["base"], "refuel": True}, timeout=240)
         if not ok_d:
             notes.append("dock failed at %s" % plan["base"])
+            _stamp_fit_cooldown(pilot, 1200, data_dir=DATA)
             return 0
 
         for mid in plan["unfit"]:
-            st_b = get_status_body()
-            live_mods = (st_b.get("ship") or {}).get("modules") or st_b.get("modules") or []
+            st_b = _body(raw("get_ship", {}, group="spacemolt"))
+            live_mods = st_b.get("modules") or (st_b.get("ship") or {}).get("modules") or []
             inst_id = mid
             for lm in live_mods:
                 if isinstance(lm, dict) and str(lm.get("type_id") or lm.get("type") or "").lower() == str(mid).lower():
@@ -486,6 +516,8 @@ def main(argv=None):
                 notes.append("install err %s" % mid)
             else:
                 notes.append("fit %s@%d" % (mid, max_pr))
+        had_err = any(n.startswith(("buy err", "install err", "dock failed")) for n in notes)
+        _stamp_fit_cooldown(pilot, 1200 if had_err else 300, data_dir=DATA)
         return 0
     finally:
         hb.set()
