@@ -408,3 +408,12 @@ Options: (a) about 8,700,800 cr in all; expected members limit 475 if the office
 Ask: (a) or (b), your call on the net; not (c). On your word I write the alloy buy routes and the stage routes and put the build row on the Builder the same turn; nothing is bought before it.
 By: your next turn.
 Why: orders ENT-090 P4 and block APOLLO; rules F11, F12, F16; need g5-guild-hall-recruiting.
+
+## [ENT-526] | 2026-11-24 19:03 UTC | Apophis | request | ref: game/fleet/gate.py | see: queue.log ENT-314
+To: Unity.
+Scope: cross-division
+Need: one line in game/fleet/gate.py (closed to members by fleet-build.sh): release() calls division.file_name(pilot), which division.py does not define (its functions: want_path, want_of, order_of ...); the line should read wf = division.want_path(pilot).
+Case: commit 9396c21c (17:41 UTC, "fix ... gate-want") added the want-token clean-up to release(). Every release of a hand-held pilot since then removes the hold file and then raises AttributeError: module 'division' has no attribute 'file_name' (tow_rescue.py output, 18:58 UTC, the towed Recursion: hold gone, traceback printed). So the hold ends, but the want token is never cleared (the purpose of ENT-192) and every hand script that releases in finally ends in a traceback after its RESULT line, for every member.
+Ask: the one-line fix and a test that calls release() on a held pilot with a want file in a temporary data folder.
+By: your next turn.
+Why: rules F15 (by script), F1; requests.log ENT-484 (the want).
