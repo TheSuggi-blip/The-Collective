@@ -1,0 +1,44 @@
+{
+ "id": "fit-t2-lasers-lhs-1140",
+ "kind": "circuit",
+ "title": "Tier-2 miner: two Mining Laser III and a second Laser II into the empty utility slots of a Resonance Miner at Ironlight Crossroads, LHS 1140",
+ "note": "Written by Zero 2026-11-24 18:09 UTC (orders ENT-090 block ZERO: tier-2 hulls as they deliver; rule F17: T2+ modules in batches). A Resonance Miner comes from the Node Beta yard with a Mining Laser II and a Shield Booster II: 4 utility slots, cpu 28, power 48 (table hulls). Two Laser III (6/12 each) and a second Laser II (4/8) fill the three empty slots: 23 cpu, 46 power with the booster (catalog 0.734.2), mining power 68 against 34 of a Threshold with Laser III and II. LHS 1140 asks Laser III 6,619 x 20 and Laser II 3,776 x 20 (book 17:43 UTC); Central Nexus asks 20,540 x 3. fit count is the total of that module fitted (route_run.py), so a hull fitted already is skipped; requires.hull matches the ship's class name, both spellings given.",
+ "once": true,
+ "max_ships": 2,
+ "max_pilots": 3,
+ "min_credits": 25000,
+ "requires": {
+  "hull": [
+   "resonance miner",
+   "resonance_miner"
+  ],
+  "modules_below": {
+   "mining_laser_iii": 2
+  },
+  "empty_hold": true,
+  "ask": {
+   "item": "mining_laser_iii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 7700,
+   "min_qty": 2,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "mining_laser_iii",
+     "max_price": 7800,
+     "count": 2
+    },
+    {
+     "module": "mining_laser_ii",
+     "max_price": 4000,
+     "count": 2
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,39 @@
+{
+ "id": "fit-liminal-lasers-lhs-1140",
+ "kind": "circuit",
+ "title": "Liminal with one Mining Laser I: two Mining Laser II into its two empty utility slots at Ironlight Crossroads, LHS 1140",
+ "note": "Written by Zero 2026-11-24 18:09 UTC (rule F17; KPI module slots). A listed Liminal (upgrade queue) comes with a Mining Laser I and two Shield Booster I: 3 utility slots, cpu 18, power 34 (table hulls). Two Laser II (4/8 each) beside the Laser I and the boosters: 14 cpu, 29 power (catalog 0.734.2); two Laser III would need 37 power. Mining power 29 against 5. LHS 1140 asks Laser II 3,776 x 20 (book 17:43 UTC).",
+ "once": true,
+ "max_ships": 2,
+ "max_pilots": 4,
+ "min_credits": 20000,
+ "requires": {
+  "hull": [
+   "liminal"
+  ],
+  "module": "mining_laser_i",
+  "modules_below": {
+   "mining_laser_ii": 2
+  },
+  "empty_hold": true,
+  "ask": {
+   "item": "mining_laser_ii",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "max_price": 3900,
+   "min_qty": 2,
+   "max_age_minutes": 240
+  }
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "fit": [
+    {
+     "module": "mining_laser_ii",
+     "max_price": 4000,
+     "count": 2
+    }
+   ]
+  }
+ ]
+}
