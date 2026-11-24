@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 672.
+Routes: 673.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -272,6 +272,7 @@ Routes: 672.
 | [guard-marfik-emission-nebula](guard-marfik-emission-nebula.json) | guard | beyond the border, 6 jumps | Guard at Marfik Emission Nebula while a ship of ours mines gas there; docks at Node Beta | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [guard-schedar-belt](guard-schedar-belt.json) | guard | beyond the border, 2 jumps | Guard at Schedar Belt while miners of ours gather iron there; docks at Node Beta | up to 1 ships, empty hold, standing work | 3 | 39 | -160 | -230 | 2026-11-24 |
 | [haul-network](haul-network.json) | haul | -- | Dynamic Logistics Hauler network: auto-picks safe Freight Board contracts, verified cross-station arbitrage, and internal empire supply | up to 94 ships, under corporation_management 7, standing work | 6738 | 2 | -50 | -610 | 2026-11-24 |
+| [haul-network-builder](haul-network-builder.json) | haul | -- | The Builder's freight and supply watch near the build sites: haul-network's runner on a policy bounded to 2 jumps to a pickup and 6 to a delivery | up to 1 ships, from corporation_management 7, standing work | TBD | TBD | TBD | TBD | -- |
 | [hunt-70-ophiuchi-gas-plume-drift-ray](hunt-70-ophiuchi-gas-plume-drift-ray.json) | hunt | beyond the border, 10 jumps | drift_ray at 70_ophiuchi_gas_plume, one hunter, loot to a trader receiver at nova_terra_central | up to 1 ships, empty hold, standing work | 6 | 28 | -660 | -1,470 | 2026-11-24 |
 | [hunt-achernar-belt-carapace](hunt-achernar-belt-carapace.json) | hunt | beyond the border, 4 jumps | Belt-grazers and patina-grazers at Achernar Belt; creature carapace into storage at The Experiment | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 4 | 6 | -90 | -530 | 2026-11-24 |
 | [hunt-achernar-frost-ring-hollow-pilgrim](hunt-achernar-frost-ring-hollow-pilgrim.json) | hunt | beyond the border, 9 jumps | hollow_pilgrim at achernar_frost_ring; loot sold at Sirius Observatory Station | up to 1 ships, empty hold, standing work | 2 | 10 | -170 | -980 | 2026-11-24 |

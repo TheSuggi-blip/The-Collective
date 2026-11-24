@@ -1,0 +1,24 @@
+{
+  "policed_only": true,
+  "exclude_strongholds": true,
+  "max_jumps_pickup": 2,
+  "max_jumps_delivery": 6,
+  "min_cr_per_jump": 60,
+  "min_total_profit": 500,
+  "max_collateral": 25000,
+  "fuel_reserve_cr": 6000,
+  "max_book_age_minutes": 30,
+  "max_buy_spend_cr": 30000,
+  "min_margin_pct": 0.25,
+  "partners_first": true,
+  "lanes": [
+    "active_freight",
+    "public_freight",
+    "internal_supply"
+  ],
+  "home_bases": [
+    "node_beta_industrial_station",
+    "central_nexus"
+  ],
+  "note": "2026-11-24 18:20 UTC (Apollo, orders ENT-090 block APOLLO: standing class work for every waiting hauler, F8): the faction's Builder's own watch, a copy of game/haul-policy.json bounded to 2 jumps to a pickup and 6 to a delivery and to the home bases Node Beta and Central Nexus, so a freight or supply job never takes the Builder far from the build sites (skill logistics-stock step 33). No arbitrage lane (P5)."
+}

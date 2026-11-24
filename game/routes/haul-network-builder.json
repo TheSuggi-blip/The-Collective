@@ -1,0 +1,19 @@
+{
+ "id": "haul-network-builder",
+ "kind": "haul",
+ "title": "The Builder's freight and supply watch near the build sites: haul-network's runner on a policy bounded to 2 jumps to a pickup and 6 to a delivery",
+ "note": "Written by Apollo, 2026-11-24 18:20 UTC (orders ENT-090 block APOLLO: standing class work for each waiting hauler, F8). The faction's Builder (the one pilot at corporation_management 7 or more, table faction_members) is fenced out of haul-network (skills_below, skill logistics-stock step 33) and waited docked at Node Beta with no build to make: the Atria kit and the Guild Hall wait on the Fleet Admiral's word (requests ENT-523 and this turn's request). This route gives it the same runner on game/haul-policy-builder.json (pickup within 2 jumps, delivery within 6, home bases Node Beta and Central Nexus), so it takes a near job and stays at hand for a build. requires.skills and in_system keep every other ship off it; max_ships 1.",
+ "policy": "game/haul-policy-builder.json",
+ "minutes": 45,
+ "max_ships": 1,
+ "standing": true,
+ "requires": {
+  "skills": {
+   "corporation_management": 7
+  },
+  "in_system": [
+   "node_beta",
+   "nexus_prime"
+  ]
+ }
+}
