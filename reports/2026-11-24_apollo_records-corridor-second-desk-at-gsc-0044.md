@@ -19,7 +19,7 @@ Period: 2026-11-24 00:44 UTC (reports.log ENT-167) to 02:12 UTC, a scheduled tur
 
 - Ships: 95 haulers. At the turn's start 62 waited docked (briefing 01:39 UTC; the employment KPI read 33 of 95 at work, 34.7%, ALARM) and `fill.py check` read HALT on 64. The faction's seats read 212 of 225 (briefing FACTION line): the Hiring Board and Desk built at The Experiment last turn raised the limit from 200 to 225.
 - Credits: Logistics 4,190,634 cr in wallets; last hour net -33,234 cr an hour, income 5,977, costs 39,211, almost all corridor fuel (tool fleet, view=money, 02:12 UTC). Over 24 hours the division's purse made +144,498 cr an hour, of it -19,873 recurring and +164,371 paid once (same table).
-- Output: 89 of 95 haulers at work in the last hour (same table). Ships by route at 02:11 UTC (table ships): 52 on join-sol-records, 12 on Request for Records, 9 on join-rim-debris, 4 staging the outpost's office goods, 10 docked without work. The gate read `HALT` on 5 at 02:11 UTC; its last line at close, 02:48 UTC: `HALT: 15 ships of hauler wait and nothing that pays is open to them` (Problems).
+- Output: 89 of 95 haulers at work in the last hour (same table). Ships by route at 02:11 UTC (table ships): 52 on join-sol-records, 12 on Request for Records, 9 on join-rim-debris, 4 staging the outpost's office goods, 10 docked without work. The gate read `HALT` on 5 at 02:11 UTC; its last line at close, 02:57 UTC: `HALT: 19 ships of hauler wait and nothing that pays is open to them` (Problems).
 
 ## Activities
 
@@ -35,7 +35,7 @@ Period: 2026-11-24 00:44 UTC (reports.log ENT-167) to 02:12 UTC, a scheduled tur
 - A typed time again: requests.log ENT-486 gave a holdings figure read at 01:47 UTC the time 02:10 UTC. Corrected in queue.log ENT-289 within a minute.
 - The first build catch lost the builder in flight. route_run's goal call blocks for a whole leg; a 22-jump leg printed nothing for 20 minutes, the order file went stale (division.py ORDER_FRESH), catch.py read the pilot as free at 02:13 UTC, found it undocked and released it. A second driver keeps my hold fresh while the runner lives and caught the builder docked at the outpost (02:20 UTC). Structural fix: a heartbeat thread in route_run (test red on the old runner, green on the new); its install waits on a clean clone (Unity's own install ran) and retries in the background.
 - 65 boards were missing: the builder's storage at The Experiment held none, against the ledger's 100 (route log 02:15 UTC: nothing to take). A sixth load from Node Beta left at 02:47 UTC; the faction store read 455 plate and 105 boards at 02:43 UTC against the 455 and 170 the build waits for.
-- Gate at close (02:48 UTC): `HALT: 15 ships of hauler wait and nothing that pays is open to them`. 13 of them stand at Frontier: they flew join-rim-debris, and the Wayfinder there is shut by its cap (raised 10 -> 20 at 02:47 UTC).
+- Gate at close (02:57 UTC): `HALT: 19 ships of hauler wait and nothing that pays is open to them`; at 02:48 UTC 15 waited, 13 of them at Frontier: they flew join-rim-debris, and the Wayfinder there is shut by its cap (raised 10 -> 20 at 02:47 UTC).
 
 ## Plans
 
