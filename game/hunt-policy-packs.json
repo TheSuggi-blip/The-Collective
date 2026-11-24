@@ -1,0 +1,110 @@
+{
+  "_owner": "Apophis (Military)",
+  "_doc": "Pack-and-escort variant of hunt-policy.json for the tier-2 hulls (route hunt-network-packs): the solo lane and the XP fallback are off, so a hull that burns five to fifteen times a starter's fuel fights only in a pack (whales and tougher game within rule F9 for the pack) or escorts, and otherwise rests where it docked (no fuel). Same claims and packs files as hunt-network.",
+  "enabled": true,
+  "claim_ttl_s": 4200,
+  "cooldown_minutes": 90,
+  "keep_herd": 2,
+  "min_creatures": 3,
+  "census_max_age_min": 180,
+  "pirate_avoid_hours": 6.0,
+  "policed_only": false,
+  "allow_lawless_min_power": 350.0,
+  "exclude_systems": [
+    "70_ophiuchi",
+    "acrux",
+    "atlas",
+    "botein",
+    "cedarhold",
+    "celaeno",
+    "diadem",
+    "garnet",
+    "gsc_0044",
+    "hatysa",
+    "intercrus",
+    "kepler_442",
+    "kitalpha",
+    "lacaille_8760",
+    "lanternwick",
+    "nembus",
+    "theemin",
+    "zubenelhakrabi"
+  ],
+  "exclude_pois": [],
+  "exclude_species": [],
+  "partner_factions": [
+    "HEXC",
+    "IRLC",
+    "NOIR"
+  ],
+  "gift_to": "trader",
+  "escort": {
+    "enabled": true,
+    "max_ships": 1,
+    "max_fleet_share": 0.15,
+    "threat_window_h": 4.0,
+    "auto_protect_lawless_civilians": true,
+    "protect_pilots": [],
+    "protect_places": [],
+    "max_jumps": 10,
+    "min_power": 1500.0,
+    "minutes": 45
+  },
+  "packs": {
+    "enabled": true,
+    "target_share": 0.02,
+    "sizes": [
+      3
+    ],
+    "min_power_ratio": 1.8,
+    "pirate_min_power_ratio": 2.2,
+    "pirates_enabled": false,
+    "pirate_tiers": [
+      "scout",
+      "raider"
+    ],
+    "min_member_power": 900.0,
+    "min_target_hull": 85,
+    "rally_max_jumps": 8,
+    "rally_timeout_s": 600,
+    "arrive_timeout_s": 240,
+    "fight_ticks": 45,
+    "flee_hull_pct": 80,
+    "close_dist": 2,
+    "max_jumps": 12,
+    "priority_species": [
+      "pilot_whale",
+      "bullionaut",
+      "cauldronback",
+      "facet_druse",
+      "kiln_snail",
+      "slag_tortoise",
+      "bulwark",
+      "glintfin",
+      "glitterback_crab",
+      "deuteron_slug",
+      "hollow_pilgrim",
+      "mirror_skate",
+      "inkwyrm",
+      "magnet_barnacle",
+      "silica_borer"
+    ]
+  },
+  "solo": {
+    "enabled": false,
+    "min_power_ratio": 1.35,
+    "ideal_ratio_low": 1.45,
+    "ideal_ratio_high": 3.2,
+    "max_jumps": 10,
+    "kills_per_run": 6,
+    "alone": true,
+    "min_bid": 1500
+  },
+  "fallback": {
+    "enabled": false,
+    "max_jumps": 6
+  },
+  "rest_seconds_when_empty": 120,
+  "_tune": "Apophis 2026-11-24 15:38 UTC: the four Recursions flew 46 hunts in 6 hours on starter prey, 2.63 kills a run, -127,062 cr, -7,950 cr a ship-hour (runs.jsonl 09:36 to 15:36 UTC); a starter's T0 hunts read -918 cr a ship-hour. Packs and escorts as hunt-network's first flight.",
+  "_stopgap": "Apophis 2026-11-24 15:48 UTC: exclude_systems holds the 18 systems whose nearest dock is our outpost GSC-0044 (no storage, its fuel bunker a supply chain, requests ENT-513) until the hunt_net fix that drops outposts from the docks is installed; then emptied."
+}
