@@ -10,7 +10,7 @@ storage for our manufacturing & reserve chains (`needs.tsv`,
 `reserve.tsv`) and high-margin scarce veins (`<=3` ships/belt, `15%`
 default `min_left` floor for a 6h buffer; `>=25%` belts for T2/T3
 multi-laser rigs to clear the `07-economy.md` sparse-deposit cliff).
-Hulls: ships.md; routes: routes.md; calls: topic-scripts.md.
+Dynamic network: `mine-network` (`game/mine-policy.json`) auto-rotates across unsaturated belts (`>=15%` live floor + instant cooldown, tool-matched, reserve-deficit prioritized, skipping full reserves). Hulls: ships.md; routes: routes.md; calls: topic-scripts.md.
 
 ### Ships
 Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; game/fleet/upgrades.py.

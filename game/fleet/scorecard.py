@@ -590,6 +590,26 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
                         bursar_claims[str(rec["pilot"])] = str(base_id)
         except Exception:
             pass
+    mine_claims = {}
+    mc_path = Path(data_dir) / "fleet" / "mine_claims.json"
+    if mc_path.is_file():
+        try:
+            mc_raw = (json.loads(mc_path.read_text(encoding="utf-8")) or {}).get("claims") or {}
+            for p_nm, rec in mc_raw.items():
+                if isinstance(rec, dict) and rec.get("belt"):
+                    mine_claims[str(p_nm)] = str(rec["belt"])
+        except Exception:
+            pass
+    hunt_claims = {}
+    hc_path = Path(data_dir) / "fleet" / "hunt_claims.json"
+    if hc_path.is_file():
+        try:
+            hc_raw = (json.loads(hc_path.read_text(encoding="utf-8")) or {}).get("claims") or {}
+            for p_nm, rec in hc_raw.items():
+                if isinstance(rec, dict) and rec.get("key"):
+                    hunt_claims[str(p_nm)] = str(rec["key"])
+        except Exception:
+            pass
 
     by_div = {"Mining": Counter(), "Military": Counter(), "Trade": Counter()}
     haul_active = 0
@@ -611,6 +631,14 @@ def _compute_field_saturation(repo_root, data_dir, conn=None, ship_divs=None):
             base_id = bursar_claims.get(pilot) or ""
             if base_id and sdivs.get(pilot, "Trade") == "Trade":
                 by_div["Trade"][base_id] += 1
+        elif kind == "mine_net":
+            belt = mine_claims.get(pilot) or ""
+            if belt and sdivs.get(pilot, "Mining") == "Mining":
+                by_div["Mining"][belt] += 1
+        elif kind == "hunt_net":
+            hk = hunt_claims.get(pilot) or ""
+            if hk and sdivs.get(pilot, "Military") == "Military":
+                by_div["Military"][hk] += 1
         elif kind == "haul":
             haul_active += 1
         elif kind == "circuit":

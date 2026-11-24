@@ -1445,6 +1445,10 @@ class PostedAndRoleTests(Tree):
         # Dynamic bursar & haul command generation works cleanly
         self.assertIn("bursar.py", " ".join(self.dispatch.command(routes["net-bursar"], "trader-9", None, self.root)))
         self.assertIn("haul.py", " ".join(self.dispatch.command(routes["net-haul"], "hauler-9", None, self.root)))
+        r_mn = {"id": "mine-network", "kind": "mine_net", "title": "t", "minutes": 45, "max_ships": 90, "policy": "game/mine-policy.json"}
+        r_hn = {"id": "hunt-network", "kind": "hunt_net", "title": "t", "minutes": 45, "max_ships": 95, "policy": "game/hunt-policy.json"}
+        self.assertIn("mine_net.py", " ".join(self.dispatch.command(r_mn, "miner-9", None, self.root)))
+        self.assertIn("hunt_net.py", " ".join(self.dispatch.command(r_hn, "drone-9", None, self.root)))
 
 
 if __name__ == "__main__":

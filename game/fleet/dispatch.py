@@ -129,7 +129,7 @@ SPAWN_MOST = 30              # runners running as processes of their own at once
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py"}
 MINE_POI_CAP = 3             # hard cap: max concurrent miners on any single belt/POI (spread miners across belts like hunters)
 BURSAR_STATION_CAP = 1       # hard cap: max concurrent static Bursar desks at any single station (spread across 61+ books)
 
@@ -1285,7 +1285,7 @@ def command(route, pilot, argument, root):
         return (base + ["--minutes", str(route.get("minutes", 30)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else [])
                 + (["--station", str(route["station"])] if route.get("station") else []))
-    if route["kind"] == "haul":
+    if route["kind"] in ("haul", "mine_net", "hunt_net"):
         return (base + ["--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot

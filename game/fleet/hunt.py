@@ -501,7 +501,7 @@ if REPAIR_FIRST:
 if not combat_mode('external'):
     sys.exit('the engine did not take the combat mode; no hunt')
 kills, started, hunt_minutes = 0, time.time(), 0.0
-if not STEP:
+if not STEP and '--no-order' not in args:
     order('hunt ' + route_id)
     atexit.register(order_done)
 AMMO = ammo_ids()

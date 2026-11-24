@@ -174,7 +174,7 @@ def _static_bursar_bases(repo_root, orders):
     return counts
 
 
-def load_exchange_stations(data, policed_only=True, exclude_strongholds=True):
+def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False):
     db = Path(data) / "store" / "read.db"
     stations = []
     if db.is_file():
@@ -183,6 +183,12 @@ def load_exchange_stations(data, policed_only=True, exclude_strongholds=True):
             con = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=3.0)
             con.row_factory = sqlite3.Row
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            pirate_sys = set()
+            if exclude_pirates and "observations" in tbls:
+                cutoff = time.time() - float(pirate_avoid_hours or 6.0) * 3600.0
+                for pr in con.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
+                    if pr[0]:
+                        pirate_sys.add(str(pr[0]))
             if {"places", "systems"} <= tbls:
                 scols = {r[1] for r in con.execute("PRAGMA table_info(systems)").fetchall()}
                 strg_expr = "COALESCE(s.stronghold, 0)" if "stronghold" in scols else "0"
@@ -216,10 +222,11 @@ def load_exchange_stations(data, policed_only=True, exclude_strongholds=True):
                     emp = str(r["empire"] or "").strip().lower()
                     if exclude_strongholds and int(r["stronghold"] or 0):
                         continue
+                    if exclude_pirates and str(r["system"] or "") in pirate_sys:
+                        continue
                     if policed_only and not emp:
                         continue
-                    # When covering neutral non-stronghold hubs too, only staff stations that actually have an Exchange book
-                    if not emp and int(r["items_n"] or 0) <= 0:
+                    if not emp and not include_empty_neutral and int(r["items_n"] or 0) <= 0:
                         continue
                     seen.add(b)
                     stations.append({
@@ -310,7 +317,14 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 write_json(claims_path, cleaned)
                 return None
 
-            stations = load_exchange_stations(data, policed_only=bool(policy.get("policed_only", True)))
+            stations = load_exchange_stations(
+                data,
+                policed_only=bool(policy.get("policed_only", True)),
+                exclude_strongholds=bool(policy.get("exclude_strongholds", True)),
+                exclude_pirates=bool(policy.get("exclude_pirates", True)),
+                pirate_avoid_hours=float(policy.get("pirate_avoid_hours") or 6.0),
+                include_empty_neutral=bool(policy.get("include_empty_neutral_stations", False)),
+            )
             if not stations:
                 write_json(claims_path, cleaned)
                 return None

@@ -497,3 +497,7 @@ APOPHIS, Military (drone- and sentinel- ships)
 Guard and escort from our stations outward, never the first outpost ring (F33). Never hunt an animal bearing another faction's tag. Hunt the kit species by F9 and F38, the parts to Logistics (P5). The wallet fix is live and the suite green (ENT-502): install your own changes. Flagships take open claimed herds last (ENT-119): say if one leaves a drone waiting. Batch P10+ pilots onto empire hulls.
 ORACLE, Intel (scout- ships)
 Keep census-kit-herds reading the five species; tell Military the same turn a herd reads 3 or more. File every tagged herd as kind ranch. Keep the north road from Atria to Yildun read. Your store-at-nearest proposal is in my build list. The 44 belts Mining now spreads over need fresh field reads.
+
+## [ENT-088] | 2026-11-24 13:32 UTC | Trinity | order | ref: governance/strategy.md | see: ENT-087
+Changed: Launched smart `mine-network` (`game/mine-policy.json`) and `hunt-network` (`game/hunt-policy.json`: on-demand Escort, 3/5/8/10 Packs at 25% share, percentage power-ratio T0->T5+), upgraded `bursar-network` to 60+ safe hubs with T0/cargo split, and added O4 medium/late-game 4-empire regional storage hubs.
+In force: Tier 1 G1-G5, Tier 2 O1-O10 (including O4 5-empire regional hubs: 1 Voidborn core + 1 hub in each of the 4 other empires), ENT-087 mandatory manufacturing/trade/extraction tiers, and policy-steered smart networks across all 5 divisions.

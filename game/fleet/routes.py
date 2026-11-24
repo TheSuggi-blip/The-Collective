@@ -77,7 +77,7 @@ import workclass                                  # noqa: E402  r22: whose work 
 import taxes                                      # noqa: E402  the weekly tax a run in flight carried
 
 EMPIRES = frozenset(("voidborn", "nebula", "solarian", "outerrim", "crimson"))   # the five empires of the game (requires.empire)
-KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station"), "bursar": (), "haul": ()}
+KINDS = {"circuit": ("stops",), "hunt": ("place", "sell_at"), "census": ("systems",), "mine": ("belt", "station"), "guard": ("guards", "station"), "bursar": (), "haul": (), "mine_net": (), "hunt_net": ()}
 PLACES = {"mine": "belt", "hunt": "place"}       # the kinds that work at one place, and the field that names it: what a guard keeps
 FRONT = "---\nname: %s\nid: %s\ntier: intel\nauthor: Unity\n---\n\n"
 MASTER = "master-index.md"
@@ -281,7 +281,7 @@ def check(root):
         if "pirates_ok" in route:
             if not isinstance(route["pirates_ok"], bool):
                 errors.append(where + "`pirates_ok` must be true or false")
-            elif route["pirates_ok"] and kind not in ("hunt", "guard", "circuit"):
+            elif route["pirates_ok"] and kind not in ("hunt", "guard", "circuit", "hunt_net"):
                 errors.append(where + "`pirates_ok` is allowed only on combat hunt, guard or circuit routes (rule F27)")
         if "jettison_gangue" in route:
             jg = route["jettison_gangue"]
@@ -670,7 +670,7 @@ def standing(route):
     earns nothing and keeps another route's ship company (requests ENT-070)."""
     need = route.get("requires") or {}
     return bool(route.get("standing") or need.get("skills_below") or (route.get("kind") == "mine" and not route.get("sell"))
-                or route.get("kind") in ("guard", "bursar", "haul") or gives(route))
+                or route.get("kind") in ("guard", "bursar", "haul", "mine_net", "hunt_net") or gives(route))
 
 
 def guarded_place(guard, guarded):

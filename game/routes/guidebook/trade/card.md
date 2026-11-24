@@ -5,8 +5,7 @@ Status: proven. Updated: 2026-11-24. Evidence: governance/collective-strategy.md
 
 Trade is the fleet's Profit Center across all five empires (Voidborn,
 Nebula, Solarian, Outer Rim, Crimson). Core duties under F23: (1)
-multi-hub `bursar-network` market-making (`bursar-policy.json`, 1
-Bursar per policed/safe station, buy walls + undercut sell ladders),
+multi-hub `bursar-network` market-making (`bursar-policy.json`, 60+ safe empire & non-pirate neutral hubs permanently staffed via `bursar-network` `max_ships=65`, `max_hull_tier=0, max_cargo=150` so T1/T2 `Prayer`/`Apophenia` & `Cargo Expander II` ships stay reserved for mobile trading & crafting),
 (2) final liquidation of Mining/Military handovers and surplus vaults,
 (3) zero-fuel **commercial value-added crafting** at public NPC
 refineries/factories for profit and rival buy-walls (`silver_bar`,

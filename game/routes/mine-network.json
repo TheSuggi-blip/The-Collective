@@ -1,0 +1,10 @@
+{
+ "id": "mine-network",
+ "kind": "mine_net",
+ "title": "Dynamic Smart Mining network: auto-rotates across unsaturated belts (>=15% floor), prioritizing reserve deficits and tool match",
+ "note": "Policy-driven autonomous Mining runner governed by game/mine-policy.json (Zero/Unity). Matches fitted tools (mining laser, ice harvester, gas harvester), prioritizes needs.tsv/supply_chains deficits while skipping full reserves, enforces live 15% regrowth floor in flight with instant cooldown rotation, and caps <=3 ships/belt atomically.",
+ "policy": "game/mine-policy.json",
+ "minutes": 45,
+ "max_ships": 90,
+ "standing": true
+}

@@ -10,7 +10,7 @@ military`) plus `sentinel-` Royal Guard ships lent until Piloting 20
 lines, fan across PvE herds (`1-2/herd`, 2 left, F9/F38), farm NPC
 pirate packs in focused 5-8 ship formations (F27), hold defensive RoE
 (F2: never fire first at players/empires), and gift combat loot inward
-to Trade/Logistics (P5).
+to Trade/Logistics (P5). Dynamic network: `hunt-network` (`game/hunt-policy.json`) runs 4 percentage power-ratio lanes auto-scaling T0->T5+: (1) on-demand Escort (0 held when clear), (2) 3/5/8/10-ship Packs (~25% share for tough wildlife & lone NPC pirates), (3) F38 `keep_herd=2` Solo rotation with instant cooldowns, (4) XP fallback.
 
 ### Ships
 Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; game/fleet/upgrades.py.

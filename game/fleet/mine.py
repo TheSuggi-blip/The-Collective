@@ -249,6 +249,30 @@ def _is_protected(item_id):
     return any(tok in cid for tok in _PROTECTED_TOKENS)
 
 
+def check_floor_breached(resources, min_left_pct=0.0, floor_resource="", min_left_units=0):
+    """Return (resource_id, remaining, max_remaining, floor_units) when a belt hits its floor, else None."""
+    pct = float(min_left_pct or 0.0)
+    min_u = int(min_left_units or 0)
+    if pct <= 0.0 and min_u <= 0:
+        return None
+    target = str(floor_resource or "").strip()
+    rows = [r for r in (resources or ()) if isinstance(r, dict)]
+    if not rows:
+        return None
+    if target:
+        cand = [r for r in rows if str(r.get("resource_id") or r.get("item_id") or "") == target]
+    else:
+        cand = [max(rows, key=lambda r: int(r.get("max_remaining") or r.get("remaining") or 0))]
+    for r in cand:
+        rid = str(r.get("resource_id") or r.get("item_id") or "")
+        rem = int(r.get("remaining") or 0)
+        mx = int(r.get("max_remaining") or 0)
+        fl = max(min_u, int(round(mx * pct / 100.0)) if (pct > 0.0 and mx > 0) else 0)
+        if fl > 0 and rem <= fl:
+            return (rid, rem, mx, fl)
+    return None
+
+
 def pick_jettison(cargo_rows, gangue=(), keep_items=(), used_ratio=0.0, raw_ids=None):
     """Choose [(item_id, qty), ...] to jettison while undocked on a belt.
     Supports both blocklist mode (`gangue`: drop named unwanted byproducts) and whitelist mode
@@ -322,10 +346,12 @@ def main():
             ship = {}
         return credits_of(call("GET", "/accounts/" + quoted)[1]), ore_of(ship)
 
-    os.makedirs(os.path.dirname(order_file), exist_ok=True)
-    with open(order_file, "w", encoding="utf-8") as handle:
-        json.dump({"pilot": pilot, "what": "mine " + route_id, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, handle)
-    atexit.register(lambda: os.path.exists(order_file) and os.remove(order_file))
+    manage_order = "--no-order" not in args
+    if manage_order:
+        os.makedirs(os.path.dirname(order_file), exist_ok=True)
+        with open(order_file, "w", encoding="utf-8") as handle:
+            json.dump({"pilot": pilot, "what": "mine " + route_id, "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}, handle)
+        atexit.register(lambda: os.path.exists(order_file) and os.remove(order_file))
     started = time.time()
     credits_before, ore_before = numbers()
     loop = {"type": "mining", "options": {"miningSystemId": belt[0], "beltPoiId": belt[1], "sellSystemId": station[0], "sellStationPoiId": station[1],
@@ -341,15 +367,40 @@ def main():
         notes = [] if status in (200, 201) and "error" not in answer else ["loop not started"]
         gangue = [g.strip() for g in option(args, "--jettison-gangue", "").split(",") if g.strip()]
         keep_items = [k.strip() for k in option(args, "--keep-items", "").split(",") if k.strip()]
+        min_left_pct = float(option(args, "--min-left-pct", "0") or 0)
+        min_left_units = int(option(args, "--min-left-units", "0") or 0)
+        floor_resource = option(args, "--floor-resource", "").strip()
         raw_mineables = load_raw_mineables(DATA) if keep_items else None
         jettisoned = {}
+        poll_idx = 0
         while not notes and time.time() - started < minutes * 60 and not os.path.exists(os.path.join(DATA, "fleet", "STOP")):
             time.sleep(30)
+            poll_idx += 1
             try:
-                os.utime(order_file)
+                if os.path.exists(order_file):
+                    os.utime(order_file)
             except OSError:
                 pass
             loop_state = call("GET", "/accounts/%s/loop" % quoted)[1]
+            if (min_left_pct > 0 or min_left_units > 0) and loop_state.get("running") and poll_idx % 3 == 0:
+                try:
+                    st_acc = (call("GET", "/accounts/" + quoted)[1].get("state") or {})
+                    loc = st_acc.get("location") or {}
+                    cur_poi = str(loc.get("poi_id") or loc.get("poi") or "")
+                    if not st_acc.get("docked_at_base") and (not cur_poi or cur_poi == belt[1]):
+                        st_p, ans_p = call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": "spacemolt", "action": "get_poi", "params": {}})
+                        if st_p in (200, 201) and isinstance(ans_p, dict) and "error" not in ans_p:
+                            sc_p = content(ans_p)
+                            res_rows = sc_p.get("resources") or (sc_p.get("poi") or {}).get("resources") or []
+                            hit = check_floor_breached(res_rows, min_left_pct=min_left_pct, floor_resource=floor_resource, min_left_units=min_left_units)
+                            if hit:
+                                rid_h, rem_h, mx_h, fl_h = hit
+                                msg_h = "field floor reached: %s %d/%d (floor %d)" % (rid_h, rem_h, mx_h, fl_h)
+                                say(msg_h + "; stopping early to preserve regrowth")
+                                notes.append(msg_h)
+                                break
+                except Exception:
+                    pass
             if (gangue or keep_items) and loop_state.get("running"):
                 try:
                     st_acc = (call("GET", "/accounts/" + quoted)[1].get("state") or {})

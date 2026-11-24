@@ -59,7 +59,7 @@ ships; continuous parallel ship upgrading selecting the best-in-class hull per
 job across all 5 empires with zero cross-empire penalty while pairing birth-empire
 Mastery to division role; mandatory core economic engines of extraction,
 commercial/industrial manufacturing, and 5-empire Bursar + fresh-book Hauler
-trade; strategic base/shipyard placement; multi-empire leverage and seating;
+trade; strategic base/shipyard placement (targeting 1 Voidborn core station + 1 dedicated regional hub/storage station in each of the 4 other empire regions -- Solarian, Nebula, Crimson, Outer Rim -- as our medium/late-game 5-station footprint); multi-empire leverage and seating;
 strict class harmony; automated intel & proof; sovereign defense/comms firewall;
 KPI closure & rival adaptation; and Neutrality-max two-tier diplomacy tracked in
 `rulebook.md` Section 14). **Optional / Opportunistic Secondary Playbooks**
@@ -198,8 +198,11 @@ Ten principles. Each is one sentence a member can test a plan against.
     Consolidated Net Worth across the entire organization as one enterprise
     -- never sub-optimizing per siloed division or turning off core engines
     instead of fixing caps. Place our hard-capped stations (`5`, with
-    faction shipyards and licensed multi-empire blueprints) and outposts
-    (`8`) at high-centrality hubs and choke points. Because SpaceMolt
+    faction shipyards and licensed multi-empire blueprints -- targeting our
+    Voidborn core plus `1` dedicated regional hub/storage station in each of
+    the `4` other empire regions: Solarian, Nebula, Crimson, and Outer Rim,
+    as our medium/late-game regional storage network) and outposts (`8`) at
+    high-centrality hubs and choke points. Because SpaceMolt
     applies zero penalty when flying another empire's hull, standardize
     best-in-class hulls by job across all five empires (using Piloting-0
     skips and auto listed-ship buys) while pairing each pilot's native

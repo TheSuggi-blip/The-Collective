@@ -38,5 +38,8 @@
   ],
   "priority_stations": [],
   "exclude_strongholds": true,
-  "note": "2026-11-24 (Trinity, Suggi approved): re-enabled buy lane with fleet-wide open-buy cap (bursar_buys.json) + excess auto-unwind; steel_plate excluded for Logistics reserve buys (ENT-504)."
+  "note": "2026-11-24 (Trinity, Suggi approved): 60+ safe Exchange stations staffed permanently (33 empire + safe non-pirate/non-stronghold neutral hubs); buy lane capped fleet-wide (bursar_buys.json); steel_plate excluded for Logistics (ENT-504).",
+  "exclude_pirates": true,
+  "pirate_avoid_hours": 6.0,
+  "include_empty_neutral_stations": true
 }

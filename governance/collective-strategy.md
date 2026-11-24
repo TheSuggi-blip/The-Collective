@@ -406,3 +406,8 @@ Expect the following planned evolutions as milestones unlock (tracked live in
 4. **Deeper Neutral Partner Supply Corridors:** Expanding Ch1-Ch4 P2P trade, standing supply
    contracts, and bilateral freight with established Neutral partners while preserving strict
    OpSec and defensive sovereignty.
+
+## Smart 5-Division Autonomous Networks & 5-Empire Regional Hubs (2026-11-24)
+
+- **All 5 Divisions Run Policy-Driven Dynamic Rotation:** Trade (`bursar-network` / `game/bursar-policy.json`, 60+ safe empire + non-pirate neutral hubs staffed by T0 desk ships `max_hull_tier=0, max_cargo=150` while preserving T1/T2/`Cargo Expander II` ships for mobile cargo/crafting), Logistics (`haul-network` / `game/haul-policy.json`, global optimal freight/arb/restock/supply), Intel (`census`, stalest unread system), Mining (`mine-network` / `game/mine-policy.json`, live 15% floor + instant cooldown + tool match + reserve deficit priority), and Military (`hunt-network` / `game/hunt-policy.json`, percentage combat-power gating auto-scaling T0->T5+, on-demand Escort holding 0 ships when clear, 3/5/8/10-ship Packs targeting 25% share for high-tier loot & pirates, and F38 `keep_herd=2` Solo rotation).
+- **Medium/Late-Game Regional Storage Hubs (`O4`):** Allocate our 5 faction stations as `1` Voidborn core + `1` dedicated regional storage/hub station in each of the `4` other empire regions (Solarian, Nebula, Crimson, Outer Rim) so every regional wing has local storage, repair, Exchange access, and cross-empire staging.

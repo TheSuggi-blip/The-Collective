@@ -1,0 +1,11 @@
+{
+ "id": "hunt-network",
+ "kind": "hunt_net",
+ "title": "Dynamic Smart Military network: on-demand Escort, 3/5/8/10 Group Packs (25% share), and Power-Ratio Solo Herd Rotation",
+ "note": "Policy-driven autonomous Military runner governed by game/hunt-policy.json (Apophis/Unity). Auto-scales T0->T5+ by percentage combat-power ratio. Runs 4 priority lanes: (1) dynamic Escort/Protection when civilians face lawless/pirate risk (0 held when clear), (2) 3/5/8/10-ship coordinated Packs (~25% of Military) against high-tier wildlife and lone NPC pirates, (3) 1-to-1 optimal Solo Herd rotation obeying F38 (keep_herd=2) with instant cooldowns and P5 Trade handover, (4) low-burn XP fallback.",
+ "policy": "game/hunt-policy.json",
+ "minutes": 45,
+ "max_ships": 95,
+ "pirates_ok": true,
+ "standing": true
+}

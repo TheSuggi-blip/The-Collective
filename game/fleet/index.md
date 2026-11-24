@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 71.
+folder; never edited by hand. Scripts listed: 73.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -61,10 +61,12 @@ folder; never edited by hand. Scripts listed: 71.
 | `herds.py` | Every place a species was ever counted by our census, with its count now, the age of the read, the law there and the pirate record, for the hunters. | By hand |
 | `hive.py` | The fleet's figures from its own readings: money, routes and their history, levels, what the work carries, what a base takes, a system. | By hand |
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
+| `hunt_net.py` | Policy-driven dynamic smart Military network (`hunt-network`). | By hand |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
+| `mine_net.py` | Policy-driven dynamic smart Mining network (`mine-network`). | By hand |
 | `mobile.py` | Where a moving station stands now, for a route stop that names the system it stood in when written. | By hand |
 | `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
@@ -617,6 +619,16 @@ hunt.py <pilot> <system_id> <poi> [--species a,b] [--kills N] [--minutes M]
     [--route ID] [--keep] [--gift-to <role|pilot>]
 ```
 
+### `hunt_net.py`
+
+Policy-driven dynamic smart Military network (`hunt-network`).
+
+Run by hand.
+
+```
+game/fleet/hunt_net.py <pilot> [--minutes 45] [--policy game/hunt-policy.json] [--route hunt-network]
+```
+
 ### `inbox.py`
 
 Read what other pilots write to our ships and say near them, keep every message once,
@@ -674,6 +686,16 @@ A runner: the dispatcher starts it for a route of the kind `mine`; by hand only 
 ```
 mine.py <pilot> <system:poi> <system:poi:base> [--minutes M] [--sell-items item:min_price,...] [--route ID] [--deposit faction]
         [--gift <JSON>]
+```
+
+### `mine_net.py`
+
+Policy-driven dynamic smart Mining network (`mine-network`).
+
+Run by hand.
+
+```
+game/fleet/mine_net.py <pilot> [--minutes 45] [--policy game/mine-policy.json] [--route mine-network]
 ```
 
 ### `mobile.py`
