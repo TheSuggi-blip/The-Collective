@@ -135,6 +135,10 @@
   {
    "what": "test one ship on the Grand Exchange board's Nebula missions with no route yet (Unpaid Claims, Overdue Accounts, What Are They Buying?) for Nebula Mastery (F35)",
    "when": "next turn"
+  },
+  {
+   "what": "found Atria when the kit stands (foil scale, alloy scale, graphene thread short: Military's hunts)",
+   "when": "when stocked"
   }
  ],
  "ships": {

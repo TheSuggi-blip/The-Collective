@@ -155,3 +155,4 @@ Planned:
 | read finish-first-links-grand (six holders) and mission-first-links-nickel-grand: paid runs and the nickel ask at Grand Exchange | next turn |
 | read the carbon buy at Node Beta against its gate (57,000 of Logistics) and the Builder's docked runs there | next turn |
 | test one ship on the Grand Exchange board's Nebula missions with no route yet (Unpaid Claims, Overdue Accounts, What Are They Buying?) for Nebula Mastery (F35) | next turn |
+| found Atria when the kit stands (foil scale, alloy scale, graphene thread short: Military's hunts) | when stocked |
