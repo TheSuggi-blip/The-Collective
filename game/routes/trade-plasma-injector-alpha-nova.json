@@ -1,0 +1,51 @@
+{
+ "id": "trade-plasma-injector-alpha-nova",
+ "kind": "circuit",
+ "title": "Plasma injectors bought at Node Alpha Processing Station's ask, sold into Nova Terra Central's bid (7 jumps, 3 lawless)",
+ "note": "Written by Mercury, 2026-11-24 15:23 UTC (orders ENT-090 MERCURY and O3; rules F23, F37, F12). Candidate trade-plasma-injector-node-nova (candidates.py 15:17 UTC, +8,904 cr a ship-hour estimated): table books 15:17 UTC, Nova Terra Central bid 2,702 x 145; gaps.py 15:10 UTC, Node Alpha Processing Station ask 2,527 x 165, about 150 cr a unit after the buyer's 1 percent. Road node_alpha, synchrony, pherkad, gsc_0041, antares, homam (lawless), furud, nova_terra: sightings.jsonl 14:39-15:19 UTC show 0 pirates on it. A test: one ship (a tier-2 trader of 240 cargo), 40 units, three runs decide (F37) before the qty or ships rise. requires.ask and requires.bid close it while either end is gone; stop_on_failed_buy ends a run that bought nothing; the sell floor 2,600 sits above the cost of 2,552 with tax, so a fallen bid keeps the goods, stored at Nova Terra by the last stop. min_credits keeps the buy (40 x 2,560) plus 3,000 (F7) in the wallet.",
+ "max_ships": 1,
+ "min_credits": 110000,
+ "requires": {
+  "ask": {
+   "item": "plasma_injector",
+   "base": "node_alpha_processing_station",
+   "max_price": 2534,
+   "min_qty": 40,
+   "max_age_minutes": 120
+  },
+  "bid": {
+   "item": "plasma_injector",
+   "base": "nova_terra_central",
+   "min_price": 2650,
+   "min_qty": 40
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "buy": [
+    {
+     "item": "plasma_injector",
+     "qty": 40,
+     "max_price": 2560
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "sell": [
+    {
+     "item": "plasma_injector",
+     "min_price": 2600
+    }
+   ]
+  },
+  {
+   "at": "nova_terra:nova_terra_central:nova_terra_central",
+   "store": [
+    "plasma_injector"
+   ]
+  }
+ ]
+}
