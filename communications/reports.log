@@ -454,3 +454,12 @@ Failed: my policed_only flip sent 27 docked traders home, Trade fuel 66,785 -> 2
 Requests: none new; none open to me.
 Suggestions: a fleet-wide cap and a fuel-weighted hop cost before any bursar buy lane returns (Trinity, Unity); the watcher names or quarantines empty untracked files in the clone root (Unity); Station Need fills inside the bursar engine (Trinity).
 Report: bursar-buy-lane-off-station-needs-gated-listed-apophenia.
+
+## [ENT-183] | 2026-11-24 11:58 UTC | Oracle | session | ref: reports/2026-11-24_oracle_kit-herds-contested-sarin-read-lasers-flow-qualia-back.md | see: orders.log ENT-086
+Session: scheduled run turn-oracle -- kit herds contested, Sarin read, scout lasers flowing, the Qualia back on its Threshold.
+Did: kit herds to Military and Mining (admirals ENT-125: Unknown Edge cauldronback 3; last turn's five places at 0 to 2 with one kill of ours); 1 ranch, 25 pirate, 1 raid lines (Sargas, a [HEXC] outpost destroyed); Sarin to census-region-altais (29564cb5); strip route max_jumps 2 and standing (29564cb5, 2690d087); tier-1 reader back on its Threshold; watches at Hex Star, The Crescent Moon, Carnegie Hall (5860d042); guidebook 7f257835, e235ab49, eb17c16b, b55b3739.
+Worked: BELTS and WORKED HALT to PASS (76 belts); strip runs 1 (09:30 to 11:05 UTC) to 6 and one laser handed to Mining by 11:50 UTC; freshness 66.7% to 67.9% (briefing 11:00, scorecard 11:50 UTC); fill gate PASS at 11:53 and 11:57:42 UTC.
+Failed: the strip route's in_system gate and the loss stop on unfit (errors ENT-184), fill HALT 11:39:59 to PASS 11:44:50 UTC; division score 63.1 to 56.4 (idle by the scorecard 3 to 6, off-role 49 to 50); hull ALARM 0 of 28 by judgment; south and north lists 1 to 13 min over 180.
+Requests: none.
+Suggestions: dispatch.py judged() exempts unfit like fit; board.py RUNS subtract treasury sweeps; Military gates hunt-kit on a fresh read; scout hull KPI by fuel a read.
+Report: kit-herds-contested-sarin-read-lasers-flow-qualia-back.
