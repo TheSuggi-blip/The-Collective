@@ -174,9 +174,11 @@
   "strip-starters-trader-krynn",
   "strip-starters-trader-alpha",
   "strip-starters-trader-experiment",
+  "mission-workshop-production-run-grand",
   "bursar-desk-krynn",
   "bursar-desk-alpha",
   "bursar-desk-experiment",
+  "bursar-desk-grand",
   "train-trading-weapon-housing-node-alpha",
   "park"
  ],
@@ -358,9 +360,11 @@
   "strip-starters-trader-krynn": 85,
   "strip-starters-trader-alpha": 85,
   "strip-starters-trader-experiment": 85,
+  "mission-workshop-production-run-grand": 85,
   "bursar-desk-krynn": 85,
   "bursar-desk-alpha": 85,
   "bursar-desk-experiment": 85,
+  "bursar-desk-grand": 85,
   "train-trading-weapon-housing-node-alpha": 85,
   "park": 85
  },

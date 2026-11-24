@@ -49,6 +49,7 @@
   "mission-debris-field-reports-frontier",
   "mission-first-hunt-iron-reach-rigel",
   "mission-request-for-records-confederacy",
+  "strip-mining-laser-krynn-hauler",
   "craft-steel-logistics-cargo-lanes",
   "craft-steel-logistics-grand-exchange",
   "craft-steel-logistics-factory-belt",
@@ -95,29 +96,27 @@
   "join-nova-hauler",
   "join-rim-hauler",
   "train-jumps-hauler",
+  "join-sol-records",
+  "join-rim-debris",
   "join-krynn-bloodforge",
   "park"
  ],
  "planned": [
   {
-   "what": "read the Frontier road test (join-sol-hauler-rim, one ship) and lift it to the Rim ships at Frontier and Altais when its run holds / next turn",
-   "when": "--"
+   "what": "read the second Hiring Board and Desk at the outpost GSC-0044 (driver in flight) and the member limit after it",
+   "when": "next turn"
   },
   {
-   "what": "bring the Sol joiners home or onward when their Solarian once missions are paid: a paid way back (cargo or a board mission) before any empty return / next turn",
-   "when": "--"
+   "what": "bring the Sol joiners home after Request for Records: a cargo leg, or the outpost steel once a hauler may withdraw faction iron",
+   "when": "next turn"
   },
   {
-   "what": "a freight step in the circuit runner (accept, pick up, deliver) for the Prayers / next turns",
-   "when": "--"
+   "what": "steel at the outpost from its 100,000 faction iron, a docked craft route per hauler, the day the officer seat stands",
+   "when": "when seated"
   },
   {
-   "what": "found Atria when an Outpost Kit is listed at Ironlight / when listed",
-   "when": "--"
-  },
-  {
-   "what": "read the four new docked steel routes (Procyon, Nova Terra, Cargo Lanes, Confederacy) once Zero's give routes hand the iron over / next turn",
-   "when": "--"
+   "what": "found Atria when the kit's hunted parts are in (foil scale, alloy scale, graphene thread, silica lens)",
+   "when": "when stocked"
   }
  ],
  "ships": {
@@ -167,6 +166,7 @@
   "mission-debris-field-reports-frontier": 95,
   "mission-first-hunt-iron-reach-rigel": 95,
   "mission-request-for-records-confederacy": 95,
+  "strip-mining-laser-krynn-hauler": 95,
   "craft-steel-logistics-cargo-lanes": 1,
   "craft-steel-logistics-grand-exchange": 1,
   "craft-steel-logistics-factory-belt": 1,
@@ -213,6 +213,8 @@
   "join-nova-hauler": 39,
   "join-rim-hauler": 63,
   "train-jumps-hauler": 8,
+  "join-sol-records": 95,
+  "join-rim-debris": 95,
   "join-krynn-bloodforge": 95,
   "park": 95
  },

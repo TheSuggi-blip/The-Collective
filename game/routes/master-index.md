@@ -37,13 +37,13 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Role | Kept by | Routes | The first three, in order | Planned | Ships |
 |---|---|---|---|---|---|
-| [command](plan-command.md) | Unity | 89 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
+| [command](plan-command.md) | Unity | 90 | voidborn-first-steps-board > voidborn-collective-provides > voidborn-signal-protocol | 0 | 9 |
 | [drone](plan-drone.md) | Apophis | 352 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 95 |
-| [hauler](plan-hauler.md) | Apollo | 94 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 5 | 95 |
-| [miner](plan-miner.md) | Zero | 119 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 2 | 130 |
-| [scout](plan-scout.md) | Oracle | 93 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 4 | 50 |
+| [hauler](plan-hauler.md) | Apollo | 97 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
+| [miner](plan-miner.md) | Zero | 120 | fit-mining-laser-iii-lhs-1140 > fit-mining-laser-ii-lhs-1140 > fit-mining-laser-ii-second-central-nexus | 2 | 130 |
+| [scout](plan-scout.md) | Oracle | 95 | store-hold-central-nexus > give-scout-stores-node-beta > give-scout-stores-central-nexus | 4 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 353 | rearm-pulse-laser-central-nexus > voidborn-signal-fragments > voidborn-first-steps-board | 2 | 36 |
-| [trader](plan-trader.md) | Mercury | 176 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
+| [trader](plan-trader.md) | Mercury | 178 | voidborn-first-steps-board > voidborn-network-expansion > voidborn-collective-provides | 1 | 85 |
 
 ## Templates by Division
 
