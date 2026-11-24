@@ -184,8 +184,8 @@ Kept by Zero. Routes: 167. Ships: 130.
 | 162 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
 | 163 | [mine-volatile-pocket](mine-volatile-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
 | 164 | [home-sol-central](home-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 6 ships, empty hold, born solarian, standing work | all 130 |
-| 165 | [mine-network](mine-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 3 ships, born voidborn, standing work | all 130 |
-| 166 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 10 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
+| 165 | [mine-network](mine-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 6 ships, standing work | all 130 |
+| 166 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 16 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
 | 167 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):
