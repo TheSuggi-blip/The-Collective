@@ -31,6 +31,7 @@ Ships: 85 traders, 0 lost, 0 grounded; fleet money view 19:49 UTC: 80 at work, 4
 ## Problems
 
 - My first gel script sent `buy` to the market tool group (`unknown action`; it belongs to the main group) and tried a donation from a non-owner (`not_yours`). No credits lost; fixed in the script before the owners flew.
+- The supply_commission rule stood in the shared memory and errors.log ENT-176 (Apophis, 07:07 UTC) since this morning; I found it in the game's help instead, after the commissions had waited another four hours since my last turn. Cause: I searched our records for the gel, not for the stuck-commission class. Fix: the trade-books step names supply_commission now, and my pitfalls point to it.
 - `gate.release` raises AttributeError after removing the hold since 9396c21c (17:41 UTC): `division.file_name` does not exist. Every hand script dies in its `finally`; errors.log ENT-199, requests.log ENT-527 to Unity (gate.py is hers). My scripts catch it.
 - The upgrade queue keeps a `building` row for a commission cancelled in the game; it held Trade's auto-upgrade lane shut. Worked around by max_active; the root fix is in upgrades.py (Suggestions).
 - The freighter desk `bursar-network-freighter` keeps 10 big hulls docked with `actions=0` in every run read 18:17 to 18:48 UTC (-1,060 cr a ship-hour measured): a big hold earns only on a lane that fills it.
