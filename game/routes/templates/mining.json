@@ -34,32 +34,19 @@
    "note": "2026-11-24 23:59 UTC (Zero), orders ENT-091: carbon, nickel, gold, platinum and quantum fragments left this template: each stands FULL in the pull (pull.py check 23:57 UTC: carbon 68,771 of max 61,572, platinum 8,548 of 3,514, quantum fragments 12,049 of 3,720), yet a gather on a mixed field stays open, and mine-network's beltless ships fell onto them ahead of the short iron gathers of the list Then. The routes still stand in Then behind the iron gathers."
   },
   "reserve-hamal": {
-   "title": "Gather what the reserve lacks, the other order so the division is spread: carbon first, then nickel, silicon, gold, platinum, quantum fragments",
+   "title": "Gather what the reserve lacks, the other order so the division is spread: silicon; the iron gathers of the list Then follow",
    "routes": [
     "store-hold-central-nexus",
-    "gather-gliese-876-belt-carbon",
-    "gather-emberglow-elder-silicon",
-    "gather-acubens-belt-carbon",
-    "gather-jishui-plainrock-carbon",
-    "gather-last-light-mineral-carbon",
-    "gather-yildun-neverworld-carbon",
-    "gather-jadecove-nickel",
-    "gather-tiaki-worldsend-nickel",
-    "gather-gsc-0049-reef-nickel",
     "gather-glasslight-shoal-silicon",
     "gather-subra-floodlight-flats-silicon",
-    "gather-goldcrest-gold",
-    "gather-bunda-belt-platinum",
-    "gather-izar-quantum-fragments",
-    "gather-errai-quantum-fragments",
-    "gather-tidewater-quantum-fragments"
+    "gather-emberglow-elder-silicon"
    ],
    "trains": [
     "mining",
     "crafting",
     "refining"
    ],
-   "note": "Orders ENT-063, block ZERO: the reserve's short goods, carbon first (the largest short, 83,867, surplus.py reserve 11:05 UTC); any mining laser. 2026-11-22 11:15 UTC (Zero): the crafts left (strict classes, P5) and the silver gather left (silver not short)."
+   "note": "2026-11-24 23:59 UTC (Zero), orders ENT-091: carbon, nickel, gold, platinum and quantum fragments left this template: each stands FULL in the pull (pull.py check 23:57 UTC), yet a gather on a mixed field stays open, and mine-network's beltless ships fell onto them ahead of the short iron gathers of the list Then. The routes still stand in Then behind the iron gathers."
   }
  }
 }
