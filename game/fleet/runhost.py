@@ -215,6 +215,75 @@ def guarded(stream, call, *args, **options):
         traceback.print_exc(file=stream)
 
 
+def run_in_thread(script_path, argv, pilot, what, env_extra=None, on_line=None, caller_stdout=None, caller_sleep=None):
+    """Execute another fleet runner script inside the caller's thread (0 MB extra OS process overhead).
+    Captures stdout/stderr line-by-line via a tee stream so callers (`mine_net.py`, `hunt_net.py`) can
+    inspect output lines in flight without spawning a 65 MB child Python process."""
+    target_out = caller_stdout if caller_stdout is not None else sys.stdout
+
+    class _LineTee:
+        def __init__(self, target, cb):
+            self._t, self._cb, self._buf = target, cb, ""
+        def write(self, s):
+            if not s:
+                return 0
+            try:
+                self._t.write(s)
+            except Exception:
+                pass
+            if self._cb:
+                self._buf += s
+                while "\n" in self._buf:
+                    line, self._buf = self._buf.split("\n", 1)
+                    try:
+                        self._cb(line + "\n")
+                    except Exception:
+                        pass
+            return len(s)
+        def flush(self):
+            try:
+                self._t.flush()
+            except Exception:
+                pass
+            if self._cb and self._buf:
+                rem, self._buf = self._buf, ""
+                try:
+                    self._cb(rem)
+                except Exception:
+                    pass
+
+    sp = Path(script_path)
+    code = compile(sp.read_text(encoding="utf-8"), str(sp), "exec")
+    stream = _LineTee(target_out, on_line)
+    env = {k: v for k, v in os.environ.items() if k.startswith("FLEET_")}
+    if env_extra:
+        env.update({str(k): str(v) for k, v in env_extra.items() if str(k).startswith("FLEET_")})
+    job = {"pilot": str(pilot), "what": str(what), "script": sp.name, "argv": [str(a) for a in argv], "env": env}
+    stop = Stop()
+    scope, mods, leaving = world(sp, job, stream, stop)
+    if caller_sleep is not None:
+        mods["time"] = Facade(time, sleep=caller_sleep)
+    rc = 0
+    try:
+        exec(code, scope)
+    except SystemExit as leave:
+        if isinstance(leave.code, int):
+            rc = leave.code
+        elif leave.code is not None:
+            stream.write(str(leave.code) + "\n")
+            rc = 1
+    except BaseException as error:
+        guarded(stream, mods["sys"].excepthook, type(error), error, error.__traceback__)
+        rc = 1
+    finally:
+        for call, args, options in reversed(leaving):
+            guarded(stream, call, *args, **options)
+        del leaving[:]
+        scope.clear()
+        stream.flush()
+    return rc
+
+
 def world(script, job, stream, stop):
     """(the globals the runner's script is run in, its modules, its exit list). A runner is written as a program of
     its own: it reads `sys.argv`, prints, registers with `atexit`, sets `sys.excepthook`, names files by `os.getpid()`,

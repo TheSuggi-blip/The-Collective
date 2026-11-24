@@ -165,5 +165,19 @@ class EscortAndAutoNetTests(unittest.TestCase):
         self.assertNotIn('"view_storage"', b_src)
 
 
+    def test_run_in_thread_executes_without_fork_and_captures_lines(self):
+        import runhost
+        with tempfile.TemporaryDirectory() as td:
+            sc = Path(td) / "child.py"
+            sc.write_text("import sys\nprint('field floor reached: 12%')\nprint('arg=' + sys.argv[1])\n", encoding="ascii")
+            seen = []
+            import io
+            buf = io.StringIO()
+            rc = runhost.run_in_thread(sc, ["miner-1"], "miner-1", "mine_net mine-network", on_line=seen.append, caller_stdout=buf)
+            self.assertEqual(rc, 0)
+            self.assertTrue(any("field floor reached:" in ln for ln in seen))
+            self.assertIn("arg=miner-1", buf.getvalue())
+
+
 if __name__ == "__main__":
     unittest.main()

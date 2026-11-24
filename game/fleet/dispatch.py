@@ -2056,6 +2056,15 @@ def one_pass(root, data, dry_run, children):
         if state["orders"].get(name) != what or script not in KINDS.values():
             lines.append("%s: `%s` dropped: the host did not take it within a minute, and the pilot's order no longer names it" % (name, what))
             continue
+        if alone >= SPAWN_MOST:
+            try:
+                (Path(data) / "fleet" / "orders" / (name + ".json")).unlink()
+            except OSError:
+                pass
+            state["orders"].pop(name, None)
+            waiting += 1
+            lines.append("%s: `%s` deferred from take_back (SPAWN_MOST %d reached); will re-queue to runhost next pass" % (name, what, SPAWN_MOST))
+            continue
         logs.mkdir(parents=True, exist_ok=True)
         mark = dict(os.environ, FLEET_MEMBER=os.environ.get("FLEET_MEMBER") or "dispatch", FLEET_HOLD=what)
         children.append(spawn([sys.executable, "-I", "-B", os.path.join(str(Path(root) / "fleet"), script)] + [str(a) for a in job.get("argv") or []],

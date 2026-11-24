@@ -703,14 +703,16 @@ def main(argv=None):
         elif policy.get("gift_surplus_to_trader") and chosen["tier"] == "market":
             cmd += ["--gift", json.dumps({"to": "trader", "items": [chosen["resource"]]})]
 
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        for line in proc.stdout or ():
-            sys.stdout.write(line)
-            sys.stdout.flush()
+        import runhost as _rh
+        def _on_mine_line(line):
+            nonlocal floor_hit
             if "field floor reached:" in line:
                 floor_hit = True
-        proc.wait()
-        return proc.returncode or 0
+        return _rh.run_in_thread(
+            ROOT / "fleet" / "mine.py", cmd[4:], pilot, "mine_net " + route_id,
+            env_extra={"FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch", "FLEET_HOLD": os.environ.get("FLEET_HOLD") or ("mine_net " + route_id)},
+            on_line=_on_mine_line, caller_stdout=sys.stdout, caller_sleep=time.sleep,
+        ) or 0
     finally:
         hb.set()
         if claimed_belt:

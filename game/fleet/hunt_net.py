@@ -1395,7 +1395,8 @@ def main(argv=None):
                     '--route', route_id,
                 ]
                 print('%s %s hunt_net: WAR WING lane 0 -> %s (%s:%s)' % (utc_now(), pilot, wjob['key'], wjob['system'], wjob['poi']), flush=True)
-                return subprocess.run(wcmd, check=False).returncode
+                import runhost as _rh
+                return _rh.run_in_thread(ROOT / 'fleet' / 'guard.py', wcmd[4:], pilot, 'hunt_net ' + route_id, caller_stdout=sys.stdout, caller_sleep=time.sleep) or 0
 
         # --- LANE 1: ON-DEMAND CONVOY & FIELD ESCORT PACKS (3/5/7/10 nearest Military + Flagship/Sentinels) ---
         ecfg = policy.get("escort") or {}
@@ -1446,7 +1447,8 @@ def main(argv=None):
                         ]
                         if req["mode"] == "convoy" and req.get("requester"):
                             cmd += ["--follow", str(req["requester"])]
-                        rc = subprocess.run(cmd, check=False).returncode
+                        import runhost as _rh
+                        rc = _rh.run_in_thread(ROOT / "fleet" / "guard.py", cmd[4:], pilot, "hunt_net " + route_id, caller_stdout=sys.stdout, caller_sleep=time.sleep) or 0
                         return rc
                     finally:
                         _ep.release_escort_member(DATA, rk, pilot)
@@ -1471,7 +1473,8 @@ def main(argv=None):
                     if dem["mode"] == "follow":
                         cmd += ["--follow", dem["follow"]]
                     print("%s %s hunt_net: ESCORT lane -> %s (%s:%s)" % (utc_now(), pilot, dem["key"], dem["system"], dem["poi"]), flush=True)
-                    rc = subprocess.run(cmd, check=False).returncode
+                    import runhost as _rh
+                    rc = _rh.run_in_thread(ROOT / "fleet" / "guard.py", cmd[4:], pilot, "hunt_net " + route_id, caller_stdout=sys.stdout, caller_sleep=time.sleep) or 0
                     return rc
 
         # --- LANE 2: COORDINATED GROUP PACKS (3 / 5 / 8 / 10 SHIPS, ~20-30% SHARE) ---
@@ -1537,18 +1540,20 @@ def main(argv=None):
         if policy.get("gift_to"):
             cmd += ["--gift-to", str(policy["gift_to"])]
 
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        import runhost as _rh
         stranger_cd = False
-        for line in proc.stdout or ():
-            sys.stdout.write(line)
-            sys.stdout.flush()
+        def _on_hunt_line(line):
+            nonlocal cooldown_key, stranger_cd
             if "ranch floor kept" in line or "no free grazer here" in line:
                 cooldown_key = chosen["key"]
             elif "a ship that is not ours was at the place" in line:
                 cooldown_key = chosen["key"]
                 stranger_cd = True
-        proc.wait()
-        return proc.returncode or 0
+        return _rh.run_in_thread(
+            ROOT / "fleet" / "hunt.py", cmd[4:], pilot, "hunt_net " + route_id,
+            env_extra={"FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch", "FLEET_HOLD": os.environ.get("FLEET_HOLD") or ("hunt_net " + route_id)},
+            on_line=_on_hunt_line, caller_stdout=sys.stdout, caller_sleep=time.sleep,
+        ) or 0
     finally:
         hb.set()
         if claimed_key or cooldown_key:
