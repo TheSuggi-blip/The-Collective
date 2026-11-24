@@ -139,11 +139,11 @@ Kept by Zero. Routes: 174. Ships: 130.
 | 117 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, empty hold, standing work | all 130 |
 | 118 | [gather-okab-belt](gather-okab-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
 | 119 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 120 | [gather-garnet-dim-lattice](gather-garnet-dim-lattice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 121 | [gather-okab-low-charge-glint](gather-okab-low-charge-glint.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 122 | [gather-cedarhold-dim-lattice](gather-cedarhold-dim-lattice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 123 | [gather-atlas-belt](gather-atlas-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 124 | [gather-thornhaven-dimming-pocket](gather-thornhaven-dimming-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 120 | [gather-garnet-dim-lattice](gather-garnet-dim-lattice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 121 | [gather-okab-low-charge-glint](gather-okab-low-charge-glint.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 122 | [gather-cedarhold-dim-lattice](gather-cedarhold-dim-lattice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 123 | [gather-atlas-belt](gather-atlas-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 124 | [gather-thornhaven-dimming-pocket](gather-thornhaven-dimming-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
 | 125 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 3 ships, empty hold, born nebula, standing work | all 130 |
 | 126 | [gather-electra-echo-train](gather-electra-echo-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 13 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
 | 127 | [gather-furud-belt-carbon](gather-furud-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, empty hold, born solarian, standing work | all 130 |
@@ -192,7 +192,7 @@ Kept by Zero. Routes: 174. Ships: 130.
 | 170 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
 | 171 | [mine-volatile-pocket](mine-volatile-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
 | 172 | [home-sol-central](home-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 6 ships, empty hold, born solarian, standing work | all 130 |
-| 173 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 16 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
+| 173 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
 | 174 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
 
 Templates its ships fly (a ship's own routes name one as `@<name>`):

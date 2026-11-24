@@ -2,11 +2,11 @@
  "id": "gather-garnet-dim-lattice",
  "kind": "mine",
  "title": "Standing work, a test: iron at Garnet Dim Lattice (beyond the border, 2 jumps from The Experiment) into storage there",
- "note": "Written by Zero, 2026-11-24 15:31 UTC (orders ENT-087 block ZERO: gather what the reserve lacks, the iron fallback for the laser-only veterans; rules F3, F23: a class whose work at home is saturated takes it further). Iron reads short again (supply iron-ore 49,691 against keep 60,000, 14:28 UTC; Unity's ENT-516), and every policed iron belt near our give stations is worked by a route of the plan at the 3-a-belt cap (queue ENT-297) or under its floor: six Voidborn veterans waited at 15:24 UTC (fill.py check). The field read iron_ore 100,000 of 100,000 (richness 25), copper_ore 100,000 of 100,000 (richness 17), energy_crystal 8 of 65 (richness 3) (table fields, 14:45 UTC); no pirate line in the system in 24 h (sightings.jsonl). Stores into the pilot's storage at The Experiment, where give-miner-stores-* hands it to the hauler receivers (P5). A test beyond the border: 2 ship(s), hold empty, lift_to 3 after its runs hold (F3, F37); the floor keeps 20,000 iron so the field grows back.",
+ "note": "Written by Zero, 2026-11-24 15:31 UTC (orders ENT-087 block ZERO: gather what the reserve lacks, the iron fallback for the laser-only veterans; rules F3, F23: a class whose work at home is saturated takes it further). Iron reads short again (supply iron-ore 49,691 against keep 60,000, 14:28 UTC; Unity's ENT-516), and every policed iron belt near our give stations is worked by a route of the plan at the 3-a-belt cap (queue ENT-297) or under its floor: six Voidborn veterans waited at 15:24 UTC (fill.py check). The field read iron_ore 100,000 of 100,000 (richness 25), copper_ore 100,000 of 100,000 (richness 17), energy_crystal 8 of 65 (richness 3) (table fields, 14:45 UTC); no pirate line in the system in 24 h (sightings.jsonl). Stores into the pilot's storage at The Experiment, where give-miner-stores-* hands it to the hauler receivers (P5). A test beyond the border: 2 ship(s), hold empty, lift_to 3 after its runs hold (F3, F37); the floor keeps 20,000 iron so the field grows back. 2026-11-24 15:41 UTC (Zero): max_ships 2 -> 3: ten miners waited at 15:39 UTC (fill.py check) and the field holds 80,000 above its floor; Garnet is worked by gather-garnet-belt for a week without a loss.",
  "belt": "garnet:garnet_dim_lattice",
  "station": "the_experiment:the_experiment_research_station:the_experiment_research_station",
  "minutes": 45,
- "max_ships": 2,
+ "max_ships": 3,
  "standing": true,
  "min_left": {
   "iron_ore": 20000
