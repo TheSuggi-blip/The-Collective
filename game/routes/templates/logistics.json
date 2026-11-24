@@ -34,7 +34,7 @@
     "crafting",
     "refining"
    ],
-   "note": "2026-11-24 00:26 UTC Apollo: the Procyon and Nova Terra steel routes added: haulers hold 2,477 and 1,457 iron ore there besides the receivers (table holdings 00:13 UTC); each opens only on the pilot's own stored iron (100 or more)."
+   "note": "2026-11-24 00:24 UTC Apollo: the Procyon and Nova Terra steel routes added: haulers hold 2,477 and 1,457 iron ore there besides the receivers (table holdings 00:13 UTC); each opens only on the pilot's own stored iron (100 or more). (An earlier note of this change carried a typed time two minutes ahead of the clock; this one is stamped by the shell.)"
   },
   "outpost-supply": {
    "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
