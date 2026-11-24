@@ -228,6 +228,4 @@ Planned:
 
 | What | When |
 |---|---|
-| read the four Apophenia commissions at The Experiment (sourcing on phase matrix and neural gel since 10:26 UTC); cancel and buy listed hulls if still sourcing | next turn |
-| read the first runs of the new Prayer and Baling Wire hulls (fuel per jump, minutes per run) before the next Prayer batch | next turn |
-| HEXC levity bladder contract at Krynn (750 for 55,125 cr): consolidate only once a 240+ cargo hull carries the Arneb lot | after the hull batch |
+| read craft-network's first three runs on each of the three test rows (job, margin, what sold) before any lift | next turn |
