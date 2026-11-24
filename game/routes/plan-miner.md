@@ -170,7 +170,7 @@ Kept by Zero. Routes: 164. Ships: 130.
 | 148 | [mine-azmidi-belt](mine-azmidi-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 3 ships, standing work | all 130 |
 | 149 | [mine-gliese-436-belt](mine-gliese-436-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
 | 150 | [mine-pollux-outer-belt](mine-pollux-outer-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 3 ships, standing work | all 130 |
-| 151 | [mine-guildless-facets](mine-guildless-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 3 ships, standing work | all 130 |
+| 151 | [mine-guildless-facets](mine-guildless-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
 | 152 | [mine-saiph-major-belt](mine-saiph-major-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
 | 153 | [mine-markeb-quantum-eddy](mine-markeb-quantum-eddy.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
 | 154 | [mine-horizon-phase-drift](mine-horizon-phase-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
