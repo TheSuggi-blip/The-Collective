@@ -1,0 +1,13 @@
+{
+ "id": "bursar-network-freighter",
+ "kind": "bursar",
+ "title": "Station Bursar for a freighter trader (cargo over 150) while no mobile trade, craft or delivery work is open: 30-minute docked runs, then free again",
+ "note": "Written by Mercury, 2026-11-24 13:46 UTC (orders ENT-088 and ENT-087 O1; rules F8, F23). bursar-network carries requires.max_hull_tier 0 and max_cargo 150 (Trinity, Suggi approved, 471a8446) so that Prayer, Baling Wire and Apophenia traders stay free for mobile trading, crafting and loot delivery. When none of that is open such a trader waited docked (fill.py check trader HALT, 2 waiting at 13:43 UTC: an Apophenia and a Baling Wire). This route gives it the same docked, zero-fuel Bursar duty under the same policy (one trader a station, game/bursar-policy.json) for 30 minutes a run, so it is free for mobile work again every half hour; it stands after every mobile route in the list Then. max_ships 6: the freighter traders of Trade on 2026-11-24.",
+ "policy": "game/bursar-policy.json",
+ "minutes": 30,
+ "max_ships": 6,
+ "standing": true,
+ "requires": {
+  "min_cargo": 151
+ }
+}
