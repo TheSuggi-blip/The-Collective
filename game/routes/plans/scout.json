@@ -4,6 +4,7 @@
  "note": "The routes the dispatcher tries, in this order, for a free scout pilot. Oracle keeps this file: put a route that pays first, a test with `max_ships` before it enters for all, and end with `park`. No route that loses money stands here to fill time (orders F8). 2026-11-16 12:18 UTC (orders.log ENT-014, turn of 12:15 UTC): the once line of the Central Nexus board at the head (EVERY ADMIRAL (c): voidborn-first-steps-board, voidborn-network-expansion, voidborn-collective-provides, voidborn-signal-protocol; Trade's files and limits); voidborn-signal-fragments next (navigation 3); census-voidborn (at most 3 ships, only when a home system is due); First Hunt for the 11 scouts that hold it at Intercrus Belt and, as a test, Intercrus Sootfall Belt (16 belt-grazers), each with a herd floor of 3; voidborn-first-hunt-gsc-0031 out (its herd is spent, 0 belt-grazers at 11:45 UTC); voidborn-first-steps out (off); Cracking the Shell for First Hunt holders; the once routes; the Node Beta chain; the two hunts that paid (Atlas Gas Pocket, Homam frost-moths); census-frontier; park. 2026-11-16 15:10 UTC (Unity, a stopgap on Suggi's word that no ship is idle): gather-gsc-0027-prism-scatter, gather-hamal-crystal-bloom added before the census as standing work for the ships that wait; its Admiral replaces them with its own standing work at its next turn (the skill fleet-play, `Plan a Division`).",
  "routes": [
   "store-hold-central-nexus",
+  "store-hold-frontier-station-near",
   "give-scout-stores-node-beta",
   "give-scout-stores-central-nexus",
   "give-scout-stores-synchrony",
@@ -97,28 +98,35 @@
   "watch-book-grand-exchange",
   "watch-book-cargo-lanes",
   "watch-book-deep-range",
+  "watch-book-starfall",
+  "watch-book-ironlight-refuge",
   "park"
  ],
  "planned": [
   {
-   "what": "Read the Survey Scanner II scout's surveys of faint-signature systems (Hamal first): a resolved deposit goes to Mining in queue.log; nothing resolved -> a probe step in census.py by fleet-build",
+   "what": "Read the first runs of store-hold-frontier-station-near and of the book watches at Starfall and Ironlight Refuge",
    "when": "next turn"
   },
   {
-   "what": "Strip a scout's off-role Mining Laser I once its origin-empire missions that mine are done (F35 keeps it until then); weigh its hand-over to Mining",
-   "when": "when the Mastery mining missions close"
+   "what": "On Zero's answer to requests ENT-490: yes -> a scout strip-and-gift route for the Mining Laser I at Central Nexus, only for pilots whose origin-empire missions that mine are done (F35); no -> the lasers stay fitted",
+   "when": "when Zero answers"
+  },
+  {
+   "what": "Read the Survey Scanner II scout's surveys of faint-signature systems (Hamal first): a resolved deposit goes to Mining in queue.log; nothing resolved -> a probe step in census.py by fleet-build",
+   "when": "next turn"
   },
   {
    "what": "Weigh one T2 Confluence for a Piloting-10 scout by fuel per read, funded under F12",
    "when": "once a T2 hull's fuel per jump is on record"
   },
   {
-   "what": "Read the envoy's replies through diplomacy.py threads; the beacon repeats Hail 2/3 at 2026-11-24 03:33 UTC",
+   "what": "Read the envoy's replies through diplomacy.py threads; the beacon's last round (Hail 3/3) is due 2026-11-25 03:33 UTC",
    "when": "every turn"
   }
  ],
  "ships": {
   "store-hold-central-nexus": 50,
+  "store-hold-frontier-station-near": 50,
   "give-scout-stores-node-beta": 50,
   "give-scout-stores-central-nexus": 50,
   "give-scout-stores-synchrony": 50,
@@ -212,6 +220,8 @@
   "watch-book-grand-exchange": 50,
   "watch-book-cargo-lanes": 50,
   "watch-book-deep-range": 50,
+  "watch-book-starfall": 50,
+  "watch-book-ironlight-refuge": 50,
   "park": 50
  },
  "of": 50,
