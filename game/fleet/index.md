@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 68.
+folder; never edited by hand. Scripts listed: 69.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -48,6 +48,7 @@ folder; never edited by hand. Scripts listed: 68.
 | `fill.py` | Keep every ship of a division at work: say why ships wait, and fill the plan with the work that stands open. | By hand |
 | `fleetfile.py` | Write the roster into a member's own FLEET.md: one table, every ship of the member on one line with its kind, its hull and the task it is on now. | By hand |
 | `fuelplan.py` | Fuel before a flight: the chart's lanes, the stations that sell fuel, and whether a tank holds the way. | By hand |
+| `game_docs.py` | Zero-bloat, pull-on-demand live SpaceMolt API & guide discovery for all Collective agents. | By hand |
 | `gate.py` | Small client for the fleet engine's gate, with the division's lock. | By hand |
 | `gauges.py` | What a ship or a side of ours can hunt: its firepower and its toughness against a creature (rule F9). | By hand |
 | `gitcommit.py` | Commit files a script wrote into the clone by path, and never leave them uncommitted there. | By hand |
@@ -333,6 +334,7 @@ empire.py collect [--ladder]     one reading, written to <data>/empire/empire.js
 empire.py write [--commit]       governance/empire.md from the data file; --commit commits it by path as Unity
 empire.py show
 empire.py site <system> candidate|chosen|dropped [--poi <poi id>] [--note "<why>"]
+empire.py dismantle <pilot> <facility_id> [--dry-run]   safely dismantle a faction facility (recovers 100% materials)
 empire.py check
 --root <dir>   the repository's root (default: two folders above this file)
 --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -395,6 +397,21 @@ Run by hand.
 
 ```
 fuelplan.py <from system> <to system> [<then system>] [--tank N]
+```
+
+### `game_docs.py`
+
+Zero-bloat, pull-on-demand live SpaceMolt API & guide discovery for all Collective
+agents.
+
+Run by hand.
+
+```
+game_docs.py overview [--data <dir>]
+game_docs.py commands [--group <tool>] [--search <keyword>] [--limit N] [--data <dir>]
+game_docs.py help <tool> [topic] [--data <dir>]
+game_docs.py guide <slug> [--data <dir>]
+game_docs.py refresh [--force] [--data <dir>]
 ```
 
 ### `gate.py`

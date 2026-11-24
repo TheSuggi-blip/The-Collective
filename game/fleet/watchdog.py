@@ -355,6 +355,29 @@ def inspect(root, data, hours=4.0, now=None, save=False):
         elif open_seats >= 2:
             add_finding("WARN", "empire", "OPEN_FACTION_SEATS", "%d open faction seat(s) ready to fill (%d/%d cap, %d/%d fleet ships seated; rule F11)" % (open_seats, member_count, members_limit, member_count, total_ships))
 
+        # Conditional Zero-Rent Migration Alert: ONLY fires while owned rent-free bases exist AND non-storage NPC offices
+        # still pay rent (disappears automatically once NPC office rent reaches 0 -- zero permanent clutter).
+        if owned_bases > 0 and "faction_facilities" in tables:
+            try:
+                rent_rows = con.execute(
+                    "SELECT type, name, system, rent_per_cycle FROM faction_facilities WHERE LOWER(COALESCE(status,'active'))='active' AND COALESCE(rent_per_cycle, 0) > 0"
+                ).fetchall()
+            except sqlite3.OperationalError:
+                rent_rows = []
+            _storage_t = {"faction_lockbox", "faction_warehouse", "faction_depot", "faction_stronghold"}
+            office_rows = [r for r in rent_rows if str(r["type"] or "").lower() not in _storage_t]
+            office_rent = sum(int(r["rent_per_cycle"] or 0) for r in office_rows)
+            total_npc_rent = sum(int(r["rent_per_cycle"] or 0) for r in rent_rows)
+            if office_rent > 0:
+                rent_day = int(round(office_rent * 86.4))
+                sev = "WARN" if office_rent >= 500 else "INFO"
+                names = ", ".join("%s@%s(%d)" % (r["type"], r["system"], int(r["rent_per_cycle"])) for r in office_rows[:4])
+                add_finding(
+                    sev, "empire", "NPC_RENT_MIGRATION",
+                    "%d NPC office(s) pay %d cr/cycle (~%s cr/day; total NPC rent %d/cycle) while %d rent-free owned base(s) active [%s] -- prioritize owned bases for upgrades & dismantle redundant NPC offices (recovers 100%% materials)"
+                    % (len(office_rows), office_rent, format(rent_day, ","), total_npc_rent, owned_bases, names),
+                )
+
         steady_1h = steady_24h = None
         if "stats_figures" in tables:
             for r in con.execute("SELECT hours, value FROM stats_figures WHERE view='kpi' AND LOWER(subject)='fleet' AND figure IN ('net', 'steady_net_per_hour')"):

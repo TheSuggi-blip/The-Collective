@@ -46,6 +46,7 @@ USAGE:
   empire.py write [--commit]       governance/empire.md from the data file; --commit commits it by path as Unity
   empire.py show
   empire.py site <system> candidate|chosen|dropped [--poi <poi id>] [--note "<why>"]
+  empire.py dismantle <pilot> <facility_id> [--dry-run]   safely dismantle a faction facility (recovers 100% materials)
   empire.py check
   --root <dir>   the repository's root (default: two folders above this file)
   --data <dir>   the unit's data folder (default /srv/collective/data)
@@ -615,6 +616,124 @@ def git(root, *args):
     return done.returncode, done.stdout
 
 
+
+STORAGE_TYPES = frozenset(("faction_lockbox", "faction_warehouse", "faction_depot", "faction_stronghold"))
+DEFAULT_RECRUIT_CAPS = {
+    "hiring_board": 50,
+    "recruitment_desk": 100,
+    "recruitment_center": 200,
+    "guild_hall_recruiting": 400,
+    "grand_recruitment_bureau": 1000,
+}
+
+
+def dismantle_facility(data, pilot, facility_id, dry=False, caller=None, call_fn=None):
+    """Safely dismantle a faction facility via `spacemolt_facility faction_dismantle`, recovering 100% of cumulative
+    build+upgrade materials into packages in faction storage (cost: 1 cargo_container per package; stops NPC rent
+    immediately). Enforces caller auth (Unity/Apollo), pilot dock & manage_facilities role, seat-cap floor guard,
+    storage dependency guard, and cargo_container stock check."""
+    if not dry and caller not in ("Unity", "Apollo", "service", None):
+        print("REFUSED: dismantling faction facilities is Logistics (Apollo) or Fleet Admiral (Unity) only (rule F11/F16)")
+        return 1
+    state = read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    facs = [f for f in (state.get("facilities") or []) if isinstance(f, dict)]
+    target = next((f for f in facs if str(f.get("facility_id") or "") == str(facility_id)), None)
+    if not target:
+        print("REFUSED: facility_id %s not found in empire.json (run `empire.py show` to list active IDs)" % facility_id)
+        return 1
+    if str(target.get("status") or "").lower() != "active":
+        print("REFUSED: facility %s (%s) is not active (status=%s)" % (target.get("name"), facility_id, target.get("status")))
+        return 1
+
+    base = str(target.get("base") or "")
+    ftype = str(target.get("type") or "").lower()
+    fname = ascii_text(target.get("name") or ftype, 80)
+    rent = int(target.get("rent_per_cycle") or 0)
+
+    # 1. Pilot division ownership, manage_facilities role, and docked-at-base check
+    if not dry and caller == "Apollo":
+        owner = division.owner(pilot, data)
+        if owner != "Apollo":
+            print("REFUSED: %s belongs to %s, not Apollo" % (pilot, owner))
+            return 1
+    members = {str(m.get("pilot") or ""): str(m.get("role") or "").lower()
+               for m in (state.get("members") or []) if isinstance(m, dict)}
+    role = members.get(pilot, "")
+    if role not in ("leader", "officer") and "build" not in role:
+        print("REFUSED: %s has faction role %r (needs leader, officer, or builder for manage_facilities)" % (pilot, role or "unseated"))
+        return 1
+    fl = read_json(Path(data) / "fleet" / "fleet.json", {}) or {}
+    ship = next((s for s in (fl.get("ships") or []) if isinstance(s, dict) and s.get("name") == pilot), None)
+    docked = str((ship or {}).get("docked") or "")
+    if docked != base:
+        print("REFUSED: %s is docked at %r, must be docked at %s to dismantle %s" % (pilot, docked or "undocked", base, fname))
+        return 1
+
+    # 2. Recruitment seat-cap safety guard: never drop cap below current seated member_count!
+    fac_info = state.get("faction") or {}
+    member_count = int(fac_info.get("member_count") or 0)
+    recruit_map = dict(DEFAULT_RECRUIT_CAPS)
+    for row in (state.get("ladder") or []):
+        if isinstance(row, dict) and row.get("line") == "faction_recruitment" and isinstance(row.get("cap"), int):
+            recruit_map[str(row.get("type") or "").lower()] = int(row["cap"])
+    old_cap = members_cap(facs, recruit_map)
+    remaining = [f for f in facs if str(f.get("facility_id") or "") != str(facility_id)]
+    new_cap = members_cap(remaining, recruit_map)
+    if ftype in recruit_map and new_cap < member_count:
+        print("REFUSED: dismantling %s at %s would lower member cap %d -> %d below %d seated members; build replacement capacity on an owned base first"
+              % (fname, base, old_cap, new_cap, member_count))
+        return 1
+
+    # 3. Faction storage dependency guard: other active facilities at the same station must go first
+    if ftype in STORAGE_TYPES:
+        others = [str(f.get("name") or f.get("type")) for f in remaining
+                  if str(f.get("base") or "") == base and str(f.get("status") or "").lower() == "active"]
+        if others:
+            print("REFUSED: dismantle other active faction facilities at %s first (%s) before dismantling %s"
+                  % (base, ", ".join(others), fname))
+            return 1
+
+    # 4. cargo_container availability check at that station's faction storage
+    containers = sum(
+        int(row.get("quantity") or 0)
+        for row in (state.get("faction_storage") or [])
+        if isinstance(row, dict) and str(row.get("base") or "") == base and str(row.get("item") or "").lower() == "cargo_container"
+    )
+    if containers < 1:
+        print("REFUSED: faction_dismantle requires at least 1 cargo_container in faction storage at %s (found 0 in empire.json; deposit cargo_container(s) first)" % base)
+        return 1
+
+    rent_day = int(round(rent * 86.4))
+    cap_note = (" | cap %d -> %d (seated %d)" % (old_cap, new_cap, member_count)) if ftype in recruit_map else ""
+    if dry:
+        print("would dismantle: %s (%s, %s) at %s via %s | saves %d cr/cycle (~%s cr/day)%s | cargo_containers=%d | 100%% build+upgrade materials packed into faction storage"
+              % (fname, ftype, facility_id, base, pilot, rent, format(rent_day, ","), cap_note, containers))
+        return 0
+
+    def _default_call(p, body):
+        import gate
+        return gate.call("post", "/accounts/%s/raw" % gate.q(p), body, timeout=90)
+
+    caller_fn = call_fn or _default_call
+    import wallet as _wal
+    held = _wal.try_hold_sweep(data, pilot, time.time())
+    try:
+        st_code, raw_ans = caller_fn(pilot, {
+            "toolGroup": "spacemolt_facility",
+            "action": "faction_dismantle",
+            "params": {"facility_id": str(facility_id)},
+        })
+    finally:
+        if held:
+            _wal.release_sweep(data, pilot)
+    if st_code != 200 or '"error"' in str(raw_ans)[:260].lower():
+        print("HALT: faction_dismantle %s (%s) at %s failed (HTTP %s): %s" % (fname, facility_id, base, st_code, ascii_text(raw_ans, 200)))
+        return 1
+    print("RESULT | dismantled %s (%s, %s) at %s via %s | saves %d cr/cycle (~%s cr/day)%s | %s"
+          % (fname, ftype, facility_id, base, pilot, rent, format(rent_day, ","), cap_note, ascii_text(raw_ans, 160)))
+    return 0
+
+
 def main():
     args = sys.argv[1:]
     value = lambda name, default: args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else default
@@ -626,6 +745,12 @@ def main():
     verb = words[0]
     if verb == "show":
         return show(data)
+    if verb == "dismantle":
+        if len(words) < 3:
+            sys.exit("USAGE: empire.py dismantle <pilot> <facility_id> [--dry-run] [--data <dir>]")
+        kind, who = division.member()
+        caller = who if kind == "member" else "service" if kind == "service" else "Unity"
+        return dismantle_facility(data, words[1], words[2], dry="--dry-run" in args, caller=caller)
     if verb == "site":
         kind, name = division.member()
         if kind != "member" or len(words) < 3:

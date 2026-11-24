@@ -240,6 +240,34 @@ def stop_plan(a):
     return [("game/fleet/stop_pilot.py", argv + (["--dry-run"] if a.get("dry_run") else []))]
 
 
+def game_docs_plan(a):
+    view = a.get("view") or "overview"
+    if view == "commands":
+        argv = ["commands"]
+        if a.get("group"):
+            argv += ["--group", str(a["group"])]
+        if a.get("search"):
+            argv += ["--search", str(a["search"])]
+        if a.get("limit"):
+            argv += ["--limit", str(int(a["limit"]))]
+        return [("game/fleet/game_docs.py", argv)]
+    if view == "help":
+        argv = ["help", str(a.get("tool") or "")]
+        if a.get("topic"):
+            argv.append(str(a["topic"]))
+        return [("game/fleet/game_docs.py", argv)]
+    if view == "guide":
+        return [("game/fleet/game_docs.py", ["guide", str(a.get("guide") or "")])]
+    return [("game/fleet/game_docs.py", ["overview"])]
+
+
+def dismantle_plan(a):
+    argv = ["dismantle", str(a.get("pilot") or ""), str(a.get("facility_id") or "")]
+    if a.get("dry_run"):
+        argv.append("--dry-run")
+    return [("game/fleet/empire.py", argv)]
+
+
 def errand_plan(a):
     act = str(a.get("action") or "show")
     if act == "show":
@@ -455,6 +483,32 @@ TOOLS = {
                  "dry_run": arg(B, "true: preview which pilots would be stopped without writing stop files")},
         "plan": stop_plan,
         "door": True},
+    "game_docs": {
+        "text": "Live, version-synced SpaceMolt API & guide lookup across ALL 320+ game actions (20 tool groups) and 17 official guides -- zero prompt bloat, zero ship hold, zero ticks. "
+                "view=overview: list all tool groups (with counts) and guide slugs. view=commands: filter actions by group= or search= keyword. "
+                "view=help: exact live parameter schema and rules for tool= and optional topic=. view=guide: read any official guide (drones, base-builder, boarding, passenger-lines, crafting, packages, factions, nomad, ...).",
+        "args": {
+            "view": arg(S, "what to look up (default: overview)", enum=("overview", "commands", "help", "guide")),
+            "group": arg(S, "for view=commands: filter by tool group (e.g. spacemolt_drone, spacemolt_facility)"),
+            "search": arg(S, "for view=commands: keyword search across all 320+ actions (e.g. dismantle, drone, passenger, gate, ranch, garage)"),
+            "limit": arg(I, "for view=commands: max actions shown (default 60)"),
+            "tool": arg(S, "for view=help: SpaceMolt tool group (e.g. spacemolt_facility, spacemolt_drone)"),
+            "topic": arg(S, "for view=help: specific action or topic (e.g. faction_dismantle, deploy)"),
+            "guide": arg(S, "for view=guide: official guide slug (e.g. drones, base-builder, boarding, passenger-lines)"),
+        },
+        "plan": game_docs_plan,
+    },
+    "dismantle": {
+        "text": "Safely dismantle a faction facility at a station (`spacemolt_facility faction_dismantle`, Unity or Apollo only, rule F11/F33): recovers 100% of cumulative build+upgrade materials into packages in faction storage (1 cargo_container/package) and stops NPC rent immediately. Enforces dock, manage_facilities role, seat-cap safety floor, storage dependency order, and cargo_container check. Use dry_run=true first.",
+        "args": {
+            "pilot": arg(S, "docked leader/officer/builder pilot name at that station"),
+            "facility_id": arg(S, "facility_id from empire.py show / SQL faction_facilities"),
+            "dry_run": arg(B, "true: verify all safety checks and rent savings without dismantling"),
+        },
+        "required": ["pilot", "facility_id"],
+        "plan": dismantle_plan,
+        "door": True,
+    },
     "errand": {
         "text": "Queue or inspect docked-leader faction errands (Unity-only, Q75 (12)): promote officer, post_mission on Notice Board, cancel_mission, write_room, role or station policy. The dispatcher holds the leader at its next dock and the 5-minute wallet sweep executes the errand automatically. War, ally, and leadership transfer are permanently blocked.",
         "door": True,
@@ -544,7 +598,7 @@ TOOLS["docs"]["args"]["topic"] = arg(S, "for handbook: a table's or view's name 
 TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbook"] + ([str(a["topic"])] if a.get("topic") else []))]
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
-WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund", "errand")      # every other tool only reads
+WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund", "errand", "dismantle")  # every other tool only reads
 WRITES += ("needs",)                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 

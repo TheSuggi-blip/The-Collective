@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 26 tools.
+The store: 65 tables and 13 views (44 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 28 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -149,6 +149,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | live 3-horizon strategic progression rungs, milestones & ledgers. | fleet view=progression | hive.py progression |
 | what founding one takes, down to the ore: credits, parts, the facility that makes the part, what we... | base_plan kind=<kind> | hive.py base <kind> |
+| Safely dismantle a faction facility at a station (`spacemolt_facility faction_dismantle`, Unity or... | dismantle pilot=<pilot> facility_id=<facility_id> | empire.py dismantle <pilot> <facility_id> |
 | what we hold: the faction with its members and limit, our bases, our offices at other stations and... | hive verb=empire | hive.py empire |
 
 ### Stock and reserve
@@ -214,6 +215,10 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | each member's newest report and the knowledge files it wrote or changed. | comms view=learnings | hive.py learnings |
 | orders in force, open requests, active claims and recent errors in one call. | comms view=turn_pack | comms.py turn-pack |
 | Search the Collective's repository by meaning (rules, map, planets, players, factions, routes... | search question=<question> | query.py <question> --top-k 8 |
+| list all tool groups (with counts) and guide slugs. | game_docs view=overview | game_docs.py overview |
+| filter actions by group= or search= keyword. | game_docs view=commands | game_docs.py commands |
+| exact live parameter schema and rules for tool= and optional topic=. | game_docs view=help | game_docs.py help  |
+| read any official guide (drones, base-builder, boarding, passenger-lines, crafting, packages... | game_docs view=guide | game_docs.py guide  |
 | the files, or one file's sections by title (doc: a file, a kind or an owner; grep: the sections that... | docs view=list | hive.py docs |
 | one section whole. | docs view=section section=<section> | hive.py docs --section <section> |
 | the sections changed since your last turn (or since). | docs view=changes | hive.py changes |
