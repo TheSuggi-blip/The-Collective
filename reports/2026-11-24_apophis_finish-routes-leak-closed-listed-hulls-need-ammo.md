@@ -27,8 +27,10 @@ minutes, -516 cr a ship-hour; circuits -82,687 cr steady and 528,000 cr
 paid once. The money view (12:41 UTC): Military's last hour -80,225 cr,
 24-hour recurring -36,093 cr an hour, 24-hour purse +78,275 an hour. The
 treasury reads 9,060,751 cr. The scorecard names Military 44.2 of 100,
-ALARM, 64 P10+ pilots without a tier-2 hull. Fill gate at 13:00 UTC:
-`FLEET | 131 ships: 118 at work, 2 starting, 0 waiting, 11 by hand | PASS`.
+ALARM, 64 P10+ pilots without a tier-2 hull. Fill gate at 13:17 UTC, the
+last check two minutes after the last plan commit:
+`FLEET | 131 ships: 125 at work, 0 starting, 0 waiting, 6 by hand | PASS`;
+none of the six by hand is held for Military.
 
 ## Activities
 
@@ -52,8 +54,13 @@ ALARM, 64 P10+ pilots without a tier-2 hull. Fill gate at 13:00 UTC:
   at The Anvil Arsenal (ask 6 cr, 9,398 units, books 13:03 UTC), head of
   First. One box fills a magazine; hunt.py reloads from the hold.
 - **Recursion #4.** The commission at Node Beta went SOURCING to BUILDING
-  (129 ticks left, about 12:45 UTC). switch12.sh switches its pilot in
-  when the hull stands stored.
+  (129 ticks left, about 12:45 UTC); switch12.sh switched its pilot in at
+  13:09 UTC (RESULT line: two Pulse Laser II, a Focused Beam I, a Shield
+  Booster II, a Shield Recharger II). Tier-2 hulls flying: 7.
+- **A store for the far.** A Solarian drone waited at Haven with 8 units
+  aboard (13:13 UTC gate HALT, 2 waiting): every hunt asks an empty hold
+  and Zero's Sol store opens within 10 jumps only. New Military route
+  store-hold-sol-central-far (a2de23c5), up to 18 jumps, head of Then.
 - **ENT-509 closed** by me (ENT-515): orders O2 settle the pace.
 
 ## Problems
