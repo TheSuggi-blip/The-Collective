@@ -178,6 +178,10 @@
   {
    "what": "read the floored regional belts against their census; read where the stopped miners went (fill.py status miner) and the jump loop's size",
    "when": "next turn"
+  },
+  {
+   "what": "Muphrid silicon stays unwritten while Minkar stands on the pirate watch; fluorine (Regor, GSC-0024) waits for uranium and thorium fields of the station core",
+   "when": "when the watch or the census changes"
   }
  ],
  "ships": {
