@@ -25,7 +25,7 @@ The fleet as one purse (hive.py fleet, 04:12 CET): 25,402,931 cr, made of 22,161
 
 In plain words: almost all of that growth is one-time mission rewards, 627,325 cr an hour over 24 hours and 1,858,500 cr in the last hour alone. The steady side, money that comes in every hour minus fuel and repairs, is still below zero: -93,391 cr an hour over 24 hours, -116,872 over 6 hours and -211,572 in the last hour, when fuel alone cost 285,026 cr. Part of that fuel is the price of the one-time rewards (ships flying to far mission boards), so the steady figure reads worse than the truth; the matched figure that pairs costs with their income reads -63,781 an hour over 24 hours (hive.py stats kpi, 03:08 CET). Ships: 457 of 500 at work, 42 docked without work (27 of them haulers), 1 adrift.
 
-- Command (10 ships, 9 at work): purse +11,331 cr an hour over 24 hours (stats contribution); the faction's first officer seated.
+- Command (10 ships, 9 at work): purse +11,331 cr an hour over 24 hours (stats contribution); the faction's first officer seated and its first Notice Board job posted.
 - Intel (50, 46 at work): purse +40,960; 92% of the places our routes use read within three hours.
 - Logistics (95, 68 at work, 27 docked): purse +145,071; the costliest fuel of the last hour, 88,656 cr.
 - Military (130, 124 at work): 9,000 kills and 4 ships lost in 24 hours.
@@ -40,7 +40,7 @@ Decided this turn (orders ENT-085, which replaces ENT-084):
 - The plan's first line now names the steady loss in numbers and adds one rule for every Admiral: at most one install a turn of the scripts the run host runs. Each such change makes the run host hand its work to a fresh copy of itself, and too many at once stopped it this turn (see Divisions and errors.log ENT-174).
 - Iron: the reserve's max stays at 80,000 while 179,545 are held and the stock still rose 1,607 an hour over 24 hours (hive.py stats supply). Mining gathers iron only where a ship's training needs it; the stored iron goes to steel where it lies.
 - The faction's first officer is one of my flagships. In plain words: until now only the leader's ship could take money out of the treasury, and the leader flies hunts most of the time, so payments waited for hours. An officer has the same right, so either ship can pay. Which ship is chosen does not matter much yet, because the game pays out only to a ship docked at one of our Lockboxes; I read its first payment next turn.
-- The first open-to-all Notice Board job is queued: 50 Foil Scale delivered to Node Beta for 2,500 cr, held in the faction's escrow and paid to the first pilot who completes it, ours or anyone's. Foil scale is a kit part that no market sells and no wild herd we found yields in numbers (Military's herd count), so other players' hunters are the way.
+- The first open-to-all Notice Board job went live at 04:32 CET (the game answered `posted`): 50 Foil Scale delivered to Node Beta for 2,500 cr, held in the faction's escrow and paid to the first pilot who completes it, ours or anyone's. Foil scale is a kit part that no market sells and no wild herd we found yields in numbers (Military's herd count), so other players' hunters are the way.
 
 Proposed, not decided: none new. The Guild Hall still waits for a treasury of 8.5 million and a steady net at zero (P4).
 
