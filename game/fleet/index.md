@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 77.
+folder; never edited by hand. Scripts listed: 78.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -91,6 +91,7 @@ folder; never edited by hand. Scripts listed: 77.
 | `scorecard.py` | Division KPI Scorecards, <80% Completion Triggers & Stagnation Detection. | By hand |
 | `shipping.py` | Read-only CLI for SpaceMolt's Player-to-Player Freight / Courier board (spacemolt_shipping). | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
+| `sqlcheck.py` | Every literal SQL query of the fleet's scripts, prepared against the store's own schema: a column or a table the store does not have is named before a runner reads an empty world from it. | By hand |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
 | `stats.py` | The fleet's statistics, computed by the store into tables of its own: the fleet as one purse, what each division gives the whole, class capacity, where the ship-hours go, the reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of each ship, gather against buy, and control-chart alerts. | By hand |
 | `stop_pilot.py` | Stop one or more in-flight ships of your division cleanly without touching global fleet/STOP. | By hand |
@@ -1040,6 +1041,20 @@ A service: it runs by itself and is never started a second time.
 sight.py              run forever (the service `sight`)
 sight.py --once       one pass
 --data <dir>          the unit's data folder (default /srv/collective/data)
+```
+
+### `sqlcheck.py`
+
+Every literal SQL query of the fleet's scripts, prepared against the store's own schema:
+a column or a table the store does not have is named before a runner reads an empty
+world from it.
+
+Run by hand.
+
+```
+sqlcheck.py                       every .py of game/fleet/ and station/ against data/store/read.db
+sqlcheck.py <file.py>...          those files only
+sqlcheck.py --db <path> [files]   another database (a test's)
 ```
 
 ### `stash.py`

@@ -456,9 +456,9 @@ def _inspect_our_adoption(repo_root, data_dir, conn, tables):
     endl_logged = (Path(repo_root) / "game" / "factions" / "h-endl.md").is_file()
     supply_short = []
     supply_total = 0
-    if "supply" in tables:
+    if "supply_status" in tables:                 # the store's view of the chains (supply.py); no table `supply` exists
         try:
-            for sr in conn.execute("SELECT chain, state, have, keep FROM supply"):
+            for sr in conn.execute("SELECT chain, status AS state, stock AS have, keep FROM supply_status"):
                 supply_total += 1
                 if str(sr["state"] or "").upper() == "SHORT":
                     hv, kp = int(_num(sr["have"])), int(_num(sr["keep"]))
@@ -673,7 +673,7 @@ def _build_strategy_playbooks(our_adopt, leaders, market_edges, sedcards=None):
                 _kpi("Freight/mission routes", "Logistics", f"{our_adopt['freight_routes']}", ">=10", our_adopt["freight_routes"] >= 10, "game/routes"),
                 _kpi("Logistics employment", "Logistics", f"{dwork.get('Logistics', 0.0):.0f}%", ">=80%", dwork.get("Logistics", 0.0) >= 80.0, "fleet.json"),
             ] + [
-                _kpi(f"Supply chain: {sc['chain']}", "Logistics", f"{sc['have']}/{sc['keep']}", f">={sc['keep']}", False, "read.db:supply")
+                _kpi(f"Supply chain: {sc['chain']}", "Logistics", f"{sc['have']}/{sc['keep']}", f">={sc['keep']}", False, "read.db:supply_status")
                 for sc in (our_adopt.get("supply_short") or [])[:2]
             ],
             our_adopt["active_freight"] >= 20,
