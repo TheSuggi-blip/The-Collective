@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 46.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 46 | Public event stream |
+| Pilots carrying the tag on the public event stream | 48 | Public event stream |
 
 ## Bases
 
@@ -38,22 +38,22 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Aberrant Spark | Node Gamma (`node_gamma`) | 0 | threshold |
-| Agony Needle | Node Beta (`node_beta`) | 0 | threshold |
+| Aberrant Spark | Node Beta (`node_beta`) | 0 | threshold |
+| Agony Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Bedlam Lance | Nexus Prime (`nexus_prime`) | 0 | accretion |
-| Bedlam Spark | Node Beta (`node_beta`) | 0 | threshold |
+| Bedlam Spark | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Cortical Flail | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Cortical Lacerator | The Experiment (`the_experiment`) | 0 | threshold |
+| Cortical Lacerator | Node Beta (`node_beta`) | 0 | threshold |
 | Cortical Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Delirium Cutter | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Delirium Cutter | Node Gamma (`node_gamma`) | 0 | threshold |
 | Delirium Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Dread Razor | Node Beta (`node_beta`) | 0 | not met |
-| Entropy Needle | The Experiment (`the_experiment`) | 0 | threshold |
-| Fever Talon | Node Beta (`node_beta`) | 0 | threshold |
-| Fractured Lance | Node Beta (`node_beta`) | 0 | threshold |
-| Frenzy Blade | The Experiment (`the_experiment`) | 0 | threshold |
-| Ghost Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Dread Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Entropy Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Fever Talon | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Fractured Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Frenzy Blade | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Ghost Needle | Node Beta (`node_beta`) | 0 | threshold |
 | Hysteric Pulse | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Hysteric Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Malignant Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
@@ -61,13 +61,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Mania Vector | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Mind-Rupture | Nexus Prime (`nexus_prime`) | 0 | liminal |
 | Morbid Claw | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Neural Spike | The Experiment (`the_experiment`) | 0 | threshold |
-| Neurotic Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Null Spike | Node Beta (`node_beta`) | 0 | threshold |
+| Null Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Panic Sabre | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Paranoia Lance | Node Gamma (`node_gamma`) | 0 | threshold |
-| Psychopathic Fang | The Experiment (`the_experiment`) | 0 | threshold |
+| Paranoia Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Psychopathic Fang | Node Beta (`node_beta`) | 0 | threshold |
 | Psychotic Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Schism Dart | Nexus Prime (`nexus_prime`) | 0 | accretion |
+| Schism Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 And 16 more.
 
