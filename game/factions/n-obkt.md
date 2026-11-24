@@ -9,13 +9,13 @@ faction: ObekT Transport
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-22
+updated: 2026-11-24
 ---
 
 # ObekT Transport [OBKT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 10 jump(s) away, in Cervantes (`cervantes`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -38,7 +38,9 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| ObekT-MCP | Nexus Prime (`nexus_prime`) | 1 | theoria |
 
 ## Standing History
 
