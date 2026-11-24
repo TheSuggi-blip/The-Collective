@@ -1,0 +1,32 @@
+{
+ "id": "join-sol-loop-home",
+ "kind": "circuit",
+ "title": "Join Sol from home for the paid loop: Sol Central (Gathering the Old Charts, Courier to Haven), then The Diplomatic Pouch from Haven back to Nexus Prime",
+ "note": "Written by Apollo, 2026-11-24 06:53 UTC (orders ENT-085 block APOLLO: no hauler waits docked; P1; rules F8, F34). For a hauler at home with no class work open (its own row only, never a list for every ship, so the receivers and crafters at home stay on their stores). Sol Central offers Gathering the Old Charts (3,500 cr, paid 06:40 UTC) and Courier to Haven (5,000 cr) to haulers of every birth; from Haven mission-diplomatic-pouch-haven-gold brings the pilot home through Sol (3,000 cr). One stop: Sol, the hold stored. Once per pilot.",
+ "far_ok": true,
+ "once": true,
+ "standing": true,
+ "max_ships": 5,
+ "skip_if_booked": [
+  "Courier to Haven"
+ ],
+ "requires": {
+  "empty_hold": true,
+  "in_system": [
+   "nexus_prime",
+   "node_beta",
+   "synchrony",
+   "the_experiment",
+   "node_alpha"
+  ],
+  "skills_below": {
+   "corporation_management": 7
+  }
+ },
+ "stops": [
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}
