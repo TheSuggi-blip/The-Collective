@@ -12,10 +12,11 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 62.
+Routes: 63.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
+| [buy-steel-reserve-central-nexus](buy-steel-reserve-central-nexus.json) | circuit | home space | Steel plate for the reserve bought docked at Central Nexus at the 18 cr ask and stored there (Logistics' haulers, standing work at home) | up to 3 ships, while central_nexus asks 19 cr or less for steel_plate, under corporation_management 7, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [craft-focused-crystal-node-beta](craft-focused-crystal-node-beta.json) | circuit | home space | Focused crystal made by hand at Node Beta from stored energy crystal and one bought palladium ore, sold into the Central Nexus bid | up to 2 ships, with 4 energy_crystal stored at node_beta_industrial_station, while central_nexus bids 700 cr for focused_crystal, off | TBD | TBD | TBD | TBD | -- |
 | [first-survey](first-survey.json) | circuit | home space | Signal Propagation Survey: dock at the five other Voidborn stations (4,000 cr since 0.715.4) | once per pilot, off | TBD | TBD | TBD | TBD | -- |
 | [give-miner-stores-central-nexus-nitrogen](give-miner-stores-central-nexus-nitrogen.json) | circuit | home space | A miner gives its stores at Central Nexus: building inputs and the reserve ores to the haulers, ices, null matter, lead and soma to the traders (strict classes); opened by nitrogen_ice stored (the iron gate of give-miner-stores-central-nexus leaves out the pilots who hold no iron there) | up to 3 ships, with 50 nitrogen_ice stored at central_nexus, standing work, off | TBD | TBD | TBD | TBD | -- |

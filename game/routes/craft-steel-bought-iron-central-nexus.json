@@ -1,0 +1,157 @@
+{
+ "id": "craft-steel-bought-iron-central-nexus",
+ "kind": "circuit",
+ "title": "Steel plate smelted by hand at Central Nexus from iron ore bought there at 1 cr, kept in the pilot's storage for the reserve (Logistics' haulers, standing work at home)",
+ "note": "Written by Apollo, 2026-11-24 07:32 UTC (orders ENT-085 block APOLLO: no hauler waits docked, steel on iron; P2; rules F8, F23, F24, F36). At 07:30 UTC 13 haulers waited docked at Nexus Prime at the end of the paid Sol loop. Central Nexus asks 1 cr for iron ore x 24,400 (depth 132,696, table books 07:31 UTC): 10 ore a plate by hand is 10 cr a plate against the 18 cr plate ask, and the reserve is short of 36,466 steel plate (tool needs action=items 07:27 UTC). Each run: five loads of 65 ore bought and stored, then basic_iron_smelting in halving sizes from storage (stops copied from craft-steel-logistics-central-nexus), the plate stored: docked, no fuel, crafting XP. A circuit that buys and crafts is craft work (workclass.py), open to haulers. Standing; the reserve gate (F36) closes it at the steel max; requires.ask keeps it to the 1 cr ask. max_ships 3 for the first runs (F37).",
+ "standing": true,
+ "max_ships": 3,
+ "requires": {
+  "in_system": [
+   "nexus_prime"
+  ],
+  "ask": {
+   "item": "iron_ore",
+   "base": "central_nexus",
+   "max_price": 1,
+   "min_qty": 325
+  },
+  "skills_below": {
+   "corporation_management": 7
+  }
+ },
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "iron_ore",
+     "qty": 65,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "iron_ore",
+     "qty": 65,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "iron_ore",
+     "qty": 65,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "iron_ore",
+     "qty": 65,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "buy": [
+    {
+     "item": "iron_ore",
+     "qty": 65,
+     "max_price": 2
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "craft": [
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 128,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 64,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 32,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 16,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 8,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 4,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 2,
+     "per_run": 1,
+     "makes": "steel_plate"
+    },
+    {
+     "recipe": "basic_iron_smelting",
+     "runs": 1,
+     "per_run": 1,
+     "makes": "steel_plate"
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}

@@ -23,14 +23,14 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 38 | 17 | 21 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 542 | 113 | 429 | hunt-sandrift-ice-fields-hollow-pilgrim: 20,310 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 11 | 5 | 6 | mine-dheneb-cryobelt: -260 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 62 | 19 | 43 | voidborn-first-steps: 4,020 cr per ship-hour |
-| All | | 925 | 234 | 691 | |
+| [Off](index-off.md) | Written down, not flown. | 63 | 20 | 43 | voidborn-first-steps: 4,020 cr per ship-hour |
+| All | | 926 | 235 | 691 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | census | circuit | guard | hunt | mine | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|
-| home space | 234 | 1 | 198 | 1 | 20 | 14 | 3 |
+| home space | 235 | 1 | 199 | 1 | 20 | 14 | 3 |
 | beyond the border | 691 | 24 | 239 | 7 | 312 | 109 | 29 |
 
 ## Plans by Role
