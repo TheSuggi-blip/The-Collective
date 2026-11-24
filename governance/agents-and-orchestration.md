@@ -3,13 +3,14 @@ name: agents-and-orchestration
 id: 20261122T035948Z
 tier: governance
 author: Trinity
-updated: 2026-11-23
+updated: 2026-11-24
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
   - governance/rulebook.md
   - governance/system-architecture.md
   - governance/knowledge-and-memory-loop.md
+  - governance/treasury-wallet-and-upgrades-blueprint.md
   - governance/progression-roadmap.md
   - governance/kpi-and-strategy-system.md
   - governance/accounting-and-hud-blueprint.md
@@ -176,3 +177,12 @@ concrete operational failure mode observed in live data:
 11. **Cash-Only & Thin-Bid Accounting Distortions (`2026-11-23`) -> GAAP/IFRS Single Source (`accounting.py`):**
    - *Scar:* `once`-mission fuel (`-18.3k cr/h`) leaked into steady OpEx and triggered false `ROUTE_BLEED` alarms; unbounded `MAX(bid)` inflated thin-bid items by `~14.5M cr`; `api_income` truncated routes at `400` and ignored wallet transfers; and pure cash-basis tables hid Mining/Military/Logistics vertical production value.
    - *Structural gate:* `game/fleet/accounting.py` provides IAS 2 NRV valuation, Matching Principle separation, CapEx isolation, and Intercompany Transfer Pricing across `server.py`, `scorecard.py`, `progression.py`, and `watchdog.py` (`governance/accounting-and-hud-blueprint.md` & `governance/kpi-and-strategy-system.md`).
+12. **Sweep Deadlock & 50-Ship Serial Throttle (`2026-11-24`) -> Decoupled 2-Lane Parallel Sweep, P2P Funding & Auto-Officers (`wallet.py`, `upgrades.py`):**
+   - *Scar:* Slow seat joins burned `101-165s > DEPOSIT_BY (90s)` while `DEPOSIT_FIRST` skipped gifts, deadlocking 4 consecutive passes (`0 cr` swept while `6.2M cr` piled up in pilot wallets); meanwhile `PER_PASS = 4` lagged 500-ship earnings and `max_actions = 3` throttled hull upgrades.
+   - *Structural gate:* Decoupled `wallet.py sweep --cash-only` from `wallet.py serve` (`routes-index-pass.sh`), added 20-pilot parallel direct seated-member deposits (`target="faction"`) + 20-pilot parallel unseated gifts, removed F12 `400k`/`750k` Admiral caps, added mid-flight parallel P2P funding + self-healing `auto_queue_officers` + `max_actions = 15` (`governance/treasury-wallet-and-upgrades-blueprint.md`). First live pass poured `+904,692 cr` into Treasury with zero HALTs.
+13. **Perverse KPI & Clutter Drift (`2026-11-24`) -> Responsibility Centers, Gap-to-Goal Burndown & Spread Guards (`scorecard.py`, `routes.py`):**
+   - *Scar:* Permanent Build Kit KPIs risked chasing endless outposts, raw division cash risked cheap loot dumping, and multiple ships risked stacking on single belts or Bursar stations (`1,000` orders/ship capacity).
+   - *Structural gate:* Responsibility-Center scoring (`Profit` / `Production` / `Service-Infra` / `Cost` / `Investment`), Logistics dynamic `Supply Chains & Fulfillment SLA`, Gap-to-Goal (`-> 0`) burndown cards, `FIELD_CONGESTION` / `HUB_CONGESTION` + `routes.py` concentration warnings, and optional `P3 MENU` playbooks (`governance/kpi-and-strategy-system.md` Sec 7).
+14. **Static Rules Blindness & NPC Rent Lock-In (`2026-11-24`) -> Pull-on-Demand `game_docs` & Guarded `dismantle` (`game_docs.py`, `empire.py`, `watchdog.py`):**
+   - *Scar:* Static `game/rules/12-commands.md` listed ~90 of 320 live v2 actions and agents had no safe `faction_dismantle` tool or zero-rent migration signal.
+   - *Structural gate:* Version-synced read-only MCP `game_docs` (all 320+ actions & 17 official guides, zero prompt bloat, zero ship hold), Zero-Rent rule (`F11`) + 5-guard MCP `dismantle` (100% material recovery), and self-disappearing `NPC_RENT_MIGRATION` alert (`governance/knowledge-and-memory-loop.md` Sec 5 & `governance/treasury-wallet-and-upgrades-blueprint.md` Sec 7).

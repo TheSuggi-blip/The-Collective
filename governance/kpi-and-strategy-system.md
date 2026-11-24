@@ -3,13 +3,14 @@ name: kpi-and-strategy-system
 id: 20261123T112000Z
 tier: governance
 author: Trinity
-updated: 2026-11-23
+updated: 2026-11-24
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
   - governance/rulebook.md
   - governance/system-architecture.md
   - governance/accounting-and-hud-blueprint.md
+  - governance/treasury-wallet-and-upgrades-blueprint.md
   - governance/progression-roadmap.md
   - governance/rival-sedcards.md
   - game/metrics.md
@@ -196,3 +197,50 @@ SpaceMolt Game Server
         1. Agents at turn start: `hive.py briefing` / `hive.py scorecard` / MCP `fleet`
         2. Suggi & Operators: Command Station HUD (`:8445` -> `Metrics`, `Empire`, `Docs`)
 ```
+
+---
+
+## 7. Responsibility-Center Alignment, Gap-to-Goal Burndown & Anti-Clutter Spread Guards (`2026-11-24`)
+
+To prevent perverse sub-optimization (e.g., hunters dumping loot cheaply to pad
+cash, logistics chasing infinite outposts for static build-kit KPIs, or 30
+ships crowding one belt/station), `scorecard.py`, `routes.py`, `watchdog.py`,
+and the Command Station HUD enforce four structural mechanisms:
+
+1. **Responsibility-Center Scoring (`scorecard.py` + `accounting.py`):**
+   - **Trade (`Profit Center`):** Scored on net commercial margin, dynamic market
+     hub coverage across all charted policed stations (`read.db:books`, derived
+     live), and `0` Bursar hub over-stacking.
+   - **Mining & Military (`Production / Combat-Sec Centers`):** Credited via
+     IAS 2 transfer pricing for ore/loot handed to Trade/Logistics and vault
+     accrual; CapEx (hulls/modules/`fit-*` fuel) never penalizes operating score.
+   - **Logistics (`Service / Infrastructure Center`):** Role KPI is **`Supply
+     Chains & Fulfillment SLA`** (Keep supply chain health + dynamic open P1/P2
+     needs/requests backlog; reads `0 open backlog` once build kits close -- no
+     permanent build-kit tie).
+   - **Intel (`Recon Cost Center`):** Scored on `< 3h` market/belt freshness
+     and zero losses (`0` profit penalty).
+   - **Command (`Investment / Capital Center`):** Scored on fleet employment,
+     seating, officer coverage, and enterprise progression.
+2. **Gap-to-Goal Burndown Display (`-> 0`):**
+   - Both Admiral briefings and HUD division cards lead with **remaining gaps
+     to full completion (`-> 0`)**: idle ships remaining, missing hull upgrades,
+     missing module slots, and each division's individual Role KPI progress bar.
+3. **Anti-Clutter Spread & Congestion Guards (`routes.py` + `scorecard.py`):**
+   - **Market Hub Bursars:** SpaceMolt allows **`1,000` open orders per pilot
+     per station** at `0` listing fee. Keep **`1` pure Bursar** (up to `2-3`
+     with heavy docked crafting) per station (`routes.py check` warns above
+     `max_ships: 3`; `scorecard.py` flags `HUB_CONGESTION`) and spread extra
+     traders across all charted policed hubs.
+   - **Depleting Belts & Hunting Grounds:** Keep `<= 8-10` miners per belt and
+     `<= 5` hunters per POI (`FIELD_CONGESTION` alert; scarce-vein miners use
+     `jettison_gangue`). Non-depleting work (missions, `spacemolt_shipping`,
+     outpost bunkering, workshop crafting) stacks safely.
+   - **Optional `P3 MENU` Playbooks:** When a division is already `>= 85%`
+     employed with `< 5` idle ships, rival copy/counter playbooks automatically
+     demote to optional `P3 MENU` so Admirals never break profitable loops just
+     to chase an extra playbook.
+4. **Self-Disappearing Conditional Alerts (`watchdog.py`):**
+   - `NPC_RENT_MIGRATION` fires only while `owned_bases > 0` and non-storage
+     NPC offices still pay rent, vanishing automatically at `0` NPC office rent.
+

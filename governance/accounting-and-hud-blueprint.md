@@ -3,11 +3,12 @@ name: accounting-and-hud-blueprint
 id: 20261123T112200Z
 tier: governance
 author: Trinity
-updated: 2026-11-23
+updated: 2026-11-24
 links:
   - governance/the-collective-constitution.md
   - governance/system-architecture.md
   - governance/kpi-and-strategy-system.md
+  - governance/treasury-wallet-and-upgrades-blueprint.md
   - game/metrics.md
   - game/fleet/index.md
 ---
@@ -190,3 +191,25 @@ in `station/server.py` (strict CSP, zero `innerHTML`, read-only SQLite):
 | **Empire -> Progression Subtab** | `/api/progression` | `game/fleet/progression.py` + `accounting.py` | IAS 2 Enterprise Net Worth (+ Leaderboard Catalog basis), 12-Rung Roadmap across Days/Weeks/Months, and Weekly/Monthly `stats_money_hour` cash rollups. |
 | **Empire -> Rivals & Playbooks** | `/api/rivals` + `/api/ops` | `game/fleet/rivals.py` + `rival_playbook.py` | Rival wealth compared apples-to-apples on SpaceMolt Catalog leaderboard basis alongside 8 dynamically ranked Copy/Counter Strategy Playbooks. |
 | **Watchdog & Agent Briefings** | CLI / MCP `fleet` | `watchdog.py` + `scorecard.py` + `accounting.py` | `watchdog.py` evaluates `ROUTE_BLEED` on `matched_cr = credits + one_time` (never falsely flagging profitable one-time missions); `hive.py briefing` prints both matched recurring cash and transfer-priced accrual value-add for every Admiral. |
+
+---
+
+## 5. Direct Member Deposits, P2P Funding & HUD Gap-to-Goal Cards (`2026-11-24`)
+
+- **Direct Seated-Member Deposits (`wallet.py` Lane 1):** Every direct
+  `target="faction"` deposit from a seated member books `[epoch, pilot,
+  DEPOSIT_TITLE, -credits]` under `_WRITE_LOCK` in `onetime.json`. `station/fleet.py`
+  and `routes.deposits()` match every pilot's deposit identically to the
+  leader's, so consolidated `purse_per_hour` and `treasury_moved_per_hour`
+  stay exact with zero cost distortion.
+- **Mid-Flight P2P Funding (`serve_funds_p2p`):** Every rich-donor -> target
+  slice books symmetrically in `gifts.jsonl` and `onetime.json` (`Wallet top-up`),
+  eliminating to `0` at fleet consolidation and never inflating or penalizing
+  any division's operating income.
+- **HUD Division Cards (`station/static/app.js`):** Each division card displays
+  its **Responsibility Center badge** (`Profit Ctr`, `Production`, `Combat/Sec`,
+  `Service/Infra`, `Cost Ctr`, `Investment`), three **Gap-to-Goal (`-> 0`)
+  burndown meters** (`Idle gap`, `Hull gap`, `Slot gap`), and its **individual
+  Role KPI bar** (including Logistics' dynamic `Supply Chains & Fulfillment SLA`
+  and Trade's live policed hub coverage).
+

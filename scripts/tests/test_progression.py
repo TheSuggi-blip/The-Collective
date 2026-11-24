@@ -22,6 +22,9 @@ class ProgressionAndBlueprintTests(unittest.TestCase):
     def test_docs_kinds_indexes_all_governance_blueprints_and_protocol(self):
         patterns = [(k, p) for k, p, _o in docs.KINDS]
         self.assertIn(("blueprint", "governance/knowledge-and-memory-loop.md"), patterns)
+        self.assertIn(("blueprint", "governance/kpi-and-strategy-system.md"), patterns)
+        self.assertIn(("blueprint", "governance/accounting-and-hud-blueprint.md"), patterns)
+        self.assertIn(("blueprint", "governance/treasury-wallet-and-upgrades-blueprint.md"), patterns)
         self.assertIn(("blueprint", "governance/progression-roadmap.md"), patterns)
         self.assertIn(("blueprint", "communications/protocol.md"), patterns)
         with tempfile.TemporaryDirectory(prefix="bp-docs-") as tmp:

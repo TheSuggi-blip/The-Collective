@@ -3,13 +3,14 @@ name: system-architecture
 id: 20261122T015958Z
 tier: governance
 author: Trinity
-updated: 2026-11-23
+updated: 2026-11-24
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
   - governance/rulebook.md
   - governance/agents-and-orchestration.md
   - governance/knowledge-and-memory-loop.md
+  - governance/treasury-wallet-and-upgrades-blueprint.md
   - governance/progression-roadmap.md
   - governance/kpi-and-strategy-system.md
   - governance/accounting-and-hud-blueprint.md
@@ -119,7 +120,7 @@ Lock-free Readers (immutable read.db):
    - Open projects in `game/needs.tsv` define the fleet reserve (`F24`, `F36`). Extraction/crafting routes gated on reserve levels run while short and close automatically when full; goods above the reserve surface in `surplus.py` for Trade to sell.
    - `workclass.py` maps each route to its division class (`F23`) and tracks remaining non-trader sales (`workclass.py sales`) for `strict-classes-on`.
 4. **Role-aware treasury sweep, autonomous division funding & clean stops (`wallet.py`, `build.py`, `stop_pilot.py`, `F7`/`F12`/`F16`):**
-   - Automatically sweeps surplus ship cash into the faction treasury in parallel (`50k` Trade/Command, `30k` working roles): seated members deposit directly to `faction` in 1 hop (`20`/pass) while unseated ships sweep in parallel (`20`/pass) in an isolated `wallet.py sweep --cash-only` stage. `wallet.py serve` runs decoupled (`25` batched funds/pass via docked Officers at any storage tier or mid-flight P2P from rich ships, self-healing `auto_queue_officers` for all division flagships + 2 docked Bursars/bankers per storage base, and `15` upgrade queue actions/pass). Admirals fund own-division ships uncapped above `>=500k` floor and Logistics builds routine facilities (`build.py <=500k` above `500k` floor). Per-pilot/per-route clean stops (`stop_pilot.py` / MCP `stop`) cancel individual runners cleanly without halting peers.
+   - Full liquidity, parallel sweeping, mid-flight P2P funding, multi-officer banking, docked-leader errands, 15x batch upgrades, and guarded `faction_dismantle` architecture lives in `governance/treasury-wallet-and-upgrades-blueprint.md`. Per-pilot/per-route clean stops (`stop_pilot.py` / MCP `stop`) cancel individual runners cleanly without halting peers; read-only MCP `game_docs` (`game/fleet/game_docs.py`) exposes all 320+ live SpaceMolt v2 actions and 17 official guides on demand with zero prompt bloat and zero ship hold.
    - Combat pirate-farming routes may explicitly opt in via `"pirates_ok": true` (`dispatch.py`, `F9`/`F27`) while non-combat routes remain strictly blocked from pirate zones.
 5. **GAAP/IFRS Accounting, Adaptive KPI Scorecard & Watchdog (`accounting.py`, `scorecard.py`, `watchdog.py`):**
    - Full financial architecture (IAS 2 NRV vault valuation, Matching Principle on `once` routes, CapEx isolation, Intercompany Transfer Pricing, and HUD data map) lives in `governance/accounting-and-hud-blueprint.md`.
