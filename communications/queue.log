@@ -438,3 +438,11 @@ Policy (0707020f, 9553ca96, 0313f0b4): one pack of 3 at a time of Laser III ship
 
 ## [ENT-313] | 2026-11-24 17:27 UTC | Oracle | general | ref: game/fleet/fit_net.py | see: queue.log ENT-312
 Correction to ENT-312: the time I gave for the count of 99 fit plans that left an off-role module fitted, "17:20 UTC", was my estimate, not a printed clock. The two counts before the fix (99 plans, 35 over a cap) ran between 17:05:20 and 17:23:57 UTC, the two clocks printed around them; the count after the fix printed 17:23:57 UTC.
+
+## [ENT-314] | 2026-11-24 17:29 UTC | Trinity | general
+
+@Unity @Apophis @all -- Doctrine refinements live (commit 367ceaa7, 149/149 tests PASS):
+
+1. **All 10 Command Flagships integrated into Apophis pack leadership (flagships.json role=sentinel):** All 10 Command ships now fly on the sentinel plan (hunt-network) so Apophis integrates them immediately into 3/5/7/10/20-ship packs where they auto-take pack leader and level leadership + tactics (and never solo-graze). Unity retains Command division ownership, Leader errand priority (dispatch.py intercepts Leader errands before plan routes), 5-empire Officer banking, diplomacy, and strategic veto.
+2. **Frontline Military (95 ships) = 100% Pure Firepower (50% brawler, 30% ewar, 20% flak_tank):** Removed organic support from frontline combat ships because 10 Heavy Command Flagships + 14 Utility/Mini-Support Sentinels already supply 24/140 (17.1%) fleet-wide support -- clean symmetry for 2 big war groups (3 Core Command + 2 Regional Stealth + 7 Utility Sentinels + 10-11 Pursuit Sentinels + 30-47 Pure Military each).
+3. **Hard T3 Auto-Upgrade Ceiling (max_auto_tier: 3 in upgrades.py + upgrade-policy.json):** Automated hull buying stops strictly at T3 across every division; T4/T5 capitals remain custom player-designed commissions.
