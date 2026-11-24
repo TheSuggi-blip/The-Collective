@@ -1,0 +1,29 @@
+{
+ "id": "strip-starters-trader-alpha",
+ "kind": "circuit",
+ "title": "A trader docked at Alpha Centauri Colonial Station strips its off-role starter modules (Pulse Laser I, Mining Laser I, Gas Harvester I) into its storage there",
+ "note": "Written by Mercury, 2026-11-24 01:23 UTC (F17: stripping off-role starters deploys at once in parallel batches; F40 alarm Module Fit & Purity: 68 of 85 traders carry an off-role starter; table ship_modules 01:23 UTC: pulse_laser_i 64, mining_laser_i 32, gas_harvester_i 2 on traders). A trader never fights (stance flee, card) and never gathers (F23): the modules take cpu and power a later cargo or defence module uses. The form of Apophis's strip-mining-laser-krynn: one docked stop, unfit then store all, once a pilot, gated to the ships already docked at Alpha Centauri Colonial Station (requires.docked_at; the Bursar desk beside it keeps them there), no fuel, no buy.",
+ "once": true,
+ "max_ships": 10,
+ "max_pilots": 85,
+ "min_credits": 3000,
+ "requires": {
+  "any_module": [
+   "pulse_laser_i",
+   "mining_laser_i",
+   "gas_harvester_i"
+  ],
+  "docked_at": "alpha_centauri_colonial_station"
+ },
+ "stops": [
+  {
+   "at": "alpha_centauri:alpha_centauri_colonial_station:alpha_centauri_colonial_station",
+   "unfit": [
+    "pulse_laser_i",
+    "mining_laser_i",
+    "gas_harvester_i"
+   ],
+   "store": "all"
+  }
+ ]
+}
