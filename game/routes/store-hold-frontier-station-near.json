@@ -1,0 +1,18 @@
+{
+ "id": "store-hold-frontier-station-near",
+ "kind": "circuit",
+ "title": "A scout of any empire near the Mobile Capital with goods aboard docks at Frontier Station and stores its hold",
+ "note": "Written by Oracle, 2026-11-24 05:10 UTC (orders ENT-085, P1 and P6; rule F8). At 05:07 UTC three Voidborn scouts stood docked at Frontier Station (Altais) with 8 units aboard each (warp stabilizer, shield charge, armor welds, deep space probes, an emergency warp device, a hull patch: rewards of the frontier missions, table ship_cargo), and one more elsewhere with 10. dispatch.py closes every empty-hold census above five units, so their own census lists were closed; store-hold-central-nexus refused them at 17 jumps (max_jumps 14) and store-hold-frontier-station takes Outer Rim pilots only (requires.empire, kept: Command and Logistics plans use it). This one is for the scout plan only: requires.hold (more than five units) and max_jumps 6, one stop, store all, into the pilot's own storage there (Trade sells surplus, F24). It stands in the scouts' list First after store-hold-central-nexus.",
+ "standing": true,
+ "max_ships": 12,
+ "requires": {
+  "hold": true,
+  "max_jumps": 6
+ },
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all"
+  }
+ ]
+}

@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 525.
+Routes: 526.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -139,7 +139,7 @@ Routes: 525.
 | [census-north](census-north.json) | census | beyond the border, 15 jumps | Read the north road and the north sites: Atria (the north outpost), the road by Regor, Groombridge 34, Chalawan and Rasalhague to Yildun (the station candidate), Aldebaran, Hawthorne, Alchiba and their neighbours, every three hours | up to 6 ships, empty hold | 106 | 12 | -140 | -620 | 2026-11-23 |
 | [census-region-altais](census-region-altais.json) | census | beyond the border, 20 jumps | Read the Outer Rim home region, Altais and the systems within four jumps (and the places others work within six), every two hours: deposits, creatures, pirates, books, boards | up to 6 ships, empty hold | 199 | 6 | -120 | -1,030 | 2026-11-23 |
 | [census-region-altais-ring](census-region-altais-ring.json) | census | beyond the border, 21 jumps | Read the outer ring of the Outer Rim home region, five and six jumps from Altais, every six hours | up to 2 ships, empty hold | 25 | 9 | -110 | -680 | 2026-11-23 |
-| [census-region-haven](census-region-haven.json) | census | beyond the border, 25 jumps | Read the Nebula home region, Haven and the systems within four jumps (and the places others work within six), every two hours: deposits, creatures, pirates, books, boards | up to 6 ships, empty hold | 123 | 5 | -100 | -700 | 2026-11-23 |
+| [census-region-haven](census-region-haven.json) | census | beyond the border, 29 jumps | Read the Nebula home region, Haven and the systems within four jumps (and the places others work within six), every two hours: deposits, creatures, pirates, books, boards | up to 6 ships, empty hold | 123 | 5 | -100 | -700 | 2026-11-23 |
 | [census-region-haven-ring](census-region-haven-ring.json) | census | beyond the border, 26 jumps | Read the outer ring of the Nebula home region, five and six jumps from Haven, every six hours | up to 2 ships, empty hold | 39 | 4 | -80 | -650 | 2026-11-23 |
 | [census-region-krynn](census-region-krynn.json) | census | beyond the border, 22 jumps | Read the Crimson home region, Krynn and the systems within four jumps, every three hours | up to 3 ships, empty hold | 96 | 7 | -110 | -700 | 2026-11-23 |
 | [census-region-sol](census-region-sol.json) | census | beyond the border, 13 jumps | Read the Solarian home region, Sol and the systems within three jumps, every three hours | up to 2 ships, empty hold | 44 | 6 | -200 | -1,570 | 2026-11-23 |
@@ -203,6 +203,7 @@ Routes: 525.
 | [join-sol-trader](join-sol-trader.json) | circuit | beyond the border, 10 jumps | A trader whose home trade is full joins the Solarian corridor: one trip to Sol Central, where the Solarian once missions open to it | once per pilot, up to 70 ships, standing work | 48 | 14 | -220 | one-time | 2026-11-23 |
 | [load-plasma-ammo-nova-terra](load-plasma-ammo-nova-terra.json) | circuit | beyond the border, 8 jumps | Plasma ammunition back aboard: withdraw the stored dispersal plasma cell packs at Nova Terra Central into the Plasma Cannon II ship's hold | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, with 1 dispersal_plasma_cell_pack stored at nova_terra_central, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-frontier-station](store-hold-frontier-station.json) | circuit | beyond the border, 17 jumps | A ship a run left loaded docks at Frontier Station, Altais, and stores its hold | up to 12 ships, goods aboard, born outerrim, standing work | 14 | 3 | 30 | 180 | 2026-11-24 |
+| [store-hold-frontier-station-near](store-hold-frontier-station-near.json) | circuit | beyond the border, 17 jumps | A scout of any empire near the Mobile Capital with goods aboard docks at Frontier Station and stores its hold | up to 12 ships, goods aboard, standing work | TBD | TBD | TBD | TBD | -- |
 | [store-hold-grand-exchange](store-hold-grand-exchange.json) | circuit | beyond the border, 21 jumps | A newborn miner a run left loaded docks at Grand Exchange Station, Haven and stores its hold | up to 35 ships, goods aboard, born nebula, standing work | 17 | 5 | 240 | 3,570 | 2026-11-24 |
 | [store-hold-krynn-war-citadel](store-hold-krynn-war-citadel.json) | circuit | beyond the border, 20 jumps | A Crimson-born drone a run left loaded docks at Crimson War Citadel, Krynn and stores its hold | up to 12 ships, goods aboard, born crimson, standing work | 49 | 10 | -340 | -1,560 | 2026-11-24 |
 | [store-hold-sol-central](store-hold-sol-central.json) | circuit | beyond the border, 10 jumps | A newborn miner a run left loaded docks at Confederacy Central Command, Sol and stores its hold | up to 35 ships, goods aboard, born solarian, standing work | 106 | 6 | -120 | -1,040 | 2026-11-24 |
