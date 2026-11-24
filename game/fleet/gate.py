@@ -148,10 +148,11 @@ def release(pilot):
     return '%s carries no hand hold of yours (%s)' % (pilot, what or 'no order file')
 
 
-def book_onetime(pilot, title, amount):
+def book_onetime(pilot, title, amount, data=None):
     """One row in data/fleet/onetime.json, under its lock: the collector keeps this money out of the steady income."""
     import fcntl
-    path = os.path.join(division.DATA, 'fleet', 'onetime.json')
+    base = str(data) if data else division.DATA
+    path = os.path.join(base, 'fleet', 'onetime.json')
     with open(path + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:

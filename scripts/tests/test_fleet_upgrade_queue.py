@@ -259,5 +259,15 @@ class UpgradeQueueTests(unittest.TestCase):
         self.assertEqual(rows["drone-1"]["state"], "funded")
         self.assertIn("TimeoutError", rows["drone-1"]["note"])
 
+    def test_gate_book_onetime_accepts_data_kwarg_for_hull_capex(self):
+        import gate as gate_mod
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "fleet").mkdir(parents=True, exist_ok=True)
+            gate_mod.book_onetime("miner-47", "Resonance_miner hull commissioned", -277941, data=tmp)
+            rows = json.loads((Path(tmp) / "fleet" / "onetime.json").read_text())
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0][1:], ["miner-47", "Resonance_miner hull commissioned", -277941])
+
+
 if __name__ == "__main__":
     unittest.main()

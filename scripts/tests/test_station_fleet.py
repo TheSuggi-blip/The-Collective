@@ -649,5 +649,17 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertIn("nothing written", self.fleet.backfill_seeds(data)[0])
 
 
+    def test_meter_ignores_capex_outliers_and_hull_class_switches(self):
+        meters = {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [50, 80, 15, 30], "div": {}}
+        row = lambda **change: dict({"division": "Mining", "docked": "base", "fuel": 50, "hull": 60, "credits": 1000, "cargo_used": 10, "class": "Threshold"}, **change)
+        # ENT-186: a 278,000 cr hull commission sharing a refuel pass uses clean fuel avg, never books as fuel or poisons clean
+        self.fleet.meter(row(fuel=70, credits=1000 - 278032), (50, 60, 1000, 10, "Threshold"), meters)
+        self.assertEqual(meters["clean"], [50, 80, 15, 30])
+        self.assertEqual((meters["fuel_units"], meters["fuel_cr"]), (20, 32))
+        # ENT-186: switching hull class (Threshold -> Recursion) must not book higher hull/fuel as repair/refuel
+        self.fleet.meter(row(fuel=200, hull=600, credits=1000, **{"class": "Recursion"}), (50, 150, 225430, 10, "Threshold"), meters)
+        self.assertEqual((meters["fuel_units"], meters["hull_points"], meters["repair_cr"]), (20, 0, 0))
+
+
 if __name__ == "__main__":
     unittest.main()
