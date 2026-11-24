@@ -167,6 +167,7 @@
   "mine-caph-disk",
   "mine-volatile-pocket",
   "home-sol-central",
+  "mine-network",
   "train-jumps-miner",
   "park"
  ],
@@ -353,6 +354,7 @@
   "mine-caph-disk": 130,
   "mine-volatile-pocket": 130,
   "home-sol-central": 130,
+  "mine-network": 130,
   "train-jumps-miner": 130,
   "park": 130
  },

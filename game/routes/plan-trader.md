@@ -221,6 +221,6 @@ Planned:
 
 | What | When |
 |---|---|
-| read the Hex Star gland carries and the bid's refill; lift or rest them | next turn |
-| test whether a HEXC supply contract at Krynn counts a part delivery (levity bladder 750, fusion pearl 274): one ship, one accept | next turn |
-| follow the Apophenia queue (five Piloting-10 traders) and the Cargo Expander II batch at Krynn; next module batch at the Grand Exchange | next turn |
+| read the four Apophenia commissions at The Experiment (sourcing on phase matrix and neural gel since 10:26 UTC); cancel and buy listed hulls if still sourcing | next turn |
+| read the first runs of the new Prayer and Baling Wire hulls (fuel per jump, minutes per run) before the next Prayer batch | next turn |
+| HEXC levity bladder contract at Krynn (750 for 55,125 cr): consolidate only once a 240+ cargo hull carries the Arneb lot | after the hull batch |
