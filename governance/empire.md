@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-25T07:26:57Z.
+Facts as of 2026-11-25T18:18:38Z.
 
 ## 1. The Faction
 
@@ -32,8 +32,8 @@ Facts as of 2026-11-25T07:26:57Z.
 | Members | 275 of a limit of 275 |
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
-| Outposts | 2 of 8 |
-| Offices at stations | 13, rent 1,037 cr per cycle (89,182 cr a day) |
+| Outposts | 3 of 8 |
+| Offices at stations | 18, rent 1,175 cr per cycle (101,050 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -48,6 +48,7 @@ of its own limit.
 | Base | Kind | System | Condition | Services |
 |---|---|---|---|---|
 | CLTV Outpost Atria | outpost | `atria` | thriving | -- |
+| CLTV Outpost Felis | outpost | `felis` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
 
 Systems we hold something in:
@@ -55,10 +56,14 @@ Systems we hold something in:
 | System | What | Note |
 |---|---|---|
 | `atria` | outpost | CLTV Outpost Atria |
+| `felis` | outpost | CLTV Outpost Felis |
 | `gsc_0044` | outpost | CLTV Outpost GSC-0044 |
 | `nexus_prime` | office | at central_nexus |
 | `node_beta` | office | at node_beta_industrial_station |
+| `procyon` | office | at procyon_colonial_station |
+| `last_light` | office | at ramens_rest |
 | `the_experiment` | office | at the_experiment_research_station |
+| `the_levy` | office | at the_levy_customs_station |
 
 What founding a base takes: `game/rules/09-factions.md` (fees and limits)
 and the tool `base_plan` (every part down to the ore, against what we
@@ -75,12 +80,17 @@ hold).
 | Faction Fuel Bunker | 1 | 8e56656eafd9cd5dff93c9efe234b958 | `atria` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
 | Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 39 |
+| Faction Fuel Bunker | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
+| Faction Lockbox | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 526 |
+| Faction Lockbox | 1 | procyon_colonial_station | `procyon` | active | 69 |
+| Faction Lockbox | 1 | ramens_rest | `last_light` | active | 69 |
 | Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 39 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
+| Faction Lockbox | 1 | the_levy_customs_station | `the_levy` | active | 69 |
 
 ## 4. Sites
 
@@ -94,7 +104,7 @@ list of stations. Where a base is built is Suggi's decision.
 | `atria` | Atria | lawless | 7 | CLTV Outpost Atria (outpost, CLTV) | built | Unity | north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers |
 | `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home |
 | `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space |
-| `felis` | Felis | lawless | 7 | none | chosen | Suggi | south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge |
+| `felis` | Felis | lawless | 7 | CLTV Outpost Felis (outpost, CLTV) | built | Suggi | south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge |
 | `achernar` | Achernar | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
 | `alnair` | Alnair | lawless | 5 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
 | `wolf_1061` | Wolf 1061 | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
