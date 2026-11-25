@@ -61,8 +61,9 @@ DEFAULT_POLICY = {
         "outpost": {"fuel_cell": 200, "steel_plate": 180, "circuit_board": 45, "hull_patch": 25},
         "station": {"fuel_cell": 1000, "steel_plate": 400, "circuit_board": 100, "flex_polymer": 150, "copper_wiring": 150, "hull_patch": 40, "repair_kit": 50},
     },
+    "hub_bunker_fuel_targets": {"outpost": 3000, "station": 5000},
     "hub_upkeep_max_unit_price": {
-        "fuel_cell": 80, "steel_plate": 120, "circuit_board": 900,
+        "fuel_cell": 115, "steel_plate": 120, "circuit_board": 900,
         "hull_patch": 350, "repair_kit": 400, "flex_polymer": 250, "copper_wiring": 250,
     },
     "arb_bid_depth_cap": 1.0,
@@ -239,9 +240,14 @@ def _load_cltv_owned_hubs_uncached(data):
         con = _wc.ro_db(db, timeout=3.0)
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         if "bases" in tbls:
+            poi_by_base = {}
+            if "places" in tbls:
+                for p_b, p_p in con.execute("SELECT base, poi FROM places WHERE COALESCE(base,'')!='' AND COALESCE(poi,'')!=''").fetchall():
+                    poi_by_base[str(p_b)] = str(p_p)
             for b_id, sys_id, poi_id, knd in con.execute(
-                "SELECT base, system, COALESCE(poi, base), COALESCE(kind, 'outpost') FROM bases WHERE base IS NOT NULL AND system IS NOT NULL"
+                "SELECT base, system, COALESCE(poi, ''), COALESCE(kind, 'outpost') FROM bases WHERE base IS NOT NULL AND system IS NOT NULL"
             ).fetchall():
+                poi_id = str(poi_id or "").strip() or poi_by_base.get(str(b_id), "")
                 if b_id and sys_id:
                     k = "station" if "station" in str(knd or "").lower() else "outpost"
                     out[str(b_id)] = {"base": str(b_id), "system": str(sys_id), "poi": str(poi_id or b_id), "kind": k}
@@ -314,14 +320,44 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             continue
         asks_by_item.setdefault(iid, []).append((ask_p, ask_q, oloc))
 
+    bunker_tgts = policy.get("hub_bunker_fuel_targets") or DEFAULT_POLICY["hub_bunker_fuel_targets"]
+    emp_data = read_json(Path(data) / "empire" / "empire.json", {})
+    bunker_fuel_by_base = {}
+    has_bunker_bases = set()
+    if isinstance(emp_data, dict):
+        for fac in (emp_data.get("facilities") or []):
+            if isinstance(fac, dict) and str(fac.get("type") or "") == "faction_fuel_bunker" and str(fac.get("status") or "active") == "active":
+                if fac.get("base"):
+                    has_bunker_bases.add(str(fac["base"]))
+        for row in (emp_data.get("faction_storage") or []):
+            if isinstance(row, dict) and str(row.get("item") or row.get("item_id") or "") == "fuel":
+                b_k = str(row.get("base") or row.get("base_id") or "")
+                if b_k:
+                    bunker_fuel_by_base[b_k] = int(row.get("units") or row.get("quantity") or 0)
+
     best = None
     for hub_id, hinfo in owned_hubs.items():
         if hub_id in sh_set or hinfo["system"] in sh_set:
             continue
         dloc = base_map.get(hub_id) or (hinfo["system"], hinfo["poi"], hub_id, "")
+        if not dloc or not str(dloc[1] or "").strip() or str(dloc[1]) == str(hub_id):
+            continue
         hub_kind = hinfo.get("kind") or "outpost"
         tgts = targets_cfg.get(hub_kind) or {}
         cur_inv = fac_by_base.get(hub_id) or {}
+
+        # Build prioritized demand list: (item_id, deficit_units, urgency, job_key, bunker_fill_bool)
+        demands = []
+        btgt = int(bunker_tgts.get(hub_kind) or 0)
+        if btgt > 0 and hub_id in has_bunker_bases:
+            have_f = int(bunker_fuel_by_base.get(hub_id, cur_inv.get("fuel") or 0))
+            if have_f < int(round(btgt * reorder_pct)):
+                jk_b = "upkeep_bunker:%s" % hub_id
+                if jk_b not in claimed_keys:
+                    cells_need = max(1, (btgt - have_f + 19) // 20)
+                    urg_b = (1.0 - (float(have_f) / float(btgt))) * 4.0
+                    demands.append(("fuel_cell", cells_need, urg_b, jk_b, True))
+
         for iid, tgt_raw in tgts.items():
             tgt = int(tgt_raw or 0)
             if tgt <= 0:
@@ -334,6 +370,12 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 continue
             deficit = max(1, tgt - have_here)
             urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
+            demands.append((iid, deficit, urgency, jkey, False))
+
+        for iid, deficit, urgency, jkey, bunker_fill in demands:
+            # Enforce sensible minimum lot size so haulers never fly 10+ jumps for 5 fuel_cell
+            lot_floor = max(25, int(hold_cap * 0.25)) if iid == "fuel_cell" else 20
+            min_lot = min(deficit, int(hold_cap), lot_floor)
 
             chosen = None
             for src_t, src_map in (("faction", fac_by_base), ("self", self_by_base)):
@@ -341,7 +383,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     if sb_id in owned_hubs or sb_id in sh_set or sb_id not in base_map:
                         continue
                     sq = int((sitems or {}).get(iid) or 0)
-                    if sq < min(deficit, 5):
+                    if sq < min_lot:
                         continue
                     oloc = base_map[sb_id]
                     if policy.get("policed_only", True) and not oloc[3]:
@@ -351,7 +393,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
                         continue
                     qty = min(deficit, sq, int(hold_cap))
-                    if qty < 1:
+                    if qty < min_lot:
                         continue
                     sc = (urgency * 1000.0 + qty * 2.0) / max(1.0, float(p_hops + d_hops))
                     if chosen is None or sc > chosen[0]:
@@ -359,6 +401,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                             "job_key": jkey, "mode": "transfer", "source_target": src_t,
                             "item": iid, "qty": qty, "origin": oloc, "dest": dloc,
                             "hub_kind": hub_kind, "max_unit_price": 0,
+                            "bunker_fill": bunker_fill,
                             "pickup_hops": p_hops, "delivery_hops": d_hops,
                         })
 
@@ -373,7 +416,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                         if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
                             continue
                         qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
-                        if qty < min(deficit, 5):
+                        if qty < min_lot:
                             continue
                         sc = (urgency * 850.0 + qty * 1.5) / max(1.0, float(p_hops + d_hops))
                         if chosen is None or sc > chosen[0]:
@@ -382,6 +425,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                                 "item": iid, "qty": qty, "origin": oloc, "dest": dloc,
                                 "hub_kind": hub_kind, "max_unit_price": int(round(cap_p)),
                                 "est_ask": int(round(ask_p)),
+                                "bunker_fill": bunker_fill,
                                 "pickup_hops": p_hops, "delivery_hops": d_hops,
                             })
                         break
@@ -1579,13 +1623,54 @@ def main(argv=None):
                     if have <= 0:
                         release_job(DATA, pilot)
                         continue
-                    ok_d, _ = go_dock(dloc, refuel=(upk.get("hub_kind") == "station"))
+                    ok_d, _ = go_dock(dloc, refuel=(upk.get("hub_kind") == "station" and not upk.get("bunker_fill")))
                     if ok_d:
-                        r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
-                        time.sleep(TICK)
-                        say("hub_upkeep DELIVERED %d %s -> %s%s" % (have, iid, dloc[2], " ERR" if "error" in r_dep else ""))
-                        notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
-                        completed += 1
+                        if upk.get("bunker_fill") and iid == "fuel_cell":
+                            moved_f = burnt_c = 0
+                            for _ in range(120):
+                                st_now = get_state()
+                                sh_now = st_now.get("ship") if isinstance(st_now.get("ship"), dict) else {}
+                                cur_f = int(sh_now.get("fuel") if sh_now.get("fuel") is not None else (st_now.get("fuel") or 0))
+                                max_f = int(sh_now.get("max_fuel") or st_now.get("max_fuel") or 95)
+                                keep_f = min(30, max(10, max_f - 25))
+                                cells_left = get_cargo().get("fuel_cell", 0)
+                                n_burn = min(cells_left, max(0, max_f - cur_f) // 20)
+                                if n_burn > 0:
+                                    raw("refuel", {"item_id": "fuel_cell", "quantity": n_burn}, group="spacemolt")
+                                    time.sleep(TICK)
+                                    after_c = get_cargo().get("fuel_cell", 0)
+                                    burnt_c += max(0, cells_left - after_c)
+                                    st_now = get_state()
+                                    sh_now = st_now.get("ship") if isinstance(st_now.get("ship"), dict) else {}
+                                    cur_f = int(sh_now.get("fuel") if sh_now.get("fuel") is not None else (st_now.get("fuel") or 0))
+                                if cur_f <= keep_f:
+                                    if n_burn > 0:
+                                        continue
+                                    break
+                                dep_f = cur_f - keep_f
+                                raw("deposit", {"item_id": "fuel", "quantity": dep_f, "target": "faction"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                st_after = get_state()
+                                sh_after = st_after.get("ship") if isinstance(st_after.get("ship"), dict) else {}
+                                f_after = int(sh_after.get("fuel") if sh_after.get("fuel") is not None else (st_after.get("fuel") or 0))
+                                if f_after >= cur_f:
+                                    break
+                                moved_f += (cur_f - f_after)
+                                if not get_cargo().get("fuel_cell", 0):
+                                    break
+                            rem_c = get_cargo().get("fuel_cell", 0)
+                            if rem_c > 0:
+                                raw("deposit", {"item_id": "fuel_cell", "quantity": rem_c, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                            say("hub_upkeep BUNKER_FILLED +%d fuel (%d cells burnt, %d stored) -> %s" % (moved_f, burnt_c, rem_c, dloc[2]))
+                            notes.append("hub_upkeep bunker +%d fuel -> %s" % (moved_f, dloc[2]))
+                            completed += 1
+                        else:
+                            r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            say("hub_upkeep DELIVERED %d %s -> %s%s" % (have, iid, dloc[2], " ERR" if "error" in r_dep else ""))
+                            notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
+                            completed += 1
                     else:
                         release_job(DATA, pilot)
 

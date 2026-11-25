@@ -202,6 +202,49 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertEqual(sup["origin"][2], "felis_outpost_id")
 
 
+    def test_hub_upkeep_min_lot_and_bunker_fill(self):
+        """Tiny 5-12 cell warehouse scraps must NOT trigger a 10-jump micro-transfer;
+        outposts with low fuel bunkers must trigger bunker_fill bulk buys up to 115 cr,
+        and hubs with empty/unscouted POI must be skipped safely."""
+        import json, sqlite3, tempfile, time
+        with tempfile.TemporaryDirectory() as td:
+            tmp_path = Path(td)
+            db_p = tmp_path / "store" / "read.db"
+            db_p.parent.mkdir(parents=True, exist_ok=True)
+            con = sqlite3.connect(db_p)
+            con.execute("CREATE TABLE bases (base TEXT, system TEXT, poi TEXT, kind TEXT)")
+            con.execute("CREATE TABLE places (base TEXT, poi TEXT)")
+            con.execute("INSERT INTO bases VALUES ('outpost_ok', 'felis', 'poi_felis_ok', 'outpost')")
+            con.execute("INSERT INTO bases VALUES ('outpost_nopoi', 'unscouted', '', 'outpost')")
+            con.commit(); con.close()
+
+            (tmp_path / "stock").mkdir(parents=True, exist_ok=True)
+            (tmp_path / "stock" / "storage.json").write_text(json.dumps({
+                "faction": [{"base": "node_beta_industrial_station", "items": [{"item_id": "fuel_cell", "quantity": 12}]}],
+                "pilots": {},
+            }), encoding="utf-8")
+            (tmp_path / "empire").mkdir(parents=True, exist_ok=True)
+            (tmp_path / "empire" / "empire.json").write_text(json.dumps({
+                "facilities": [{"type": "faction_fuel_bunker", "status": "active", "base": "outpost_ok"}],
+                "faction_storage": [{"base": "outpost_ok", "item": "fuel", "units": 200}],
+            }), encoding="utf-8")
+
+            base_map = {
+                "node_beta_industrial_station": ("node_beta", "node_beta_industrial_station", "node_beta_industrial_station", "voidborn"),
+                "node_alpha_processing_station": ("node_alpha", "node_alpha_processing_station", "node_alpha_processing_station", "voidborn"),
+                "outpost_ok": ("felis", "poi_felis_ok", "outpost_ok", ""),
+            }
+            lanes = {"node_beta": ["node_alpha", "felis"], "node_alpha": ["node_beta"], "felis": ["node_beta"]}
+            books = [{"base": "node_alpha_processing_station", "item": "fuel_cell", "ask": 100, "ask_qty": 500, "t": time.time()}]
+            pol = haul.load_policy()
+            job = haul._pick_hub_upkeep(tmp_path, "hauler-1", books, base_map, lanes, "node_beta", 120, 15000, pol, set())
+            self.assertIsNotNone(job)
+            self.assertEqual(job["dest"][2], "outpost_ok")
+            self.assertTrue(job["bunker_fill"])
+            self.assertEqual(job["mode"], "buy")
+            self.assertGreaterEqual(job["qty"], 100)
+
+
 if __name__ == "__main__":
     unittest.main()
 

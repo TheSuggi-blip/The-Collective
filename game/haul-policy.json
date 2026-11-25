@@ -59,12 +59,16 @@
     }
   },
   "hub_upkeep_max_unit_price": {
-    "fuel_cell": 80,
+    "fuel_cell": 115,
     "steel_plate": 120,
     "circuit_board": 900,
     "hull_patch": 350,
     "repair_kit": 400,
     "flex_polymer": 250,
     "copper_wiring": 250
+  },
+  "hub_bunker_fuel_targets": {
+    "outpost": 3000,
+    "station": 5000
   }
 }
