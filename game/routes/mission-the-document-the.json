@@ -1,0 +1,29 @@
+{
+ "id": "mission-the-document-the",
+ "kind": "circuit",
+ "title": "The Document: 6000 cr, +250 XP at The Crucible Garrison",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 6000 cr, sale 0 cr, +250 XP. Test with one ship first. Added as a test by fill.py on 2026-11-25 06:12 UTC (Apollo): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "accept": [
+    "the_document"
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "The Document"
+ ],
+ "skip_if_booked": [
+  "The Document"
+ ]
+}

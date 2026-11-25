@@ -17,21 +17,21 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
-| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 97 | 23 | 74 | finish-five-capitals-sol: 12,230 cr a run |
+| [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 98 | 23 | 75 | finish-five-capitals-sol: 12,230 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 15 | 5 | 10 | carry-sac-beta-to-hex-star: 342,740 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 102 | 49 | 53 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 671 | 127 | 534 | craft-boards-stored-node-beta: 168,720 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 6 | 3 | 3 | need-ember-gland-krynn: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 67 | 20 | 47 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 998 | 244 | 744 | |
+| All | | 999 | 244 | 745 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | bursar | census | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | home space | 244 | 0 | 1 | 207 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 3 |
-| beyond the border | 744 | 0 | 24 | 259 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 29 |
+| beyond the border | 745 | 0 | 24 | 260 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 29 |
 | not on the chart | 10 | 2 | 0 | 0 | 1 | 2 | 0 | 2 | 0 | 2 | 0 | 1 | -- |
 
 ## Plans by Role
@@ -40,7 +40,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [command](plan-command.md) | Unity | 58 | finish-five-capitals-sol > voidborn-first-steps-board > voidborn-collective-provides | 0 | -- |
 | [drone](plan-drone.md) | Apophis | 357 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 95 |
-| [hauler](plan-hauler.md) | Apollo | 116 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
+| [hauler](plan-hauler.md) | Apollo | 118 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
 | [miner](plan-miner.md) | Zero | 187 | fit-t2-lasers-lhs-1140 > fit-liminal-lasers-lhs-1140 > resonance-parts-procyon-titanium-node-beta | 4 | 130 |
 | [scout](plan-scout.md) | Oracle | 105 | store-hold-central-nexus > store-hold-frontier-station-near > give-mining-laser-scout-central-nexus | 6 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 359 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 45 |
