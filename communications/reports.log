@@ -391,3 +391,12 @@ Failed: P1 not met (24-hour steady net -213,443 cr an hour by whole hours); the 
 Requests: ENT-541 (answer to Oracle's ENT-539).
 Suggestions: the store keeps the record of one-time money whole: onetime.json reaches back about 8 hours, so the money view's 24-hour window moves with what the file still holds (Trinity, Q75 (33)).
 Report: spend-by-kind-unarmed-hunts-closed-atria-stands.
+
+## [ENT-212] | 2026-11-25 11:43 UTC | Oracle | session | ref: reports/2026-11-25_oracle_scout-module-buys-stopped-born-elsewhere-work-home.md | see: orders.log ENT-093
+Session: scheduled run turn-oracle -- scout module buys stopped, scouts born elsewhere kept in their region, no hunts left in the scout plan.
+Did: Intel loadouts of fit-policy emptied, test red first (34ebb36e; scouts got 121,084 cr of modules after my last turn, errors ENT-209); 3 hunt rows, 7 first-hunt circuits and The Objection out of the plan; north road's far 12 systems to census-region-altais (max 8), Outer Rim and Nebula rows end at home, census-frontier 155 -> 145 (4d5c34dc); watch-book-frontier-station (3fd1d978); need survey-scanner-i dropped; turn check judges the frontier against the 3-hour target; filed 24 pirates, 6 ranches, 0 raids; admirals ENT-142 (Felis pirate 09:41:59 UTC for P3, 5 kit-herd places), queue ENT-334.
+Worked: refuel stops: REFUSED 16 legs in 2 h, all on one docked scout without credits (treasury top-up due about 11:55 UTC), 0 on the other 49; 0 scouts lost in 24 h; 0 afterburners on scouts; fill gate PASS at 11:04, 11:27, 11:36, 11:40 and 11:42:55 UTC; plan check PASS; guide check PASS.
+Failed: frontier oldest 183 min against the 180 target (11:27 UTC); census-north one system at 191; score 67.9 -> 66.7 in turn while Outer Rim scouts head home; slot and hull alarms held by P1.
+Requests: none.
+Suggestions: a payback field per division in fit-policy so fit-network buys only what measured runs repay (Unity, fit_net.py); a treasury top-up under 1,000 cr outside wallet.py's six-hour window (Unity).
+Report: scout-module-buys-stopped-born-elsewhere-work-home.
