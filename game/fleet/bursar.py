@@ -803,15 +803,20 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             bid_q = int(row.get("best_buy_qty") or row.get("buy_quantity") or 0)
             ask = float(row.get("best_sell") or 0)
             base_v = float((catalog_vals or {}).get(iid) or 0)
-            if ask > 0 and base_v > 0:
-                ref_p = max(min(base_v, ask), bid)
+            # Strict live-market valuation (Suggi directive): NEVER let stale catalog base_v block real live bids!
+            if bid > 0 and ask > 0:
+                ref_p = min(ask, max(bid, ask * 0.70))
+            elif bid > 0:
+                ref_p = bid
+            elif ask > 0:
+                ref_p = ask
             else:
-                ref_p = max(base_v, bid, ask * 0.5)
+                ref_p = base_v
             if ref_p < 2:
                 continue
             floor_p = max(2, int(round(ref_p * min_ratio)))
-            hit_live_spread = (ask > 0 and bid >= max(10, int(round(ask * 0.85))))
-            if bid_q > 0 and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
+            hit_live_spread = (ask > 0 and bid >= max(5, int(round(ask * hit_ratio)))) or (ask <= 0 and bid >= 5)
+            if bid_q > 0 and bid >= 5 and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                 continue
             if used_sell_ords >= max_sell_ords:

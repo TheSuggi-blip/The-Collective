@@ -305,6 +305,16 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertEqual(picks, [("null_matter", 50)])
 
 
+    def test_bursar_hits_live_bid_ignoring_inflated_catalog_base(self):
+        """Bursar must sell into real live cash bids (e.g. phase_crystal @ 110 cr) instead of letting
+        stale inflated catalog base_v (300 cr) block instant cash conversion."""
+        import bursar
+        book = {"phase_crystal": {"best_buy": 110, "best_buy_qty": 200, "best_sell": 145}}
+        pol = {"min_cash_keep": 20000, "sell": {"enabled": True, "max_orders_per_station": 16, "undercut_cr": 1, "min_price_ratio": 0.65, "instant_hit_bid_ratio": 0.72, "respect_reserve": True}, "buy": {"enabled": False}}
+        acts = bursar.plan_bursar_actions(book, {"phase_crystal": 40}, [], {}, set(), {"phase_crystal": 300}, 50000, pol)
+        self.assertEqual(acts, [("sell_bid", "phase_crystal", 40, 110)])
+
+
 if __name__ == "__main__":
     unittest.main()
 

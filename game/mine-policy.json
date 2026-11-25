@@ -16,7 +16,13 @@
   ],
   "exclude_systems": [],
   "exclude_pois": [],
-  "exclude_resources": [],
+  "exclude_resources": [
+    "copper_ore",
+    "water_ice",
+    "sol_alloy_ore",
+    "quantum_fragments",
+    "antimatter_containment_cell"
+  ],
   "pirate_avoid_hours": 6.0,
   "max_jumps": 14,
   "max_station_jumps": 6,
