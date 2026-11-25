@@ -15,7 +15,7 @@ updated: 2026-11-25
 # UNSANE. [SANE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 35.
+Pilots of it in our space in the last 24 hours: 42.
 
 ## Identity
 
@@ -38,38 +38,38 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Agony Needle | Node Gamma (`node_gamma`) | 0 | threshold |
+| Agony Needle | Node Beta (`node_beta`) | 0 | threshold |
 | Bedlam Lance | Nexus Prime (`nexus_prime`) | 0 | accretion |
-| Bedlam Spark | Synchrony (`synchrony`) | 0 | threshold |
-| Catatonia Dart | Node Beta (`node_beta`) | 0 | threshold |
+| Bedlam Spark | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Cortical Flail | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Delirium Cutter | Synchrony (`synchrony`) | 0 | threshold |
-| Delirium Dart | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| Cortical Lacerator | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Delirium Dart | Pherkad (`pherkad`) | 0 | threshold |
 | Dread Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Entropy Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Fever Talon | Pherkad (`pherkad`) | 0 | threshold |
+| Frenzy Blade | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Ghost Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Hysteric Pulse | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Hysteric Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Malignant Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mania Lance | GSC-0027 (`gsc_0027`) | 0 | threshold |
-| Mind-Rupture | GSC-0027 (`gsc_0027`) | 0 | liminal |
+| Malignant Spike | Node Alpha (`node_alpha`) | 0 | threshold |
+| Mania Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Mania Vector | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Mind-Rupture | Node Beta (`node_beta`) | 0 | liminal |
 | Morbid Claw | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Neural Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Null Spike | Node Alpha (`node_alpha`) | 0 | threshold |
 | Panic Sabre | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Paranoia Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Paranoia Lance | Synchrony (`synchrony`) | 0 | threshold |
 | Psychopathic Fang | The Experiment (`the_experiment`) | 0 | threshold |
-| Psychotic Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Schism Dart | The Experiment (`the_experiment`) | 0 | accretion |
-| Screaming Needle | Node Beta (`node_beta`) | 0 | threshold |
+| Psychotic Stinger | Node Beta (`node_beta`) | 0 | threshold |
+| Schism Dart | Node Alpha (`node_alpha`) | 0 | accretion |
+| Schism Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Screaming Needle | GSC-0027 (`gsc_0027`) | 0 | threshold |
 | Screaming Sabre | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Siphon Sting | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Static Flail | Node Beta (`node_beta`) | 0 | liminal |
-| Static Talon | Node Beta (`node_beta`) | 0 | threshold |
-| Synaptic Bolt | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Synaptic Razor | Node Beta (`node_beta`) | 0 | threshold |
-| TheChurch | Nexus Prime (`nexus_prime`) | 0 | absence |
 
-And 5 more.
+And 12 more.
 
 ## Standing History
 

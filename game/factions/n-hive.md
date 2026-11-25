@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 19.
+Pilots of it in our space in the last 24 hours: 12.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 19.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 97 | Public event stream |
+| Pilots carrying the tag on the public event stream | 98 | Public event stream |
 
 ## Bases
 
@@ -42,25 +42,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
-| 404cabdaa14cd583b3a3cc98 | Hamal (`hamal`) | 0 | workhorse |
-| 5766f7c87c7f84b6893abd7e | Hamal (`hamal`) | 0 | workhorse |
-| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
-| 6d3e8d906d454ef5c87b6e4c | Node Gamma (`node_gamma`) | 0 | workhorse |
-| 706a154ccad49b2a57f5f914 | Acubens (`acubens`) | 0 | workhorse |
+| 10c1432ce43efedb9c7f9632 | Hamal (`hamal`) | 0 | workhorse |
+| 16d6873a069d1726d6bccaf5 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | workhorse |
+| 67194c43c43f74e1b9267ed5 | Synchrony (`synchrony`) | 0 | workhorse |
 | 80ec580ea701fcce02ad0a02 | Hamal (`hamal`) | 0 | workhorse |
-| 91cba4fc8631acb92b8db26f | Node Beta (`node_beta`) | 0 | runner |
-| a61127ef25917281a2f5af9d | Acubens (`acubens`) | 0 | workhorse |
-| b9eca5b6501443e6d0541e69 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| c413294b4b6a11879da15614 | Node Gamma (`node_gamma`) | 0 | futures |
+| 907a7ad5fc57ac61d6e57ad4 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| c560f1f71312e41fa9c0f091 | Node Gamma (`node_gamma`) | 0 | deep_survey |
 | cb9f390ad124b910d6bb336c | Node Gamma (`node_gamma`) | 0 | workhorse |
-| dd23b0ca1cc14350d2b0b023 | Hamal (`hamal`) | 0 | workhorse |
-| e3a724a14758022cda8c123e | Hamal (`hamal`) | 0 | workhorse |
-| f4fb0d5cfa446f5ef0f33b3f | Hamal (`hamal`) | 0 | workhorse |
-| f5736d218d41c0675a22c3d6 | Synchrony (`synchrony`) | 0 | workhorse |
-| f8c3f4c38ee48a37ee21926b | Hamal (`hamal`) | 0 | workhorse |
-| fdd4d2a524b48e0478b85d38 | Pherkad (`pherkad`) | 0 | workhorse |
-| hiver | Hamal (`hamal`) | 0 | workhorse |
+| dffe230ab864d7efef98b1fc | Node Gamma (`node_gamma`) | 0 | workhorse |
+| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
+| ed54a64a82f3c4f9990829ad | Node Gamma (`node_gamma`) | 0 | workhorse |
+| fdd4d2a524b48e0478b85d38 | Node Gamma (`node_gamma`) | 0 | workhorse |
 
 ## Standing History
 
