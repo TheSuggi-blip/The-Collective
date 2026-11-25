@@ -163,6 +163,18 @@ def _load_pirate_threat_safe(data_dir, hours):
         return {}
 
 
+def _dispatch_pirates(data_dir, now_t):
+    """The systems the dispatcher's pirate stop closes now (dispatch.pirates: the sightings record and the members'
+    pirate lines, six hours, a heavy pack 24): one reading of danger for the mine routes and mine-network alike
+    (requests ENT-534, 2026-11-25: the observations table alone held 4 of the 21 systems the dispatcher closed)."""
+    try:
+        import dispatch as _dp
+        return {str(s) for s in _dp.pirates(Path(data_dir), float(now_t))}
+    except Exception as exc:          # a record that cannot be read closes nothing more than the store's own lines
+        print("mine_net: the dispatcher's pirate record not read: %s" % exc, file=sys.stderr)
+        return set()
+
+
 def load_graph_and_world(data_dir, repo_root, policy, now_t=None):
     """Load star graph, systems, stations, fields, pirates, reserves, needs, and item values from read.db & TSVs."""
     if now_t is None:
@@ -245,7 +257,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                 cutoff = now_t - float(policy.get("pirate_avoid_hours") or 6.0) * 3600.0
                 for (subj,) in cur.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
                     if subj:
-                        pirates.add(str(subj))
+                        pirates.add(str(subj).split(":", 1)[0].strip())     # a subject `system:poi` counts by its system
 
             def _items():
                 cols = {r[1] for r in cur.execute("PRAGMA table_info(items)").fetchall()}
@@ -372,6 +384,9 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     lst = stations_by_sys.setdefault(tup[0], [])
                     if tup not in lst:
                         lst.append(tup)
+
+    pirates |= _dispatch_pirates(data_dir, now_t)
+    pirates.discard("")
 
     _res_world = {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,

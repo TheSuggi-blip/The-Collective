@@ -365,5 +365,63 @@ class MineNetMarketTierTests(unittest.TestCase):
             self.assertTrue(why)
 
 
+class MineNetPirateTests(unittest.TestCase):
+    """2026-11-25 (requests ENT-534): mine-network read pirates from the store's observations table only, 4
+    systems, while the dispatcher's pirate stop (dispatch.pirates: the sightings record and the members' lines)
+    closed 21; four escorts sent to its deficit belts fell to pirates. Its pirate systems are the dispatcher's
+    too, an observation's subject counts by its system, and a deficit belt there is never offered while
+    request_escort_for_pirate_deficits is false."""
+
+    def _data(self, tmp, now):
+        import sqlite3
+        data = Path(tmp) / "data"
+        (data / "store").mkdir(parents=True)
+        (data / "intel").mkdir(parents=True)
+        con = sqlite3.connect(str(data / "store" / "read.db"))
+        con.executescript("""
+            CREATE TABLE lanes (a TEXT, b TEXT);
+            CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+            CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, base TEXT);
+            CREATE TABLE fields (system TEXT, poi TEXT, resource TEXT, remaining INTEGER, max_remaining INTEGER,
+                                 richness INTEGER, t INTEGER);
+            CREATE TABLE observations (kind TEXT, subject TEXT, note TEXT, t REAL);
+            CREATE TABLE supply_status (chain TEXT, item TEXT, place TEXT, keep INT, stock INT, status TEXT);
+            INSERT INTO lanes VALUES ('s1', 's2'), ('s1', 's3'), ('s1', 's4');
+            INSERT INTO systems VALUES ('s1', 'voidborn', 0), ('s2', '', 0), ('s3', '', 0), ('s4', '', 0);
+            INSERT INTO places VALUES ('s1', 'st1', 'station', 'Station 1', 'base1');
+            INSERT INTO fields VALUES ('s2', 'belt2', 'iron_ore', 90000, 100000, 5, 1),
+                                      ('s3', 'belt3', 'iron_ore', 90000, 100000, 5, 1),
+                                      ('s4', 'belt4', 'iron_ore', 90000, 100000, 5, 1),
+                                      ('s1', 'belt1', 'iron_ore', 90000, 100000, 5, 1);
+            INSERT INTO supply_status VALUES ('iron-ore', 'iron_ore', 'fleet', 60000, 49000, 'short');
+        """)
+        con.execute("INSERT INTO observations VALUES ('pirate', 's4:belt4', 'raider', ?)", (now - 600,))
+        con.commit()
+        con.close()
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 1800))
+        old = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now - 9 * 3600))
+        (data / "intel" / "sightings.jsonl").write_text(
+            json.dumps({"system": "s2", "at": stamp, "pirates": 2}) + "\n"
+            + json.dumps({"system": "s3", "at": old, "pirates": 3}) + "\n", encoding="ascii")
+        return data
+
+    def test_the_dispatchers_pirate_systems_close_deficit_belts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            now = time.time()
+            data = self._data(tmp, now)
+            pol = dict(mine_net.DEFAULT_POLICY, policed_only=True, allow_lawless_for_deficit=True,
+                       request_escort_for_pirate_deficits=False, market_tier=False, craft_demand_tier=False)
+            w = mine_net.load_graph_and_world(str(data), str(tmp), pol, now_t=now)
+            self.assertIn("s2", w["pirates"])       # the sightings record, 30 minutes old
+            self.assertIn("s4", w["pirates"])       # an observation's subject counts by its system
+            self.assertNotIn("s3", w["pirates"])    # nine hours old: past the six-hour stop
+            pilot = {"name": "miner-1", "system": "s1", "tier": 0, "modules": [{"type": "mining_laser_i"}]}
+            belts = [c["belt_key"] for c in mine_net.score_belt_candidates(pilot, w, pol, {}, {})]
+            self.assertNotIn("s2:belt2", belts)
+            self.assertNotIn("s4:belt4", belts)
+            self.assertIn("s3:belt3", belts)
+            self.assertIn("s1:belt1", belts)
+
+
 if __name__ == "__main__":
     unittest.main()
