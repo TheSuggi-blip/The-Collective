@@ -136,3 +136,4 @@ Planned:
 | Measure fuel a jump of the scouts that carry a fuel optimizer against the rest before any module returns to an Intel loadout (P1) | next turn |
 | Read the envoy's replies through diplomacy.py threads twice a turn; beacons go out by themselves (next round 2026-11-26 09:26 UTC); replies to Unity | every turn |
 | Read the Survey Scanner II surveys (census-kit-herds): a faint signature resolved goes to Mining in queue.log | next turn |
+| Weigh a tier-2 scout hull only by fuel a read against the Threshold (tests.md) and a payback within a week (P1); none bought until then | once a T2 hull's fuel a jump is on record |
