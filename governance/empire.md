@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-24T20:47:35Z.
+Facts as of 2026-11-25T06:13:39Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-24T20:47:35Z.
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 1 of 8 |
-| Offices at stations | 10, rent 828 cr per cycle (71,208 cr a day) |
+| Offices at stations | 11, rent 828 cr per cycle (71,208 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -71,6 +71,7 @@ hold).
 | Recruitment Desk | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
 | Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 39 |
+| Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
 | Faction Lockbox | 1 | node_beta_industrial_station | `node_beta` | active | 69 |
 | Notice Board | 1 | node_beta_industrial_station | `node_beta` | active | 17 |
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 526 |
