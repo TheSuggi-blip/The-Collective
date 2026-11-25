@@ -766,23 +766,24 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         has_rep_col = "repair" in smh_cols
         rows_m = conn.execute(
             (
-                "SELECT minutes, income, costs, net, rewards, bought, total, treasury, repair "
-                "FROM stats_money_hour WHERE division = 'ALL' AND ships > 0 AND hour >= ?"
+                "SELECT minutes, income, costs, net, rewards, bought, once, total, repair "
+                "FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?"
             ) if has_rep_col else (
-                "SELECT minutes, income, costs, net, rewards, bought, total, treasury, 0 "
-                "FROM stats_money_hour WHERE division = 'ALL' AND ships > 0 AND hour >= ?"
+                "SELECT minutes, income, costs, net, rewards, bought, once, total, 0 "
+                "FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?"
             ),
             (cut_m,),
         ).fetchall()
         tot_m = sum(_num(r[0]) for r in rows_m)
         if tot_m > 0:
+            win_minutes = tot_m
             raw_income_h = sum(_num(r[1]) * _num(r[0]) for r in rows_m) / tot_m
             raw_costs_h = sum(_num(r[2]) * _num(r[0]) for r in rows_m) / tot_m
-            repair_cr_h = sum(_num(r[8]) * _num(r[0]) for r in rows_m) / tot_m
             raw_steady_h = sum(_num(r[3]) * _num(r[0]) for r in rows_m) / tot_m
             rewards_h = sum(_num(r[4]) * _num(r[0]) for r in rows_m) / tot_m
             bought_once_h = sum(_num(r[5]) * _num(r[0]) for r in rows_m) / tot_m
             purse_h = sum(_num(r[7]) * _num(r[0]) for r in rows_m) / tot_m
+            repair_cr_h = sum(_num(r[8]) * _num(r[0]) for r in rows_m) / tot_m
             if isinstance(w, dict) and w.get("treasury_own_per_hour") is not None:
                 treasury_own_h = _num(w.get("treasury_own_per_hour"))
                 purse_h = raw_steady_h + (rewards_h - bought_once_h) + treasury_own_h
