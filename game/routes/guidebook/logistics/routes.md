@@ -1,16 +1,16 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py show and check, fill.py status and check hauler (2026-11-24 18:06 to 18:24 UTC); runs.jsonl and the tool route haul-network (hours 15 to 17 UTC); shipping.py list (18:20 UTC); requests.log ENT-504, ENT-523, ENT-525; orders.log ENT-090 (block APOLLO).
+Status: proven. Updated: 2026-11-25. Evidence: plan.py show and check, fill.py status and check hauler (2026-11-25 00:04 to 01:20 UTC); the tool route haul-network (hours 15 to 23 UTC of 2026-11-24); shipping.py list (00:35 UTC); requests.log ENT-531 to ENT-533; orders.log ENT-091 (block APOLLO).
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), the `finish-*` routes (each with `requires.mission`).
-- Own: `finish-*` in the holders' rows only; `@newborn-nebula`, `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row.
-- Then: `buy-steel-reserve-central-nexus` (`held_below` steel), `builder-home-node-beta`, `buy-carbon-reserve-node-beta` (`held_below` carbon 50,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network-builder` (the Builder's own watch, game/haul-policy-builder.json: pickup within 2 jumps, delivery within 6), `haul-network` (94 ships), `park`.
-- `haul-network`: freight and supply only, no arbitrage (P5). Since the lane went out it earned 0 cr (15 to 17 UTC, about 2,000 runs): the board's policed contracts end at strongholds. Its ships wait docked at no fuel; read each turn.
-- Off: the officer steel route on the outpost's faction iron (topic-bases). Hulls (F17): no bulk hull while no freight fills it.
-- What would change it: Unity's word on the Atria kit (ENT-523) and the Guild Hall (ENT-525), freight a hull can carry.
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), the `finish-*` routes (each with `requires.mission`), `fit-network` last.
+- Own: `finish-*` in the holders' rows only; `@newborn-nebula`, `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row. The Builder's row holds `@craft-reserve` alone: no far once mission and no buy route a funded wallet would open (the kit line's fund, 2026-11-25).
+- Then: `buy-steel-reserve-central-nexus` (`held_below` steel), `builder-home-node-beta`, `buy-carbon-reserve-node-beta` (`held_below` carbon 50,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network-builder` (the Builder's watch: pickup within 2 jumps, delivery within 6), `haul-network` (94 ships), `park`.
+- `haul-network`: freight and supply only, no arbitrage (P5). It earned 120 cr in the nine hours 15 to 23 UTC of 2026-11-24: the board's contracts end at strongholds or lie 11 to 39 jumps out. Its ships wait docked at no fuel; read each turn.
+- The kit line (topic-bases.md) runs by hand rows of the skill logistics-stock (stage.py, catch.py, build.py): one facility, one kit.
+- What would change it: freight a hull can carry; the Guild Hall's gate (ENT-532: the 24-hour steady net at zero or above).
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
@@ -49,10 +49,9 @@ Status: proven. Updated: 2026-11-21. Evidence: route files and RESULT lines 2026
 - Hand chains: catch.py, craftchain.py and stage.py of the skill logistics-stock.
 
 ### Beyond the border (a test)
-Status: test. Updated: 2026-11-21. Evidence: buy-gold-ironlight-boards, RESULT line 2026-11-17 00:35 UTC; requests.log ENT-172; runs table 2026-11-16; orders.log ENT-056.
+Status: retired. Updated: 2026-11-25. Evidence: buy-gold-ironlight-boards, RESULT line 2026-11-17 00:35 UTC; plan.py show 2026-11-25.
 
-- `buy-gold-ironlight-boards`: one ship with an empty hold to Ironlight Crossroads (LHS 1140, lawless, police 0, six jumps), 3 gold ore at 145 cr or less (booked once, craft inputs), then `fabricate_gold_circuit_boards` at Node Beta from the pilot's own copper and crystal: 3 of 3 stops in 20.6 min, -561 cr, 2 boards. Out of the plan since 2026-11-17 04:05 UTC.
-- Our hunters sold at that station 14 times on 2026-11-16 without a loss. The orders now ask Logistics to carry and supply beyond our borders too (ENT-056).
+- The one-ship test to Ironlight Crossroads (2026-11-17) left the plan the same day and was not flown again; carrying beyond our border is proven by the outpost's supply routes (topic-bases.md) and the far joins (routes.md, Standing Plan).
 
 ### Missions that pay once (the list First)
 Status: proven. Updated: 2026-11-21. Evidence: data/missions and the tool candidates, kind mission, 2026-11-17 11:53 UTC; RESULT line 12:41 UTC; queue.log ENT-157.
