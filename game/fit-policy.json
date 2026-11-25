@@ -26,7 +26,10 @@
       "mining_laser_i",
       "ice_harvester_i",
       "gas_harvester_i",
-      "pulse_laser_i"
+      "pulse_laser_i",
+      "afterburner_ii",
+      "afterburner_iii",
+      "plasma_afterburner"
     ],
     "Military": [
       "mining_laser_i",
@@ -982,9 +985,7 @@
             "cloaking_device_ii",
             "cloaking_device_i",
             "ship_scanner_iii",
-            "plasma_afterburner",
-            "afterburner_iii",
-            "afterburner_ii"
+            "fuel_optimizer"
           ],
           "defense": [
             "quantum_shield_iv",
@@ -999,9 +1000,7 @@
             "deep_core_survey_scanner",
             "survey_scanner_ii",
             "ship_scanner_iii",
-            "fuel_optimizer",
-            "afterburner_iii",
-            "afterburner_ii"
+            "fuel_optimizer"
           ],
           "defense": [
             "quantum_shield_iv",
