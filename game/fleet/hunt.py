@@ -327,6 +327,20 @@ def ammo_ids():
     return fitted_ammo(body(raw('get_ship')).get('modules') or [], catalog_items(os.path.join(os.path.dirname(os.path.dirname(MARKET)), 'catalog')))
 
 
+REACH = [None]                               # the shortest reach among the weapons that can fire (fire_reach_now)
+
+
+def fire_reach_now():
+    """Read where this ship must close to: handover.fire_reach over the ship's modules, the catalog and the hold
+    (errors.log ENT-198: an empty launcher held the autocannons out of reach). None keeps the game's own reach."""
+    try:
+        REACH[0] = handover.fire_reach(body(raw('get_ship')).get('modules') or [],
+                                       catalog_items(os.path.join(os.path.dirname(os.path.dirname(MARKET)), 'catalog')), cargo())
+    except Exception:                        # noqa: BLE001  a reading that fails leaves the game's own reach
+        REACH[0] = None
+    return REACH[0]
+
+
 def foreign_ranched(c):
     """A creature another faction ranches carries that faction's tag in its name
     ('[HEXC] Patina-Grazer'): its owner's livestock, never our prey (2026-11-23: a
@@ -444,6 +458,8 @@ def fight():
         if tick % 3 == 2:
             reload_if_low(0)
         if tick % 6 == 0:
+            fire_reach_now()
+        if tick % 6 == 0:
             say('battle: ' + ' / '.join(row for row in t.splitlines() if '\t' in row and not row.startswith('player\t'))[:400])
         cells = [c for c in (row.split('\t') for row in t.splitlines()) if len(c) > 9 and c[0] != 'player']
         kinds = [c[1] for c in cells]
@@ -462,12 +478,15 @@ def fight():
             FLED[0] = 'ship'
         else:
             # close in: a battle starts at distance 6 and a Pulse Laser I reaches 3
+            # and an empty launcher (reach 6) must not hold autocannons (reach 2) out of their reach (errors.log ENT-198):
+            # close to the shortest reach among the weapons that can fire (fire_reach_now), else the game's own
             reach = re.search(r'Max weapon reach: (\d+)', t)
+            limit = REACH[0] if REACH[0] else (int(reach.group(1)) if reach else None)
             dist = [int(c[5]) for c in (row.split('\t') for row in t.splitlines()) if len(c) > 5 and c[1] == 'creature' and c[5].isdigit()]
-            if reach and dist and min(dist) > int(reach.group(1)):
+            if limit and dist and min(dist) > limit:
                 d = raw('advance', {}, group='spacemolt_battle')
                 if tick < 2:
-                    say('advance: ' + text(d)[:200].replace('\n', ' / '))
+                    say('advance to reach %d: ' % limit + text(d)[:200].replace('\n', ' / '))
         time.sleep(10)
     say('the fight did not end in 15 minutes: fleeing and stopping')
     raw('stance', {'stance': 'flee'}, group='spacemolt_battle')

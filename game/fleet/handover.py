@@ -194,6 +194,33 @@ def fitted_ammo(modules, items):
     return out
 
 
+def fire_reach(modules, items, held):
+    """The distance a hunter closes to: the shortest catalog `reach` among the fitted weapons that can fire now (a
+    weapon without `ammo_type`, or one whose magazine holds rounds, or whose ammo lies in the hold), or None when no
+    weapon can fire or the catalog names no reach (the caller keeps the game's own `Max weapon reach`). errors.log
+    ENT-198: an empty Missile Launcher I (reach 6) held autocannon hulls (reach 2) at 6, 26 hunts without a kill.
+    modules: the get_ship rows; items: the catalog's items; held: the hold, {item: qty}."""
+    by_id = {i.get("id"): i for i in items or [] if isinstance(i, dict)}
+    loaded = {}
+    for item_id, qty in (held or {}).items():
+        effect = (by_id.get(item_id) or {}).get("effect")
+        if (by_id.get(item_id) or {}).get("category") == "ammo" and isinstance(effect, dict) and qty:
+            loaded[effect.get("subtype")] = True
+    reaches = []
+    for m in modules or []:
+        if not isinstance(m, dict):
+            continue
+        item = by_id.get(m.get("type_id") or m.get("type")) or {}
+        reach = item.get("reach")
+        if not isinstance(reach, (int, float)) or reach <= 0:
+            continue
+        kind = m.get("ammo_type") or item.get("ammo_type")
+        if kind and not ((m.get("current_ammo") or 0) > 0 or loaded.get(kind)):
+            continue
+        reaches.append(int(reach))
+    return min(reaches) if reaches else None
+
+
 def catalog_items(folder):
     """The items of the newest catalog copy in data/catalog (<version>.json), [] when none is readable."""
     best = None
