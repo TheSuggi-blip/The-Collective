@@ -289,24 +289,22 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                         shortages[iid] = max(shortages.get(iid, 0), keep - stk)
 
             def _market():
-                # Dynamic depth-weighted, multi-buyer, anti-flood live market map (<6h fresh books ONLY!).
-                # Stores [vwap_bid, net_absorption_qty, buyer_stations, top_qty, total_depth].
+                # Strictly REAL top-of-book bid_qty live market map (<6h fresh books ONLY; NEVER 1-cr trash bid_depth!).
+                # Stores [vwap_bid, net_absorption_qty, buyer_stations, real_bid_qty, real_bid_qty].
                 min_bid = float(policy.get("market_min_bid") or 5.0)
                 bcols = {r[1] for r in cur.execute("PRAGMA table_info(books)").fetchall()}
-                bd_expr = "MAX(COALESCE(bid_qty, 0), COALESCE(bid_depth, 0))" if "bid_depth" in bcols else "COALESCE(bid_qty, 0)"
                 t_where = " AND t >= ?" if "t" in bcols else ""
                 params = (min_bid, now_t - 6.0 * 3600.0) if "t" in bcols else (min_bid,)
                 b_col = "base" if "base" in bcols else ("station" if "station" in bcols else "''")
                 q = (
-                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), SUM(%s), COUNT(DISTINCT %s), MAX(bid) "
+                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), COUNT(DISTINCT %s), MAX(bid) "
                     "FROM books WHERE bid >= ? AND bid_qty > 0%s GROUP BY item"
-                ) % (bd_expr, b_col, t_where)
-                for iid, wsum, tq, tot_d, st_cnt, max_b in cur.execute(q, params):
+                ) % (b_col, t_where)
+                for iid, wsum, tq, st_cnt, max_b in cur.execute(q, params):
                     if iid and tq and int(tq) > 0:
                         vwap = float(wsum or 0.0) / float(tq)
-                        # Blend VWAP with max_bid conservatively (prevents 1-unit spoof spikes from dominating!)
                         eff_p = vwap if int(tq) >= 20 else min(vwap, float(max_b or vwap))
-                        market[str(iid)] = [eff_p, int(tq), int(st_cnt or 1), int(tq), int(tot_d or tq)]
+                        market[str(iid)] = [eff_p, int(tq), int(st_cnt or 1), int(tq), int(tq)]
                 market_read[0] = True
 
             def _held():
@@ -341,24 +339,19 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
             conn.close()
             if market_read[0]:
                 hv_min = float(policy.get("high_value_market_min_bid") or 0.0)
-                hv_cap = int(policy.get("high_value_stock_cap") or 2000)
+                hv_cap = int(policy.get("high_value_stock_cap") or 0)
                 min_buyers_q = int(policy.get("min_market_buyer_qty") or 20)
                 for iid, rec in market.items():
                     h_u = held.get(iid, 0)
-                    top_q = int(rec[3]) if len(rec) > 3 else int(rec[1])
-                    tot_d = int(rec[4]) if len(rec) > 4 else top_q
-                    # Anti-flood & minimum-buyer-depth gate (Suggi directive):
-                    # Require enough live buyers (>= min_market_buyer_qty) so we never mass-farm for 1-2 buyers,
-                    # and smoothly stop farming once fleet stock reaches 85% of live absorption depth!
-                    if top_q < min_buyers_q and tot_d < max(min_buyers_q * 4, 100):
+                    real_q = int(rec[3]) if len(rec) > 3 else int(rec[1])
+                    # Strict real-buyer anti-flood gate: NEVER farm for thin <min_buyers_q spoof bids or beyond 85% of real bid_qty!
+                    if real_q < min_buyers_q:
                         rec[1] = 0
                         continue
-                    abs_cap = int(max(top_q, tot_d * 0.85))
-                    net_depth = abs_cap - h_u
-                    if hv_min > 0 and rec[0] >= hv_min and top_q >= min_buyers_q and h_u < max(hv_cap, abs_cap):
-                        rec[1] = max(net_depth, max(hv_cap, abs_cap) - h_u)
-                    else:
-                        rec[1] = net_depth
+                    abs_cap = int(real_q * 0.85)
+                    if hv_min > 0 and hv_cap > 0 and rec[0] >= hv_min:
+                        abs_cap = max(abs_cap, hv_cap)
+                    rec[1] = abs_cap - h_u
                 market_world = market
 
     allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
@@ -388,9 +381,11 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
             if room > 0:
                 shortages[str(iid)] = max(shortages.get(str(iid), 0), room)
 
-    for extra in policy.get("priority_resources") or []:
-        if isinstance(extra, str) and extra.strip():
-            shortages.setdefault(extra.strip(), 5000)
+    # Only inject static priority_resources as synthetic deficits when market_tier is off or no books exist
+    if not policy.get("market_tier", True) or not market_world:
+        for extra in policy.get("priority_resources") or []:
+            if isinstance(extra, str) and extra.strip():
+                shortages.setdefault(extra.strip(), 5000)
 
     # Load Tier-2 commercial/industrial crafting demand (game/craft-demand.json)
     craft_demand = {}
@@ -624,10 +619,26 @@ def release_belt_claim(data_dir, pilot, cooldown_belt=None, cooldown_minutes=90,
             fcntl.flock(lf, fcntl.LOCK_UN)
 
 
-def adaptive_belt_cap(remaining, max_remaining, policy):
+def effective_min_left_pct(res, mkt, is_deficit, policy):
+    """Competitive belt depletion floor: base min_left_pct (5%), dropping to scarce_min_left_pct (3%) for scarce high-cash ores."""
+    base_pct = float(policy.get("min_left_pct") or 5.0)
+    scarce_pct = float(policy.get("scarce_min_left_pct") or 0.0)
+    if scarce_pct > 0.0 and scarce_pct < base_pct:
+        s_bid = float(policy.get("scarce_min_bid") or 100.0)
+        s_cash = float(policy.get("scarce_min_real_cash") or 500000.0)
+        if is_deficit:
+            return scarce_pct
+        if mkt and len(mkt) >= 4:
+            vwap, real_q = float(mkt[0] or 0.0), int(mkt[3] or 0)
+            if vwap >= s_bid or (vwap * real_q) >= s_cash:
+                return scarce_pct
+    return base_pct
+
+
+def adaptive_belt_cap(remaining, max_remaining, policy, min_left_pct=None):
     """Adaptive crowding cap: <= max_per_belt (default 3), scaled down on low-headroom belts."""
     max_cap = max(1, int(policy.get("max_per_belt") or 3))
-    pct = float(policy.get("min_left_pct") or 10.0)
+    pct = float(policy.get("min_left_pct") or 10.0) if min_left_pct is None else float(min_left_pct)
     floor_u = int(round(max_remaining * pct / 100.0)) if max_remaining > 0 else 0
     headroom = max(0, int(remaining) - floor_u)
     per_ship = max(50, int(policy.get("units_per_ship_run") or 250))
@@ -697,22 +708,32 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             continue
         if resource_tool_kind(res) not in tools:
             continue
+        is_policed = bool(smeta.get("empire"))
+        is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
+        mkt = market.get(res) if market is not None else None
+        eff_min_pct = effective_min_left_pct(res, mkt, is_deficit, policy)
         rem, mx = f["remaining"], f["max_remaining"]
-        if mx > 0 and (rem * 100.0 / mx) < min_pct:
+        if mx > 0 and (rem * 100.0 / mx) < eff_min_pct:
             continue
-        cap = adaptive_belt_cap(rem, mx, policy)
+        cap = adaptive_belt_cap(rem, mx, policy, min_left_pct=eff_min_pct)
         if cap <= 0 or claimed_counts.get(belt_key, 0) >= cap:
             continue
         hops = dists.get(sys_id) if p_sys else 0
         if hops is None or hops > max_jumps:
             continue
-        is_policed = bool(smeta.get("empire"))
-        is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
-        is_craft = bool(policy.get("craft_demand_tier", True) and res in craft_demand and not is_deficit)
+        _held_chk = int((world.get("held") or {}).get(res, 0))
+        _real_mkt_q = int(mkt[3]) if (mkt and len(mkt) > 3) else 0
+        _craft_need = int(craft_demand.get(res) or 0)
+        # Anti-flood craft gate: NEVER bypass saturation for unbid or already-glutted ores!
+        is_craft = bool(
+            policy.get("craft_demand_tier", True)
+            and _craft_need > 0
+            and not is_deficit
+            and _held_chk < max(1500, int(_real_mkt_q * 0.85) + min(_craft_need, 3000))
+        )
         is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft)
-        mkt = market.get(res) if market is not None else None
         if skip_full and market is not None and not (is_deficit or is_craft or is_full):
-            # No bid at market_min_bid or more, or the fleet holds what those bids take: training ore only.
+            # No bid at market_min_bid or more, or the fleet holds what those real bids take: skip!
             is_full = not mkt or mkt[1] <= 0
         if _in_pirate_sys:
             _esc_ok = False
@@ -812,7 +833,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         cand = {
             "belt_key": belt_key, "system": sys_id, "poi": poi_id,
             "resource": res, "remaining": rem, "max_remaining": mx,
-            "cap": cap, "hops": hops, "st_hops": st_hops,
+            "cap": cap, "hops": hops, "st_hops": st_hops, "min_left_pct": eff_min_pct,
             "station": "%s:%s:%s" % st_tup, "tier": tier, "score": round(score, 2),
         }
         _tr = _TIER_RANK.get(tier, 9)
@@ -842,6 +863,48 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
 
 
 _TIER_RANK = {"deficit": 0, "craft_demand": 1, "market": 2, "xp_fallback": 3}
+
+
+def pick_relocation_hub(pilot_info, world, policy, claims, cooldowns, static_counts=None, now_t=None):
+    """Adaptive Hub Relocation: when local radius has 0 eligible belts, pick the richest reachable Lockbox/Outpost hub!"""
+    now_t = time.time() if now_t is None else float(now_t)
+    p_sys = str(pilot_info.get("system") or "")
+    if not p_sys:
+        return None
+    reloc_max_j = int(policy.get("relocate_max_jumps") or 40)
+    adj = world.get("adj") or {}
+    systems = world.get("systems") or {}
+    stations_by_sys = world.get("stations_by_sys") or {}
+    pref_bases = (world.get("lockbox_bases") or set()) | (world.get("owned_outpost_bases") or set())
+    dists = bfs_distances(adj, p_sys, max_hops=reloc_max_j)
+    best = None
+    for h_sys, st_list in stations_by_sys.items():
+        if h_sys == p_sys or h_sys not in dists:
+            continue
+        if (systems.get(h_sys) or {}).get("stronghold"):
+            continue
+        st_tup = None
+        for t in st_list:
+            if not pref_bases or t[2] in pref_bases:
+                st_tup = t
+                break
+        if not st_tup:
+            continue
+        h_hops = dists[h_sys]
+        sim_pilot = dict(pilot_info, system=h_sys)
+        h_cands = score_belt_candidates(sim_pilot, world, policy, claims, cooldowns, now_t=now_t, static_counts=static_counts)
+        if not h_cands:
+            continue
+        top5 = h_cands[:5]
+        hub_score = sum(max(1.0, float(c["score"])) for c in top5) / (1.0 + 0.25 * float(h_hops))
+        rec = {
+            "system": st_tup[0], "poi": st_tup[1], "base": st_tup[2],
+            "hops": h_hops, "belts": len(h_cands),
+            "top_resource": top5[0]["resource"], "score": round(hub_score, 2),
+        }
+        if best is None or rec["score"] > best["score"]:
+            best = rec
+    return best
 
 
 def assign_optimal_mines(pilots_info, world, policy, claims, cooldowns, now_t=None):
@@ -964,6 +1027,25 @@ def main(argv=None):
                 claimed_belt = cand["belt_key"]
                 break
         if not chosen:
+            if policy.get("allow_adaptive_relocate", True):
+                reloc = pick_relocation_hub(ship_doc, world, policy, claims, cooldowns, static_counts=static_counts)
+                if reloc:
+                    print("%s %s mine_net: ADAPTIVE RELOCATE -> %s (%dJ, %d belts, top=%s, score=%.1f)" % (
+                        utc_now(), pilot, reloc["system"], reloc["hops"], reloc["belts"], reloc["top_resource"], reloc["score"]
+                    ), flush=True)
+                    try:
+                        import gate as _g_rel, urllib.parse as _up_rel
+                        _g_rel.call(
+                            "POST",
+                            "/accounts/%s/goal" % _up_rel.quote(pilot, safe=""),
+                            {"type": "prepare-at-station", "options": {
+                                "systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True,
+                            }},
+                            timeout=420,
+                        )
+                        return 0
+                    except Exception as _re:
+                        print("%s %s mine_net: relocate err: %s" % (utc_now(), pilot, str(_re)[:80]), flush=True)
             print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, int(policy.get("rest_seconds_when_empty") or 120)), flush=True)
             started = time.time()
             end_nap = started + float(policy.get("rest_seconds_when_empty") or 120)
@@ -981,7 +1063,7 @@ def main(argv=None):
             pilot, chosen["belt_key"], chosen["station"],
             "--minutes", str(int(round(minutes))),
             "--route", route_id,
-            "--min-left-pct", str(policy.get("min_left_pct", 10.0)),
+            "--min-left-pct", str(chosen.get("min_left_pct", policy.get("min_left_pct", 5.0))),
             "--floor-resource", chosen["resource"],
             "--no-order",
         ]

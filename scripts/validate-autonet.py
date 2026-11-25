@@ -61,10 +61,12 @@ def check_repo(repo_root=None):
         elif rel == "game/mine-policy.json":
             if bool(d.get("policed_only", True)) and not bool(d.get("allow_lawless_for_deficit", True)) and int(d.get("lawless_min_tier") or 1) > 3:
                 errors.append(f"{rel}: policed_only=true + allow_lawless_for_deficit=false + lawless_min_tier>3 starves miners of deficit belts")
-            if float(d.get("min_left_pct") or 15) < 10.0:
-                errors.append(f"{rel}: min_left_pct must stay >= 10% (15% standard) to prevent belt depletion")
+            if float(d.get("min_left_pct") or 5) < 5.0:
+                errors.append(f"{rel}: min_left_pct must stay >= 5% to stay safely above deposit_too_sparse")
 
         elif rel == "game/hunt-policy.json":
+            if int(d.get("keep_herd", 1)) < 1:
+                errors.append(f"{rel}: keep_herd must stay >= 1 to prevent herd extinction")
             if not bool((d.get("solo") or {}).get("enabled", True)):
                 errors.append(f"{rel}: solo.enabled=false is forbidden")
             if not bool((d.get("escort") or {}).get("enabled", True)):

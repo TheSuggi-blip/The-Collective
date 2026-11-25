@@ -4,8 +4,8 @@
   "enabled": true,
   "claim_ttl_s": 4200,
   "cooldown_minutes": 90,
-  "keep_herd": 2,
-  "min_creatures": 3,
+  "keep_herd": 1,
+  "min_creatures": 2,
   "census_max_age_min": 180,
   "pirate_avoid_hours": 6.0,
   "policed_only": false,
@@ -63,26 +63,35 @@
     "max_jumps": 10,
     "priority_species": [
       "cloudwhale",
+      "crusher_mantis",
+      "frost_lurker",
+      "molt_leviathan",
       "frost_moth",
-      "hollow_pilgrim",
-      "cinder_sylph",
-      "facet_druse",
+      "quantum_moth",
+      "prism_drifter",
       "cobalt_squid",
-      "kiln_snail",
+      "rivetshell",
+      "hollow_pilgrim",
+      "cinder_urchin",
+      "halo_drifter",
+      "cinder_sylph",
+      "bell_jelly",
+      "ash_scarab",
       "pilot_whale",
       "cauldronback",
       "glintfin",
       "inkwyrm",
       "silica_borer",
-      "bell_jelly",
-      "quantum_moth",
+      "kiln_snail",
+      "facet_druse",
       "bullionaut",
       "bulwark"
     ],
     "command_flagship_min_power": 150.0,
     "max_forming_packs": 10,
     "require_command_leader": true,
-    "max_station_jumps": 10
+    "max_station_jumps": 10,
+    "min_loot_val": 450.0
   },
   "solo": {
     "enabled": true,
@@ -96,7 +105,7 @@
     "policed_alone_mode": "pirates",
     "lawless_alone_mode": "pirates",
     "max_station_jumps": 10,
-    "min_loot_val": 450.0
+    "min_loot_val": 200.0
   },
   "fallback": {
     "enabled": false,
@@ -113,5 +122,7 @@
     "minutes": 45,
     "_note": "Dormant in peacetime (activates ONLY on active war in empire.json or explicit data/fleet/war-posture-on, rule F2)."
   },
-  "lawless_only": true
+  "lawless_only": true,
+  "allow_adaptive_relocate": true,
+  "relocate_max_jumps": 45
 }

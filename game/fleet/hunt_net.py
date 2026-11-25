@@ -130,13 +130,18 @@ DEFAULT_POLICY = {
 # Known baseline creature hull & loot values (overridden live from data/wildlife & read.db)
 DEFAULT_SPECIES_HULL = {
     "nullbubble": 35, "cinder_sylph": 40, "drift_ray": 45, "frost_moth": 45,
-    "bell_jelly": 45, "halo_drifter": 50, "phase_lurker": 55, "belt_grazer": 60,
-    "patina_grazer": 60, "glitterback_crab": 60, "rime_grazer": 65, "pressblister": 65,
-    "veil_ray": 60, "hollow_pilgrim": 70, "cinder_urchin": 70, "sift_ray": 75,
-    "deuteron_slug": 85, "slag_tortoise": 90, "bulwark": 95, "kiln_snail": 100,
-    "facet_druse": 110, "cauldronback": 120, "bullionaut": 130, "glintfin": 140,
-    "mirror_skate": 95, "inkwyrm": 100, "magnet_barnacle": 110, "silica_borer": 115,
-    "pilot_whale": 220,
+    "bell_jelly": 45, "carrion_moth": 45, "halo_drifter": 50, "phase_lurker": 55,
+    "quantum_moth": 55, "ash_scarab": 55, "pall_jelly": 55, "belt_grazer": 60,
+    "patina_grazer": 60, "glitterback_crab": 60, "rivetshell": 60, "rime_grazer": 65,
+    "pressblister": 65, "prism_drifter": 65, "veil_ray": 60, "hollow_pilgrim": 70,
+    "cinder_urchin": 70, "glacier_drifter": 70, "chlorophage": 70, "sift_ray": 75,
+    "cobalt_squid": 75, "lantern_slug": 75, "deuteron_slug": 85, "voltmanta": 85,
+    "etchmaw": 85, "slag_tortoise": 90, "bulwark": 95, "mirror_skate": 95,
+    "skeinwraith": 95, "glimmer_druse": 95, "kiln_snail": 100, "inkwyrm": 100,
+    "void_browser": 100, "facet_druse": 110, "magnet_barnacle": 110, "vulcanid": 110,
+    "silica_borer": 115, "cauldronback": 120, "aeonbear": 120, "bullionaut": 130,
+    "glintfin": 140, "crusher_mantis": 140, "frost_lurker": 150,
+    "pilot_whale": 220, "cloudwhale": 220, "molt_leviathan": 350,
 }
 
 SPECIES_NEED_DROPS = {
@@ -147,14 +152,22 @@ SPECIES_NEED_DROPS = {
     "silica_borer": ("silica_lens",),
     "hollow_pilgrim": ("ember_gland", "caustic_sac"),
     "pilot_whale": ("whale_blubber", "graphene_thread", "antimatter_residue", "whale_oil"),
-    "cloudwhale": ("lumen_oil", "whale_oil"),
+    "cloudwhale": ("lumen_oil", "whale_baleen", "whale_oil"),
     "glacial_whale": ("lumen_oil", "hoarfrost_flank", "hoarfrost_heartcore"),
     "cinder_sylph": ("ember_gland", "cinderspice"),
+    "cinder_urchin": ("radiant_bile", "ember_gland"),
     "glintfin": ("glintfin", "chrome_scale"),
     "glitterback_crab": ("chrome_scale", "creature_carapace"),
-    "cobalt_squid": ("cobalt_ink", "cobalt_squid"),
-    "pressblister": ("krypton_bladder", "methane_bladder", "levity_bladder"),
+    "cobalt_squid": ("cobalt_roe", "cobalt_ink", "cobalt_squid"),
+    "pressblister": ("nitrogen_bladder", "methane_bladder", "levity_bladder"),
     "bell_jelly": ("noble_condensate", "radiant_bile"),
+    "halo_drifter": ("noble_condensate",),
+    "prism_drifter": ("prism_charged_ichor", "prismatic_carapace", "prismatic_lens"),
+    "glacier_drifter": ("tritium_pearl",),
+    "rivetshell": ("rivetshell_meat",),
+    "crusher_mantis": ("mantis_claw",),
+    "frost_lurker": ("hoarfrost_flank", "hoarfrost_heartcore", "dry_ice_frond"),
+    "molt_leviathan": ("leviathan_heartcore", "leviathan_meat", "creature_carapace"),
     "sift_ray": ("ray_eggs", "ammonia_gland"),
     "drift_ray": ("ray_eggs", "levity_bladder"),
     "veil_ray": ("void_dust", "ray_eggs"),
@@ -163,13 +176,22 @@ SPECIES_NEED_DROPS = {
     "rime_grazer": ("rimeblue_cheese", "crystal_melt"),
     "slag_tortoise": ("creature_carapace", "slag_carapace"),
     "deuteron_slug": ("tritium_pearl", "deuterium_ice"),
-    "frost_moth": ("crystal_melt", "hoarfrost_flank"),
+    "lantern_slug": ("charge_gland", "methane_bladder"),
+    "frost_moth": ("superfluid_vial", "crystal_melt", "hoarfrost_flank"),
     "phase_lurker": ("phase_crystal", "void_dust"),
-    "quantum_moth": ("superfluid_vial", "quantum_fragments"),
+    "quantum_moth": ("quantum_silk", "quantum_fragments", "exotic_lattice"),
     "ash_scarab": ("cinderspice", "ember_gland"),
     "kiln_snail": ("irradiated_marrow", "ember_gland"),
     "facet_druse": ("crystal_melt", "energy_crystal"),
-    "nullbubble": ("null_matter", "void_dust"),
+    "nullbubble": ("krypton_bladder", "null_matter", "void_dust"),
+    "chlorophage": ("caustic_sac",),
+    "bullionaut": ("noble_matte",),
+    "bulwark": ("ballast_plate",),
+    "pall_jelly": ("noble_matte",),
+    "voltmanta": ("ion_nodule",),
+    "vulcanid": ("refractory_sinter",),
+    "aeonbear": ("exotic_cyst",),
+    "skeinwraith": ("exotic_distillate",),
 }
 
 
@@ -615,21 +637,20 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                         _drop_held[str(_iid)] = _drop_held.get(str(_iid), 0) + int(_u)
             if "books" in _htbls:
                 _bcols = {r[1] for r in _ch.execute("PRAGMA table_info(books)").fetchall()}
-                _bd_e = "MAX(COALESCE(bid_qty, 0), COALESCE(bid_depth, 0))" if "bid_depth" in _bcols else "COALESCE(bid_qty, 0)"
                 _bc = "base" if "base" in _bcols else ("station" if "station" in _bcols else "''")
                 _hcut = time.time() - 6.0 * 3600.0
                 _q = (
-                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), SUM(%s), COUNT(DISTINCT %s) "
+                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), COUNT(DISTINCT %s) "
                     "FROM books WHERE bid >= 15 AND bid_qty > 0 AND t >= ? GROUP BY item"
-                ) % (_bd_e, _bc)
-                for _iid, _wsum, _tq, _td, _stc in _ch.execute(_q, (_hcut,)):
+                ) % _bc
+                for _iid, _wsum, _tq, _stc in _ch.execute(_q, (_hcut,)):
                     if not _iid or not _tq or int(_tq) <= 0:
                         continue
                     _vwap = float(_wsum or 0.0) / float(_tq)
-                    # Minimum buyer liquidity factor (prevents mass-farming thin 1-3 unit spoof bids!)
-                    _liq = min(1.0, float(_tq) / 50.0) * (1.15 if int(_stc or 1) >= 3 else (1.0 if int(_stc or 1) >= 2 else 0.80))
-                    # Anti-flood saturation decay: smoothly drops to 0.05x once fleet holds >= 80% of live buyer depth!
-                    _abs = max(80.0, float(_td or _tq) * 0.80)
+                    # Strictly REAL top-of-book bid_qty liquidity & anti-flood saturation (NEVER 1-cr bid_depth!)
+                    _bw_m = 1.35 if (_vwap * float(_tq)) >= 500000.0 else (1.15 if int(_stc or 1) >= 3 else (1.0 if int(_stc or 1) >= 2 else 0.80))
+                    _liq = min(1.0, float(_tq) / 30.0) * _bw_m
+                    _abs = max(40.0, float(_tq) * 0.85)
                     _h_u = float(_drop_held.get(str(_iid), 0))
                     _sat = 0.05 if _h_u >= _abs else max(0.15, 1.0 - (_h_u / _abs) * 0.75)
                     live_drop_val[str(_iid)] = max(live_drop_val.get(str(_iid), 0.0), _vwap * _liq * _sat)
@@ -967,7 +988,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     min_ratio = float(scfg.get("min_power_ratio") or 1.35)
     ideal_lo = float(scfg.get("ideal_ratio_low") or 1.45)
     ideal_hi = float(scfg.get("ideal_ratio_high") or 3.20)
-    min_cr = max(int(policy.get("keep_herd") or 2) + 1, int(policy.get("min_creatures") or 3))
+    keep_h = int(policy.get("keep_herd", 2))
+    min_cr = max(keep_h + 1, int(policy.get("min_creatures", keep_h + 1)))
     policed_only = bool(policy.get("policed_only", False))
     allow_lawless_p = float(policy.get("allow_lawless_min_power") or 350.0)
     excl_sys = set(str(x) for x in (policy.get("exclude_systems") or []))
@@ -984,7 +1006,11 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     species_loot = world["species_loot_val"]
 
     dists = bfs_distances(adj, p_sys, max_hops=max_j) if p_sys else {}
-    busy_keys = {r.get("key") for cp, r in (claims or {}).items() if cp != p_name and r.get("key")}
+    claimed_counts = {}
+    for cp, r in (claims or {}).items():
+        if cp != p_name and isinstance(r, dict) and r.get("key"):
+            k_ = r.get("key")
+            claimed_counts[k_] = claimed_counts.get(k_, 0) + 1
 
     out = []
     for h in world["herds"]:
@@ -996,7 +1022,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             continue
         if place_key in excl_pois or poi_id in excl_pois or place_key in ranch_pois or sp in excl_sp:
             continue
-        if place_key in busy_keys or cooldowns.get(place_key, 0) > now_t:
+        herd_cap = 2 if int(h["count"]) >= 8 else 1
+        if claimed_counts.get(place_key, 0) >= herd_cap or cooldowns.get(place_key, 0) > now_t:
             continue
         smeta = systems.get(sys_id, {})
         if smeta.get("stronghold"):
@@ -1040,8 +1067,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             elif st_hops <= 8:
                 fit_mult *= 1.04
 
-        kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - int(policy.get("keep_herd") or 2)))
-        loot_est = float(species_loot.get(sp) or 2000.0) * kills_avail
+        kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - keep_h))
+        loot_est = float(species_loot.get(sp) or 0.0) * kills_avail
         fuel_est = 90.0 * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
         score = ((loot_est * fit_mult) - fuel_est) / (1.0 + 0.7 * hops + 0.8 * st_hops)
         out.append({
@@ -1080,7 +1107,8 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
     pir_ratio = float(pcfg.get("pirate_min_power_ratio") or 2.20)
     min_thull = int(pcfg.get("min_target_hull") or 80)
     prio_sp = set(str(x) for x in (pcfg.get("priority_species") or []))
-    min_cr = max(int(policy.get("keep_herd") or 2) + 1, int(policy.get("min_creatures") or 3))
+    _pk_kh = int(policy.get("keep_herd", 2))
+    min_cr = max(_pk_kh + 1, int(policy.get("min_creatures", _pk_kh + 1)))
     excl_sys = set(str(x) for x in (policy.get("exclude_systems") or []))
     excl_pois = set(str(x) for x in (policy.get("exclude_pois") or []))
     ranch_pois = world["ranch_pois"]
@@ -1194,6 +1222,59 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
 
     cands.sort(key=lambda c: (-c["score"], c["hops"], c["key"]))
     return cands
+
+
+def pick_relocation_hub(pilot_info, ship_power, world, policy, claims, cooldowns, is_cmd=False, f9=None, now_t=None):
+    """Adaptive Outpost/Hub Relocation: move idle hunters & Command Flagships out of grazed pockets to rich lawless hubs!"""
+    now_t = time.time() if now_t is None else float(now_t)
+    p_sys = str(pilot_info.get("system") or "")
+    p_name = str(pilot_info.get("name") or "")
+    if not p_sys:
+        return None
+    reloc_max_j = int(policy.get("relocate_max_jumps") or 45)
+    adj = world.get("adj") or {}
+    systems = world.get("systems") or {}
+    stations_by_sys = world.get("stations_by_sys") or {}
+    pref_bases = (world.get("lockbox_bases") or set()) | (world.get("bursar_bases") or set())
+    dists = bfs_distances(adj, p_sys, max_hops=reloc_max_j)
+    solo_on = bool((policy.get("solo") or {}).get("enabled", True)) and not is_cmd
+    ranked_hubs = []
+    for h_sys, st_list in stations_by_sys.items():
+        if h_sys == p_sys or h_sys not in dists:
+            continue
+        if (systems.get(h_sys) or {}).get("stronghold"):
+            continue
+        st_tup = None
+        for t in st_list:
+            if not pref_bases or t[2] in pref_bases:
+                st_tup = t
+                break
+        if not st_tup:
+            continue
+        h_hops = dists[h_sys]
+        sim_pilot = dict(pilot_info, system=h_sys)
+        h_targets = []
+        if solo_on:
+            h_targets.extend(score_solo_herds(sim_pilot, ship_power, world, policy, claims, cooldowns, now_t=now_t, f9=f9)[:5])
+        h_targets.extend(score_pack_targets(sim_pilot, ship_power, world, policy, claims, cooldowns, now_t=now_t, f9=f9)[:5])
+        if not h_targets:
+            continue
+        h_targets.sort(key=lambda c: -float(c.get("score") or 0.0))
+        top5 = h_targets[:5]
+        _hub_m = 1.25 if st_tup[2] in (world.get("lockbox_bases") or set()) else 1.0
+        hub_score = (_hub_m * sum(max(1.0, float(c.get("score") or 0.0)) for c in top5)) / (1.0 + 0.18 * float(h_hops))
+        ranked_hubs.append({
+            "system": st_tup[0], "poi": st_tup[1], "base": st_tup[2],
+            "hops": h_hops, "targets": len(h_targets),
+            "top_species": str(top5[0].get("species") or ""), "score": round(hub_score, 1),
+        })
+    if not ranked_hubs:
+        return None
+    ranked_hubs.sort(key=lambda r: (-r["score"], r["hops"], r["system"]))
+    top_sc = ranked_hubs[0]["score"]
+    spread = [r for r in ranked_hubs[:3] if r["score"] >= top_sc * 0.50]
+    idx = (sum(ord(ch) for ch in p_name) % len(spread)) if (len(spread) > 1 and p_name) else 0
+    return spread[idx]
 
 
 def assign_optimal_hunts(pilots_info, weapon_cat, booster_cat, world, policy, claims, cooldowns, now_t=None):
@@ -2065,6 +2146,14 @@ def main(argv=None):
         # --- LANE 3 & 4: SOLO OPTIMAL HERD HUNTING (POWER-RATIO GATED + F38 RANCH FLOOR) ---
         # Command Support Flagships operate in War Wing / Escorts / Coordinated Packs -- never solo grazing!
         if pilot in load_command_flagships(DATA) and not policy.get("allow_command_solo", False):
+            if not pack_targets and policy.get("allow_adaptive_relocate", True):
+                reloc = pick_relocation_hub(ship_doc, spow, world, policy, claims, cooldowns, is_cmd=True, f9=f9)
+                if reloc:
+                    print("%s %s hunt_net: ADAPTIVE RELOCATE (Command) -> %s (%dJ, %d targets, top=%s)" % (
+                        utc_now(), pilot, reloc["system"], reloc["hops"], reloc["targets"], reloc["top_species"]
+                    ), flush=True)
+                    _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
+                    return 0
             nap = min(90, int(policy.get("rest_seconds_when_empty") or 90))
             print("%s %s hunt_net: Command Support Flagship awaiting pack/escort/war wing; resting %ds" % (utc_now(), pilot, nap), flush=True)
             end_nap = time.time() + nap
@@ -2074,12 +2163,21 @@ def main(argv=None):
         cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
         chosen = None
         for cand in cands:
-            if claim_hunt_key_atomic(DATA, pilot, cand["key"], "solo", policy, max_per_key=1):
+            _mk = 2 if int(cand.get("count") or 0) >= 8 else 1
+            if claim_hunt_key_atomic(DATA, pilot, cand["key"], "solo", policy, max_per_key=_mk):
                 chosen = cand
                 claimed_key = cand["key"]
                 break
 
         if not chosen:
+            if policy.get("allow_adaptive_relocate", True):
+                reloc = pick_relocation_hub(ship_doc, spow, world, policy, claims, cooldowns, is_cmd=False, f9=f9)
+                if reloc:
+                    print("%s %s hunt_net: ADAPTIVE RELOCATE -> %s (%dJ, %d targets, top=%s, score=%.1f)" % (
+                        utc_now(), pilot, reloc["system"], reloc["hops"], reloc["targets"], reloc["top_species"], reloc["score"]
+                    ), flush=True)
+                    _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
+                    return 0
             nap = int(policy.get("rest_seconds_when_empty") or 120)
             print("%s %s hunt_net: no eligible herd/pack/escort matched power=%.0f; resting %ds" % (utc_now(), pilot, spow["power"], nap), flush=True)
             end_nap = time.time() + nap
@@ -2101,7 +2199,7 @@ def main(argv=None):
             "--min-bid", str(int(scfg.get("min_bid") or 1500)),
             "--sell-at", chosen["sell_at"],
             "--max-prey-hull", str(int(chosen["prey_hull"] * 1.2)),
-            "--keep-herd", str(int(policy.get("keep_herd") or 2)),
+            "--keep-herd", str(int(policy.get("keep_herd", 2))),
             "--route", route_id,
             "--no-order",
         ]

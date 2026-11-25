@@ -467,5 +467,74 @@ class MultiHubUpkeepTests(unittest.TestCase):
         self.assertTrue(any(a[0] == "sell_bid" and a[1] == "nitrogen_ice" and a[2] == 800 for a in acts))
 
 
+
+    def test_mine_net_real_bid_qty_competitive_floor_and_relocation(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (repo / "game").mkdir(parents=True)
+            _make_db(data / "store" / "read.db")
+            con = sqlite3.connect(data / "store" / "read.db")
+            now_t = time.time()
+            con.execute("INSERT INTO systems VALUES ('far_pocket', 'crimson', 0)")
+            con.execute("INSERT INTO lanes VALUES ('far_pocket', 'oakridge')")
+            con.execute("INSERT INTO fields VALUES ('felis', 'felis_silver', 'silver_ore', 1350, 25000, 100.0, ?)", (now_t,))
+            con.execute("INSERT INTO fields VALUES ('felis', 'felis_phase', 'phase_crystal', 20000, 25000, 100.0, ?)", (now_t,))
+            con.execute("ALTER TABLE books ADD COLUMN bid_depth INTEGER DEFAULT 0")
+            con.execute("INSERT INTO books (base, item, bid, bid_qty, bid_depth, ask, ask_qty, t) VALUES ('oakridge_st_id', 'silver_ore', 101.0, 50000, 50000, 120.0, 100, ?)", (now_t,))
+            con.execute("INSERT INTO books (base, item, bid, bid_qty, bid_depth, ask, ask_qty, t) VALUES ('oakridge_st_id', 'phase_crystal', 110.0, 10, 50000, 130.0, 100, ?)", (now_t,))
+            con.commit()
+            con.close()
+            pol = dict(mine_net.DEFAULT_POLICY)
+            pol.update({
+                "min_left_pct": 5.0, "scarce_min_left_pct": 3.0, "scarce_min_bid": 100.0,
+                "min_market_buyer_qty": 20, "policed_only": False, "market_tier": True,
+                "allow_xp_fallback": False, "priority_resources": [], "max_jumps": 1,
+            })
+            world = mine_net.load_graph_and_world(data, repo, pol)
+            self.assertEqual(world["market"]["phase_crystal"][1], 0)
+            self.assertGreater(world["market"]["silver_ore"][1], 40000)
+            ship_f = {"name": "miner-f", "system": "felis", "tier": 1, "modules": ["mining_laser_ii"]}
+            cands = mine_net.score_belt_candidates(ship_f, world, pol, {}, {})
+            self.assertEqual(len(cands), 1)
+            self.assertEqual(cands[0]["resource"], "silver_ore")
+            self.assertEqual(cands[0]["min_left_pct"], 3.0)
+            ship_far = {"name": "miner-far", "system": "far_pocket", "tier": 1, "modules": ["mining_laser_ii"]}
+            self.assertEqual(mine_net.score_belt_candidates(ship_far, world, pol, {}, {}), [])
+            reloc = mine_net.pick_relocation_hub(ship_far, world, pol, {}, {})
+            self.assertIsNotNone(reloc)
+            self.assertEqual(reloc["system"], "felis")
+
+    def test_hunt_net_keep_herd_1_verified_drops_and_adaptive_relocation(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (repo / "game").mkdir(parents=True)
+            _make_db(data / "store" / "read.db")
+            con = sqlite3.connect(data / "store" / "read.db")
+            now_t = time.time()
+            con.execute("INSERT INTO systems VALUES ('crimson_pocket', 'crimson', 0)")
+            con.execute("INSERT INTO lanes VALUES ('crimson_pocket', 'oakridge')")
+            con.execute("INSERT INTO places VALUES ('felis', 'felis_op_poi', 'felis_outpost_id', 'CLTV Outpost Felis', 'station')")
+            con.execute("INSERT INTO herds VALUES ('felis', 'felis_reef', 'rivetshell', 'Rivetshell', 'grazer', 2, ?)", (now_t,))
+            con.execute("INSERT INTO books VALUES ('oakridge_st_id', 'rivetshell_meat', 300.0, 8000, 350.0, 100, ?)", (now_t,))
+            con.commit()
+            con.close()
+            pol = dict(hunt_net.DEFAULT_POLICY)
+            pol["keep_herd"] = 1
+            pol["min_creatures"] = 2
+            pol["lawless_only"] = True
+            pol["solo"] = dict(pol["solo"], max_jumps=1, min_loot_val=200.0)
+            pol["packs"] = dict(pol["packs"], max_jumps=1)
+            world = hunt_net._load_combat_world_uncached(data, repo, pol, now_t)
+            self.assertGreaterEqual(world["species_loot_val"].get("rivetshell", 0.0), 200.0)
+            ship_far = {"name": "drone-c1", "system": "crimson_pocket", "hull": 250, "shield": 120, "modules": ["pulse_laser_iii"]}
+            spow = {"power": 950.0, "dps": 25.0, "ehp": 370.0, "tier": 1}
+            self.assertEqual(hunt_net.score_solo_herds(ship_far, spow, world, pol, {}, {}), [])
+            reloc = hunt_net.pick_relocation_hub(ship_far, spow, world, pol, {}, {})
+            self.assertIsNotNone(reloc)
+            self.assertEqual(reloc["system"], "felis")
+
+
 if __name__ == "__main__":
     unittest.main()

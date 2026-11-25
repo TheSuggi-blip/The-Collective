@@ -102,24 +102,24 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
             # Populate item_vals strictly from fresh (<6h) live market bids in read.db:books!
             if "books" in tbls:
                 _bcols = {r[1] for r in con.execute("PRAGMA table_info(books)").fetchall()}
-                _bd_expr = "COALESCE(bid_depth, bid_qty, 0)" if "bid_depth" in _bcols else "COALESCE(bid_qty, 0)"
-                _q = "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), %s, COALESCE(ask,0), COALESCE(ask_qty,0) FROM books" % _bd_expr
+                _q = "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), COALESCE(ask,0), COALESCE(ask_qty,0) FROM books"
                 _p = ()
                 if "t" in _bcols:
                     _q += " WHERE t >= ?"
                     _p = (time.time() - 6.0 * 3600.0,)
-                for b_id, iid, bid, bq, bd, ask, aq in con.execute(_q, _p):
+                for b_id, iid, bid, bq, ask, aq in con.execute(_q, _p):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     if not b_s or not i_s:
                         continue
-                    eff_bq = max(int(bq or 0), int(bd or 0))
+                    # Strictly real top-of-book bid_qty (NEVER 1-cr trash bid_depth!)
+                    real_bq = int(bq or 0)
                     books_by_base.setdefault(b_s, {})[i_s] = {
-                        "bid": float(bid or 0), "bid_qty": int(bq or 0), "bid_depth": eff_bq,
+                        "bid": float(bid or 0), "bid_qty": real_bq, "bid_depth": real_bq,
                         "ask": float(ask or 0), "ask_qty": int(aq or 0),
                     }
-                    if float(bid or 0) > 0 and eff_bq > 0:
+                    if float(bid or 0) >= 5.0 and real_bq > 0:
                         prev_b, prev_q = global_bid.get(i_s, (0.0, 0))
-                        global_bid[i_s] = (max(prev_b, float(bid)), prev_q + eff_bq)
+                        global_bid[i_s] = (max(prev_b, float(bid)), prev_q + real_bq)
                         if float(bid) > item_vals.get(i_s, 0.0):
                             item_vals[i_s] = float(bid)
             need_craft_caps = {}
@@ -200,12 +200,16 @@ def expand_demand_raw_inputs(world):
         min_bq = int(demand.get("min_bid_qty") or 5)
         gbid = world.get("global_bid") or {}
         ivals = world.get("item_vals") or {}
+        _st_by = world.get("stock_by_item") or {}
         for rec in recipes.values():
             if rec.get("facility_only") or not rec.get("inputs") or not rec.get("outputs"):
                 continue
             out_item, out_q = rec["outputs"][0]
             mb, bq = gbid.get(out_item, (0.0, 0))
-            if mb <= 0 or bq < min_bq:
+            if mb < 10.0 or bq < min_bq:
+                continue
+            # Anti-flood: never request raw mats for a crafted output we already hold >= 85% of live real buyers!
+            if int(_st_by.get(out_item) or 0) >= max(50, int(bq * 0.85)):
                 continue
             in_cost = sum(q * float(ivals.get(ii) or 0.0) for ii, q in rec["inputs"])
             rev = mb * out_q
@@ -223,11 +227,13 @@ def expand_demand_raw_inputs(world):
             for in_i, _q in rec["inputs"]:
                 if in_i in makers_by_out:
                     expanded.add(in_i)
+    ind_outs = set((demand.get("industrial_targets") or {}).keys())
     wanted_raw = {}
     for out_i in expanded:
+        def_cap = 12000 if out_i in ind_outs else 3000
         for rec in makers_by_out.get(out_i, ()):
             for in_item, _q in rec["inputs"]:
-                cap = raw_caps.get(in_item, 12000)
+                cap = min(raw_caps.get(in_item, def_cap), 15000)
                 cur = int((world.get("stock_by_item") or {}).get(in_item, 0))
                 if cur < cap:
                     wanted_raw[in_item] = max(wanted_raw.get(in_item, 0), cap - cur)
@@ -354,25 +360,28 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
             local_b = book.get(out_item) or {}
             local_bid = float(local_b.get("bid") or 0)
             local_bq = int(local_b.get("bid_qty") or 0)
-            local_bd = max(local_bq, int(local_b.get("bid_depth") or 0))
             local_ask = float(local_b.get("ask") or 0)
-            bid, bq = local_bid, local_bd
+            gb_p, gb_q = gbid.get(out_item, (0.0, 0))
+            # Anti-flood for commercial Trade crafting: never craft more when fleet already holds >= 85% of real buyer qty!
+            _real_demand_q = max(local_bq, gb_q)
+            if _real_demand_q > 0 and int(stock_map.get(out_item) or 0) >= max(50, int(_real_demand_q * 0.85)):
+                continue
+            bid, bq = local_bid, local_bq
             sell_via_ask = False
-            # When spending cash on market inputs, REQUIRE a live LOCAL buyer bid so cash converts back to profit immediately!
+            # When spending cash on market inputs, REQUIRE a live LOCAL real buyer bid so cash converts back to profit immediately!
             if bid <= 0 or bq < min_bq:
                 if buys:
                     continue
-                # Using own stored inputs (0 cash spent!): sell at live galactic bid OR undercut active local ask!
-                gb_p, gb_q = gbid.get(out_item, (0.0, 0))
-                if local_ask >= 15 and gb_p >= 5 and local_ask <= gb_p * 4.0:
-                    bid, bq = max(5.0, local_ask - 1.0), max(min_bq, 10)
+                # Using own stored inputs (0 cash spent!): sell at live galactic real bid OR undercut active local ask!
+                if local_ask >= 15 and gb_p >= 10 and gb_q >= min_bq and local_ask <= gb_p * 4.0:
+                    bid, bq = max(5.0, local_ask - 1.0), gb_q
                     sell_via_ask = True
-                elif gb_p > 0 and gb_q >= min_bq:
+                elif gb_p >= 10 and gb_q >= min_bq:
                     bid, bq = gb_p, gb_q
                 else:
                     continue
-            if buys and local_bd > 0:
-                max_abs_runs = max(1, local_bd // max(1, out_qty))
+            if buys and local_bq > 0:
+                max_abs_runs = max(1, local_bq // max(1, out_qty))
                 if runs > max_abs_runs:
                     runs = max_abs_runs
                     buys = []

@@ -34,7 +34,7 @@
   "enabled": true,
   "arb_bid_depth_cap": 0.65,
   "min_arb_bid_qty": 10,
-  "liquidate_min_revenue_cr": 1200,
+  "liquidate_min_revenue_cr": 800,
   "allow_faction_surplus_liquidation": true,
   "allow_calm_buywall_dest": true,
   "buywall_min_bid": 12,
@@ -73,6 +73,8 @@
     "station": 6000
   },
   "consolidate_min_units": 10,
-  "consolidate_min_value_cr": 600,
-  "liquidate_max_slots": 24
+  "consolidate_min_value_cr": 800,
+  "liquidate_max_slots": 24,
+  "rest_seconds_when_empty": 90,
+  "idle_poll_interval_s": 30
 }

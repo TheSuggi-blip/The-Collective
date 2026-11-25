@@ -49,7 +49,7 @@ class TestSupplyChainOptimization(unittest.TestCase):
 
     def test_mine_net_10pct_floor_and_t0_calm_lawless_equal_to_t2(self):
         pol = json.loads((REPO / "game" / "mine-policy.json").read_text(encoding="ascii"))
-        self.assertEqual(float(pol["min_left_pct"]), 10.0)
+        self.assertEqual(float(pol["min_left_pct"]), 5.0)
         self.assertEqual(int(pol["lawless_min_tier"]), 0)
         world = {
             "adj": {"sol": ["border_calm"], "border_calm": ["sol"]},

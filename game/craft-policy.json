@@ -12,9 +12,9 @@
   "max_buy_spend_per_cycle_cr": 25000,
   "trade": {
     "enabled": true,
-    "min_margin_pct": 0.15,
-    "min_profit_cr": 50,
-    "min_bid_qty": 1,
+    "min_margin_pct": 0.2,
+    "min_profit_cr": 150,
+    "min_bid_qty": 5,
     "sell_mode": "sell_order_or_bid",
     "instant_hit_bid_ratio": 0.9,
     "undercut_cr": 1,

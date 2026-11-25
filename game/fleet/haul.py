@@ -1221,8 +1221,9 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
         if not iid:
             continue
         bp = float(r.get("bid") or 0)
-        ap = float(r.get("ask") or 0)
-        v = bp if bp > 0 else (ap * 0.7 if ap > 0 else 0)
+        bq = int(r.get("bid_qty") or 0)
+        # Strictly value consolidation by REAL cash bids (bid>=5, bid_qty>=5) so Haulers never shuffle unbid junk!
+        v = bp if (bp >= 5.0 and bq >= 5) else 0.0
         if v > val_by_item.get(iid, 0):
             val_by_item[iid] = v
 
@@ -1266,7 +1267,9 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
             if q < min_u or iid in reserved:
                 continue
-            uval = max(4.0, float(val_by_item.get(iid) or 0.0))
+            uval = float(val_by_item.get(iid) or 0.0)
+            if uval < 5.0:
+                continue
             take_q = min(q, int(hold_cap))
             est_val = take_q * uval
             if est_val < min_val:
@@ -1421,13 +1424,10 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
             continue
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
-        bd = max(bq, int(r.get("bid_depth") or 0))
-        # Allow full-hold loading across multi-tier buy-walls (protected by live tier floor check at dest!)
-        eff_bq = min(bd, max(bq * 5, 250)) if (bp >= 20.0 and bd > bq) else bq
         iid = str(r.get("item") or "")
-        if not (iid and bp >= 1.0 and eff_bq >= 1):
+        # Strictly load REAL top-of-book bid_qty (never 1-cr trash bid_depth!)
+        if not (iid and bp >= 1.0 and bq >= 1):
             continue
-        bq = eff_bq
         if policed and not loc[3]:
             if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):
                 continue

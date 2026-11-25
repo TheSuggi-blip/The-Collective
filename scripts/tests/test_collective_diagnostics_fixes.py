@@ -153,6 +153,8 @@ class TestDiagnosticsFixes(unittest.TestCase):
             data = Path(tmp) / "data"
             (data / "stock").mkdir(parents=True)
             (data / "store").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({"members": [{"name": "hauler-1", "role": "officer"}]}), encoding="ascii")
             now = 1795600000
             (data / "stock" / "storage.json").write_text(json.dumps({
                 "pilots": {},
