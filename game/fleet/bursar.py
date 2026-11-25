@@ -369,7 +369,8 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 if b_id in exclude:
                     continue
                 used = (1 if b_id in cleaned else 0) + static_counts.get(b_id, 0)
-                if used >= max_per and b_id not in unwind:
+                st_cap = max(max_per, int(policy.get("priority_max_per_station") or max_per)) if b_id in priority else max_per
+                if used >= st_cap and b_id not in unwind:
                     continue
                 hops = _bfs_hops(lanes, cur_sys, st["system"]) if cur_sys else 0
                 if cur_sys and lanes and hops is None:
@@ -618,11 +619,15 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             bid_q = int(row.get("best_buy_qty") or row.get("buy_quantity") or 0)
             ask = float(row.get("best_sell") or 0)
             base_v = float((catalog_vals or {}).get(iid) or 0)
-            ref_p = max(base_v, bid, ask * 0.5)
+            if ask > 0 and base_v > 0:
+                ref_p = max(min(base_v, ask), bid)
+            else:
+                ref_p = max(base_v, bid, ask * 0.5)
             if ref_p < 2:
                 continue
             floor_p = max(2, int(round(ref_p * min_ratio)))
-            if bid >= max(floor_p, int(round(ref_p * hit_ratio))) and bid_q > 0:
+            hit_live_spread = (ask > 0 and bid >= max(10, int(round(ask * 0.85))))
+            if bid_q > 0 and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                 continue
             if used_sell_ords >= max_sell_ords:
@@ -918,8 +923,8 @@ def main(argv=None):
                               unwind_bases=unwind_bases)
         if not claim:
             say("no unstaffed Exchange station available under max_per_station=%s" % policy.get("max_per_station", 1))
-            notes.append("all stations staffed")
-            time.sleep(60)
+            notes.append("all stations staffed: not reached")
+            time.sleep(10)
             return 0
 
         sys_id, poi_id, base_id = claim["system"], claim["poi"], claim["base"]

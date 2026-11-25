@@ -146,6 +146,9 @@ TRIAGE_SPECS = {
     "MINING_YIELD": ("P1", "P1", 82, 72, 2),
     "FIELD_CONGESTION": ("P1", "P2", 80, 64, 1),
     "HUB_CONGESTION": ("P1", "P2", 78, 62, 1),
+    "AUTONET_LANE_MISSING": ("P0", "P1", 98, 84, 1),
+    "AUTONET_STALLED": ("P0", "P1", 96, 80, 1),
+    "CASH_CONVERSION_LAG": ("P1", "P2", 88, 70, 1),
     "SMART_ENGINE_GAP": ("P1", "P2", 82, 66, 1),
     "DIV_HULL_UPGRADE": ("P1", "P1", 80, 70, 2),
     "HULL_UPGRADE_LAG": ("P1", "P1", 80, 70, 2),
@@ -845,8 +848,57 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
     o4_covered = len(o4_empires)
     o4_target = 5
 
+    # Live 2h AutoNet fill-rate telemetry from read.db:runs (detects docked-watch / no-belt / stranger-flee / staffed stalls)
+    net_runs_2h = {}
+    if conn is not None and "runs" in tables:
+        try:
+            r_cols = {r[1] for r in conn.execute("PRAGMA table_info(runs)").fetchall()}
+            if {"route", "t", "row"}.issubset(r_cols):
+                cut_2h = now - 7200.0
+                for rt_nm, raw_j in conn.execute(
+                    "SELECT route, row FROM runs WHERE t >= ? AND route IN "
+                    "('haul-network','mine-network','hunt-network','bursar-network','craft-network')",
+                    (cut_2h,),
+                ).fetchall():
+                    rec = net_runs_2h.setdefault(str(rt_nm), {"total": 0, "empty": 0, "reasons": Counter()})
+                    rec["total"] += 1
+                    try:
+                        ns = (json.loads(raw_j) or {}).get("notes") or []
+                    except Exception:
+                        ns = []
+                    joined = " | ".join(str(x) for x in ns).lower()
+                    is_empty = False
+                    if rt_nm == "haul-network" and "docked watch" in joined:
+                        is_empty = True
+                        rec["reasons"]["docked watch"] += 1
+                    elif rt_nm == "mine-network" and "no belt matched" in joined:
+                        is_empty = True
+                        rec["reasons"]["no belt matched"] += 1
+                    elif rt_nm == "hunt-network" and ("a ship that is not ours" in joined or "no eligible herd" in joined):
+                        is_empty = True
+                        rec["reasons"]["stranger flee/empty"] += 1
+                    elif rt_nm == "bursar-network" and "all stations staffed" in joined:
+                        is_empty = True
+                        rec["reasons"]["all stations staffed"] += 1
+                    elif rt_nm == "craft-network" and ("docked watch" in joined or "quote refuse" in joined or "buy short" in joined):
+                        is_empty = True
+                        rec["reasons"]["no recipe/refused"] += 1
+                    if is_empty:
+                        rec["empty"] += 1
+        except Exception:
+            pass
+
+    def _net_fill(rt_nm):
+        rec = net_runs_2h.get(rt_nm) or {}
+        tot = int(rec.get("total") or 0)
+        emp = int(rec.get("empty") or 0)
+        fill = round(100.0 * (tot - emp) / tot, 1) if tot > 0 else 100.0
+        top_r = rec.get("reasons").most_common(1)[0][0] if (rec.get("reasons") and emp > 0) else ""
+        return tot, emp, fill, top_r
+
     out = {}
     disabled_engines = []
+    stalled_engines = []
 
     # 1. Mining (mine-network)
     mine_pol_path = game_dir / "mine-policy.json"
@@ -904,7 +956,29 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "direction": "FLAT",
                 "action": "Promote mine-network ahead of static mine-* loops in plan-mining.md so >=15% floor & reserve priority auto-rotate (ENT-088)",
             }
+    mine_tot_2h, mine_emp_2h, mine_fill_2h, mine_top_r = _net_fill("mine-network")
+    mine_choked_pol = (
+        mine_present
+        and bool(mine_pol.get("policed_only", True))
+        and not bool(mine_pol.get("allow_lawless_for_deficit", True))
+        and int(mine_pol.get("lawless_min_tier") or 1) > 3
+    )
+    if mine_present and (mine_notice is None or mine_notice.get("severity") != "ALARM"):
+        if mine_choked_pol or (mine_tot_2h >= 10 and mine_fill_2h < 75.0):
+            mine_status = "ALARM"
+            stalled_engines.append("mine-network")
+            mine_notice = {
+                "severity": "ALARM", "code": "AUTONET_STALLED",
+                "metric": "AutoNet: mine-network stalled / choked",
+                "actual": f"{mine_fill_2h:.0f}% belt match ({mine_emp_2h}/{mine_tot_2h} empty in 2h: {mine_top_r or 'policy choke'})",
+                "target": ">=75% belt match (allow calm lawless deficits + T1+ belts)",
+                "direction": "WORSENING",
+                "action": "Widen game/mine-policy.json (allow_lawless_for_deficit=true, lawless_min_tier<=1, high_value_market_min_bid) so miners switch off bloated copper onto rich belts instead of bouncing empty (F8)",
+            }
     out["Mining"] = {
+        "fill_pct_2h": mine_fill_2h,
+        "runs_2h": mine_tot_2h,
+        "empty_2h": mine_emp_2h,
         "engine": "mine-network",
         "policy_present": mine_present,
         "enabled": mine_enabled,
@@ -1008,8 +1082,23 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "direction": "FLAT",
                 "action": "Inspect game/hunt-policy.json pack ratios/targets so 20-30% of Military farms tougher wildlife/pirates in 3/5/8/10 packs",
             }
+    hunt_tot_2h, hunt_emp_2h, hunt_fill_2h, hunt_top_r = _net_fill("hunt-network")
+    if hunt_present and (hunt_notice is None or hunt_notice.get("severity") != "ALARM") and hunt_tot_2h >= 10 and hunt_fill_2h < 75.0:
+        hunt_status = "ALARM"
+        stalled_engines.append("hunt-network")
+        hunt_notice = {
+            "severity": "ALARM", "code": "AUTONET_STALLED",
+            "metric": "AutoNet: hunt-network high abort/empty rate",
+            "actual": f"{hunt_fill_2h:.0f}% effective ({hunt_emp_2h}/{hunt_tot_2h} aborted in 2h: {hunt_top_r})",
+            "target": ">=75% effective solo/pack hunts (<25% aborts)",
+            "direction": "WORSENING",
+            "action": "Keep solo.policed_alone_mode='pirates' and solo.lawless_alone_mode='pirates' in game/hunt-policy.json so hunters ignore harmless passersby and only flee pirates/hostiles (F8/F9)",
+        }
     out["Military"] = {
         "engine": "hunt-network",
+        "fill_pct_2h": hunt_fill_2h,
+        "runs_2h": hunt_tot_2h,
+        "empty_2h": hunt_emp_2h,
         "policy_present": hunt_present,
         "enabled": hunt_enabled,
         "packs_enabled": packs_enabled,
@@ -1125,8 +1214,22 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "direction": "FLAT",
                 "action": "Keep T0 traders routing through bursar-network to fill 60+ safe empire & neutral hubs while T1+/cargo ships run mobile trade/craft (ENT-088)",
             }
+    bur_tot_2h, bur_emp_2h, bur_fill_2h, bur_top_r = _net_fill("bursar-network")
+    if bur_present and bur_notice is None and bur_tot_2h >= 10 and bur_fill_2h < 60.0:
+        bur_status = "WARN"
+        bur_notice = {
+            "severity": "WARN", "code": "AUTONET_STALLED",
+            "metric": "AutoNet: bursar-network overflow bounce rate",
+            "actual": f"{bur_fill_2h:.0f}% seated ({bur_emp_2h}/{bur_tot_2h} 'all stations staffed' in 2h)",
+            "target": ">=60% seated or overflow routed to freight/craft/liquidation",
+            "direction": "FLAT",
+            "action": "Keep priority_max_per_station=2 on core hubs and route overflow traders to bursar-network-freighter, craft-network, and sell-loot liquidation (F8)",
+        }
     out["Trade"] = {
         "engine": "bursar-network",
+        "fill_pct_2h": bur_fill_2h,
+        "runs_2h": bur_tot_2h,
+        "empty_2h": bur_emp_2h,
         "policy_present": bur_present,
         "enabled": bur_enabled,
         "buy_enabled": bur_buy_enabled,
@@ -1166,6 +1269,9 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
     log_idle = max(0, int((ldiv.get("Logistics") or {}).get("total", 0)) - int((ldiv.get("Logistics") or {}).get("working", 0)))
     haul_notice = None
     haul_status = "OK"
+    haul_tot_2h, haul_emp_2h, haul_fill_2h, haul_top_r = _net_fill("haul-network")
+    haul_req_lanes = ("active_freight", "internal_supply", "public_freight", "arbitrage")
+    haul_missing_lanes = [ln for ln in haul_req_lanes if haul_lanes is not None and ln not in haul_lanes]
     if haul_present:
         if not haul_enabled or not haul_lanes_active:
             haul_status = "ALARM"
@@ -1177,6 +1283,17 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "target": "haul-network active with freight/supply lanes ON",
                 "direction": "FLAT",
                 "action": "Re-enable game/haul-policy.json core lanes (tune caps/margins rather than turning off; O3)",
+            }
+        elif haul_missing_lanes:
+            haul_status = "ALARM"
+            stalled_engines.append("haul-network")
+            haul_notice = {
+                "severity": "ALARM", "code": "AUTONET_LANE_MISSING",
+                "metric": f"AutoNet: haul-network missing core lane(s) ({', '.join(haul_missing_lanes)})",
+                "actual": f"lanes={haul_lanes} ({haul_emp_2h}/{haul_tot_2h} docked watch in 2h)",
+                "target": "active_freight, internal_supply, public_freight, arbitrage all ON",
+                "direction": "WORSENING",
+                "action": "Restore missing core lanes (especially arbitrage & internal_supply) in game/haul-policy.json; tune margin/cap rather than deleting lanes (F8/O3)",
             }
         elif _div_total("Logistics") >= 5 and haul_plan == 0:
             haul_status = "WARN"
@@ -1209,8 +1326,22 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
                 "action": "Cap haul-network to real freight/supply demand and route surplus haulers to industrial craft, reserve builds, or passenger lanes",
             }
     _hl_lbl = (",".join(haul_lanes) if haul_lanes is not None else ("ON" if haul_enabled else "OFF"))
+    if haul_present and (haul_notice is None or haul_notice.get("severity") != "ALARM") and haul_tot_2h >= 10 and haul_fill_2h < 70.0:
+        haul_status = "ALARM"
+        stalled_engines.append("haul-network")
+        haul_notice = {
+            "severity": "ALARM", "code": "AUTONET_STALLED",
+            "metric": "AutoNet: haul-network stalled on docked watch",
+            "actual": f"{haul_fill_2h:.0f}% active ({haul_emp_2h}/{haul_tot_2h} empty/watch runs in 2h)",
+            "target": ">=70% active freight/supply/arbitrage/liquidation (<30% watch)",
+            "direction": "WORSENING",
+            "action": "Keep arbitrage + liquidate_surplus active in game/haul-policy.json and ensure fresh books so haulers never sit idle on docked watch (F8/O3)",
+        }
     out["Logistics"] = {
         "engine": "haul-network",
+        "fill_pct_2h": haul_fill_2h,
+        "runs_2h": haul_tot_2h,
+        "empty_2h": haul_emp_2h,
         "policy_present": haul_present,
         "enabled": haul_enabled,
         "lanes": haul_lanes,
@@ -1225,7 +1356,7 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
         "owned_outposts": owned_outposts,
         "status": haul_status,
         "summary": (
-            f"haul-network {haul_active} active ({haul_claims_n} claims, lanes: {_hl_lbl}) | "
+            f"haul-network {haul_active} active ({haul_claims_n} claims, fill {haul_fill_2h:.0f}%, lanes: {_hl_lbl}) | "
             f"O4 5-emp hubs {o4_covered}/{o4_target} ({owned_outposts} outpost)"
         ) if haul_present else "",
         "notice": haul_notice,
@@ -1297,15 +1428,16 @@ def _compute_smart_networks(repo_root, data_dir, conn=None, tables=None, ship_di
     ok_cnt = sum(1 for k in div_keys if out[k]["status"] == "OK")
     degraded = [k for k in div_keys if out[k]["status"] != "OK"]
     cmd_notice = None
-    cmd_status = "ALARM" if disabled_engines else ("WARN" if len(degraded) >= 3 else "OK")
-    if disabled_engines:
+    _crit_nets = disabled_engines + [x for x in stalled_engines if x not in disabled_engines]
+    cmd_status = "ALARM" if _crit_nets else ("WARN" if len(degraded) >= 3 else "OK")
+    if _crit_nets:
         cmd_notice = {
-            "severity": "ALARM", "code": "SMART_ENGINE_GAP",
-            "metric": f"AutoNet Policy Turned Off ({', '.join(disabled_engines)})",
-            "actual": f"{len(disabled_engines)} autonomous network(s) disabled",
-            "target": "all 5 division autonomous networks ON",
+            "severity": "ALARM", "code": "AUTONET_STALLED" if (stalled_engines and not disabled_engines) else "SMART_ENGINE_GAP",
+            "metric": f"AutoNet Disabled/Stalled ({', '.join(_crit_nets)})",
+            "actual": f"{len(disabled_engines)} disabled, {len(stalled_engines)} stalled/gutted",
+            "target": "all 5 division AutoNets ON with >=75% 2h fill rate",
             "direction": "WORSENING",
-            "action": "Re-enable disabled game/*-policy.json immediately; tune caps/ratios rather than disabling AutoNet (ENT-088)",
+            "action": "Keep all AutoNet policies ON with core lanes (incl. arbitrage & calm deficits); tune parameters and stack P3 strategies ON TOP without breaking AutoNet (F8/F40)",
         }
     out["Command"] = {
         "engine": "fleet-networks",
@@ -1817,6 +1949,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         "MODULE_FIT_SATURATION": max(0.0, (TARGET_COMPLETION_PCT - fleet_slot_pct) / TARGET_COMPLETION_PCT),
         "FIELD_CONGESTION": 0.85,
         "HUB_CONGESTION": 0.80,
+        "AUTONET_LANE_MISSING": 0.98,
+        "AUTONET_STALLED": 0.92,
+        "CASH_CONVERSION_LAG": 0.85,
         "SMART_ENGINE_GAP": 0.85,
     }
     for _t in ent_triggers:
@@ -2110,6 +2245,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "MINING_YIELD": max(0.0, (100.0 - _num(role_kpi.get("pct"))) / 100.0),
             "FIELD_CONGESTION": min(1.0, ((div_sat or {}).get("max_per_poi", 0)) / 30.0),
             "HUB_CONGESTION": min(1.0, ((div_sat or {}).get("max_per_poi", 0)) / 25.0),
+            "AUTONET_LANE_MISSING": 0.98,
+            "AUTONET_STALLED": 0.92,
+            "CASH_CONVERSION_LAG": 0.85,
             "TRADE_NET": 0.9 if d_net24 <= 0 else 0.4,
             "SURPLUS_BACKLOG": min(1.0, surplus_worth / 1000000.0),
             "SUPPLY_CHAINS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),

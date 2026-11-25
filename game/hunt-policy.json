@@ -89,7 +89,9 @@
     "max_jumps": 10,
     "kills_per_run": 6,
     "alone": true,
-    "min_bid": 1500
+    "min_bid": 1500,
+    "policed_alone_mode": "pirates",
+    "lawless_alone_mode": "pirates"
   },
   "fallback": {
     "enabled": true,

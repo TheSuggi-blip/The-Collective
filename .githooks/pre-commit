@@ -111,4 +111,14 @@ if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^communications/
     fi
   fi
 fi
+# AutoNet policy & plan gate: prevent disabling AutoNet engines or stripping core lanes/routes.
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^(game/[a-z_-]*policy[^/]*\.json|game/routes/plans/[^/]+\.json|scripts/validate-autonet\.py)$'; then
+  if [ -f scripts/validate-autonet.py ]; then
+    if ! python3 -B scripts/validate-autonet.py; then
+      echo ""
+      echo "COMMIT BLOCKED: AutoNet structural invariant violated (tune parameters or stack P3 strategies on top, never disable/gut AutoNet)."
+      exit 1
+    fi
+  fi
+fi
 exit 0

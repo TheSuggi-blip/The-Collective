@@ -807,6 +807,131 @@ def _release_upgrade(data_dir, pilot, division_mod):
             pass
 
 
+
+def _norm_hull_name(val):
+    return re.sub(r"[^a-z0-9]+", "_", str(val or "").strip().lower()).strip("_")
+
+
+def _lookup_station_spec(data_dir, station_name):
+    """Resolve a Shipyard Authority station display name (e.g. 'Frontier Station') to 'sys:poi:base'."""
+    db = Path(data_dir) / "store" / "read.db"
+    nm = str(station_name or "").strip().lower()
+    if not nm or not db.is_file():
+        return None
+    nm_slug = _norm_hull_name(nm)
+    con = None
+    try:
+        con = _connect_ro(data_dir)
+        rows = con.execute("SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != ''").fetchall()
+        for sys_id, poi_id, base_id, pname in rows:
+            if (
+                str(pname or "").strip().lower() == nm
+                or str(base_id or "").strip().lower() == nm
+                or _norm_hull_name(base_id) == nm_slug
+                or _norm_hull_name(pname) == nm_slug
+            ):
+                return "%s:%s:%s" % (sys_id, poi_id, base_id)
+    except Exception:
+        return None
+    finally:
+        if con is not None:
+            con.close()
+    return None
+
+
+def reconcile_built_hangars(data_dir, pmap, rows, now):
+    """1. Mark already-switched 'building' rows done.
+    2. Auto-enqueue orphaned pre-queue commissioned hulls from comms/messages.jsonl (e.g. hauler-53/54 Prayers)
+       so serve_upgrades flies those pilots to switch_ship automatically.
+    """
+    changed = False
+    active_pilots = set()
+    for r in rows:
+        if not isinstance(r, dict):
+            continue
+        pilot = str(r.get("pilot") or "")
+        st = str(r.get("state") or "")
+        if st == "building" and pilot in pmap:
+            cur_cls = _norm_hull_name((pmap[pilot][2] or {}).get("class"))
+            want_cls = _norm_hull_name(r.get("hull"))
+            if cur_cls and want_cls and cur_cls == want_cls:
+                r.pop("ready_to_switch", None)
+                r["state"] = "done"
+                r["updated_at"] = int(now)
+                r["note"] = "reconciled: already flying %s" % r.get("hull")
+                changed = True
+                continue
+        if st in ACTIVE_QUEUE_STATES:
+            active_pilots.add(pilot)
+
+    msg_p = Path(data_dir) / "comms" / "messages.jsonl"
+    if not msg_p.is_file():
+        return changed
+    rec_p = Path(data_dir) / "fleet" / "hangar_reconciled.json"
+    done_keys = set()
+    try:
+        raw_rk = json.loads(rec_p.read_text(encoding="utf-8")) if rec_p.is_file() else []
+        if isinstance(raw_rk, list):
+            done_keys = {str(x) for x in raw_rk}
+    except Exception:
+        done_keys = set()
+
+    built_re = re.compile(r"Your commissioned ([A-Za-z0-9 _-]+?) is built and docked at ([^.]+)\.")
+    seen_orphans = {}
+    try:
+        with open(msg_p, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if "Shipyard Authority" not in line or "is built and docked" not in line:
+                    continue
+                try:
+                    mj = json.loads(line)
+                except ValueError:
+                    continue
+                m = built_re.search(str(mj.get("text") or ""))
+                if not m:
+                    continue
+                h_slug = _norm_hull_name(m.group(1))
+                st_nm = m.group(2).strip()
+                p_nm = str(mj.get("to") or mj.get("pilot") or mj.get("recipient") or "").strip()
+                if not p_nm or p_nm not in pmap or p_nm in active_pilots:
+                    continue
+                cur_cls = _norm_hull_name((pmap[p_nm][2] or {}).get("class"))
+                if cur_cls == h_slug:
+                    continue
+                seen_orphans[p_nm] = (h_slug, st_nm)
+    except OSError:
+        return changed
+
+    next_n = 1 + max((int(str(r.get("id") or "u-0").split("-")[1]) for r in rows if str(r.get("id") or "").startswith("u-") and str(r.get("id")).split("-")[1].isdigit()), default=0)
+    for p_nm, (h_slug, st_nm) in sorted(seen_orphans.items()):
+        spec = _lookup_station_spec(data_dir, st_nm)
+        if not spec:
+            continue
+        base_id = spec.split(":")[2]
+        rkey = "%s:%s:%s" % (p_nm, h_slug, base_id)
+        if rkey in done_keys:
+            continue
+        rows.append({
+            "id": "u-%d" % next_n,
+            "pilot": p_nm,
+            "hull": h_slug,
+            "station": spec,
+            "max_price": 0,
+            "state": "building",
+            "ready_to_switch": True,
+            "from_hangar_scan": True,
+            "reconcile_key": rkey,
+            "by": "AutoReconcile",
+            "created_at": int(now),
+            "updated_at": int(now),
+            "last_poll": 0,
+            "note": "ready at %s (auto-detected built hull in hangar)" % base_id,
+        })
+        next_n += 1
+        active_pilots.add(p_nm)
+        changed = True
+    return changed
+
 def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=210.0,
                    gate_mod=None, wallet_mod=None, division_mod=None, max_workers=6):
     """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
@@ -814,8 +939,14 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
     if (Path(data_dir) / "fleet" / "STOP").exists():
         return 0
     rows = load_queue(data_dir)
+    pmap = _pilot_division_map(data_dir)
+    changed, actions, t0 = False, 0, time.time()
+    if reconcile_built_hangars(data_dir, pmap, rows, now):
+        changed = True
     active = [r for r in rows if isinstance(r, dict) and r.get("state") in ACTIVE_QUEUE_STATES]
     if not active:
+        if changed and not dry:
+            save_queue(data_dir, rows, merge=True)
         return 0
     here = str(Path(__file__).resolve().parent)
     if here not in sys.path:
@@ -826,9 +957,6 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
         import wallet as wallet_mod
     if gate_mod is None:
         import gate as gate_mod
-
-    pmap = _pilot_division_map(data_dir)
-    changed, actions, t0 = False, 0, time.time()
 
     # Phase 1 (fast, no gate calls): advance all queued/funding rows first and persist immediately
     for r in active:
@@ -1040,6 +1168,17 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             stored = [s for s in _extract_ships(ls_ans) if str(s.get("class_id") or "").lower() == hull
                       and not s.get("is_active") and s.get("location_base_id") == base_id]
             if not stored:
+                if r.get("from_hangar_scan"):
+                    r.pop("ready_to_switch", None)
+                    r["state"], r["updated_at"], r["note"] = "done", int(now), "reconciled: no stored %s at %s" % (hull, base_id)
+                    rkey = str(r.get("reconcile_key") or ("%s:%s:%s" % (pilot, hull, base_id)))
+                    rec_p = Path(data_dir) / "fleet" / "hangar_reconciled.json"
+                    try:
+                        prev_rk = json.loads(rec_p.read_text(encoding="utf-8")) if rec_p.is_file() else []
+                        rk_list = sorted(set((prev_rk if isinstance(prev_rk, list) else []) + [rkey]))
+                        rec_p.write_text(json.dumps(rk_list, indent=2) + "\n", encoding="utf-8")
+                    except Exception:
+                        pass
                 continue
             r["ready_to_switch"] = True
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
@@ -1060,6 +1199,15 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
                     r.pop("ready_to_switch", None)
                     r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into %s @ %s" % (hull, base_id)
+                    if r.get("from_hangar_scan"):
+                        rkey = str(r.get("reconcile_key") or ("%s:%s:%s" % (pilot, hull, base_id)))
+                        rec_p = Path(data_dir) / "fleet" / "hangar_reconciled.json"
+                        try:
+                            prev_rk = json.loads(rec_p.read_text(encoding="utf-8")) if rec_p.is_file() else []
+                            rk_list = sorted(set((prev_rk if isinstance(prev_rk, list) else []) + [rkey]))
+                            rec_p.write_text(json.dumps(rk_list, indent=2) + "\n", encoding="utf-8")
+                        except Exception:
+                            pass
                     print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id), flush=True)
                 else:
                     r["note"] = "switch failed: %s" % json.dumps(sw_ans)[:80]

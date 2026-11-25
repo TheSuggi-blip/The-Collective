@@ -181,6 +181,7 @@ def load_map():
             "x": round(float(s["x"]), 1), "y": round(float(s["y"]), 1),
             "empire": text(s.get("empire") or "", 20), "home": bool(s.get("is_home")),
             "stronghold": bool(s.get("is_stronghold")),
+            "frontier_tier": int(s.get("frontier_tier") or 0),
             "lanes": [text(c, 80) for c in s.get("connections", [])][:40],
         })
     if len(systems) < 100:
@@ -196,7 +197,15 @@ def load_map():
     for s in systems:
         s["jumps"] = dist.get(s["id"], -1)
     empires = {text(k, 20): text(v, 9) for k, v in (d.get("empires") or {}).items()}
-    return {"systems": systems, "empires": empires}
+    gates = []
+    for g in (d.get("gates") or [])[:200]:
+        if isinstance(g, dict) and g.get("from_system") and g.get("to_system"):
+            gates.append({
+                "from": text(g.get("from_system"), 80),
+                "to": text(g.get("to_system"), 80),
+                "online": bool(g.get("online", True)),
+            })
+    return {"systems": systems, "empires": empires, "gates": gates}
 
 
 def load_stations():
@@ -1276,7 +1285,7 @@ def api_state():
     with LOCK:
         m = VALUE.get("map") or {"systems": [], "empires": {}}
         out = {
-            "home": HOME, "systems": m["systems"], "empires": m["empires"], "stations": VALUE.get("stations") or [],
+            "home": HOME, "systems": m["systems"], "empires": m["empires"], "gates": m.get("gates") or [], "stations": VALUE.get("stations") or [],
             "stats": VALUE.get("stats") or {}, "feed_built_at": (VALUE.get("feed") or {}).get("built_at", ""),
         }
     out["intel"] = scan_intel()

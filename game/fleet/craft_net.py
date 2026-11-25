@@ -557,30 +557,54 @@ def main(argv=None):
             return 0
 
         print("%s %s craft_net: starting %dx %s (%s) at %s" % (utc_now(), pilot, int(job["runs"] * job["per_run"]), job["makes"], job["mode"], base_id), flush=True)
-        # 1. Buy any short docked inputs via real buy-items goal & store them for workshop
+        asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+        max_fee_tot = float(policy.get("max_fee_per_run_cr") or 1500) * max(1, int(job["runs"]))
+
+        # 0. Pre-buy dry-run validation (ENT-326): NEVER buy inputs if recipe is invalid, lacks workshop/skill, or fee > max_fee!
+        q_pre_raw = raw("craft", dict(asked_c, dry_run=True), group="spacemolt")
+        q_pre = _body(q_pre_raw)
+        pre_err = str(q_pre_raw.get("error") or q_pre.get("error") or "")
+        pre_fee = float(q_pre.get("credits_total") or 0)
+        if pre_err or (pre_fee > 0 and pre_fee > max_fee_tot):
+            notes.append("pre-quote refuse %s (err=%s fee=%d)" % (job["recipe"], pre_err[:40] or "fee", int(pre_fee)))
+            _stamp_craft_cooldown("%s:%s" % (pilot, job["recipe"]), 3600, data_dir=DATA)
+            _stamp_craft_cooldown(pilot, 300, data_dir=DATA)
+            return 0
+
+        # 1. Buy any short docked inputs in cargo-safe chunks and verify actual storage delivery before crafting
         buy_spent = 0
+        hold_cap = max(10, int(ship_doc.get("cargo_capacity") or 50))
         for iid, qty, ask in job["buys"]:
-            cr_b0 = get_credits()
-            ok_b, _rb = goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(ask * 1.02) + 2, "maxQuantity": int(qty)}]}, timeout=120)
-            time.sleep(TICK)
-            cr_b1 = get_credits()
-            if cr_b0 > 0 and cr_b1 >= 0 and cr_b0 > cr_b1:
-                buy_spent += (cr_b0 - cr_b1)
-            if not ok_b:
+            rem_buy = int(qty)
+            chunks = 0
+            while rem_buy > 0 and chunks < 12:
+                chunks += 1
+                chunk_q = min(rem_buy, max(10, hold_cap - 5))
+                cr_b0 = get_credits()
+                ok_b, _rb = goal("buy-items", {"items": [{"itemId": iid, "maxPrice": int(ask * 1.02) + 2, "maxQuantity": int(chunk_q)}]}, timeout=120)
+                time.sleep(TICK)
+                cr_b1 = get_credits()
+                if cr_b0 > 0 and cr_b1 >= 0 and cr_b0 > cr_b1:
+                    buy_spent += (cr_b0 - cr_b1)
+                if not ok_b:
+                    break
+                raw("deposit", {"item_id": iid, "quantity": int(chunk_q), "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                time.sleep(TICK)
+                rem_buy -= chunk_q
+            live_after = get_live_stored(base_id) or {}
+            need_after = int(stored.get(iid, 0)) + int(qty)
+            if rem_buy > 0 or int(live_after.get(iid, 0)) < need_after:
                 if buy_spent > 0:
                     gate.book_onetime(pilot, "craft_net input stock %s" % iid, -int(buy_spent), data=str(DATA))
                     onetime_booked[0] -= int(buy_spent)
-                notes.append("buy err %s" % iid)
+                notes.append("buy short %s (have=%d need=%d)" % (iid, int(live_after.get(iid, 0)), need_after))
+                _stamp_craft_cooldown("%s:%s" % (pilot, job["recipe"]), 1800, data_dir=DATA)
                 _stamp_craft_cooldown(pilot, 600, data_dir=DATA)
                 return 0
-            raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
-            time.sleep(TICK)
 
-        # 2. Dry-run quote check + execute docked craft (exact route_run.py wire schema: quantity=runs*per_run)
-        asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+        # 2. Final dry-run quote check + execute docked craft (exact route_run.py wire schema: quantity=runs*per_run)
         q_c = _body(raw("craft", dict(asked_c, dry_run=True), group="spacemolt"))
         q_fee = float(q_c.get("credits_total") or 0)
-        max_fee_tot = float(policy.get("max_fee_per_run_cr") or 1500) * max(1, int(job["runs"]))
         if q_c.get("have_inputs") is False or (q_fee > 0 and q_fee > max_fee_tot):
             if buy_spent > 0:
                 gate.book_onetime(pilot, "craft_net input stock %s" % job["makes"], -int(buy_spent), data=str(DATA))

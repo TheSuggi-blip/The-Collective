@@ -1883,10 +1883,13 @@ def main(argv=None):
         if scfg.get("alone", True):
             _sys_rec = (world.get("systems") or {}).get(chosen["system"]) or {}
             _is_pol = bool(_sys_rec.get("empire")) and not bool(_sys_rec.get("stronghold"))
-            if _is_pol and str(scfg.get("policed_alone_mode", "pirates")) == "pirates":
-                cmd += ["--alone-mode", "pirates"]
-            else:
-                cmd.append("--alone")
+            _amode = str(scfg.get("policed_alone_mode", "pirates") if _is_pol else scfg.get("lawless_alone_mode", "pirates")).strip().lower()
+            cmd.append("--alone")
+            if _amode in ("pirates", "strangers"):
+                cmd += ["--alone-mode", _amode]
+            _ptags = [str(t).strip().upper() for t in (policy.get("partner_factions") or []) if str(t).strip()]
+            if _ptags:
+                cmd += ["--ignore-tags", ",".join(_ptags)]
         if policy.get("gift_to"):
             cmd += ["--gift-to", str(policy["gift_to"])]
 

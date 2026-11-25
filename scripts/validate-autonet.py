@@ -1,0 +1,113 @@
+#!/usr/bin/env python3
+"""Structural AutoNet invariant validator (CI + pre-commit hook).
+
+Ensures Admirals adapt and tune AutoNet parameters or stack P3 strategies ON TOP
+rather than disabling engines, deleting core lanes (e.g. arbitrage), choking all
+belts, or stripping *-network routes out of division plans.
+"""
+import json
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parent.parent
+
+REQUIRED_POLICIES = (
+    "game/haul-policy.json",
+    "game/mine-policy.json",
+    "game/hunt-policy.json",
+    "game/bursar-policy.json",
+    "game/craft-policy.json",
+    "game/fit-policy.json",
+)
+
+REQUIRED_HAUL_LANES = ("active_freight", "internal_supply", "public_freight", "arbitrage")
+
+REQUIRED_PLAN_ROUTES = {
+    "game/routes/plans/miner.json": ("mine-network", "fit-network"),
+    "game/routes/plans/drone.json": ("hunt-network", "fit-network"),
+    "game/routes/plans/sentinel.json": ("hunt-network", "fit-network"),
+    "game/routes/plans/hauler.json": ("haul-network", "fit-network"),
+    "game/routes/plans/trader.json": ("bursar-network", "fit-network"),
+}
+
+
+def check_repo(repo_root=None):
+    root = Path(repo_root) if repo_root else REPO
+    errors = []
+
+    for rel in REQUIRED_POLICIES:
+        p = root / rel
+        if not p.is_file():
+            errors.append(f"MISSING policy: {rel}")
+            continue
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception as e:
+            errors.append(f"INVALID JSON in {rel}: {e}")
+            continue
+        if not isinstance(d, dict):
+            errors.append(f"Policy {rel} must be a JSON object")
+            continue
+        if d.get("enabled", True) is False:
+            errors.append(f"{rel}: enabled=false is forbidden (tune parameters or stack P3 strategies on top instead)")
+
+        if rel == "game/haul-policy.json":
+            lanes = d.get("lanes") or []
+            missing = [ln for ln in REQUIRED_HAUL_LANES if ln not in lanes]
+            if missing:
+                errors.append(f"{rel}: required core lanes missing: {missing} (keep arbitrage, internal_supply, public_freight, active_freight)")
+
+        elif rel == "game/mine-policy.json":
+            if bool(d.get("policed_only", True)) and not bool(d.get("allow_lawless_for_deficit", True)) and int(d.get("lawless_min_tier") or 1) > 3:
+                errors.append(f"{rel}: policed_only=true + allow_lawless_for_deficit=false + lawless_min_tier>3 starves miners of deficit belts")
+            if float(d.get("min_left_pct") or 15) < 10.0:
+                errors.append(f"{rel}: min_left_pct must stay >= 10% (15% standard) to prevent belt depletion")
+
+        elif rel == "game/hunt-policy.json":
+            if not bool((d.get("solo") or {}).get("enabled", True)):
+                errors.append(f"{rel}: solo.enabled=false is forbidden")
+            if not bool((d.get("escort") or {}).get("enabled", True)):
+                errors.append(f"{rel}: escort.enabled=false is forbidden (tune threat gate instead)")
+            if int((d.get("escort") or {}).get("min_escorts") or 3) < 3:
+                errors.append(f"{rel}: escort.min_escorts must stay >= 3 (Suggi doctrine)")
+
+        elif rel == "game/bursar-policy.json":
+            if not bool((d.get("sell") or {}).get("enabled", True)):
+                errors.append(f"{rel}: sell.enabled=false is forbidden")
+            if not bool((d.get("buy") or {}).get("enabled", True)):
+                errors.append(f"{rel}: buy.enabled=false is forbidden")
+
+    for rel, req_routes in REQUIRED_PLAN_ROUTES.items():
+        p = root / rel
+        if not p.is_file():
+            continue
+        try:
+            d = json.loads(p.read_text(encoding="utf-8"))
+        except Exception as e:
+            errors.append(f"INVALID JSON in {rel}: {e}")
+            continue
+        routes = set(d.get("routes") or [])
+        ships = d.get("ships") or {}
+        for r in req_routes:
+            if r not in routes:
+                errors.append(f"{rel}: missing required AutoNet route '{r}' (stack P3 strategies on top, never strip AutoNet)")
+            elif int(ships.get(r, 1)) <= 0:
+                errors.append(f"{rel}: AutoNet route '{r}' ship cap cannot be 0")
+
+    return errors
+
+
+def main():
+    root = Path(sys.argv[1]) if len(sys.argv) > 1 else REPO
+    errs = check_repo(root)
+    if errs:
+        print("AUTONET INVARIANT CHECK FAILED:")
+        for e in errs:
+            print("  -", e)
+        return 1
+    print("AUTONET INVARIANT CHECK: OK")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

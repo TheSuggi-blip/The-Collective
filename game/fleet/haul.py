@@ -55,7 +55,10 @@ DEFAULT_POLICY = {
     "max_buy_spend_cr": 35000,
     "min_margin_pct": 0.20,
     "partners_first": True,
-    "lanes": ["active_freight", "public_freight", "arbitrage", "internal_supply"],
+    "lanes": ["active_freight", "internal_supply", "public_freight", "arbitrage", "liquidate_surplus"],
+    "arb_bid_depth_cap": 1.0,
+    "min_arb_bid_qty": 1,
+    "liquidate_min_revenue_cr": 300,
     "home_bases": ["node_beta_industrial_station", "central_nexus", "the_experiment_research_station"],
 }
 
@@ -89,6 +92,9 @@ def _call_json(method, path, payload=None, timeout=120):
         return st, {"error": str(txt)[:200]}
 
 
+CORE_HAUL_LANES = ("active_freight", "internal_supply", "public_freight", "arbitrage", "liquidate_surplus")
+
+
 def load_policy(policy_path=None):
     merged = json.loads(json.dumps(DEFAULT_POLICY))
     path = Path(policy_path) if policy_path else (ROOT / "haul-policy.json")
@@ -97,6 +103,14 @@ def load_policy(policy_path=None):
     raw = read_json(path, {})
     if isinstance(raw, dict):
         merged.update(raw)
+    is_main_policy = (policy_path is None) or (path.name == "haul-policy.json")
+    if is_main_policy:
+        merged["enabled"] = True
+        lanes_cur = [str(x) for x in (merged.get("lanes") or []) if str(x)]
+        for req_l in CORE_HAUL_LANES:
+            if req_l not in lanes_cur:
+                lanes_cur.append(req_l)
+        merged["lanes"] = lanes_cur
     return merged
 
 
@@ -359,6 +373,8 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
     max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
     max_spend_cfg = float(policy.get("max_buy_spend_cr") or 35000)
     min_margin = float(policy.get("min_margin_pct") or 0.20)
+    bid_cap_ratio = max(0.2, min(1.0, float(policy.get("arb_bid_depth_cap") or 1.0)))
+    min_bid_qty = max(1, int(policy.get("min_arb_bid_qty") or 1))
 
     by_item = {}
     for r in books_rows or []:
@@ -392,7 +408,7 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
         for ab, aloc, ask_p, ask_q, _, _ in asks:
             unit_cost = ask_p * 1.05
             for bb, bloc, _, _, bid_p, bid_q in bids:
-                if ab == bb or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
+                if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
                     continue
                 jkey = "arb-bid:%s:%s" % (bb, iid)
                 if jkey in claimed_keys:
@@ -417,7 +433,8 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
             p_hops = _hops(p_sys, aloc[0]) if p_sys else 0
             if p_hops is None or p_hops > max_pick:
                 continue
-            qty = min(p_cap, int(ask_q), int(bid_q), int(p_spend // unit_cost))
+            eff_bid_q = max(1, int(bid_q * bid_cap_ratio))
+            qty = min(p_cap, int(ask_q), eff_bid_q, int(p_spend // unit_cost))
             if qty < 1:
                 continue
             tot_hops = max(1, p_hops + d_hops)
@@ -640,6 +657,8 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
     max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
     max_spend = min(float(policy.get("max_buy_spend_cr") or 35000), max(0.0, float(avail_cash)))
     min_margin = float(policy.get("min_margin_pct") or 0.20)
+    bid_cap_ratio = max(0.2, min(1.0, float(policy.get("arb_bid_depth_cap") or 1.0)))
+    min_bid_qty = max(1, int(policy.get("min_arb_bid_qty") or 1))
     if hold_cap < 1 or max_spend < 100:
         return None
 
@@ -668,7 +687,7 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
             continue
         for ab, aloc, ask_p, ask_q, _, _ in asks:
             for bb, bloc, _, _, bid_p, bid_q in bids:
-                if ab == bb or bid_p < ask_p * (1.0 + min_margin):
+                if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin):
                     continue
                 jkey = "arb-bid:%s:%s" % (bb, iid)
                 if jkey in claimed_keys:
@@ -680,7 +699,8 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
                 unit_cost = ask_p * 1.05
                 if bid_p <= unit_cost:
                     continue
-                qty = min(int(hold_cap), int(ask_q), int(bid_q), int(max_spend // unit_cost))
+                eff_bid_q = max(1, int(bid_q * bid_cap_ratio))
+                qty = min(int(hold_cap), int(ask_q), eff_bid_q, int(max_spend // unit_cost))
                 if qty < 1:
                     continue
                 tot_hops = max(1, p_hops + d_hops)
@@ -824,6 +844,113 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
                 best = (score, {"job_key": jkey, "item": iid, "qty": take_q, "origin": oloc, "dest": dloc})
     return best[1] if best else None
 
+
+
+def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None):
+    """Carry pilot's own non-reserved stored items to the best reachable policed live bid to convert surplus to cash."""
+    if hold_cap < 1:
+        return None
+    now_t = time.time() if now_t is None else float(now_t)
+    policed = bool(policy.get("policed_only", True))
+    max_pick = int(policy.get("max_jumps_pickup") or 16)
+    max_del = int(policy.get("max_jumps_delivery") or 30)
+    max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
+    min_rev = float(policy.get("liquidate_min_revenue_cr") or 300)
+
+    reserved = set(PROTECTED_ITEMS)
+    db = Path(data) / "store" / "read.db"
+    if db.is_file():
+        con = None
+        try:
+            import worldcache as _wc
+            con = _wc.ro_db(db, timeout=3.0)
+            tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
+            if "need_status" in tbls:
+                ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
+                r_cols = [c for c in ("stock", "craft", "short_items") if c in ns_cols]
+                if r_cols:
+                    for row in con.execute("SELECT %s FROM need_status" % ", ".join(r_cols)):
+                        for txt in row:
+                            for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(txt or "")):
+                                reserved.add(m.group(1))
+            if "supply_status" in tbls:
+                for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
+                    if iid and int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
+                        reserved.add(str(iid))
+        except sqlite3.Error:
+            pass
+        finally:
+            if con is not None:
+                con.close()
+    res_tsv = REPO / "game" / "reserve.tsv"
+    if res_tsv.is_file():
+        try:
+            for line in res_tsv.read_text(encoding="utf-8", errors="replace").splitlines():
+                if line and not line.startswith("#") and not line.lower().startswith("item"):
+                    cols = line.split("\t")
+                    if cols and cols[0].strip():
+                        reserved.add(cols[0].strip())
+        except OSError:
+            pass
+
+    stor = read_json(Path(data) / "stock" / "storage.json", {})
+    p_stor = (stor.get("pilots") or {}).get(pilot) if isinstance(stor, dict) else None
+    if not isinstance(p_stor, dict):
+        return None
+
+    bids_by_item = {}
+    for r in books_rows or []:
+        b_id = str(r.get("base") or "")
+        loc = base_map.get(b_id)
+        if not loc or (policed and not loc[3]):
+            continue
+        if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
+            continue
+        t = float(r.get("t") or 0)
+        if t > 0 and (now_t - t) > max_age_s:
+            continue
+        bp = float(r.get("bid") or 0)
+        bq = int(r.get("bid_qty") or 0)
+        iid = str(r.get("item") or "")
+        if iid and bp >= 10.0 and bq >= 1:
+            bids_by_item.setdefault(iid, []).append((b_id, loc, bp, bq))
+
+    best = None
+    for b_id, items in p_stor.items():
+        if b_id not in base_map or not isinstance(items, dict):
+            continue
+        oloc = base_map[b_id]
+        if policed and not oloc[3]:
+            continue
+        p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+        if p_hops is None or p_hops > max_pick:
+            continue
+        for iid, qty in items.items():
+            q = int(qty or 0)
+            if q < 1 or iid in reserved or iid not in bids_by_item:
+                continue
+            for sb, sloc, bid_p, bid_q in bids_by_item[iid]:
+                d_hops = _bfs_hops(lanes, oloc[0], sloc[0]) if lanes else (0 if oloc[0] == sloc[0] else 1)
+                if d_hops is None or d_hops > max_del:
+                    continue
+                take_q = min(q, int(hold_cap), int(bid_q))
+                if take_q < 1:
+                    continue
+                tot_hops = max(1, p_hops + d_hops)
+                est_rev = take_q * bid_p - tot_hops * 45.0
+                if est_rev < min_rev:
+                    continue
+                jkey = "liq:%s:%s:%s:%s" % (pilot, b_id, sb, iid)
+                if jkey in claimed_keys:
+                    continue
+                score = est_rev / float(tot_hops)
+                if best is None or score > best[0]:
+                    best = (score, {
+                        "job_key": jkey, "item": iid, "qty": take_q,
+                        "origin": oloc, "dest": sloc, "est_bid": int(round(bid_p)),
+                        "est_rev": int(round(est_rev)),
+                    })
+    return best[1] if best else None
 
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
@@ -1195,7 +1322,7 @@ def main(argv=None):
                     live_bid = float(row_s.get("best_buy") or 0)
                     live_bid_q = int(row_s.get("best_buy_qty") or row_s.get("buy_quantity") or 0)
                     sell_q = min(got, live_bid_q) if live_bid_q > 0 else 0
-                    if live_bid >= live_ask * 1.05 and sell_q > 0:
+                    if live_bid >= live_ask * 0.92 and sell_q > 0:
                         d = raw("sell", {"item_id": iid, "quantity": sell_q}, group="spacemolt")
                         time.sleep(TICK)
                         say("arb sold %d %s at %s @ ~%d cr%s" % (sell_q, iid, sloc[2], int(live_bid), " ERR" if "error" in d else ""))
@@ -1217,10 +1344,17 @@ def main(argv=None):
                             say("arb %s bid slipped: gifted %d to Bursar %s at %s (cost %d cr)" % (iid, got, bp, sloc[2], int(round(got * live_ask))))
                             notes.append("arb->bursar %d %s (cost %d)" % (got, iid, int(round(got * live_ask))))
                         else:
-                            raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            list_p = max(int(round(live_ask * 1.05)), int(live_ask) + 2)
+                            r_lo = raw("create_sell_order", {"item_id": iid, "quantity": got, "price_each": list_p}, group="spacemolt_market")
                             time.sleep(TICK)
-                            say("arb %s bid slipped: stored %d at %s (cost %d cr)" % (iid, got, sloc[2], int(round(got * live_ask))))
-                            notes.append("arb stored %d %s (cost %d)" % (got, iid, int(round(got * live_ask))))
+                            if "error" not in r_lo:
+                                say("arb %s bid slipped: listed %d at %s @ %d cr" % (iid, got, sloc[2], list_p))
+                                notes.append("arb listed %d %s @ %d" % (got, iid, list_p))
+                            else:
+                                raw("deposit", {"item_id": iid, "quantity": got, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                say("arb %s bid slipped: stored %d at %s (cost %d cr)" % (iid, got, sloc[2], int(round(got * live_ask))))
+                                notes.append("arb stored %d %s (cost %d)" % (got, iid, int(round(got * live_ask))))
                     completed += 1
 
             elif lane == "internal_supply":
@@ -1247,6 +1381,40 @@ def main(argv=None):
                             raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
                             time.sleep(TICK)
                         notes.append("supply %d %s -> %s" % (have, iid, dloc[2]))
+                        completed += 1
+
+            elif lane == "liquidate_surplus":
+                books_rows = _load_books(DATA)
+                claimed = active_claimed_keys(DATA)
+                liq = _pick_surplus_liquidation(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
+                if liq and claim_job(DATA, pilot, liq["job_key"]):
+                    iid, oloc, dloc, qty = liq["item"], liq["origin"], liq["dest"], liq["qty"]
+                    say("liquidate %d %s: %s -> %s @ ~%d cr" % (qty, iid, oloc[2], dloc[2], liq["est_bid"]))
+                    ok_o, _ = go_dock(oloc)
+                    if not ok_o:
+                        release_job(DATA, pilot)
+                        continue
+                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    have = get_cargo().get(iid, 0)
+                    if have <= 0:
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, _ = go_dock(dloc)
+                    if ok_d:
+                        raw("sell", {"item_id": iid, "quantity": have}, group="spacemolt")
+                        time.sleep(TICK)
+                        rem = get_cargo().get(iid, 0)
+                        if rem < have:
+                            notes.append("liquidated %d %s @ %s" % (have - rem, iid, dloc[2]))
+                        if rem > 0:
+                            bp = docked_bursar_at(DATA, dloc[2])
+                            if bp and bp != pilot and "error" not in raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": rem}, group="spacemolt_social"):
+                                time.sleep(TICK)
+                                notes.append("liq->bursar %d %s" % (rem, iid))
+                            else:
+                                raw("deposit", {"item_id": iid, "quantity": rem, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
                         completed += 1
 
         if completed == 0:

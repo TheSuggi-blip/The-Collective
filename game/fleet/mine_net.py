@@ -185,6 +185,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
     shortages = {}
     full_items = set()
     market_world = None
+    held = {}
 
     if db_path.exists():
         try:
@@ -307,8 +308,16 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     _read(label, fn)
             conn.close()
             if market_read[0]:
+                hv_min = float(policy.get("high_value_market_min_bid") or 0.0)
+                hv_cap = int(policy.get("high_value_stock_cap") or 2000)
                 for iid, rec in market.items():
-                    rec[1] -= held.get(iid, 0)
+                    h_u = held.get(iid, 0)
+                    raw_depth = int(rec[1])
+                    net_depth = raw_depth - h_u
+                    if hv_min > 0 and rec[0] >= hv_min and raw_depth > 0 and h_u < max(hv_cap, raw_depth * 3):
+                        rec[1] = max(net_depth, max(hv_cap, raw_depth * 3) - h_u)
+                    else:
+                        rec[1] = net_depth
                 market_world = market
 
     allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
@@ -368,6 +377,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
         "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand, "market": market_world,
+        "held": held,
         "data_dir": str(data_dir), "allow_escort_request": True,
         "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
     }
@@ -633,7 +643,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 uval = max(1.0, mkt[0])   # what it sells for, never the catalog's base value
         else:
             tier = "xp_fallback"
-            tier_mult = 0.25
+            _held_u = int((world.get("held") or {}).get(res, 0))
+            _bloated = (_held_u >= 25000 and uval < 12.0) or (res in full_items)
+            tier_mult = 0.05 if _bloated else 0.35
         if tier == "market" and not policy.get("market_tier", True):
             continue
 

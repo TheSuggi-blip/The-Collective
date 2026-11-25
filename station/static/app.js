@@ -930,6 +930,30 @@ function paint(t) {
       for (let i = 0; i < seg.length; i += 4) { ctx.moveTo(seg[i], seg[i + 1]); ctx.lineTo(seg[i + 2], seg[i + 3]); }
       ctx.stroke();
     }
+    if (Array.isArray(S.gates) && S.gates.length) {
+      for (const g of S.gates) {
+        const a = sys.get(g.from), b = sys.get(g.to);
+        if (!a || !b) continue;
+        const [ax, ay] = toScreen(a), [bx, by] = toScreen(b);
+        ctx.save();
+        ctx.strokeStyle = g.online ? 'rgba(56, 217, 232, 0.24)' : 'rgba(230, 176, 75, 0.18)';
+        ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+        ctx.strokeStyle = g.online ? '#38d9e8' : '#e6b04b';
+        ctx.lineWidth = 1.8;
+        ctx.setLineDash([7, 5]);
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.stroke();
+        ctx.setLineDash([]);
+        if (view.k >= 0.06) {
+          const mx = (ax + bx) / 2, my = (ay + by) / 2;
+          ctx.font = '700 9px system-ui, sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillStyle = g.online ? '#7bf0fb' : '#f2c97d';
+          ctx.fillText(g.online ? 'JUMP GATE' : 'GATE (OFF)', mx, my - 6);
+        }
+        ctx.restore();
+      }
+    }
   }
   if (route.length > 1) {                                           // the way from home: a soft band and a moving dash
     const line = () => { ctx.beginPath(); route.forEach((id, i) => { const [x, y] = toScreen(sys.get(id)); if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.stroke(); };
@@ -2475,6 +2499,18 @@ async function renderSelection(panel, live) {
   const lanes = el('div', 'chips');
   s.lanes.forEach((id) => lanes.append(sysLink(id)));
   navCard.append(el('div', 'icsub', 'Adjacent lanes:'), lanes);
+  const sysGates = (S.gates || []).filter((g) => g.from === s.id || g.to === s.id);
+  if (sysGates.length) {
+    const gChips = el('div', 'chips');
+    for (const g of sysGates) {
+      const other = g.from === s.id ? g.to : g.from;
+      gChips.append(sysLink(other), el('span', 'pill ' + (g.online ? 'good' : 'warn'), g.online ? 'JUMP GATE' : 'GATE OFF'));
+    }
+    navCard.append(el('div', 'icsub', 'Jump Gates:'), gChips);
+  }
+  if ((s.frontier_tier || 0) > 0) {
+    navCard.append(el('div', 'icsub', 'Frontier zone:'), el('span', 'pill warn', 'Frontier Tier ' + s.frontier_tier));
+  }
   if (route.length > 1) {
     const way = el('div', 'chips');
     route.forEach((id) => way.append(sysLink(id)));

@@ -395,11 +395,17 @@ def hostile_names(folder):
     return names
 
 
-def leave_reason(near, own, mode, hostile):
+def leave_reason(near, own, mode, hostile, ignore_tags=()):
     """(what to say, the run's note) when a hunt with --alone leaves the place without a fight, or None. A pirate always
-    makes it leave; in mode 'strangers' every ship that is not ours does, in mode 'pirates' only a pilot of the hostile
-    list. 61 of 161 drone hunts left for a stranger who never fired (2026-11-17 04:12 to 08:10 UTC, runs.jsonl)."""
-    others = sorted(str(row.get('username')) for row in (near.get('nearby') or []) if isinstance(row, dict) and row.get('username') and row.get('username') not in own)
+    makes it leave; in mode 'strangers' every ship that is not ours (and not an ignored partner tag) does, in mode
+    'pirates' only a pilot of the hostile list. 61 of 161 drone hunts left for a stranger who never fired (2026-11-17)."""
+    ign = {str(t).strip().upper() for t in (ignore_tags or ()) if str(t).strip()}
+    others = sorted(
+        str(row.get('username'))
+        for row in (near.get('nearby') or [])
+        if isinstance(row, dict) and row.get('username') and row.get('username') not in own
+        and (not ign or str(row.get('faction_tag') or row.get('tag') or '').strip().upper() not in ign)
+    )
     pirates = near.get('pirate_count') or 0
     if pirates:
         return 'pirates %s here, strangers %s' % (pirates, others[:4]), 'left: a pirate was at the place'
@@ -506,8 +512,11 @@ before_credits, before_cargo = credits(), cargo()
 HULL_BEFORE, OWN, notes = hull()[0], own_names(), []
 GAME = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ALONE_MODE = alone_mode(os.path.join(GAME, 'routes', route_id + '.json')) if ALONE and not STEP else 'strangers'
-if ALONE and STEP and '--alone-mode' in args and args[args.index('--alone-mode') + 1] == 'pirates':
-    ALONE_MODE = 'pirates'                   # 2026-11-23: a circuit's hunt step with alone 'pirates' (First Hunt left for strangers)
+if ALONE and '--alone-mode' in args and args.index('--alone-mode') + 1 < len(args):
+    _am = str(args[args.index('--alone-mode') + 1]).strip().lower()
+    if _am in ('pirates', 'strangers'):
+        ALONE_MODE = _am                     # honor explicit --alone-mode for both circuit steps and hunt_net
+IGNORE_TAGS = {t.strip().upper() for t in args[args.index('--ignore-tags') + 1].split(',') if t.strip()} if ('--ignore-tags' in args and args.index('--ignore-tags') + 1 < len(args)) else set()
 KEEP_HERD = int(args[args.index('--keep-herd') + 1]) if '--keep-herd' in args else ranch_keep(os.path.join(GAME, 'routes', route_id + '.json'), 2)
 HOSTILE = hostile_names(os.path.join(GAME, 'players')) if ALONE_MODE == 'pirates' else set()
 if ALONE:
@@ -554,7 +563,7 @@ if not SHORT and not REPAIR_FIRST and goal('navigate-to-system', {'targetSystemI
             say('already in a battle: taking it up')
         else:
             near = body(raw('get_nearby'))
-            why = leave_reason(near, OWN, ALONE_MODE, HOSTILE) if ALONE else None
+            why = leave_reason(near, OWN, ALONE_MODE, HOSTILE, IGNORE_TAGS) if ALONE else None
             if why:
                 say(why[0] + ': no fight, leaving')
                 notes.append(why[1])
