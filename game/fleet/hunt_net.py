@@ -1270,6 +1270,30 @@ def _foreign_ranched(c):
     return nm.startswith("[") and not nm.startswith("[CLTV]")
 
 
+def pack_fuel_short(ship_doc, target_sys, lanes, stations):
+    """The note why a pack member stays home, or None: its tank (ship file) against the way from where it stands to
+    the pack's system and on to the nearest station with fuel, by fuelplan's rule (hunt.py fuel_first weighs a solo
+    hunt the same way). A tank at 90 percent or more always flies. 2026-11-25: a hunter with 3 fuel at a station
+    that sells none led a whale pack to its gas pocket and stood there dry at 1 fuel."""
+    import fuelplan
+    if not isinstance(ship_doc, dict):
+        return None
+    fuel, size = ship_doc.get("fuel"), ship_doc.get("max_fuel")
+    if not isinstance(fuel, (int, float)):
+        return None
+    if isinstance(size, (int, float)) and size > 0 and fuel >= 0.9 * size:
+        return None
+    here = str(ship_doc.get("system") or "")
+    there = fuelplan.way(lanes, here, target_sys) if here and target_sys else None
+    onward = fuelplan.nearest_fuel(lanes, target_sys, stations) if target_sys else None
+    if there is None or not onward:
+        return None
+    way = there + onward[0]
+    if fuelplan.fuel_short(fuel, way, ship=ship_doc):
+        return "fuel %s short for the pack at %s and on to fuel (%s jumps)" % (fuel, target_sys, way)
+    return None
+
+
 def run_pack_mission(pilot, pack, policy, order_path, route_id):
     """Execute synchronized 3/5/8/10-ship pack combat using proven spacemolt_fleet + outside battle-join protocol."""
     pcfg = policy.get("packs") or {}
@@ -1313,6 +1337,24 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
     try:
         # 2. Prepare: repair/refuel, set default_stance fire & combat_mode external
         _goal(pilot, "prepare-at-station", {"systemId": dock[0], "poiId": dock[1], "baseId": dock[2], "refuel": True}, timeout_s=180)
+        try:
+            import fuelplan
+            _lanes, _home = fuelplan.chart(REPO / "game")
+            _far = fuelplan.strongholds(REPO / "game")
+            _st = {k: v for k, v in fuelplan.fuel_stations(DATA).items() if k not in _far}
+            _short = pack_fuel_short(read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {}), cur["system"], _lanes, _st)
+        except Exception:
+            _short = None
+        if _short:
+            print("%s %s hunt_net: PACK %s left: %s" % (utc_now(), pilot, pid, _short), flush=True)
+
+            def _leave(p):
+                if p.get("leader") == pilot:
+                    p.update(state="aborted", flee=True, flee_reason="leader " + _short)
+                else:
+                    p["members"] = [m for m in (p.get("members") or []) if m != pilot]
+            pack_update(DATA, pid, _leave)
+            return "fuel_short"
         _raw(pilot, "default_stance", {"stance": "fire"}, "spacemolt_battle")
         _gate_call("PATCH", "/accounts/%s/combat-mode" % q, {"mode": "external"})
         time.sleep(10)

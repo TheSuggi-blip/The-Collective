@@ -47,7 +47,12 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertEqual(plan["unfit"], ["pulse_laser_i"])
             bought_ids = [m for m, _p in plan["buy_fit"]]
             self.assertIn("ice_harvester_iii", bought_ids)
-            self.assertIn("shield_booster_iv", bought_ids)
+            # the defence buy follows the live policy: Mining took its defence loadouts out (0916d551, Zero)
+            ice_def = (((pol.get("specialties") or {}).get("Mining") or {}).get("loadouts") or {}).get("ice", {}).get("defense") or []
+            if "shield_booster_iv" in ice_def:
+                self.assertIn("shield_booster_iv", bought_ids)
+            else:
+                self.assertNotIn("shield_booster_iv", bought_ids)
 
             # 2. Already cleanly fitted ship returns None (0ms dispatch skip!)
             ship_full = {"name": "miner-2", "division": "Mining", "system": "s1", "class": "t0_miner", "credits": 40000, "modules": ["mining_laser_iii", "cargo_expander_iii", "shield_booster_iv"]}

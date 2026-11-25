@@ -339,5 +339,32 @@ class HuntNetRuleF9Tests(unittest.TestCase):
         self.assertGreaterEqual(sz_h, 5)
 
 
+
+class HuntNetPackFuelTests(unittest.TestCase):
+    """A pack member's tank is weighed against the way to the pack and on to fuel (2026-11-25: a hunter with 3 fuel
+    led a whale pack from a station that sells none and stood dry at 1 fuel)."""
+
+    LANES = {"a": ["b"], "b": ["a", "c"], "c": ["b"]}
+    STATIONS = {"a": ("a_poi", "a_base")}
+
+    def ship(self, fuel, modules=()):
+        return {"system": "a", "fuel": fuel, "max_fuel": 95, "modules": list(modules)}
+
+    def test_a_dry_tank_stays_home(self):
+        note = hunt_net.pack_fuel_short(self.ship(3), "c", self.LANES, self.STATIONS)
+        self.assertIsNotNone(note)
+        self.assertIn("4 jumps", note)
+
+    def test_a_tank_that_holds_the_way_flies(self):
+        self.assertIsNone(hunt_net.pack_fuel_short(self.ship(60), "c", self.LANES, self.STATIONS))
+
+    def test_afterburners_raise_the_need(self):
+        self.assertIsNotNone(hunt_net.pack_fuel_short(self.ship(60, ["afterburner_ii", "afterburner_ii"]), "c",
+                                                      self.LANES, self.STATIONS))
+
+    def test_a_full_tank_always_flies_and_an_unread_one_is_not_judged(self):
+        self.assertIsNone(hunt_net.pack_fuel_short(self.ship(90, ["afterburner_ii"] * 3), "c", self.LANES, self.STATIONS))
+        self.assertIsNone(hunt_net.pack_fuel_short({"system": "a"}, "c", self.LANES, self.STATIONS))
+
 if __name__ == "__main__":
     unittest.main()
