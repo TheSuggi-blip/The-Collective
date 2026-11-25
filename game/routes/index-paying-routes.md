@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 16.
+Routes: 17.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Routes: 16.
 | [carry-melt-sirius-to-dheneb](carry-melt-sirius-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from sirius_observatory_station to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | 1 | 8 | 50,920 | 368,100 | 2026-11-25 |
 | [carry-melt-sol-to-dheneb](carry-melt-sol-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from confederacy_central_command to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 5 crystal_melt stored at confederacy_central_command, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | 1 | 17 | 21,350 | 75,810 | 2026-11-25 |
 | [carry-phase-deep-range-to-sol](carry-phase-deep-range-to-sol.json) | circuit | beyond the border, 19 jumps | Stored phase_crystal carried from deep_range_outpost to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at deep_range_outpost, while confederacy_central_command bids 100 cr for phase_crystal | 6 | 36 | 5,860 | 9,650 | 2026-11-25 |
+| [carry-phase-first-step-to-sol](carry-phase-first-step-to-sol.json) | circuit | beyond the border, 18 jumps | Stored phase_crystal carried from first_step_memorial_station to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at first_step_memorial_station, while confederacy_central_command bids 100 cr for phase_crystal | 1 | 19 | 3,250 | 10,440 | 2026-11-25 |
 | [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 30 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac | 1 | 20 | 45,790 | 136,690 | 2026-11-25 |
 | [sell-ember-hexstar-krynn](sell-ember-hexstar-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Hex Star (Dheneb) to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while crimson_war_citadel bids 5000 cr for ember_gland | 2 | 39 | 28,900 | 44,580 | 2026-11-25 |
 | [sell-exotic-docked-grand-exchange](sell-exotic-docked-grand-exchange.json) | circuit | beyond the border, 21 jumps | Stored exotic_matter sold where it lies, at grand_exchange_station, at 45 cr or more | up to 1 ships, with 20 exotic_matter stored at grand_exchange_station, while grand_exchange_station bids 45 cr for exotic_matter | 1 | 1 | 2,850 | 244,290 | 2026-11-25 |
