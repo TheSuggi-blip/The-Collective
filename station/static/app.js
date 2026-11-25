@@ -4190,39 +4190,46 @@ function renderFinancialStatements(panel, ops, w, t) {
   panel.append(fsTable(['Cash Flow Activity (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], cfRows, [1, 2, 3, 4]));
   panel.append(el('p', 'sub', 'IAS 7 & Buffett Owner Earnings identity: Hulls, modules, Lockboxes, and Outposts have zero depreciation (D&A = 0) and are 100% one-time Growth CapEx; CFO == Cash Owner Earnings and CFO + Inventory Accrual == Total Economic Owner Earnings. Negative FCF during positive CFO indicates self-funded expansion, not operating loss.'));
 
-  // 4. PROFITABILITY MARGINS & BUFFETT / MUNGER CAPITAL RETURN SCORECARD (ROIC / RONTA / ROE)
-  panel.append(el('h3', null, '4. Profitability Margins & Capital Returns (Buffett / Munger ROIC & RONTA)'));
+  // 4A. PROFITABILITY MARGINS (%) -- UNIFIED 5-COLUMN IR TABLE
+  panel.append(el('h3', null, '4A. Profitability Margins (%)'));
+  const marginRows = [
+    pctRow('Gross Margin', grossProfitOf, revTotOf, 'fs-ind', 'Gross Profit / Total Operating Revenue'),
+    pctRow('Core Operating Margin (EBIT)', ebitOf, revTotOf, 'fs-ind', 'Core EBIT / Total Operating Revenue'),
+    pctRow('Owner Earnings Margin (Net Op. Profit)', netOpOf, revTotOf, 'fs-sub', 'Net Op. Profit / Total Operating Revenue'),
+    pctRow('Cash Owner Earnings Margin (CFO)', cfoOf, cashRevOf, 'fs-ind', 'CFO / Total Cash Revenue'),
+    pctRow('Free Cash Flow Margin (FCF)', fcfOf, cashRevOf, 'fs-memo', 'FCF / Total Cash Revenue (post-CapEx)'),
+  ];
+  panel.append(fsTable(['Profitability Margin', '1h', '6h', '24h', 'Formula'], marginRows, [1, 2, 3]));
+
+  // 4B. BUFFETT / MUNGER CAPITAL RETURNS (ROIC / RONTA / ROE) -- ALL NUMERIC COLUMNS
+  panel.append(el('h3', null, '4B. Capital Returns (Buffett / Munger ROIC, RONTA & ROE -- 24h Pace)'));
   const opInvCap = bs ? Number(bs.operating_invested_capital || (hardAssets + Number(bs.vault_live_market || bs.vault_worth || 0))) : 0;
   const totEq = bs ? Number(bs.net_worth || 0) : 0;
-  const roicRow = (label, denom, basisNote, cls) => {
-    const m30 = (a) => {
-      if (!a || !denom || denom <= 0) return '--';
-      const oe = netOpOf(a);
-      if (oe === null) return '--';
-      const p = (oe * 24 * 30 * 100) / denom;
-      return el('span', p < 0 ? 'fs-neg' : p > 0 ? 'fs-pos' : null, (p >= 0 ? '+' : '') + p.toFixed(1) + '% /mo');
+  const capRetRow = (label, denom, cls) => {
+    const oe24 = a24 ? netOpOf(a24) : null;
+    const valid = oe24 !== null && denom > 0;
+    const mo = valid ? (oe24 * 24 * 30 * 100) / denom : null;
+    const ann = valid ? (oe24 * 24 * 365 * 100) / denom : null;
+    const pb = valid && oe24 > 0 ? denom / (oe24 * 24) : null;
+    const fmtR = (v, sfx) => v === null ? '--' : el('span', v < 0 ? 'fs-neg' : 'fs-pos', (v >= 0 ? '+' : '') + v.toFixed(sfx === '%/yr' ? 0 : 1) + sfx);
+    return {
+      cls: cls || 'fs-ind',
+      cells: [
+        label,
+        denom > 0 ? fmtCompact(denom) + ' cr' : '--',
+        fmtR(mo, '%/mo'),
+        fmtR(ann, '%/yr'),
+        pb !== null ? pb.toFixed(1) + ' days' : '--',
+      ],
     };
-    const ann24 = a24 && denom > 0 && netOpOf(a24) !== null ? ((netOpOf(a24) * 24 * 365 * 100) / denom) : null;
-    const pb24 = a24 && denom > 0 && netOpOf(a24) !== null && netOpOf(a24) > 0 ? (denom / (netOpOf(a24) * 24)) : null;
-    const noteCell = ann24 !== null
-      ? (ann24 >= 0 ? '+' : '') + ann24.toFixed(0) + '% ann.' + (pb24 !== null ? ' (' + pb24.toFixed(1) + 'd payback) | ' : ' | ') + basisNote
-      : basisNote;
-    return { cls: cls || 'fs-ind', cells: [label, m30(a1), m30(a6), m30(a24), noteCell] };
   };
-  const ratioRows = [
-    { cls: 'fs-sec', sec: 'Operating & Cash Profitability Margins' },
-    pctRow('Gross Margin (Gross Profit / Total Operating Revenue)', grossProfitOf, revTotOf, 'fs-ind', 'Direct extraction, transit & craft efficiency'),
-    pctRow('Core Operating Margin (EBIT / Total Operating Revenue)', ebitOf, revTotOf, 'fs-ind', 'Repeatable business margin after facility rent'),
-    pctRow('Owner Earnings Margin (Net Operating Profit / Total Operating Revenue)', netOpOf, revTotOf, 'fs-sub', 'Total economic margin ex-Growth CapEx'),
-    pctRow('Cash Owner Earnings Margin (CFO / Total Cash Revenue)', cfoOf, cashRevOf, 'fs-ind', 'Pure spendable cash conversion on cash sales & missions'),
-    pctRow('Free Cash Flow Margin (FCF / Total Cash Revenue)', fcfOf, cashRevOf, 'fs-memo', 'Post-CapEx cash margin (negative during heavy fleet upgrades)'),
-    { cls: 'fs-sec', sec: 'Buffett / Munger Capital Efficiency (Monthly 30d Pace & Annualized)' },
-    roicRow('ROIC -- Productive Hard Assets (Buffett RONTA, Ex-Cash & Ex-Vault)', hardAssets, 'Denom: ' + fmtCompact(hardAssets) + ' PP&E (Hulls+Mods+Facilities)', 'fs-sub'),
-    roicRow('ROIC -- Operating Invested Capital (Ex-Excess Cash)', opInvCap, 'Denom: ' + fmtCompact(opInvCap) + ' (PP&E + Vault NRV; penalizes bloat)', 'fs-ind'),
-    roicRow('ROE -- Total Collective Equity (Incl. Cash Drag)', totEq, 'Denom: ' + fmtCompact(totEq) + ' Total Equity (shows idle Treasury drag)', 'fs-memo'),
+  const capRows = [
+    capRetRow('ROIC -- Productive Hard Assets (Buffett RONTA, Ex-Cash & Ex-Vault)', hardAssets, 'fs-sub'),
+    capRetRow('ROIC -- Operating Invested Capital (Hard Assets + Vault NRV, Ex-Cash)', opInvCap, 'fs-ind'),
+    capRetRow('ROE -- Total Collective Equity (Incl. Idle Cash Drag)', totEq, 'fs-memo'),
   ];
-  panel.append(fsTable(['Ratio / Return Metric', '1h Pace', '6h Pace', '24h Pace', 'Annualized / Audit Interpretation'], ratioRows, [1, 2, 3]));
-  panel.append(el('p', 'sub', 'Buffett/Munger principle (1983/1986 Letters): Idle Treasury cash earns 0% and drags down headline ROE. Compare Hard-Asset ROIC (deployed ships & outposts only) against Operating ROIC (adds working inventory) and Equity ROE (adds excess cash) to separate fleet earning power from cash drag.'));
+  panel.append(fsTable(['Capital Return Metric', 'Capital Base', '30d Pace', 'Annualized', 'Payback'], capRows, [1, 2, 3, 4]));
+  panel.append(el('p', 'sub', 'Buffett/Munger principle (1983/1986 Letters): Idle Treasury cash earns 0% and drags down headline ROE. Compare Hard-Asset ROIC (deployed ships & outposts only) against Operating ROIC (adds working inventory) and Equity ROE (adds excess cash) to separate fleet earning power from idle cash drag.'));
 
   // 5. IFRS 8 OPERATING SEGMENT FOOTNOTE & SYNERGY RECONCILIATION (24h WINDOW)
   const segSrc = a24 || cur;
