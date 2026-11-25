@@ -1056,8 +1056,20 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
     """Discover tough wildlife herds & pirate systems suited for 3/5/8/10-ship packs."""
     now_t = time.time() if now_t is None else float(now_t)
     pcfg = policy.get("packs") or {}
-    if not pcfg.get("enabled", True) or ship_power["power"] < float(pcfg.get("min_member_power") or 420.0):
+    _is_cmd_p = str(pilot_info.get("name") or "") in load_command_flagships(world.get("data_dir") or DATA)
+    _min_mp = float(pcfg.get("command_flagship_min_power") or 150.0) if _is_cmd_p else float(pcfg.get("min_member_power") or 420.0)
+    if not pcfg.get("enabled", True) or ship_power["power"] < _min_mp:
         return []
+    _wing_floor = float(pcfg.get("min_member_power") or 750.0)
+    _pack_eval_pwr = (
+        {
+            **ship_power,
+            "power": max(float(ship_power.get("power") or 0.0), _wing_floor),
+            "dps": max(float(ship_power.get("dps") or 0.0), 18.0),
+            "ehp": max(float(ship_power.get("ehp") or 0.0), 260.0),
+        }
+        if _is_cmd_p else ship_power
+    )
     p_sys = str(pilot_info.get("system") or "")
     max_j = int(pcfg.get("max_jumps") or 12)
     sizes = tuple(int(s) for s in (pcfg.get("sizes") or [3, 5, 8, 10]))
@@ -1106,15 +1118,14 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         )
         # Command Flagships NEVER solo-graze (they exist to lead strike packs & earn leadership XP!),
         # so allow Command ships to start packs on big priority prey even if a heavy flagship passed solo_ok!
-        _is_cmd_p = str(pilot_info.get("name") or "") in load_command_flagships(world.get("data_dir") or DATA)
         if solo_ok and not (_is_cmd_p and (sp in prio_sp or prey_hull >= min_thull)):
             continue
         if sp in set(str(x) for x in (policy.get("exclude_species") or [])):
             continue
-        sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
+        sz = choose_pack_size(_pack_eval_pwr, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
             if _is_cmd_p and sizes:
-                sz = min(sizes)
+                sz = max(s for s in sizes if s <= 5) if any(s <= 5 for s in sizes) else min(sizes)
             else:
                 continue
         _pk_st_rad = int(pcfg.get("max_station_jumps") or 10)
@@ -1155,7 +1166,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             phull = float(pir.get("max_hull") or pir.get("hull") or 100.0)
             pshield = float(pir.get("max_shield") or pir.get("shield") or 40.0)
             threat = compute_target_threat(phull, pshield, role="pirate", count_fighting=1)
-            sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
+            sz = choose_pack_size(_pack_eval_pwr, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
             st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=int(pcfg.get("max_station_jumps") or 10), preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
