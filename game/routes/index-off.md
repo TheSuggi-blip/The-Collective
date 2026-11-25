@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 63.
+Routes: 64.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -27,6 +27,7 @@ Routes: 63.
 | [sell-curd-experiment](sell-curd-experiment.json) | circuit | home space | Stored verdigris curd sold into the curd bid at The Experiment, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at the_experiment_research_station, while the_experiment_research_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-curd-node-beta](sell-curd-node-beta.json) | circuit | home space | Stored verdigris curd sold into the curd bid at Node Beta, where the drones stored it | up to 1 ships, with 2 verdigris_curd stored at node_beta_industrial_station, while node_beta_industrial_station bids 250 cr for verdigris_curd, off | TBD | TBD | TBD | TBD | -- |
 | [sell-superfluid-at-node-beta](sell-superfluid-at-node-beta.json) | circuit | home space | Hunt loot stored by Trade's receiver at Node Beta sold where it lies | up to 1 ships, with 10 superfluid_vial stored at node_beta_industrial_station, while node_beta_industrial_station bids 650 cr for superfluid_vial, off | TBD | TBD | TBD | TBD | -- |
+| [strip-missile-launcher-central-nexus](strip-missile-launcher-central-nexus.json) | circuit | home space | A drone with a Missile Launcher I or a Railgun I and autocannons strips the launcher at Central Nexus, stores it, and takes four rounds boxes | once per pilot, up to 3 ships, 10 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr, off | TBD | TBD | TBD | TBD | -- |
 | [voidborn-first-steps](voidborn-first-steps.json) | circuit | home space | First Steps in the Void for a pilot that holds it: mine 15 carbon ore at Acubens Belt, hand in at Central Nexus | once per pilot, up to 2 ships, off | 52 | 11 | 860 | one-time | 2026-11-16 |
 | [hunt-acubens-urchin](hunt-acubens-urchin.json) | hunt | home space | Cinder-urchins at Acubens Shadow Pocket; radiant bile sold at Node Gamma | up to 1 ships, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-home-whale](hunt-home-whale.json) | hunt | home space | Pilot-whales at Stellar Siphon in Nexus Prime; whale oil sold at Node Beta | up to 1 ships, needs piercing_railgun_i, off | TBD | TBD | TBD | TBD | -- |
