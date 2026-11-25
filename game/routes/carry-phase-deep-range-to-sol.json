@@ -1,0 +1,45 @@
+{
+ "id": "carry-phase-deep-range-to-sol",
+ "kind": "circuit",
+ "title": "Stored phase_crystal carried from deep_range_outpost to the confederacy_central_command bid at 100 cr or more",
+ "note": "2026-11-25 07:17 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). confederacy_central_command bid 110 x 1127 (book of 2026-11-25T07:17:46Z); the cheapest ask read is 255 x 15 at central_nexus; floor 100 cr. A pilot whose own storage at the first station holds the good withdraws up to 115, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Road: 14 jumps from Deep Range to Sol, 6 lawless (gsc_0046 .. ridgecrest): a test, one ship (rules F3, F37); no route sold phase crystal before (sellgen.py scan 07:16 UTC); the reserve takes none (tool stock reserve). Nothing is bought; stored min 50: one hold of a tier-0 trader is worth about 12,000 cr at the bid. A run into a bid taken on the way costs the hop's fuel.",
+ "requires": {
+  "stored": {
+   "at": "deep_range_outpost",
+   "item": "phase_crystal",
+   "min": 50
+  },
+  "bid": {
+   "item": "phase_crystal",
+   "base": "confederacy_central_command",
+   "min_price": 100,
+   "min_qty": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "phase_crystal",
+     "qty": 115
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "phase_crystal",
+     "min_price": 100
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}

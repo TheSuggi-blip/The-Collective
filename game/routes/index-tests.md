@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 107.
+Routes: 108.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -82,6 +82,7 @@ Routes: 107.
 | [carry-melt-sirius-to-dheneb](carry-melt-sirius-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from sirius_observatory_station to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-sol-to-dheneb](carry-melt-sol-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from confederacy_central_command to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 5 crystal_melt stored at confederacy_central_command, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-null-matter-nexus-to-crucible](carry-null-matter-nexus-to-crucible.json) | circuit | beyond the border, 18 jumps | Null matter stored by Trade at Central Nexus carried to the station bid at The Crucible Garrison and sold there | up to 1 ships, with 65 null_matter stored at central_nexus, while the_crucible_garrison bids 300 cr for null_matter | TBD | TBD | TBD | TBD | -- |
+| [carry-phase-deep-range-to-sol](carry-phase-deep-range-to-sol.json) | circuit | beyond the border, 19 jumps | Stored phase_crystal carried from deep_range_outpost to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at deep_range_outpost, while confederacy_central_command bids 100 cr for phase_crystal | TBD | TBD | TBD | TBD | -- |
 | [home-frontier-station](home-frontier-station.json) | circuit | beyond the border, 17 jumps | Home to Frontier Station: an Outer Rim scout far from Altais docks at its capital, where its region's work is | up to 12 ships, empty hold, born outerrim | TBD | TBD | TBD | TBD | -- |
 | [mission-shipyard-engine-core-deep-range](mission-shipyard-engine-core-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Engine Core at Deep Range Outpost: 12 bought at Unknown Edge Waystation, delivered for 18,988 cr (Outer Rim haulers) | up to 1 ships, from 19,862 cr, born outerrim, while unknown_edge_waystation asks 1400 cr or less for engine_core | TBD | TBD | TBD | TBD | -- |
 | [mission-shipyard-fuel-tank-deep-range](mission-shipyard-fuel-tank-deep-range.json) | circuit | beyond the border, 19 jumps | Shipyard Supply: Fuel Tank at Deep Range Outpost: 14 fuel tanks bought at Unknown Edge Waystation, carried 3 jumps and delivered for 9,515 cr (Outer Rim haulers) | up to 3 ships, from 11,500 cr, born outerrim, while unknown_edge_waystation asks 620 cr or less for fuel_tank | TBD | TBD | TBD | TBD | -- |
