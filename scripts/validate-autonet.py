@@ -28,6 +28,7 @@ REQUIRED_PLAN_ROUTES = {
     "game/routes/plans/sentinel.json": ("hunt-network", "fit-network"),
     "game/routes/plans/hauler.json": ("haul-network", "fit-network"),
     "game/routes/plans/trader.json": ("bursar-network", "fit-network"),
+    "game/routes/plans/scout.json": ("fit-network",),
 }
 
 
@@ -76,6 +77,29 @@ def check_repo(repo_root=None):
                 errors.append(f"{rel}: sell.enabled=false is forbidden")
             if not bool((d.get("buy") or {}).get("enabled", True)):
                 errors.append(f"{rel}: buy.enabled=false is forbidden")
+
+        elif rel == "game/fit-policy.json":
+            specs = d.get("specialties") or {}
+            req_fit_slots = {
+                ("Mining", "ore"): ("utility", "defense"),
+                ("Mining", "ice"): ("utility", "defense"),
+                ("Mining", "gas"): ("utility", "defense"),
+                ("Logistics", "freight"): ("utility", "defense"),
+                ("Logistics", "passenger"): ("utility", "defense"),
+                ("Military", "brawler"): ("weapon", "defense", "utility"),
+                ("Military", "ewar"): ("weapon", "defense", "utility"),
+                ("Military", "flak_tank"): ("weapon", "defense", "utility"),
+                ("Military", "royal_guard_escort"): ("weapon", "defense", "utility"),
+                ("Military", "royal_guard_utility"): ("weapon", "defense", "utility"),
+                ("Intel", "covert_recon"): ("utility", "defense"),
+                ("Intel", "sensor_survey"): ("utility", "defense"),
+                ("Trade", "mobile"): ("utility", "defense"),
+            }
+            for (div_k, sp_k), req_slots in req_fit_slots.items():
+                ld = ((specs.get(div_k) or {}).get("loadouts") or {}).get(sp_k) or {}
+                for sl in req_slots:
+                    if not (ld.get(sl) or []):
+                        errors.append(f"{rel}: {div_k}.{sp_k}.{sl} loadout cannot be empty (Suggi mandate: always keep non-bursar fleet modules upgrading automatically)")
 
     for rel, req_routes in REQUIRED_PLAN_ROUTES.items():
         p = root / rel

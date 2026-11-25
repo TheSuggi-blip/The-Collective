@@ -117,33 +117,44 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertLessEqual(sum(cost[m][0] for m in kept + bought), 12)
             self.assertLessEqual(sum(cost[m][1] for m in kept + bought), 24)
 
-    def test_live_intel_policy_buys_no_module_for_a_scout(self):
-        # Orders ENT-093 P1: a module only when its measured gain repays it within a week. No scout module
-        # has such a measure, so the live Intel loadouts are empty: a scout with free slots, nothing off-role
-        # aboard and a full wallet gets no fit plan (fit-network skips it at once, no fuel, no buy).
+    def test_live_intel_policy_auto_fits_scout_without_afterburners(self):
+        # Suggi mandate (2026-11-25): all non-bursar fleet divisions always auto-upgrade modules (scanners, cloaks, shields, fuel_optimizer),
+        # while fuel-guzzling afterburners remain off-role for Intel scouts.
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
-        world = {"hulls": {"threshold": {"tier": 0, "weapon": 1, "defense": 2, "utility": 2}}}
-        for hull in ("Threshold", "Cobble", "Prospect", "Crimson Stiletto"):
-            ship = {"name": "scout-9", "division": "Intel", "system": "s1", "class": hull, "credits": 90000,
-                    "modules": [{"type": "shield_booster_ii", "slot": "defense"}]}
-            self.assertIsNone(fit_net.plan_ship_fit(ship, world, pol), hull)
-
-    def test_live_logistics_policy_buys_no_module_for_a_hauler(self):
-        # Orders ENT-093 P1: a module only when its measured gain repays it within a week. No hauler module
-        # has such a measure (fit-network bought shield boosters and cargo expanders for haulers, none measured),
-        # so the live Logistics loadouts are empty: a hauler with free slots, nothing off-role aboard and a full
-        # wallet gets no fit plan, freight and passenger hulls alike; what it carries stays fitted.
-        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
-        sold = ("shield_booster_ii", "shield_booster_iii", "cargo_expander_ii", "cargo_expander_iii", "fuel_optimizer",
-                "economy_passenger_cabin", "business_passenger_cabin", "adaptive_shield_iii", "quantum_shield_iv")
-        slots = {"tier": 0, "weapon": 1, "defense": 2, "utility": 3}
-        world = {"hulls": {h: dict(slots) for h in ("threshold", "prayer", "floor price", "nebula tender")},
+        sold = ("shield_booster_iv", "shield_booster_ii", "cloaking_device_i", "survey_scanner_ii", "fuel_optimizer", "afterburner_ii")
+        world = {"hulls": {"threshold": {"tier": 0, "weapon": 1, "defense": 2, "utility": 2}},
                  "adj": {"s1": []}, "stations": {"b1": ("s1", "p1", "b1", True)},
                  "asks": {m: [(1000, "b1", 50)] for m in sold}}
-        for hull in ("Threshold", "Prayer", "Floor Price", "Nebula Tender"):
-            ship = {"name": "hauler-9", "division": "Logistics", "system": "s1", "class": hull, "credits": 90000,
-                    "modules": [{"type": "cargo_expander_ii", "slot": "utility"}]}
-            self.assertIsNone(fit_net.plan_ship_fit(ship, world, pol), hull)
+        ship = {"name": "scout-9", "division": "Intel", "system": "s1", "class": "Threshold", "credits": 90000,
+                "modules": [{"type": "afterburner_ii", "slot": "utility"}]}
+        plan = fit_net.plan_ship_fit(ship, world, pol)
+        self.assertIsNotNone(plan)
+        self.assertIn("afterburner_ii", plan["unfit"])
+        bought = [m for m, _p in plan["buy_fit"]]
+        self.assertTrue(any(m in bought for m in ("shield_booster_iv", "shield_booster_ii")))
+        self.assertFalse(any("afterburner" in m for m in bought))
+
+    def test_live_logistics_and_military_policies_auto_fit_all_slots(self):
+        # Suggi mandate (2026-11-25): Logistics haulers and Military drones/sentinels auto-fit full utility, weapon & defense ladders.
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        sold = ("shield_booster_iv", "shield_booster_ii", "cargo_expander_iii", "cargo_expander_ii", "fuel_optimizer",
+                "economy_passenger_cabin", "pulse_laser_iii", "tracking_computer_iii", "expanded_fuel_tank")
+        slots = {"tier": 2, "weapon": 2, "defense": 2, "utility": 2}
+        world = {"hulls": {"prayer": dict(slots), "brawler_hull": dict(slots)},
+                 "adj": {"s1": []}, "stations": {"b1": ("s1", "p1", "b1", True)},
+                 "asks": {m: [(1000, "b1", 50)] for m in sold}}
+        hauler = {"name": "hauler-9", "division": "Logistics", "system": "s1", "class": "Prayer", "credits": 90000, "modules": []}
+        hp = fit_net.plan_ship_fit(hauler, world, pol)
+        self.assertIsNotNone(hp)
+        hb = [m for m, _p in hp["buy_fit"]]
+        self.assertIn("cargo_expander_iii", hb)
+        self.assertIn("shield_booster_iv", hb)
+        drone = {"name": "drone-9", "division": "Military", "system": "s1", "class": "brawler_hull", "credits": 90000, "modules": []}
+        dp = fit_net.plan_ship_fit(drone, world, pol)
+        self.assertIsNotNone(dp)
+        db = [m for m, _p in dp["buy_fit"]]
+        self.assertIn("pulse_laser_iii", db)
+        self.assertIn("shield_booster_iv", db)
 
     def test_royal_guard_command_and_military_support_specialties(self):
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))

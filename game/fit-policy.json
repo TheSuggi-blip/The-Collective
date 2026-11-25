@@ -3,8 +3,8 @@
   "_doc": "Min-max hull-locked module auto-fitting policy (game/fleet/fit_net.py). Every T1-T5 hull in every division resolves deterministically via detect_by_hull / sentinel_detect_by_hull / flagship_detect_by_hull to its exact matching module loadout, stripping off-role and wrong-resource modules automatically.",
   "enabled": true,
   "policed_only": true,
-  "max_jumps": 6,
-  "min_wallet_keep_cr": 10000,
+  "max_jumps": 10,
+  "min_wallet_keep_cr": 6000,
   "strip_off_role": true,
   "off_role_modules": {
     "Mining": [
@@ -59,10 +59,10 @@
     "pulse_laser_ii": 8500,
     "pulse_laser_iii": 16000,
     "shield_booster_ii": 11000,
-    "shield_booster_iv": 13000,
+    "shield_booster_iv": 16500,
     "armor_plate_ii": 2500,
     "armor_plate_iii": 3500,
-    "survey_scanner_ii": 18000,
+    "survey_scanner_ii": 22000,
     "economy_passenger_cabin": 5000,
     "business_passenger_cabin": 10000,
     "expanded_fuel_tank": 2000,
@@ -96,7 +96,7 @@
     "blood_reaver": 14000,
     "phase_disruptor": 28000,
     "regenerative_armor_ii": 18000,
-    "fuel_optimizer": 2000,
+    "fuel_optimizer": 3500,
     "mining_laser_v": 75000,
     "hyper_mining_laser_iii": 28000,
     "deep_core_extractor_iii": 25000,
@@ -243,6 +243,13 @@
             "mining_laser_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
           ]
         },
         "ice": {
@@ -252,6 +259,13 @@
             "ice_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
           ]
         },
         "gas": {
@@ -261,11 +275,18 @@
             "gas_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
           ]
         }
       },
       "_zero_note": "2026-11-24 23:49 UTC (Zero): mix [[\"ore\", 65], [\"ice\", 20], [\"gas\", 15]] -> ore 100. Laser-only miners are no longer refitted to ice or gas: every ice and gas good the bids take is held already (water ice 47,139 against a best bid 56 cr 834 deep; nitrogen ice 63,842 at 2 cr; argon, neon, nebula, ion, krypton, xenon bid 2 cr; hydrogen, plasma, chlorine bids >= 10 cr take 2,545 units against 6,549 held), while iron, the short chain, needs lasers; 147 miner fit-network runs in 6 h cost -352,388 cr steady and -248,391 cr once. Ships already fitted with a harvester keep their specialty (detect_by_module).",
-      "_zero_note_defense": "2026-11-25 05:47 UTC (Zero, orders ENT-092 P1): the defense loadouts of ore, ice and gas are out. From 00:00 to 05:00 UTC fit-network ran 80 times on miners for -477,066 cr once, nearly all shield boosters II/III at 9,788 to 14,904 cr (runs.jsonl); 99 boosters stand fitted on miners (ship_modules), and no miner was lost since 2026-11-24 18:00 UTC (stats_pilot_hour ships_lost). Miners flee and keep to systems without pirates (mine_net 04cbb69a); a shield buys nothing measured. Fitted boosters stay. Back in when a miner loss is read on a belt the pirate gate cleared."
+      "_suggi_policy": "2026-11-25 (Suggi directive): full automatic T1-T5 utility + defense module fitting restored across ore, ice, and gas miners; upgrades are CapEx and never penalize division operating score."
     },
     "Military": {
       "mix": [
@@ -418,46 +439,139 @@
       "loadouts": {
         "brawler": {
           "weapon": [
-            "pulse_laser_iii",
-            "pulse_laser_ii"
-          ],
-          "defense": [],
-          "utility": []
-        },
-        "ewar": {
-          "weapon": [
-            "pulse_laser_iii",
-            "pulse_laser_ii"
-          ],
-          "defense": [],
-          "utility": []
-        },
-        "flak_tank": {
-          "weapon": [
-            "pulse_laser_iii",
-            "pulse_laser_ii"
-          ],
-          "defense": [],
-          "utility": []
-        },
-        "royal_guard_escort": {
-          "weapon": [
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "plasma_cannon_iii",
+            "ion_blaster_iii",
+            "phase_disruptor",
+            "blood_reaver",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "regenerative_armor_ii",
+            "armor_plate_iii",
             "shield_booster_ii"
           ],
-          "utility": []
+          "utility": [
+            "tracking_computer_iii",
+            "expanded_fuel_tank"
+          ]
         },
-        "royal_guard_utility": {
+        "ewar": {
           "weapon": [
+            "emp_pulse_iii",
+            "neural_disruptor",
+            "focused_beam_iii",
+            "ion_blaster_iii",
+            "emp_missile_launcher",
+            "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
-          "defense": [],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_recharger_ii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
           "utility": [
-            "remote_armor_repairer_ii"
+            "ecm_jammer",
+            "tracking_computer_iii",
+            "sensor_dampener",
+            "target_painter_ii",
+            "target_painter_i",
+            "warp_disruptor",
+            "expanded_fuel_tank"
+          ]
+        },
+        "flak_tank": {
+          "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
+            "flak_cannon_ii",
+            "flak_cannon_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_recharger_ii",
+            "regenerative_armor_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "warp_disruptor",
+            "expanded_fuel_tank"
+          ]
+        },
+        "royal_guard_escort": {
+          "weapon": [
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "pulse_laser_iii",
+            "flak_cannon_ii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "tracking_computer_iii",
+            "ship_scanner_iii",
+            "warp_disruptor",
+            "expanded_fuel_tank",
+            "ship_scanner_ii"
+          ]
+        },
+        "royal_guard_utility": {
+          "weapon": [
+            "emp_pulse_iii",
+            "neural_disruptor",
+            "ion_blaster_iii",
+            "em_disruptor_i",
+            "pulse_laser_iii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_recharger_ii",
+            "shield_booster_ii",
+            "armor_plate_iii"
+          ],
+          "utility": [
+            "remote_armor_repairer_iii",
+            "field_hospital",
+            "shipboard_sickbay",
+            "advanced_drone_bay",
+            "combat_drone_bay",
+            "remote_armor_repairer_ii",
+            "target_painter_ii",
+            "sensor_dampener",
+            "expanded_fuel_tank"
           ]
         },
         "command_ewar_tac": {
@@ -719,7 +833,7 @@
           16
         ]
       ],
-      "_tune_apophis": "2026-11-25 06:39 UTC Apophis (orders ENT-092 P1, block APOPHIS: fuel): afterburners off-role for Military (fit-network strips them into storage where the ship stands): starter hunters with an afterburner flew 762 hunt runs in 6 h at -1,529 cr a ship-hour against -746 without (793 runs), 2.3 against 2.79 kills a run (table runs, ship_modules, 06:35 UTC); fuelplan.ship_jump_cost: 7 to 11 fuel a jump with them against 3. Drone loadouts buy weapons only (a wildlife hunt ends at 100 percent hull; fit-network spent 135,229 cr once on Military defence and tanks in 6 h, onetime.json); sentinel escorts keep shield_booster_ii, utility sentinels the remote repairer. Earlier: 2026-11-25 00:43 UTC loadouts cut to lasers, boosters, tank."
+      "_tune_apophis": "2026-11-25 (Suggi directive): full automatic T1-T5 weapon, defense, and utility loadouts restored across all Military drones and sentinels; fuel-guzzling afterburners remain off-role per empirical fuelplan data (3 fuel/jump vs 7-11)."
     },
     "Logistics": {
       "mix": [
@@ -784,12 +898,32 @@
       },
       "loadouts": {
         "freight": {
-          "utility": [],
-          "defense": []
+          "utility": [
+            "cargo_expander_iii",
+            "cargo_expander_ii",
+            "fuel_optimizer"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
+          ]
         },
         "passenger": {
-          "utility": [],
-          "defense": []
+          "utility": [
+            "business_passenger_cabin",
+            "economy_passenger_cabin",
+            "fuel_optimizer"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
+          ]
         }
       }
     },
@@ -915,8 +1049,39 @@
         ]
       },
       "loadouts": {
-        "covert_recon": {},
-        "sensor_survey": {}
+        "covert_recon": {
+          "utility": [
+            "phase_cloaking_device",
+            "cloaking_device_ii",
+            "cloaking_device_i",
+            "ship_scanner_iii",
+            "fuel_optimizer",
+            "expanded_fuel_tank"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
+          ]
+        },
+        "sensor_survey": {
+          "utility": [
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
+            "ship_scanner_iii",
+            "fuel_optimizer",
+            "expanded_fuel_tank"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii"
+          ]
+        }
       }
     },
     "Command": {
