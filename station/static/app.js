@@ -3881,26 +3881,6 @@ function renderAlerts() {
         'Other faction PvP battle (not CLTV) -- click to jump',
         () => { if (sys.has(b.system)) select(b.system, true); else { tab = 'Metrics'; render(); } });
     });
-    const fac = (ops.readiness && ops.readiness.faction) || {};
-    if (fac.limit && fac.members >= fac.limit - 2) {
-      addChip('warn', 'Faction cap ' + fac.members + '/' + fac.limit, 'Open Metrics needs (recruitment-center)', () => { tab = 'Metrics'; render(); });
-    }
-    const shorts = (ops.supply || []).filter((x) => x.state === 'SHORT');
-    if (shorts.length) {
-      const top = shorts[0];
-      addChip('warn', 'Supply short: ' + top.chain + (shorts.length > 1 ? ' (+' + (shorts.length - 1) + ')' : ''), 'Open Metrics supply chains', () => { tab = 'Metrics'; render(); });
-    }
-    const mad = ((ops.alerts && ops.alerts.mad) || []).filter((m) => m.verdict.startsWith('OUT'));
-    if (mad.length) {
-      addChip('warn', mad.length + ' MAD anomal' + (mad.length === 1 ? 'y' : 'ies'), 'Open Metrics anomaly table', () => { tab = 'Metrics'; render(); });
-    }
-  }
-  const idleCount = F.ships.filter((r) => ['dock', 'idle'].includes(shipState(r)[0])).length;
-  if (idleCount > 0) {
-    addChip('info', idleCount + ' idle ship' + (idleCount === 1 ? '' : 's'), 'Filter Fleet outliner to Idle ships', () => {
-      if (shut.has('left')) toggleShut('left');
-      setRosterMode('idle');
-    });
   }
   if (!chips.length) { barEl.hidden = true; return; }
   chips.forEach((c) => barEl.append(c));
