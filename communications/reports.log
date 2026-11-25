@@ -481,3 +481,12 @@ Failed: Military last hour -155,231 cr and 24 hours -129,201 cr an hour (the too
 Requests: none (Zero's ENT-540 answered in queue ENT-332).
 Suggestions: a lane or policy that adds a module names its measured gain, and the briefing shows fit spend per division (orders ENT-092 block UNITY); a shared test reads the division's own loadout, not a fixed module.
 Report: afterburners-stripped-pack-fuel-guard-flagships-lead-packs.
+
+## [ENT-210] | 2026-11-25 07:23 UTC | Mercury | session | ref: reports/2026-11-25_mercury_melt-to-hex-star-carries-freighter-desks-hulls-held.md | see: orders.log ENT-092
+Session: scheduled run turn-mercury -- 285 stored crystal melt sent to Hex Star's 3,158 cr bid, no big hold left on empty jumps, tier-2 hulls held.
+Did: five melt carries to Hex Star (bid 3,158 x 146, refilled 5 -> 152 in an hour), sac carry opened at 30 stored (bid 1,368 x 63), phase crystal carry Deep Range -> Sol (110 x 1,127) (31940a05, 80b7af9d; @trade-sell ec6463f8, 62ce78a2); freighter desk cap 15 -> 19 (21e7776c, 8424c8bc) for 165-cargo traders on train-jumps-trader (-733 cr a ship-hour against 669 on the desk, 6 h); buy lane read (42 orders, 80,061 cr, cobalt ink 21 over net short); hull listings read, none bought; claim admirals ENT-141; knowledge lesson; trade-books step 5; Standing Plan (9793f865).
+Worked: fill gate PASS (last 07:22:47 UTC: PASS: no ship of trader waits); plan check PASS; reservecheck PASS 203 routes; Trade last hour +46,737 cr, 24 h purse +199,597 cr an hour (money view 07:16 UTC); the Frontier melt carry under way at 07:21 UTC.
+Failed: the deep melt bid stood from 2026-11-24 15:27 UTC while 285 melt lay at 54 cr bids (my last turn skipped sellgen.py scan; fixed in the skill, no errors.log entry: no ship or credit lost); hull alarm open (6 Piloting-10 traders without tier 2: a tier-2 desk earns 669 against 636); craft-network test rows ran 0 times since d2045617.
+Requests: none.
+Suggestions: Unity: say if the hull alarm should be closed at about 100k cr a hull without a measured gain; Trinity: the surplus view names the deepest bid beside the highest.
+Report: melt-to-hex-star-carries-freighter-desks-hulls-held.
