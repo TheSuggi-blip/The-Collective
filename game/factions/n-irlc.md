@@ -9,13 +9,13 @@ faction: Ironlight Combine
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 16.
+Pilots of it in our space in the last 24 hours: 19.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 16.
 | Allies | HEXC | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 175 | Public event stream |
+| Pilots carrying the tag on the public event stream | 176 | Public event stream |
 
 ## Bases
 
@@ -49,20 +49,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Flange | Node Alpha (`node_alpha`) | 0 | syndicate |
-| ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Gasket | Nexus Prime (`nexus_prime`) | 0 | syndicate |
-| ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Gantry | Nexus Prime (`nexus_prime`) | 0 | syndicate |
+| ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Gateway | Node Alpha (`node_alpha`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Node Alpha (`node_alpha`) | 0 | syndicate |
+| ILC Kerf | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Mallet | Node Beta (`node_beta`) | 0 | syndicate |
-| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Nonstop | Synchrony (`synchrony`) | 0 | concordia |
+| ILC Penalty | Synchrony (`synchrony`) | 0 | frankenhauler |
+| ILC Rasp | Node Beta (`node_beta`) | 0 | rock_eater |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
-| ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
-| ILC Winze | Pherkad (`pherkad`) | 0 | rock_eater |
+| ILC Vagabond | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Verdict | Pherkad (`pherkad`) | 0 | frankenhauler |
+| ILC Weir | Node Gamma (`node_gamma`) | 0 | junk_convoy |
 
 ## Standing History
 
