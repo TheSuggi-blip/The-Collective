@@ -454,3 +454,12 @@ Failed: frontier oldest read 184 min against 155 and freshness 71.1% to 69.2% (t
 Requests: ENT-539 (to Unity: no hunt to a ship without a weapon).
 Suggestions: Trinity weighs fuel a jump in fit_net's choice for fuel-bound classes; Apophis reads his hunters' fuel after afterburners (queue ENT-329).
 Report: afterburners-off-scouts-census-refuels-on-the-way.
+
+## [ENT-207] | 2026-11-25 06:01 UTC | Zero | session | ref: reports/2026-11-25_zero_pirate-gate-joined-booster-spend-stopped-deposits-ours.md | see: ENT-092
+Session: scheduled run turn-zero -- one pirate reading for mine-network, shield-booster spend on miners stopped, iron stored where it can be taken out.
+Did: answered ENT-534 (ENT-540): mine_net takes the dispatcher's pirate systems (4 of 21 read before; 04cbb69a, test red first, 121 test files green), request_escort_for_pirate_deficits false; read mine-network since b0a2eef6 (368 runs, 283 ship-hours, 155,816 ore, -469 cr a ship-hour, 118 of 123 claims iron deficits, 0 losses); allow_bursar_dropoffs false (63 of 121 claims stored at Bursar hubs; 3ef7d3cb); Mining defence loadouts out of fit-policy (80 runs -477,066 cr once in 5 h; 0916d551); three outpost faction gathers off by order (9ab81bba); six Then caps lowered to carries; guidebook Standing Plan; queue ENT-330.
+Worked: fill gate PASS at 05:53, 05:55 and 06:01 UTC (no ship of miner waits); plan check PASS; dry runs: 21 pirate systems read, 129 of 130 miners placed at the 12 listed stations, 0 booster buys under the new fit policy; no miner lost.
+Failed: about 477,066 cr went on shield boosters for miners before the fix, cause a defence loadout in the shared fit policy I had not read (errors ENT-206; its sold-out count is 23, not 14); stored iron at Bursar hubs not measured, no give route yet; hull alarm unchanged (3 of 60 Piloting-10 miners on tier 2), no hull bought under P1.
+Requests: ENT-540 (answer).
+Suggestions: a shared policy change that spends a division's money goes in as a test variant named in queue.log (F37); every network runner takes its danger set from dispatch.pirates.
+Report: pirate-gate-joined-booster-spend-stopped-deposits-ours.
