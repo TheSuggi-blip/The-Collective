@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 15.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 90 | Public event stream |
+| Pilots carrying the tag on the public event stream | 88 | Public event stream |
 
 ## Bases
 
@@ -34,7 +34,7 @@ Pilots of it in our space in the last 24 hours: 15.
 |---|---|---|---|---|---|
 | Hive Antares | station | Antares (`antares`) | lawless | 5 | thriving |
 | Hive Sulafat | station | Sulafat (`sulafat`) | lawless | 19 | thriving |
-| Hive Segin | station | Segin (`segin`) | lawless | 21 | thriving |
+| Hive Segin | station | Segin (`segin`) | lawless | 21 | operational |
 
 ## Pilots in Our Space
 
@@ -42,21 +42,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Node Beta (`node_beta`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Acubens (`acubens`) | 0 | workhorse |
-| 6ce9fcc5d675364f5a7de638 | Acubens (`acubens`) | 0 | workhorse |
-| 6d3e8d906d454ef5c87b6e4c | Hamal (`hamal`) | 0 | workhorse |
-| 706a154ccad49b2a57f5f914 | Synchrony (`synchrony`) | 0 | workhorse |
-| b9eca5b6501443e6d0541e69 | Node Beta (`node_beta`) | 0 | workhorse |
-| c413294b4b6a11879da15614 | Nexus Prime (`nexus_prime`) | 0 | futures |
-| c560f1f71312e41fa9c0f091 | Hamal (`hamal`) | 0 | deep_survey |
-| cb9f390ad124b910d6bb336c | Hamal (`hamal`) | 0 | workhorse |
-| ddac9c7dba6b0465e059d88b | Acubens (`acubens`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Synchrony (`synchrony`) | 0 | futures |
-| eabefb578c1ac30a8ecf90a7 | Node Alpha (`node_alpha`) | 0 | runner |
-| ec43cfe9e4293184f10e08ca | Node Beta (`node_beta`) | 0 | workhorse |
-| f8c3f4c38ee48a37ee21926b | Acubens (`acubens`) | 0 | workhorse |
-| fdd4d2a524b48e0478b85d38 | The Experiment (`the_experiment`) | 0 | workhorse |
+| 13170464db5eef0043ae9f5e | Hamal (`hamal`) | 0 | workhorse |
+| 41f0a85ee5fe4d71232d03a8 | Acubens (`acubens`) | 0 | workhorse |
+| 907a7ad5fc57ac61d6e57ad4 | Hamal (`hamal`) | 0 | workhorse |
+| a41fe11e5e1e54e9d8f60ebb | The Experiment (`the_experiment`) | 0 | futures |
+| b9eca5b6501443e6d0541e69 | Hamal (`hamal`) | 0 | workhorse |
+| ed54a64a82f3c4f9990829ad | Hamal (`hamal`) | 0 | workhorse |
 
 ## Standing History
 
