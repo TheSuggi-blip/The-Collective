@@ -1,0 +1,33 @@
+{
+ "id": "mission-the-line-ironhearth",
+ "kind": "circuit",
+ "title": "The Line: 5000 cr, +380 XP at Ironhearth Station",
+ "note": "Written by routemaker.py from the board and the order books: goods for about 0 cr, reward 5000 cr, sale 0 cr, +380 XP. Test with one ship first. Added as a test by fill.py on 2026-11-25 05:15 UTC (Oracle): up to 3 ships, one result each, until 3 runs are read (rule F37).",
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station",
+   "accept": [
+    "the_line"
+   ]
+  },
+  {
+   "at": "the_rampart:the_rampart_checkpoint:the_rampart_checkpoint",
+   "redock": true
+  },
+  {
+   "at": "the_crucible:the_crucible_garrison:the_crucible_garrison",
+   "redock": true
+  },
+  {
+   "at": "ironhearth:ironhearth_station:ironhearth_station"
+  }
+ ],
+ "once": true,
+ "one_time": [
+  "The Line"
+ ],
+ "skip_if_booked": [
+  "The Line"
+ ]
+}

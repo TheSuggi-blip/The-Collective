@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 96.
+Routes: 97.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -83,6 +83,7 @@ Routes: 96.
 | [mission-structural-reinforcement-alpha](mission-structural-reinforcement-alpha.json) | circuit | beyond the border, 11 jumps | Structural Reinforcement: 3,000 cr once at Alpha Centauri, pre-fabricated materials picked up at Nova Terra and delivered back (a test) | once per pilot, up to 20 ships, empty hold | 447 | 13 | 2,730 | one-time | 2026-11-24 |
 | [mission-the-colonies-crimson](mission-the-colonies-crimson.json) | circuit | beyond the border, 21 jumps | The Colonies: 5000 cr, +290 XP at War Citadel | once per pilot, up to 3 ships | 89 | 12 | 1,980 | one-time | 2026-11-25 |
 | [mission-the-expeditionary-mandate-first](mission-the-expeditionary-mandate-first.json) | circuit | beyond the border, 18 jumps | The Expeditionary Mandate: 10000 cr, +360 XP at First Step Memorial Station | once per pilot, up to 3 ships | 3 | 38 | -690 | one-time | 2026-11-23 |
+| [mission-the-line-ironhearth](mission-the-line-ironhearth.json) | circuit | beyond the border, 21 jumps | The Line: 5000 cr, +380 XP at Ironhearth Station | once per pilot, up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-the-memorial-frontier](mission-the-memorial-frontier.json) | circuit | beyond the border, 18 jumps | The Memorial: 8000 cr at Mobile Capital (Altais), a visit to First Step | once per pilot, up to 15 ships | 260 | 11 | 7,340 | one-time | 2026-11-23 |
 | [mission-the-objection-deep](mission-the-objection-deep.json) | circuit | beyond the border, 19 jumps | The Objection: 600 cr, +75 XP at Deep Range Outpost | once per pilot, up to 3 ships | 83 | 5 | 40 | one-time | 2026-11-24 |
 | [mission-the-proposal-frontier](mission-the-proposal-frontier.json) | circuit | beyond the border, 19 jumps | The Proposal: 800 cr, +80 XP at Mobile Capital | once per pilot, up to 3 ships | 100 | 6 | 210 | one-time | 2026-11-23 |
