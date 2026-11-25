@@ -126,7 +126,7 @@ Kept by Zero. Routes: 187. Ships: 130.
 | 104 | [gather-gsc-0049-belt](gather-gsc-0049-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
 | 105 | [gather-keid-belt](gather-keid-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
 | 106 | [gather-amberfall-belt](gather-amberfall-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 107 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
+| 107 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, standing work | all 130 |
 | 108 | [mine-pherkad-rift](mine-pherkad-rift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
 | 109 | [gather-node-gamma-nitrogen-ice](gather-node-gamma-nitrogen-ice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, needs ice_harvester_i, empty hold, standing work | all 130 |
 | 110 | [gather-schedar-belt](gather-schedar-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 2 jumps | up to 3 ships, empty hold, standing work | all 130 |
