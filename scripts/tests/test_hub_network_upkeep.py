@@ -362,6 +362,48 @@ class MultiHubUpkeepTests(unittest.TestCase):
         self.assertGreaterEqual(float(hp.get("min_margin_pct") or 0), 0.25)
 
 
+
+    def test_command_leader_pack_doctrine_and_antiflood_10j(self):
+        import hunt_net
+        # 1. Command-Ship-Only Pack Leadership Doctrine: non-Command ship CANNOT start a pack!
+        with tempfile.TemporaryDirectory() as tmp:
+            td = Path(tmp)
+            (td / "fleet").mkdir(parents=True, exist_ok=True)
+            (td / "fleet" / "flagships.json").write_text(json.dumps({"Prime Directive": {"flagship": True}}), encoding="utf-8")
+            w = {"adj": {"sys_a": ["sys_b"], "sys_b": ["sys_a"]}}
+            pol = {"packs": {"enabled": True, "require_command_leader": True, "target_share": 0.30, "sizes": [3], "min_member_power": 500.0, "command_flagship_min_power": 150.0, "rally_max_jumps": 10, "rally_timeout_s": 300, "max_forming_packs": 4}}
+            targets = [{"key": "pack:sys_a:poi_1", "place_key": "sys_a:poi_1", "mode": "wildlife", "system": "sys_a", "poi": "poi_1", "species": "cloudwhale", "prey_hull": 3433, "desired_size": 3, "dock": "sys_a:st:b1"}]
+            spow_d = {"power": 900.0, "tier": 1}
+            spow_c = {"power": 300.0, "tier": 1}
+            # Regular drone tries to form pack alone -> MUST be rejected (None)!
+            self.assertIsNone(hunt_net.pack_try_join_or_create(td, "drone-1", "sys_a", spow_d, targets, w, pol, 40, now_t=1000.0))
+            # Command Flagship creates pack -> succeeds as leader!
+            pk_cmd = hunt_net.pack_try_join_or_create(td, "Prime Directive", "sys_a", spow_c, targets, w, pol, 40, now_t=1001.0)
+            self.assertIsNotNone(pk_cmd)
+            self.assertEqual(pk_cmd["leader"], "Prime Directive")
+            # Now regular drones join the Command-led pack and launch it!
+            pk_j1 = hunt_net.pack_try_join_or_create(td, "drone-1", "sys_a", spow_d, targets, w, pol, 40, now_t=1002.0)
+            self.assertEqual(pk_j1["leader"], "Prime Directive")
+            pk_j2 = hunt_net.pack_try_join_or_create(td, "drone-2", "sys_b", spow_d, targets, w, pol, 40, now_t=1003.0)
+            self.assertEqual(pk_j2["state"], "launched")
+            self.assertEqual(pk_j2["leader"], "Prime Directive")
+
+        # 2. Verify live policy invariants (10J radius, Command leadership, zero noob prey, CapEx cash-bleed floor)
+        root = Path(__file__).resolve().parents[2]
+        hp = json.loads((root / "game" / "hunt-policy.json").read_text(encoding="utf-8"))
+        self.assertTrue(hp["packs"]["require_command_leader"])
+        self.assertTrue(hp["packs"]["pirates_enabled"])
+        self.assertEqual(hp["packs"]["max_jumps"], 10)
+        self.assertFalse(hp["fallback"]["enabled"])
+        self.assertIn("belt_grazer", hp["exclude_species"])
+        mp = json.loads((root / "game" / "mine-policy.json").read_text(encoding="utf-8"))
+        self.assertEqual(mp["max_station_jumps"], 10)
+        self.assertGreaterEqual(mp["min_market_buyer_qty"], 20)
+        self.assertFalse(mp["allow_xp_fallback"])
+        up = json.loads((root / "game" / "upgrade-policy.json").read_text(encoding="utf-8"))
+        self.assertGreaterEqual(up["treasury_floor_cr"], 8500000)
+
+
 if __name__ == "__main__":
     unittest.main()
 

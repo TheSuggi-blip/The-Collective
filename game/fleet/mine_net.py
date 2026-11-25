@@ -289,19 +289,34 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                         shortages[iid] = max(shortages.get(iid, 0), keep - stk)
 
             def _market():
-                # What a market good sells for: the best bid at market_min_bid or more and the units those bids
-                # take, less what the fleet already holds (2026-11-24: copper held 792,590 against 106 units bid).
+                # Dynamic depth-weighted, multi-buyer, anti-flood live market map (<6h fresh books ONLY!).
+                # Stores [vwap_bid, net_absorption_qty, buyer_stations, top_qty, total_depth].
                 min_bid = float(policy.get("market_min_bid") or 5.0)
-                for iid, bid, depth in cur.execute(
-                        "SELECT item, MAX(bid), SUM(bid_qty) FROM books WHERE bid >= ? GROUP BY item", (min_bid,)):
-                    if iid and bid:
-                        market[str(iid)] = [float(bid), int(depth or 0)]
+                bcols = {r[1] for r in cur.execute("PRAGMA table_info(books)").fetchall()}
+                bd_expr = "MAX(COALESCE(bid_qty, 0), COALESCE(bid_depth, 0))" if "bid_depth" in bcols else "COALESCE(bid_qty, 0)"
+                t_where = " AND t >= ?" if "t" in bcols else ""
+                params = (min_bid, now_t - 6.0 * 3600.0) if "t" in bcols else (min_bid,)
+                b_col = "base" if "base" in bcols else ("station" if "station" in bcols else "''")
+                q = (
+                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), SUM(%s), COUNT(DISTINCT %s), MAX(bid) "
+                    "FROM books WHERE bid >= ? AND bid_qty > 0%s GROUP BY item"
+                ) % (bd_expr, b_col, t_where)
+                for iid, wsum, tq, tot_d, st_cnt, max_b in cur.execute(q, params):
+                    if iid and tq and int(tq) > 0:
+                        vwap = float(wsum or 0.0) / float(tq)
+                        # Blend VWAP with max_bid conservatively (prevents 1-unit spoof spikes from dominating!)
+                        eff_p = vwap if int(tq) >= 20 else min(vwap, float(max_b or vwap))
+                        market[str(iid)] = [eff_p, int(tq), int(st_cnt or 1), int(tq), int(tot_d or tq)]
                 market_read[0] = True
 
             def _held():
                 for iid, units in cur.execute("SELECT item, SUM(units) FROM inventory GROUP BY item"):
                     if iid:
                         held[str(iid)] = int(units or 0)
+                if "faction_storage" in tbls:
+                    for iid, units in cur.execute("SELECT item, SUM(units) FROM faction_storage GROUP BY item"):
+                        if iid:
+                            held[str(iid)] = held.get(str(iid), 0) + int(units or 0)
 
             def _needs():
                 # The open needs' raw shortfalls (need_status.gather: "uranium_ore 2,304, thorium_ore 1,200").
@@ -327,12 +342,21 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
             if market_read[0]:
                 hv_min = float(policy.get("high_value_market_min_bid") or 0.0)
                 hv_cap = int(policy.get("high_value_stock_cap") or 2000)
+                min_buyers_q = int(policy.get("min_market_buyer_qty") or 20)
                 for iid, rec in market.items():
                     h_u = held.get(iid, 0)
-                    raw_depth = int(rec[1])
-                    net_depth = raw_depth - h_u
-                    if hv_min > 0 and rec[0] >= hv_min and raw_depth > 0 and h_u < max(hv_cap, raw_depth * 3):
-                        rec[1] = max(net_depth, max(hv_cap, raw_depth * 3) - h_u)
+                    top_q = int(rec[3]) if len(rec) > 3 else int(rec[1])
+                    tot_d = int(rec[4]) if len(rec) > 4 else top_q
+                    # Anti-flood & minimum-buyer-depth gate (Suggi directive):
+                    # Require enough live buyers (>= min_market_buyer_qty) so we never mass-farm for 1-2 buyers,
+                    # and smoothly stop farming once fleet stock reaches 85% of live absorption depth!
+                    if top_q < min_buyers_q and tot_d < max(min_buyers_q * 4, 100):
+                        rec[1] = 0
+                        continue
+                    abs_cap = int(max(top_q, tot_d * 0.85))
+                    net_depth = abs_cap - h_u
+                    if hv_min > 0 and rec[0] >= hv_min and top_q >= min_buyers_q and h_u < max(hv_cap, abs_cap):
+                        rec[1] = max(net_depth, max(hv_cap, abs_cap) - h_u)
                     else:
                         rec[1] = net_depth
                 market_world = market
@@ -766,11 +790,22 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         fuel_pen = 35.0 * hops + 25.0 * st_hops
         # Zero, 2026-11-25: a longer way always scores lower. Dividing a negative score (fuel above what the good is worth,
         # every experience-only belt) by the way raised it, and a belt 4 jumps from its station outranked one beside a station.
-        _num = (tier_mult * uval * 20.0 * headroom_bonus) - fuel_pen
+        # Liquidity & anti-flood saturation factor: multi-station deep demand ranks highest;
+        # as fleet stock climbs toward buyer depth, score decays smoothly so miners auto-switch!
+        _liq_m = 1.0
+        _sat_m = 1.0
+        if mkt and len(mkt) >= 5:
+            _st_c, _tq_m, _td_m = int(mkt[2]), int(mkt[3]), int(mkt[4])
+            _liq_m = min(1.0, max(0.20, _tq_m / 100.0)) * (1.15 if _st_c >= 3 else (1.0 if _st_c >= 2 else 0.80))
+            _abs_m = max(400.0, float(_td_m) * 0.85) + float(craft_demand.get(res, 0))
+            if not is_deficit:
+                _sat_m = max(0.10, 1.0 - min(0.90, (float(_held_u) / _abs_m) * 0.80))
+        fuel_pen = 42.0 * hops + 35.0 * st_hops
+        _num = (tier_mult * uval * _liq_m * _sat_m * 24.0 * headroom_bonus) - fuel_pen
         if policy.get("hub_gravity_bonus", True) and _num > 0:
             _st_base = st_tup[2]
             if _st_base in (world.get("owned_outpost_bases") or set()) or _st_base in (world.get("lockbox_bases") or set()):
-                _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= hub_rad else 1.0))
+                _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= 4 else (1.04 if st_hops <= hub_rad else 1.0)))
                 _num *= _hub_mult
         _way = 1.0 + 0.6 * hops + 1.2 * st_hops
         score = _num / _way if _num >= 0 else _num * _way

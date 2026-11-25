@@ -12,7 +12,16 @@
   "allow_lawless_min_power": 350.0,
   "exclude_systems": [],
   "exclude_pois": [],
-  "exclude_species": [],
+  "exclude_species": [
+    "belt_grazer",
+    "patina_grazer",
+    "drift_ray",
+    "sift_ray",
+    "slag_tortoise",
+    "carrion_moth",
+    "halo_drifter",
+    "glacier_drifter"
+  ],
   "partner_factions": [
     "HEXC",
     "IRLC",
@@ -33,43 +42,52 @@
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.07,
+    "target_share": 0.3,
     "sizes": [
-      3
+      3,
+      5,
+      7,
+      10
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": false,
+    "pirates_enabled": true,
     "pirate_tiers": [
       "scout",
-      "raider"
+      "raider",
+      "raider_elite"
     ],
-    "min_member_power": 900.0,
-    "min_target_hull": 85,
-    "rally_max_jumps": 8,
+    "min_member_power": 750.0,
+    "min_target_hull": 40,
+    "rally_max_jumps": 12,
     "rally_timeout_s": 600,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 6,
+    "max_jumps": 10,
     "priority_species": [
-      "pilot_whale",
-      "bullionaut",
-      "cauldronback",
-      "facet_druse",
-      "kiln_snail",
-      "slag_tortoise",
-      "bulwark",
-      "glintfin",
-      "glitterback_crab",
-      "deuteron_slug",
+      "cloudwhale",
+      "frost_moth",
       "hollow_pilgrim",
-      "mirror_skate",
+      "cinder_sylph",
+      "facet_druse",
+      "cobalt_squid",
+      "kiln_snail",
+      "pilot_whale",
+      "cauldronback",
+      "glintfin",
       "inkwyrm",
-      "magnet_barnacle",
-      "silica_borer"
-    ]
+      "silica_borer",
+      "bell_jelly",
+      "quantum_moth",
+      "bullionaut",
+      "bulwark"
+    ],
+    "require_command_leader": true,
+    "max_forming_packs": 6,
+    "command_flagship_min_power": 150.0,
+    "max_station_jumps": 10
   },
   "solo": {
     "enabled": false,
@@ -79,7 +97,9 @@
     "max_jumps": 10,
     "kills_per_run": 6,
     "alone": true,
-    "min_bid": 1500
+    "min_bid": 1500,
+    "max_station_jumps": 10,
+    "min_loot_val": 450.0
   },
   "fallback": {
     "enabled": false,

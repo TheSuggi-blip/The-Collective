@@ -593,28 +593,57 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         except (OSError, ValueError):
             pass
 
-    # 100% EMPIRICAL live-market + live-contract wildlife loot valuation (ZERO fake hull formula, ZERO catalog values!)
-    live_drop_bid = {}
+    # 100% EMPIRICAL, LIQUIDITY-WEIGHTED & ANTI-FLOOD wildlife loot valuation (Suggi directive):
+    # - Discounts thin 1-3 unit bids so hunters NEVER mass-farm for 1-2 buyers!
+    # - Applies saturation decay against live fleet holdings + faction_storage so hunters auto-rotate when flooded!
+    # - Incorporates live high-payout delivery contracts (e.g. HEXC 100k cr for 20x lumen_oil = 5,000 cr/u!).
+    live_drop_val = {}
+    _drop_held = {}
     _db_h = Path(data_dir) / "store" / "read.db"
     if _db_h.is_file():
         try:
             import worldcache as _wc_h
             _ch = _wc_h.ro_db(_db_h, timeout=3.0)
             _htbls = {r[0] for r in _ch.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if "holdings" in _htbls:
+                for _iid, _u in _ch.execute("SELECT item, SUM(units) FROM holdings GROUP BY item"):
+                    if _iid and _u:
+                        _drop_held[str(_iid)] = _drop_held.get(str(_iid), 0) + int(_u)
+            if "faction_storage" in _htbls:
+                for _iid, _u in _ch.execute("SELECT item, SUM(units) FROM faction_storage GROUP BY item"):
+                    if _iid and _u:
+                        _drop_held[str(_iid)] = _drop_held.get(str(_iid), 0) + int(_u)
             if "books" in _htbls:
+                _bcols = {r[1] for r in _ch.execute("PRAGMA table_info(books)").fetchall()}
+                _bd_e = "MAX(COALESCE(bid_qty, 0), COALESCE(bid_depth, 0))" if "bid_depth" in _bcols else "COALESCE(bid_qty, 0)"
+                _bc = "base" if "base" in _bcols else ("station" if "station" in _bcols else "''")
                 _hcut = time.time() - 6.0 * 3600.0
-                for _iid, _mb in _ch.execute("SELECT item, MAX(bid) FROM books WHERE bid > 0 AND bid_qty > 0 AND t >= ? GROUP BY item", (_hcut,)):
-                    if _iid and _mb:
-                        live_drop_bid[str(_iid)] = max(live_drop_bid.get(str(_iid), 0.0), float(_mb))
-            # Also capture high-payout faction supply delivery contracts (e.g. 100k cr for 20x lumen_oil = 5,000 cr/u!)
+                _q = (
+                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), SUM(%s), COUNT(DISTINCT %s) "
+                    "FROM books WHERE bid >= 15 AND bid_qty > 0 AND t >= ? GROUP BY item"
+                ) % (_bd_e, _bc)
+                for _iid, _wsum, _tq, _td, _stc in _ch.execute(_q, (_hcut,)):
+                    if not _iid or not _tq or int(_tq) <= 0:
+                        continue
+                    _vwap = float(_wsum or 0.0) / float(_tq)
+                    # Minimum buyer liquidity factor (prevents mass-farming thin 1-3 unit spoof bids!)
+                    _liq = min(1.0, float(_tq) / 50.0) * (1.15 if int(_stc or 1) >= 3 else (1.0 if int(_stc or 1) >= 2 else 0.80))
+                    # Anti-flood saturation decay: smoothly drops to 0.05x once fleet holds >= 80% of live buyer depth!
+                    _abs = max(80.0, float(_td or _tq) * 0.80)
+                    _h_u = float(_drop_held.get(str(_iid), 0))
+                    _sat = 0.05 if _h_u >= _abs else max(0.15, 1.0 - (_h_u / _abs) * 0.75)
+                    live_drop_val[str(_iid)] = max(live_drop_val.get(str(_iid), 0.0), _vwap * _liq * _sat)
+            # Live delivery contracts (guaranteed repeatable buyer demand like HEXC 100k lumen_oil / 61k ember_gland!)
             if "missions" in _htbls:
                 for _rew, _obj in _ch.execute("SELECT reward, objectives FROM missions WHERE kind='delivery' AND reward >= 5000 AND objectives IS NOT NULL"):
                     _m = re.search(r"Deliver\s+(\d+)\s*(?:x|\u00d7|\*)?\s+([A-Za-z0-9 _-]+?)(?:\s+to\s+|$)", str(_obj or ""), re.I)
                     if _m and int(_m.group(1) or 0) > 0:
                         _u_p = float(_rew) / float(int(_m.group(1)))
                         _slug = re.sub(r"[^a-z0-9]+", "_", _m.group(2).strip().lower()).strip("_")
-                        if _slug and _u_p > live_drop_bid.get(_slug, 0.0):
-                            live_drop_bid[_slug] = _u_p
+                        if _slug:
+                            _h_u = float(_drop_held.get(_slug, 0))
+                            _csat = max(0.15, 1.0 - min(0.85, _h_u / 200.0))
+                            live_drop_val[_slug] = max(live_drop_val.get(_slug, 0.0), _u_p * _csat)
             _ch.close()
         except sqlite3.Error:
             pass
@@ -622,14 +651,13 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
     craft_loot_species = {str(x).lower() for x in (cd.get("priority_loot_species") or [])} if isinstance(cd, dict) and cd.get("enabled", True) else set()
     for sp, hull in species_hull.items():
         drops = SPECIES_NEED_DROPS.get(sp) or ()
-        # Sum live market bid value of expected drops (empirical market value per kill, minimum 50 cr floor for unmapped species)
-        emp_v = sum(live_drop_bid.get(d, 0.0) for d in drops)
+        emp_v = sum(live_drop_val.get(d, 0.0) for d in drops)
         if emp_v <= 0.0:
-            emp_v = 50.0
+            emp_v = 25.0
         if any(d in needs_items for d in drops):
             emp_v *= 2.5
         elif sp.lower() in craft_loot_species:
-            emp_v *= 1.5
+            emp_v *= 1.35
         species_loot_val[sp] = round(emp_v, 1)
     owned_bases = []
     _db_b = Path(data_dir) / "store" / "read.db"
@@ -650,7 +678,7 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
         "species_loot_val": species_loot_val, "owned_bases": owned_bases,
-        "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live, "lockbox_bases": _lockbox_hubs,
+        "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live, "lockbox_bases": _lockbox_hubs, "data_dir": str(data_dir),
     }
 
 
@@ -986,7 +1014,11 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         if not ok_g or not f9_passes(f9, prey_hull, "grazer", n=1):
             continue
 
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+        min_lv = float(scfg.get("min_loot_val") or 0.0)
+        if min_lv > 0 and float(species_loot.get(sp) or 0.0) < min_lv:
+            continue
+        _st_rad = int(scfg.get("max_station_jumps") or 10)
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup:
             continue
 
@@ -1003,6 +1035,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
                 fit_mult *= 1.18
             elif st_hops <= 4:
                 fit_mult *= 1.10
+            elif st_hops <= 8:
+                fit_mult *= 1.04
 
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - int(policy.get("keep_herd") or 2)))
         loot_est = float(species_loot.get(sp) or 2000.0) * kills_avail
@@ -1070,12 +1104,21 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         solo_ok = passes_combat_gate(ship_power, threat, solo_ratio, check_f9=False)[0] and (
             f9 is None or f9_passes(f9, prey_hull, role, n=1)
         )
-        if solo_ok:
+        # Command Flagships NEVER solo-graze (they exist to lead strike packs & earn leadership XP!),
+        # so allow Command ships to start packs on big priority prey even if a heavy flagship passed solo_ok!
+        _is_cmd_p = str(pilot_info.get("name") or "") in load_command_flagships(world.get("data_dir") or DATA)
+        if solo_ok and not (_is_cmd_p and (sp in prio_sp or prey_hull >= min_thull)):
+            continue
+        if sp in set(str(x) for x in (policy.get("exclude_species") or [])):
             continue
         sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
-            continue
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+            if _is_cmd_p and sizes:
+                sz = min(sizes)
+            else:
+                continue
+        _pk_st_rad = int(pcfg.get("max_station_jumps") or 10)
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_pk_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup:
             continue
         loot_v = float(species_loot.get(sp) or 4000.0) * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
@@ -1115,7 +1158,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
-            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=int(pcfg.get("max_station_jumps") or 10), preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
             if not st_tup:
                 continue
             score = (18000.0 * (phull / 80.0)) / (1.0 + 0.6 * hops + 0.5 * st_hops)
@@ -1226,8 +1269,13 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
                     kv[0],
                 ))
             )
+            req_cmd_leader = bool(pcfg.get("require_command_leader", False))
             for pid, pk in sorted(packs.items(), key=sort_key):
                 if pk.get("state") != "forming":
+                    continue
+                # Hard Command-Leadership Doctrine (Suggi directive):
+                # When require_command_leader is active, non-Command ships may ONLY join a pack led by a Command Ship!
+                if req_cmd_leader and not is_cmd and str(pk.get("leader") or "") not in cmd_ships:
                     continue
                 dsz = int(pk.get("desired_size") or 3)
                 if len(pk.get("members") or []) >= dsz:
@@ -1248,7 +1296,11 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return dict(pk, pack_id=pid)
 
-            # 2. Otherwise create a new forming pack if under pack quota, under max_forming_packs, and targets exist
+            # 2. Otherwise create a new forming pack if under pack quota, under max_forming_packs, and targets exist.
+            # HARD DOCTRINE: when require_command_leader=True, ONLY a Command Ship can create & lead a new group!
+            if req_cmd_leader and not is_cmd:
+                write_json(path, {"updated_at": int(now_t), "packs": packs})
+                return None
             if in_packs_reserved >= quota or forming_n >= max_forming or not pack_targets:
                 write_json(path, {"updated_at": int(now_t), "packs": packs})
                 return None

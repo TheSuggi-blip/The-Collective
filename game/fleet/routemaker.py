@@ -681,7 +681,7 @@ def mine_candidates(world):
                 rank_val = per_hour * (1.08 if (world.get("strict") and base in lockboxes and per_hour > 0) else 1.0)
                 if sales and (best is None or rank_val > best[0]):
                     best = (rank_val, per_hour, minutes, loads, base, jumps, sales, "empire_lockbox" if base in lockboxes else "exchange")
-            elif base in owned_hubs and base in lockboxes and jumps <= 4:
+            elif base in owned_hubs and base in lockboxes and jumps <= 10:
                 # CLTV Owned Outpost / Station (no Exchange order book): netback valuation at 0.88x best live market bid
                 minutes, fuel = trip(world, jumps)
                 minutes += cargo / (rate * rich)
