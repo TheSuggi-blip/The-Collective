@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 0.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Prospector Post | outpost | Izar (`izar`) | lawless | 13 | thriving |
+| Prospector Post | outpost | Izar (`izar`) | lawless | 13 | thriving, wrecked |
 
 ## Pilots in Our Space
 
