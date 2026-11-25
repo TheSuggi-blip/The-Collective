@@ -169,6 +169,41 @@ def _load_base_map_uncached(data):
     return out
 
 
+def load_cltv_outposts(data):
+    """Auto-discover active CLTV Owned Outpost base_ids (0-rent Faction Lockboxes) from read.db."""
+    import worldcache as _wc
+    return set(_wc.cached(("haul_cltv_outposts", str(data), _wc.db_sig(data)), 60.0,
+                          lambda: _load_cltv_outposts_uncached(data)))
+
+
+def _load_cltv_outposts_uncached(data):
+    out = set()
+    db = Path(data) / "store" / "read.db"
+    if not db.is_file():
+        return out
+    con = None
+    try:
+        import worldcache as _wc
+        con = _wc.ro_db(db, timeout=3.0)
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        if "faction_facilities" in tbls:
+            for (b_id,) in con.execute(
+                "SELECT DISTINCT base FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(rent_per_cycle, 0) = 0 AND COALESCE(status, 'active') = 'active'"
+            ).fetchall():
+                if b_id:
+                    out.add(str(b_id))
+        if "bases" in tbls:
+            for (b_id,) in con.execute("SELECT base FROM bases WHERE kind = 'outpost'").fetchall():
+                if b_id:
+                    out.add(str(b_id))
+    except sqlite3.Error:
+        pass
+    finally:
+        if con is not None:
+            con.close()
+    return out
+
+
 def load_stronghold_bases(data):
     import worldcache as _wc
     return _wc.cached(("haul_strongholds", str(data), _wc.db_sig(data)), 25.0, lambda: _load_stronghold_bases_uncached(data))
@@ -791,6 +826,16 @@ def _load_books_uncached(data):
             con.close()
 
 
+def _storage_stations(entry):
+    """Unwrap storage.json pilot/Faction record: handles live {"stations": {base: {item: qty}}} AND flat {base: {item: qty}}."""
+    if not isinstance(entry, dict):
+        return {}
+    st = entry.get("stations")
+    if isinstance(st, dict):
+        return st
+    return {k: v for k, v in entry.items() if isinstance(v, dict)}
+
+
 def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys):
     """Find needed items held in THIS pilot's own storage at a remote station that should move to a home_base."""
     home_bases = [b for b in (policy.get("home_bases") or []) if b in base_map]
@@ -823,24 +868,40 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
     if not open_needs:
         return None
     stor = read_json(Path(data) / "stock" / "storage.json", {})
-    p_stor = (stor.get("pilots") or {}).get(pilot) if isinstance(stor, dict) else None
-    if not isinstance(p_stor, dict):
+    owned_outposts = load_cltv_outposts(data)
+    sources = []
+    if isinstance(stor, dict):
+        for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
+            if isinstance(items, dict):
+                sources.append(("self", b_id, items))
+        for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
+            for b_id, items in _storage_stations(f_raw).items():
+                if isinstance(items, dict):
+                    sources.append(("faction", b_id, items))
+    if not sources:
         return None
     max_pick = int(policy.get("max_jumps_pickup") or 12)
     max_del = int(policy.get("max_jumps_delivery") or 25)
     best = None
-    for b_id, items in p_stor.items():
-        if b_id in home_bases or b_id not in base_map or not isinstance(items, dict):
+    for src_target, b_id, items in sources:
+        if b_id in home_bases or b_id not in base_map:
             continue
         oloc = base_map[b_id]
-        if policy.get("policed_only", True) and not oloc[3]:
+        # Allow pickups from our own CLTV Owned Outpost Lockboxes (0-rent regional consolidation hubs!)
+        if policy.get("policed_only", True) and not oloc[3] and b_id not in owned_outposts:
             continue
         for iid, qty in items.items():
             q = int(qty or 0)
             if q < 10 or iid not in open_needs:
                 continue
-            jkey = "supply:%s:%s:%s" % (pilot, b_id, iid)
-            if jkey in claimed_keys:
+            max_slots = min(4, max(1, q // max(1, int(hold_cap))))
+            jkey = None
+            for slot_i in range(max_slots):
+                cand_k = ("supply:%s:%s:%s" % (src_target, b_id, iid)) if slot_i == 0 else ("supply:%s:%s:%s#%d" % (src_target, b_id, iid, slot_i))
+                if cand_k not in claimed_keys:
+                    jkey = cand_k
+                    break
+            if not jkey:
                 continue
             p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
             if p_hops is None or p_hops > max_pick:
@@ -857,7 +918,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
             take_q = min(q, int(hold_cap))
             score = take_q / max(1.0, float(p_hops + d_hops))
             if best is None or score > best[0]:
-                best = (score, {"job_key": jkey, "item": iid, "qty": take_q, "origin": oloc, "dest": dloc})
+                best = (score, {"job_key": jkey, "item": iid, "qty": take_q, "source_target": src_target, "origin": oloc, "dest": dloc})
     return best[1] if best else None
 
 
@@ -912,17 +973,14 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     stor = read_json(Path(data) / "stock" / "storage.json", {})
     sources = []
     if isinstance(stor, dict):
-        p_stor = (stor.get("pilots") or {}).get(pilot)
-        if isinstance(p_stor, dict):
-            for b_id, items in p_stor.items():
-                if isinstance(items, dict):
-                    sources.append(("self", b_id, items))
+        for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
+            if isinstance(items, dict):
+                sources.append(("self", b_id, items))
         if policy.get("allow_faction_surplus_liquidation", True):
-            for f_stor in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
-                if isinstance(f_stor, dict):
-                    for b_id, items in f_stor.items():
-                        if isinstance(items, dict):
-                            sources.append(("faction", b_id, items))
+            for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
+                for b_id, items in _storage_stations(f_raw).items():
+                    if isinstance(items, dict):
+                        sources.append(("faction", b_id, items))
     if not sources:
         return None
 
@@ -950,12 +1008,13 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                 continue
         bids_by_item.setdefault(iid, []).append((b_id, loc, bp, bq))
 
+    owned_outposts = load_cltv_outposts(data)
     best = None
     for src_target, b_id, items in sources:
         if b_id not in base_map:
             continue
         oloc = base_map[b_id]
-        if policed and not oloc[3]:
+        if policed and not oloc[3] and b_id not in owned_outposts:
             continue
         p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
         if p_hops is None or p_hops > max_pick:
@@ -975,8 +1034,14 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                 est_rev = take_q * bid_p - tot_hops * 45.0
                 if est_rev < min_rev:
                     continue
-                jkey = "liq:%s:%s:%s:%s" % (src_target, b_id, sb, iid)
-                if jkey in claimed_keys:
+                max_slots = min(3, max(1, min(q, int(bid_q)) // max(1, int(hold_cap))))
+                jkey = None
+                for slot_i in range(max_slots):
+                    cand_k = ("liq:%s:%s:%s:%s" % (src_target, b_id, sb, iid)) if slot_i == 0 else ("liq:%s:%s:%s:%s#%d" % (src_target, b_id, sb, iid, slot_i))
+                    if cand_k not in claimed_keys:
+                        jkey = cand_k
+                        break
+                if not jkey:
                     continue
                 score = est_rev / float(tot_hops)
                 if best is None or score > best[0]:
@@ -987,6 +1052,108 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                         "est_rev": int(round(est_rev)),
                     })
     return best[1] if best else None
+
+def _pick_backhaul_delivery(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None):
+    """Zero-idle Corporate Backhaul: find profitable single-item `deliver_item` supply contracts from data/missions/*.json.
+
+    Safe by construction: only selects contracts where we can buy the exact item BEFORE accepting the contract,
+    target_base is safe (not stronghold/pirate), and net credit reward beats ask cost + jump fuel by >= min_total_profit!
+    """
+    if hold_cap < 1 or avail_cash < 500:
+        return None
+    now_t = time.time() if now_t is None else float(now_t)
+    mdir = Path(data) / "missions"
+    if not mdir.is_dir():
+        return None
+    policed = bool(policy.get("policed_only", True))
+    allow_bw = bool(policy.get("allow_calm_buywall_dest", True))
+    max_pick = int(policy.get("max_jumps_pickup") or 12)
+    max_del = int(policy.get("max_jumps_delivery") or 20)
+    min_prof = float(policy.get("backhaul_min_profit_cr") or policy.get("min_total_profit") or 400)
+    min_margin = float(policy.get("backhaul_min_margin_pct") or 0.20)
+    max_spend = min(float(policy.get("max_buy_spend_cr") or 15000), float(avail_cash))
+    max_age_s = float(policy.get("max_book_age_minutes") or 45) * 60.0
+
+    asks_by_item = {}
+    for r in books_rows or []:
+        b_id = str(r.get("base") or "")
+        loc = base_map.get(b_id)
+        if not loc or (policed and not loc[3]):
+            continue
+        if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
+            continue
+        t = float(r.get("t") or 0)
+        if t > 0 and (now_t - t) > max_age_s:
+            continue
+        ap = float(r.get("ask") or 0)
+        aq = int(r.get("ask_qty") or 0)
+        iid = str(r.get("item") or "")
+        if iid and ap > 0 and aq > 0 and iid not in PROTECTED_ITEMS:
+            asks_by_item.setdefault(iid, []).append((b_id, loc, ap, aq))
+
+    if not asks_by_item:
+        return None
+
+    best = None
+    for mp in mdir.glob("*.json"):
+        try:
+            if (now_t - mp.stat().st_mtime) > 7200.0:
+                continue
+            doc = json.loads(mp.read_text(encoding="utf-8", errors="replace"))
+        except (OSError, ValueError):
+            continue
+        m_base = str(doc.get("base") or mp.stem)
+        if m_base not in base_map:
+            continue
+        mloc = base_map[m_base]
+        if exclude_bases and (m_base in exclude_bases or mloc[0] in exclude_bases):
+            continue
+        if policed and not mloc[3] and not allow_bw:
+            continue
+        for m in doc.get("missions") or []:
+            if not isinstance(m, dict) or str(m.get("type") or "") != "delivery":
+                continue
+            obs = [o for o in (m.get("objectives") or []) if isinstance(o, dict)]
+            if len(obs) != 1 or str(obs[0].get("type") or "") != "deliver_item":
+                continue
+            ob = obs[0]
+            iid = str(ob.get("item_id") or "")
+            qty = int(ob.get("quantity") or 0)
+            t_base = str(ob.get("target_base_id") or m_base)
+            rew_cr = int(((m.get("rewards") or {}).get("credits")) or 0)
+            if not iid or qty < 1 or qty > int(hold_cap) or rew_cr < min_prof or t_base != m_base:
+                continue
+            if iid not in asks_by_item:
+                continue
+            title = str(m.get("title") or "")
+            mid = str(m.get("mission_id") or m.get("template_id") or title)
+            jkey = "bhm:%s:%s" % (m_base, mid)
+            if jkey in claimed_keys:
+                continue
+            for ab, aloc, ask_p, ask_q in asks_by_item[iid]:
+                if ask_q < qty:
+                    continue
+                buy_cost = qty * ask_p * 1.05
+                if buy_cost > max_spend or buy_cost <= 0:
+                    continue
+                p_hops = _bfs_hops(lanes, cur_sys, aloc[0]) if cur_sys and lanes else 0
+                d_hops = _bfs_hops(lanes, aloc[0], mloc[0]) if lanes else (0 if aloc[0] == mloc[0] else 1)
+                if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                    continue
+                tot_hops = max(1, p_hops + d_hops)
+                est_prof = rew_cr - buy_cost - tot_hops * 45.0
+                if est_prof < min_prof or (est_prof / buy_cost) < min_margin:
+                    continue
+                score = est_prof / float(tot_hops)
+                if best is None or score > best[0]:
+                    best = (score, {
+                        "job_key": jkey, "mission_id": mid, "title": title,
+                        "item": iid, "qty": qty, "reward_cr": rew_cr,
+                        "buy_loc": aloc, "dest_loc": mloc,
+                        "est_ask": ask_p, "est_profit": int(round(est_prof)),
+                    })
+    return best[1] if best else None
+
 
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
@@ -1420,7 +1587,7 @@ def main(argv=None):
                     if not ok_o:
                         release_job(DATA, pilot)
                         continue
-                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": sup.get("source_target") or "self"}, group="spacemolt_storage")
                     time.sleep(TICK)
                     have = get_cargo().get(iid, 0)
                     if have <= 0:
@@ -1471,6 +1638,72 @@ def main(argv=None):
                                 time.sleep(TICK)
                         completed += 1
 
+            elif lane == "backhaul_mission":
+                books_rows = _load_books(DATA)
+                claimed = active_claimed_keys(DATA)
+                bhm = _pick_backhaul_delivery(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
+                if bhm and claim_job(DATA, pilot, bhm["job_key"]):
+                    iid, qty = bhm["item"], bhm["qty"]
+                    bloc, dloc = bhm["buy_loc"], bhm["dest_loc"]
+                    say("backhaul_mission %s: buy %d %s @ %s -> deliver %s (rew +%d, est +%d cr)" % (
+                        bhm["title"][:35], qty, iid, bloc[2], dloc[2], bhm["reward_cr"], bhm["est_profit"]))
+                    ok_b, _ = go_dock(bloc)
+                    if not ok_b:
+                        release_job(DATA, pilot)
+                        continue
+                    q_chk = body(raw("estimate_market_order", {"item_id": iid, "quantity": qty, "side": "buy"}, group="spacemolt_market"))
+                    est_u = float(q_chk.get("average_price") or q_chk.get("avg_price") or bhm["est_ask"])
+                    if est_u * qty * 1.05 > bhm["reward_cr"] - 200:
+                        say("backhaul_mission aborted: live ask %.0f exceeds budget" % est_u)
+                        release_job(DATA, pilot)
+                        continue
+                    rb = raw("buy", {"item_id": iid, "quantity": qty, "auto_list": False}, group="spacemolt_market")
+                    time.sleep(TICK)
+                    got = get_cargo().get(iid, 0)
+                    if "error" in rb or got < qty:
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, _ = go_dock(dloc)
+                    if ok_d:
+                        board = body(raw("get_missions")).get("missions") or []
+                        match_m = None
+                        for bm in board if isinstance(board, list) else []:
+                            if isinstance(bm, dict) and (str(bm.get("mission_id") or "") == bhm["mission_id"] or str(bm.get("title") or "") == bhm["title"]):
+                                match_m = bm
+                                break
+                        done_m = False
+                        if match_m:
+                            post_mid = str(match_m.get("mission_id") or match_m.get("template_id") or "")
+                            if post_mid:
+                                acc_r = raw("accept_mission", {"mission_id": post_mid})
+                                time.sleep(TICK)
+                                if "error" not in acc_r:
+                                    acc_b = body(acc_r)
+                                    comp_mid = str(acc_b.get("mission_id") or post_mid)
+                                    comp_r = raw("complete_mission", {"mission_id": comp_mid})
+                                    time.sleep(TICK)
+                                    if "error" not in comp_r:
+                                        done_m = True
+                                        notes.append("backhaul_mission %s +%d cr" % (bhm["title"][:30], bhm["reward_cr"]))
+                                        say("backhaul_mission COMPLETED %s (+%d cr)" % (bhm["title"][:35], bhm["reward_cr"]))
+                                    else:
+                                        raw("abandon_mission", {"mission_id": comp_mid})
+                                        time.sleep(TICK)
+                        if not done_m:
+                            raw("sell", {"item_id": iid, "quantity": got}, group="spacemolt")
+                            time.sleep(TICK)
+                            rem = get_cargo().get(iid, 0)
+                            if rem > 0:
+                                inv_cost[0] += int(round(rem * est_u))
+                                bp = docked_bursar_at(DATA, dloc[2])
+                                if bp and bp != pilot and "error" not in raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": rem}, group="spacemolt_social"):
+                                    time.sleep(TICK)
+                                else:
+                                    raw("deposit", {"item_id": iid, "quantity": rem, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                    time.sleep(TICK)
+                            notes.append("backhaul_mission fallback sold/gifted %d %s" % (got, iid))
+                        completed += 1
+
         if completed == 0:
             watch_s = float(policy.get("rest_seconds_when_empty") or (float(policy.get("idle_watch_minutes") or 15) * 60.0))
             poll_s = min(180.0, max(30.0, float(policy.get("idle_poll_interval_s") or 180.0)))
@@ -1495,7 +1728,7 @@ def main(argv=None):
                             say("watch->supply %d %s: %s -> %s" % (qty, iid, oloc[2], dloc[2]))
                             ok_o, _ = go_dock(oloc)
                             if ok_o:
-                                raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                                raw("withdraw", {"item_id": iid, "quantity": qty, "target": sup.get("source_target") or "self"}, group="spacemolt_storage")
                                 time.sleep(TICK)
                                 have = get_cargo().get(iid, 0)
                                 if have > 0:

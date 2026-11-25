@@ -16,7 +16,8 @@
     "internal_supply",
     "public_freight",
     "arbitrage",
-    "liquidate_surplus"
+    "liquidate_surplus",
+    "backhaul_mission"
   ],
   "home_bases": [
     "node_beta_industrial_station",
@@ -35,5 +36,7 @@
   "allow_faction_surplus_liquidation": true,
   "allow_calm_buywall_dest": true,
   "buywall_min_bid": 50,
-  "buywall_min_qty": 200
+  "buywall_min_qty": 200,
+  "backhaul_min_profit_cr": 400,
+  "backhaul_min_margin_pct": 0.2
 }

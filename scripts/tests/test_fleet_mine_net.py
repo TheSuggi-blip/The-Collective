@@ -65,7 +65,7 @@ class MineNetTests(unittest.TestCase):
 
     def test_atomic_claims_adaptive_cap_and_floor_cooldown(self):
         pol = dict(mine_net.DEFAULT_POLICY, max_per_belt=3, units_per_ship_run=250)
-        self.assertEqual(mine_net.adaptive_belt_cap(1800, 10000, pol), 1)
+        self.assertEqual(mine_net.adaptive_belt_cap(1300, 10000, pol), 1)
         self.assertEqual(mine_net.adaptive_belt_cap(5000, 10000, pol), 3)
         with tempfile.TemporaryDirectory() as tmp:
             now_t = time.time()

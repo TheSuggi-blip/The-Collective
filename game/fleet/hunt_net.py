@@ -388,13 +388,28 @@ def bfs_distances(adj, start_sys, max_hops=18):
     return dist
 
 
-def nearest_station(adj, stations_by_sys, sys_id, max_hops=6):
+def nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=None):
     dists = bfs_distances(adj, sys_id, max_hops=max_hops)
+    pref = preferred_bases or ()
+    best_any = None
+    best_pref = None
     for sid, hops in sorted(dists.items(), key=lambda kv: (kv[1], kv[0])):
         sts = stations_by_sys.get(sid)
-        if sts:
-            return hops, sts[0]
-    return None, None
+        if not sts:
+            continue
+        if best_any is None:
+            best_any = (hops, sts[0])
+        if pref and best_pref is None:
+            for st in sts:
+                if st[2] in pref:
+                    best_pref = (hops, st)
+                    break
+        if best_pref is not None:
+            break
+    # Prefer a staffed CLTV Bursar cross-dock hub if within +1 hop of closest unstaffed dock
+    if best_pref is not None and (best_any is None or best_pref[0] <= best_any[0] + 1):
+        return best_pref
+    return best_any if best_any is not None else (None, None)
 
 
 def load_combat_world(data_dir, repo_root, policy, now_t=None):
@@ -458,12 +473,25 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             # fuel bunker is a supply chain (requests.log ENT-513).
             outposts = {str(b) for (b,) in _rows("SELECT base FROM bases WHERE kind = 'outpost'") if b}
             # Docks: every place with a base (table places), our own stations and the empires'.
+            _bursar_live = set()
+            try:
+                _bc_doc = read_json(Path(data_dir) / "fleet" / "bursar_claims.json", {})
+                if isinstance(_bc_doc, dict):
+                    for _bk, _bv in _bc_doc.items():
+                        if isinstance(_bv, dict) and (now_t - float(_bv.get("claimed_at") or 0)) <= 7200.0:
+                            _bursar_live.add(str(_bk))
+            except Exception:
+                pass
             for sys_id, poi_id, base_id, nm in _rows(
                 "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
             ):
                 if (str(sys_id), str(nm or "")) in foreign_docks or str(base_id) in outposts:
                     continue
-                stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
+                lst = stations_by_sys.setdefault(sys_id, [])
+                if str(base_id) in _bursar_live:
+                    lst.insert(0, (sys_id, poi_id, base_id))
+                else:
+                    lst.append((sys_id, poi_id, base_id))
             for sys_id, poi_id, cr, name, role, cnt, ts in _rows(
                 "SELECT system, poi, creature, name, role, count, t FROM herds WHERE count > 0"
             ):
@@ -562,7 +590,7 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
         "species_loot_val": species_loot_val, "owned_bases": owned_bases,
-        "craft_loot_species": craft_loot_species,
+        "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live,
     }
 
 
@@ -898,7 +926,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         if not ok_g or not f9_passes(f9, prey_hull, "grazer", n=1):
             continue
 
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5)
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5, preferred_bases=world.get("bursar_bases"))
         if not st_tup:
             continue
 
@@ -981,7 +1009,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
             continue
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6)
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=world.get("bursar_bases"))
         if not st_tup:
             continue
         loot_v = float(species_loot.get(sp) or 4000.0) * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
@@ -1019,7 +1047,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
-            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6)
+            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=world.get("bursar_bases"))
             if not st_tup:
                 continue
             score = (18000.0 * (phull / 80.0)) / (1.0 + 0.6 * hops + 0.5 * st_hops)

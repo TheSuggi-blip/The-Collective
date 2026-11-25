@@ -40,7 +40,7 @@ DEFAULT_POLICY_PATH = REPO / "game" / "mine-policy.json"
 
 DEFAULT_POLICY = {
     "enabled": True,
-    "min_left_pct": 15.0,
+    "min_left_pct": 10.0,
     "max_per_belt": 3,
     "units_per_ship_run": 250,
     "cooldown_minutes": 90,
@@ -374,7 +374,46 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
         except Exception:
             craft_demand = {}
 
-    # Optional: allow miners to drop commercial/craft ore at any of our 61+ live Bursar hubs
+    # Auto-discover CLTV Owned Outposts & Faction Lockboxes (0-rent shared storage hubs!)
+    lockbox_bases = set()
+    owned_outpost_bases = set()
+    bursar_bases = set()
+    if db_path.exists():
+        try:
+            import worldcache as _wc_lb
+            _lcon = _wc_lb.ro_db(db_path)
+            try:
+                _ltbls = {r[0] for r in _lcon.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+                if {"faction_facilities", "places"} <= _ltbls:
+                    for fsys, fbase, frent in _lcon.execute(
+                        "SELECT system, base, COALESCE(rent_per_cycle, 0) FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active'"
+                    ).fetchall():
+                        if fbase:
+                            lockbox_bases.add(str(fbase))
+                            if int(frent or 0) == 0:
+                                owned_outpost_bases.add(str(fbase))
+                    if "bases" in _ltbls:
+                        for (ob,) in _lcon.execute("SELECT base FROM bases WHERE kind = 'outpost'").fetchall():
+                            if ob and str(ob) in lockbox_bases:
+                                owned_outpost_bases.add(str(ob))
+                    if policy.get("auto_use_owned_outposts", True):
+                        for psys, ppoi, pbase in _lcon.execute(
+                            "SELECT system, poi, base FROM places WHERE base IS NOT NULL AND base != ''"
+                        ).fetchall():
+                            if str(pbase) in lockbox_bases and psys and ppoi:
+                                tup = (str(psys), str(ppoi), str(pbase))
+                                lst = stations_by_sys.setdefault(tup[0], [])
+                                if tup not in lst:
+                                    # Prioritize 0-rent owned outposts & Lockboxes at front of system's docks
+                                    lst.insert(0, tup)
+            except sqlite3.Error:
+                pass
+            finally:
+                _lcon.close()
+        except Exception:
+            pass
+
+    # Allow miners to cross-dock commercial/market ore at live staffed CLTV Bursar hubs
     if policy.get("allow_bursar_dropoffs", False):
         bc = read_json(Path(data_dir) / "fleet" / "bursar_claims.json", {})
         if isinstance(bc, dict):
@@ -384,6 +423,7 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     bemp = str(rec.get("empire") or (systems.get(bsys) or {}).get("empire") or "")
                     if not bemp and not policy.get("allow_lawless_bursar_dropoffs", False):
                         continue
+                    bursar_bases.add(str(rec["base"]))
                     tup = (bsys, str(rec["poi"]), str(rec["base"]))
                     lst = stations_by_sys.setdefault(tup[0], [])
                     if tup not in lst:
@@ -396,7 +436,8 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
         "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand, "market": market_world,
-        "held": held,
+        "held": held, "lockbox_bases": lockbox_bases, "owned_outpost_bases": owned_outpost_bases,
+        "bursar_bases": bursar_bases,
         "data_dir": str(data_dir), "allow_escort_request": True,
         "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
     }
@@ -534,7 +575,7 @@ def release_belt_claim(data_dir, pilot, cooldown_belt=None, cooldown_minutes=90,
 def adaptive_belt_cap(remaining, max_remaining, policy):
     """Adaptive crowding cap: <= max_per_belt (default 3), scaled down on low-headroom belts."""
     max_cap = max(1, int(policy.get("max_per_belt") or 3))
-    pct = float(policy.get("min_left_pct") or 15.0)
+    pct = float(policy.get("min_left_pct") or 10.0)
     floor_u = int(round(max_remaining * pct / 100.0)) if max_remaining > 0 else 0
     headroom = max(0, int(remaining) - floor_u)
     per_ship = max(50, int(policy.get("units_per_ship_run") or 250))
@@ -554,9 +595,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     p_name = str(pilot_info.get("name") or "")
     max_jumps = int(policy.get("max_jumps") or 10)
     max_st_jumps = int(policy.get("max_station_jumps") or 4)
-    min_pct = float(policy.get("min_left_pct") or 15.0)
+    min_pct = float(policy.get("min_left_pct") or 10.0)
     policed_only = bool(policy.get("policed_only", True))
-    lawless_min_t = int(policy.get("lawless_min_tier") or 1)
+    lawless_min_t = int(policy["lawless_min_tier"]) if policy.get("lawless_min_tier") is not None else 0
     allow_lawless_def = bool(policy.get("allow_lawless_for_deficit", True))
     allow_sys = set(str(x) for x in (policy.get("allow_lawless_systems") or []))
     excl_sys = set(str(x) for x in (policy.get("exclude_systems") or []))
@@ -858,14 +899,20 @@ def main(argv=None):
             pilot, chosen["belt_key"], chosen["station"],
             "--minutes", str(int(round(minutes))),
             "--route", route_id,
-            "--min-left-pct", str(policy.get("min_left_pct", 15.0)),
+            "--min-left-pct", str(policy.get("min_left_pct", 10.0)),
             "--floor-resource", chosen["resource"],
             "--no-order",
         ]
-        if policy.get("deposit_mode") == "faction":
+        _dest_base = chosen["station"].split(":")[2] if len(chosen["station"].split(":")) >= 3 else ""
+        _owned_outposts = world.get("owned_outpost_bases") or set()
+        _lockboxes = world.get("lockbox_bases") or set()
+        _bursars = world.get("bursar_bases") or set()
+        if _dest_base in _owned_outposts or policy.get("deposit_mode") == "faction":
             cmd += ["--deposit", "faction"]
-        elif policy.get("gift_surplus_to_trader") and chosen["tier"] == "market":
-            cmd += ["--gift", json.dumps({"to": "trader", "items": [chosen["resource"]]})]
+        elif policy.get("auto_lockbox_for_reserves", True) and _dest_base in _lockboxes and chosen["tier"] in ("deficit", "craft_demand"):
+            cmd += ["--deposit", "faction"]
+        elif policy.get("gift_surplus_to_trader") and (chosen["tier"] == "market" or _dest_base in _bursars):
+            cmd += ["--gift", json.dumps({"to": "trader", "items": [chosen["resource"]], "source": "both"})]
 
         import runhost as _rh
         def _on_mine_line(line):

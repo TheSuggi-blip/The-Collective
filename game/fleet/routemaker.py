@@ -663,11 +663,11 @@ def mine_candidates(world):
                      "note": "Written by routemaker.py from the field's and the book's readings; an estimate of %d cr per ship-hour, not a measurement. A test: one ship."
                              % per_hour, "belt": "%s:%s" % (field["system"], field["poi"]), "station": station["at"], "minutes": int(max(30, min(90, 2 * minutes))), "max_ships": 1,
                      "sell": floors}
-        # Default 15% depletion floor (6h turn buffer, protecting belts from draining to 0 between turns)
+        # Default 10% depletion floor (6h turn buffer, protecting belts from draining to 0 between turns)
         sized = [r for r in live if r.get("max_remaining", 0) >= 500]
         if sized:
             primary = max(sized, key=lambda r: (r["max_remaining"], r["richness"]))
-            route["min_left"] = {primary["id"]: max(100, int(round(primary["max_remaining"] * 0.15)))}
+            route["min_left"] = {primary["id"]: max(100, int(round(primary["max_remaining"] * 0.10)))}
         if tool:
             route["requires"] = {"module": tool}
         if lawless(world, field["system"]):

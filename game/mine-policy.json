@@ -2,13 +2,13 @@
   "_owner": "Zero (Mining) & Unity",
   "_doc": "Policy for dynamic mine-network (game/fleet/mine_net.py). Auto-rotates miners across unsaturated belts (>=15% floor), matching fitted tools, prioritizing reserve/needs.tsv shortages, skipping full reserves, and stamping instant cooldowns on floor breach.",
   "enabled": true,
-  "min_left_pct": 15.0,
+  "min_left_pct": 10.0,
   "max_per_belt": 3,
   "units_per_ship_run": 250,
   "cooldown_minutes": 90,
   "claim_ttl_s": 4200,
   "policed_only": true,
-  "lawless_min_tier": 1,
+  "lawless_min_tier": 0,
   "allow_lawless_for_deficit": true,
   "allow_lawless_systems": [
     "atlas",
@@ -60,5 +60,7 @@
   "buywall_min_bid": 50,
   "buywall_min_depth": 500,
   "buywall_lawless_max_jumps": 6,
-  "hard_glut_skip_units": 200000
+  "hard_glut_skip_units": 200000,
+  "auto_use_owned_outposts": true,
+  "auto_lockbox_for_reserves": true
 }

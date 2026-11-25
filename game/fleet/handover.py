@@ -147,7 +147,29 @@ def receiver(to, base, data=None, giver=None):
         return None, "no receiver named (`to`)"
     if to in ROLES:
         table = receivers(data).get(to) or {}
-        name = table.get(base) or table.get("*")
+        name = table.get(base)
+        # Dynamic Cross-Docking: when role is `trader` and no explicit static pin exists at `base`,
+        # auto-resolve to the live active CLTV Bursar stationed at `base` in bursar_claims.json!
+        if not name and to == "trader" and base:
+            bclaims = read_json(Path(data) / "fleet" / "bursar_claims.json", {})
+            brec = bclaims.get(str(base)) if isinstance(bclaims, dict) else None
+            if isinstance(brec, dict):
+                now_t = time.time()
+                holders = brec.get("holders") if isinstance(brec.get("holders"), dict) else None
+                cands = []
+                if holders:
+                    for hp, hat in sorted(holders.items()):
+                        if hp and hp != giver and (now_t - float(hat or 0)) <= 7200.0 and hp in ours(data):
+                            cands.append(str(hp))
+                else:
+                    hp = str(brec.get("pilot") or "")
+                    hat = float(brec.get("claimed_at") or 0)
+                    if hp and hp != giver and (now_t - hat) <= 7200.0 and hp in ours(data):
+                        cands.append(hp)
+                if cands:
+                    name = cands[zlib.crc32(str(giver or "").encode("utf-8")) % len(cands)]
+        if not name:
+            name = table.get("*")
         if isinstance(name, list):                       # requests ENT-344 (2): several receivers, each giver always to the same one
             names = [n for n in name if isinstance(n, str) and n and n != giver and n in ours(data)]
             name = names[zlib.crc32(str(giver or "").encode("utf-8")) % len(names)] if names else None
