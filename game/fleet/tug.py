@@ -51,7 +51,7 @@ def stranded(ship, order, lanes, stations, below=BELOW, mark=""):
     else:
         per_jump = max(fuelplan.PER_JUMP, round(float(max_fuel) / 55.0, 1)) if isinstance(max_fuel, (int, float)) and max_fuel > 0 else fuelplan.PER_JUMP
         dock_way = max(DOCK_WAY, int(round(per_jump)))
-    eff_below = max(below, int(round(per_jump * 6 + dock_way)))
+    eff_below = min(30, max(below, int(round(per_jump * 3 + dock_way))))
     if not isinstance(fuel, (int, float)) or fuel >= eff_below:
         return None
     if ship.get("docked") or ship.get("docked_at") or ship.get("in_transit") or ship.get("jumping"):

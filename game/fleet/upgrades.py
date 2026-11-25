@@ -696,7 +696,9 @@ def _read_live_fuel_loc(gate_mod, pilot, ship=None):
             if not str(loc.get("system") or ""):
                 _gate_raw(gate_mod, pilot, "get_status", {}, group="spacemolt")
             else:
-                cur_sys = str(loc.get("system") or cur_sys)
+                raw_sys = str(loc.get("system") or "")
+                if raw_sys:
+                    cur_sys = re.sub(r"[^a-z0-9]+", "_", raw_sys.lower()).strip("_") or cur_sys
             if isinstance(sh.get("fuel"), (int, float)):
                 cur_fuel = sh["fuel"]
             if isinstance(sh.get("max_fuel"), (int, float)) and sh["max_fuel"] > 0:
@@ -715,6 +717,17 @@ def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65, data_dir=No
         return False, "A goal is already executing on this account. Try again shortly."
     if not data_dir:
         return _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=timeout)
+    if not isinstance(ship, dict) or not ship.get("modules"):
+        try:
+            _sf = Path(data_dir) / "fleet" / "ships" / (pilot + ".json")
+            if _sf.is_file():
+                _sdoc = json.loads(_sf.read_text(encoding="utf-8"))
+                if isinstance(_sdoc, dict):
+                    ship = _sdoc
+                    if not cur_sys and _sdoc.get("system"):
+                        cur_sys = str(_sdoc["system"])
+        except (OSError, ValueError):
+            pass
 
     import fuelplan as _fp
     game_dir = Path(__file__).resolve().parent.parent

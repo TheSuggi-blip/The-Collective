@@ -341,7 +341,8 @@ class UpgradeQueueTests(unittest.TestCase):
                 @staticmethod
                 def call(method, url, body=None, timeout=30):
                     if method == "get":
-                        return 200, json.dumps({"hasExecutingGoal": False, "state": {"location": {"system": state["sys"]}, "ship": {"fuel": state["fuel"], "max_fuel": 95}}})
+                        disp = "70 Ophiuchi" if state["sys"] == "70_ophiuchi" else state["sys"]
+                        return 200, json.dumps({"hasExecutingGoal": False, "state": {"location": {"system": disp}, "ship": {"fuel": state["fuel"], "max_fuel": 95}}})
                     if url.endswith("/goal"):
                         dst = body["options"]["systemId"]
                         goals.append(dst)
