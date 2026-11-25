@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 672.
+Routes: 673.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -252,6 +252,7 @@ Routes: 672.
 | [watch-book-crescent-moon](watch-book-crescent-moon.json) | circuit | beyond the border, 11 jumps | Zero-fuel docked watch: a scout already docked at The Crescent Moon, Mebsuta ([MOON]) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 8 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-deep-range](watch-book-deep-range.json) | circuit | beyond the border, 19 jumps | Zero-fuel docked watch: a scout already docked at Deep Range Outpost (Outer Rim) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 8 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-factory-belt](watch-book-factory-belt.json) | circuit | beyond the border, 23 jumps | Zero-fuel docked watch: a scout already docked at Factory Belt Manufacturing Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 12 | 30 | 0 | 0 | 2026-11-24 |
+| [watch-book-frontier-station](watch-book-frontier-station.json) | circuit | beyond the border, 17 jumps | Zero-fuel docked watch: a scout already docked at Frontier Station (Altais, the Outer Rim capital) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [watch-book-gold-run](watch-book-gold-run.json) | circuit | beyond the border, 19 jumps | Zero-fuel docked watch: a scout already docked at Gold Run Extraction Hub (Nebula) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 13 | 5 | 0 | 0 | 2026-11-23 |
 | [watch-book-grand-exchange](watch-book-grand-exchange.json) | circuit | beyond the border, 21 jumps | Zero-fuel docked watch: a scout already docked at Grand Exchange Station (Nebula capital) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | 14 | 30 | 0 | 0 | 2026-11-24 |
 | [watch-book-hex-star](watch-book-hex-star.json) | circuit | beyond the border, 11 jumps | Zero-fuel docked watch: a scout already docked at Hex Star, Dheneb ([HEXC], a rival mega-hub) saves its order book and mission board every 5 minutes for 30 minutes | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |

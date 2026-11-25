@@ -1,0 +1,19 @@
+{
+  "id": "watch-book-frontier-station",
+  "kind": "circuit",
+  "title": "Zero-fuel docked watch: a scout already docked at Frontier Station (Altais, the Outer Rim capital) saves its order book and mission board every 5 minutes for 30 minutes",
+  "note": "Kept by Oracle; written 2026-11-25 11:25 UTC. The form of watch-book-node-beta (zero-fuel docked watch, market_poll every 5 minutes for 30 minutes, one ship a station, only a scout already in the system). Orders ENT-093, block ORACLE: scouts born elsewhere work their own region (F35); the Outer Rim rows end at home-frontier-station, and a scout docked there with no census due takes this watch instead of a census leg into another empire's region. The capital's book and its ship listings feed Trade and the upgrade service.",
+  "standing": true,
+  "max_ships": 1,
+  "requires": {
+    "in_system": "altais"
+  },
+  "stops": [
+    {
+      "at": "altais:mobile_capital:frontier_station",
+      "market_poll": true,
+      "watch_minutes": 30,
+      "watch_interval_minutes": 5
+    }
+  ]
+}
