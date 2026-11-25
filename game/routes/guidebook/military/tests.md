@@ -1,26 +1,21 @@
 # Military guidebook -- Tests (tests.md)
 
 ### Open Tests
-Status: test. Updated: 2026-11-24. Evidence: table runs (kills, lowest_hull_pct); data/fleet/hunt_packs.json; game/hunt-policy-packs.json and route hunt-network-packs; route strip-missile-launcher-central-nexus; requests.log ENT-523.
+Status: test. Updated: 2026-11-25. Evidence: table runs (kills, lowest_hull_pct); data/fleet/hunt_packs.json; hunt_net RESULT lines 2026-11-25 00:16 to 00:40 UTC; hunt_net policy file; errors.log ENT-202.
 
 - Whale hunts alone with a Shield Booster II hold at the siphon and Antares
   herds; two other herds took ships to 4 and 14 percent and are off (F9).
   The proven way stays three Laser III in one fleet (`group_hunt.py`).
-- Pack lane (route `hunt-network-packs`, policy
-  `game/hunt-policy-packs.json`): no pack launched in its first five hours.
-  `pack_try_join_or_create` caps pack pilots at max(3, active x
-  `target_share`) and a joiner must stand within `rally_max_jumps` of the
-  target: at 0.02 three singletons filled the quota at three far places.
-  Retuned: share 0.07, pack and escort reach 6 jumps. Read three
-  `hunt_net pack` RESULT lines before any lift.
-- Cleavers and Broadaxes: strip the empty launcher or railgun, then three
-  hunts read kills (`strip-missile-launcher-central-nexus`).
-- Atria kit parts: the kit is assembled only in a facility we do not own
-  (requests.log ENT-523); the kit hunts stay off the tier-2 rows until
-  the Fleet Admiral decides how the kit is got.
-- Armor Plate II on a Shard or Theoria: armor +10, speed stays 1; lifted.
-- Pirate formations (F27): `group_hunt.py --pirate` after three wildlife
-  packs hold; lone scouts only, never at a pack's POI.
+- Pack lane (route `hunt-network`, hunt_net policy file): packs
+  now form (sizes 3 to 7); the first three RESULT lines read looted=0 on
+  pilot whales and glintfins. Members are Laser III class (power 900) and
+  packs wildlife only until three packs read kills.
+- Escort lane: stopped after four losses to pirates (errors.log ENT-202);
+  back with a gate of escort power against the pirates read.
+- Cleavers and Broadaxes: hunt.py closes to the shortest reach that can
+  fire (9ef00c7c); three hunts per hull read kills before more are bought.
+- Pulse Laser III for the role: `fit-pulse-laser-iii-lhs-1140`, 3 at a
+  time; 86 ships still fly only Pulse Laser I (ship files 2026-11-25).
 
 ### Group hunts
 Status: proven. Updated: 2026-11-23. Evidence: observations kind group_hunt (2026-11-17 to 2026-11-23 04:46 UTC); errors.log ENT-129, ENT-130; spacemolt.com/docs/combat; skill military-turn group_hunt.py.

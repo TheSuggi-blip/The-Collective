@@ -53,7 +53,7 @@ Status: proven. Updated: 2026-11-24. Evidence: commission_quote Central Nexus 20
   hull, 3 weapons) name no Piloting gate.
 
 ### Listed Hulls and Tier-2 Fuel
-Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026-11-24; runs.jsonl hunts 2026-11-24 by hull; a Cleaver's hunt log 18:28 to 18:39 UTC; catalog 0.734.3 (reach); game/fleet/hunt.py (advance).
+Status: test. Updated: 2026-11-24. Evidence: browse_ships all_stations=true 2026-11-24; runs.jsonl hunts 2026-11-24 by hull; a Cleaver's hunt log 18:28 to 18:39 UTC; catalog (table items, reach); game/fleet/hunt.py (advance).
 
 - Read the ship exchange before a commission: `browse_ships` with
   `all_stations: true` and `class_id` (free; `can_fly: true` checks

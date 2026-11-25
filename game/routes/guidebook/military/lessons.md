@@ -154,3 +154,20 @@ Status: proven. Updated: 2026-11-23. Evidence: errors.log 2026-11-16; admirals.l
   tow) docks the ship at the nearest public station; `tow_rescue.py`.
   A hunt whose runs buy no fuel never refuelled at its sell_at
   (`station_fuel_empty`): set it off (errors.log, 2026-11-22).
+
+### Escorts and the danger they go to
+Status: proven. Updated: 2026-11-25. Evidence: errors.log ENT-202; git log game/hunt-policy.json (a58678b9, 7a9a0680, 36c4d592); table runs (guard rows "left: in a fight"); public_battles.
+
+- A lane that sends ships toward danger needs a gate of the side's power
+  against that danger, not only a floor on each ship: hunt-network's
+  escort lane, widened to 20 escorts at power 350, sent starters to the
+  belts where mine-network had read pirates, and four were lost in one
+  hour. The lane stands stopped (`escort.enabled` false) until hunt_net
+  weighs the escort side against the pirates read at the place.
+- A policy file of mine can be rewritten by another hand: read `git log`
+  of `game/hunt-policy.json` and `game/fit-policy.json` each turn, and
+  the policy's runs before its next widening.
+- The class guard refuses a drone route that unfits a weapon and fits
+  none: a strip route of that kind never flies. The reach fix went into
+  hunt.py instead (9ef00c7c: close to the shortest reach that can fire).
+

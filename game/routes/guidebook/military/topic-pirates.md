@@ -56,14 +56,16 @@ weak list, never re-attacks one already fought (that summons the
 stronghold's combat pirates), flees by F2.
 
 ### What a side takes against pirates
-Status: test. Updated: 2026-11-21. Evidence: the pirate test above; tests.md (Group hunts, Weapon fits).
+Status: proven. Updated: 2026-11-25. Evidence: public_battles 2026-11-24 23:34 to 2026-11-25 00:33 UTC (kitalpha, 70_ophiuchi, sheliak); a guard's look and battle lines 00:32 to 00:33 UTC; hunt_net.compute_ship_power, compute_target_threat; errors.log ENT-202.
 
-An estimate, not measured: one starter deals about 6 a tick to a scout
-and takes about 15, so alone it needs some 15 ticks while help comes in 6.
-Five in reach would kill a scout in about 4 ticks. A weapon of 18 or 28
-damage changes this sum: the pirate group waits for the weapon test and a
-group that kills a creature first. The Pirate Bounty (2,000 cr, 20 weapons
-XP) is flown only with a pirate route.
+Measured: a lone starter sent to a belt where two pirates stood was in
+the battle 40 seconds after its second look and destroyed three seconds
+after it set the stance flee; three such escorts were lost within an
+hour. By hunt_net's own sums a starter weighs about 250 to 1,000 and one
+raider about 2,000 (a pirate weighs twice its hull): no single ship of
+ours outweighs a raider, and a pack needs about 2.2 times the pirates'
+sum. The Pirate Bounty (2,000 cr, 20 weapons XP) is flown only with a
+pirate route of such a side.
 
 ### Guards and escorts
 Status: proven. Updated: 2026-11-21. Evidence: guard.py; guard runs in table runs 2026-11-16 to 2026-11-17; requests.log ENT-217, ENT-226, ENT-248; the retired routes.md entry Guard (hive.py guide military --retired).
