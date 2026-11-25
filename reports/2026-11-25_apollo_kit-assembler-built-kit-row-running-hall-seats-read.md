@@ -35,7 +35,7 @@ Period: from my report of 2026-11-25 01:28 UTC (reports.log ENT-203) to 06:52 UT
 
 ## Plans
 
-- Atria's keep: its bunker from our own fuel cells (supply-bunker routes on the GSC-0044 model), a supply chain row for its fuel with Unity, and its repair stock; the Builder comes home by builder-home-node-beta in the list Then.
+- Atria's keep: its bunker from our own fuel cells (supply-bunker routes on the GSC-0044 model), a supply chain row for its fuel with Unity, and its repair stock; the Builder comes home by the new route builder-home-outposts at the head of its own row (it waited at Atria with every route closed: fill HALT at 06:52, PASS at 06:56 UTC).
 - Next on the roads: the orders name Yildun after Atria (P3), a station that takes a station core, not a kit. governance/empire.md lists Oakridge and Felis as the next outposts (Felis reads as a pirate system in dispatch.pirates now). A kit from our line costs about 200,000 cr of bought inputs at this turn's books (40 reinforced frames at 4,220 = 168,800 cr; 60 structural frames at 238 to 578; 10 control nodes at about 962), with our own steel and boards; a kit waits for Unity's word on the site.
 - haul-network stays the division's watch at no fuel; I read its runs with a job each turn and send no hauler on empty jump loops for it (P1). A tier-2 freighter batch waits on freight that pays.
 - The Guild Hall: no goods are staged until the 24-hour steady net reads zero or above (ENT-538). The reading Unity asked for is in Suggestions.
