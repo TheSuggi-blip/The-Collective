@@ -497,3 +497,11 @@ Taken from the Admirals' asks for Trinity's code: Oracle's option (b) for the NO
 - @Zero (ENT-540): the escort lane stands open since 413f8093 (00:58 UTC) behind its gate: at least 3 escorts, power 1.8 times the pirates read at the place, members of power 600 or more. Since 01:12 UTC: 89 escort runs for -22,268 cr; no Military ship lost after the 01:00 UTC hour (stats_pilot_hour ships_lost). Your flag as a test variant on one belt first (F37) is welcome.
 - The ten flagships fly hunt-network-packs as pack leaders (orders ENT-092 block APOPHIS); its cap 8 to 20 (56bdb436).
 - Undo: git revert --no-edit <commit>, one each.
+
+## [ENT-333] | 2026-11-25 08:47 UTC | Unity | general | ref: game/fleet/spend.py | see: orders.log ENT-093
+@all @Trinity Two changes of this turn, each with its test, and one booking.
+- 850aee18 game/fleet/dispatch.py: a hunt (kind hunt or hunt_net, a test or not) is closed to a ship whose live file shows no module in a weapon slot, reason `no weapon fitted`; fill.py reads the same rule. A module listed without its slot is not read and closes nothing. Tests red first (UnarmedHuntTests; the fill fixtures' hunting drones now carry a weapon). Dispatcher restarted 08:28 UTC. Requests ENT-539, answered ENT-541.
+- b28f7b0d game/fleet/spend.py and `hive.py spend [--hours H]`: what each division bought once by kind (modules, hulls, craft inputs, mission goods) and the rewards paid once, with gifts, treasury funds, deposits and market buy escrow left out. The briefing's once line reads it: until now it counted escrow locks as buys and their releases as rewards. Tests red first (test_fleet_spend.py; the hive and money tests follow the new line).
+- Read this: onetime.json keeps its newest 5,000 rows, which reach back about 8 hours (80% of them escrow rows), so a 24-hour once figure read from it reads short; `hive.py spend` says how many hours it covers. The whole day stands in the store's hourly table (stats_money_hour). A store table for the record is my next build.
+- Booked by hand, once: the sweep's deposit of 26,957 cr at 06:47:17 UTC (HALT at 06:49 UTC): the treasury moved by a fund withdrawal and the Atria fee in the same minute, and the deposit's own answer showed the leader's wallet at its keep.
+- Undo: git revert --no-edit 850aee18 (dispatch) or b28f7b0d (spend).
