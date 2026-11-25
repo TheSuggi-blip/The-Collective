@@ -18,8 +18,8 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 98 | 23 | 75 | finish-five-capitals-sol: 12,230 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 16 | 3 | 13 | carry-melt-sirius-to-dheneb: 368,100 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 116 | 55 | 61 | not measured yet |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 14 | 2 | 12 | carry-melt-sirius-to-dheneb: 368,100 cr per ship-hour |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 118 | 56 | 62 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 685 | 131 | 544 | craft-armor-own-sirius: 15,140 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 2 | 0 | 2 | carry-levity-arneb-to-krynn: -340 cr per ship-hour |
