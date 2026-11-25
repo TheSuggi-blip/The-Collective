@@ -162,8 +162,8 @@ Status: proven. Updated: 2026-11-25. Evidence: errors.log ENT-202; git log game/
   against that danger, not only a floor on each ship: hunt-network's
   escort lane, widened to 20 escorts at power 350, sent starters to the
   belts where mine-network had read pirates, and four were lost in one
-  hour. The lane stands stopped (`escort.enabled` false) until hunt_net
-  weighs the escort side against the pirates read at the place.
+  hour. The lane was stopped (`escort.enabled` false) and reopened once
+  hunt_net weighed the escort side against the pirates read (413f8093).
 - A policy file of mine can be rewritten by another hand: read `git log`
   of `game/hunt-policy.json` and `game/fit-policy.json` each turn, and
   the policy's runs before its next widening.

@@ -10,8 +10,10 @@ Status: test. Updated: 2026-11-25. Evidence: table runs (kills, lowest_hull_pct)
   now form (sizes 3 to 7); the first three RESULT lines read looted=0 on
   pilot whales and glintfins. Members are Laser III class (power 900) and
   packs wildlife only until three packs read kills.
-- Escort lane: stopped after four losses to pirates (errors.log ENT-202);
-  back with a gate of escort power against the pirates read.
+- Escort lane: stopped after four losses to pirates (errors.log ENT-202),
+  reopened with a gate (413f8093): three escorts at least, their power
+  against the pirates read (ratio 1.8). Read its first runs; one more
+  loss stops it again.
 - Cleavers and Broadaxes: hunt.py closes to the shortest reach that can
   fire (9ef00c7c); three hunts per hull read kills before more are bought.
 - Pulse Laser III for the role: `fit-pulse-laser-iii-lhs-1140`, 3 at a
