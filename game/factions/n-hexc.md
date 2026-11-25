@@ -50,8 +50,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
-| Zhou | Pherkad (`pherkad`) | 0 | pithead |
+| HexCraft1 | Hamal (`hamal`) | 0 | axiomata |
+| Mead-brewer | Pherkad (`pherkad`) | 5 | axiomata |
 
 ## Standing History
 

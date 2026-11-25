@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -42,18 +42,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0a5266cdbbc00fe268e0948a | Pherkad (`pherkad`) | 0 | workhorse |
-| 13170464db5eef0043ae9f5e | Hamal (`hamal`) | 0 | workhorse |
-| 16d6873a069d1726d6bccaf5 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| 323b4ce2bdad4743015d68fa | Pherkad (`pherkad`) | 0 | workhorse |
-| 395530a76c237308aaa5b1dc | Pherkad (`pherkad`) | 0 | workhorse |
-| 5766f7c87c7f84b6893abd7e | Synchrony (`synchrony`) | 0 | workhorse |
-| 636c1957c2349e4e27ec7db0 | Hamal (`hamal`) | 0 | deep_survey |
-| 8054dbcf8fff7c0f8c4f0165 | Pherkad (`pherkad`) | 0 | workhorse |
-| ac55ba07be5a48456875b4ff | Pherkad (`pherkad`) | 0 | workhorse |
-| ddac9c7dba6b0465e059d88b | Synchrony (`synchrony`) | 0 | workhorse |
-| dffe230ab864d7efef98b1fc | Pherkad (`pherkad`) | 0 | workhorse |
-| ed54a64a82f3c4f9990829ad | Synchrony (`synchrony`) | 0 | workhorse |
+| 2d6ffeda232aa324424edb53 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| 323b4ce2bdad4743015d68fa | Synchrony (`synchrony`) | 0 | workhorse |
+| 4c671b9675ba73f0025d603d | Hamal (`hamal`) | 0 | deep_survey |
+| 636c1957c2349e4e27ec7db0 | Node Beta (`node_beta`) | 0 | deep_survey |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Pherkad (`pherkad`) | 0 | workhorse |
 
 ## Standing History
 
