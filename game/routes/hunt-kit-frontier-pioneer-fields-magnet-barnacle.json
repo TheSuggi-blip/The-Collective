@@ -23,14 +23,5 @@
   "empty_hold": true
  },
  "gift_to": "hauler",
- "standing": true,
- "measured": {
-  "date": "2026-11-24",
-  "runs": 5,
-  "minutes": 24,
-  "credits_per_run": -4110,
-  "cph_per_ship": -11150,
-  "hours": 12,
-  "last_run": "2026-11-24T17:30:53Z"
- }
+ "standing": true
 }

@@ -29,5 +29,12 @@
  ],
  "skip_if_booked": [
   "The Line"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-25",
+  "runs": 1,
+  "minutes": 18,
+  "credits_per_run": 4810,
+  "cph_per_ship": 16320
+ }
 }
