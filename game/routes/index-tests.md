@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 118.
+Routes: 117.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -38,7 +38,6 @@ Routes: 118.
 | [carry-soma-synchrony-node-gamma](carry-soma-synchrony-node-gamma.json) | circuit | home space | Stored neural soma carried one jump from Synchrony Hub to the Node Gamma soma bid | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_gamma_relay_station bids 500 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [carry-soma-synchrony-to-alpha](carry-soma-synchrony-to-alpha.json) | circuit | home space | Stored neural soma carried from Synchrony Hub to the Node Alpha bid at 350 cr or more | up to 1 ships, with 1 voidborn_neural_soma stored at synchrony_hub, while node_alpha_processing_station bids 320 cr for voidborn_neural_soma | TBD | TBD | TBD | TBD | -- |
 | [drain-ice-nexus](drain-ice-nexus.json) | circuit | home space | Stored water ice sold where it lies, at central_nexus, into the bid there | up to 1 ships, with 5 water_ice stored at central_nexus, while central_nexus bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
-| [drain-ice-node-alpha](drain-ice-node-alpha.json) | circuit | home space | Stored water ice sold where it lies, at node_alpha_processing_station, into the bid there | up to 2 ships, with 30 water_ice stored at node_alpha_processing_station, while node_alpha_processing_station bids 25 cr for water_ice | TBD | TBD | TBD | TBD | -- |
 | [drain-methane-experiment](drain-methane-experiment.json) | circuit | home space | Stored methane ice sold where it lies, at The Experiment, into the bid there | up to 1 ships, with 10 methane_ice stored at the_experiment_research_station, while the_experiment_research_station bids 30 cr for methane_ice | TBD | TBD | TBD | TBD | -- |
 | [mission-70d9950c762ac17eeedfc9a292ed07ac-central](mission-70d9950c762ac17eeedfc9a292ed07ac-central.json) | circuit | home space | Wreck Recovery: Fugue in Algol: 2465 cr, +50 XP at The Core | up to 3 ships | TBD | TBD | TBD | TBD | -- |
 | [mission-83d4aab496f36cd12fbed259b3f534bf-central](mission-83d4aab496f36cd12fbed259b3f534bf-central.json) | circuit | home space | Wreck Recovery: Congregation in GSC-0041: 984 cr, +50 XP at The Core | up to 3 ships | TBD | TBD | TBD | TBD | -- |
