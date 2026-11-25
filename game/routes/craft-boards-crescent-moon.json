@@ -79,14 +79,5 @@
    "at": "mebsuta:bba58290a3ed25bad530772b15ab3fa4:ec315132a710a7d0fbc68cca05073154",
    "store": "all"
   }
- ],
- "measured": {
-  "date": "2026-11-23",
-  "runs": 4,
-  "minutes": 136,
-  "credits_per_run": -10,
-  "cph_per_ship": 0,
-  "hours": 12,
-  "last_run": "2026-11-23T01:10:41Z"
- }
+ ]
 }
