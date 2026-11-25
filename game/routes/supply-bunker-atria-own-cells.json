@@ -1,0 +1,40 @@
+{
+ "id": "supply-bunker-atria-own-cells",
+ "kind": "circuit",
+ "title": "Fuel for our outpost CLTV Outpost Atria from our own fuel cells: up to 65 cells taken from the pilot's storage at Node Beta, flown 6 jumps, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only",
+ "note": "Written by Apollo, 2026-11-25 12:12 UTC (orders ENT-093 block APOLLO: Atria stands, its bunker and a fuel supply-chain row with me; P1, P2). The model is supply-bunker-gsc-0044-own-cells. Atria's bunker read 0 fuel (data/empire/empire.json faction_storage, 12:04 UTC); the chain outpost-fuel-atria keeps 3,000 (a first guess: the draw of members' refuels there is not measured yet). Road Node Beta, Schedar, GSC-0050, Brachium, Nightveil, Acrab, Atria: 6 jumps, lawless from Schedar on (no system of the orders' pirate watch on it). A Threshold holds 95 fuel; keep 30 leaves about 3 units a jump for the 6 jumps home. requires.stored: only a pilot whose own storage at Node Beta holds 29 cells or more (cells given by a trader or made there); requires.reserve below 3,000, the chain's keep. One ship, a test (rules F3, F37): three runs read before it is lifted.",
+ "max_ships": 1,
+ "standing": true,
+ "min_credits": 5000,
+ "requires": {
+  "empty_hold": true,
+  "stored": {
+   "at": "node_beta_industrial_station",
+   "item": "fuel_cell",
+   "min": 29
+  },
+  "reserve": {
+   "base": "8e56656eafd9cd5dff93c9efe234b958",
+   "item": "fuel",
+   "below": 3000
+  }
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "withdraw": [
+    {
+     "item": "fuel_cell",
+     "qty": 65
+    }
+   ]
+  },
+  {
+   "at": "atria:fdb4ca4d88436a1b7c21f0a7da8ac7bf:8e56656eafd9cd5dff93c9efe234b958",
+   "refuel": false,
+   "bunker": {
+    "keep": 30
+   }
+  }
+ ]
+}

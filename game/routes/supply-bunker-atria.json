@@ -1,0 +1,44 @@
+{
+ "id": "supply-bunker-atria",
+ "kind": "circuit",
+ "title": "Fuel for our outpost CLTV Outpost Atria: 65 fuel cells bought at Node Alpha, flown 7 jumps, burnt into the tank at the outpost and the tank above 30 deposited into the faction's fuel reserve; members of the faction only",
+ "note": "Written by Apollo, 2026-11-25 12:12 UTC (orders ENT-093 block APOLLO: Atria's bunker; P1). The model is supply-bunker-gsc-0044 (65 cells, about 1,300 to 1,360 fuel a run at about 6,600 cr, near 5 cr a unit against 11 to 15 cr at our stations' tanks). Atria's bunker read 0 fuel (empire.json, 12:04 UTC). Node Alpha asked 100 cr x 2,874 cells (book 11:28 UTC); requires.ask opens it only while its book shows 101 or under with 65 units. The backup of supply-bunker-atria-own-cells: requires.reserve below 2,000 (that route's floor is 3,000), so bought cells fill the empty bunker by one or two runs and our own cells keep it above. Road Node Alpha, Node Beta, GSC-0027, GSC-0050, Brachium, GSC-0049, Acrab, Atria: 7 jumps, lawless after Node Beta; keep 30 for the way home. stop_on_failed_buy: no flight without the cells. One ship, a test (rules F3, F37).",
+ "max_ships": 1,
+ "standing": true,
+ "min_credits": 12000,
+ "requires": {
+  "empty_hold": true,
+  "ask": {
+   "item": "fuel_cell",
+   "base": "node_alpha_processing_station",
+   "max_price": 101,
+   "min_qty": 65,
+   "max_age_minutes": 120
+  },
+  "reserve": {
+   "base": "8e56656eafd9cd5dff93c9efe234b958",
+   "item": "fuel",
+   "below": 2000
+  }
+ },
+ "stops": [
+  {
+   "at": "node_alpha:node_alpha_processing_station:node_alpha_processing_station",
+   "buy": [
+    {
+     "item": "fuel_cell",
+     "qty": 65,
+     "max_price": 103
+    }
+   ],
+   "stop_on_failed_buy": true
+  },
+  {
+   "at": "atria:fdb4ca4d88436a1b7c21f0a7da8ac7bf:8e56656eafd9cd5dff93c9efe234b958",
+   "refuel": false,
+   "bunker": {
+    "keep": 30
+   }
+  }
+ ]
+}
