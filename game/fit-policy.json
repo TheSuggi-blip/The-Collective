@@ -431,147 +431,73 @@
       "loadouts": {
         "brawler": {
           "weapon": [
-            "plasma_cannon_iv",
-            "focused_beam_iii",
-            "plasma_cannon_iii",
-            "ion_blaster_iii",
-            "phase_disruptor",
-            "blood_reaver",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "armor_repairer_iii",
-            "hull_reinforcement_iii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "regenerative_armor_ii",
-            "armor_plate_iii",
             "shield_booster_ii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "plasma_afterburner",
-            "afterburner_iii",
-            "afterburner_ii",
             "expanded_fuel_tank"
           ]
         },
         "ewar": {
           "weapon": [
-            "emp_pulse_iii",
-            "neural_disruptor",
-            "focused_beam_iii",
-            "ion_blaster_iii",
-            "emp_missile_launcher",
-            "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "shield_booster_ii",
-            "armor_plate_iii"
+            "shield_booster_ii"
           ],
           "utility": [
-            "ecm_jammer",
-            "tracking_computer_iii",
-            "sensor_dampener",
-            "target_painter_ii",
-            "target_painter_i",
-            "warp_disruptor",
-            "afterburner_iii"
+            "expanded_fuel_tank"
           ]
         },
         "flak_tank": {
           "weapon": [
-            "flak_cannon_iii",
-            "plasma_cannon_iv",
-            "flak_cannon_ii",
-            "flak_cannon_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "armor_repairer_iii",
-            "hull_reinforcement_iii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "shield_booster_ii",
+            "hull_reinforcement_iii"
           ],
           "utility": [
-            "warp_disruptor",
-            "afterburner_iii",
-            "expanded_fuel_tank",
-            "afterburner_ii"
+            "expanded_fuel_tank"
           ]
         },
         "royal_guard_escort": {
           "weapon": [
-            "flak_cannon_iii",
-            "plasma_cannon_iv",
-            "focused_beam_iii",
             "pulse_laser_iii",
-            "flak_cannon_ii",
             "pulse_laser_ii"
           ],
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_booster_ii",
-            "armor_plate_iii"
+            "shield_booster_ii"
           ],
           "utility": [
-            "tracking_computer_iii",
-            "plasma_afterburner",
-            "afterburner_iii",
-            "ship_scanner_iii",
-            "warp_disruptor",
-            "expanded_fuel_tank",
-            "afterburner_ii",
-            "ship_scanner_ii"
+            "expanded_fuel_tank"
           ]
         },
         "royal_guard_utility": {
           "weapon": [
-            "emp_pulse_iii",
-            "neural_disruptor",
-            "ion_blaster_iii",
-            "em_disruptor_i",
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "shield_booster_ii",
-            "armor_plate_iii"
+            "shield_booster_ii"
           ],
           "utility": [
-            "remote_armor_repairer_iii",
-            "field_hospital",
-            "shipboard_sickbay",
-            "advanced_drone_bay",
-            "combat_drone_bay",
             "remote_armor_repairer_ii",
-            "target_painter_ii",
-            "sensor_dampener",
-            "afterburner_iii",
             "expanded_fuel_tank"
           ]
         },
@@ -833,7 +759,8 @@
           "command_carrier_screen",
           16
         ]
-      ]
+      ],
+      "_tune_apophis": "2026-11-25 00:43 UTC Apophis (orders ENT-091 P1, P7): Military loadouts cut to what a hunter uses: Pulse Laser III/II for an open weapon slot, shield boosters for defence (no armor plate: its speed penalty leaves a starter at speed 1), an expanded fuel tank for utility (far hunts end on dry tanks), a remote armor repairer for utility sentinels. Since 19:00 UTC drones and sentinels flew fit-network 251 times for -1,054,648 cr (runs): afterburner_ii 65 for 196,667, regenerative_armor_ii 11 for 167,999, ship_scanner_ii 12 for 92,506, armor_plate_iii 46 for 81,770. fit_net fills open slots only; a Pulse Laser I is upgraded by the fit-pulse-laser-iii-* routes."
     },
     "Logistics": {
       "mix": [
