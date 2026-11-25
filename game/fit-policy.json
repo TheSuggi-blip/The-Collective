@@ -34,7 +34,11 @@
     "Military": [
       "mining_laser_i",
       "ice_harvester_i",
-      "gas_harvester_i"
+      "gas_harvester_i",
+      "afterburner_i",
+      "afterburner_ii",
+      "afterburner_iii",
+      "plasma_afterburner"
     ],
     "Command": [
       "mining_laser_i",
@@ -417,43 +421,24 @@
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
-          "defense": [
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ],
-          "utility": [
-            "expanded_fuel_tank"
-          ]
+          "defense": [],
+          "utility": []
         },
         "ewar": {
           "weapon": [
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
-          "defense": [
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ],
-          "utility": [
-            "expanded_fuel_tank"
-          ]
+          "defense": [],
+          "utility": []
         },
         "flak_tank": {
           "weapon": [
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
-          "defense": [
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii",
-            "hull_reinforcement_iii"
-          ],
-          "utility": [
-            "expanded_fuel_tank"
-          ]
+          "defense": [],
+          "utility": []
         },
         "royal_guard_escort": {
           "weapon": [
@@ -461,27 +446,18 @@
             "pulse_laser_ii"
           ],
           "defense": [
-            "shield_booster_iv",
-            "shield_booster_iii",
             "shield_booster_ii"
           ],
-          "utility": [
-            "expanded_fuel_tank"
-          ]
+          "utility": []
         },
         "royal_guard_utility": {
           "weapon": [
             "pulse_laser_iii",
             "pulse_laser_ii"
           ],
-          "defense": [
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ],
+          "defense": [],
           "utility": [
-            "remote_armor_repairer_ii",
-            "expanded_fuel_tank"
+            "remote_armor_repairer_ii"
           ]
         },
         "command_ewar_tac": {
@@ -743,7 +719,7 @@
           16
         ]
       ],
-      "_tune_apophis": "2026-11-25 00:43 UTC Apophis (orders ENT-091 P1, P7): Military loadouts cut to what a hunter uses: Pulse Laser III/II for an open weapon slot, shield boosters for defence (no armor plate: its speed penalty leaves a starter at speed 1), an expanded fuel tank for utility (far hunts end on dry tanks), a remote armor repairer for utility sentinels. Since 19:00 UTC drones and sentinels flew fit-network 251 times for -1,054,648 cr (runs): afterburner_ii 65 for 196,667, regenerative_armor_ii 11 for 167,999, ship_scanner_ii 12 for 92,506, armor_plate_iii 46 for 81,770. fit_net fills open slots only; a Pulse Laser I is upgraded by the fit-pulse-laser-iii-* routes."
+      "_tune_apophis": "2026-11-25 06:39 UTC Apophis (orders ENT-092 P1, block APOPHIS: fuel): afterburners off-role for Military (fit-network strips them into storage where the ship stands): starter hunters with an afterburner flew 762 hunt runs in 6 h at -1,529 cr a ship-hour against -746 without (793 runs), 2.3 against 2.79 kills a run (table runs, ship_modules, 06:35 UTC); fuelplan.ship_jump_cost: 7 to 11 fuel a jump with them against 3. Drone loadouts buy weapons only (a wildlife hunt ends at 100 percent hull; fit-network spent 135,229 cr once on Military defence and tanks in 6 h, onetime.json); sentinel escorts keep shield_booster_ii, utility sentinels the remote repairer. Earlier: 2026-11-25 00:43 UTC loadouts cut to lasers, boosters, tank."
     },
     "Logistics": {
       "mix": [
