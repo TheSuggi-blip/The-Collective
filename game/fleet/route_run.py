@@ -710,17 +710,7 @@ def fit_pending(system, poi, base):
 
 
 def book_onetime(title, amount):
-    with open(ONETIME_FILE + '.lock', 'w') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        try:
-            rows = json.load(open(ONETIME_FILE, encoding='utf-8'))
-        except (OSError, ValueError):
-            rows = []
-        rows.append([int(time.time()), pilot, title, amount])
-        tmp = f'{ONETIME_FILE}.{os.getpid()}.tmp'
-        with open(tmp, 'w', encoding='utf-8') as fh:
-            json.dump(rows[-5000:], fh, separators=(',', ':'))
-        os.replace(tmp, ONETIME_FILE)
+    gate.book_onetime(pilot, title, amount, data=os.path.dirname(os.path.dirname(os.path.abspath(ONETIME_FILE))))
 
 
 def active():

@@ -1160,7 +1160,7 @@ def main(argv=None):
                             _cpol["trade"] = _tc
                             _cw = _cn.load_craft_world(DATA, REPO, _cpol)
                             _st_now = get_stored(base_id)
-                            _job = _cn.pick_craft_job(pilot, "Trade", base_id, _st_now, _cr_now, _cw, _cpol)
+                            _job = _cn.pick_craft_job("Trade", base_id, _st_now, _cr_now, _cw, _cpol)
                             if _job:
                                 _ok_buy = True
                                 for _bi, _bq, _bp in (_job.get("buys") or ()):

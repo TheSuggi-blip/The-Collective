@@ -1796,13 +1796,13 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
     surplus_worth = int(_num(kpi_live.get(("surplus_worth", 24)), 0))
 
     once_direct_24h = int(acc_24["once_direct_h"]) if isinstance(acc_24, dict) else 0
-    recurring_cash_24h = round(steady_24h - once_direct_24h, 1)
+    recurring_cash_24h = round(float(acc_24["recurring_cash_h"]), 1) if (isinstance(acc_24, dict) and acc_24.get("recurring_cash_h") is not None) else round(steady_24h - once_direct_24h, 1)
     inv_accrual_24h = int(acc_24["inventory_accrual_h"]) if isinstance(acc_24, dict) else 0
-    accrual_op_24h = round(recurring_cash_24h + inv_accrual_24h, 1)
+    accrual_op_24h = round(float(acc_24["accrual_operating_h"]), 1) if (isinstance(acc_24, dict) and acc_24.get("accrual_operating_h") is not None) else round(recurring_cash_24h + inv_accrual_24h, 1)
     once_direct_6h = int(acc_6["once_direct_h"]) if isinstance(acc_6, dict) else 0
-    recurring_cash_6h = round(steady_6h - once_direct_6h, 1)
+    recurring_cash_6h = round(float(acc_6["recurring_cash_h"]), 1) if (isinstance(acc_6, dict) and acc_6.get("recurring_cash_h") is not None) else round(steady_6h - once_direct_6h, 1)
     inv_accrual_6h = int(acc_6["inventory_accrual_h"]) if isinstance(acc_6, dict) else 0
-    accrual_op_6h = round(recurring_cash_6h + inv_accrual_6h, 1)
+    accrual_op_6h = round(float(acc_6["accrual_operating_h"]), 1) if (isinstance(acc_6, dict) and acc_6.get("accrual_operating_h") is not None) else round(recurring_cash_6h + inv_accrual_6h, 1)
     has_accrual_24h = bool(acc_24.get("has_inventory_accrual")) if isinstance(acc_24, dict) else False
 
     cf_sign = "POSITIVE" if recurring_cash_24h > 0 else "NEGATIVE"
