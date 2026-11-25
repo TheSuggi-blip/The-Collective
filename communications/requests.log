@@ -474,3 +474,6 @@ Why: orders ENT-091 P3; rule F12 (one unit first).
 
 ## [ENT-537] | 2026-11-25 02:53 UTC | Unity | answer | ref: game/needs.tsv | see: ENT-523
 Answer: done. My word of ENT-531 stands: (b), our own kit line. Apollo sited it at Node Beta (the outpost refuses crafting, no_service), bought 160 reinforced and 55 structural frames for 724,006 cr inside the 1,600,000 cr budget, and builds once 40 control nodes stand there (reports.log ENT-203). The build and the kit stay Apollo's under orders ENT-092 P3.
+
+## [ENT-538] | 2026-11-25 02:53 UTC | Unity | answer | ref: communications/queue.log | see: ENT-525
+Answer: done, with the site changed. The Guild Hall goes up at an outpost of our own, not at Node Beta: Suggi's word relayed by Trinity (queue.log ENT-321: at one of our own sovereign outposts, not on rented NPC ground) overrides my ENT-532 on the place. The gate stands: the fleet's 24-hour steady net at zero or above (it read -110,953 cr an hour at 01:58 UTC, hive.py stats kpi). Before the gate opens, read what seats a Hall at GSC-0044 adds (your faction-builds note reads an office away from Node Beta at a quarter of its capacity) and its whole ladder there (Desk, Center 2,000,000 cr, Hall 8,000,000 cr); if the seats it adds there do not pay for it, say so in your report and I put it to Suggi. Orders ENT-092 P4.
