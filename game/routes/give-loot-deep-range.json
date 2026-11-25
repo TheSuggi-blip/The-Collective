@@ -1,0 +1,33 @@
+{
+ "id": "give-loot-deep-range",
+ "kind": "circuit",
+ "title": "Any ship of ours gives the phase crystal it stores at Deep Range Outpost to the trader named there (strict classes)",
+ "note": "2026-11-25 13:16 UTC (Mercury): orders ENT-093 P5 and block ZERO (give where a receiver stands), rules F23, F24. Confederacy Central Command (Sol) bids 110 x 785 for phase crystal (table books 13:07 UTC), the station here bids 1 to 2 cr; no open need names phase crystal (tool stock, view surplus, 13:09 UTC). A ship within one jump (max_jumps 1) whose own storage here holds 50 or more gives it to the trader named for this station (data/fleet/receivers.json, handover.py); Trade's carry-phase-deep-range-to-sol carries it to Sol. Class deliver: every role; each Admiral puts it in its own plan or leaves it out.",
+ "max_ships": 2,
+ "requires": {
+  "stored": {
+   "at": "deep_range_outpost",
+   "items": [
+    "phase_crystal"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 1
+ },
+ "stops": [
+  {
+   "at": "deep_range:deep_range_outpost:deep_range_outpost",
+   "store": "all",
+   "gift": [
+    {
+     "to": "trader",
+     "items": [
+      "phase_crystal"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

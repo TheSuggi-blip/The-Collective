@@ -1,0 +1,45 @@
+{
+ "id": "carry-phase-first-step-to-sol",
+ "kind": "circuit",
+ "title": "Stored phase_crystal carried from first_step_memorial_station to the confederacy_central_command bid at 100 cr or more",
+ "note": "2026-11-25 13:16 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). confederacy_central_command bid 110 x 785 (book of 2026-11-25T13:16:06Z); the cheapest ask read is 132 x 123 at confederacy_central_command; floor 100 cr; at first_step_memorial_station 220 units lie there in our storages. A pilot whose own storage at the first station holds the good withdraws up to 115, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Nothing is bought; a run into a bid taken on the way costs the hop's fuel. Stored min 50 set by hand: one tier-0 hold. Road: 13 jumps, 6 lawless (gsc_0046 .. ridgecrest), the road carry-phase-deep-range-to-sol flew 6 times without a loss from 07:33 to 11:52 UTC (5,835 cr a run, table runs): one ship. The goods reach a trader by give-loot-first-step (Mining's phase crystal, P5).",
+ "requires": {
+  "stored": {
+   "at": "first_step_memorial_station",
+   "item": "phase_crystal",
+   "min": 50
+  },
+  "bid": {
+   "item": "phase_crystal",
+   "base": "confederacy_central_command",
+   "min_price": 100,
+   "min_qty": 100
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "first_step:first_step_memorial_station:first_step_memorial_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "phase_crystal",
+     "qty": 115
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "sell": [
+    {
+     "item": "phase_crystal",
+     "min_price": 100
+    }
+   ]
+  },
+  {
+   "at": "sol:sol_central:confederacy_central_command",
+   "store": "all"
+  }
+ ]
+}
