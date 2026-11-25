@@ -156,3 +156,4 @@ Planned:
 |---|---|
 | read the kit row's RESULT lines: Outpost Kit crafted in our assembler at Node Beta, Atria founded at its belt; then the Atria bunker and its fuel chain | next turn |
 | haul-network: read runs with a job against docked watch; escorted lawless freight (Ironlight LHS 1140 to Gold Run, about 100 cr a jump) only when Military's escort lane reopens | next turn |
+| Guild Hall at GSC-0044 (Center first, then Hall; 225 seats by the game's best-office rule): stage plate, boards, flex and alloy only when the 24-hour net reads zero | at the gate |
