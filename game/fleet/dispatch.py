@@ -103,6 +103,7 @@ import argparse
 import calendar
 import fcntl
 import json
+import sqlite3
 import os
 import re
 import subprocess
@@ -922,6 +923,32 @@ def _build_crowding_counts(orders, routes, data=None):
     return mine_pois, bursar_bases
 
 
+_POLICED_SYS_CACHE = {}
+
+def _policed_systems(data):
+    """Cached set of safe empire system IDs (empire != '') from read.db; empty set if read.db absent."""
+    if not data:
+        return set()
+    key = str(data)
+    now = time.time()
+    hit = _POLICED_SYS_CACHE.get(key)
+    if hit and (now - hit[0]) < 300.0:
+        return hit[1]
+    out = set()
+    db_p = Path(data) / "store" / "read.db"
+    if db_p.exists():
+        try:
+            con = sqlite3.connect("file:%s?mode=ro&immutable=1" % db_p, uri=True)
+            try:
+                out = {str(r[0]) for r in con.execute("SELECT id FROM systems WHERE empire IS NOT NULL AND empire != ''").fetchall() if r[0]}
+            finally:
+                con.close()
+        except Exception:
+            out = set()
+    _POLICED_SYS_CACHE[key] = (now, out)
+    return out
+
+
 def why_not(pilot, rid, route, state):
     """(why the route is closed to the pilot now, or None when it is open; for an open census the system to read).
     The one rule: pick() and fill.py both use it."""
@@ -937,8 +964,13 @@ def why_not(pilot, rid, route, state):
         allowed = [empires] if isinstance(empires, str) else [str(e) for e in empires]
         if pilot.get("empire") not in allowed:
             return "open only to pilots born %s (the pilot: %s)" % (", ".join(allowed), pilot.get("empire") or "not read"), None
-    if route.get("kind") in ("hunt", "hunt_net") and pilot.get("weapons") == 0:            # requests ENT-539: no unarmed hunter
+    _is_cmd_flag = bool(state.get("data") and pilot.get("name") in flagships(state.get("data")))
+    if route.get("kind") in ("hunt", "hunt_net") and pilot.get("weapons") == 0 and not (route.get("kind") == "hunt_net" and _is_cmd_flag):
         return "no weapon fitted", None
+    if route.get("kind") == "hunt" and state.get("data"):
+        _h_sys = str(route.get("place") or "").split(":")[0]
+        if _h_sys and _h_sys in _policed_systems(state.get("data")):
+            return "safe empire hunt blocked (lawless-only military)", None
     far_mission = mission_reach_reason(pilot, rid, route)         # rules F34, F35: keep foreign once-missions local unless far_ok
     if far_mission:
         return far_mission, None
