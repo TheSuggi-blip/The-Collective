@@ -809,7 +809,7 @@ Run by hand.
 ```
 plan.py [show] [<division>|<Member>|all] [--brief]    the file, what the check says and whether it is applied
 plan.py check [<division>|<Member>|all]               PASS or HALT per division (exit 1 on a HALT)
-plan.py apply [<division>|<Member>|all] [--quiet]     after a change by hand: check, write, commit
+plan.py apply [<division>|<Member>|all] [--quiet] [--whole-division]   after a change by hand: check, write, commit
 plan.py set <ships> <routes> [--division <name>]      the own routes of ships: names with commas, a range
                                                       (miner-1..10), a role or `all`; routes with commas in their
                                                       order (`@<name>` for a template, in any mix), or `none`

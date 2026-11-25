@@ -2193,7 +2193,7 @@ def main(argv=None):
     given.update({name: now for name in awaiting_treasury(data) if name and name not in given})   # the treasury serves it
     held, owes = funded(data, now), owed(data)                  # a fund for a buy, and credits withdrawn for others, are no donor's to give
     gifts = [(d, p, c) for d, p, c in plan_gifts(topup_view(rows, held, owes), given) if d not in flying]
-    done, failed = [], []
+    done, failed, waits = [], [], []
     for donor, pilot, credits in gifts:
         if "--dry-run" in args:
             print("would give: %s -> %s %s cr" % (donor, pilot, format(credits, ",")))
@@ -2209,16 +2209,21 @@ def main(argv=None):
             ok, text = landed(data, pilot, was, credits), "the gate did not answer (%s: %s) and the wallet does not show the gift" % (type(error).__name__, error)
             if not ok:
                 unsure(data, donor, pilot, credits, time.time())
+        fight = not ok and "in_battle" in str(text or "").lower().replace(" ", "_")
         if ok:
             book(data, [(donor, pilot, credits)], time.time())  # at once and with its own time: a fault later in the pass never loses the record
             done.append((donor, pilot, credits))
+        elif fight:                                             # a ship in a fight: no fault; the next pass asks again (five-minute job, 2026-11-25)
+            waits.append((donor, pilot))
         else:
             failed.append((donor, pilot, text))
-        note(data, "topup", donor, pilot, credits, "booked" if ok else "unsure" if "did not answer" in text else "refused", text, sent_at=sent)
+        note(data, "topup", donor, pilot, credits, "booked" if ok else "battle" if fight else "unsure" if "did not answer" in text else "refused", text, sent_at=sent)
     for pilot in dict.fromkeys(p for _d, p, _c in done):          # once per receiver, after its last gift
         refresh(pilot)
     for donor, pilot, credits in done:
         print("given: %s -> %s %s cr" % (donor, pilot, format(credits, ",")))
+    for donor, pilot in waits:
+        print("waits: the gift %s -> %s, one of them in a fight; the next pass asks again" % (donor, pilot))
     for donor, pilot, text in failed:
         print("HALT: the gift %s -> %s failed: %s" % (donor, pilot, text))
     stranded = [(name, credits) for name, credits, _o in low if name not in {p for _d, p, _c in gifts}]

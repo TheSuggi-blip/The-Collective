@@ -1,6 +1,8 @@
 """game/fleet/wallet.py and the dispatcher's wallet floor on a disposable data folder: no ship of ours goes broke. No engine."""
 
+import contextlib
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -79,6 +81,31 @@ class WalletTests(unittest.TestCase):
         sent.clear()
         self.wallet.main(["topup", "--data", str(self.data)])                                  # the wallets still read low: no second gift
         self.assertEqual(sent, [])
+
+    def test_a_gift_refused_for_a_fight_waits_for_a_later_pass_and_is_no_fault(self):
+        # five-minute job 2026-11-24 22:36, 2026-11-25 00:01 and 00:38 UTC: "HALT: the gift ... failed: in_battle", a pass
+        # that ended 1 for a ship that was only fighting; the fight ends, and the next pass gives
+        sent = []
+
+        def give(donor, pilot, credits):
+            sent.append(pilot)
+            if pilot == "trader-1":
+                return False, '{"error":"API call failed: in_battle: cannot perform this action while in combat. [code: queue_error]"}'
+            return True, "ok"
+        self.wallet.give, self.wallet.WAIT = give, 0
+        os.environ["HERMES_SESSION_PROFILE"] = "unity"
+        self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            self.assertEqual(self.wallet.main(["topup", "--data", str(self.data)]), 0)
+        self.assertNotIn("HALT", out.getvalue())
+        self.assertIn("in a fight", out.getvalue())
+        notes = [json.loads(line) for line in (self.data / "fleet" / "sweep.jsonl").read_text().splitlines()]
+        self.assertTrue(any(n.get("to") == "trader-1" and n.get("state") == "battle" for n in notes), notes)
+        sent.clear()
+        self.wallet.give = lambda donor, pilot, credits: (sent.append(pilot) or True, "ok")
+        self.wallet.main(["topup", "--data", str(self.data)])                                  # the fight is over: the gift goes
+        self.assertIn("trader-1", sent)
 
     def test_a_gate_that_does_not_answer_ends_no_pass_and_loses_no_record(self):
         # 2026-11-16: a deposit timed out, the pass ended in a fault, and the gifts it had given before were booked nowhere

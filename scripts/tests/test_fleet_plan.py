@@ -71,8 +71,9 @@ class Tree(unittest.TestCase):
     def git(self, *args):
         return subprocess.run(["git", "-C", str(self.top)] + list(args), stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True).stdout
 
-    def run_plan(self, member, *args):
+    def run_plan(self, member, *args, **more):
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"), "HOME": self.temp.name, "FLEET_TAXES": os.devnull, "FLEET_COMMIT_WAIT": "0"}
+        env.update(more)
         if member:
             env["HERMES_SESSION_PROFILE"] = member
         return subprocess.run([sys.executable, "-I", "-B", str(FLEET / "plan.py")] + list(args) + ["--root", str(self.root), "--data", str(self.data)],
@@ -214,6 +215,60 @@ class PlanTests(Tree):
         self.assertIn("1 ships have no row yet (miner-7)", self.run_plan("zero", "show", "--brief").stdout)
         self.run_plan("zero", "apply")
         self.assertEqual(self.assign()["pilots"]["miner-7"][2], "ice-a")
+
+
+class KeeperTests(Tree):
+    """errors.log ENT-203: craft-network went into Trade's list Then by another hand's apply and flew 73 traders for
+    -479,693 cr in 3.5 hours before Trade's Admiral read one run. A route for every ship of a division goes in by its
+    keeper; another hand tests it on a few ships' own rows, or says --whole-division, which is written down for the keeper."""
+
+    def foreign(self):
+        path = self.data / "plans" / "foreign.jsonl"
+        return [json.loads(line) for line in path.read_text().splitlines() if line.strip()] if path.is_file() else []
+
+    def test_another_hand_adding_to_a_whole_list_is_refused_and_a_test_on_rows_is_not(self):
+        self.assertEqual(self.run_plan("zero", "apply").returncode, 0)
+        before = self.still()
+        done = self.run_plan("unity", "then", "--division", "mining", "guard,ice-a,ice-b,gather,census,park")
+        self.assertEqual(done.returncode, 1, done.stdout)
+        self.assertIn("kept by Zero", done.stdout)
+        self.assertIn("guard", done.stdout)
+        self.assertEqual(self.still(), before)                                                     # nothing changed, nothing committed
+        self.assertEqual(self.run_plan("unity", "set", "miner-1", "guard", "--division", "mining").returncode, 0)   # a test on one ship's own row is free
+        self.assertEqual(self.run_plan("zero", "then", "guard,ice-a,ice-b,gather,census,park").returncode, 0)   # its keeper may
+        self.assertEqual(self.foreign(), [])
+
+    def test_whole_division_passes_is_written_down_for_the_keeper_and_names_the_hand(self):
+        self.run_plan("zero", "apply")
+        done = self.run_plan("unity", "then", "--division", "mining", "guard,ice-a,ice-b,gather,census,park", "--whole-division",
+                             FLEET_HAND="the five-minute job")
+        self.assertEqual(done.returncode, 0, done.stdout)
+        self.assertEqual(self.assign()["pilots"]["miner-3"][-6], "guard")
+        notes = self.foreign()
+        self.assertEqual(len(notes), 1)
+        self.assertEqual((notes[0]["division"], notes[0]["keeper"], notes[0]["then"], notes[0]["first"]), ("mining", "Zero", ["guard"], []))
+        self.assertIn("the five-minute job", notes[0]["hand"])
+        self.assertIn("the five-minute job", self.git("log", "-1", "--format=%s"))
+        shown = self.run_plan("zero", "show", "--brief").stdout
+        self.assertIn("another hand", shown)
+        self.assertIn("guard", shown)
+
+    def test_a_once_route_may_go_into_first_by_any_hand(self):
+        self.run_plan("zero", "apply")
+        self.run_plan("zero", "first", "fit")
+        done = self.run_plan("unity", "first", "--division", "mining", "board,fit")
+        self.assertEqual(done.returncode, 0, done.stdout)                                         # missions paid once: the five-minute job adds them
+        self.assertEqual(self.foreign(), [])
+
+    def test_a_hand_edit_applied_by_another_hand_is_refused_until_its_keeper_applies(self):
+        self.run_plan("zero", "apply")
+        text = self.file("mining").read_text().replace("## Then, for Every Ship\n\n1. ice-a\n", "## Then, for Every Ship\n\n1. guard\n2. ice-a\n")
+        self.file("mining").write_text(text)
+        done = self.run_plan("unity", "apply", "all", "--quiet", FLEET_HAND="the five-minute job")
+        self.assertIn("kept by Zero", done.stdout)
+        self.assertNotIn("guard", self.assign()["pilots"]["miner-3"])
+        self.assertIn("mining: applied", self.run_plan("zero", "apply").stdout)
+        self.assertIn("guard", self.assign()["pilots"]["miner-3"])
 
 
 class AwayTests(Tree):

@@ -24,6 +24,10 @@ WHAT: a division's plan is one file its Admiral keeps: data/plans/plan-<division
                                           written from it, one commit
 RULES:
   - A member changes the file of its own division; the Fleet Admiral any. A shell that is no member changes nothing.
+  - The lists for every ship (First, Then) take a new route from the division's keeper only: another hand (the Fleet
+    Admiral's shell, the five-minute job applying a hand edit) is refused and tests on a few ships' own rows, or passes
+    --whole-division; what it adds is written to data/plans/foreign.jsonl and shown to the keeper with the plan for 24 h.
+    A mission paid once and `park` any hand may add. FLEET_HAND names the hand in the record (errors.log ENT-203).
   - A file that fails the check changes nothing: the plan applied last stays in force, and the ships fly on.
   - The level columns and the form of the file are the script's: `apply` writes the file again in its one form. Free
     text of the Admiral stands under `## Notes` and is kept as it is. Planned and Notes are written by `planned` and
@@ -57,7 +61,7 @@ From another script:
 USAGE:
   plan.py [show] [<division>|<Member>|all] [--brief]    the file, what the check says and whether it is applied
   plan.py check [<division>|<Member>|all]               PASS or HALT per division (exit 1 on a HALT)
-  plan.py apply [<division>|<Member>|all] [--quiet]     after a change by hand: check, write, commit
+  plan.py apply [<division>|<Member>|all] [--quiet] [--whole-division]   after a change by hand: check, write, commit
   plan.py set <ships> <routes> [--division <name>]      the own routes of ships: names with commas, a range
                                                         (miner-1..10), a role or `all`; routes with commas in their
                                                         order (`@<name>` for a template, in any mix), or `none`
@@ -106,6 +110,7 @@ NONE = ("", "-", "--", "none")
 KEEP = 40                      # applied versions of one division kept in history/
 TEMPLATES = "routes/templates/"  # a division's templates file, under the game folder: <division>.json
 LINE = 500                      # characters of one line of Planned or Notes at most
+FOREIGN = "foreign.jsonl"       # routes another hand than the keeper put into a division's lists for every ship (ENT-203)
 
 
 def roles_of(name):
@@ -476,10 +481,64 @@ def write_private(data, ready, who, now):
     return ("applied" if changed else "written again (levels, form, Planned or Notes)" if was != ready["text"] else "unchanged"), changed
 
 
-def apply(root, data, names, who, changes=None, extra=None, message=None, commit=None, now=None):
+def hand_of(who):
+    """Who changes a plan, as the record names it: the member, and FLEET_HAND when the shell says which hand runs in it
+    (the five-minute job applies every hand edit as the Fleet Admiral: commit 95bd8316, errors.log ENT-203)."""
+    told = " ".join(str(os.environ.get("FLEET_HAND") or "").split())[:80]
+    return "%s (%s)" % (who, told) if told and told != who else who
+
+
+def last_kept(data, name):
+    """The division's plan as applied last (its newest kept version), parsed; None before its first apply."""
+    kept = sorted((folder(data) / "history").glob("plan-%s.*.md" % name))
+    try:
+        return parse(kept[-1].read_text(encoding="ascii", errors="replace")) if kept else None
+    except OSError:
+        return None
+
+
+def foreign_adds(data, name, plan, who, routes):
+    """{first: [...], then: [...]}: what a hand that is not the division's keeper adds to its lists for every ship,
+    against the version applied last; a mission paid once and the park route any hand may add. {} when none."""
+    if not who or DIVISIONS.get(name) == who:
+        return {}
+    last = last_kept(data, name)
+    if last is None:
+        return {}
+    once = getattr(dispatch, "is_once_mission", None)
+
+    def free(rid):
+        route = routes.get(rid) or {}
+        return bool(route.get("once") or route.get("park") or (once and route and once(rid, route)))
+    found = {key: [rid for rid in plan[key] if rid not in last[key] and not free(rid)] for key in ("first", "then")}
+    return found if any(found.values()) else {}
+
+
+def foreign_notes(data, name, now, hours=24):
+    """The lines of foreign.jsonl about one division in the last hours, newest last."""
+    path, lines = folder(data) / FOREIGN, []
+    try:
+        rows = path.read_text(encoding="ascii", errors="replace").splitlines()
+    except OSError:
+        return lines
+    for row in rows[-400:]:
+        try:
+            note = json.loads(row)
+        except ValueError:
+            continue
+        if note.get("division") == name and now - float(note.get("t") or 0) <= hours * 3600:
+            lines.append("another hand changed the lists for every ship at %s: %s added %s; its runs are the keeper's to read"
+                         % (note.get("at"), note.get("hand"), "; ".join("%s + %s" % (key.capitalize(), ", ".join(note.get(key) or []))
+                                                                     for key in ("first", "then") if note.get(key))))
+    return lines
+
+
+def apply(root, data, names, who, changes=None, extra=None, message=None, commit=None, now=None, keeper_gate=False, whole=False):
     """Check and write the plans of the divisions named, each after its change. (True when none halted, the lines).
     `extra` ({path under the game folder: text}, a new route file or a division's templates file) goes into the same
-    commit. A division whose plan fails the check changes nothing; with `extra` or a change one failure stops all."""
+    commit. A division whose plan fails the check changes nothing; with `extra` or a change one failure stops all.
+    With `keeper_gate` (the command line) a hand that is not a division's keeper adds no route to its lists for every
+    ship unless `whole` (--whole-division); what such a hand adds is written to foreign.jsonl for the keeper."""
     now = time.time() if now is None else now
     routes, kits = dispatch.load_routes(root), {}
     for rel, text in (extra or {}).items():                  # a route file that is written with the plan counts as there
@@ -495,6 +554,18 @@ def apply(root, data, names, who, changes=None, extra=None, message=None, commit
     with open(folder(data) / "plans.lock", "w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         ready = [prepare(root, data, name, routes, (changes or {}).get(name), kits.get(name)) for name in names]
+        notices = {}
+        for one in ready:
+            adds = {} if one["errors"] else foreign_adds(data, one["name"], one["plan"], who, routes)
+            if adds and keeper_gate and not whole:
+                one["errors"].append("the lists for every ship of the %s division are kept by %s; %s adds %s. A route for every ship goes in by "
+                                     "its keeper; another hand tests it on a few ships' own rows (`plan.py set <ships> <route>`, rule F37; "
+                                     "errors.log ENT-203), or passes --whole-division, which is written down for the keeper"
+                                     % (one["name"], DIVISIONS[one["name"]], hand_of(who),
+                                        "; ".join("%s + %s" % (key.capitalize(), ", ".join(ids)) for key, ids in adds.items() if ids)))
+                one["files"], one["text"] = {}, ""
+            elif adds:
+                notices[one["name"]] = adds
         for one in ready:
             for text in one["errors"][:12]:
                 lines.append("HALT %s: %s" % (one["name"], text))
@@ -515,7 +586,10 @@ def apply(root, data, names, who, changes=None, extra=None, message=None, commit
             made = sorted({(Path(root) / rel).parent for rel in files if not (Path(root) / rel).parent.is_dir()}, key=str)  # the first templates file: commit writes into folders that exist
             for place in made:
                 place.mkdir(parents=True)
-            done, line = commit(root, data, who, files, message or "plans: %s (plan.py, %s)" % (", ".join(o["name"] for o in ready if o["files"]) or "routes", who), **patience)
+            text = message or "plans: %s (plan.py, %s)" % (", ".join(o["name"] for o in ready if o["files"]) or "routes", who)
+            if hand_of(who) != who and hand_of(who) not in text:
+                text += " [hand: %s]" % hand_of(who)
+            done, line = commit(root, data, who, files, text, **patience)
             for place in reversed(made if not done else []):
                 if place.is_dir() and not any(place.iterdir()):
                     place.rmdir()                          # nothing committed: no empty folder left behind
@@ -529,7 +603,14 @@ def apply(root, data, names, who, changes=None, extra=None, message=None, commit
         for one in ready:
             if one["errors"]:
                 continue
-            word, _changed = write_private(data, one, who, now)
+            word, changed = write_private(data, one, who, now)
+            if changed and one["name"] in notices:
+                note = {"t": int(now), "at": time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(now)), "division": one["name"],
+                        "keeper": DIVISIONS[one["name"]], "hand": hand_of(who), "first": notices[one["name"]].get("first", []),
+                        "then": notices[one["name"]].get("then", [])}
+                with open(folder(data) / FOREIGN, "a", encoding="ascii") as out:
+                    out.write(json.dumps(note, separators=(",", ":")) + "\n")
+                lines.append("  note %s: written down for %s: %s" % (one["name"], DIVISIONS[one["name"]], foreign_notes(data, one["name"], now)[-1]))
             own = sum(1 for ship, _role, _row in one["crew"] if one["plan"]["ships"].get(ship))
             lines.append("%s: %s | %d ships, %d with routes of their own | First %d, Then %d | %s"
                          % (one["name"], word, len(one["crew"]), own, len(one["plan"]["first"]), len(one["plan"]["then"]), path_of(data, one["name"])))
@@ -729,6 +810,8 @@ def show(root, data, names, short):
             print("  HALT: " + text)
         for text in ready["warnings"][:8]:
             print("  note: " + text)
+        for text in foreign_notes(data, name, time.time())[-4:]:
+            print("  note: " + text)
         if ready["errors"]:
             code = 1
         elif short:
@@ -816,9 +899,10 @@ def main(argv=None):
                 sys.exit("REFUSED: the plan of the %s division is kept by %s (rule F1): ask in requests.log" % (name, DIVISIONS[name]))
         return names
 
+    whole = "--whole-division" in args                        # errors.log ENT-203: another hand's route for every ship, said aloud
     if verb == "apply":
         names = allowed(named(rest[0]) if rest else ([mine] if who != "Unity" else sorted(DIVISIONS)))
-        good, lines = apply(root, data, names, who)
+        good, lines = apply(root, data, names, who, keeper_gate=True, whole=whole)
         quiet = "--quiet" in args                             # the five-minute job: only what changed or halted
         lines = [line for line in lines if not quiet or line.startswith(("HALT", "REFUSED", "committed")) or ": applied |" in line]
         if lines:
@@ -885,7 +969,7 @@ def main(argv=None):
             note = "%s plan: Notes %s (plan.py, %s)" % (name, ("emptied" if not text else "replaced by one line") if clear else "+ one line", who)
     else:
         sys.exit(__doc__)
-    good, lines = apply(root, data, [name], who, changes={name: change}, message=note)
+    good, lines = apply(root, data, [name], who, changes={name: change}, message=note, keeper_gate=verb in ("first", "then"), whole=whole)
     print("\n".join(lines))
     return 0 if good else 1
 
