@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 64.
+Routes: 67.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -77,6 +77,9 @@ Routes: 64.
 | [hunt-the-dim-lantern-veil-ray](hunt-the-dim-lantern-veil-ray.json) | hunt | beyond the border, 29 jumps | veil_ray at the_dim_lantern; loot sold at Treasure Cache Trading Post | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-toi-2257-gas-pocket-cinder-sylph](hunt-toi-2257-gas-pocket-cinder-sylph.json) | hunt | beyond the border, 26 jumps | cinder_sylph at toi_2257_gas_pocket; loot sold at Hex Star | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [hunt-violethall-gas-plume-cinder-sylph](hunt-violethall-gas-plume-cinder-sylph.json) | hunt | beyond the border, 17 jumps | cinder_sylph at violethall_gas_plume; loot sold at Hex Star | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | mine | beyond the border, 7 jumps | A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only | up to 1 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
+| [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at Forgotten Tailings (GSC-0044) into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [mine-floodlight-flats](mine-floodlight-flats.json) | mine | beyond the border, 12 jumps | Floodlight Flats: iron_ore, copper_ore, silicon_ore, neodymium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-long-errand-band](mine-long-errand-band.json) | mine | beyond the border, 10 jumps | Long Errand Band: nickel_ore; sold at Ironlight Crossroads | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-zubenelhakrabi-crystal-sand](mine-zubenelhakrabi-crystal-sand.json) | mine | beyond the border, 11 jumps | Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |

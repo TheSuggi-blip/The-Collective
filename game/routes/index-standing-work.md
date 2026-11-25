@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 674.
+Routes: 671.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -551,7 +551,6 @@ Routes: 674.
 | [hunt-network](hunt-network.json) | hunt_net | -- | Dynamic Smart Military network: on-demand Escort, 3/5/8/10 Group Packs (25% share), and Power-Ratio Solo Herd Rotation | up to 140 ships, standing work | 1372 | 12 | -290 | -1,120 | 2026-11-25 |
 | [hunt-network-packs](hunt-network-packs.json) | hunt_net | -- | Tier-2 hulls: hunt-network's pack and escort lanes only (no solo, no fallback): rest docked between packs | up to 8 ships, standing work | 11 | 18 | -830 | -2,430 | 2026-11-24 |
 | [gather-achernar-belt](gather-achernar-belt.json) | mine | beyond the border, 4 jumps | Standing work, a test: iron at Achernar Belt (beyond the border, one jump from The Experiment) into storage at The Experiment | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
-| [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | mine | beyond the border, 7 jumps | A test: ore gathered at Acrux Belt (lithium, iron, copper) into the faction's storage at our outpost CLTV Outpost GSC-0044 (one jump); members of the faction only | up to 1 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | mine | beyond the border, 20 jumps | A test: Mining-skill work for Nebula-born miners: ore of Alrakis Commerce Vein into storage at Cargo Lanes Freight Depot (one jump) | up to 3 ships, empty hold, born nebula, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-amberfall-belt](gather-amberfall-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test of one ship: iron at Amberfall Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta | up to 1 ships, empty hold, standing work | 2 | 49 | -400 | -490 | 2026-11-25 |
 | [gather-atlas-belt](gather-atlas-belt.json) | mine | beyond the border, 6 jumps | Standing work, a test: iron at Atlas Belt (beyond the border, 3 jumps from The Experiment) into storage there | up to 3 ships, empty hold, standing work | 12 | 45 | -330 | -480 | 2026-11-24 |
@@ -575,8 +574,6 @@ Routes: 674.
 | [gather-gsc-0007-dark-beacon-silicon](gather-gsc-0007-dark-beacon-silicon.json) | mine | beyond the border, 27 jumps | A test: silicon ore of Dark Beacon Cluster (GSC-0007) into storage at Cargo Lanes Freight Depot (13 jumps, lawless) | up to 1 ships, empty hold, born nebula, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0012-flicker-fray](gather-gsc-0012-flicker-fray.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at GSC-0012 Flicker Fray (beyond the border, 3 jumps from Synchrony Hub) into storage there | up to 3 ships, empty hold, standing work | 6 | 46 | -350 | -450 | 2026-11-24 |
 | [gather-gsc-0031-belt](gather-gsc-0031-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test: iron at GSC-0031 Belt (beyond the border, 3 jumps from Synchrony Hub) into storage there | up to 3 ships, empty hold, standing work | 14 | 45 | -360 | -500 | 2026-11-25 |
-| [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at GSC-0044 Belt into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
-| [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | mine | beyond the border, 6 jumps | A test: ore gathered at Forgotten Tailings (GSC-0044) into the faction's storage at our outpost CLTV Outpost GSC-0044 (same system); members of the faction only | up to 3 ships, empty hold, standing work | TBD | TBD | TBD | TBD | -- |
 | [gather-gsc-0049-belt](gather-gsc-0049-belt.json) | mine | beyond the border, 5 jumps | Standing work, a test of one ship: iron at GSC-0049 Belt (beyond the border, 4 jumps from Node Beta) into storage at Node Beta | up to 1 ships, empty hold, standing work | 4 | 49 | -320 | -390 | 2026-11-25 |
 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | mine | beyond the border, 5 jumps | A test: nickel and platinum ore gathered at GSC-0049 Platinum-Group Reef (lawless) into storage at Node Beta Industrial Station (four jumps) | up to 1 ships, empty hold, standing work | 4 | 96 | -430 | -270 | 2026-11-24 |
 | [gather-harborlight-leavings-train](gather-harborlight-leavings-train.json) | mine | beyond the border, 10 jumps | A test: Mining-skill work for Solarian-born miners: ore of Harborlight Prospector's Leavings into storage at Procyon Colonial Station (two jumps, by Markab) | up to 3 ships, empty hold, born solarian, standing work | 45 | 42 | -380 | -530 | 2026-11-23 |
