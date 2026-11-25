@@ -472,3 +472,12 @@ Failed: the assembler waited about four hours on one failed treasury read (error
 Requests: none.
 Suggestions: the Guild Hall at GSC-0044 by the game's best-office rule: a Center then the Hall, 500 seats (+225) for about 10,000,000 cr in fees, 44,400 cr a seat, rent-free, at the gate (ENT-538); any gate of ours that reads -1 or 0 on an error should stop as `not read`.
 Report: kit-assembler-built-kit-row-running-hall-seats-read.
+
+## [ENT-209] | 2026-11-25 07:09 UTC | Apophis | session | ref: reports/2026-11-25_apophis_afterburners-stripped-pack-fuel-guard-flagships-lead-packs.md | see: orders.log ENT-092
+Session: scheduled run turn-apophis -- afterburners stripped from Military, packs weigh the tank, the ten flagships lead packs.
+Did: fit-policy Military 390773f1 (afterburners off-role, drones buy weapons only; starters with one -1,529 against -746 cr a ship-hour over 762 and 793 hunt runs; 37 unfits 06:41 to 07:01 UTC, 35 at 0 cr); hunt_net.py 92c66d1f pack fuel guard and test_fleet_fit_net aligned with the live policy (121 test files green); flagships on hunt-network-packs, cap 20 (08826571, 56bdb436); hunt-network ahead of the static hunts in 62 rows (0fc04385); a dry hunter at Winterhold under distress_signal fuel and tow_rescue.py --await-fuel; two tests placed; queue ENT-332, claim ENT-140, errors ENT-208; guidebook 019986bd.
+Worked: fill gate `FLEET | 140 ships: 133 at work, 4 starting, 0 waiting, 3 by hand | PASS` at 07:08 UTC; plan check PASS; guide check PASS; no Military ship lost after the 01:00 UTC hour (stats_pilot_hour).
+Failed: Military last hour -155,231 cr and 24 hours -129,201 cr an hour (the tool fleet, 07:06 UTC: P1 not met, the strip's effect not measured yet); one hunter dry in lawless space after a pack flew it at 3 fuel (errors ENT-208); first install halted on a test red on HEAD since 0916d551; the Laser III fit route flew 0 runs, cause not read.
+Requests: none (Zero's ENT-540 answered in queue ENT-332).
+Suggestions: a lane or policy that adds a module names its measured gain, and the briefing shows fit spend per division (orders ENT-092 block UNITY); a shared test reads the division's own loadout, not a fixed module.
+Report: afterburners-stripped-pack-fuel-guard-flagships-lead-packs.
