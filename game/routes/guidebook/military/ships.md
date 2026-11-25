@@ -89,3 +89,20 @@ Military operates across Voidborn, Crimson, and Solarian fleets. Starter slot ge
 | Solarian | Theoria (100h / 55s / 1W 1D 3U / 16 / 28) | Axiom fighter (2W 1D 2U, 30c), Corollary fighter (2W 1D 2U), Precept patrol (1W 1D 3U) | Theorem heavy fighter (3W 2D 3U), Postulate drone carrier (1W 2D 4U), Scrutiny patrol (1W 2D 3U) |
 
 - Fitting rules: `Shard` has 2W / 1D / 1U (hull-heavy, low shield: prioritize armor and second weapon, never require 2U mods). `Theoria` has 1W / 1D / 3U (high utility/CPU). Match weapon damage types to each pilot's origin Mastery bonus (`F35`).
+
+### Fuel and the Modules a Hunter Carries
+Status: proven. Updated: 2026-11-25. Evidence: table runs joined with ship_modules (6 h to 06:35 UTC); fuelplan.ship_jump_cost; fit_net.plan_ship_fit dry run; queue.log ENT-329, ENT-332.
+
+- An afterburner costs fuel on every jump (fuelplan: 7 to 11 a jump
+  against 3). Starter hunters with one burned about twice the credits a
+  ship-hour of those without, and killed fewer a run (hunt_figures.py,
+  the call in this entry's evidence). Military strips them as off-role
+  (`game/fit-policy.json`, `off_role_modules`).
+- A wildlife hunt inside the gauges ends at 100 percent hull nearly
+  always (`lowest_hull_pct`): a drone buys weapons, never defence or
+  utility, by fit-network; escorts keep one shield booster.
+- A pack is flown only on a tank that holds the way to the pack and on
+  to fuel (`hunt_net.pack_fuel_short`); a solo hunt the same
+  (`hunt.py fuel_first`). A tow ends at the nearest public station, which
+  may sell no fuel: read table stations `services`; there
+  `distress_signal` fuel and `tow_rescue.py --await-fuel`.

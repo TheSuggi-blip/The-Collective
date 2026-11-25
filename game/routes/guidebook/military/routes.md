@@ -1,26 +1,25 @@
 # Military guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-25. Evidence: the tool plan (show, templates, 00:57 UTC); hive.py briefing (column carries); the tool fill (check); dispatch.judged; table herds; runs.jsonl joined with stats_pilot_hour (cost per XP).
+Status: proven. Updated: 2026-11-25. Evidence: the tool plan (show, 06:43 UTC); hive.py briefing (column carries); the tool fill (check); table runs joined with ship_modules (fuel per ship-hour); hunt_figures.py.
 
-What the division flies between two turns (orders ENT-084, P1, P3, P5,
-P6 and block APOPHIS): hunts at the least fuel per XP, fits, a group that
-kills; no sale, carry or craft (P5). No guard in the first ring (F33).
-One hunter to a herd (column carries).
+What the division flies between two turns (orders ENT-092, P1, P5,
+P6 and block APOPHIS): hunts near a station with fuel for the way home,
+fits, packs; no sale, carry or craft (P5). No guard in the first ring
+(F33). One hunter to a herd (column carries).
 
 | Order | Routes | Ships | Why |
 |---|---|---|---|
-| First | `buy-autocannon-rounds-*` (home asks first, The Anvil for Crimson-born); `rearm-pulse-laser-*` (a hunter without a weapon); the once line; `recursion-parts-*` (the yard's bids, once); the Laser III, Shield Booster II and Armor Plate II fits (F17); `strip-mining-laser-*`; plasma loaders; `give-drone-stores-*`; `fit-network` last (Military loadouts: lasers, shield boosters, a fuel tank) | each under its limit | F35; F17; P5; P7 |
-| Own | a cheap near hunt first; far herds; the filler's tests; three Laser III drones fly `hunt-network` first (its first packs) | 1 each | P1; tests; P7 |
-| Tier-2 rows | `hunt-network-packs` (hunt.py closes to the reach that fires, 9ef00c7c) | 7 | P1; F9 |
-| Cleaver rows | the newborn rows | 3 | F37 |
-| `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps of where they stand, a few `far_ok` 7 to 9 jumps out | 1 each | P6; F38 |
-| `@hunter` | module-gated hunts (`*-pl3`, `pc2`, whale `sb2` where the hull held), then every hunt by credits a combat-and-piloting XP over 24 hours, cheapest first; at its end herds 2 to 6 jumps out; no hunt at a partner ranch (F2, F4) | 1 each | combat XP; F23 |
-| Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it: once, `far_ok`, `standing` (a positioning trip is not judged for pay), one trip to Central Nexus | 6 each | P6, O5 |
-| Then | the guard posts beyond the border (not GSC-0044: first ring), `hunt-network`, then `park` | 1 each | F8, F33 |
+| First | `buy-autocannon-rounds-*`; `rearm-pulse-laser-*`; the once line; `recursion-parts-*`; the Laser III fit (F17); `strip-mining-laser-*`; plasma loaders; `give-drone-stores-*`; `fit-network` last (Military: weapons only, afterburners stripped as off-role) | each under its limit | F35; F17; P1; P5 |
+| Own | missions, fits and `hunt-test-*` first; then `hunt-network` (the AutoNet picks a near herd, F40); then the row's own hunts | 1 each | P1; F37; F40 |
+| Tier-2 rows, the ten flagships | `hunt-network-packs` alone: packs and escorts, docked between; flagships lead (Leadership, Tactics) | up to 20 | P1; F9; F10 |
+| `@krynn-newborn`, `@sol-newborn` | their empire's once missions, then one hunt a herd within 6 jumps, a few `far_ok` 7 to 9 out | 1 each | P6; F35; F38 |
+| `@hunter` | `store-hold-central-nexus`, `hunt-network`, module-gated hunts, then hunts by credits a combat XP; no hunt at a partner ranch (F2, F4) | 1 each | F23 |
+| Last in the newborn rows | `store-hold-krynn-war-citadel` before `@hunter`; `join-corridor-crimson` / `-solarian` after it (once, `far_ok`, `standing`) | 6 each | P6, O5 |
+| Then | `hunt-network`, the guard posts beyond the border (not the first ring), `park` | 1 each | F8, F33 |
 
 Every hunt carries `gift_to`. What changes it: a herd read back (table
-herds), a pirate at a place (`pirate_places.py`), a reserve good short.
+herds), a pirate at a place (`pirate_places.py`), a tank run dry (tug.py).
 ### Hunts of grazers (`hunt.py`)
 Status: proven. Updated: 2026-11-21. Evidence: game/fleet/hunt.py; skill military-turn hunt_figures.py; routes.md entry versions of 2026-11-17 (--history).
 
