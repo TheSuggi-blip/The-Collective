@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-25T18:18:38Z.
+Facts as of 2026-11-25T18:22:15Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-25T18:18:38Z.
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
 | Outposts | 3 of 8 |
-| Offices at stations | 18, rent 1,175 cr per cycle (101,050 cr a day) |
+| Offices at stations | 19, rent 1,175 cr per cycle (101,050 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -64,6 +64,7 @@ Systems we hold something in:
 | `last_light` | office | at ramens_rest |
 | `the_experiment` | office | at the_experiment_research_station |
 | `the_levy` | office | at the_levy_customs_station |
+| `the_rampart` | office | at the_rampart_checkpoint |
 
 What founding a base takes: `game/rules/09-factions.md` (fees and limits)
 and the tool `base_plan` (every part down to the ore, against what we
@@ -91,6 +92,7 @@ hold).
 | Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 39 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 | Faction Lockbox | 1 | the_levy_customs_station | `the_levy` | active | 69 |
+| Faction Lockbox | 1 | the_rampart_checkpoint | `the_rampart` | active | 69 |
 
 ## 4. Sites
 
