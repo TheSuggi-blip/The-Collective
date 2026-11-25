@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-25T06:13:39Z.
+Facts as of 2026-11-25T07:26:57Z.
 
 ## 1. The Faction
 
@@ -32,8 +32,8 @@ Facts as of 2026-11-25T06:13:39Z.
 | Members | 275 of a limit of 275 |
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 0 of 5 a faction may hold |
-| Outposts | 1 of 8 |
-| Offices at stations | 11, rent 828 cr per cycle (71,208 cr a day) |
+| Outposts | 2 of 8 |
+| Offices at stations | 13, rent 1,037 cr per cycle (89,182 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -47,12 +47,14 @@ of its own limit.
 
 | Base | Kind | System | Condition | Services |
 |---|---|---|---|---|
+| CLTV Outpost Atria | outpost | `atria` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
 
 Systems we hold something in:
 
 | System | What | Note |
 |---|---|---|
+| `atria` | outpost | CLTV Outpost Atria |
 | `gsc_0044` | outpost | CLTV Outpost GSC-0044 |
 | `nexus_prime` | office | at central_nexus |
 | `node_beta` | office | at node_beta_industrial_station |
@@ -69,6 +71,8 @@ hold).
 | Faction Fuel Bunker | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Faction Lockbox | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
 | Recruitment Desk | 1 | 443f0c5b2a1fbbcea95d13b76a797fe9 | `gsc_0044` | active | 0 |
+| Faction Lockbox | 1 | 8e56656eafd9cd5dff93c9efe234b958 | `atria` | active | 0 |
+| Faction Fuel Bunker | 1 | 8e56656eafd9cd5dff93c9efe234b958 | `atria` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
 | Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 39 |
 | Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
@@ -87,7 +91,7 @@ list of stations. Where a base is built is Suggi's decision.
 | System | Name | Space | Jumps from home | Stations there | Status | Proposed by | Note |
 |---|---|---|---|---|---|---|---|
 | `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | east road inner outpost (built 2026-11-17, rule F33): 3 systems beyond border, 6 jumps from home; two belts of iron and copper near 100,000 each, sol alloy ore, grazer herds |
-| `atria` | Atria | lawless | 7 | none | chosen | Unity | north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers |
+| `atria` | Atria | lawless | 7 | CLTV Outpost Atria (outpost, CLTV) | built | Unity | north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers |
 | `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home |
 | `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space |
 | `felis` | Felis | lawless | 7 | none | chosen | Suggi | south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge |
