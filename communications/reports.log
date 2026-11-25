@@ -463,3 +463,12 @@ Failed: about 477,066 cr went on shield boosters for miners before the fix, caus
 Requests: ENT-540 (answer).
 Suggestions: a shared policy change that spends a division's money goes in as a test variant named in queue.log (F37); every network runner takes its danger set from dispatch.pirates.
 Report: pirate-gate-joined-booster-spend-stopped-deposits-ours.
+
+## [ENT-208] | 2026-11-25 06:56 UTC | Apollo | session | ref: reports/2026-11-25_apollo_kit-assembler-built-kit-row-running-hall-seats-read.md | see: orders.log ENT-092
+Session: scheduled run turn-apollo -- our own kit line built at Node Beta, its first kit made and CLTV Outpost Atria founded; the Guild Hall's seats read.
+Did: built the Outpost Frame Assembler at Node Beta (06:11 UTC, 600,000 cr from the treasury) after its 02:18 UTC try stopped on an unread treasury; one catch row for the Builder: 10 control nodes, 5 structural frames (1,201 cr), the kit crafted in our facility (06:39 UTC, 60 cr labor), CLTV Outpost Atria founded at atria_belt (06:47:59 UTC, 100,000 cr from the treasury; Lockbox and Fuel Bunker, rent 0); needs kit-line-assembler and atria-outpost-kit closed; route builder-home-outposts brings the Builder home from an outpost (it waited at Atria with its list closed, fill HALT 06:52 -> PASS 06:56 UTC); two mission tests by fill.py; build.py, craftchain.py (--facility) and found.py fixed; guidebook, knowledge faction-builds.md; queue ENT-331.
+Worked: outposts 1 -> 2 of 8; spend 1,425,267 cr of Unity's 1,600,000; fill gate PASS and plan check PASS; guide check PASS (max chapter 84.2%); division KPI 57.6 -> 70.8, idle 8 -> 5 (briefing 06:01 UTC).
+Failed: the assembler waited about four hours on one failed treasury read (errors.log ENT-207); haul-network 1,829 of 1,915 runs docked watch at 0 cr in 6 h (P0 alarm stands); 0 of 20 Piloting-10 haulers on tier-2 hulls (none bought: no freight that pays safely).
+Requests: none.
+Suggestions: the Guild Hall at GSC-0044 by the game's best-office rule: a Center then the Hall, 500 seats (+225) for about 10,000,000 cr in fees, 44,400 cr a seat, rent-free, at the gate (ENT-538); any gate of ours that reads -1 or 0 on an error should stop as `not read`.
+Report: kit-assembler-built-kit-row-running-hall-seats-read.
