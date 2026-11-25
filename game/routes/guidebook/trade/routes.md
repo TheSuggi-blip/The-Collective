@@ -1,9 +1,9 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-25. Evidence: plan.py check 01:29 UTC; fill.py check trader; runs.jsonl craft-network trader rows 20:28-23:56 UTC (453 runs, -479,693 cr); orders_scan.py 01:17 UTC (escrow 83,434 cr, 37 buys); commits d2045617, 3c205b6d, b3978b49.
+Status: proven. Updated: 2026-11-25. Evidence: plan.py check 07:18 UTC; fill.py check trader 07:18 UTC; sellgen.py scan 07:16 UTC; tool market crystal_melt 07:08 UTC; runs of the last 6 h by route (table runs, 07:04 UTC); commits 31940a05, 80b7af9d, 21e7776c, 8424c8bc.
 
-The plan file as applied on 2026-11-25 at 01:29 UTC (orders ENT-091,
+The plan file as applied on 2026-11-25 at 07:18 UTC (orders ENT-092,
 block MERCURY):
 
 - First, every ship: `fit-network` (tier-0 hulls detect as bursar
@@ -13,20 +13,25 @@ block MERCURY):
   `carry-sac-beta-to-hex-star`, gated by `requires.stored`, `requires.bid`).
 - Own rows: a `finish-*` route only for its mission's holders;
   `craft-network` on three test rows only (F37); the join corridors,
-  the capitals' lines, `@trade-sell > @trade-craft`.
+  the capitals' lines, `@trade-sell > @trade-craft`. `@trade-sell`
+  opens with one carry from every place where a trader's storage holds
+  a load of a good a far book bids deep for (`carry-melt-*-to-dheneb`,
+  `carry-phase-deep-range-to-sol`): each gated on the holder's own
+  storage and the far bid, one ship each, the lawless ones tests (F3).
 - Then, gated to where each ship stands: starters stripped once, the
   five Bursar desks, `bursar-network` (cargo 150 or less),
-  `bursar-network-freighter` (cargo over 150, cap 15), steel crafts,
-  `train-trading-*`, `train-jumps-trader`, park. No shared AutoNet
-  goes into Then before its trader runs pay: craft-network put there
-  by a plan apply of five divisions ran 73 traders for -479,693 cr.
+  `bursar-network-freighter` (cargo over 150, cap 19 so no big hold
+  falls to `train-jumps-trader`), steel crafts, `train-trading-*`,
+  `train-jumps-trader`, park. No shared AutoNet goes into Then before
+  its trader runs pay.
 
-Hulls: listed rungs of game/upgrade-policy.json only at their caps
-(Meridian 95k, Bulk Terms 100k); a T2 freighter on desk duty measured
-211 cr a ship-hour against 993 for a tier-0 desk (6 h, table runs).
+Hulls: tier-2 listings read each turn (`ship_listings`); none bought
+while a tier-2 freighter desk earns what a tier-0 desk earns (table
+runs, 6 h); a big hold pays on carries, where a listed Prayer serves.
 
-What would change it: craft-network's test rows paying; a listed T2
-under its cap; a Station Need or HEXC contract over the bid.
+What would change it: craft-network's test rows paying; a tier-2 hull
+measured above a tier-0 one on the division's work; a Station Need or
+HEXC contract over the bid; a far bid gone (the carries close alone).
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
