@@ -38,5 +38,14 @@
    "at": "haven:grand_exchange:grand_exchange_station",
    "store": "all"
   }
- ]
+ ],
+ "measured": {
+  "date": "2026-11-25",
+  "runs": 1,
+  "minutes": 1,
+  "credits_per_run": 2850,
+  "cph_per_ship": 244290,
+  "hours": 12,
+  "last_run": "2026-11-25T14:30:28Z"
+ }
 }

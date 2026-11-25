@@ -22,7 +22,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 116 | 54 | 62 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 685 | 131 | 544 | craft-armor-own-sirius: 15,140 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 2 | 0 | 2 | carry-levity-arneb-to-krynn: -280 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 2 | 0 | 2 | carry-levity-arneb-to-krynn: -340 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 67 | 20 | 47 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
 | All | | 1024 | 249 | 765 | |
 
