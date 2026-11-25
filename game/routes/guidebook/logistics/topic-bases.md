@@ -47,15 +47,16 @@ Status: proven. Updated: 2026-11-21. Evidence: build.py 2026-11-17 12:19 and 20:
 - Rent: faction_owned prints it (242 cr a cycle for all five, 2026-11-21 23:48 UTC); none at our own outpost.
 - Next, the Recruitment Center (cap 200): 2,000,000 cr, 500 boards, 1,000 plate, 300 flex polymer, Corporation Management 3; when the purse holds its fee (ENT-056). Its flex: `buy-flex-ironlight-to-node-beta`.
 
-### The Atria outpost and its kit line (orders.log ENT-091, P3; requests.log ENT-531)
-Status: test. Updated: 2026-11-25. Evidence: spacemolt_facility types and craft dry_run docked at Node Beta, Central Nexus and GSC-0044 (2026-11-25 00:09 to 00:36 UTC); base_plan outpost; table books; requests.log ENT-531, ENT-533; needs atria-outpost-kit, kit-line-assembler.
+### The Atria outpost and its kit line (orders.log ENT-092, P3; requests.log ENT-531)
+Status: test. Updated: 2026-11-25. Evidence: build.py RESULT lines (02:18 and 06:11 UTC, scratch); faction_owned and faction_list docked at Node Beta (06:11 UTC); spacemolt_facility types and craft dry_run (00:09 to 00:36 UTC); catalog outpost_kit; table holdings; requests.log ENT-531, ENT-537.
 
-The kit comes from our own line (Unity, ENT-531), not Arneb (999,999 a kit) nor Ironlight (no kit listed since 2026-11-17).
-- The line: an Outpost Frame Assembler (production, level 2, 600,000 cr from the treasury; 800 steel plate, 300 circuit boards, 120 reinforced frames, 40 control nodes; rent 209 cr a cycle at an empire station). `types` reads it buildable at Node Beta, Central Nexus and our outpost, but the outpost refuses `craft` (`no_service`: no crafting service there), so it stands at Node Beta beside the faction store.
-- A kit: 400 steel, 150 boards, 40 reinforced and 60 structural frames, 10 control nodes; 120 ticks, 60 cr labor.
-- Inputs: our steel and boards (Node Beta); reinforced frames bought at Central Nexus (4,220 cr, 885 deep; one bought and read first, F12); structural frames at Central Nexus (578, 5 deep) and The Experiment (775); control nodes from Trade's storage (ENT-533), else Ironlight Crossroads (1,035).
-- A public assembler stands at Confederacy Central Command (Sol, 10 jumps; the dry run's answer): a kit there for its owner's fee, unread.
-- The founding: found.py from Node Beta by Schedar, GSC-0050, Brachium, Nightveil, Acrab, Atria (6 jumps); 100,000 cr, the treasury. Its bunker: our own cells. The place: Atria Belt aluminum, gold; ice fields; an emission nebula. Nearest fuel and market 6 jumps.
+The kit comes from our own line (Unity, ENT-531, ENT-537), not Arneb (999,999 a kit) nor Ironlight (no kit listed since 2026-11-17).
+- The line: our Outpost Frame Assembler at Node Beta (faction_build 2026-11-25 06:11 UTC, 600,000 cr from the treasury; 800 steel plate, 300 circuit boards, 120 reinforced frames, 40 control nodes from the faction store there; 117 ticks under construction; rent 209 cr a cycle, labor 60 cr a run). `types` also reads it buildable at our outpost, but the outpost refuses `craft` (`no_service`), so it stands beside the faction store.
+- A kit (assemble_outpost_kit, facility only): 400 steel, 150 boards, 40 reinforced and 60 structural frames, 10 control nodes, from the crafter's own storage (cargo first); `craftchain.py --facility` (no workshop preset) runs it in our facility.
+- Inputs: steel and boards ours; reinforced frames at Central Nexus (4,220 cr, one bought and read first, F12); structural frames at Node Alpha (238), Central Nexus, The Experiment; control nodes from Trade's storage (ENT-533) or Nova Terra (962).
+- The first try stopped on an unread treasury (one failed read read as -1 cr): build.py now reads it four times and says `not read`.
+- The founding: found.py from Node Beta to Atria's belt (6 jumps from Node Beta, 7 from home in governance/empire.md; no pirate system on the way in dispatch.pirates); 100,000 cr from the treasury. Its bunker: our own cells. The place: Atria Belt iron and copper full, aluminum, gold; ice fields; an emission nebula.
+- A public assembler stands at Confederacy Central Command (10 jumps): a second source of kits for its owner's fee, unread.
 
 ### An outpost's faction store: goods go in, nothing comes out
 Status: proven. Updated: 2026-11-24. Evidence: runs.jsonl of craft-steel-faction-gsc-0044 (2026-11-24, 32 runs 'faction withdraw iron_ore: refused'); a one-unit hand test by an Officer docked at GSC-0044 (2026-11-24 12:14 to 12:20 UTC); the game's help of storage; game/rules/07-economy.md (Crafting); requests.log ENT-513.

@@ -24,9 +24,9 @@ Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-100; driver logs 2
 - A script that drives a pilot for minutes refreshes my hold before every call and stops when the order file names another hand or a runner: an order file 20 minutes old is dead to the dispatcher (the bunker filler lost at minute 31, ENT-100).
 - A runner I kill leaves its pilot unheld: `gate.py hold` it at once.
 - A batch that takes and releases pilots skips every pilot with an order file, my mark included.
-- Stop a driver by PID (`kill -9`), never `pkill -f` (it kills the tool's shell); SIGTERM runs `finally` and frees the pilot.
+- Stop a driver by PID, never `pkill -f` (it kills the tool's shell); SIGTERM runs `finally` and frees the pilot.
 - catch.py: `<base>` is where the row ends docked (with `--goto`, the goto's base); `--goto` waits up to 400 s for the goal: read the ship file, not the log; a row started during an earlier run catches that run's end.
-- A driver that outlives the turn: `persist_on_release`; logs by absolute path in the scratch folder (one in the clone held every push).
+- A driver that outlives the turn: `persist_on_release`, its log by absolute path in scratch (never in the clone); a log file's folder made in its own call first (a refused command makes none).
 
 ### Engine goals and loops
 Status: proven. Updated: 2026-11-21. Evidence: errors.log ENT-098, ENT-109; ship files 2026-11-16 03:03 UTC; catch.py logs 2026-11-17 00:10 to 04:01 UTC; commit 0f7a36a.
@@ -71,13 +71,13 @@ Status: proven. Updated: 2026-11-21. Evidence: plan.py and fill.py, 2026-11-16 t
 - A `comms.py append` file carries the turn's time in its name, appended only after the write answered `verified` (errors.log ENT-101). Logs name places by data file, never per-pilot cargo.
 
 ### Freight on the shipping board
-Status: proven. Updated: 2026-11-23. Evidence: shipping list_all, 164 contracts read 05:48 UTC and 165 read 08:54 UTC; game/rules/07-economy.md, row Packages; table stations (empire pirates); tables systems and lanes; route_run.py (no shipping step); queue.log ENT-262.
+Status: proven. Updated: 2026-11-25. Evidence: shipping list_all (2026-11-23 05:48 and 08:54 UTC; 2026-11-25 06:08 UTC, 106 contracts); game/rules/07-economy.md, row Packages; tables stations, systems, lanes; game/haul-policy.json; game/fleet/haul.py.
 
-- A freight package is always 100 cargo units: no Threshold (65) or Cobble (75) carries one; the board opens to us with a hull of 100 cargo or more.
-- Read the ends before the reward: the largest rewards (3,500 to 13,100 cr) start or end at pirate stations (100 of 164); on our roads and in Nebula space a contract pays 225 to 1,245 cr.
-- Map the ends before a hull is bought for it: each contract's origin system stands in `latest_beacon_fingerprint` (third field), its destination by station name in table stations; a breadth-first walk over table lanes gives the hops and the stronghold systems on the way (systems.stronghold). Read of 2026-11-23 08:54 UTC: 165 contracts, 103 touch a stronghold system, 49 end at stations not in our map, 13 run through mapped space, the best of them 361 cr.
-- The circuit runner has no freight step (accept, pick up, deliver): a freighter hull earns nothing on the board until one is built.
-- The read: `FULL=1 gate.py raw <docked pilot> list_all '{"eligible_as":"player","include_ineligible":true,"page":N}' shipping` (20 a page); without FULL the answer is cut at 3,000 characters.
+- A package is 100 cargo units: no Threshold (65) or Cobble (75) carries one.
+- Read the ends first: the largest rewards touch pirate strongholds (103 of 165, 2026-11-23); on our roads 225 to 1,245 cr. Ironlight's LHS 1140 to Gold Run (17 hops, about 1,700 cr, 2026-11-25) crosses lawless space: escorted or not at all.
+- Map the ends: origin system = third field of `latest_beacon_fingerprint` (or `origin_base_id`), destination `destination_base_id`; a walk over table lanes gives hops and stronghold systems.
+- haul.py (haul-network) takes, carries and delivers board contracts within haul-policy.json (`policed_only`, `exclude_strongholds`, `min_cr_per_jump`); the circuit runner has no freight step.
+- The read: `FULL=1 gate.py raw <docked pilot> list_all '{"eligible_as":"player","include_ineligible":true,"page":N}' shipping` (20 a page, in `shipments`); without FULL the answer is cut at 3,000 characters.
 
 ### Missions held half done, and boards per pilot
 Status: proven. Updated: 2026-11-24. Evidence: data/fleet/ships/hauler-*.json (mission_list, 06:20 UTC); runs of mission-federation-trade-route-prospectus-grand (04:22 UTC, 'not offered'), mission-sirius-expedition-sol (06:27 UTC, 15 runs 'not offered'), mission-old-charts-sol (06:40 UTC, +3,500 once); get_missions at Sol and get_active_missions by hand.

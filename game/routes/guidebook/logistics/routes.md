@@ -1,16 +1,15 @@
 # Logistics guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-25. Evidence: plan.py show and check, fill.py status and check hauler (2026-11-25 00:04 to 01:20 UTC); the tool route haul-network (hours 15 to 23 UTC of 2026-11-24); shipping.py list (00:35 UTC); requests.log ENT-531 to ENT-533; orders.log ENT-091 (block APOLLO).
+Status: proven. Updated: 2026-11-25. Evidence: plan.py show and check, fill.py status, fill and check hauler (2026-11-25 06:03 to 06:30 UTC); the tool route haul-network (hours of 2026-11-24 08:00 to 2026-11-25 05:00 UTC); data/routes/runs.jsonl (6 h to 06:10 UTC); shipping.py list (06:08 UTC); game/haul-policy.json (b0a2eef6); orders.log ENT-092 (block APOLLO).
 
 A free hauler takes the first open route of First, its own routes, Then (`plan.py show`). Earnings: the tool fleet, view=standing, member Apollo.
 
-- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), the `finish-*` routes (each with `requires.mission`), `fit-network` last.
-- Own: `finish-*` in the holders' rows only; `@newborn-nebula`, `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row. The Builder's row holds `@craft-reserve` alone: no far once mission and no buy route a funded wallet would open (the kit line's fund, 2026-11-25).
-- Then: `buy-steel-reserve-central-nexus` (`held_below` steel), `builder-home-node-beta`, `buy-carbon-reserve-node-beta` (`held_below` carbon 50,000), the far joins (`skills_below` corporation_management 7 keeps the Builder home), `haul-network-builder` (the Builder's watch: pickup within 2 jumps, delivery within 6), `haul-network` (94 ships), `park`.
-- `haul-network`: freight and supply only, no arbitrage (P5). It earned 120 cr in the nine hours 15 to 23 UTC of 2026-11-24: the board's contracts end at strongholds or lie 11 to 39 jumps out. Its ships wait docked at no fuel; read each turn.
-- The kit line (topic-bases.md) runs by hand rows of the skill logistics-stock (stage.py, catch.py, build.py): one facility, one kit.
-- What would change it: freight a hull can carry; the Guild Hall's gate (ENT-532: the 24-hour steady net at zero or above).
+- First: the once missions (`voidborn-*`, first hunts, `mission-*` of the five capitals; F34, F35), the `finish-*` routes (each with `requires.mission`), `fit-network` last; tests that fill.py adds go in front of one ship's own row.
+- Own: `finish-*` in the holders' rows only; `@newborn-nebula`, `@newborn-rim`; `@outpost-supply`; `@stored-goods`, `@craft-reserve` (docked crafts, closed at the reserve max, F36); `@train-hauler`; receivers' `craft-steel-logistics-<station>` first in their rows. No give-to-hauler route in a hauler row. The Builder's row holds `@craft-reserve` alone; its builds run as catch.py rows of the skill logistics-stock.
+- Then: `buy-steel-reserve-central-nexus`, `builder-home-node-beta`, `buy-carbon-reserve-node-beta`, the far joins (`skills_below` corporation_management 7 keeps the Builder home), `craft-network`, `haul-network-builder` (the Builder's watch), `haul-network` (94 ships), `park`.
+- `haul-network`: freight, supply, and again arbitrage and liquidate_surplus (b0a2eef6, Suggi's directive by Trinity). In the 6 hours to 06:10 UTC of 2026-11-25, 1,829 of 1,915 runs were docked watch at 0 cr; the board's paying contracts end at strongholds or cross lawless space (Ironlight LHS 1140 to Gold Run, 17 hops). Its ships wait docked at no fuel: the division's watch, not paying work.
+- What would change it: freight a hull can carry safely (Military's escort lane reopened); the Guild Hall's gate (ENT-538: the 24-hour steady net at zero or above).
 
 ### Route Templates
 Status: proven. Updated: 2026-11-21. Evidence: game/routes/templates/logistics.json (2026-11-21); plan.py templates; Suggi 2026-11-16 and rule F22.
