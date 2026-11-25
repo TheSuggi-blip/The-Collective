@@ -134,3 +134,4 @@ Planned:
 | Read four hours of census-frontier at 145 min and SITES of census-north and census-region-altais after the move: still over the 3-hour target -> 10 min lower, never more ships | next turn |
 | Read hive.py spend for Intel: modules bought once should read 0 after the loadouts were emptied; fit-network on scouts only strips | next turn |
 | Measure fuel a jump of the scouts that carry a fuel optimizer against the rest before any module returns to an Intel loadout (P1) | next turn |
+| Read the envoy's replies through diplomacy.py threads twice a turn; beacons go out by themselves (next round 2026-11-26 09:26 UTC); replies to Unity | every turn |
