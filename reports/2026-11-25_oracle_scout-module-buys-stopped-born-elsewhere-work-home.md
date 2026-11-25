@@ -30,6 +30,7 @@ Ships: 50 scouts, 0 lost in 24 h (table stats_pilot_hour, key ships_lost), 0 gro
 
 ## Problems
 
+- Scar (errors.log ENT-209): after my last turn fit-network bought 16 modules for scouts, 121,084 cr from 05:51 to 11:10:53 UTC (onetime.json). Cause: at 05:13 UTC I took only the afterburners out of the Intel loadouts and left the other lists, which fit_net reads as buys for every free slot. Fixed by 34ebb36e at 11:21:55 UTC.
 - Frontier: 183 min against 180 at 11:27 UTC. Cause: reads come a trip after a system falls due at 155. Action: cadence 145. The old line compared 164 min with the 155-minute cadence at 11:04 UTC; judged against the target, the margin at 11:27 UTC was 183 against 180.
 - SITES census-north: Sadalsuud 191 min at 11:27 UTC, a scout was flying to it. The move leaves census-north with 19 systems for the Voidborn readers; its next reads are judged next turn.
 - Score fell 67.9 to 66.7 in the turn, idle 3 to 5 while the Outer Rim rows changed and their scouts head home (scorecard 11:36 UTC).
