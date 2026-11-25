@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 112.
+Routes: 113.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -79,6 +79,7 @@ Routes: 112.
 | [carry-lead-beta-to-sirius](carry-lead-beta-to-sirius.json) | circuit | beyond the border, 9 jumps | Stored lead ore carried from Node Beta to Sirius Observatory Station and sold into its bid at 35 cr or more | up to 1 ships, with 30 lead_ore stored at node_beta_industrial_station, while sirius_observatory_station bids 35 cr for lead_ore | TBD | TBD | TBD | TBD | -- |
 | [carry-lead-nexus-to-grand-exchange](carry-lead-nexus-to-grand-exchange.json) | circuit | beyond the border, 21 jumps | Stored lead ore carried from central_nexus to grand_exchange_station and sold into its bid at 200 cr or more | up to 1 ships, with 30 lead_ore stored at central_nexus, while grand_exchange_station bids 200 cr for lead_ore | TBD | TBD | TBD | TBD | -- |
 | [carry-lead-nexus-to-sirius](carry-lead-nexus-to-sirius.json) | circuit | beyond the border, 9 jumps | Stored lead ore carried from Central Nexus to Sirius Observatory Station and sold into its bid at 35 cr or more | up to 1 ships, with 30 lead_ore stored at central_nexus, while sirius_observatory_station bids 35 cr for lead_ore | TBD | TBD | TBD | TBD | -- |
+| [carry-levity-arneb-to-krynn](carry-levity-arneb-to-krynn.json) | circuit | beyond the border, 20 jumps | Levity bladders stored at Arneb carried to Crimson War Citadel (Krynn) and stored there, for the HEXC supply contract of 750 | up to 1 ships, with 30 levity_bladder stored at cca9e51e6eaf8dada77f698ccc4a09c7 | TBD | TBD | TBD | TBD | -- |
 | [carry-liner-first-step-to-ramens](carry-liner-first-step-to-ramens.json) | circuit | beyond the border, 18 jumps | Stored chemical liners carried from First Step to Ramen's Rest and sold into its bid at 900 cr or more | up to 1 ships, with 6 chemical_liner stored at first_step_memorial_station, while ramens_rest bids 900 cr for chemical_liner | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-first-step-to-experiment](carry-melt-first-step-to-experiment.json) | circuit | beyond the border, 18 jumps | Stored crystal_melt carried from first_step_memorial_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 20 crystal_melt stored at first_step_memorial_station, while the_experiment_research_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-nexus-to-cargo-lanes](carry-melt-nexus-to-cargo-lanes.json) | circuit | beyond the border, 20 jumps | Crystal melt stored by Trade at Central Nexus carried to the station bid at Cargo Lanes Freight Depot (Nebula) and sold there | up to 1 ships, with 30 crystal_melt stored at central_nexus, while cargo_lanes_freight_depot bids 2000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |

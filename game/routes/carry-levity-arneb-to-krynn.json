@@ -1,0 +1,32 @@
+{
+ "id": "carry-levity-arneb-to-krynn",
+ "kind": "circuit",
+ "title": "Levity bladders stored at Arneb carried to Crimson War Citadel (Krynn) and stored there, for the HEXC supply contract of 750",
+ "note": "2026-11-25 13:20 UTC (Mercury): orders ENT-093 P1, rule F39 channel 2 (partner Notice Board contracts, filled by title). Crimson War Citadel's board offers `HEXC supply contract: Levity Bladder`, 750 to deliver at that station for 55,125 cr (74 a unit; board read 13:18 UTC, data/missions); levity bladder bids 1 to 2 cr everywhere read (table books 13:19 UTC). A delivery objective counts the goods in the pilot's storage at the target (game/rules/07-economy.md, 0.727.1), so the load is stored at Krynn run by run and the contract is accepted and handed in once one pilot's storage there holds 750. A pilot whose own storage at Arneb holds 30 or more withdraws a hold and stores it at Krynn; nothing is bought or sold. Road 6 jumps, 3 lawless (arneb, kornephoros, albireo): one ship (rules F3, F37).",
+ "max_ships": 1,
+ "requires": {
+  "stored": {
+   "at": "cca9e51e6eaf8dada77f698ccc4a09c7",
+   "item": "levity_bladder",
+   "min": 30
+  }
+ },
+ "stops": [
+  {
+   "at": "arneb:a356fc2c1744c0425cf6cf47f48def92:cca9e51e6eaf8dada77f698ccc4a09c7",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "levity_bladder",
+     "qty": 600
+    }
+   ]
+  },
+  {
+   "at": "krynn:war_citadel:crimson_war_citadel",
+   "store": [
+    "levity_bladder"
+   ]
+  }
+ ]
+}

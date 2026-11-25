@@ -19,19 +19,19 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 98 | 23 | 75 | finish-five-capitals-sol: 12,230 cr a run |
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 16 | 3 | 13 | carry-melt-sirius-to-dheneb: 368,100 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 112 | 54 | 58 | not measured yet |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 113 | 54 | 59 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 685 | 131 | 544 | craft-armor-own-sirius: 15,140 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 2 | 0 | 2 | need-ember-gland-krynn: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 67 | 20 | 47 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 1020 | 248 | 762 | |
+| All | | 1021 | 248 | 763 | |
 
 ## Routes by Zone and Kind
 
 | Zone | Routes | bursar | census | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | Farthest system, jumps from home |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | home space | 248 | 0 | 1 | 211 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 3 |
-| beyond the border | 762 | 0 | 24 | 277 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 29 |
+| beyond the border | 763 | 0 | 24 | 278 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 29 |
 | not on the chart | 10 | 2 | 0 | 0 | 1 | 2 | 0 | 2 | 0 | 2 | 0 | 1 | -- |
 
 ## Plans by Role
