@@ -264,5 +264,49 @@ class RemoteBookTests(unittest.TestCase):
         self.assertEqual(self.stale_books(str(self.data / "none"), "here", self.now, 8, 3600), [])
 
 
+class RefuelHopTests(unittest.TestCase):
+    """A census leg longer than one tank calls at fuel stations on the way (2026-11-25: 278 census legs were refused
+    in two hours, `fuel 95 short ... not flown`, by scouts docked at stations with full tanks, the system farther
+    than one tank; fuelplan.plan_refuel_hop picks each stop). [] flies as it stands; None stays refused."""
+
+    LINE = {"s0": ["s1"], "s1": ["s0", "s2"], "s2": ["s1", "s3"], "s3": ["s2", "s4"], "s4": ["s3", "s5"],
+            "s5": ["s4", "s6"], "s6": ["s5"]}
+    SHIP = {"max_fuel": 45, "modules": []}            # 3 a jump (45 / 45 under the floor of 3), 20 spare
+
+    def setUp(self):
+        import sys
+        sys.path.insert(0, str(CENSUS.parent))
+        import fuelplan
+        self.fp = fuelplan
+        (self.refuel_hops,) = load("refuel_hops")
+
+    def test_a_tank_that_reaches_flies_with_no_stop(self):
+        stations = {"s0": ("p0", "b0")}
+        self.assertEqual(self.refuel_hops(self.LINE, "s0", "s2", 2, stations, 45, 45, self.SHIP, self.fp), [])
+
+    def test_a_far_system_is_reached_by_the_stations_between(self):
+        stations = {"s0": ("p0", "b0"), "s3": ("p3", "b3"), "s6": ("p6", "b6")}
+        ship = {"max_fuel": 30, "modules": []}
+        hops = self.refuel_hops(self.LINE, "s0", "s6", 0, stations, 30, 30, ship, self.fp)
+        self.assertEqual([h[1] for h in hops], ["s3"])      # 6 x 3 + 20 = 38 over 30; from s3: 3 x 3 + 20 = 29
+        self.assertEqual(hops[0], (3, "s3", "p3", "b3"))
+        half = self.refuel_hops(self.LINE, "s3", "s6", 0, stations, 10, 30, ship, self.fp)
+        self.assertEqual([h[1] for h in half], ["s3"])      # a low tank at a station fills there first
+
+    def test_no_station_between_stays_refused(self):
+        stations = {"s0": ("p0", "b0")}
+        self.assertIsNone(self.refuel_hops(self.LINE, "s0", "s6", 6, stations, 45, 45, self.SHIP, self.fp))
+
+    def test_off_the_chart_is_refused(self):
+        self.assertIsNone(self.refuel_hops(self.LINE, "s0", "zz", 0, {"s0": ("p0", "b0")}, 45, 45, self.SHIP, self.fp))
+
+    def test_the_stops_are_bounded(self):
+        line = {"t%d" % i: [n for n in ("t%d" % (i - 1), "t%d" % (i + 1)) if 0 <= int(n[1:]) <= 30] for i in range(31)}
+        stations = {"t%d" % i: ("p%d" % i, "b%d" % i) for i in range(0, 31, 5)}
+        self.assertIsNone(self.refuel_hops(line, "t0", "t30", 0, stations, 45, 45, self.SHIP, self.fp, limit=2))
+        hops = self.refuel_hops(line, "t0", "t30", 0, stations, 45, 45, self.SHIP, self.fp, limit=6)
+        self.assertTrue(hops and len(hops) <= 6 and hops[-1][1] != "t0")
+
+
 if __name__ == "__main__":
     unittest.main()

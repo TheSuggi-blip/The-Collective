@@ -341,6 +341,43 @@ def refuel_at(stop):
     return after
 
 
+def refuel_hops(lanes, here, target, onward, stations, tank, max_fuel, ship, fp, limit=3):
+    """The fuel stations to call at, in order, so that the tank flies from `here` to `target` and `onward` jumps on to
+    fuel: [] when the tank flies it as it stands, None when no chain of at most `limit` stops brings it in reach.
+    Each stop is (jumps, system, poi, base), reached by fuelplan's rule (fp.fuel_short: a jump's fuel and the spare
+    of the ship), the one nearest the target first, a stop at `here` only to fill a tank that is not full; at each
+    stop the tank is taken as full (2026-11-25: 278 census legs refused in two hours by scouts with full tanks,
+    the system farther than one tank)."""
+    dist_t = fp.jumps(lanes, target, 99)
+    if here not in dist_t or tank is None:
+        return None
+    hops, cur, fuel, filled = [], here, tank, set()
+    while True:
+        if not fp.fuel_short(fuel, dist_t[cur] + onward, ship=ship):
+            return hops
+        if len(hops) >= limit:
+            return None
+        reach = fp.jumps(lanes, cur, 99)
+        best = None
+        for system, (poi, base) in sorted(stations.items()):
+            d = reach.get(system)
+            if d is None or system not in dist_t or (d and fp.fuel_short(fuel, d, ship=ship)):
+                continue
+            if system == cur:
+                if fuel >= max_fuel or system in filled:
+                    continue
+            elif dist_t[system] >= dist_t[cur]:
+                continue
+            cand = (dist_t[system], d, system, poi, base)
+            if best is None or cand < best:
+                best = cand
+        if best is None:
+            return None
+        hops.append((best[1], best[2], best[3], best[4]))
+        cur, fuel = best[2], max_fuel
+        filled.add(cur)
+
+
 def end_stop(stay, last_station, short, stop):
     """Where a census ends: ('stay', None) docked where it last read (--stay); ('fuel', stop) with --stay and
     docked nowhere, at the nearest station with fuel (2026-11-23: a scout refused by a foreign station, `Access
@@ -541,16 +578,23 @@ if WAY is not None:
     WAY += ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0)
 TANK = fuel()
 if _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):                     # never fly out on a tank that cannot take the ship on to fuel
+    ON = ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0)
+    MAXF = (SHIP_DOC or {}).get('max_fuel') if isinstance((SHIP_DOC or {}).get('max_fuel'), (int, float)) else TANK
+    HOPS = refuel_hops(LANES, HERE, system_id, ON, STATIONS, TANK, MAXF, SHIP_DOC, _fp) if HERE else None
     STOP = nearest_fuel(LANES, HERE, STATIONS)
+    STOPS = HOPS if HOPS else ([STOP] if STOP else [])       # a far system by the stations between, else as before
     say(f'fuel {TANK} short of {_PJ * WAY + _SP:.0f} for {system_id} and on to fuel: '
-        + (f'fuel stop at {STOP[1]} first' if STOP else 'no station with fuel on the chart'))
-    if STOP:
+        + (f'fuel stop at {", ".join(s[1] for s in STOPS)} first' if STOPS else 'no station with fuel on the chart'))
+    for STOP in STOPS:
         before_ref = TANK
         TANK = refuel_at(STOP)
-        if TANK is not None and before_ref is not None and TANK > before_ref:
-            WAY2 = jumps(LANES, STOP[1], 99).get(system_id)
-            WAY = None if WAY2 is None else WAY2 + (ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0))
-    if not STOP or _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):
+        if TANK is None or before_ref is None or (TANK <= before_ref and TANK < (MAXF or 0)):
+            break                                       # a stop that gave no fuel ends the way there
+    if STOPS:
+        HERE = ship_system() or HERE
+        WAY2 = jumps(LANES, HERE, 99).get(system_id) if HERE else None
+        WAY = None if WAY2 is None else WAY2 + ON
+    if not STOPS or _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):
         write_row(system_id, STARTED, WALLET_BEFORE, wallet(), 0, 0, [f'fuel {TANK} short for {system_id}: not flown'])
         print(f'RESULT {pilot}: {system_id}: not flown, fuel {TANK} short of the way there and on to fuel', flush=True)
         sys.exit(0)
