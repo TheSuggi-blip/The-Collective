@@ -5,6 +5,11 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "carry-melt-sirius-to-dheneb",
+    "carry-melt-sol-to-dheneb",
+    "carry-melt-cargo-lanes-to-dheneb",
+    "carry-melt-first-step-to-dheneb",
+    "carry-melt-frontier-to-dheneb",
     "carry-bladder-alpha-to-sol",
     "carry-melt-nexus-to-sol",
     "carry-melt-nexus-to-frontier",
