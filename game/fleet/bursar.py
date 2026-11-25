@@ -686,6 +686,90 @@ def _is_excess_buy(listed_here, tot_need, other_q, max_units):
     return listed_here > max(allowed_here, int(allowed_here * 1.25))
 
 
+
+def _bursar_can_withdraw_faction(data, pilot):
+    emp = read_json(Path(data) / "empire" / "empire.json", {})
+    if not isinstance(emp, dict):
+        return False
+    allowed = {"leader", "officer"}
+    for r in (emp.get("roles") or []):
+        if isinstance(r, dict) and (r.get("permissions") or {}).get("manage_treasury"):
+            for k in ("id", "name"):
+                if r.get(k):
+                    allowed.add(str(r[k]).strip().lower())
+    for m in (emp.get("members") or []):
+        if not isinstance(m, dict):
+            continue
+        nm = str(m.get("pilot") or m.get("name") or m.get("member") or m.get("username") or "").strip()
+        if nm == str(pilot):
+            return str(m.get("role") or m.get("rank") or "").strip().lower() in allowed
+    return False
+
+
+def _bursar_active_lockboxes(data):
+    emp = read_json(Path(data) / "empire" / "empire.json", {})
+    out = set()
+    if isinstance(emp, dict):
+        for f in (emp.get("facilities") or []):
+            if isinstance(f, dict) and str(f.get("type") or "") == "faction_lockbox" and str(f.get("status") or "active") == "active":
+                if f.get("base"):
+                    out.add(str(f["base"]))
+    return out
+
+
+def _sync_bursar_receivers(data, claims, now_t=None):
+    """Auto-register every live docked Bursar Trader into data/fleet/receivers.json['trader'][base_id] so Miners, Hunters, and Haulers always find the hub's docked Receiver."""
+    now_t = time.time() if now_t is None else float(now_t)
+    rec_p = Path(data) / "fleet" / "receivers.json"
+    rec = read_json(rec_p, {})
+    if not isinstance(rec, dict):
+        rec = {}
+    tr = dict(rec.get("trader") or {}) if isinstance(rec.get("trader"), dict) else {}
+    by_base = {}
+    for _k, _v in (claims.items() if isinstance(claims, dict) else []):
+        if not isinstance(_v, dict) or (now_t - float(_v.get("claimed_at") or 0)) > 7200.0:
+            continue
+        b_id = str(_v.get("base") or _k.split("#")[0] or "").strip()
+        p_nm = str(_v.get("pilot") or "").strip()
+        if b_id and p_nm:
+            by_base.setdefault(b_id, [])
+            if p_nm not in by_base[b_id]:
+                by_base[b_id].append(p_nm)
+    if by_base:
+        for b_id, plist in by_base.items():
+            tr[b_id] = plist[0] if len(plist) == 1 else sorted(plist)
+        rec["trader"] = tr
+        write_json(rec_p, rec)
+
+
+def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4):
+    """Pure planner: select non-reserved marketable faction lockbox items at this hub to pull for immediate Bursar selling/crafting."""
+    if not fac_items or free_hold < 1:
+        return []
+    cands = []
+    for iid, q in fac_items.items():
+        qty = int(q or 0)
+        if qty <= 0 or iid in PROTECTED_ITEMS or iid in reserved:
+            continue
+        row = book.get(iid) or {}
+        bid = float(row.get("best_buy") or 0)
+        ask = float(row.get("best_sell") or 0)
+        if bid <= 0 and ask <= 0:
+            continue
+        uval = bid if bid > 0 else ask * 0.7
+        cands.append((uval * min(qty, free_hold), iid, min(qty, free_hold)))
+    cands.sort(reverse=True)
+    picks = []
+    rem = int(free_hold)
+    for _, iid, tq in cands[:max_kinds]:
+        take = min(tq, rem)
+        if take >= 1:
+            picks.append((iid, take))
+            rem -= take
+        if rem < 1:
+            break
+    return picks
+
 def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, catalog_vals, credits, policy, fleet_open_buys=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
@@ -1058,6 +1142,33 @@ def main(argv=None):
                     if q > 0 and iid not in PROTECTED_ITEMS:
                         raw("deposit", {"item_id": iid, "quantity": q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
                         time.sleep(TICK)
+                # Auto-sync live Bursar Traders into receivers.json so every hub has an active Receiver!
+                try:
+                    _sync_bursar_receivers(DATA, read_json(DATA / "fleet" / "bursar_claims.json", {}))
+                except Exception:
+                    pass
+                # Pull marketable non-reserved Faction Lockbox surplus at this hub into Bursar storage for 0-fuel sale & crafting!
+                if (policy.get("sell") or {}).get("sell_faction_storage", True) and base_id in _bursar_active_lockboxes(DATA) and _bursar_can_withdraw_faction(DATA, pilot):
+                    try:
+                        fd = body(raw("view", {"station_id": base_id, "target": "faction"}, group="spacemolt_storage"))
+                        frows = fd.get("items") or fd.get("storage") or []
+                        fac_here = {}
+                        for fr in (frows if isinstance(frows, list) else []):
+                            if isinstance(fr, dict) and fr.get("item_id"):
+                                fac_here[str(fr["item_id"])] = fac_here.get(str(fr["item_id"]), 0) + int(fr.get("quantity") or 0)
+                        _, sd_b = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
+                        sh_b = ((sd_b.get("state") or {}).get("ship") or {}) if isinstance(sd_b, dict) else {}
+                        free_h = max(0, int(sh_b.get("cargo_capacity") or 80) - int(sh_b.get("cargo_used") or 0))
+                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=4)
+                        for p_iid, p_q in picks:
+                            rw = raw("withdraw", {"item_id": p_iid, "quantity": p_q, "target": "faction"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            if "error" not in rw:
+                                raw("deposit", {"item_id": p_iid, "quantity": p_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                say("faction_pull %d %s -> self for sale/craft @ %s" % (p_q, p_iid, base_id))
+                    except Exception:
+                        pass
                 stored = get_stored(base_id)
                 orders_resp = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
                 cr = get_credits()

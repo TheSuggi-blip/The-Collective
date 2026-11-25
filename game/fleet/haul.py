@@ -290,14 +290,11 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
     max_spend = min(float(policy.get("max_buy_spend_cr") or 15000), max(0.0, float(avail_cash or 0)))
     sh_set = set(exclude_bases or ())
 
+    can_fac = _pilot_can_withdraw_faction(data, pilot)
     stor = read_json(Path(data) / "stock" / "storage.json", {})
-    fac_by_base = {}
+    fac_by_base = _load_faction_storage_by_base(data, stor)
     self_by_base = {}
     if isinstance(stor, dict):
-        for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
-            for b_id, items in _storage_stations(f_raw).items():
-                if isinstance(items, dict):
-                    fac_by_base[b_id] = items
         for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
             if isinstance(items, dict):
                 self_by_base[b_id] = items
@@ -378,7 +375,8 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             min_lot = min(deficit, int(hold_cap), lot_floor)
 
             chosen = None
-            for src_t, src_map in (("faction", fac_by_base), ("self", self_by_base)):
+            _upk_srcs = (("faction", fac_by_base), ("self", self_by_base)) if can_fac else (("self", self_by_base),)
+            for src_t, src_map in _upk_srcs:
                 for sb_id, sitems in src_map.items():
                     if sb_id in owned_hubs or sb_id in sh_set or sb_id not in base_map:
                         continue
@@ -1067,6 +1065,202 @@ def _storage_stations(entry):
     return {k: v for k, v in entry.items() if isinstance(v, dict)}
 
 
+
+def _pilot_can_withdraw_faction(data, pilot):
+    """True only if pilot holds Leader/Officer (manage_treasury) in empire.json so Member haulers never burn fuel on permission-denied withdraws."""
+    emp = read_json(Path(data) / "empire" / "empire.json", {})
+    if not isinstance(emp, dict):
+        return False
+    allowed_roles = {"leader", "officer"}
+    for r in (emp.get("roles") or []):
+        if isinstance(r, dict) and (r.get("permissions") or {}).get("manage_treasury"):
+            for k in ("id", "name"):
+                if r.get(k):
+                    allowed_roles.add(str(r[k]).strip().lower())
+    for m in (emp.get("members") or []):
+        if not isinstance(m, dict):
+            continue
+        nm = str(m.get("pilot") or m.get("name") or m.get("member") or m.get("username") or "").strip()
+        if nm == str(pilot):
+            rl = str(m.get("role") or m.get("rank") or "").strip().lower()
+            return rl in allowed_roles
+    return False
+
+
+def _load_faction_storage_by_base(data, stor=None):
+    """Merge live empire.json faction_storage with stock/storage.json Faction rows so Haulers always see 100% of current Lockbox stock."""
+    out = {}
+    if isinstance(stor, dict):
+        for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
+            for b_id, items in _storage_stations(f_raw).items():
+                if isinstance(items, dict):
+                    dst = out.setdefault(str(b_id), {})
+                    for k, v in items.items():
+                        dst[str(k)] = max(int(dst.get(str(k)) or 0), int(v or 0))
+    emp = read_json(Path(data) / "empire" / "empire.json", {})
+    if isinstance(emp, dict):
+        for row in (emp.get("faction_storage") or []):
+            if not isinstance(row, dict):
+                continue
+            b_id = str(row.get("base") or row.get("base_id") or "")
+            iid = str(row.get("item") or row.get("item_id") or "")
+            qty = int(row.get("units") or row.get("quantity") or 0)
+            if b_id and iid and qty > 0 and iid != "fuel":
+                dst = out.setdefault(b_id, {})
+                dst[iid] = max(int(dst.get(iid) or 0), qty)
+    return out
+
+
+def _load_reserved_items_exact(data):
+    """Strict non-blocking reserve set: PROTECTED_ITEMS + reserve.tsv keep-all + active short_items & supply_status deficits."""
+    reserved = set(PROTECTED_ITEMS)
+    db = Path(data) / "store" / "read.db"
+    fleet_totals = {}
+    if db.is_file():
+        con = None
+        try:
+            import worldcache as _wc
+            con = _wc.ro_db(db, timeout=3.0)
+            tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
+            if "need_status" in tbls:
+                ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
+                if "short_items" in ns_cols:
+                    for (txt,) in con.execute("SELECT short_items FROM need_status WHERE short_items IS NOT NULL"):
+                        for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(txt or "")):
+                            reserved.add(m.group(1))
+            if "supply_status" in tbls:
+                for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
+                    if iid:
+                        fleet_totals[str(iid)] = int(stk or 0)
+                        if int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
+                            reserved.add(str(iid))
+            if "holdings" in tbls:
+                for iid, u in con.execute("SELECT item, SUM(units) FROM holdings GROUP BY item").fetchall():
+                    if iid:
+                        fleet_totals[str(iid)] = max(fleet_totals.get(str(iid), 0), int(u or 0))
+        except sqlite3.Error:
+            pass
+        finally:
+            if con is not None:
+                con.close()
+    res_tsv = REPO / "game" / "reserve.tsv"
+    if res_tsv.is_file():
+        try:
+            for line in res_tsv.read_text(encoding="utf-8", errors="replace").splitlines():
+                if not line or line.startswith("#") or line.lower().startswith("kind"):
+                    continue
+                cols = line.split("	")
+                if len(cols) >= 3 and cols[0].strip() == "keep":
+                    rid = cols[1].strip()
+                    lim = cols[2].strip().lower()
+                    if lim == "all":
+                        reserved.add(rid)
+                    elif lim.isdigit() and fleet_totals.get(rid, 0) < int(lim):
+                        reserved.add(rid)
+        except OSError:
+            pass
+    return reserved
+
+
+def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None):
+    """Pull non-reserved surplus from lawless Owned Outposts & non-Bursar hubs to the nearest policed Trade Hub with a docked Bursar Trader."""
+    if hold_cap < 1:
+        return None
+    now_t = time.time() if now_t is None else float(now_t)
+    can_fac = _pilot_can_withdraw_faction(data, pilot)
+    max_pick = int(policy.get("max_jumps_pickup") or 16)
+    max_del = int(policy.get("max_jumps_delivery") or 35)
+    min_u = int(policy.get("consolidate_min_units") or 10)
+    min_val = float(policy.get("consolidate_min_value_cr") or 250)
+    sh_set = set(exclude_bases or ())
+    reserved = _load_reserved_items_exact(data)
+
+    claims = read_json(Path(data) / "fleet" / "bursar_claims.json", {})
+    bursar_hubs = []
+    for b_id, rec in (claims.items() if isinstance(claims, dict) else []):
+        if not isinstance(rec, dict) or (now_t - float(rec.get("claimed_at") or 0)) > 7200.0:
+            continue
+        loc = base_map.get(str(b_id))
+        if loc and loc[3] and str(b_id) not in sh_set and loc[0] not in sh_set:
+            bursar_hubs.append((str(b_id), loc, str(rec.get("pilot") or "")))
+    if not bursar_hubs:
+        return None
+
+    val_by_item = {}
+    for r in books_rows or []:
+        iid = str(r.get("item") or "")
+        if not iid:
+            continue
+        bp = float(r.get("bid") or 0)
+        ap = float(r.get("ask") or 0)
+        v = bp if bp > 0 else (ap * 0.7 if ap > 0 else 0)
+        if v > val_by_item.get(iid, 0):
+            val_by_item[iid] = v
+
+    stor = read_json(Path(data) / "stock" / "storage.json", {})
+    owned_hubs = load_cltv_owned_hubs(data)
+    bursar_base_set = {b for b, _, _ in bursar_hubs}
+    sources = []
+    if isinstance(stor, dict):
+        for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
+            if isinstance(items, dict) and str(b_id) not in bursar_base_set:
+                sources.append(("self", str(b_id), items))
+    if can_fac:
+        for b_id, items in _load_faction_storage_by_base(data, stor).items():
+            if b_id in owned_hubs or b_id not in bursar_base_set:
+                sources.append(("faction", b_id, items))
+
+    best = None
+    for src_t, b_id, items in sources:
+        if b_id not in base_map or b_id in sh_set:
+            continue
+        oloc = base_map[b_id]
+        if oloc[0] in sh_set:
+            continue
+        p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+        if p_hops is None or p_hops > max_pick:
+            continue
+        nearest_dst = None
+        for db, dloc, bp in bursar_hubs:
+            if db == b_id:
+                continue
+            dh = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
+            if dh is not None and dh <= max_del:
+                if nearest_dst is None or dh < nearest_dst[0]:
+                    nearest_dst = (dh, db, dloc, bp)
+        if not nearest_dst:
+            continue
+        d_hops, db, dloc, b_pilot = nearest_dst
+        for iid, qty in items.items():
+            q = int(qty or 0)
+            if b_id in owned_hubs:
+                q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
+            if q < min_u or iid in reserved:
+                continue
+            uval = max(4.0, float(val_by_item.get(iid) or 0.0))
+            take_q = min(q, int(hold_cap))
+            est_val = take_q * uval
+            if est_val < min_val:
+                continue
+            max_slots = min(6, max(1, q // max(1, int(hold_cap))))
+            jkey = None
+            for si in range(max_slots):
+                ck = ("cons:%s:%s:%s:%s" % (src_t, b_id, db, iid)) if si == 0 else ("cons:%s:%s:%s:%s#%d" % (src_t, b_id, db, iid, si))
+                if ck not in claimed_keys:
+                    jkey = ck
+                    break
+            if not jkey:
+                continue
+            tot_h = max(1, p_hops + d_hops)
+            sc = est_val / float(tot_h)
+            if best is None or sc > best[0]:
+                best = (sc, {
+                    "job_key": jkey, "item": iid, "qty": take_q, "source_target": src_t,
+                    "origin": oloc, "dest": dloc, "bursar_pilot": b_pilot,
+                    "est_val": int(round(est_val)), "pickup_hops": p_hops, "delivery_hops": d_hops,
+                })
+    return best[1] if best else None
+
 def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys):
     """Find needed items held in THIS pilot's own storage at a remote station that should move to a home_base."""
     home_bases = [b for b in (policy.get("home_bases") or []) if b in base_map]
@@ -1210,11 +1404,9 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
             if isinstance(items, dict):
                 sources.append(("self", b_id, items))
-        if policy.get("allow_faction_surplus_liquidation", True):
-            for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
-                for b_id, items in _storage_stations(f_raw).items():
-                    if isinstance(items, dict):
-                        sources.append(("faction", b_id, items))
+        if policy.get("allow_faction_surplus_liquidation", True) and _pilot_can_withdraw_faction(data, pilot):
+            for b_id, items in _load_faction_storage_by_base(data, stor).items():
+                sources.append(("faction", b_id, items))
     if not sources:
         return None
 
@@ -1235,7 +1427,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
         iid = str(r.get("item") or "")
-        if not (iid and bp >= 10.0 and bq >= 1):
+        if not (iid and bp >= 5.0 and bq >= 1):
             continue
         if policed and not loc[3]:
             if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):
@@ -1271,7 +1463,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                 est_rev = take_q * bid_p - tot_hops * 45.0
                 if est_rev < min_rev:
                     continue
-                max_slots = min(3, max(1, min(q, int(bid_q)) // max(1, int(hold_cap))))
+                max_slots = min(int(policy.get('liquidate_max_slots') or 8), max(1, min(q, int(bid_q)) // max(1, int(hold_cap))))
                 jkey = None
                 for slot_i in range(max_slots):
                     cand_k = ("liq:%s:%s:%s:%s" % (src_target, b_id, sb, iid)) if slot_i == 0 else ("liq:%s:%s:%s:%s#%d" % (src_target, b_id, sb, iid, slot_i))
@@ -1956,6 +2148,45 @@ def main(argv=None):
                                 raw("deposit", {"item_id": iid, "quantity": rem, "target": "self", "source": "cargo"}, group="spacemolt_storage")
                                 time.sleep(TICK)
                         completed += 1
+
+            elif lane == "consolidate_to_trader":
+                books_rows = _load_books(DATA)
+                claimed = active_claimed_keys(DATA)
+                cons = _pick_consolidate_to_trader(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
+                if cons and claim_job(DATA, pilot, cons["job_key"]):
+                    iid, oloc, dloc, qty = cons["item"], cons["origin"], cons["dest"], cons["qty"]
+                    say("consolidate %d %s: %s -> %s (bursar %s, ~%d cr)" % (qty, iid, oloc[2], dloc[2], cons.get("bursar_pilot") or "?", cons["est_val"]))
+                    ok_o, _ = go_dock(oloc)
+                    if not ok_o:
+                        release_job(DATA, pilot)
+                        continue
+                    _src_t = cons.get("source_target") or "self"
+                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": _src_t}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    have = get_cargo().get(iid, 0)
+                    if have <= 0:
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, _ = go_dock(dloc)
+                    if ok_d:
+                        bp = docked_bursar_at(DATA, dloc[2]) or cons.get("bursar_pilot")
+                        handed = False
+                        if bp and bp != pilot:
+                            rg = raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": have}, group="spacemolt_social")
+                            time.sleep(TICK)
+                            if "error" not in rg:
+                                handed = True
+                                notes.append("cons->bursar %d %s @ %s" % (have, iid, dloc[2]))
+                        if not handed:
+                            rd = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            if "error" in rd:
+                                raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                            notes.append("cons->hub %d %s @ %s" % (have, iid, dloc[2]))
+                        completed += 1
+                    else:
+                        release_job(DATA, pilot)
 
             elif lane == "backhaul_mission":
                 books_rows = _load_books(DATA)

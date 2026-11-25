@@ -1,161 +1,55 @@
----
-name: financial-statements
-id: 20261125T151113Z
-tier: governance
-author: Trinity
-updated: 2026-11-25
-links:
-  - governance/accounting-and-hud-blueprint.md
-  - governance/kpi-and-strategy-system.md
-  - governance/system-architecture.md
-  - governance/treasury-wallet-and-upgrades-blueprint.md
-  - governance/the-collective-constitution.md
----
+# Financial Statements Blueprint (v7.3 -- Strict GAAP / IFRS 15 Realized Basis)
 
-# The Collective -- Corporate Financial Statements & Enterprise Operating Blueprint
+Owner: Command (Unity) & All 5 Division Admirals
+Audience: Suggi (Owner / Investor Relations), Unity, and Division Admirals
+Live Implementation: `game/fleet/accounting.py` + `station/static/app.js` (`Metrics -> Financial Statements (IR)`)
 
-Institutional short-format **Investor Relations (IR)** and audit standard for
-reporting The Collective's financial performance, balance sheet position, cash
-generation, Buffett/Munger capital returns, and IFRS 8 segment synergies across
-the Command Station HUD (`:8445` -> `Metrics -> Financial Statements (IR)`) and
-all agent scorecards (`game/fleet/accounting.py`).
+## 1. Accounting Standard & Core Principle (IFRS 15 / ASC 606 & IAS 2)
 
-Companion blueprints: `governance/accounting-and-hud-blueprint.md` (raw telemetry
-plumbing, `onetime.json` 72h archive, and HUD data map) and
-`governance/kpi-and-strategy-system.md` (Responsibility-Center scoring and triage).
+The Collective reports consolidated corporate financial statements under strict **IFRS 15 / US GAAP ASC 606** (Revenue Recognition) and **IAS 2** (Inventory Capitalization):
 
----
+1. **Inventory Is NOT Profit Until Sold (IFRS 15 / ASC 606):**
+   - Mining ore, hunting salvage, or crafting components converts fuel cash into **Working Capital Inventory (a Current Asset on the Balance Sheet)** under IAS 2.
+   - Revenue and Gross Profit are recognized **ONLY at the point of sale** when control transfers to a buyer on an Exchange or shipping contract and liquid credits are realized.
+   - Counting unsold vault inventory as Operating Profit creates a dangerous paper illusion where headline profit appears huge (`+1.5M--3.6M/h`) while real spendable credits (`Credits - CapEx`) stagnate or fall.
+2. **Realized Net Operating Profit == Cash Owner Earnings (`Credits - CapEx`):**
+   - Because ship hulls, fitted modules, and permanent facilities suffer **zero scheduled physical depreciation (`D&A = 0`)**, hull upgrades, module installations, Outpost foundations, and Border Lockbox builds are **100% discretionary one-time Growth CapEx** (Cash Flow from Investing, `CFI`), never recurring operating expenses.
+   - Therefore, **Realized Net Operating Profit (`CFO` / Cash Owner Earnings)** directly answers the Owner's acid test: *Excluding one-time hull/module/hub upgrades, are our real spendable credits rising?*
+   - **Rule of Thumb:** If Growth CapEx is roughly equal to `CFO`, total liquid cash stays flat while productive fleet hard assets grow (healthy self-funded expansion). If Growth CapEx is near zero while `CFO <= 0`, the business is trapping cash in unsold inventory and the Haul/Trade liquidation pipeline must be fixed immediately.
+3. **Zero-Plug OpEx Reconciliation:**
+   - Every credit of recurring cost is decomposed without unexplained plugs into five explicit lines: **Fuel Burn**, **Hull & Shield Repairs**, **Direct Crafting Inputs**, **Other Direct COGS**, less **Reclassified Mission & CapEx Transit Fuel** (matched out into Seed Missions and Investing CapEx).
 
-## 1. Accounting Principles & Reporting Standard
+## 2. Five Institutional Statements & Audit Sections
 
-The Collective operates as a self-funded, debt-free industrial space corporation
-(`500` standing ships across `6` divisions). Its consolidated statements follow
-four global institutional standards:
+### Section 1 -- Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15)
+- **Realized Operating Revenue:** Cash Exchange sales and freight contract receipts (SOLD ONLY).
+- **Less: Matched Direct Operating Costs:** Zero-plug sum of Fuel + Repairs + Craft Inputs + Other Direct COGS - Reclassified Mission/CapEx Fuel.
+- **= Realized Gross Profit** -> Less **Station Facility Rent** -> **= Realized Core Operating Profit (IFRS 15 EBIT)**.
+- **+ Realized Seed & Mission Rewards (Net of Direct Fuel)** -> **= Realized Net Operating Profit / Cash Owner Earnings (`Credits - CapEx`)**.
+- **Separated Memoranda (NOT Realized Profit):** *Memo: Unsold Inventory Change (IAS 2 Live-Market NRV)* and *Memo: Total Economic Wealth Creation (Realized + Unsold Inventory)*.
 
-1. **IFRS 18 (Statement of Operations Separation):** Core recurring operations,
-   non-recurring mission income, and permanent capital investments (CapEx) are
-   strictly separated so fleet expansion never disguises operating profit.
-2. **IAS 2 / ASC 330 (Live-Market Net Realizable Value):** Inventory is never
-   carried at inflated catalog sticker prices or unfillable glut values. Every
-   item is valued at live two-sided order-book NRV (`ask`-capped, `bid`-depth
-   checked, `24h` trend-anchored, and glut-haircut when stock exceeds market
-   buy-wall depth), including active Exchange sell-order escrow (`bursar_sells.json`).
-3. **IAS 7 (Direct Cash Flow Reconciliation):** Every statement ties out to the
-   single credit with zero plugs and 100% elimination of internal ship gifts,
-   inter-division handovers, and treasury sweeps.
-4. **IFRS 8 & Buffett/Munger Capital Discipline:** The Consolidated P&L remains
-   100% whole-enterprise (never polluted by internal transfers), paired with an
-   IFRS 8 Operating Segment Footnote showing cross-division synergies and a
-   Buffett Return on Net Tangible Hard Assets (`ROIC` / `RONTA`) scorecard that
-   separates productive fleet returns from idle Treasury cash drag.
+### Section 2 -- Condensed Consolidated Balance Sheet (IAS 1 / IAS 2)
+- **Current Assets:** Spendable Cash (`Ship Wallets` + `Faction Treasury`) + Unsold Inventory valued conservatively at **IAS 2 Live-Market Order-Book NRV** (bid-depth and glut adjusted; never inflated static catalog prices) + Active Sell Escrow.
+- **Non-Current Productive Hard Assets (Live-Updated Net PP&E, `D&A = 0`):** Recomputed automatically every 60 seconds from live fleet telemetry -- **Fleet Hulls**, **Fitted Ship Modules**, and **Space Infrastructure & Facilities**.
+- **Liabilities & Equity:** Debt-free (`0` debt); `Total Assets == Consolidated Enterprise Net Worth (Collective Equity)`.
 
----
+### Section 3 -- Condensed Consolidated Statement of Cash Flows & FCF Bridge (IAS 7 / ASC 230)
+- **CFO (Operating Cash Flow):** Reconciles exactly to Realized Net Operating Profit (`Credits - CapEx`).
+- **CFI (Investing Cash Flow):** One-time growth outlays for hulls, modules, Outposts, and Lockboxes (`capex_net_h`).
+- **FCF (Free Cash Flow):** `CFO + CFI`, tracking exact net liquid credit movement across wallets and treasury.
+- **Working Capital Memo:** Unsold Inventory Build highlights cash temporarily trapped in storage awaiting liquidation.
 
-## 2. Condensed Consolidated Statement of Operations (Income Statement / P&L)
+### Section 4A -- Realized Profitability Margins & Cash-Conversion Quality
+- **Realized Gross Margin**, **Realized Core EBIT Margin**, **Realized Net Operating / CFO Margin**, and **FCF Margin**.
+- **Cash Conversion Ratio (%):** `Realized Sales / (Realized Sales + max(0, Unsold Inventory Build))` -- exposes immediately whether gathered goods are selling into cash (`>= 60%` healthy) or stalling in vaults (`< 25%` alert).
+- **Days Inventory Outstanding (DIO):** `Vault Live-Market NRV / Daily Realized Sales` -- classic Supply Chain Cash-to-Cash (C2C) turnover metric (lower = faster cash velocity).
 
-Rendered side-by-side for `1h (/h)`, `6h (/h)`, `24h (/h)`, and `24h Pace (/day)`
-directly from `game/fleet/accounting.py` (`/api/ops -> accounting`):
+### Section 4B -- Buffett / Munger Capital Returns (Realized Cash ROIC, RONTA & ROE)
+- Primary rows measure **STRICT REALIZED CASH** returns (`24h` pace annualized / 30d + Cash Payback Days) across three progressively broader capital bases:
+  1. **Realized Hard-Asset ROIC (Buffett RONTA):** Cash yield on deployed ships, modules, and hubs only (excludes idle cash and unsold vaults).
+  2. **Realized Operating Invested Capital ROIC:** Cash yield on `Hard Assets + Vault NRV` (penalizes bloated inventory).
+  3. **Realized Equity ROE:** Cash yield on Total Net Worth (quantifies idle cash drag).
+- Memo row displays **Economic Hard-Asset ROIC** including unrealized inventory build for transparent comparison.
 
-| Line Item | Formula (`accounting.py` fields) | Executive Meaning |
-| :--- | :--- | :--- |
-| **Recurring Gross Revenue** | `raw_income_h` | Cash receipts from Exchange sales, freight contracts, and recurring work |
-| **Inventory & Production Accrual** | `inventory_accrual_h` | Net live-market NRV change in Vault + Faction Lockbox + Sell Escrow stock |
-| **Total Operating Revenue & Value Added** | `raw_income_h + inventory_accrual_h` | Gross economic output created by the fleet |
-| *OpEx -- Fleet Fuel Burn (Metered)* | `-opex_breakdown.fuel_h` | Metered energy/jump fuel across all divisions (`stats_money_hour.fuel`) |
-| *OpEx -- Hull & Module Repairs (Metered)* | `-opex_breakdown.repair_h` | Metered hull/shield repair spend (`stats_money_hour.repair`) |
-| *OpEx -- Crafting Fees & Inputs* | `-opex_breakdown.craft_inputs_h` | Direct industrial crafting fees and input purchases |
-| *OpEx -- Market COGS, Ammo & Other* | `-opex_breakdown.other_cogs_h` | Arbitrage/market input purchases, ammo, and miscellaneous direct spend |
-| *Less: Mission & CapEx Fuel Reclassified* | `+opex_breakdown.reclassified_once_h` | Matching Principle removal of non-recurring mission & fit-transit fuel |
-| **Total Matched Direct Operating Costs** | `-opex_breakdown.matched_direct_h` | Exact sum of the 5 lines above (`== -(raw_costs_h + once_direct_h)`) |
-| **Gross Profit** | `Total Operating Revenue - Direct OpEx` | Extraction, transit, and production margin before fixed overhead |
-| **Treasury Operating Overhead (SG&A)** | `treasury_own_h` | NPC facility rent and direct treasury operating spend |
-| **Core Operating Profit (EBIT)** | `Gross Profit + treasury_own_h` | Pure repeatable business profitability before non-recurring missions & CapEx |
-| **Seed & Repeatable Mission Net** | `seed_net_h` | Non-recurring/seed mission rewards matched against their direct travel fuel |
-| **Net Operating Profit / Owner Earnings (Ex-CapEx)** | `accrual_operating_h + seed_net_h + treasury_own_h` | Total Buffett Owner Earnings (cash + live-market inventory) excluding Growth CapEx |
-| *Memo: Cash Owner Earnings (Buffett Basis)* | `recurring_cash_h + seed_net_h + treasury_own_h` | Pure spendable cash Owner Earnings before inventory build & CapEx (`== CFO`) |
-
-### Buffett "Owner Earnings" Principle (Zero-Depreciation CapEx Rule)
-
-Under Warren Buffett's 1986 Berkshire Hathaway standard:
-`Owner Earnings = Net Income + D&A - Maintenance CapEx +/- Working Capital`.
-In SpaceMolt, permanent fleet assets (upgraded hulls, fitted T1--T5 modules, Faction
-Lockboxes, Fuel Bunkers, Outposts, and Stations) carry **zero Depreciation & Amortization
-(`D&A = 0`)** and **zero Maintenance CapEx (`Maintenance CapEx = 0`)** because routine
-fuel, hull repairs, and station upkeep are already expensed directly inside Operating
-Costs and Treasury Overhead. Consequently, all hull/module/outpost purchases are **100%
-discretionary one-time Growth CapEx** and are strictly excluded from true operating
-profitability:
-- **Cash Owner Earnings (Ex-CapEx) = `CFO`** (`recurring_cash_h + seed_net_h + treasury_own_h`)
-- **Total Economic Owner Earnings (Ex-CapEx) = `Net Operating Profit`** (`CFO + inventory_accrual_h`)
-
----
-
-## 3. Condensed Consolidated Balance Sheet (Statement of Financial Position)
-
-Rendered from `/api/ops -> balance_sheet` (`accounting.compute_balance_sheet`, recomputed
-dynamically every 60 seconds from live `read.db`):
-
-| Section / Account | Source Field | Basis & Live Update Mechanism |
-| :--- | :--- | :--- |
-| **Current Assets (Liquidity & Working Capital)** | | |
-| Cash -- Fleet Ship Wallets | `wallets` | Liquid working float across all standing pilot accounts |
-| Cash -- Faction Treasury (Excess Cash) | `treasury` | Central liquidity & CapEx pool (earns `0%` idle yield) |
-| **Total Cash & Cash Equivalents** | `liquid_cash` | `wallets + treasury` (100% immediately spendable) |
-| Inventory -- Station & Faction Vaults | `vault_live_market - vault_sell_escrow_nrv` | Held raw ore, crafted components, and loot at live-market NRV |
-| Inventory -- Active Exchange Sell Escrow | `vault_sell_escrow_nrv` | Live units actively listed by Bursars (`bursar_sells.json`) |
-| **Total Current Assets** | `liquid_cash + vault_live_market` | Immediately liquid cash + realizable working inventory |
-| **Non-Current Productive Hard Assets (Net PP&E, D&A = 0)** | | |
-| Fleet Hulls (Dynamic Live Upgrade Book) | `fleet_hulls` | Recomputed live every 60s from `ships x hull_materials` (auto-updates on T0->T5 upgrades) |
-| Fitted Ship Modules (Dynamic Live Fit Book) | `fleet_modules` | Recomputed live every 60s from `ship_modules x items` (auto-updates on module fits) |
-| Space Infrastructure & Facilities | `facility_invested` | Owned 0-rent Outposts, Stations, Faction Lockboxes, Fuel Bunkers, Assemblers |
-| **Total Productive Hard Assets (Net PP&E)** | `hard_assets` | `fleet_hulls + fleet_modules + facility_invested` |
-| **TOTAL ASSETS** | `net_worth` | Exact 4-pillar Enterprise Net Worth |
-| **Liabilities & Collective Equity** | | |
-| Short-Term & Long-Term Debt | `0` | 100% self-funded, zero external debt |
-| **Total Collective Equity** | `net_worth` | Exact accounting identity: `Assets == Liabilities + Equity` |
-
----
-
-## 4. Condensed Consolidated Statement of Cash Flows & FCF Bridge (IAS 7)
-
-1. **Cash Flows from Operating Activities (`CFO` / Cash Owner Earnings):**
-   `CFO = recurring_cash_h + seed_net_h + treasury_own_h` (excludes all hull/module/outpost CapEx).
-2. **Cash Flows from Investing Activities (`CFI` / Growth CapEx):**
-   `CFI = capex_gross_h + capex_fit_direct_h = capex_net_h` (permanent one-time fleet & station expansion).
-3. **Cash Flows from Financing Activities (`CFF`):** `0` (debt-free).
-4. **Net Change in Cash (Purse Cash Flow):** `CFO + CFI + CFF == purse_h` (exact tie-out to the credit).
-5. **Free Cash Flow (`FCF`):** `FCF = CFO + CapEx`. Negative FCF paired with positive CFO signals
-   deliberate self-funded growth reinvestment, not operating distress.
-
----
-
-## 5. Profitability Margins, Buffett/Munger ROIC & IFRS 8 Segment Footnote
-
-### A. Operating & Cash Margins
-- **Gross Margin %** = `Gross Profit / Total Operating Revenue`
-- **Core Operating (EBIT) Margin %** = `EBIT / Total Operating Revenue`
-- **Owner Earnings Margin %** = `Net Operating Profit / Total Operating Revenue`
-- **Cash Owner Earnings (CFO) Margin %** = `CFO / Total Cash Revenue (raw_income_h + seed_rewards_h)`
-- **FCF Margin %** = `FCF / Total Cash Revenue`
-
-### B. Buffett / Munger Capital Efficiency Hierarchy (Separating Fleet Returns from Cash Drag)
-Idle Treasury cash earns `0%` in SpaceMolt and artificially depresses headline ROE. Following
-Buffett's 1983/2007 Letters (Return on Unleveraged Net Tangible Assets) and institutional ROIC:
-1. **ROIC -- Productive Hard Assets (Buffett RONTA, Ex-Cash & Ex-Inventory):**
-   `Owner Earnings / hard_assets` (`fleet_hulls + fleet_modules + facility_invested`) reported as
-   **30-Day Monthly %**, **Annualized %**, and **Hard-Asset Payback Period (Days)**. Measures pure
-   earning power of deployed ships and stations.
-2. **ROIC -- Operating Invested Capital (Ex-Excess Cash):**
-   `Owner Earnings / (hard_assets + vault_live_market)`. Includes working capital tied up in
-   unsold vaults/escrow, creating discipline against inventory bloat.
-3. **ROE -- Total Collective Equity (Incl. Cash Drag):**
-   `Owner Earnings / net_worth`. Comparing Hard-Asset ROIC vs. Equity ROE quantifies exact idle-cash
-   drag and signals when excess Treasury reserves should be deployed into Stations or T3--T5 upgrades.
-
-### C. IFRS 8 Operating Segment Contribution & Synergy Footnote
-The Consolidated Statement of Operations remains strictly whole-enterprise (so internal F23
-handovers never inflate revenue or make Mining/Intel look falsely unprofitable). Directly beneath
-the ratios, a compact **IFRS 8 Segment Footnote** disaggregates `Mining`, `Logistics`, `Military`,
-`Trade`, `Intel`, and `Faction Vaults` (`Recurring Cash`, `Inventory Accrual`, `Net Handovers`,
-`Metered Fuel`, and `Segment Profit`), with an explicit `Intercompany Eliminations (== 0)` row
-tying back to Consolidated Core Operating Profit (`EBIT`).
+### Section 5 -- Operating Segment Footnote & Synergy Bridge (IFRS 8)
+- Isolates each division's **Realized Cash /h**, **Unsold Inventory Change /h**, **Net Intercompany Handovers /h** (eliminated cleanly to `0`), **Fuel Burn /h**, and **Economic Value-Add /h** so vertical synergies (`Mining/Military -> Logistics -> Trade -> Cash`) remain transparent without double-counting revenue.

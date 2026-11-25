@@ -157,7 +157,7 @@ class MultiHubUpkeepTests(unittest.TestCase):
             world = hunt_net._load_combat_world_uncached(data, repo, hunt_net.DEFAULT_POLICY, time.time())
             self.assertIn("crimson_war_citadel", world["lockbox_bases"])
             self.assertIn("confederacy_central_command", world["lockbox_bases"])
-            self.assertNotIn("felis_outpost_id", world["lockbox_bases"])
+            self.assertIn("felis_outpost_id", world["lockbox_bases"])
 
     def test_haul_hub_upkeep_transfer_buy_and_no_pingpong(self):
         with tempfile.TemporaryDirectory() as td:
@@ -175,6 +175,8 @@ class MultiHubUpkeepTests(unittest.TestCase):
                     }
                 }
             }), encoding="utf-8")
+            (data / "empire").mkdir(parents=True, exist_ok=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({"members": [{"pilot": "hauler-1", "role": "Officer"}, {"pilot": "hauler-2", "role": "Officer"}, {"pilot": "hauler-3", "role": "Officer"}]}), encoding="utf-8")
             base_map = haul._load_base_map_uncached(data)
             self.assertIn("felis_outpost_id", base_map)
             self.assertIn("oakridge_st_id", base_map)
@@ -243,6 +245,64 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertTrue(job["bunker_fill"])
             self.assertEqual(job["mode"], "buy")
             self.assertGreaterEqual(job["qty"], 100)
+
+
+    def test_pull_to_cash_role_guard_consolidate_and_bursar_pull(self):
+        """Verify Member haulers cannot pick faction-storage withdraws, Officer haulers consolidate
+        outpost surplus to docked Bursars, and Bursars select marketable faction surplus cleanly."""
+        import json, tempfile, time
+        import bursar
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "empire").mkdir(parents=True, exist_ok=True)
+            (d / "fleet").mkdir(parents=True, exist_ok=True)
+            (d / "stock").mkdir(parents=True, exist_ok=True)
+            (d / "empire" / "empire.json").write_text(json.dumps({
+                "members": [
+                    {"pilot": "hauler-1", "role": "Officer"},
+                    {"pilot": "hauler-99", "role": "Member"},
+                    {"pilot": "trader-3", "role": "Officer"},
+                ],
+                "facilities": [
+                    {"type": "faction_lockbox", "status": "active", "base": "node_beta_industrial_station"},
+                    {"type": "faction_lockbox", "status": "active", "base": "outpost_atria"},
+                ],
+                "faction_storage": [
+                    {"base": "outpost_atria", "item": "null_matter", "units": 200},
+                ],
+            }), encoding="utf-8")
+            (d / "fleet" / "bursar_claims.json").write_text(json.dumps({
+                "node_beta_industrial_station": {"pilot": "trader-3", "claimed_at": time.time()},
+            }), encoding="utf-8")
+            (d / "stock" / "storage.json").write_text(json.dumps({"pilots": {}}), encoding="utf-8")
+
+            self.assertTrue(haul._pilot_can_withdraw_faction(d, "hauler-1"))
+            self.assertFalse(haul._pilot_can_withdraw_faction(d, "hauler-99"))
+
+            base_map = {
+                "outpost_atria": ("atria", "poi_atria", "outpost_atria", ""),
+                "node_beta_industrial_station": ("node_beta", "node_beta_industrial_station", "node_beta_industrial_station", "voidborn"),
+            }
+            lanes = {"atria": ["node_beta"], "node_beta": ["atria"]}
+            books = [{"base": "node_beta_industrial_station", "item": "null_matter", "bid": 590, "bid_qty": 100, "ask": 650, "t": time.time()}]
+            pol = haul.load_policy()
+
+            j_mem = haul._pick_consolidate_to_trader(d, "hauler-99", books, base_map, lanes, "atria", 100, pol, set())
+            self.assertIsNone(j_mem)
+
+            j_off = haul._pick_consolidate_to_trader(d, "hauler-1", books, base_map, lanes, "atria", 100, pol, set())
+            self.assertIsNotNone(j_off)
+            self.assertEqual(j_off["item"], "null_matter")
+            self.assertEqual(j_off["dest"][2], "node_beta_industrial_station")
+            self.assertEqual(j_off["bursar_pilot"], "trader-3")
+
+            picks = bursar._select_faction_surplus_to_pull(
+                {"fuel_cell": 100, "null_matter": 50, "junk_unlisted": 80},
+                {"null_matter": {"best_buy": 590, "best_sell": 650}},
+                {"fuel_cell"},
+                free_hold=80,
+            )
+            self.assertEqual(picks, [("null_matter", 50)])
 
 
 if __name__ == "__main__":

@@ -488,12 +488,12 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                 for (lb_base,) in _rows(
                     "SELECT DISTINCT base FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active' AND base IS NOT NULL"
                 ):
-                    if lb_base and str(lb_base) not in outposts:
+                    if lb_base:
                         _lockbox_hubs.add(str(lb_base))
             for sys_id, poi_id, base_id, nm in _rows(
                 "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
             ):
-                if (str(sys_id), str(nm or "")) in foreign_docks or str(base_id) in outposts:
+                if (str(sys_id), str(nm or "")) in foreign_docks or (str(base_id) in outposts and str(base_id) not in _lockbox_hubs):
                     continue
                 lst = stations_by_sys.setdefault(sys_id, [])
                 if str(base_id) in _bursar_live:
@@ -948,8 +948,11 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         else:
             fit_mult = 1.0
         _pref_hubs = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
-        if st_hops <= 2 and st_tup[2] in _pref_hubs:
-            fit_mult *= 1.12
+        if st_tup[2] in _pref_hubs:
+            if st_hops <= 2:
+                fit_mult *= 1.18
+            elif st_hops <= 4:
+                fit_mult *= 1.10
 
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - int(policy.get("keep_herd") or 2)))
         loot_est = float(species_loot.get(sp) or 2000.0) * kills_avail
@@ -1026,7 +1029,9 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if not st_tup:
             continue
         loot_v = float(species_loot.get(sp) or 4000.0) * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
-        score = (loot_v * (prey_hull / 60.0)) / (1.0 + 0.6 * hops + 0.5 * st_hops)
+        _pk_pref = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
+        _pk_hub_m = 1.18 if (st_tup[2] in _pk_pref and st_hops <= 2) else (1.10 if (st_tup[2] in _pk_pref and st_hops <= 4) else 1.0)
+        score = (loot_v * (prey_hull / 60.0) * _pk_hub_m) / (1.0 + 0.6 * hops + 0.5 * st_hops)
         cands.append({
             "key": "pack:" + place_key, "place_key": place_key, "mode": "wildlife",
             "system": sys_id, "poi": poi_id, "species": sp, "role": role,
@@ -1975,6 +1980,9 @@ def main(argv=None):
                 cmd += ["--ignore-tags", ",".join(_ptags)]
         if policy.get("gift_to"):
             cmd += ["--gift-to", str(policy["gift_to"])]
+        _h_dest_base = chosen["sell_at"].split(":")[2] if len(chosen.get("sell_at", "").split(":")) >= 3 else ""
+        if _h_dest_base in (world.get("lockbox_bases") or set()):
+            cmd += ["--deposit", "faction"]
 
         import runhost as _rh
         stranger_cd = False

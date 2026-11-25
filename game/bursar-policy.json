@@ -27,11 +27,12 @@
   },
   "sell": {
     "enabled": true,
-    "max_orders_per_station": 12,
+    "max_orders_per_station": 16,
     "undercut_cr": 1,
     "min_price_ratio": 0.65,
-    "instant_hit_bid_ratio": 0.8,
-    "respect_reserve": true
+    "instant_hit_bid_ratio": 0.72,
+    "respect_reserve": true,
+    "sell_faction_storage": true
   },
   "exclude_stations": [
     "428b353757ef4100317abd39cbdb79bf"
@@ -42,7 +43,11 @@
     "the_experiment_research_station",
     "grand_exchange_station",
     "confederacy_central_command",
-    "crimson_war_citadel"
+    "crimson_war_citadel",
+    "the_levy_customs_station",
+    "ramens_rest",
+    "procyon_colonial_station",
+    "the_rampart_checkpoint"
   ],
   "exclude_strongholds": true,
   "note": "2026-11-24 (Trinity, Suggi approved): 60+ safe Exchange stations staffed permanently (33 empire + safe non-pirate/non-stronghold neutral hubs); buy lane capped fleet-wide (bursar_buys.json); steel_plate excluded for Logistics (ENT-504).",
@@ -53,9 +58,9 @@
   "priority_max_per_station": 2,
   "craft": {
     "enabled": true,
-    "max_runs_per_poll": 3,
-    "max_buy_spend_cr": 15000,
-    "min_margin_pct": 0.2,
+    "max_runs_per_poll": 8,
+    "max_buy_spend_cr": 25000,
+    "min_margin_pct": 0.15,
     "min_profit_cr": 150
   }
 }

@@ -690,6 +690,16 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _esc_ok = False
             if not _esc_ok:
                 continue
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=max_st_jumps)
+        if not st_tup:
+            continue
+        hub_rad = int(policy.get("hub_radius_jumps") or 4)
+        _st_base_chk = st_tup[2]
+        _in_hub_zone = bool(
+            st_hops <= hub_rad
+            and (_st_base_chk in (world.get("owned_outpost_bases") or set())
+                 or _st_base_chk in (world.get("lockbox_bases") or set()))
+        )
         bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
         bw_min_depth = int(policy.get("buywall_min_depth") or 500)
         is_buywall = bool(mkt and mkt[0] >= bw_min_bid and mkt[1] >= bw_min_depth)
@@ -697,6 +707,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if not is_policed:
             lawless_ok = (
                 (not policed_only)
+                or _in_hub_zone
                 or (sys_id in allow_sys)
                 or (p_tier >= lawless_min_t)
                 or (allow_lawless_def and is_deficit)
@@ -704,10 +715,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             )
             if not lawless_ok:
                 continue
-        if is_full and (not allow_xp or hops > xp_max_j):
-            continue
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=max_st_jumps)
-        if not st_tup:
+        if is_full and (not allow_xp or (hops > xp_max_j and not _in_hub_zone)):
             continue
 
         uval = max(4.0, float(item_vals.get(res) or 8.0))
@@ -724,6 +732,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             tier_mult = 8.0 if is_buywall else 2.5
         else:
             tier = "xp_fallback"
+            _live_b = float(mkt[0]) if (mkt and mkt[0] > 0) else 0.0
+            uval = max(2.0, min(uval, _live_b)) if _live_b > 0 else 2.0
             _held_u = int((world.get("held") or {}).get(res, 0))
             _bloated = (_held_u >= 25000 and uval < 12.0) or (res in full_items)
             _hard_glut = (_held_u >= int(policy.get("hard_glut_skip_units") or 200000) and uval < 10.0)
@@ -739,7 +749,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if policy.get("hub_gravity_bonus", True) and _num > 0:
             _st_base = st_tup[2]
             if _st_base in (world.get("owned_outpost_bases") or set()) or _st_base in (world.get("lockbox_bases") or set()):
-                _hub_mult = 1.20 if st_hops == 0 else (1.12 if st_hops <= 2 else (1.06 if st_hops <= 4 else 1.0))
+                _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= hub_rad else 1.0))
                 _num *= _hub_mult
         _way = 1.0 + 0.6 * hops + 1.2 * st_hops
         score = _num / _way if _num >= 0 else _num * _way
@@ -923,9 +933,7 @@ def main(argv=None):
         _owned_outposts = world.get("owned_outpost_bases") or set()
         _lockboxes = world.get("lockbox_bases") or set()
         _bursars = world.get("bursar_bases") or set()
-        if _dest_base in _owned_outposts or policy.get("deposit_mode") == "faction":
-            cmd += ["--deposit", "faction"]
-        elif policy.get("auto_lockbox_for_reserves", True) and _dest_base in _lockboxes and chosen["tier"] in ("deficit", "craft_demand"):
+        if _dest_base in _owned_outposts or _dest_base in _lockboxes or policy.get("deposit_mode") == "faction":
             cmd += ["--deposit", "faction"]
         elif policy.get("gift_surplus_to_trader") and (chosen["tier"] == "market" or _dest_base in _bursars):
             cmd += ["--gift", json.dumps({"to": "trader", "items": [chosen["resource"]], "source": "both"})]
@@ -935,11 +943,51 @@ def main(argv=None):
             nonlocal floor_hit
             if "field floor reached:" in line:
                 floor_hit = True
-        return _rh.run_in_thread(
+        rc_run = _rh.run_in_thread(
             ROOT / "fleet" / "mine.py", cmd[4:], pilot, "mine_net " + route_id,
             env_extra={"FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch", "FLEET_HOLD": os.environ.get("FLEET_HOLD") or ("mine_net " + route_id)},
             on_line=_on_mine_line, caller_stdout=sys.stdout, caller_sleep=time.sleep,
         ) or 0
+        # Auto-drain trapped legacy personal locker ore at this Lockbox hub into shared Faction Lockbox
+        if policy.get("auto_drain_personal_to_lockbox", True) and (_dest_base in _lockboxes or _dest_base in _owned_outposts):
+            try:
+                import gate as _g_dr, urllib.parse as _up_dr
+                _pe = _up_dr.quote(pilot, safe="")
+                _st_c, _st_d = _g_dr.call("GET", "/accounts/%s" % _pe, timeout=20)
+                _loc = ((_st_d.get("state") or {}).get("location") or {}) if isinstance(_st_d, dict) else {}
+                _sh = ((_st_d.get("state") or {}).get("ship") or {}) if isinstance(_st_d, dict) else {}
+                _free_c = max(0, int(_sh.get("cargo_capacity") or 0) - int(_sh.get("cargo_used") or 0))
+                if str(_loc.get("docked") or "") == _dest_base and _free_c >= 10:
+                    _, _vw = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "view", "params": {"station_id": _dest_base}}, timeout=30)
+                    _sc = (_vw.get("structuredContent") or _vw.get("result") or {}) if isinstance(_vw, dict) else {}
+                    _rows = _sc.get("items") or _sc.get("storage") or []
+                    _moved = 0
+                    for _it in (_rows if isinstance(_rows, list) else []):
+                        if not isinstance(_it, dict) or _moved >= 2:
+                            break
+                        _iid = str(_it.get("item_id") or "")
+                        _iq = int(_it.get("quantity") or 0)
+                        if not _iid or _iq <= 0 or _iid in ("fuel_cell", "fuel", "hull_patch", "repair_kit"):
+                            continue
+                        if _iid.endswith(("_i", "_ii", "_iii", "_iv", "_v")) and any(w in _iid for w in ("laser", "shield", "armor", "scanner", "expander", "booster", "drone", "cannon", "turret", "beam", "railgun", "missile")):
+                            continue
+                        _tq = min(_iq, _free_c)
+                        if _tq < 1:
+                            break
+                        _, _rw = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "withdraw", "params": {"item_id": _iid, "quantity": _tq, "target": "self"}}, timeout=30)
+                        if isinstance(_rw, dict) and "error" not in _rw:
+                            time.sleep(11.0)
+                            _, _rd = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "faction", "source": "cargo"}}, timeout=30)
+                            time.sleep(11.0)
+                            if isinstance(_rd, dict) and "error" not in _rd:
+                                _moved += 1
+                                print("%s %s mine_net: drained %d %s personal -> faction lockbox @ %s" % (utc_now(), pilot, _tq, _iid, _dest_base), flush=True)
+                            else:
+                                _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "self", "source": "cargo"}}, timeout=30)
+                                break
+            except Exception:
+                pass
+        return rc_run
     finally:
         hb.set()
         if claimed_belt:

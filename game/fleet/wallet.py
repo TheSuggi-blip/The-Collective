@@ -144,7 +144,7 @@ P2P_MIN_SLICE = 10000          # minimum donor excess slice worth transferring i
 STORAGE_FACILITY_TYPES = frozenset(("faction_lockbox", "faction_warehouse", "faction_depot", "faction_stronghold"))
 LOCKBOX_OFFICERS_PER_BASE = 4  # target seated Officers stationed/docked at each active Faction Storage base
 MIN_OFFICERS_PER_DIVISION = 4  # minimum seated Officers per division (all 6 divisions covered for cross-division banking & ops)
-MAX_AUTO_OFFICERS = 50         # global cap on total auto-promoted Officers + leader
+MAX_AUTO_OFFICERS = 180         # global cap on total auto-promoted Officers + leader
 # The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
 # ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
@@ -1415,7 +1415,7 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
 
 
 ERRAND_WAIT = 24                 # hours an open leader errand waits before expiring by itself
-ERRAND_BATCH = 15                # max open errands executed in a single docked pass (promotes full officer slate cleanly)
+ERRAND_BATCH = 30                # max open errands executed in a single docked pass (promotes full officer slate cleanly)
 ERRAND_ACTIONS = {
     "promote": "spacemolt_faction_admin",
     "post_mission": "spacemolt_faction_admin",
@@ -1692,6 +1692,25 @@ def auto_queue_officers(data, now, dry=False):
             to_queue.append((p, "auto-officer: %s division officer & treasury access" % div_name))
             officers.add(p)
             div_counts[div_name] = div_counts.get(div_name, 0) + 1
+            room -= 1
+
+    # Priority 4: ALL seated Logistics Haulers and Trade Traders need manage_treasury to pull from Faction Lockboxes
+    if room > 0:
+        pull_cands = []
+        for p, role in seated.items():
+            if role != "member" or p in officers:
+                continue
+            r_cls = dispatch.role_of(p, named)
+            if r_cls not in ("hauler", "trader"):
+                continue
+            s = fleet.get(p) or {}
+            if s.get("status", "connected") != "connected":
+                continue
+            pull_cands.append((0 if r_cls == "trader" else 1, p))
+        pull_cands.sort()
+        for _prio, p in pull_cands[:room]:
+            to_queue.append((p, "auto-officer: hauler/trader Faction Lockbox withdrawal access"))
+            officers.add(p)
             room -= 1
 
     if not to_queue:

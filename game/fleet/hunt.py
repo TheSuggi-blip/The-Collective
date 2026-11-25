@@ -94,7 +94,8 @@ min_bid = int(args[args.index('--min-bid') + 1]) if '--min-bid' in args else 50
 sell_at = args[args.index('--sell-at') + 1].split(':') if '--sell-at' in args else ['nexus_prime', 'the_core', 'central_nexus']
 sell_at[0], sell_at[1], MOVED = mobile.locate(sell_at[0], sell_at[1], sell_at[2], '/srv/collective/data')
 route_id = args[args.index('--route') + 1] if '--route' in args else 'hunt-' + poi
-GIFT_TO = args[args.index('--gift-to') + 1] if '--gift-to' in args else ''   # r22: a hunt route's `gift_to`, the hand-over instead of the sale
+GIFT_TO = args[args.index('--gift-to') + 1] if '--gift-to' in args else ''
+DEPOSIT_TARGET = 'faction' if ('--deposit' in args and args[args.index('--deposit') + 1] == 'faction') else 'self'   # r22: a hunt route's `gift_to`, the hand-over instead of the sale
 STEP = '--step' in args                      # a step of a circuit: the order file, the station and the row are the circuit's
 ALONE = '--alone' in args                    # no fight where a ship that is not ours stands
 LOW = [100]                                  # our hull at its lowest in this run, percent
@@ -670,7 +671,10 @@ if DOCKED and '--keep' not in args:
     stashed = {}
     for item, qty in cargo().items():                # the rest goes into storage here: the hold is free for the next hunt
         if item not in AMMO and item not in wanted:
-            if 'error' not in raw('deposit', {'item_id': item, 'quantity': qty, 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage'):
+            res_dep = raw('deposit', {'item_id': item, 'quantity': qty, 'target': DEPOSIT_TARGET, 'source': 'cargo'}, group='spacemolt_storage')
+            if 'error' in res_dep and DEPOSIT_TARGET == 'faction':
+                res_dep = raw('deposit', {'item_id': item, 'quantity': qty, 'target': 'self', 'source': 'cargo'}, group='spacemolt_storage')
+            if 'error' not in res_dep:
                 stashed[item] = qty
             time.sleep(11)
     if stashed:

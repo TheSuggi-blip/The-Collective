@@ -171,3 +171,10 @@ Every repository commit passes `.github/workflows/ascii-guard.yml` and scoped `.
 8. **Needs register:** `python3 -B game/fleet/needs.py check`.
 9. **Fleet script index:** `python3 -B scripts/fleet-index.py --check`.
 10. **Store handbook & report floors:** `python3 -B scripts/handbook.py --check` and `python3 -B scripts/report-words.py --template-check`.
+
+
+### Pull-to-Cash Supply Chain & 4J Multi-Hub Radius (2026-11-25)
+- **Full 4J Hub Unlock:** Both `mine-network` and `hunt-network` unlock and prioritize safe resource belts and herds out to a **4-jump radius** around all 10 active Faction Lockbox hubs (3 zero-rent Owned Outposts + 7 policed 5-Empire Lockboxes), scoring fallback belts strictly by live market bid rather than catalog base value.
+- **Shared Faction Lockbox Deposits & Self-Drain:** Gatherers deposit directly into `faction` Lockboxes at all 10 hubs (`mine-policy.json` `deposit_mode: "faction"` + `hunt.py --deposit faction`), and `mine_net.py` automatically drains legacy trapped personal miner lockers into shared Faction Lockboxes on every return visit.
+- **Role-Guarded Hauler Consolidation & Liquidation:** `wallet.py` automatically promotes all seated Logistics Haulers and Trade Traders to `Officer` (`manage_treasury: true`, `MAX_AUTO_OFFICERS=180`), while `haul.py` role-guards faction withdraws, merges live `empire.json` storage, clears non-shortage surplus (`8` parallel slots), and adds the `consolidate_to_trader` lane pulling non-bid surplus from lawless Outposts straight to docked Bursar Traders.
+- **Zero-Fuel Bursar Lockbox Selling & Commercial Crafting:** `bursar-policy.json` permanently staffs all 4 new Border Lockboxes (`the_levy`, `ramens_rest`, `procyon`, `the_rampart`), pulls non-reserved marketable surplus straight out of `faction` Lockboxes (`sell_faction_storage: true`), instant-hits liquid bids (`>= 0.72x` ask), maintains `16` undercut sell orders, and runs up to `8` zero-fuel commercial craft cycles per poll.

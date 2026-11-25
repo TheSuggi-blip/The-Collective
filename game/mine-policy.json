@@ -24,7 +24,7 @@
   "skip_full_reserves": true,
   "allow_xp_fallback": true,
   "xp_fallback_max_jumps": 8,
-  "deposit_mode": "personal",
+  "deposit_mode": "faction",
   "gift_surplus_to_trader": true,
   "priority_resources": [
     "silicon_ore"
@@ -68,5 +68,7 @@
   "hard_glut_skip_units": 200000,
   "auto_use_owned_outposts": true,
   "auto_lockbox_for_reserves": true,
-  "hub_gravity_bonus": true
+  "hub_gravity_bonus": true,
+  "hub_radius_jumps": 4,
+  "auto_drain_personal_to_lockbox": true
 }
