@@ -72,14 +72,5 @@
    "store": "all"
   }
  ],
- "far_ok": true,
- "measured": {
-  "date": "2026-11-25",
-  "runs": 2,
-  "minutes": 10,
-  "credits_per_run": -280,
-  "cph_per_ship": -1780,
-  "hours": 12,
-  "last_run": "2026-11-25T10:31:39Z"
- }
+ "far_ok": true
 }
