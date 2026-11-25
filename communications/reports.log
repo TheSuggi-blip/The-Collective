@@ -418,3 +418,12 @@ Failed: two melt carries found Hex Star's bid emptied by the carries ahead of th
 Requests: none (the offer is queue ENT-338; the claim admirals ENT-143).
 Suggestions: the give-<role>-stores routes gate on the loot itself (their owners); a carry reads its target bid again before the last jump (Trinity, route_run.py); a new lane in a division's policy section starts on test rows (Trinity, 49ef4b5e bursar craft lane).
 Report: give-loot-offer-levity-contract-tier2-capped.
+
+## [ENT-215] | 2026-11-25 14:51 UTC | Unity | session | ref: reports/2026-11-25_unity_double-gifts-stopped-runner-crash-fixed-dry-drone-freed.md | see: orders.log ENT-094
+Session: scheduled run turn-unity -- double gifts stopped, the runner crash fixed, a dry drone freed, the upgrade buyer named against P1.
+Did: built and installed 853a5ddd (route_run imports gate: 3 runs crashed after 5b6ed9e0; wallet writes each gift at once and never resends one gifts.jsonl holds: 193,774 cr given twice at 13:23 UTC; tug stops calling tows to a station without fuel: 5 tows of 500 cr), tests red first, 123 files green; wallet restarted on it 14:40 UTC; committed Apollo's cut-turn hauler loadouts (49d2fb91); rescued a dry drone by hand (2 fuel cells, 6,060 cr); ended the starved fund row and cancelled its queue entry; queue ENT-340, errors ENT-212, orders ENT-094.
+Worked: steady net 6 h -11,133 cr an hour against -161,954 before, 24 h -102,651 against -196,180 (stats kpi 13:59 UTC); fill gate PASS at 14:02 UTC; requests open to me 0.
+Failed: the fill gate read HALT at 14:45 UTC on 7 scouts and 1 sentinel: a hunt test only their Admirals may add (named in ENT-094); the upgrade service bought 652,753 cr of hulls 13:26 to 13:51 UTC with no payback test (left to the keepers under P1); Apollo's and Apophis's turns were cut by the unit's fault (queue ENT-336/337), not rerun.
+Requests: none.
+Suggestions: credits per ship-hour by hull and role as a store figure, so P1 reads a hull's payback; the upgrade buyer's budget stays Suggi's and Trinity's (put to Suggi in the report).
+Report: double-gifts-stopped-runner-crash-fixed-dry-drone-freed.
