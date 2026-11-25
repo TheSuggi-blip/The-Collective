@@ -4050,7 +4050,7 @@ function renderFinancialStatements(panel, ops, w, t) {
   const opMarginTxt = curRevTot > 0 && curNetOp !== null ? ((100 * curNetOp) / curRevTot).toFixed(1) + '% margin' : 'Ex-CapEx accrual';
 
   kpi(
-    'Net operating profit (' + (cur ? cur.hours + 'h' : metricWin) + ', Ex-CapEx)',
+    'Owner earnings / net op. profit (' + (cur ? cur.hours + 'h' : metricWin) + ', Ex-CapEx)',
     curNetOp !== null ? signed(Math.round(curNetOp)) + ' /h' : '--',
     curNetOp !== null ? (curNetOp >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(curNetOp * 24))) + '/day pace | ' + opMarginTxt : '',
     'main' + (curNetOp !== null ? tone(curNetOp) : '')
@@ -4147,7 +4147,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Recurring Cash from Operations (Matched)', (a) => (a ? numOr0(a, 'recurring_cash_h') : null), 'fs-ind'),
     row5('Mission & Contract Cash (Net of Direct Fuel)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
     row5('Treasury Operating Rent & Direct Expenses', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
-    row5('Net Cash Provided by Operating Activities (CFO, Ex-CapEx)', cfoOf, 'fs-sub'),
+    row5('Cash Owner Earnings / Net Cash from Operations (CFO, Ex-CapEx)', cfoOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Cash Flows from Investing Activities (CFI / CapEx)' },
     row5('Capital Expenditures -- Hulls, Modules & Outposts (Gross)', (a) => (a ? numOr0(a, 'capex_gross_h') : null), 'fs-ind'),
     row5('Module Fit Salvage & Transit Adjustments', (a) => (a ? numOr0(a, 'capex_fit_direct_h') : null), 'fs-ind'),
@@ -4164,7 +4164,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Total Economic Wealth Creation (CFO + Inventory Accrual)', (a) => (a ? cfoOf(a) + numOr0(a, 'inventory_accrual_h') : null), 'fs-tot'),
   ];
   panel.append(fsTable(['Cash Flow Activity (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], cfRows, [1, 2, 3, 4]));
-  panel.append(el('p', 'sub', 'IAS 7 identity: CFO + CFI + CFF == Net Change in Cash (Purse Cash Flow) to the credit. Negative FCF during positive CFO indicates deliberate self-funded CapEx reinvestment (hulls, modules, outposts), not operating loss.'));
+  panel.append(el('p', 'sub', 'IAS 7 & Buffett Owner Earnings identity: Hulls, modules, Lockboxes, and Outposts have zero depreciation (D&A = 0) and are 100% one-time Growth CapEx; CFO == Cash Owner Earnings and CFO + Inventory Accrual == Total Economic Owner Earnings. Negative FCF during positive CFO indicates self-funded expansion, not operating loss.'));
 }
 
 async function renderMetrics(panel, live) {

@@ -474,6 +474,7 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             outposts = {str(b) for (b,) in _rows("SELECT base FROM bases WHERE kind = 'outpost'") if b}
             # Docks: every place with a base (table places), our own stations and the empires'.
             _bursar_live = set()
+            _lockbox_hubs = set()
             try:
                 _bc_doc = read_json(Path(data_dir) / "fleet" / "bursar_claims.json", {})
                 if isinstance(_bc_doc, dict):
@@ -482,6 +483,13 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                             _bursar_live.add(str(_bk))
             except Exception:
                 pass
+            _hn_tbls = {r[0] for r in _rows("SELECT name FROM sqlite_master WHERE type='table'")}
+            if "faction_facilities" in _hn_tbls:
+                for (lb_base,) in _rows(
+                    "SELECT DISTINCT base FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active' AND base IS NOT NULL"
+                ):
+                    if lb_base and str(lb_base) not in outposts:
+                        _lockbox_hubs.add(str(lb_base))
             for sys_id, poi_id, base_id, nm in _rows(
                 "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
             ):
@@ -489,6 +497,8 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                     continue
                 lst = stations_by_sys.setdefault(sys_id, [])
                 if str(base_id) in _bursar_live:
+                    lst.insert(0, (sys_id, poi_id, base_id))
+                elif str(base_id) in _lockbox_hubs:
                     lst.insert(0, (sys_id, poi_id, base_id))
                 else:
                     lst.append((sys_id, poi_id, base_id))
@@ -590,7 +600,7 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
         "species_loot_val": species_loot_val, "owned_bases": owned_bases,
-        "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live,
+        "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live, "lockbox_bases": _lockbox_hubs,
     }
 
 
@@ -926,7 +936,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         if not ok_g or not f9_passes(f9, prey_hull, "grazer", n=1):
             continue
 
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5, preferred_bases=world.get("bursar_bases"))
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=5, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup:
             continue
 
@@ -937,6 +947,9 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             fit_mult = max(0.55, 1.0 - 0.08 * (ratio - ideal_hi))
         else:
             fit_mult = 1.0
+        _pref_hubs = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
+        if st_hops <= 2 and st_tup[2] in _pref_hubs:
+            fit_mult *= 1.12
 
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - int(policy.get("keep_herd") or 2)))
         loot_est = float(species_loot.get(sp) or 2000.0) * kills_avail
@@ -1009,7 +1022,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         sz = choose_pack_size(ship_power, threat, wild_ratio, sizes=sizes, f9=f9, prey_hull=prey_hull, role=role)
         if sz is None:
             continue
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=world.get("bursar_bases"))
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup:
             continue
         loot_v = float(species_loot.get(sp) or 4000.0) * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
@@ -1047,7 +1060,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             sz = choose_pack_size(ship_power, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
-            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=world.get("bursar_bases"))
+            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
             if not st_tup:
                 continue
             score = (18000.0 * (phull / 80.0)) / (1.0 + 0.6 * hops + 0.5 * st_hops)

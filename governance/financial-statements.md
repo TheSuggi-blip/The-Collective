@@ -59,9 +59,26 @@ directly from `game/fleet/accounting.py` (`/api/ops -> accounting`):
 | **Treasury Operating Overhead** | `treasury_own_h` | NPC facility rent and direct treasury operating spend (excl. pilot deposits) |
 | **Core Operating Profit (EBIT)** | `accrual_operating_h + treasury_own_h` | Pure repeatable business profitability before non-recurring missions & CapEx |
 | **Seed & Repeatable Mission Net** | `seed_net_h` | Non-recurring/seed mission rewards matched against their direct travel fuel |
-| **Net Operating Profit (Ex-CapEx)** | `accrual_operating_h + seed_net_h + treasury_own_h` | Total enterprise operating profit (cash + live-market inventory) excluding CapEx |
-| *Memo: Pure Cash Operating Profit* | `recurring_cash_h + seed_net_h + treasury_own_h` | Cash-only operating profit before inventory build and before CapEx (`== CFO`) |
+| **Net Operating Profit / Owner Earnings (Ex-CapEx)** | `accrual_operating_h + seed_net_h + treasury_own_h` | Total Buffett Owner Earnings (cash + live-market inventory) excluding one-time Growth CapEx |
+| *Memo: Cash Owner Earnings (Buffett Basis)* | `recurring_cash_h + seed_net_h + treasury_own_h` | Pure cash Owner Earnings before inventory build & discretionary Growth CapEx (`== CFO`) |
 | *Memo: Metered Fleet Fuel Burn* | `-SUM(by_division[*].fuel_cr_h)` | Transparent energy/transit burn across all six divisions |
+
+---
+
+
+### Buffett "Owner Earnings" Principle (Zero-Depreciation CapEx Rule)
+
+Under Warren Buffett's 1986 Berkshire Hathaway standard:
+`Owner Earnings = Net Income + D&A - Maintenance CapEx +/- Working Capital`.
+In SpaceMolt, permanent fleet assets (upgraded hulls, fitted T1--T5 modules, Faction
+Lockboxes, Fuel Bunkers, Outposts, and Stations) carry **zero Depreciation & Amortization
+(`D&A = 0`)** and **zero Maintenance CapEx (`Maintenance CapEx = 0`)** because routine
+fuel, hull repairs, and station upkeep are already expensed directly inside Operating
+Costs and Treasury Overhead. Consequently, all hull/module/outpost purchases are **100%
+discretionary one-time Growth CapEx** and are strictly excluded from true operating
+profitability:
+- **Cash Owner Earnings (Ex-CapEx) = `CFO`** (`recurring_cash_h + seed_net_h + treasury_own_h`)
+- **Total Economic Owner Earnings (Ex-CapEx) = `Net Operating Profit`** (`CFO + inventory_accrual_h`)
 
 ---
 

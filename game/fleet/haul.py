@@ -55,7 +55,16 @@ DEFAULT_POLICY = {
     "max_buy_spend_cr": 35000,
     "min_margin_pct": 0.20,
     "partners_first": True,
-    "lanes": ["active_freight", "internal_supply", "public_freight", "arbitrage", "liquidate_surplus"],
+    "lanes": ["active_freight", "hub_upkeep", "internal_supply", "public_freight", "arbitrage", "liquidate_surplus"],
+    "hub_upkeep_reorder_pct": 0.60,
+    "hub_upkeep_targets": {
+        "outpost": {"fuel_cell": 200, "steel_plate": 180, "circuit_board": 45, "hull_patch": 25},
+        "station": {"fuel_cell": 1000, "steel_plate": 400, "circuit_board": 100, "flex_polymer": 150, "copper_wiring": 150, "hull_patch": 40, "repair_kit": 50},
+    },
+    "hub_upkeep_max_unit_price": {
+        "fuel_cell": 80, "steel_plate": 120, "circuit_board": 900,
+        "hull_patch": 350, "repair_kit": 400, "flex_polymer": 250, "copper_wiring": 250,
+    },
     "arb_bid_depth_cap": 1.0,
     "min_arb_bid_qty": 1,
     "liquidate_min_revenue_cr": 300,
@@ -161,6 +170,13 @@ def _load_base_map_uncached(data):
                 WHERE COALESCE(p.base, '') != ''
             """).fetchall():
                 out[str(base_id)] = (str(sys_id), str(poi_id), str(base_id), str(emp or "").strip().lower())
+        if {"bases", "systems"} <= tbls:
+            for sys_id, poi_id, base_id, emp in con.execute("""
+                SELECT b.system, COALESCE(b.poi, b.base), b.base, COALESCE(s.empire, '')
+                FROM bases b LEFT JOIN systems s ON s.id = b.system
+                WHERE COALESCE(b.base, '') != '' AND COALESCE(b.system, '') != ''
+            """).fetchall():
+                out.setdefault(str(base_id), (str(sys_id), str(poi_id), str(base_id), str(emp or "").strip().lower()))
     except sqlite3.Error:
         pass
     finally:
@@ -202,6 +218,177 @@ def _load_cltv_outposts_uncached(data):
         if con is not None:
             con.close()
     return out
+
+
+def load_cltv_owned_hubs(data):
+    """Auto-discover ALL CLTV Owned Outposts & Stations from read.db (bases + 0-rent facilities).
+    Returns {base_id: {'base': base_id, 'system': sys_id, 'poi': poi_id, 'kind': 'outpost'|'station'}}."""
+    import worldcache as _wc
+    return dict(_wc.cached(("haul_cltv_owned_hubs", str(data), _wc.db_sig(data)), 60.0,
+                           lambda: _load_cltv_owned_hubs_uncached(data)))
+
+
+def _load_cltv_owned_hubs_uncached(data):
+    out = {}
+    db = Path(data) / "store" / "read.db"
+    if not db.is_file():
+        return out
+    con = None
+    try:
+        import worldcache as _wc
+        con = _wc.ro_db(db, timeout=3.0)
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        if "bases" in tbls:
+            for b_id, sys_id, poi_id, knd in con.execute(
+                "SELECT base, system, COALESCE(poi, base), COALESCE(kind, 'outpost') FROM bases WHERE base IS NOT NULL AND system IS NOT NULL"
+            ).fetchall():
+                if b_id and sys_id:
+                    k = "station" if "station" in str(knd or "").lower() else "outpost"
+                    out[str(b_id)] = {"base": str(b_id), "system": str(sys_id), "poi": str(poi_id or b_id), "kind": k}
+        if "faction_facilities" in tbls:
+            for b_id, sys_id in con.execute(
+                "SELECT DISTINCT base, system FROM faction_facilities WHERE type IN ('faction_lockbox', 'faction_fuel_bunker') AND COALESCE(rent_per_cycle, 0) = 0 AND COALESCE(status, 'active') = 'active'"
+            ).fetchall():
+                if b_id and sys_id and str(b_id) not in out:
+                    out[str(b_id)] = {"base": str(b_id), "system": str(sys_id), "poi": str(b_id), "kind": "outpost"}
+    except sqlite3.Error:
+        pass
+    finally:
+        if con is not None:
+            con.close()
+    return out
+
+
+def _hub_upkeep_keep_floor(policy, hub_kind, item_id):
+    """Minimum upkeep reserve kept at an Owned Outpost/Station (prevents pull/push ping-pong!)."""
+    tgts = (policy.get("hub_upkeep_targets") or {}).get(hub_kind) or {}
+    return max(0, int(tgts.get(item_id) or 0))
+
+
+def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None):
+    """Reorder-point (s, S) automated upkeep resupply for ALL CLTV Owned Outposts & Stations.
+    Prefers zero-cash internal transfers from empire Faction/pilot warehouses; falls back to cheap
+    policed Exchange purchases when internal stock is absent (e.g. fuel_cell, hull_patch)."""
+    if hold_cap < 1:
+        return None
+    now_t = time.time() if now_t is None else float(now_t)
+    owned_hubs = load_cltv_owned_hubs(data)
+    if not owned_hubs:
+        return None
+    reorder_pct = float(policy.get("hub_upkeep_reorder_pct") or 0.60)
+    targets_cfg = policy.get("hub_upkeep_targets") or DEFAULT_POLICY["hub_upkeep_targets"]
+    max_prices = policy.get("hub_upkeep_max_unit_price") or DEFAULT_POLICY["hub_upkeep_max_unit_price"]
+    max_pick = int(policy.get("max_jumps_pickup") or 16)
+    max_del = int(policy.get("max_jumps_delivery") or 35)
+    max_age_s = float(policy.get("max_book_age_minutes") or 45) * 60.0
+    max_spend = min(float(policy.get("max_buy_spend_cr") or 15000), max(0.0, float(avail_cash or 0)))
+    sh_set = set(exclude_bases or ())
+
+    stor = read_json(Path(data) / "stock" / "storage.json", {})
+    fac_by_base = {}
+    self_by_base = {}
+    if isinstance(stor, dict):
+        for f_raw in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
+            for b_id, items in _storage_stations(f_raw).items():
+                if isinstance(items, dict):
+                    fac_by_base[b_id] = items
+        for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
+            if isinstance(items, dict):
+                self_by_base[b_id] = items
+
+    asks_by_item = {}
+    for row in books_rows or []:
+        if not isinstance(row, dict):
+            continue
+        b_id = str(row.get("base") or "")
+        iid = str(row.get("item") or "")
+        ask_p = float(row.get("ask") or 0)
+        ask_q = int(row.get("ask_qty") or 0)
+        if not b_id or not iid or ask_p <= 0 or ask_q <= 0 or b_id in sh_set:
+            continue
+        ts = float(row.get("t") or 0)
+        if ts and (now_t - ts) > max_age_s:
+            continue
+        oloc = base_map.get(b_id)
+        if not oloc or not oloc[3] or oloc[0] in sh_set:
+            continue
+        asks_by_item.setdefault(iid, []).append((ask_p, ask_q, oloc))
+
+    best = None
+    for hub_id, hinfo in owned_hubs.items():
+        if hub_id in sh_set or hinfo["system"] in sh_set:
+            continue
+        dloc = base_map.get(hub_id) or (hinfo["system"], hinfo["poi"], hub_id, "")
+        hub_kind = hinfo.get("kind") or "outpost"
+        tgts = targets_cfg.get(hub_kind) or {}
+        cur_inv = fac_by_base.get(hub_id) or {}
+        for iid, tgt_raw in tgts.items():
+            tgt = int(tgt_raw or 0)
+            if tgt <= 0:
+                continue
+            have_here = int(cur_inv.get(iid) or 0)
+            if have_here >= int(round(tgt * reorder_pct)):
+                continue
+            jkey = "upkeep:%s:%s" % (hub_id, iid)
+            if jkey in claimed_keys:
+                continue
+            deficit = max(1, tgt - have_here)
+            urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
+
+            chosen = None
+            for src_t, src_map in (("faction", fac_by_base), ("self", self_by_base)):
+                for sb_id, sitems in src_map.items():
+                    if sb_id in owned_hubs or sb_id in sh_set or sb_id not in base_map:
+                        continue
+                    sq = int((sitems or {}).get(iid) or 0)
+                    if sq < min(deficit, 5):
+                        continue
+                    oloc = base_map[sb_id]
+                    if policy.get("policed_only", True) and not oloc[3]:
+                        continue
+                    p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+                    d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
+                    if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                        continue
+                    qty = min(deficit, sq, int(hold_cap))
+                    if qty < 1:
+                        continue
+                    sc = (urgency * 1000.0 + qty * 2.0) / max(1.0, float(p_hops + d_hops))
+                    if chosen is None or sc > chosen[0]:
+                        chosen = (sc, {
+                            "job_key": jkey, "mode": "transfer", "source_target": src_t,
+                            "item": iid, "qty": qty, "origin": oloc, "dest": dloc,
+                            "hub_kind": hub_kind, "max_unit_price": 0,
+                            "pickup_hops": p_hops, "delivery_hops": d_hops,
+                        })
+
+            if chosen is None and max_spend >= 200:
+                cap_p = float(max_prices.get(iid) or 0)
+                if cap_p > 0:
+                    for ask_p, ask_q, oloc in sorted(asks_by_item.get(iid) or [], key=lambda x: x[0]):
+                        if ask_p > cap_p:
+                            break
+                        p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+                        d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
+                        if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                            continue
+                        qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
+                        if qty < min(deficit, 5):
+                            continue
+                        sc = (urgency * 850.0 + qty * 1.5) / max(1.0, float(p_hops + d_hops))
+                        if chosen is None or sc > chosen[0]:
+                            chosen = (sc, {
+                                "job_key": jkey, "mode": "buy", "source_target": "market",
+                                "item": iid, "qty": qty, "origin": oloc, "dest": dloc,
+                                "hub_kind": hub_kind, "max_unit_price": int(round(cap_p)),
+                                "est_ask": int(round(ask_p)),
+                                "pickup_hops": p_hops, "delivery_hops": d_hops,
+                            })
+                        break
+
+            if chosen and (best is None or chosen[0] > best[0]):
+                best = chosen
+    return best[1] if best else None
 
 
 def load_stronghold_bases(data):
@@ -869,6 +1056,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
         return None
     stor = read_json(Path(data) / "stock" / "storage.json", {})
     owned_outposts = load_cltv_outposts(data)
+    owned_hubs = load_cltv_owned_hubs(data)
     sources = []
     if isinstance(stor, dict):
         for b_id, items in _storage_stations((stor.get("pilots") or {}).get(pilot)).items():
@@ -892,6 +1080,8 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
             continue
         for iid, qty in items.items():
             q = int(qty or 0)
+            if b_id in owned_hubs:
+                q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
             if q < 10 or iid not in open_needs:
                 continue
             max_slots = min(4, max(1, q // max(1, int(hold_cap))))
@@ -1009,6 +1199,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         bids_by_item.setdefault(iid, []).append((b_id, loc, bp, bq))
 
     owned_outposts = load_cltv_outposts(data)
+    owned_hubs = load_cltv_owned_hubs(data)
     best = None
     for src_target, b_id, items in sources:
         if b_id not in base_map:
@@ -1021,6 +1212,8 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
             continue
         for iid, qty in items.items():
             q = int(qty or 0)
+            if b_id in owned_hubs:
+                q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
             if q < 1 or iid in reserved or iid not in bids_by_item:
                 continue
             for sb, sloc, bid_p, bid_q in bids_by_item[iid]:
@@ -1212,9 +1405,9 @@ def main(argv=None):
         msg = str((ans.get("message") or ans.get("error") or "") if isinstance(ans, dict) else ans)[:100]
         return False, msg
 
-    def go_dock(loc):
+    def go_dock(loc, refuel=True):
         sys_id, poi_id, base_id = loc[0], loc[1], loc[2]
-        return run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
+        return run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": bool(refuel)})
 
     def save_market(base_id, sys_id):
         items = [i for i in (body(raw("view_market", {}, group="spacemolt_market")).get("items") or []) if isinstance(i, dict)]
@@ -1354,6 +1547,47 @@ def main(argv=None):
                         notes.append("active freight %s -> %s" % (cid[:8], db))
                         completed += 1
                         break
+
+            elif lane == "hub_upkeep":
+                books_rows = _load_books(DATA)
+                claimed = active_claimed_keys(DATA)
+                upk = _pick_hub_upkeep(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
+                if upk and claim_job(DATA, pilot, upk["job_key"]):
+                    iid, oloc, dloc, qty = upk["item"], upk["origin"], upk["dest"], upk["qty"]
+                    say("hub_upkeep (%s) %d %s: %s -> %s (%dj+%dj)" % (
+                        upk["mode"], qty, iid, oloc[2], dloc[2], upk["pickup_hops"], upk["delivery_hops"]))
+                    ok_o, _ = go_dock(oloc, refuel=True)
+                    if not ok_o:
+                        release_job(DATA, pilot)
+                        continue
+                    have = 0
+                    if upk["mode"] == "transfer":
+                        raw("withdraw", {"item_id": iid, "quantity": qty, "target": upk.get("source_target") or "faction"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        have = get_cargo().get(iid, 0)
+                    else:
+                        mb = save_market(oloc[2], oloc[0])
+                        row = mb.get(iid) or {}
+                        live_ask = float(row.get("best_sell") or 0)
+                        live_aq = int(row.get("best_sell_qty") or row.get("sell_quantity") or 0)
+                        if live_ask > 0 and live_ask <= float(upk.get("max_unit_price") or 0) and live_aq > 0:
+                            buy_q = min(qty, live_aq, int(max(0, get_credits() - int(policy.get("fuel_reserve_cr") or 6000)) // (live_ask * 1.02)))
+                            if buy_q >= 1:
+                                raw("buy", {"item_id": iid, "quantity": buy_q, "auto_list": False}, group="spacemolt_market")
+                                time.sleep(TICK)
+                                have = get_cargo().get(iid, 0)
+                    if have <= 0:
+                        release_job(DATA, pilot)
+                        continue
+                    ok_d, _ = go_dock(dloc, refuel=(upk.get("hub_kind") == "station"))
+                    if ok_d:
+                        r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        say("hub_upkeep DELIVERED %d %s -> %s%s" % (have, iid, dloc[2], " ERR" if "error" in r_dep else ""))
+                        notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
+                        completed += 1
+                    else:
+                        release_job(DATA, pilot)
 
             elif lane == "public_freight":
                 entries = extract_shipments(raw("list_all", {"limit": 50}, group="spacemolt_shipping"))

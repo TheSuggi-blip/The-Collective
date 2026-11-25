@@ -1,0 +1,207 @@
+#!/usr/bin/env python3
+"""Unit tests for multi-hub AutoNet, RouteMaker Owned Outposts/Lockboxes, and Hauler Hub Upkeep."""
+import json
+import sqlite3
+import sys
+import tempfile
+import time
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "game" / "fleet"))
+
+import haul
+import hunt_net
+import mine_net
+import routemaker
+
+
+def _make_db(db_path):
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    con = sqlite3.connect(db_path)
+    con.executescript("""
+        CREATE TABLE lanes (a TEXT, b TEXT);
+        CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER);
+        CREATE TABLE places (system TEXT, poi TEXT, base TEXT, name TEXT, kind TEXT);
+        CREATE TABLE stations (name TEXT, system TEXT, kind TEXT, services TEXT, tag TEXT);
+        CREATE TABLE bases (base TEXT, name TEXT, system TEXT, poi TEXT, kind TEXT);
+        CREATE TABLE faction_facilities (system TEXT, base TEXT, type TEXT, status TEXT, rent_per_cycle INTEGER);
+        CREATE TABLE fields (system TEXT, poi TEXT, resource TEXT, remaining INTEGER, max_remaining INTEGER, richness REAL, t REAL);
+        CREATE TABLE items (id TEXT, base_value REAL);
+        CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER, t REAL);
+        CREATE TABLE herds (system TEXT, poi TEXT, creature TEXT, name TEXT, role TEXT, count INTEGER, t REAL);
+        CREATE TABLE observations (kind TEXT, subject TEXT, t REAL);
+        CREATE TABLE need_status (priority INTEGER, gather TEXT, short_items TEXT);
+        CREATE TABLE supply_status (item TEXT, stock INTEGER, keep INTEGER);
+    """)
+    con.executemany("INSERT INTO lanes VALUES (?, ?)", [
+        ("node_beta", "nexus_prime"),
+        ("nexus_prime", "felis"),
+        ("node_beta", "sol"),
+        ("node_beta", "krynn"),
+        ("felis", "oakridge"),
+    ])
+    con.executemany("INSERT INTO systems VALUES (?, ?, ?)", [
+        ("node_beta", "voidborn", 0),
+        ("nexus_prime", "voidborn", 0),
+        ("sol", "solarian", 0),
+        ("krynn", "crimson", 0),
+        ("felis", "", 0),
+        ("oakridge", "", 0),
+    ])
+    con.executemany("INSERT INTO places VALUES (?, ?, ?, ?, ?)", [
+        ("node_beta", "nb_poi", "node_beta_industrial_station", "Node Beta", "station"),
+        ("sol", "sol_central", "confederacy_central_command", "Sol Central", "station"),
+        ("krynn", "war_citadel", "crimson_war_citadel", "Crimson War Citadel", "station"),
+    ])
+    con.executemany("INSERT INTO stations VALUES (?, ?, ?, ?, ?)", [
+        ("Node Beta", "node_beta", "station", "storage,market,refuel", ""),
+        ("Sol Central", "sol", "station", "storage,market,refuel", ""),
+        ("Crimson War Citadel", "krynn", "station", "storage,market,refuel", ""),
+    ])
+    con.executemany("INSERT INTO bases VALUES (?, ?, ?, ?, ?)", [
+        ("felis_outpost_id", "CLTV Outpost Felis", "felis", "felis_op_poi", "outpost"),
+        ("oakridge_st_id", "CLTV Station Oakridge", "oakridge", "oak_poi", "station"),
+    ])
+    con.executemany("INSERT INTO faction_facilities VALUES (?, ?, ?, ?, ?)", [
+        ("node_beta", "node_beta_industrial_station", "faction_lockbox", "active", 69),
+        ("sol", "confederacy_central_command", "faction_lockbox", "active", 69),
+        ("krynn", "crimson_war_citadel", "faction_lockbox", "active", 69),
+        ("felis", "felis_outpost_id", "faction_lockbox", "active", 0),
+        ("felis", "felis_outpost_id", "faction_fuel_bunker", "active", 0),
+        ("oakridge", "oakridge_st_id", "faction_lockbox", "active", 0),
+    ])
+    con.commit()
+    con.close()
+
+
+class MultiHubUpkeepTests(unittest.TestCase):
+    def test_routemaker_generates_owned_outpost_route_with_faction_deposit(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td) / "game"
+            data = Path(td) / "data"
+            (root / "map").mkdir(parents=True)
+            (root / "map" / "galaxy.tsv").write_text(
+                "id\tlanes\nnode_beta\tfelis\nfelis\tnode_beta\n", encoding="utf-8"
+            )
+            (data / "scouting").mkdir(parents=True)
+            (data / "market").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            (data / "fleet" / "strict-classes-on").write_text("1", encoding="utf-8")
+            (data / "empire").mkdir(parents=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "faction": {"id": "cltv"},
+                "bases": [{"base": "felis_op", "name": "CLTV Outpost Felis", "system": "felis", "poi": "felis_op_poi", "kind": "outpost"}],
+                "facilities": [{"base": "felis_op", "type": "faction_lockbox", "status": "active", "rent_per_cycle": 0}],
+            }), encoding="utf-8")
+            (data / "scouting" / "felis.json").write_text(json.dumps({
+                "system": "felis", "read_at": "2026-11-25T16:00:00Z",
+                "pois": {
+                    "felis_belt_b": {
+                        "poi": {"name": "Felis Belt B", "type": "asteroid_belt"},
+                        "resources": [{"resource_id": "iron_ore", "richness": 100, "remaining": 90000, "max_remaining": 100000}],
+                    }
+                }
+            }), encoding="utf-8")
+            (data / "scouting" / "node_beta.json").write_text(json.dumps({
+                "system": "node_beta", "read_at": "2026-11-25T16:00:00Z",
+                "pois": {
+                    "nb_poi": {"poi": {"name": "Node Beta", "type": "station", "base_id": "nb_base"}}
+                }
+            }), encoding="utf-8")
+            (data / "market" / "nb_base.json").write_text(json.dumps({
+                "base": "nb_base", "system": "node_beta", "read_at": "2026-11-25T16:00:00Z",
+                "items": [{"item_id": "iron_ore", "best_buy": 40, "best_buy_qty": 5000, "best_sell": 50, "best_sell_qty": 100}],
+            }), encoding="utf-8")
+            world = routemaker.load_world(data, root, now=time.time())
+            self.assertIn("felis_op", world["owned_hubs"])
+            self.assertIn("felis_op", world["lockboxes"])
+            cands = routemaker.mine_candidates(world)
+            self.assertEqual(len(cands), 1)
+            c = cands[0]
+            self.assertEqual(c["route"]["station"], "felis:felis_op_poi:felis_op")
+            self.assertEqual(c["route"]["deposit"], "faction")
+            self.assertEqual(c["basis"]["hub_kind"], "owned_outpost")
+
+    def test_mine_net_autodiscovers_outpost_from_bases_and_applies_hub_gravity(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (repo / "game").mkdir(parents=True)
+            _make_db(data / "store" / "read.db")
+            con = sqlite3.connect(data / "store" / "read.db")
+            con.execute("INSERT INTO fields VALUES ('felis', 'felis_belt_b', 'iron_ore', 95000, 100000, 100.0, ?)", (time.time(),))
+            con.execute("INSERT INTO items VALUES ('iron_ore', 15.0)")
+            con.commit()
+            con.close()
+            pol = dict(mine_net.DEFAULT_POLICY)
+            pol.update({"auto_use_owned_outposts": True, "hub_gravity_bonus": True, "policed_only": False, "market_tier": False, "priority_resources": ["iron_ore"]})
+            world = mine_net.load_graph_and_world(data, repo, pol)
+            self.assertIn("felis_outpost_id", world["owned_outpost_bases"])
+            self.assertIn("felis", world["stations_by_sys"])
+            ship = {"name": "miner-1", "system": "felis", "tier": 2, "modules": ["mining_laser_ii"]}
+            cands_on = mine_net.score_belt_candidates(ship, world, pol, {}, {})
+            pol_off = dict(pol, hub_gravity_bonus=False)
+            cands_off = mine_net.score_belt_candidates(ship, world, pol_off, {}, {})
+            self.assertEqual(len(cands_on), 1)
+            self.assertEqual(cands_on[0]["station"], "felis:felis_op_poi:felis_outpost_id")
+            self.assertGreater(cands_on[0]["score"], cands_off[0]["score"])
+
+    def test_hunt_net_prefers_empire_lockbox_hubs(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (repo / "game").mkdir(parents=True)
+            _make_db(data / "store" / "read.db")
+            world = hunt_net._load_combat_world_uncached(data, repo, hunt_net.DEFAULT_POLICY, time.time())
+            self.assertIn("crimson_war_citadel", world["lockbox_bases"])
+            self.assertIn("confederacy_central_command", world["lockbox_bases"])
+            self.assertNotIn("felis_outpost_id", world["lockbox_bases"])
+
+    def test_haul_hub_upkeep_transfer_buy_and_no_pingpong(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            _make_db(data / "store" / "read.db")
+            (data / "stock").mkdir(parents=True)
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {
+                    "Faction": {
+                        "stations": {
+                            "node_beta_industrial_station": {"steel_plate": 1500, "circuit_board": 400},
+                            "felis_outpost_id": {"iron_ore": 500, "steel_plate": 100},
+                            "oakridge_st_id": {"steel_plate": 300, "fuel_cell": 900, "circuit_board": 100, "flex_polymer": 150, "copper_wiring": 150, "hull_patch": 40, "repair_kit": 50},
+                        }
+                    }
+                }
+            }), encoding="utf-8")
+            base_map = haul._load_base_map_uncached(data)
+            self.assertIn("felis_outpost_id", base_map)
+            self.assertIn("oakridge_st_id", base_map)
+            lanes = {"node_beta": ["nexus_prime", "sol"], "nexus_prime": ["node_beta", "felis"], "felis": ["nexus_prime", "oakridge"], "oakridge": ["felis"], "sol": ["node_beta"]}
+            pol = dict(haul.DEFAULT_POLICY)
+            now_t = time.time()
+            books = [{"base": "confederacy_central_command", "item": "fuel_cell", "ask": 35, "ask_qty": 500, "bid": 20, "bid_qty": 100, "t": now_t}]
+            job1 = haul._pick_hub_upkeep(data, "hauler-1", books, base_map, lanes, "node_beta", 300, 15000, pol, set(), now_t=now_t)
+            self.assertIsNotNone(job1)
+            self.assertEqual(job1["item"], "fuel_cell")
+            self.assertEqual(job1["mode"], "buy")
+            self.assertEqual(job1["dest"][2], "felis_outpost_id")
+            self.assertEqual(job1["qty"], 200)
+            job2 = haul._pick_hub_upkeep(data, "hauler-2", books, base_map, lanes, "node_beta", 300, 15000, pol, {job1["job_key"]}, now_t=now_t)
+            self.assertIsNotNone(job2)
+            self.assertEqual(job2["mode"], "transfer")
+            self.assertEqual(job2["origin"][2], "node_beta_industrial_station")
+            con = sqlite3.connect(data / "store" / "read.db")
+            con.execute("INSERT INTO need_status (priority, gather, short_items) VALUES (1, '', 'steel_plate 500, iron_ore 500')")
+            con.commit()
+            con.close()
+            sup = haul._pick_internal_supply(data, "hauler-3", base_map, lanes, "felis", 300, pol, set())
+            self.assertIsNotNone(sup)
+            self.assertEqual(sup["item"], "iron_ore")
+            self.assertEqual(sup["origin"][2], "felis_outpost_id")
+
+
+if __name__ == "__main__":
+    unittest.main()
+

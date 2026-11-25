@@ -290,7 +290,69 @@ def load_world(data, root, now):
     world["catalog_version"] = catalog.get("version") or ""
     world["stock"] = (read_json(data / "stock" / "storage.json", {}).get("totals") or {}).get("by_station") or {}
     world["strongholds"] = stronghold_systems(root)
-    world["faction_id"] = ((read_json(data / "empire" / "empire.json", {}) or {}).get("faction") or {}).get("id") or ""
+    _emp_doc = read_json(data / "empire" / "empire.json", {}) or {}
+    world["faction_id"] = (_emp_doc.get("faction") or {}).get("id") or ""
+    world["lockboxes"] = set()
+    world["owned_hubs"] = {}
+    for _b in (_emp_doc.get("bases") or []):
+        _bid = str((_b.get("base") or _b.get("base_id") or "") if isinstance(_b, dict) else "")
+        _bsys = str((_b.get("system") or _b.get("system_id") or "") if isinstance(_b, dict) else "")
+        if _bid and _bsys:
+            _bpoi = str(_b.get("poi") or _b.get("poi_id") or _bid)
+            _bname = str(_b.get("name") or _bid)
+            _bkind = str(_b.get("kind") or "outpost").lower()
+            world["owned_hubs"][_bid] = {
+                "system": _bsys, "poi": _bpoi, "name": _bname,
+                "at": "%s:%s:%s" % (_bsys, _bpoi, _bid), "kind": _bkind, "rent": 0,
+            }
+            world["stations"].setdefault(_bid, {
+                "system": _bsys, "poi": _bpoi, "name": _bname,
+                "at": "%s:%s:%s" % (_bsys, _bpoi, _bid),
+                "faction_id": world["faction_id"], "market_fee_bps": 0, "owned_hub": True,
+            })
+    for _ff in (_emp_doc.get("facilities") or _emp_doc.get("faction_facilities") or []):
+        if isinstance(_ff, dict) and str(_ff.get("type") or _ff.get("facility_type") or "") == "faction_lockbox":
+            _fb = str(_ff.get("base") or _ff.get("base_id") or "")
+            if str(_ff.get("status") or "active").lower() == "active" and _fb:
+                world["lockboxes"].add(_fb)
+    _db_rm = data / "store" / "read.db"
+    if _db_rm.is_file():
+        try:
+            import sqlite3 as _sq_rm
+            _con_rm = _sq_rm.connect("file:%s?mode=ro" % _db_rm, uri=True, timeout=3.0)
+            try:
+                _tbls_rm = {r[0] for r in _con_rm.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+                if "bases" in _tbls_rm:
+                    for _bid, _bnm, _bsys, _bpoi, _bkind in _con_rm.execute(
+                        "SELECT base, COALESCE(name, base), system, COALESCE(poi, base), COALESCE(kind, 'outpost') FROM bases WHERE base IS NOT NULL AND system IS NOT NULL"
+                    ).fetchall():
+                        _bid, _bsys, _bpoi = str(_bid), str(_bsys), str(_bpoi)
+                        world["owned_hubs"][_bid] = {
+                            "system": _bsys, "poi": _bpoi, "name": str(_bnm or _bid),
+                            "at": "%s:%s:%s" % (_bsys, _bpoi, _bid), "kind": str(_bkind or "outpost").lower(), "rent": 0,
+                        }
+                        world["stations"].setdefault(_bid, {
+                            "system": _bsys, "poi": _bpoi, "name": str(_bnm or _bid),
+                            "at": "%s:%s:%s" % (_bsys, _bpoi, _bid),
+                            "faction_id": world["faction_id"], "market_fee_bps": 0, "owned_hub": True,
+                        })
+                if "faction_facilities" in _tbls_rm:
+                    for _fsys, _fbase, _frent in _con_rm.execute(
+                        "SELECT system, base, COALESCE(rent_per_cycle, 0) FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active'"
+                    ).fetchall():
+                        if _fbase:
+                            world["lockboxes"].add(str(_fbase))
+                            if int(_frent or 0) == 0 and str(_fbase) not in world["owned_hubs"] and _fsys:
+                                _st_info = world["stations"].get(str(_fbase)) or {}
+                                _fpoi = str(_st_info.get("poi") or _fbase)
+                                world["owned_hubs"][str(_fbase)] = {
+                                    "system": str(_fsys), "poi": _fpoi, "name": str(_st_info.get("name") or _fbase),
+                                    "at": "%s:%s:%s" % (_fsys, _fpoi, _fbase), "kind": "outpost", "rent": 0,
+                                }
+            finally:
+                _con_rm.close()
+        except Exception:
+            pass
     world["runs"] = []
     try:
         with open(data / "routes" / "runs.jsonl", encoding="utf-8") as handle:
@@ -598,26 +660,54 @@ def mine_candidates(world):
         if not rich:
             continue
         best = None
+        owned_hubs = world.get("owned_hubs") or {}
+        lockboxes = world.get("lockboxes") or set()
         for base, station in world["stations"].items():
             book = world["books"].get(base)
             jumps = world["chart"].jumps(field["system"], station["system"])
-            if not book or jumps is None:
+            if jumps is None:
                 continue
-            minutes, fuel = trip(world, jumps)
-            minutes += cargo / (rate * rich)
-            loads = 60 / minutes                              # an hour of mining, sold down the book once
-            per_hour, sales = -fuel * loads, []
-            for res in live:
-                hour = loads * cargo * res["richness"] / rich
-                sold, got, how, levels, back = sell_hour(world, base, res["id"], hour)
-                per_hour += got
-                if sold > 0:
-                    sales.append((res["id"], cargo * res["richness"] / rich, hour, sold, got, how, levels, back))
-            if sales and (best is None or per_hour > best[0]):     # the station: what the hour brings there, every item together
-                best = (per_hour, minutes, loads, base, jumps, sales)
+            if book:
+                minutes, fuel = trip(world, jumps)
+                minutes += cargo / (rate * rich)
+                loads = 60 / minutes                              # an hour of mining, sold down the book once
+                per_hour, sales = -fuel * loads, []
+                for res in live:
+                    hour = loads * cargo * res["richness"] / rich
+                    sold, got, how, levels, back = sell_hour(world, base, res["id"], hour)
+                    per_hour += got
+                    if sold > 0:
+                        sales.append((res["id"], cargo * res["richness"] / rich, hour, sold, got, how, levels, back))
+                rank_val = per_hour * (1.08 if (world.get("strict") and base in lockboxes and per_hour > 0) else 1.0)
+                if sales and (best is None or rank_val > best[0]):
+                    best = (rank_val, per_hour, minutes, loads, base, jumps, sales, "empire_lockbox" if base in lockboxes else "exchange")
+            elif base in owned_hubs and base in lockboxes and jumps <= 4:
+                # CLTV Owned Outpost / Station (no Exchange order book): netback valuation at 0.88x best live market bid
+                minutes, fuel = trip(world, jumps)
+                minutes += cargo / (rate * rich)
+                loads = 60 / minutes
+                per_hour, sales = -fuel * loads, []
+                for res in live:
+                    hour = loads * cargo * res["richness"] / rich
+                    bids = best_bids(world, res["id"])
+                    if bids:
+                        net_bid = max(1.0, bids[0][0] * 0.88)
+                        cap_qty = max(hour, bids[0][1])
+                        sold = min(hour, cap_qty)
+                        got = sold * net_bid
+                        per_hour += got
+                        sales.append((res["id"], cargo * res["richness"] / rich, hour, sold, got, "outpost netback (0.88x %s)" % bids[0][2], [(net_bid, sold)], False))
+                    elif world.get("strict") or res["id"] in (world.get("open_needs") or set()):
+                        bv = max(4.0, num((world["items"].get(res["id"]) or {}).get("base_value")) * 0.6)
+                        got = hour * bv
+                        per_hour += got
+                        sales.append((res["id"], cargo * res["richness"] / rich, hour, hour, got, "outpost reserve", [(bv, hour)], False))
+                rank_val = per_hour * (1.12 if per_hour > 0 else 1.0)
+                if sales and (best is None or rank_val > best[0]):
+                    best = (rank_val, per_hour, minutes, loads, base, jumps, sales, "owned_outpost")
         if best is None:
             continue
-        per_hour, minutes, loads, base, jumps, sales = best
+        _rank_val, per_hour, minutes, loads, base, jumps, sales, hub_kind = best
         per_run = per_hour / loads
         station = world["stations"][base]
         warnings, parts, hourly, floors = [], [], [], []
@@ -634,7 +724,8 @@ def mine_candidates(world):
         if low:
             warnings.append("nearly mined out: %s hold fewer than ten loads" % ", ".join(low))
         warn_age(world, field["read_at"], "the field's reading", warnings)
-        warn_age(world, world["books"][base]["read_at"], "the order book of %s" % base, warnings)
+        if base in world["books"]:
+            warn_age(world, world["books"][base]["read_at"], "the order book of %s" % base, warnings)
         if lawless(world, field["system"]):
             warnings.append("lawless space: no police at %s" % field["system"])
         tool = HARVESTER.get(field["type"])
@@ -668,15 +759,19 @@ def mine_candidates(world):
         if sized:
             primary = max(sized, key=lambda r: (r["max_remaining"], r["richness"]))
             route["min_left"] = {primary["id"]: max(100, int(round(primary["max_remaining"] * 0.10)))}
+        if hub_kind == "owned_outpost":
+            route["deposit"] = "faction"
         if tool:
             route["requires"] = {"module": tool}
         if lawless(world, field["system"]):
             route.setdefault("requires", {})["empty_hold"] = True
+        basis_d = {"field": "%s:%s" % (field["system"], field["poi"]), "richness": {r["id"]: r["richness"] for r in live},
+                   "left": {r["id"]: r["remaining"] for r in live}, "sold_at": base, "jumps": jumps, "loads_an_hour": round(loads, 2),
+                   "an_hour": hourly, "a_load": parts}
+        if hub_kind != "exchange":
+            basis_d["hub_kind"] = hub_kind
         out.append(candidate(world, cid, "mine", route["title"], per_hour, per_run, minutes,
-                             {"field": "%s:%s" % (field["system"], field["poi"]), "richness": {r["id"]: r["richness"] for r in live},
-                              "left": {r["id"]: r["remaining"] for r in live}, "sold_at": base, "jumps": jumps, "loads_an_hour": round(loads, 2),
-                              "an_hour": hourly, "a_load": parts},
-                             warnings, route=route, rid=rid))
+                             basis_d, warnings, route=route, rid=rid))
     return out
 
 
@@ -846,9 +941,11 @@ def best_sale(world, herd, drops, run_minutes):
         minutes, fuel = trip(world, jumps)
         minutes += max(8.0, run_minutes - 7)           # the fight and the looting: a measured run less its own short trip
         per_hour = 60 * (income - fuel) / minutes
-        if income > 0 and (best is None or per_hour > best[0]):
-            best = (per_hour, income - fuel, minutes, base, jumps, parts, floor)
-    return best
+        _lbs = world.get("lockboxes") or set()
+        _rk = per_hour * (1.05 if (base in _lbs and per_hour > 0) else 1.0)
+        if income > 0 and (best is None or _rk > best[0]):
+            best = (_rk, per_hour, income - fuel, minutes, base, jumps, parts, floor)
+    return best[1:] if best else None
 
 
 def hunt_candidates(world):

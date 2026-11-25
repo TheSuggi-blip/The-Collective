@@ -13,6 +13,7 @@
   "partners_first": true,
   "lanes": [
     "active_freight",
+    "hub_upkeep",
     "internal_supply",
     "public_freight",
     "arbitrage",
@@ -38,5 +39,32 @@
   "buywall_min_bid": 50,
   "buywall_min_qty": 200,
   "backhaul_min_profit_cr": 400,
-  "backhaul_min_margin_pct": 0.2
+  "backhaul_min_margin_pct": 0.2,
+  "hub_upkeep_reorder_pct": 0.6,
+  "hub_upkeep_targets": {
+    "outpost": {
+      "fuel_cell": 200,
+      "steel_plate": 180,
+      "circuit_board": 45,
+      "hull_patch": 25
+    },
+    "station": {
+      "fuel_cell": 1000,
+      "steel_plate": 400,
+      "circuit_board": 100,
+      "flex_polymer": 150,
+      "copper_wiring": 150,
+      "hull_patch": 40,
+      "repair_kit": 50
+    }
+  },
+  "hub_upkeep_max_unit_price": {
+    "fuel_cell": 80,
+    "steel_plate": 120,
+    "circuit_board": 900,
+    "hull_patch": 350,
+    "repair_kit": 400,
+    "flex_polymer": 250,
+    "copper_wiring": 250
+  }
 }

@@ -392,11 +392,22 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                             lockbox_bases.add(str(fbase))
                             if int(frent or 0) == 0:
                                 owned_outpost_bases.add(str(fbase))
+                    _owned_rows = []
                     if "bases" in _ltbls:
-                        for (ob,) in _lcon.execute("SELECT base FROM bases WHERE kind = 'outpost'").fetchall():
-                            if ob and str(ob) in lockbox_bases:
-                                owned_outpost_bases.add(str(ob))
+                        for ob, osys, opoi, okind in _lcon.execute(
+                            "SELECT base, system, COALESCE(poi, base), COALESCE(kind, 'outpost') FROM bases WHERE base IS NOT NULL AND system IS NOT NULL"
+                        ).fetchall():
+                            if ob:
+                                _owned_rows.append((str(osys), str(opoi or ob), str(ob), str(okind or "outpost").lower()))
+                                if str(okind or "").lower() == "outpost" and str(ob) in lockbox_bases:
+                                    owned_outpost_bases.add(str(ob))
                     if policy.get("auto_use_owned_outposts", True):
+                        for osys, opoi, ob, _ok in _owned_rows:
+                            if ob in lockbox_bases and osys and opoi:
+                                tup = (osys, opoi, ob)
+                                lst = stations_by_sys.setdefault(tup[0], [])
+                                if tup not in lst:
+                                    lst.insert(0, tup)
                         for psys, ppoi, pbase in _lcon.execute(
                             "SELECT system, poi, base FROM places WHERE base IS NOT NULL AND base != ''"
                         ).fetchall():
@@ -725,6 +736,11 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         # Zero, 2026-11-25: a longer way always scores lower. Dividing a negative score (fuel above what the good is worth,
         # every experience-only belt) by the way raised it, and a belt 4 jumps from its station outranked one beside a station.
         _num = (tier_mult * uval * 20.0 * headroom_bonus) - fuel_pen
+        if policy.get("hub_gravity_bonus", True) and _num > 0:
+            _st_base = st_tup[2]
+            if _st_base in (world.get("owned_outpost_bases") or set()) or _st_base in (world.get("lockbox_bases") or set()):
+                _hub_mult = 1.20 if st_hops == 0 else (1.12 if st_hops <= 2 else (1.06 if st_hops <= 4 else 1.0))
+                _num *= _hub_mult
         _way = 1.0 + 0.6 * hops + 1.2 * st_hops
         score = _num / _way if _num >= 0 else _num * _way
         cand = {
