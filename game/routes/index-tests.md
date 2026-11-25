@@ -12,11 +12,12 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 109.
+Routes: 110.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [bursar-melt-central-nexus](bursar-melt-central-nexus.json) | circuit | home space | Station Bursar: one resting sell order of the pilot's own crystal melt at Central Nexus, kept at 3,900 (floor 3,500) | up to 1 ships, 3 pilots in all, with 10 crystal_melt stored at central_nexus | TBD | TBD | TBD | TBD | -- |
+| [bursar-null-matter-central-nexus](bursar-null-matter-central-nexus.json) | circuit | home space | Station Bursar: one resting sell order of the pilot's own null matter at central_nexus, kept at 340 (floor 300) | up to 1 ships, 1 pilots in all, with 50 null_matter stored at central_nexus | TBD | TBD | TBD | TBD | -- |
 | [bursar-null-matter-node-beta](bursar-null-matter-node-beta.json) | circuit | home space | Station Bursar: one resting sell order of the pilot's own null matter at node_beta_industrial_station, kept at 340 (floor 300) | up to 1 ships, 1 pilots in all, with 50 null_matter stored at node_beta_industrial_station | TBD | TBD | TBD | TBD | -- |
 | [bursar-null-matter-synchrony](bursar-null-matter-synchrony.json) | circuit | home space | Station Bursar: one resting sell order of the pilot's own null matter at synchrony_hub, kept at 340 (floor 300) | up to 1 ships, 1 pilots in all, with 50 null_matter stored at synchrony_hub | TBD | TBD | TBD | TBD | -- |
 | [buy-plasma-ammo-central-nexus](buy-plasma-ammo-central-nexus.json) | circuit | home space | Plasma ammunition for the Plasma Cannon II test: four dispersal plasma cell packs at Central Nexus | up to 1 ships, 2 pilots in all, needs plasma_cannon_ii, from 15,000 cr, while central_nexus asks 200 cr or less for dispersal_plasma_cell_pack | TBD | TBD | TBD | TBD | -- |
