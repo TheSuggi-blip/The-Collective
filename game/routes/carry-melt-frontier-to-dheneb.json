@@ -1,0 +1,45 @@
+{
+ "id": "carry-melt-frontier-to-dheneb",
+ "kind": "circuit",
+ "title": "Stored crystal_melt carried from frontier_station to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more",
+ "note": "2026-11-25 07:09 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). b495c6003fc83e18f6d8cecbe6929133 bid 3158 x 146 (book of 2026-11-25T07:09:12Z); the cheapest ask read is 3307 x 4 at central_nexus; floor 3000 cr; A pilot whose own storage at the first station holds the good withdraws up to 60, sells into the bid at the second and stores what the bid left there. requires.bid closes it while a book read within the hour shows that bid gone or under the floor. Road: Frontier Station moves (mobile.py sends the stop where it stands; altais 14 jumps, 8 lawless): a test, one ship (rules F3, F37). Hex Star (HEXC, neutral by agreement) refilled this bid from 5 to 152 units within the hour (05:00 to 05:54 UTC, tool market). Nothing is bought; stored min 15: one load worth the road. A run into a bid taken on the way costs the hop's fuel.",
+ "requires": {
+  "stored": {
+   "at": "frontier_station",
+   "item": "crystal_melt",
+   "min": 15
+  },
+  "bid": {
+   "item": "crystal_melt",
+   "base": "b495c6003fc83e18f6d8cecbe6929133",
+   "min_price": 3000,
+   "min_qty": 15
+  }
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "altais:mobile_capital:frontier_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "crystal_melt",
+     "qty": 60
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "sell": [
+    {
+     "item": "crystal_melt",
+     "min_price": 3000
+    }
+   ]
+  },
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all"
+  }
+ ]
+}
