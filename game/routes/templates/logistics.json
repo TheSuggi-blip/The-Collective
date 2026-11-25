@@ -37,8 +37,10 @@
    "note": "2026-11-24 00:24 UTC Apollo: the Procyon and Nova Terra steel routes added: haulers hold 2,477 and 1,457 iron ore there besides the receivers (table holdings 00:13 UTC); each opens only on the pilot's own stored iron (100 or more). (An earlier note of this change carried a typed time two minutes ahead of the clock; this one is stamped by the shell.)"
   },
   "outpost-supply": {
-   "title": "What our outpost GSC-0044 takes: repair materials while its facilities are damaged, then fuel cells into its bunker while the reserve gate reads it under its floor; faction members only",
+   "title": "What our outposts GSC-0044 and Atria take: repair materials while a facility is damaged, then fuel cells into each bunker while the reserve gate reads it under its floor; faction members only",
    "routes": [
+    "supply-bunker-atria-own-cells",
+    "supply-bunker-atria",
     "supply-repair-gsc-0044-boards",
     "supply-repair-gsc-0044-plate",
     "supply-bunker-gsc-0044-own-cells",
@@ -48,7 +50,7 @@
     "navigation",
     "piloting"
    ],
-   "note": "2026-11-22 04:10 UTC: the bunker first from our own cells at Node Beta while the reserve reads under the chain's keep of 5,000 (a test, F37 three runs), the buying route the backup under 4,000; repair stock as before"
+   "note": "2026-11-25 12:13 UTC: Atria first (bunker read 0 at 12:04 UTC; chain outpost-fuel-atria keep 3,000): own cells from Node Beta under 3,000, cells bought at Node Alpha under 2,000 (one ship each, F37); GSC-0044 as before (own cells under 5,000, bought under 5,000)"
   },
   "train-hauler": {
    "title": "The last standing work before park: jumps through our own stations for piloting (the freighter at 10) and navigation",
