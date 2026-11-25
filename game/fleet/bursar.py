@@ -484,13 +484,23 @@ def load_needs_and_reserves(repo_root, data):
 
 
 def _load_needs_and_reserves_uncached(repo_root, data):
-    open_needs, reserved, catalog_vals = {}, set(PROTECTED_ITEMS), {}
+    """Load open needs, hard reserves (keep=all + short needs), and STRICT live galactic market bids (ZERO catalog base_value!)."""
+    open_needs, reserved, live_market_vals = {}, set(PROTECTED_ITEMS), {}
+    fleet_stock = {}
     db = Path(data) / "store" / "read.db"
     if db.is_file():
         con = None
         try:
             import worldcache as _wc; con = _wc.ro_db(db, timeout=3.0)
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
+            if "holdings" in tbls:
+                for iid, u in con.execute("SELECT item, SUM(units) FROM holdings GROUP BY item").fetchall():
+                    if iid and u:
+                        fleet_stock[str(iid)] = fleet_stock.get(str(iid), 0) + int(u)
+            if "faction_storage" in tbls:
+                for iid, u in con.execute("SELECT item, SUM(units) FROM faction_storage GROUP BY item").fetchall():
+                    if iid and u:
+                        fleet_stock[str(iid)] = fleet_stock.get(str(iid), 0) + int(u)
             if "contract_candidates" in tbls:
                 for (short_s,) in con.execute("SELECT short_items FROM contract_candidates WHERE short_items IS NOT NULL").fetchall():
                     for part in str(short_s).split(","):
@@ -499,14 +509,17 @@ def _load_needs_and_reserves_uncached(repo_root, data):
                             iid, qty = m.group(1), int(m.group(2).replace(",", ""))
                             if qty > 0:
                                 open_needs[iid] = open_needs.get(iid, 0) + qty
-                                reserved.add(iid)
-            if "items" in tbls:
-                cols = {r[1] for r in con.execute("PRAGMA table_info(items)").fetchall()}
-                vcol = "base_value" if "base_value" in cols else ("value" if "value" in cols else "")
-                if vcol:
-                    for iid, val in con.execute("SELECT id, COALESCE(%s, 0) FROM items" % vcol).fetchall():
-                        if iid and val:
-                            catalog_vals[str(iid)] = float(val)
+            # Quantity-capped surplus rule: only block an open_need item if fleet stock is <= 1.25x need!
+            # Prevents e.g. 401u silicon_ore need from freezing 9,500+ surplus units worth millions of cr!
+            for iid, nq in open_needs.items():
+                if fleet_stock.get(iid, 0) <= int(nq * 1.25) + 50:
+                    reserved.add(iid)
+            # Strict live market reference map from fresh (<6h) read.db books -- ZERO static catalog base_value!
+            if "books" in tbls:
+                cutoff = time.time() - 6.0 * 3600.0
+                for iid, mb in con.execute("SELECT item, MAX(bid) FROM books WHERE bid > 0 AND bid_qty > 0 AND t >= ? GROUP BY item", (cutoff,)).fetchall():
+                    if iid and mb:
+                        live_market_vals[str(iid)] = float(mb)
         except sqlite3.Error:
             pass
         finally:
@@ -515,13 +528,26 @@ def _load_needs_and_reserves_uncached(repo_root, data):
     res_tsv = Path(repo_root) / "game" / "reserve.tsv"
     if res_tsv.is_file():
         try:
-            for ln in res_tsv.read_text(encoding="ascii", errors="replace").splitlines()[1:]:
+            for ln in res_tsv.read_text(encoding="ascii", errors="replace").splitlines():
+                ln = ln.strip()
+                if not ln or ln.startswith("#") or ln.lower().startswith("kind\t"):
+                    continue
                 cols = ln.split("\t")
-                if len(cols) >= 2 and cols[0].strip() and not cols[0].startswith("#"):
-                    reserved.add(cols[0].strip())
+                if len(cols) >= 3:
+                    rkind, rid, runits = cols[0].strip().lower(), cols[1].strip(), cols[2].strip().lower()
+                    if rkind == "keep" and rid:
+                        if runits == "all":
+                            reserved.add(rid)
+                        else:
+                            try:
+                                need_u = int(float(runits))
+                                if fleet_stock.get(rid, 0) <= int(need_u * 1.25):
+                                    reserved.add(rid)
+                            except ValueError:
+                                reserved.add(rid)
         except OSError:
             pass
-    return open_needs, reserved, catalog_vals
+    return open_needs, reserved, live_market_vals
 
 
 def _book_escrow(data, pilot, kind, credits):
@@ -557,7 +583,7 @@ def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None, s
             if iid and rem > 0:
                 my_items[iid] = my_items.get(iid, 0) + rem
                 if oid:
-                    my_orders[oid] = {"item": iid, "rem": rem, "price": pr}
+                    my_orders[oid] = {"item": iid, "rem": rem, "price": pr, "first_seen": int(now_t)}
     others = {}
     filled_cr = 0
     with open(lock_path, "a+", encoding="utf-8") as lf:
@@ -662,6 +688,11 @@ def sync_fleet_sells(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
             if pilot and base_id:
                 p_map = cleaned.setdefault(str(pilot), {})
                 if my_items:
+                    prev_ords = ((p_map.get(str(base_id)) or {}).get("orders") or {}) if isinstance(p_map.get(str(base_id)), dict) else {}
+                    for _oid, _od in my_orders.items():
+                        _po = prev_ords.get(_oid)
+                        if isinstance(_po, dict) and _po.get("first_seen") and int(_po.get("price") or 0) == int(_od.get("price") or 0):
+                            _od["first_seen"] = int(_po["first_seen"])
                     p_map[str(base_id)] = {"at": int(now_t), "items": my_items, "orders": my_orders}
                 else:
                     p_map.pop(str(base_id), None)
@@ -770,7 +801,7 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             break
     return picks
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, catalog_vals, credits, policy, fleet_open_buys=None):
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -802,16 +833,19 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             bid = float(row.get("best_buy") or 0)
             bid_q = int(row.get("best_buy_qty") or row.get("buy_quantity") or 0)
             ask = float(row.get("best_sell") or 0)
-            base_v = float((catalog_vals or {}).get(iid) or 0)
-            # Strict live-market valuation (Suggi directive): NEVER let stale catalog base_v block real live bids!
+            # 100% STRICT live-market valuation (ZERO catalog base_value!):
+            # live_market_vals holds fresh (<6h) galactic live best bids only.
+            gal_bid = float((live_market_vals or {}).get(iid) or 0)
             if bid > 0 and ask > 0:
                 ref_p = min(ask, max(bid, ask * 0.70))
             elif bid > 0:
                 ref_p = bid
             elif ask > 0:
                 ref_p = ask
+            elif gal_bid > 0:
+                ref_p = gal_bid
             else:
-                ref_p = base_v
+                continue
             if ref_p < 2:
                 continue
             floor_p = max(2, int(round(ref_p * min_ratio)))
@@ -823,12 +857,26 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
                 continue
             mine = own_sell.get(iid) or []
             my_min_sell = min((int(o.get("price_each") or 0) for o in mine if int(o.get("price_each") or 0) > 0), default=0)
+            _now = time.time() if now_t is None else float(now_t)
+            _stale_m = float(sell_cfg.get("stale_step_minutes") or 25.0)
+            _stale_pct = float(sell_cfg.get("stale_step_pct") or 0.06)
             if my_min_sell > 0 and (ask <= 0 or my_min_sell <= int(ask)):
-                # Already the cheapest ask on the book: never undercut ourselves!
-                target_p = max(floor_p, my_min_sell)
+                # Adaptive inventory turnover: if our top ask sits unsold > stale_step_minutes, step down toward clearing!
+                oldest_fs = min((int((order_first_seen or {}).get(str(o.get("order_id") or ""), _now)) for o in mine), default=int(_now))
+                age_m = max(0.0, (_now - oldest_fs) / 60.0)
+                if _stale_m > 0 and age_m >= _stale_m and my_min_sell > floor_p:
+                    stepped = max(floor_p, int(round(my_min_sell * (1.0 - _stale_pct))))
+                    if stepped == my_min_sell and my_min_sell > floor_p:
+                        stepped = my_min_sell - 1
+                    target_p = stepped
+                else:
+                    target_p = max(floor_p, my_min_sell)
             else:
-                target_p = max(floor_p, int(ask) - undercut) if ask > 0 else max(floor_p, int(round(ref_p * 1.05)))
+                target_p = max(floor_p, int(ask) - undercut) if ask > 0 else max(floor_p, int(round(ref_p * 1.02)))
             if bid > 0 and target_p <= int(bid):
+                if bid_q > 0 and bid >= 5:
+                    actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
+                    continue
                 target_p = int(bid) + 1
             listed = sum(int(o.get("remaining") or 0) for o in mine)
             for o in mine:
@@ -890,13 +938,13 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, ca
             ask = float(row.get("best_sell") or 0)
             if bid <= 0 and ask <= 0:
                 continue
-            base_v = float((catalog_vals or {}).get(iid) or 0)
+            gal_bid = float((live_market_vals or {}).get(iid) or 0)
             if ask > 0:
                 ceiling = int(ask * max_ratio)
-                if base_v > 0:
-                    ceiling = min(ceiling, int(base_v * 2.5))
-            elif base_v > 0:
-                ceiling = int(base_v * 1.1)
+            elif gal_bid > 0:
+                ceiling = int(gal_bid * 1.05)
+            elif bid > 0:
+                ceiling = int(bid * 1.05)
             else:
                 continue
             if ceiling < 1:
@@ -1164,7 +1212,7 @@ def main(argv=None):
                         _, sd_b = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
                         sh_b = ((sd_b.get("state") or {}).get("ship") or {}) if isinstance(sd_b, dict) else {}
                         free_h = max(0, int(sh_b.get("cargo_capacity") or 80) - int(sh_b.get("cargo_used") or 0))
-                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=4)
+                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8)
                         for p_iid, p_q in picks:
                             rw = raw("withdraw", {"item_id": p_iid, "quantity": p_q, "target": "faction"}, group="spacemolt_storage")
                             time.sleep(TICK)
@@ -1188,7 +1236,10 @@ def main(argv=None):
                 fleet_open_buys = sync_fleet_buys(DATA, pilot, base_id, orders_resp, book_fills=True)
                 own_by_id = {str(o.get("order_id") or o.get("id") or ""): o for o in (orders_resp or []) if isinstance(o, dict)}
                 cancelled_oids = set()
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys)
+                _sells_doc = read_json(DATA / "fleet" / "bursar_sells.json", {})
+                _p_ord_meta = (((_sells_doc.get("entries") or {}).get(pilot) or {}).get(base_id) or {}).get("orders") or {}
+                _order_fs = {str(k): int(v.get("first_seen") or 0) for k, v in _p_ord_meta.items() if isinstance(v, dict) and v.get("first_seen")}
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break
@@ -1258,52 +1309,102 @@ def main(argv=None):
                         sync_fleet_sells(DATA, pilot, base_id, own_orders)
                     except Exception:
                         pass
-                # Zero-fuel docked commercial crafting between Bursar polls (Suggi directive)
+                # Zero-fuel docked commercial crafting + IMMEDIATE live-bid cash conversion (Suggi directive)
                 craft_cfg = policy.get("craft") or {}
                 if craft_cfg.get("enabled", False) and (until - time.time()) > 45:
                     try:
                         _cr_now = get_credits()
                         _min_k = int(policy.get("min_cash_keep") or 20000)
-                        if _cr_now >= _min_k + 3000:
+                        if _cr_now >= _min_k + 2000:
                             import craft_net as _cn
                             _cpol = dict(_cn.read_json(REPO / "game" / "craft-policy.json", {}) or {})
-                            _cpol["max_runs_per_cycle"] = int(craft_cfg.get("max_runs_per_poll") or 3)
-                            _cpol["max_buy_spend_per_cycle_cr"] = int(craft_cfg.get("max_buy_spend_cr") or 15000)
+                            _cpol["max_runs_per_cycle"] = int(craft_cfg.get("max_runs_per_poll") or 20)
+                            _cpol["max_buy_spend_per_cycle_cr"] = int(craft_cfg.get("max_buy_spend_cr") or 50000)
                             _cpol["min_wallet_keep_cr"] = _min_k
                             _tc = dict(_cpol.get("trade") or {})
-                            _tc["min_margin_pct"] = float(craft_cfg.get("min_margin_pct") or _tc.get("min_margin_pct") or 0.20)
-                            _tc["min_profit_cr"] = int(craft_cfg.get("min_profit_cr") or _tc.get("min_profit_cr") or 150)
+                            _tc["min_margin_pct"] = float(craft_cfg.get("min_margin_pct") or _tc.get("min_margin_pct") or 0.15)
+                            _tc["min_profit_cr"] = int(craft_cfg.get("min_profit_cr") or _tc.get("min_profit_cr") or 100)
                             _cpol["trade"] = _tc
                             _cw = _cn.load_craft_world(DATA, REPO, _cpol)
                             _st_now = get_stored(base_id)
-                            _job = _cn.pick_craft_job("Trade", base_id, _st_now, _cr_now, _cw, _cpol)
+                            # Also expose non-reserved Faction Lockbox inputs at this hub for high-margin crafting!
+                            _fac_in_map = {}
+                            if base_id in _bursar_active_lockboxes(DATA) and _bursar_can_withdraw_faction(DATA, pilot):
+                                _fd_c = body(raw("view", {"station_id": base_id, "target": "faction"}, group="spacemolt_storage"))
+                                for _fr in (_fd_c.get("items") or _fd_c.get("storage") or []):
+                                    if isinstance(_fr, dict) and _fr.get("item_id"):
+                                        _fi, _fq = str(_fr["item_id"]), int(_fr.get("quantity") or 0)
+                                        if _fq > 0 and _fi not in reserved and _fi not in PROTECTED_ITEMS:
+                                            _fac_in_map[_fi] = _fac_in_map.get(_fi, 0) + _fq
+                            _combined_st = dict(_st_now)
+                            for _fi, _fq in _fac_in_map.items():
+                                _combined_st[_fi] = _combined_st.get(_fi, 0) + _fq
+                            _job = _cn.pick_craft_job("Trade", base_id, _combined_st, _cr_now, _cw, _cpol)
                             if _job:
-                                _ok_buy = True
-                                for _bi, _bq, _bp in (_job.get("buys") or ()):
-                                    _q_chk = body(raw("estimate_market_order", {"item_id": _bi, "quantity": int(_bq), "side": "buy"}, group="spacemolt_market"))
-                                    _est_u = float(_q_chk.get("average_price") or _q_chk.get("avg_price") or _bp)
-                                    if _est_u > _bp * 1.15:
-                                        _ok_buy = False
-                                        break
-                                    _rb = raw("buy", {"item_id": _bi, "quantity": int(_bq), "auto_list": False}, group="spacemolt")
-                                    time.sleep(TICK)
-                                    if "error" in _rb:
-                                        _ok_buy = False
-                                        break
-                                if _ok_buy:
-                                    _rc = raw("craft", {"recipe_id": _job["recipe_id"], "count": int(_job["runs"])}, group="spacemolt_crafting")
-                                    time.sleep(TICK)
-                                    if "error" not in _rc:
-                                        say("bursar_craft %dx %s (est +%d cr)" % (int(_job["runs"]), _job["output"], int(_job.get("est_profit") or 0)))
-                                        acted += 1
-                                        # Deposit crafted cargo so the next sell poll lists/liquidates it immediately
-                                        _h_cr = get_cargo()
-                                        for _ci, _cq in _h_cr.items():
-                                            if _cq > 0 and _ci not in PROTECTED_ITEMS:
-                                                raw("deposit", {"item_id": _ci, "quantity": _cq, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                _rec_id = str(_job["recipe"])
+                                _out_id = str(_job["makes"])
+                                _craft_qty = max(1, int(_job["runs"]) * max(1, int(_job.get("per_run") or 1)))
+                                # Pre-check craftability (skills/facility/fee) BEFORE spending a single credit on inputs!
+                                _dry_req = {"recipe_id": _rec_id, "quantity": _craft_qty, "deliver_to": "storage", "dry_run": True}
+                                _dry_res = raw("craft", _dry_req, group="spacemolt")
+                                _dry_err = str(_dry_res.get("error") or "") if isinstance(_dry_res, dict) else ""
+                                _skill_blk = any(w in _dry_err.lower() for w in ("skill", "facility", "unlock", "unknown recipe", "not found"))
+                                if not _skill_blk:
+                                    # 1. Pull any needed inputs that sit in Faction Lockbox into self storage first
+                                    _rec_def = (_cw.get("recipes") or {}).get(_rec_id) or {}
+                                    for _in_i, _in_u in (_rec_def.get("inputs") or ()):
+                                        _need_i = int(_in_u) * int(_job["runs"])
+                                        _have_self = int(_st_now.get(_in_i, 0))
+                                        _pull_f = min(max(0, _need_i - _have_self), int(_fac_in_map.get(_in_i, 0)))
+                                        if _pull_f > 0:
+                                            _rwf = raw("withdraw", {"item_id": _in_i, "quantity": _pull_f, "target": "faction"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                                            if "error" not in _rwf:
+                                                raw("deposit", {"item_id": _in_i, "quantity": _pull_f, "target": "self", "source": "cargo"}, group="spacemolt_storage")
                                                 time.sleep(TICK)
-                    except Exception:
-                        pass
+                                    # 2. Buy remaining shortfall inputs only if quote clears live margin
+                                    _ok_buy = True
+                                    for _bi, _bq, _bp in (_job.get("buys") or ()):
+                                        _q_chk = body(raw("estimate_market_order", {"item_id": _bi, "quantity": int(_bq), "side": "buy"}, group="spacemolt_market"))
+                                        _est_u = float(_q_chk.get("average_price") or _q_chk.get("avg_price") or _bp)
+                                        if _est_u > _bp * 1.15:
+                                            _ok_buy = False
+                                            break
+                                        _rb = raw("buy", {"item_id": _bi, "quantity": int(_bq), "auto_list": False}, group="spacemolt")
+                                        time.sleep(TICK)
+                                        if "error" in _rb:
+                                            _ok_buy = False
+                                            break
+                                        # Deposit bought inputs into storage so craft finds them cleanly
+                                        _hc_in = get_cargo().get(_bi, 0)
+                                        if _hc_in > 0:
+                                            raw("deposit", {"item_id": _bi, "quantity": _hc_in, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                                    # 3. Execute craft via verified spacemolt:craft action!
+                                    if _ok_buy:
+                                        _rc = raw("craft", {"recipe_id": _rec_id, "quantity": _craft_qty, "deliver_to": "storage"}, group="spacemolt")
+                                        time.sleep(TICK)
+                                        if "error" not in _rc:
+                                            say("bursar_craft %dx %s (%s, est +%d cr)" % (_craft_qty, _out_id, _rec_id, int(_job.get("est_profit") or 0)))
+                                            acted += 1
+                                            # 4. IMMEDIATE cash conversion: hit local live bid right now, else post undercut sell_order!
+                                            _loc_bid = int(_job.get("local_bid") or 0)
+                                            if _loc_bid >= 5:
+                                                _rw_o = raw("withdraw", {"item_id": _out_id, "quantity": _craft_qty, "target": "self"}, group="spacemolt_storage")
+                                                time.sleep(TICK)
+                                                if "error" not in _rw_o:
+                                                    _rs_o = raw("sell", {"item_id": _out_id, "quantity": _craft_qty}, group="spacemolt")
+                                                    time.sleep(TICK)
+                                                    say("bursar_craft_sell %dx %s @ ~%d cr%s" % (_craft_qty, _out_id, _loc_bid, " ERR" if "error" in _rs_o else ""))
+                                            else:
+                                                _sell_p = max(5, int(_job.get("sell_price") or 0))
+                                                if _sell_p >= 5:
+                                                    raw("create_sell_order", {"item_id": _out_id, "quantity": _craft_qty, "price_each": _sell_p}, group="spacemolt_market")
+                                                    time.sleep(TICK)
+                                        else:
+                                            say("bursar_craft skip %s: %s" % (_rec_id, str(_rc.get("error") or "")[:80]))
+                    except Exception as _ce:
+                        say("bursar_craft err: %s: %s" % (type(_ce).__name__, str(_ce)[:100]))
             except SystemExit:
                 raise
             except Exception as err:

@@ -86,28 +86,28 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
             if "recipes" in tbls and "recipe_inputs" in tbls and "recipe_outputs" in tbls:
                 r_cols = {r[1] for r in con.execute("PRAGMA table_info(recipes)").fetchall()}
                 cat_expr = "LOWER(COALESCE(category, ''))" if "category" in r_cols else "''"
-                for rid, nm, fo, rcat in con.execute("SELECT id, name, COALESCE(facility_only, 0), %s FROM recipes" % cat_expr):
+                t_expr = "COALESCE(time, 1)" if "time" in r_cols else "1"
+                for rid, nm, fo, rcat, rtime in con.execute("SELECT id, name, COALESCE(facility_only, 0), %s, %s FROM recipes" % (cat_expr, t_expr)):
                     rid_s = str(rid or "")
                     if not rid_s or rid_s.startswith("onboard_") or rcat == "ship passive":
                         continue
-                    recipes[rid_s] = {"id": rid_s, "name": str(nm or rid_s), "facility_only": bool(fo), "inputs": [], "outputs": []}
+                    recipes[rid_s] = {"id": rid_s, "name": str(nm or rid_s), "facility_only": bool(fo), "time": max(1.0, float(rtime or 1.0)), "inputs": [], "outputs": []}
                 for rid, iid, u in con.execute("SELECT recipe, item, units FROM recipe_inputs"):
                     if str(rid) in recipes and iid and int(u or 0) > 0:
                         recipes[str(rid)]["inputs"].append((str(iid), int(u)))
                 for rid, iid, u in con.execute("SELECT recipe, item, units FROM recipe_outputs"):
                     if str(rid) in recipes and iid and int(u or 0) > 0:
                         recipes[str(rid)]["outputs"].append((str(iid), int(u)))
-            if "items" in tbls:
-                cols = {r[1] for r in con.execute("PRAGMA table_info(items)").fetchall()}
-                vcol = "base_value" if "base_value" in cols else ("value" if "value" in cols else None)
-                if vcol:
-                    for iid, val in con.execute("SELECT id, %s FROM items" % vcol):
-                        if iid and val:
-                            item_vals[str(iid)] = float(val)
+            # Strict live-market valuation (ZERO static catalog base_value!):
+            # Populate item_vals strictly from fresh (<6h) live market bids in read.db:books!
             if "books" in tbls:
-                for b_id, iid, bid, bq, ask, aq in con.execute(
-                    "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), COALESCE(ask,0), COALESCE(ask_qty,0) FROM books"
-                ):
+                _bcols = {r[1] for r in con.execute("PRAGMA table_info(books)").fetchall()}
+                _q = "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), COALESCE(ask,0), COALESCE(ask_qty,0) FROM books"
+                _p = ()
+                if "t" in _bcols:
+                    _q += " WHERE t >= ?"
+                    _p = (time.time() - 6.0 * 3600.0,)
+                for b_id, iid, bid, bq, ask, aq in con.execute(_q, _p):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     if not b_s or not i_s:
                         continue
@@ -118,6 +118,8 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                     if float(bid or 0) > 0 and int(bq or 0) > 0:
                         prev_b, prev_q = global_bid.get(i_s, (0.0, 0))
                         global_bid[i_s] = (max(prev_b, float(bid)), prev_q + int(bq))
+                        if float(bid) > item_vals.get(i_s, 0.0):
+                            item_vals[i_s] = float(bid)
             need_craft_caps = {}
             if "need_status" in tbls:
                 ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
@@ -195,23 +197,30 @@ def expand_demand_raw_inputs(world):
             mb, bq = gbid.get(out_item, (0.0, 0))
             if mb <= 0 or bq < min_bq:
                 continue
-            in_cost = sum(q * float(ivals.get(ii) or 10.0) for ii, q in rec["inputs"])
+            in_cost = sum(q * float(ivals.get(ii) or 0.0) for ii, q in rec["inputs"])
             rev = mb * out_q
-            if rev - in_cost >= min_p and in_cost > 0 and (rev - in_cost) / in_cost >= min_m:
+            if rev - in_cost >= min_p and (in_cost <= 0 or (rev - in_cost) / in_cost >= min_m):
                 target_outputs.add(out_item)
 
-    wanted_raw = {}
+    # 2-step upstream expansion (e.g. lead_sheet <- lead_ingot <- lead_ore) so miners auto-feed multi-step high-margin chains!
+    makers_by_out = {}
     for rec in recipes.values():
-        if rec.get("facility_only") or not rec.get("inputs") or not rec.get("outputs"):
-            continue
-        out_item = rec["outputs"][0][0]
-        if out_item not in target_outputs:
-            continue
-        for in_item, _q in rec["inputs"]:
-            cap = raw_caps.get(in_item, 15000)
-            cur = int((world.get("stock_by_item") or {}).get(in_item, 0))
-            if cur < cap:
-                wanted_raw[in_item] = max(wanted_raw.get(in_item, 0), cap - cur)
+        if not rec.get("facility_only") and rec.get("inputs") and rec.get("outputs"):
+            makers_by_out.setdefault(rec["outputs"][0][0], []).append(rec)
+    expanded = set(target_outputs)
+    for out_i in list(target_outputs):
+        for rec in makers_by_out.get(out_i, ()):
+            for in_i, _q in rec["inputs"]:
+                if in_i in makers_by_out:
+                    expanded.add(in_i)
+    wanted_raw = {}
+    for out_i in expanded:
+        for rec in makers_by_out.get(out_i, ()):
+            for in_item, _q in rec["inputs"]:
+                cap = raw_caps.get(in_item, 12000)
+                cur = int((world.get("stock_by_item") or {}).get(in_item, 0))
+                if cur < cap:
+                    wanted_raw[in_item] = max(wanted_raw.get(in_item, 0), cap - cur)
     return wanted_raw
 
 
@@ -294,7 +303,9 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
                 if allow_buy and ask > 0 and aq > 0:
                     runs_from_here += aq // req_q
                 max_possible = min(max_possible, runs_from_here)
-                unit_c = ask if ask > 0 else float(ivals.get(in_item) or 10.0)
+                # Live opportunity cost: local bid if present, else galactic live bid (0.0 if unbid -- NEVER catalog base_value!)
+                local_in_bid = float(row_b.get("bid") or 0)
+                unit_c = local_in_bid if local_in_bid > 0 else float(ivals.get(in_item) or 0.0)
                 cost_per_run += req_q * unit_c
             elif allow_buy and ask > 0 and aq >= req_q:
                 max_possible = min(max_possible, aq // req_q)
@@ -355,10 +366,13 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
                             tot_buy += short_q * ask
             rev_per_run = bid * out_qty
             prof_per_run = rev_per_run - cost_per_run - est_fee
-            margin = prof_per_run / max(1.0, cost_per_run)
+            margin = prof_per_run / max(1.0, cost_per_run) if cost_per_run > 0 else 1.0
             if prof_per_run < min_profit or margin < min_margin:
                 continue
-            score = prof_per_run * runs * (1.25 if out_item in comm_targets else 1.0) * (1.2 if local_bid > 0 else 1.0)
+            # Theory of Constraints: rank strictly by Contribution Margin per Bottleneck Tick!
+            r_ticks = max(1.0, float(rec.get("time") or 1.0))
+            cm_per_tick = prof_per_run / r_ticks
+            score = cm_per_tick * (1.0 + 0.15 * min(runs, 10)) * (1.25 if out_item in comm_targets else 1.0) * (1.5 if local_bid > 0 else 1.0)
             cand = {
                 "recipe": rec["id"], "makes": out_item, "per_run": out_qty, "runs": runs,
                 "buys": buys, "est_profit": round(prof_per_run * runs, 1), "margin_pct": round(margin * 100.0, 1),
@@ -375,7 +389,7 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
                 runs = min(runs, cap_runs)
             prio_boost = 5.0 if out_item in (world.get("need_crafts") or set()) else 1.0
             stored_ratio = 1.0 if not buys else 0.6
-            score = prio_boost * stored_ratio * runs * max(10.0, float(ivals.get(out_item) or 50.0))
+            score = prio_boost * stored_ratio * runs * max(1.0, float(ivals.get(out_item) or 1.0))
             cand = {
                 "recipe": rec["id"], "makes": out_item, "per_run": out_qty, "runs": runs,
                 "buys": buys, "est_profit": 0.0, "margin_pct": 0.0,

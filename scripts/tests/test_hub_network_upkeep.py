@@ -315,6 +315,53 @@ class MultiHubUpkeepTests(unittest.TestCase):
         self.assertEqual(acts, [("sell_bid", "phase_crystal", 40, 110)])
 
 
+
+    def test_zero_catalog_adaptive_bursar_and_lockbox_miner_guard(self):
+        import time as _t
+        import bursar
+        # 1. Zero catalog fallback: if local bid=0, ask=0, and live galactic bid=0, bursar skips (never uses catalog!)
+        acts_empty = bursar.plan_bursar_actions(
+            book={"mystery_junk": {"best_buy": 0, "best_buy_qty": 0, "best_sell": 0}},
+            stored_items={"mystery_junk": 50},
+            own_orders=[],
+            open_needs={},
+            reserved=set(),
+            live_market_vals={},
+            credits=100000,
+            policy={"sell": {"enabled": True, "min_price_ratio": 0.65, "instant_hit_bid_ratio": 0.70}, "buy": {"enabled": False}},
+        )
+        self.assertEqual(acts_empty, [])
+
+        # 2. Adaptive stale-order price decay: our top ask sitting 40m unsold steps down by 6%!
+        now_t = _t.time()
+        acts_decay = bursar.plan_bursar_actions(
+            book={"silver_ore": {"best_buy": 60, "best_buy_qty": 500, "best_sell": 200}},
+            stored_items={"silver_ore": 100},
+            own_orders=[{"order_id": "ord-stale", "item_id": "silver_ore", "side": "sell", "remaining": 100, "price_each": 200}],
+            open_needs={},
+            reserved=set(),
+            live_market_vals={"silver_ore": 100.0},
+            credits=100000,
+            policy={"sell": {"enabled": True, "min_price_ratio": 0.65, "instant_hit_bid_ratio": 0.70, "stale_step_minutes": 25, "stale_step_pct": 0.06}, "buy": {"enabled": False}},
+            order_first_seen={"ord-stale": int(now_t - 40 * 60)},
+            now_t=now_t,
+        )
+        self.assertIn(("sell_modify", "silver_ore", "ord-stale", 188), acts_decay)
+
+        # 3. mine-policy.json strictly locks deposit_stations to 10 Lockbox/Outpost hubs & zero non-Lockbox NPC bases
+        mp = json.loads((Path(__file__).resolve().parents[2] / "game" / "mine-policy.json").read_text(encoding="utf-8"))
+        self.assertEqual(mp.get("deposit_mode"), "faction")
+        self.assertEqual(len(mp.get("deposit_stations") or []), 10)
+        for bad_base in ("nova_terra_central", "alpha_centauri_colonial_station", "synchrony_hub", "grand_exchange_station"):
+            self.assertFalse(any(bad_base in s for s in mp["deposit_stations"]), f"Non-lockbox base {bad_base} leaked in deposit_stations")
+
+        # 4. haul-policy.json prioritizes liquidate_surplus before arbitrage & tightens arb
+        hp = json.loads((Path(__file__).resolve().parents[2] / "game" / "haul-policy.json").read_text(encoding="utf-8"))
+        self.assertLess(hp["lanes"].index("liquidate_surplus"), hp["lanes"].index("arbitrage"))
+        self.assertGreaterEqual(int(hp.get("liquidate_max_slots") or 0), 20)
+        self.assertGreaterEqual(float(hp.get("min_margin_pct") or 0), 0.25)
+
+
 if __name__ == "__main__":
     unittest.main()
 

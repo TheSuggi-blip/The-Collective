@@ -184,8 +184,9 @@ class TestFleetAccounting(unittest.TestCase):
                 pnl["purse_h"],
             )
             self.assertTrue(pnl["has_inventory_accrual"])
-            self.assertEqual(pnl["inventory_accrual_h"], 7000)
-            self.assertEqual(pnl["accrual_operating_h"], -54000)
+            # Marginal depth-reconciled IAS 2 NRV: 10u circuit_board bid depth (3,750 / 24h = 156/h); 12,000u unbid copper_ore glut adds 0!
+            self.assertEqual(pnl["inventory_accrual_h"], 156)
+            self.assertEqual(pnl["accrual_operating_h"], -60844)
             divs = pnl["by_division"]
             self.assertEqual(divs["Mining"]["tx_out_h"], 2000)
             self.assertEqual(divs["Trade"]["tx_in_h"], 2000)

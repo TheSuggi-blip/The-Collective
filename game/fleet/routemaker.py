@@ -697,11 +697,11 @@ def mine_candidates(world):
                         got = sold * net_bid
                         per_hour += got
                         sales.append((res["id"], cargo * res["richness"] / rich, hour, sold, got, "outpost netback (0.88x %s)" % bids[0][2], [(net_bid, sold)], False))
-                    elif world.get("strict") or res["id"] in (world.get("open_needs") or set()):
-                        bv = max(4.0, num((world["items"].get(res["id"]) or {}).get("base_value")) * 0.6)
-                        got = hour * bv
+                    elif res["id"] in (world.get("open_needs") or set()):
+                        # Strict live-market policy (zero catalog base_value): only open reserve needs qualify with 0 live bid
+                        got = hour * 1.0
                         per_hour += got
-                        sales.append((res["id"], cargo * res["richness"] / rich, hour, hour, got, "outpost reserve", [(bv, hour)], False))
+                        sales.append((res["id"], cargo * res["richness"] / rich, hour, hour, got, "outpost reserve (open need)", [(1.0, hour)], False))
                 rank_val = per_hour * (1.12 if per_hour > 0 else 1.0)
                 if sales and (best is None or rank_val > best[0]):
                     best = (rank_val, per_hour, minutes, loads, base, jumps, sales, "owned_outpost")

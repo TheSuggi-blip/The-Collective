@@ -1112,32 +1112,40 @@ def _load_faction_storage_by_base(data, stor=None):
 
 
 def _load_reserved_items_exact(data):
-    """Strict non-blocking reserve set: PROTECTED_ITEMS + reserve.tsv keep-all + active short_items & supply_status deficits."""
-    reserved = set(PROTECTED_ITEMS)
+    """Return hard-reserved item IDs: PROTECTED_ITEMS + keep=all + open needs where fleet stock <= 1.25x need + 50."""
+    reserved = set(PROTECTED_ITEMS) | {"fuel", "station_core"}
+    open_needs = {}
+    fleet_stock = {}
     db = Path(data) / "store" / "read.db"
-    fleet_totals = {}
     if db.is_file():
         con = None
         try:
             import worldcache as _wc
             con = _wc.ro_db(db, timeout=3.0)
             tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
-            if "need_status" in tbls:
-                ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
-                if "short_items" in ns_cols:
-                    for (txt,) in con.execute("SELECT short_items FROM need_status WHERE short_items IS NOT NULL"):
-                        for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(txt or "")):
-                            reserved.add(m.group(1))
-            if "supply_status" in tbls:
-                for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
-                    if iid:
-                        fleet_totals[str(iid)] = int(stk or 0)
-                        if int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
-                            reserved.add(str(iid))
             if "holdings" in tbls:
                 for iid, u in con.execute("SELECT item, SUM(units) FROM holdings GROUP BY item").fetchall():
-                    if iid:
-                        fleet_totals[str(iid)] = max(fleet_totals.get(str(iid), 0), int(u or 0))
+                    if iid and u:
+                        fleet_stock[str(iid)] = fleet_stock.get(str(iid), 0) + int(u)
+            if "faction_storage" in tbls:
+                for iid, u in con.execute("SELECT item, SUM(units) FROM faction_storage GROUP BY item").fetchall():
+                    if iid and u:
+                        fleet_stock[str(iid)] = fleet_stock.get(str(iid), 0) + int(u)
+            if "contract_candidates" in tbls:
+                for (short_s,) in con.execute("SELECT short_items FROM contract_candidates WHERE short_items IS NOT NULL").fetchall():
+                    for part in str(short_s).split(","):
+                        m = re.match(r"\s*([a-z0-9_]+)\s+([\d,]+)", part.strip())
+                        if m:
+                            iid, qty = m.group(1), int(m.group(2).replace(",", ""))
+                            if qty > 0:
+                                open_needs[iid] = open_needs.get(iid, 0) + qty
+            if "supply_status" in tbls:
+                for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
+                    if iid and int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
+                        open_needs[str(iid)] = max(open_needs.get(str(iid), 0), int(keep) - int(stk or 0))
+            for iid, nq in open_needs.items():
+                if fleet_stock.get(iid, 0) <= int(nq * 1.25) + 50:
+                    reserved.add(iid)
         except sqlite3.Error:
             pass
         finally:
@@ -1146,21 +1154,25 @@ def _load_reserved_items_exact(data):
     res_tsv = REPO / "game" / "reserve.tsv"
     if res_tsv.is_file():
         try:
-            for line in res_tsv.read_text(encoding="utf-8", errors="replace").splitlines():
-                if not line or line.startswith("#") or line.lower().startswith("kind"):
+            for ln in res_tsv.read_text(encoding="ascii", errors="replace").splitlines():
+                ln = ln.strip()
+                if not ln or ln.startswith("#") or ln.lower().startswith("kind\t"):
                     continue
-                cols = line.split("	")
-                if len(cols) >= 3 and cols[0].strip() == "keep":
-                    rid = cols[1].strip()
-                    lim = cols[2].strip().lower()
-                    if lim == "all":
-                        reserved.add(rid)
-                    elif lim.isdigit() and fleet_totals.get(rid, 0) < int(lim):
-                        reserved.add(rid)
+                cols = ln.split("\t")
+                if len(cols) >= 3:
+                    rk, ri, ru = cols[0].strip().lower(), cols[1].strip(), cols[2].strip().lower()
+                    if rk == "keep" and ri:
+                        if ru == "all":
+                            reserved.add(ri)
+                        else:
+                            try:
+                                if fleet_stock.get(ri, 0) <= int(float(ru) * 1.25):
+                                    reserved.add(ri)
+                            except ValueError:
+                                reserved.add(ri)
         except OSError:
             pass
     return reserved
-
 
 def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None):
     """Pull non-reserved surplus from lawless Owned Outposts & non-Bursar hubs to the nearest policed Trade Hub with a docked Bursar Trader."""
@@ -1362,41 +1374,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
     min_rev = float(policy.get("liquidate_min_revenue_cr") or 300)
 
-    reserved = set(PROTECTED_ITEMS)
-    db = Path(data) / "store" / "read.db"
-    if db.is_file():
-        con = None
-        try:
-            import worldcache as _wc
-            con = _wc.ro_db(db, timeout=3.0)
-            tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')").fetchall()}
-            if "need_status" in tbls:
-                ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
-                r_cols = [c for c in ("stock", "craft", "short_items") if c in ns_cols]
-                if r_cols:
-                    for row in con.execute("SELECT %s FROM need_status" % ", ".join(r_cols)):
-                        for txt in row:
-                            for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(txt or "")):
-                                reserved.add(m.group(1))
-            if "supply_status" in tbls:
-                for iid, stk, keep in con.execute("SELECT item, stock, keep FROM supply_status").fetchall():
-                    if iid and int(keep or 0) > 0 and int(stk or 0) < int(keep or 0):
-                        reserved.add(str(iid))
-        except sqlite3.Error:
-            pass
-        finally:
-            if con is not None:
-                con.close()
-    res_tsv = REPO / "game" / "reserve.tsv"
-    if res_tsv.is_file():
-        try:
-            for line in res_tsv.read_text(encoding="utf-8", errors="replace").splitlines():
-                if line and not line.startswith("#") and not line.lower().startswith("item"):
-                    cols = line.split("\t")
-                    if cols and cols[0].strip():
-                        reserved.add(cols[0].strip())
-        except OSError:
-            pass
+    reserved = _load_reserved_items_exact(data)
 
     stor = read_json(Path(data) / "stock" / "storage.json", {})
     sources = []

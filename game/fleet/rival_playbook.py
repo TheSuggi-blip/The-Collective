@@ -170,7 +170,7 @@ def show(data="/srv/collective/data"):
         best_asks = {r["item"]: float(r["a"] or 0) for r in conn.execute(
             "SELECT item, MIN(ask) as a FROM books WHERE ask > 0 AND ask_qty > 0 GROUP BY item"
         ).fetchall()}
-        base_vals = {r["id"]: float(r["base_value"] or 0) for r in conn.execute("SELECT id, base_value FROM items").fetchall()}
+        base_vals = {}  # Strict live-market policy: zero catalog base_value fallback
         held_stock = {r["item"]: num(r["u"]) for r in conn.execute("SELECT item, SUM(units) as u FROM holdings GROUP BY item").fetchall()}
         ins_by_rec = {}
         for r in conn.execute("SELECT recipe, item, units FROM recipe_inputs").fetchall():

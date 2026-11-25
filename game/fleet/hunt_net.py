@@ -141,12 +141,35 @@ DEFAULT_SPECIES_HULL = {
 
 SPECIES_NEED_DROPS = {
     "mirror_skate": ("foil_scale",),
-    "cauldronback": ("alloy_scale",),
+    "cauldronback": ("alloy_scale", "anchor_plate"),
     "inkwyrm": ("cobalt_ink",),
     "magnet_barnacle": ("ferrous_nodule",),
     "silica_borer": ("silica_lens",),
     "hollow_pilgrim": ("ember_gland", "caustic_sac"),
-    "pilot_whale": ("whale_blubber", "graphene_thread", "antimatter_residue"),
+    "pilot_whale": ("whale_blubber", "graphene_thread", "antimatter_residue", "whale_oil"),
+    "cloudwhale": ("lumen_oil", "whale_oil"),
+    "glacial_whale": ("lumen_oil", "hoarfrost_flank", "hoarfrost_heartcore"),
+    "cinder_sylph": ("ember_gland", "cinderspice"),
+    "glintfin": ("glintfin", "chrome_scale"),
+    "glitterback_crab": ("chrome_scale", "creature_carapace"),
+    "cobalt_squid": ("cobalt_ink", "cobalt_squid"),
+    "pressblister": ("krypton_bladder", "methane_bladder", "levity_bladder"),
+    "bell_jelly": ("noble_condensate", "radiant_bile"),
+    "sift_ray": ("ray_eggs", "ammonia_gland"),
+    "drift_ray": ("ray_eggs", "levity_bladder"),
+    "veil_ray": ("void_dust", "ray_eggs"),
+    "belt_grazer": ("grazer_milk", "creature_carapace"),
+    "patina_grazer": ("verdigris_curd", "grazer_milk"),
+    "rime_grazer": ("rimeblue_cheese", "crystal_melt"),
+    "slag_tortoise": ("creature_carapace", "slag_carapace"),
+    "deuteron_slug": ("tritium_pearl", "deuterium_ice"),
+    "frost_moth": ("crystal_melt", "hoarfrost_flank"),
+    "phase_lurker": ("phase_crystal", "void_dust"),
+    "quantum_moth": ("superfluid_vial", "quantum_fragments"),
+    "ash_scarab": ("cinderspice", "ember_gland"),
+    "kiln_snail": ("irradiated_marrow", "ember_gland"),
+    "facet_druse": ("crystal_melt", "energy_crystal"),
+    "nullbubble": ("null_matter", "void_dust"),
 }
 
 
@@ -570,17 +593,44 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         except (OSError, ValueError):
             pass
 
+    # 100% EMPIRICAL live-market + live-contract wildlife loot valuation (ZERO fake hull formula, ZERO catalog values!)
+    live_drop_bid = {}
+    _db_h = Path(data_dir) / "store" / "read.db"
+    if _db_h.is_file():
+        try:
+            import worldcache as _wc_h
+            _ch = _wc_h.ro_db(_db_h, timeout=3.0)
+            _htbls = {r[0] for r in _ch.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if "books" in _htbls:
+                _hcut = time.time() - 6.0 * 3600.0
+                for _iid, _mb in _ch.execute("SELECT item, MAX(bid) FROM books WHERE bid > 0 AND bid_qty > 0 AND t >= ? GROUP BY item", (_hcut,)):
+                    if _iid and _mb:
+                        live_drop_bid[str(_iid)] = max(live_drop_bid.get(str(_iid), 0.0), float(_mb))
+            # Also capture high-payout faction supply delivery contracts (e.g. 100k cr for 20x lumen_oil = 5,000 cr/u!)
+            if "missions" in _htbls:
+                for _rew, _obj in _ch.execute("SELECT reward, objectives FROM missions WHERE kind='delivery' AND reward >= 5000 AND objectives IS NOT NULL"):
+                    _m = re.search(r"Deliver\s+(\d+)\s*(?:x|\u00d7|\*)?\s+([A-Za-z0-9 _-]+?)(?:\s+to\s+|$)", str(_obj or ""), re.I)
+                    if _m and int(_m.group(1) or 0) > 0:
+                        _u_p = float(_rew) / float(int(_m.group(1)))
+                        _slug = re.sub(r"[^a-z0-9]+", "_", _m.group(2).strip().lower()).strip("_")
+                        if _slug and _u_p > live_drop_bid.get(_slug, 0.0):
+                            live_drop_bid[_slug] = _u_p
+            _ch.close()
+        except sqlite3.Error:
+            pass
     cd = read_json(Path(repo_root) / "game" / "craft-demand.json", {})
     craft_loot_species = {str(x).lower() for x in (cd.get("priority_loot_species") or [])} if isinstance(cd, dict) and cd.get("enabled", True) else set()
     for sp, hull in species_hull.items():
-        # Rough value proxy scales super-linearly with creature hull/difficulty + need/craft multipliers
-        base_v = 1200.0 + (hull ** 1.35) * 8.0
         drops = SPECIES_NEED_DROPS.get(sp) or ()
+        # Sum live market bid value of expected drops (empirical market value per kill, minimum 50 cr floor for unmapped species)
+        emp_v = sum(live_drop_bid.get(d, 0.0) for d in drops)
+        if emp_v <= 0.0:
+            emp_v = 50.0
         if any(d in needs_items for d in drops):
-            base_v *= 4.0
+            emp_v *= 2.5
         elif sp.lower() in craft_loot_species:
-            base_v *= 2.0
-        species_loot_val[sp] = round(base_v, 1)
+            emp_v *= 1.5
+        species_loot_val[sp] = round(emp_v, 1)
     owned_bases = []
     _db_b = Path(data_dir) / "store" / "read.db"
     if _db_b.is_file():

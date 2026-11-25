@@ -754,15 +754,13 @@ def api_ship(name):
                     if q <= 0:
                         continue
                     it = items_cat.get(iid) or {}
-                    val = int(num(it.get("base_value")))
                     mb = _ship_bid_map.get(iid)
-                    nrv_u = min(val, mb) if (mb is not None and mb > 0 and val > 0) else (mb if (mb is not None and mb > 0) else val)
-                    w = q * val
+                    nrv_u = float(mb) if (mb is not None and mb > 0) else 0.0
                     w_nrv = int(round(q * nrv_u))
                     tot_u += q
-                    tot_w += w
+                    tot_w += w_nrv
                     tot_nrv += w_nrv
-                    rows_b.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": q, "worth": w, "worth_nrv": w_nrv})
+                    rows_b.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": q, "worth": w_nrv, "worth_nrv": w_nrv})
                 if rows_b:
                     boxes.append({
                         "base": text(base_id, 60),
@@ -1634,10 +1632,11 @@ def api_system(sid):
             if bid in sys_base_ids or sn.strip().lower() in st_names_low:
                 matched_bases.add(bid)
                 binfo = bunker_by_base.get(bid)
+                _inv_val_map = {r["id"]: int(r.get("value") or 0) for g in (inv.get("groups") or []) for r in (g.get("rows") or [])}
                 frows = []
                 for iid, qty, _bn in sorted(fac_items_by_base.get(bid, []), key=lambda x: -x[1]):
                     it = items_cat.get(iid) or {}
-                    val = int(num(it.get("base_value")))
+                    val = int(_inv_val_map.get(iid) or 0)
                     frows.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": qty, "worth": qty * val})
                 storages.append({
                     "base": text(bid, 60), "name": text(sn, 80),
@@ -1655,11 +1654,12 @@ def api_system(sid):
             mkt = market_by_base.get(bid, [])
             if not binfo and not f_list and not mkt:
                 continue
+            _inv_val_map2 = {r["id"]: int(r.get("value") or 0) for g in (inv.get("groups") or []) for r in (g.get("rows") or [])}
             frows = []
             tot_u, tot_w = 0, 0
             for iid, qty, _bn in sorted(f_list, key=lambda x: -x[1]):
                 it = items_cat.get(iid) or {}
-                val = int(num(it.get("base_value")))
+                val = int(_inv_val_map2.get(iid) or 0)
                 tot_u += qty
                 tot_w += qty * val
                 frows.append({"id": text(iid, 60), "name": text(it.get("name") or iid, 60), "kind": book.kind_of(it), "units": qty, "worth": qty * val})
@@ -1722,8 +1722,8 @@ def craftbook():
 def inventory_state():
     """(the inventory, the catalog's tables): computed again only when the storage book or the catalog file changed."""
     data = FLEET.parent
-    files = [data / "stock" / "storage.json"] + sorted((data / "catalog").glob("*.json"))
-    key = tuple((p.name, p.stat().st_mtime_ns, p.stat().st_size) for p in files if p.is_file())
+    files = [data / "stock" / "storage.json", data / "store" / "read.db"] + sorted((data / "catalog").glob("*.json"))
+    key = tuple((p.name, int(p.stat().st_mtime // 30), p.stat().st_size) for p in files if p.is_file())
     with INVENTORY_LOCK:
         if INVENTORY["key"] != key:
             try:
@@ -1769,7 +1769,23 @@ def api_item(item):
     built.sort(key=lambda b: (b["kind"], b["cost"], b["name"]))
     ours = next((r for g in value["groups"] for r in g["rows"] if r["id"] == item), None)
     book = craftbook()
-    return {"id": text(item, 60), "name": name(item), "kind": book.kind_of(row), "description": text(row.get("description"), 400), "value": num(row.get("base_value")),
+    _live_v = int(ours.get("value") or 0) if ours else 0
+    _live_b = int(ours.get("live_bid") or 0) if ours else 0
+    _live_a = int(ours.get("live_ask") or 0) if ours else 0
+    _live_d = int(ours.get("bid_depth") or 0) if ours else 0
+    if not ours:
+        try:
+            _bmap, _bids, _tr, _asks, _ = book._live_market_maps(str(FLEET.parent))
+            _bl = _bids.get(item) or ()
+            _live_b = int(round(_bl[0][0])) if _bl else 0
+            _live_d = int(round(sum(q for _p, q in _bl))) if _bl else 0
+            _ai = _asks.get(item)
+            _live_a = int(round(_ai[0])) if _ai and _ai[0] > 0 else 0
+            _live_v = _live_b if _live_b > 0 else (int(round(_live_a * 0.70)) if _live_a > 0 else 0)
+        except Exception:
+            pass
+    return {"id": text(item, 60), "name": name(item), "kind": book.kind_of(row), "description": text(row.get("description"), 400), "value": _live_v,
+            "live_bid": _live_b, "live_ask": _live_a, "bid_depth": _live_d,
             "size": num(row.get("size")), "units": ours["units"] if ours else 0,
             "at": [[book.place_name(str(FLEET.parent), place), units] for place, units in sorted((ours or {"at": {}})["at"].items(), key=lambda kv: -kv[1])],
             "made_by": [recipe(r) for r in (cat.get("makers") or {}).get(item, [])[:12]],

@@ -200,16 +200,47 @@ def place_name(data, base):
     return base.replace("_", " ").title()
 
 
+def _live_market_maps(data):
+    """Load strict live market bid/ask/NRV pricing from read.db (zero static catalog base_value pricing)."""
+    import sqlite3
+    db = Path(data) / "store" / "read.db"
+    if not db.is_file():
+        return {}, {}, {}, {}, {}
+    con = None
+    try:
+        _fleet_dir = str(Path(__file__).resolve().parent)
+        if _fleet_dir not in sys.path:
+            sys.path.insert(0, _fleet_dir)
+        import accounting as _acc
+        con = sqlite3.connect("file:%s?mode=ro&immutable=1" % db, uri=True, timeout=3.0)
+        base_map, max_bid_map, bids_by_item = _acc._load_price_maps(con)
+        trend_map = _acc._load_market_trends(con)
+        ask_map = _acc._load_ask_map(con)
+        fstore = {}
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if "faction_storage" in tbls:
+            for b_id, iid, u in con.execute("SELECT base, item, SUM(units) FROM faction_storage GROUP BY base, item"):
+                if b_id and iid and int(u or 0) > 0:
+                    fstore.setdefault(str(b_id), {})[str(iid)] = int(u)
+        return base_map, bids_by_item, trend_map, ask_map, fstore
+    except Exception:
+        return {}, {}, {}, {}, {}
+    finally:
+        if con is not None:
+            try:
+                con.close()
+            except Exception:
+                pass
+
+
 def inventory(data, cat=None):
-    """What the fleet owns in goods, from the storage book's totals (stock/storage.json: every pilot's own storage at
-    every station, and the holds): {written, pilots, oldest, catalog, total: {items, units, worth}, groups: [{key,
-    title, items, units, worth, rows}], stations: [{base, name, items, units, worth, rows}]}. A row is {id, name,
-    kind, units, stored, held, value, worth, at: {base or `hold`: units}}; worth is units times the catalog's base
-    value, never a price somebody pays. The one function for it: the shell, the station and the reports ask here."""
+    """What the fleet owns in goods (faction lockboxes + pilot station vaults + ship cargo holds), priced strictly at
+    live market Net Realizable Value (depth-walked read.db books, 0 cr if unbid/unasked -- zero catalog base_value!)."""
     cat = cat or load(data) or {"version": "none", "items": {}}
     book = read_json(Path(data) / "stock" / "storage.json", {})
     totals = book.get("totals") or {}
     read = sorted(e["read_at"] for e in (book.get("pilots") or {}).values() if isinstance(e, dict) and "stations" in e and e.get("read_at"))
+    base_map, bids_by_item, trend_map, ask_map, fstore = _live_market_maps(data)
     rows = {}
 
     def add(item, place, units, field):
@@ -219,19 +250,46 @@ def inventory(data, cat=None):
         if item not in rows:
             known = cat["items"].get(item) or {}
             rows[item] = {"id": item, "name": known.get("name") or item, "kind": kind_of(known), "units": 0, "stored": 0, "held": 0,
-                          "value": known.get("base_value") or 0, "at": {}}
+                          "value": 0, "live_bid": 0, "live_ask": 0, "bid_depth": 0, "at": {}}
         row = rows[item]
         row["units"], row[field] = row["units"] + units, row[field] + units
         row["at"][place] = row["at"].get(place, 0) + units
 
-    for base, goods in (totals.get("by_station") or {}).items():
+    # Include BOTH pilot vaults and shared Faction Lockboxes (deduped against storage.json if already merged)
+    by_st = totals.get("by_station") or {}
+    for base, goods in by_st.items():
         for item, units in (goods or {}).items():
+            add(item, base, units, "stored")
+    for base, goods in fstore.items():
+        for item, units in (goods or {}).items():
+            # storage.json tracks pilot personal vaults; faction_storage holds shared faction lockboxes separately
             add(item, base, units, "stored")
     for goods in (totals.get("holds_by_member") or {}).values():
         for item, units in (goods or {}).items():
             add(item, "hold", units, "held")
-    for row in rows.values():
-        row["worth"] = row["units"] * row["value"]
+    try:
+        import accounting as _acc
+        _has_acc = bool(bids_by_item or ask_map)
+    except Exception:
+        _acc = None
+        _has_acc = False
+    for iid, row in rows.items():
+        u = row["units"]
+        blist = bids_by_item.get(iid) or ()
+        top_bid = int(round(blist[0][0])) if blist else 0
+        bdepth = int(round(sum(q for _p, q in blist))) if blist else 0
+        ainfo = ask_map.get(iid)
+        top_ask = int(round(ainfo[0])) if ainfo and ainfo[0] > 0 else 0
+        row["live_bid"] = top_bid
+        row["live_ask"] = top_ask
+        row["bid_depth"] = bdepth
+        if _has_acc and _acc is not None and u > 0:
+            w_live = _acc.depth_realizable_value(iid, u, base_map, bids_by_item, trend_map, ask_map=ask_map)
+            row["worth"] = int(round(w_live))
+            row["value"] = int(round(w_live / float(u))) if u > 0 else 0
+        else:
+            row["worth"] = 0
+            row["value"] = 0
     first = lambda r: (-r["worth"], -r["units"], r["id"])
     groups = []
     for key, title in KINDS:

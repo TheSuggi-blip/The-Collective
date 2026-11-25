@@ -3,9 +3,9 @@
   "_doc": "Shared manufacturing demand register linking craft-network (Trade commercial + Logistics industrial) back to mine-network and hunt-network. Priority 2 behind needs.tsv/supply_status (Priority 1) and ahead of raw market sales (Priority 3).",
   "enabled": true,
   "auto_discover_profitable": true,
-  "min_margin_pct": 0.22,
-  "min_profit_cr": 150,
-  "min_bid_qty": 5,
+  "min_margin_pct": 0.15,
+  "min_profit_cr": 100,
+  "min_bid_qty": 3,
   "industrial_targets": {
     "steel_plate": {
       "cap": 15000,
@@ -41,56 +41,62 @@
     }
   },
   "commercial_targets": {
-    "armor_plate_ii": {
-      "cap": 200,
+    "lead_sheet": {
+      "cap": 2000,
       "division": "Trade"
     },
-    "armor_plate_iii": {
-      "cap": 150,
+    "flex_polymer": {
+      "cap": 1000,
       "division": "Trade"
     },
-    "cargo_expander_ii": {
-      "cap": 200,
+    "circuit_board": {
+      "cap": 1500,
       "division": "Trade"
     },
-    "cargo_expander_iii": {
-      "cap": 150,
+    "copper_piping": {
+      "cap": 1000,
       "division": "Trade"
     },
-    "shield_booster_ii": {
-      "cap": 100,
+    "structural_frame": {
+      "cap": 400,
       "division": "Trade"
     },
-    "mining_laser_ii": {
-      "cap": 100,
+    "ammo_ap": {
+      "cap": 2000,
       "division": "Trade"
     },
-    "pulse_laser_ii": {
-      "cap": 100,
+    "biogas_fizz": {
+      "cap": 1000,
+      "division": "Trade"
+    },
+    "energy_cell": {
+      "cap": 2000,
       "division": "Trade"
     }
   },
   "raw_input_caps": {
-    "iron_ore": 60000,
-    "copper_ore": 40000,
-    "silicon_ore": 45000,
-    "carbon_ore": 45000,
-    "nickel_ore": 25000,
+    "silicon_ore": 40000,
+    "uranium_ore": 20000,
+    "lead_ore": 30000,
     "titanium_ore": 20000,
     "gold_ore": 15000,
-    "water_ice": 30000,
-    "nitrogen_ice": 25000,
-    "fluorine_gas": 10000
+    "platinum_ore": 15000,
+    "silver_ore": 20000,
+    "trade_crystal": 20000,
+    "phase_crystal": 15000,
+    "carbon_ore": 20000,
+    "deuterium_ice": 20000,
+    "plasma_gas": 20000
   },
   "priority_loot_species": [
+    "hollow_pilgrim",
+    "inkwyrm",
+    "silica_borer",
     "pilot_whale",
-    "bullionaut",
     "cauldronback",
-    "facet_druse",
-    "kiln_snail",
-    "slag_tortoise",
-    "bulwark",
+    "cinder_sylph",
     "glintfin",
-    "glitterback_crab"
+    "glitterback_crab",
+    "facet_druse"
   ]
 }

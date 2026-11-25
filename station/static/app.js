@@ -2587,7 +2587,7 @@ async function renderItem(panel, live) {
   const kgrid = el('div', 'kpis');
   const ikpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); kgrid.append(b); };
   ikpi('Fleet stock', fmt(d.units) + ' units', d.at.length + ' location' + (d.at.length === 1 ? '' : 's'), d.units > 0 ? 'main pos' : '');
-  ikpi('Catalog worth', fmtCompact(totalWorth) + ' cr', fmt(d.value) + ' cr base value / unit', totalWorth > 0 ? 'pos' : '');
+  ikpi('Live Market Worth', fmtCompact(totalWorth) + ' cr', fmt(d.value) + ' cr live NRV / unit' + (d.live_bid ? ' (bid ' + fmt(d.live_bid) + ')' : ''), totalWorth > 0 ? 'pos' : '');
   ikpi('Cargo volume', (d.size || 1) + ' vol / unit', fmt((d.units || 0) * (d.size || 1)) + ' total hold vol', '');
   ikpi('Industrial uses', fmt((d.used_total || 0) + (d.built_total || 0)), fmt(d.used_total || 0) + ' recipes | ' + fmt(d.built_total || 0) + ' builds', '');
   panel.append(kgrid);
@@ -2596,7 +2596,7 @@ async function renderItem(panel, live) {
     panel.append(el('h3', null, 'Where our stock sits (' + d.at.length + ' places)'));
     const maxU = Math.max(1, ...d.at.map((a) => a[1]));
     const card = el('div', 'icard');
-    card.append(fitTable(table(['Station / Hold', 'Share', 'Units', 'Base Worth'],
+    card.append(fitTable(table(['Station / Hold', 'Share', 'Units', 'Live Worth'],
       d.at.map((a) => {
         const pctShare = Math.round((100 * a[1]) / Math.max(1, d.units));
         const barCell = el('div', 'progcell');
@@ -2660,7 +2660,7 @@ async function renderInventory(panel, live) {
   const grid = el('div', 'kpis');
   const ikpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); };
   const invBs = (ops && ops.balance_sheet) || null;
-  ikpi('Total catalog worth', fmtCompact(d.total.worth) + ' cr',
+  ikpi('Live Market Worth (NRV)', fmtCompact(d.total.worth) + ' cr',
     fmt(d.total.items) + ' items | ' + fmt(d.total.units) + ' u'
     + (invBs && invBs.vault_nrv !== undefined ? ' | IAS 2 NRV ' + fmtCompact(invBs.vault_nrv) + ' | bid depth ' + fmtCompact(invBs.vault_liquid || 0) : ''),
     'main pos');
@@ -2849,8 +2849,8 @@ async function renderInventory(panel, live) {
         }
         ch.append(el('span', 'pill ' + (isOurHub ? 'good' : isHold ? 'info' : ''), isOurHub ? 'OUR HUB' : isHold ? 'IN FLIGHT' : 'STATION VAULT'));
         card.append(ch);
-        card.append(el('div', 'icsub', fmt(rows.length) + ' item types | ' + fmt(s.units) + ' units | ~' + fmtCompact(s.worth) + ' cr base worth'));
-        card.append(fitTable(table(['Item', 'Category', 'Units', 'Base Worth'],
+        card.append(el('div', 'icsub', fmt(rows.length) + ' item types | ' + fmt(s.units) + ' units | ~' + fmtCompact(s.worth) + ' cr live market worth'));
+        card.append(fitTable(table(['Item', 'Category', 'Units', 'Live Worth'],
           rows.map((r) => [itemLink(r.id, r.name), kindPill(r.kind), fmt(r.units), fmtCompact(r.worth) + ' cr']), [2, 3])));
         cards.append(card);
       }
@@ -2887,8 +2887,8 @@ async function renderInventory(panel, live) {
     const card = el('div', 'icard');
     const sumWorth = filtered.reduce((a, r) => a + (r.worth || 0), 0);
     const sumUnits = filtered.reduce((a, r) => a + (r.units || 0), 0);
-    card.append(el('div', 'icsub', 'Showing ' + fmt(filtered.length) + ' item types | ' + fmt(sumUnits) + ' units | ~' + fmtCompact(sumWorth) + ' cr catalog worth'));
-    card.append(fitTable(table(['Item', 'Category', 'Total', 'In Vaults', 'In Holds', 'Unit Val', 'Worth'],
+    card.append(el('div', 'icsub', 'Showing ' + fmt(filtered.length) + ' item types | ' + fmt(sumUnits) + ' units | ~' + fmtCompact(sumWorth) + ' cr live market worth'));
+    card.append(fitTable(table(['Item', 'Category', 'Total', 'In Vaults', 'In Holds', 'Live Price', 'Live Worth'],
       filtered.map((r) => [
         itemLink(r.id, r.name),
         kindPill(r.kind),

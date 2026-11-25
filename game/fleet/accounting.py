@@ -909,13 +909,28 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                         for (ediv, eit), eq in _esc_di.items():
                             now_s[(ediv, eit)] = now_s.get((ediv, eit), 0) + eq
                             now_item_tot[eit] = now_item_tot.get(eit, 0) + eq
+                    old_item_tot = {}
+                    for (_d_k, _i_k), _u_v in old_s.items():
+                        old_item_tot[_i_k] = old_item_tot.get(_i_k, 0) + _u_v
+                    # Reconcile inventory accrual 1:1 with Balance Sheet marginal depth_realizable_value!
+                    # Prevents thin top-of-book bids (e.g. 600u water_ice @ 44 cr) from inflating 30,000u glut deltas.
+                    marginal_unit_nrv = {}
+                    for it in (set(now_item_tot) | set(old_item_tot)):
+                        u_now = now_item_tot.get(it, 0)
+                        u_old = old_item_tot.get(it, 0)
+                        du_tot = u_now - u_old
+                        if du_tot != 0:
+                            v_now = depth_realizable_value(it, u_now, base_map, bids_by_item, trend_map, ask_map=ask_map)
+                            v_old = depth_realizable_value(it, u_old, base_map, bids_by_item, trend_map, ask_map=ask_map)
+                            marginal_unit_nrv[it] = (v_now - v_old) / float(du_tot)
+                        else:
+                            marginal_unit_nrv[it] = live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=u_now, max_bid_map=max_bid_map, ask_map=ask_map)
                     for (div, it) in (set(now_s) | set(old_s)):
                         du = now_s.get((div, it), 0) - old_s.get((div, it), 0)
                         if du == 0:
                             continue
                         fleet_item_delta[it] = fleet_item_delta.get(it, 0) + du
-                        held_u = now_item_tot.get(it, 0) if du > 0 else 0
-                        up = live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=held_u, max_bid_map=max_bid_map, ask_map=ask_map)
+                        up = marginal_unit_nrv.get(it, 0.0)
                         inv_nrv_div[div] = inv_nrv_div.get(div, 0.0) + du * up
                         inv_cat_div[div] = inv_cat_div.get(div, 0.0) + du * base_map.get(it, 0.0)
 

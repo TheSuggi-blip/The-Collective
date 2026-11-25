@@ -2,23 +2,23 @@
   "policed_only": true,
   "exclude_strongholds": true,
   "max_jumps_pickup": 16,
-  "max_jumps_delivery": 35,
-  "min_cr_per_jump": 60,
-  "min_total_profit": 300,
+  "max_jumps_delivery": 22,
+  "min_cr_per_jump": 180,
+  "min_total_profit": 1500,
   "max_collateral": 25000,
   "fuel_reserve_cr": 6000,
-  "max_book_age_minutes": 45,
+  "max_book_age_minutes": 20,
   "max_buy_spend_cr": 15000,
-  "min_margin_pct": 0.15,
+  "min_margin_pct": 0.25,
   "partners_first": true,
   "lanes": [
     "active_freight",
     "hub_upkeep",
     "internal_supply",
-    "public_freight",
-    "arbitrage",
     "liquidate_surplus",
     "consolidate_to_trader",
+    "public_freight",
+    "arbitrage",
     "backhaul_mission"
   ],
   "home_bases": [
@@ -32,9 +32,9 @@
   "escort_rally_timeout_s": 240,
   "never_trust_lawless_player_solo": true,
   "enabled": true,
-  "arb_bid_depth_cap": 0.8,
-  "min_arb_bid_qty": 2,
-  "liquidate_min_revenue_cr": 300,
+  "arb_bid_depth_cap": 0.65,
+  "min_arb_bid_qty": 10,
+  "liquidate_min_revenue_cr": 1200,
   "allow_faction_surplus_liquidation": true,
   "allow_calm_buywall_dest": true,
   "buywall_min_bid": 50,
@@ -73,6 +73,6 @@
     "station": 5000
   },
   "consolidate_min_units": 10,
-  "consolidate_min_value_cr": 250,
-  "liquidate_max_slots": 8
+  "consolidate_min_value_cr": 600,
+  "liquidate_max_slots": 24
 }

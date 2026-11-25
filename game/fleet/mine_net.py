@@ -260,20 +260,25 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                         pirates.add(str(subj).split(":", 1)[0].strip())     # a subject `system:poi` counts by its system
 
             def _items():
-                cols = {r[1] for r in cur.execute("PRAGMA table_info(items)").fetchall()}
-                vcol = "base_value" if "base_value" in cols else ("value" if "value" in cols else None)
-                if vcol:
-                    for iid, val in cur.execute("SELECT id, %s FROM items" % vcol):
-                        if iid and val:
-                            item_vals[str(iid)] = float(val)
+                # Strict live-market policy (Suggi directive): NEVER seed item_vals from static catalog base_value!
+                pass
 
             def _books():
                 cols = {r[1] for r in cur.execute("PRAGMA table_info(books)").fetchall()}
                 bcol = "bid" if "bid" in cols else ("best_buy" if "best_buy" in cols else None)
+                qcol = "bid_qty" if "bid_qty" in cols else ("best_buy_qty" if "best_buy_qty" in cols else None)
+                tcol = "t" if "t" in cols else None
                 if bcol:
-                    for iid, bid in cur.execute("SELECT item, MAX(%s) FROM books WHERE %s > 0 GROUP BY item" % (bcol, bcol)):
+                    where = "%s > 0" % bcol
+                    params = ()
+                    if qcol:
+                        where += " AND %s > 0" % qcol
+                    if tcol:
+                        where += " AND %s >= ?" % tcol
+                        params = (now_t - 6.0 * 3600.0,)
+                    for iid, bid in cur.execute("SELECT item, MAX(%s) FROM books WHERE %s GROUP BY item" % (bcol, where), params):
                         if iid and bid:
-                            item_vals[str(iid)] = max(item_vals.get(str(iid), 0.0), float(bid))
+                            item_vals[str(iid)] = float(bid)
 
             def _supply():
                 # supply_status carries the stock beside the keep (supply_chains has no stock column).
@@ -334,7 +339,6 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
 
     allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
     if allow:
-        # The Admiral's list of deposit stations (system:poi:base): only where a give route of ours collects.
         stations_by_sys = {}
         for spec in allow:
             sys_id, poi_id, base_id = spec.split(":")
@@ -439,6 +443,19 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     lst = stations_by_sys.setdefault(tup[0], [])
                     if tup not in lst:
                         lst.append(tup)
+
+    # Hard Lockbox-Only Guard (Suggi directive): when deposit_mode == "faction", NEVER route miners to a
+    # non-Lockbox NPC station (which would error on faction deposit and fall back into private personal storage!).
+    if policy.get("deposit_mode") == "faction":
+        valid_fac_hubs = set(lockbox_bases) | set(owned_outpost_bases)
+        if valid_fac_hubs:
+            filt_st = {}
+            for _s, _lst in stations_by_sys.items():
+                _keep = [t for t in _lst if t[2] in valid_fac_hubs]
+                if _keep:
+                    filt_st[_s] = _keep
+            if filt_st:
+                stations_by_sys = filt_st
 
     pirates |= _dispatch_pirates(data_dir, now_t)
     pirates.discard("")
@@ -718,22 +735,26 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if is_full and (not allow_xp or (hops > xp_max_j and not _in_hub_zone)):
             continue
 
-        uval = max(4.0, float(item_vals.get(res) or 8.0))
+        # Strict live-market valuation (ZERO catalog base_value fallback!)
+        _live_b = float(mkt[0]) if (mkt and mkt[0] > 0) else float(item_vals.get(res) or 0.0)
+        _held_u = int((world.get("held") or {}).get(res, 0))
+        _is_glut = (not is_deficit and _held_u >= 20000 and _live_b < 15.0)
+        uval = _live_b
         if is_deficit:
             tier = "deficit"
+            uval = max(10.0, _live_b)
             tier_mult = 12.0
-        elif is_craft:
+        elif is_craft and not _is_glut and _live_b >= 15.0:
             tier = "craft_demand"
-            tier_mult = 6.0
-        elif not is_full:
+            tier_mult = 7.0
+        elif not is_full and not _is_glut and _live_b > 0:
             tier = "market"
-            if mkt:
-                uval = max(1.0, mkt[0])   # live market bid, never stale static catalog base_value
-            tier_mult = 8.0 if is_buywall else 2.5
+            tier_mult = 9.0 if is_buywall else 3.0
         else:
+            if not allow_xp:
+                continue
             tier = "xp_fallback"
-            _live_b = float(mkt[0]) if (mkt and mkt[0] > 0) else 0.0
-            uval = max(2.0, min(uval, _live_b)) if _live_b > 0 else 2.0
+            uval = max(1.0, _live_b) if _live_b > 0 else 1.0
             _held_u = int((world.get("held") or {}).get(res, 0))
             _bloated = (_held_u >= 25000 and uval < 12.0) or (res in full_items)
             _hard_glut = (_held_u >= int(policy.get("hard_glut_skip_units") or 200000) and uval < 10.0)
@@ -952,18 +973,39 @@ def main(argv=None):
         if policy.get("auto_drain_personal_to_lockbox", True) and (_dest_base in _lockboxes or _dest_base in _owned_outposts):
             try:
                 import gate as _g_dr, urllib.parse as _up_dr
+                def _jraw(_raw_out):
+                    if isinstance(_raw_out, dict):
+                        return _raw_out
+                    if isinstance(_raw_out, str) and _raw_out.strip():
+                        try:
+                            return json.loads(_raw_out)
+                        except ValueError:
+                            return {}
+                    return {}
+                def _jbody(_d):
+                    if not isinstance(_d, dict):
+                        return {}
+                    for _k in ("structuredContent", "result", "data"):
+                        if isinstance(_d.get(_k), dict):
+                            return _d[_k]
+                    _txt_l = _d.get("content")
+                    if isinstance(_txt_l, list) and _txt_l and isinstance(_txt_l[0], dict):
+                        return _jraw(_txt_l[0].get("text") or "")
+                    return _d
                 _pe = _up_dr.quote(pilot, safe="")
-                _st_c, _st_d = _g_dr.call("GET", "/accounts/%s" % _pe, timeout=20)
-                _loc = ((_st_d.get("state") or {}).get("location") or {}) if isinstance(_st_d, dict) else {}
-                _sh = ((_st_d.get("state") or {}).get("ship") or {}) if isinstance(_st_d, dict) else {}
+                _, _gs_r = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt", "action": "get_status", "params": {}}, timeout=30)
+                _gs = _jbody(_jraw(_gs_r))
+                _pl = _gs.get("player") if isinstance(_gs.get("player"), dict) else {}
+                _sh = _gs.get("ship") if isinstance(_gs.get("ship"), dict) else {}
+                _docked_b = str(_pl.get("docked_at_base") or _gs.get("docked_at_base") or _gs.get("base_id") or "")
                 _free_c = max(0, int(_sh.get("cargo_capacity") or 0) - int(_sh.get("cargo_used") or 0))
-                if str(_loc.get("docked") or "") == _dest_base and _free_c >= 10:
-                    _, _vw = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "view", "params": {"station_id": _dest_base}}, timeout=30)
-                    _sc = (_vw.get("structuredContent") or _vw.get("result") or {}) if isinstance(_vw, dict) else {}
+                if _docked_b == _dest_base and _free_c >= 5:
+                    _, _vw_r = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "view", "params": {"station_id": _dest_base}}, timeout=30)
+                    _sc = _jbody(_jraw(_vw_r))
                     _rows = _sc.get("items") or _sc.get("storage") or []
                     _moved = 0
                     for _it in (_rows if isinstance(_rows, list) else []):
-                        if not isinstance(_it, dict) or _moved >= 2:
+                        if not isinstance(_it, dict) or _moved >= 6:
                             break
                         _iid = str(_it.get("item_id") or "")
                         _iq = int(_it.get("quantity") or 0)
@@ -974,19 +1016,21 @@ def main(argv=None):
                         _tq = min(_iq, _free_c)
                         if _tq < 1:
                             break
-                        _, _rw = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "withdraw", "params": {"item_id": _iid, "quantity": _tq, "target": "self"}}, timeout=30)
-                        if isinstance(_rw, dict) and "error" not in _rw:
+                        _, _rw_r = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "withdraw", "params": {"item_id": _iid, "quantity": _tq, "target": "self"}}, timeout=30)
+                        _rw = _jraw(_rw_r)
+                        if isinstance(_rw, dict) and "error" not in _rw and not _rw.get("isError"):
                             time.sleep(11.0)
-                            _, _rd = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "faction", "source": "cargo"}}, timeout=30)
+                            _, _rd_r = _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "faction", "source": "cargo"}}, timeout=30)
+                            _rd = _jraw(_rd_r)
                             time.sleep(11.0)
-                            if isinstance(_rd, dict) and "error" not in _rd:
+                            if isinstance(_rd, dict) and "error" not in _rd and not _rd.get("isError"):
                                 _moved += 1
                                 print("%s %s mine_net: drained %d %s personal -> faction lockbox @ %s" % (utc_now(), pilot, _tq, _iid, _dest_base), flush=True)
                             else:
                                 _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "self", "source": "cargo"}}, timeout=30)
                                 break
-            except Exception:
-                pass
+            except Exception as _de:
+                print("%s %s mine_net: drain err: %s" % (utc_now(), pilot, str(_de)[:80]), flush=True)
         return rc_run
     finally:
         hb.set()
