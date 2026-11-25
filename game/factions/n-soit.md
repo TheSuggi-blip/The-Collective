@@ -9,7 +9,7 @@ faction: Soit
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Soit [SOIT]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 10.
 | Allies | OKLM, SGC. | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 78 | Public event stream |
+| Pilots carrying the tag on the public event stream | 76 | Public event stream |
 
 ## Bases
 

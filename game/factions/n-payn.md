@@ -9,13 +9,13 @@ faction: Pay Now Inc
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Pay Now Inc [PAYN]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 5 | Public event stream |
+| Pilots carrying the tag on the public event stream | 7 | Public event stream |
 
 ## Bases
 
@@ -39,7 +39,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Atervisus | The Experiment (`the_experiment`) | 0 | hells_bells |
-| VedaFlux | Node Alpha (`node_alpha`) | 0 | threshold |
+| Stoleas | Nexus Prime (`nexus_prime`) | 0 | paradox |
+| VedaFlux | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 
