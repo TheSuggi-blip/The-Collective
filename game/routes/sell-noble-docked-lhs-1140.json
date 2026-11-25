@@ -1,0 +1,42 @@
+{
+ "id": "sell-noble-docked-lhs-1140",
+ "kind": "circuit",
+ "title": "Stored noble_condensate sold where it lies, at 784309214f105860a16a0c100a70eb14, at 650 cr or more",
+ "note": "2026-11-25 13:22 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). 784309214f105860a16a0c100a70eb14 bid 690 x 47 (book of 2026-11-25T13:03:42Z); no ask of it in our books; floor 650 cr; 26 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. Set by hand: requires.docked_at 784309214f105860a16a0c100a70eb14, so only a trader already docked there sells (zero fuel: no ship flies for it); stored min 5; max_ships 1.",
+ "requires": {
+  "stored": {
+   "at": "784309214f105860a16a0c100a70eb14",
+   "item": "noble_condensate",
+   "min": 5
+  },
+  "bid": {
+   "item": "noble_condensate",
+   "base": "784309214f105860a16a0c100a70eb14",
+   "min_price": 650,
+   "min_qty": 1
+  },
+  "docked_at": "784309214f105860a16a0c100a70eb14"
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "noble_condensate"
+    }
+   ],
+   "sell": [
+    {
+     "item": "noble_condensate",
+     "min_price": 650
+    }
+   ]
+  },
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "store": "all"
+  }
+ ]
+}

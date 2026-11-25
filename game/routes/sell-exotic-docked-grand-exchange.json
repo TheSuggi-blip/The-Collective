@@ -1,0 +1,42 @@
+{
+ "id": "sell-exotic-docked-grand-exchange",
+ "kind": "circuit",
+ "title": "Stored exotic_matter sold where it lies, at grand_exchange_station, at 45 cr or more",
+ "note": "2026-11-25 13:22 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). grand_exchange_station bid 50 x 446 (book of 2026-11-25T13:20:35Z); the cheapest ask read is 1200 x 715 at b495c6003fc83e18f6d8cecbe6929133; floor 45 cr; 280 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. Set by hand: requires.docked_at grand_exchange_station, so only a trader already docked there sells (zero fuel: no ship flies for it); stored min 20; max_ships 1.",
+ "requires": {
+  "stored": {
+   "at": "grand_exchange_station",
+   "item": "exotic_matter",
+   "min": 20
+  },
+  "bid": {
+   "item": "exotic_matter",
+   "base": "grand_exchange_station",
+   "min_price": 45,
+   "min_qty": 1
+  },
+  "docked_at": "grand_exchange_station"
+ },
+ "max_ships": 1,
+ "stops": [
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "exotic_matter"
+    }
+   ],
+   "sell": [
+    {
+     "item": "exotic_matter",
+     "min_price": 45
+    }
+   ]
+  },
+  {
+   "at": "haven:grand_exchange:grand_exchange_station",
+   "store": "all"
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+ "id": "sell-lead-docked-central-nexus",
+ "kind": "circuit",
+ "title": "Stored lead_ore sold where it lies, at central_nexus, at 110 cr or more",
+ "note": "2026-11-25 13:22 UTC (Mercury, written by sellgen.py; orders block MERCURY, rule F24). central_nexus bid 120 x 1000 (book of 2026-11-25T13:21:50Z); the cheapest ask read is 120 x 1 at 01bad6afe17a96264def4e8066bad050; floor 110 cr; 277 units lie there in our storages. requires.stored sends only a pilot whose own storage there holds the good; requires.bid closes the route while a book read within the hour shows no bid at the floor. The withdraw step takes only what the bid takes. Nothing is bought. Open to every division: each ship sells its own stores. Set by hand: requires.docked_at central_nexus, so only a trader already docked there sells (zero fuel: no ship flies for it); stored min 3; max_ships 3.",
+ "requires": {
+  "stored": {
+   "at": "central_nexus",
+   "item": "lead_ore",
+   "min": 3
+  },
+  "bid": {
+   "item": "lead_ore",
+   "base": "central_nexus",
+   "min_price": 110,
+   "min_qty": 1
+  },
+  "docked_at": "central_nexus"
+ },
+ "max_ships": 3,
+ "stops": [
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all",
+   "withdraw": [
+    {
+     "item": "lead_ore"
+    }
+   ],
+   "sell": [
+    {
+     "item": "lead_ore",
+     "min_price": 110
+    }
+   ]
+  },
+  {
+   "at": "nexus_prime:the_core:central_nexus",
+   "store": "all"
+  }
+ ]
+}
