@@ -48,11 +48,6 @@ Status: proven. Updated: 2026-11-21. Evidence: route files and RESULT lines 2026
 - Boards: `craft-boards-*` (topic-station.md).
 - Hand chains: catch.py, craftchain.py and stage.py of the skill logistics-stock.
 
-### Beyond the border (a test)
-Status: retired. Updated: 2026-11-25. Evidence: buy-gold-ironlight-boards, RESULT line 2026-11-17 00:35 UTC; plan.py show 2026-11-25.
-
-- The one-ship test to Ironlight Crossroads (2026-11-17) left the plan the same day and was not flown again; carrying beyond our border is proven by the outpost's supply routes (topic-bases.md) and the far joins (routes.md, Standing Plan).
-
 ### Missions that pay once (the list First)
 Status: proven. Updated: 2026-11-21. Evidence: data/missions and the tool candidates, kind mission, 2026-11-17 11:53 UTC; RESULT line 12:41 UTC; queue.log ENT-157.
 
