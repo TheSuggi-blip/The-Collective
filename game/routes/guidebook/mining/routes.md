@@ -1,32 +1,33 @@
 # Mining guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); fill.py check miner; table runs (mine-network, fit-network); routes/pull.json; mine_net dry run on read.db; queue.log ENT-324.
+Status: proven. Updated: 2026-11-25. Evidence: the plan file (tool plan, show); fill.py check miner; table runs (mine-network since b0a2eef6); mine_net claims in the route logs; dispatch.pirates against mine_net's world; dry runs of assign_optimal_mines on read.db; requests ENT-534/540; queue ENT-330.
 
-Turn of orders ENT-091 (iron short of its 60,000 keep; P1 pay for itself;
-P7 smart networks). A free miner takes First, its own routes, then Then.
+Turn of orders ENT-092 (iron gathers full, stored where it can be taken
+out, never into the outpost; P1 pay for itself). A free miner takes
+First, its own routes, then Then.
 
 | Route | Ships | For |
 |---|---|---|
 | fit and slot routes, `resonance-parts-*`, gives, once missions | by asks | slots, yard parts, stores, paid once |
-| `fit-network` (end of First) | all; skips a fitted ship | Mining mix ore 100: lasers stay lasers |
-| `mine-network` (end of First) | up to 130 | deficits (iron to 80,000), market goods, training ore |
-| own rows: `@reserve-prism`, `@reserve-hamal`, empire rows | by the pull | silicon; carbon, nickel, gold, platinum full |
-| Then: iron gathers 2 to 4 jumps out; lawless iron tests | 3 a belt; 1 | iron to 80,000 |
-| Then: regional belts; `train-jumps-miner`; park | 1 to 3; 20 | last |
+| `fit-network` (end of First) | all; skips a fitted ship | lasers and expanders only: no defense loadout |
+| `mine-network` (end of First) | up to 130 | deficits (iron, fluorine), then training ore |
+| own rows: `@reserve-prism`, `@reserve-hamal`, empire rows | by the pull | silicon; the rest full |
+| Then: iron gathers, regional belts (pull closes them above 80,000) | 1 to 3, at most `carries` | fallback |
+| Then: `train-jumps-miner`; park | 20; - | last |
 
-mine-network (policy game/mine-policy.json) mines a reserve deficit
-first (the pull's open raw goods up to their max, need_status gather),
-then a market good only where a bid of 10 cr or more takes more than the
-fleet holds (handed to traders), else training ore within 3 jumps. About
-half the division finds no belt (dry run 75 of 130): such a run writes a
-row, three in a row rest the pair 30 min, and the ship flies the static
-iron gathers of Then. Deposits only at give stations; lawless only in
-`allow_lawless_systems` (atlas, intercrus).
+mine-network counts a deficit from the pull's open goods and the needs'
+gather column up to priority 3 (the Guild Hall's 30,000 iron keeps iron a
+deficit while the pull reads it full). Lawless deficit belts are open to
+it; every system the dispatcher's pirate stop closes is closed to it too,
+and it asks no escort. It stores only at the 12 stations of
+deposit_stations (Bursar hubs off). The outpost's faction gathers stand
+off by order.
 
-What would change it: iron at 80,000 (most ships then train near home);
-a held good gaining a 10 cr bid with depth; a pirate read in atlas or
-intercrus (take it out of the policy list).
+What would change it: an order to store into the outpost again; a miner
+lost on a belt the pirate gate cleared (defense loadout back in, a test);
+Military's escort lane reopened behind a power gate (the escort flag as
+a test variant); the Guild Hall need closed (iron falls to training ore).
 
 ### Drains and carries of stored goods (kind `circuit`)
 Status: proven. Updated: 2026-11-21. Evidence: drain-methane-experiment and carry-null-matter-synchrony-nexus (hive.py route <id>).
