@@ -1,33 +1,32 @@
 # Trade guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: plan.py check 19:40 UTC; fill.py check trader; orders_scan.py 19:15 UTC (escrow 71,009 cr, 33 buys); route carry-sac-beta-to-hex-star run 19:21 UTC; commission_status 19:10 UTC; upgrades.py auto_enqueue dry run 19:12 UTC.
+Status: proven. Updated: 2026-11-25. Evidence: plan.py check 01:29 UTC; fill.py check trader; runs.jsonl craft-network trader rows 20:28-23:56 UTC (453 runs, -479,693 cr); orders_scan.py 01:17 UTC (escrow 83,434 cr, 37 buys); commits d2045617, 3c205b6d, b3978b49.
 
-The plan file as applied on 2026-11-24 at 19:40 UTC (orders ENT-090,
+The plan file as applied on 2026-11-25 at 01:29 UTC (orders ENT-091,
 block MERCURY):
 
 - First, every ship: `fit-network` (tier-0 hulls detect as bursar
-  desks in game/fit-policy.json: no fit); the once line of every
-  board; the Station Needs (`need-*`, gated by `requires.stored` and
-  `requires.posted`); the far bids for stored goods at Hex Star
-  (`sell-ember-*`, `sell-melt-*`, `carry-sac-beta-to-hex-star`, each
-  gated by `requires.stored` and `requires.bid`).
-- Own rows: a `finish-*` route only for the holders of its mission;
-  `craft-network` at the head of three test rows (P7, F37); the join
-  corridors, the capitals' lines, `@trade-sell > @trade-craft`.
+  desks: no fit); the once line of every board; the Station Needs
+  (`need-*`, gated by `requires.stored` and `requires.posted`); the far
+  bids for stored goods (`sell-ember-*`, `sell-melt-*`,
+  `carry-sac-beta-to-hex-star`, gated by `requires.stored`, `requires.bid`).
+- Own rows: a `finish-*` route only for its mission's holders;
+  `craft-network` on three test rows only (F37); the join corridors,
+  the capitals' lines, `@trade-sell > @trade-craft`.
 - Then, gated to where each ship stands: starters stripped once, the
-  five Bursar desks, `bursar-network` (tier 0, cargo 150 or less),
-  `bursar-network-freighter` (cargo over 150, docked) before steel
-  crafts, `train-trading-*`, `train-jumps-trader`, park.
+  five Bursar desks, `bursar-network` (cargo 150 or less),
+  `bursar-network-freighter` (cargo over 150, cap 15), steel crafts,
+  `train-trading-*`, `train-jumps-trader`, park. No shared AutoNet
+  goes into Then before its trader runs pay: craft-network put there
+  by a plan apply of five divisions ran 73 traders for -479,693 cr.
 
-Hulls: the upgrade service buys listed hulls by the Trade ladder of
-game/upgrade-policy.json (Prayer, Ledger; Baling Wire, Meridian
-Freighter, Bulk Terms, Apophenia for Piloting 10; max_active 7).
-A commission stuck in sourcing is finished by its owner with
-`supply_commission` (owner only), the good bought where its ask stands.
+Hulls: listed rungs of game/upgrade-policy.json only at their caps
+(Meridian 95k, Bulk Terms 100k); a T2 freighter on desk duty measured
+211 cr a ship-hour against 993 for a tier-0 desk (6 h, table runs).
 
-What would change it: craft-network's first runs; the bids at Hex Star
-gone; the Meridian buys delivered.
+What would change it: craft-network's test rows paying; a listed T2
+under its cap; a Station Need or HEXC contract over the bid.
 
 ### Selling stores where they lie (`sell-<good>-at-<station>`, `carry-<good>-<from>-to-<to>`)
 Status: proven. Updated: 2026-11-22. Evidence: the sell and carry route files with their measured figures; sellgen.py of Mercury's trade skill.
