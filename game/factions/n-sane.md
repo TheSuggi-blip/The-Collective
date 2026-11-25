@@ -15,7 +15,7 @@ updated: 2026-11-25
 # UNSANE. [SANE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 42.
+Pilots of it in our space in the last 24 hours: 35.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 42.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 48 | Public event stream |
+| Pilots carrying the tag on the public event stream | 47 | Public event stream |
 
 ## Bases
 
@@ -38,38 +38,38 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Agony Needle | Node Beta (`node_beta`) | 0 | threshold |
+| Agony Needle | Node Gamma (`node_gamma`) | 0 | threshold |
 | Bedlam Lance | Nexus Prime (`nexus_prime`) | 0 | accretion |
-| Bedlam Spark | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Bedlam Spark | The Experiment (`the_experiment`) | 0 | threshold |
 | Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Cortical Flail | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Cortical Lacerator | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Delirium Dart | Pherkad (`pherkad`) | 0 | threshold |
+| Cortical Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Delirium Dart | Node Alpha (`node_alpha`) | 0 | threshold |
 | Dread Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Entropy Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Fever Talon | Pherkad (`pherkad`) | 0 | threshold |
+| Fever Talon | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Fractured Lance | Pherkad (`pherkad`) | 0 | threshold |
 | Frenzy Blade | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Ghost Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Hysteric Pulse | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Hysteric Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Malignant Spike | Node Alpha (`node_alpha`) | 0 | threshold |
-| Mania Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mania Vector | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mind-Rupture | Node Beta (`node_beta`) | 0 | liminal |
-| Morbid Claw | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Hysteric Pulse | Node Alpha (`node_alpha`) | 0 | threshold |
+| Malignant Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Mania Lance | The Experiment (`the_experiment`) | 0 | threshold |
+| Morbid Claw | Node Beta (`node_beta`) | 0 | threshold |
 | Neural Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Neurotic Razor | Hamal (`hamal`) | 0 | threshold |
 | Null Spike | Node Alpha (`node_alpha`) | 0 | threshold |
-| Panic Sabre | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Paranoia Lance | Synchrony (`synchrony`) | 0 | threshold |
-| Psychopathic Fang | The Experiment (`the_experiment`) | 0 | threshold |
+| Paranoia Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Psychopathic Fang | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Psychotic Stinger | Node Beta (`node_beta`) | 0 | threshold |
-| Schism Dart | Node Alpha (`node_alpha`) | 0 | accretion |
-| Schism Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Screaming Needle | GSC-0027 (`gsc_0027`) | 0 | threshold |
-| Screaming Sabre | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Schism Dart | Nexus Prime (`nexus_prime`) | 0 | accretion |
+| Screaming Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Screaming Sabre | The Experiment (`the_experiment`) | 0 | threshold |
 | Siphon Sting | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Static Talon | Node Beta (`node_beta`) | 0 | threshold |
+| Synaptic Bolt | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Synaptic Razor | The Experiment (`the_experiment`) | 0 | threshold |
 
-And 12 more.
+And 5 more.
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-25
 # You Sexy Mother Truckers [YSMT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | DB , CRFT | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 12 | Public event stream |
+| Pilots carrying the tag on the public event stream | 13 | Public event stream |
 
 ## Bases
 
@@ -36,7 +36,10 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Cornelius 'Commerce' Col | Node Beta (`node_beta`) | 0 | congregation |
+| Scott 'Salvager' Sullivn | Nexus Prime (`nexus_prime`) | 0 | congregation |
 
 ## Standing History
 
