@@ -1573,7 +1573,7 @@ def main(argv=None):
                         if live_ask > 0 and live_ask <= float(upk.get("max_unit_price") or 0) and live_aq > 0:
                             buy_q = min(qty, live_aq, int(max(0, get_credits() - int(policy.get("fuel_reserve_cr") or 6000)) // (live_ask * 1.02)))
                             if buy_q >= 1:
-                                raw("buy", {"item_id": iid, "quantity": buy_q, "auto_list": False}, group="spacemolt_market")
+                                raw("buy", {"item_id": iid, "quantity": buy_q, "auto_list": False}, group="spacemolt")
                                 time.sleep(TICK)
                                 have = get_cargo().get(iid, 0)
                     if have <= 0:
@@ -1891,7 +1891,7 @@ def main(argv=None):
                         say("backhaul_mission aborted: live ask %.0f exceeds budget" % est_u)
                         release_job(DATA, pilot)
                         continue
-                    rb = raw("buy", {"item_id": iid, "quantity": qty, "auto_list": False}, group="spacemolt_market")
+                    rb = raw("buy", {"item_id": iid, "quantity": qty, "auto_list": False}, group="spacemolt")
                     time.sleep(TICK)
                     got = get_cargo().get(iid, 0)
                     if "error" in rb or got < qty:

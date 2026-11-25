@@ -1169,7 +1169,7 @@ def main(argv=None):
                                     if _est_u > _bp * 1.15:
                                         _ok_buy = False
                                         break
-                                    _rb = raw("buy", {"item_id": _bi, "quantity": int(_bq), "auto_list": False}, group="spacemolt_market")
+                                    _rb = raw("buy", {"item_id": _bi, "quantity": int(_bq), "auto_list": False}, group="spacemolt")
                                     time.sleep(TICK)
                                     if "error" in _rb:
                                         _ok_buy = False
