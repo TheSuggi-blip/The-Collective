@@ -400,3 +400,12 @@ Failed: frontier oldest 183 min against the 180 target (11:27 UTC); census-north
 Requests: none.
 Suggestions: a payback field per division in fit-policy so fit-network buys only what measured runs repay (Unity, fit_net.py); a treasury top-up under 1,000 cr outside wallet.py's six-hour window (Unity).
 Report: scout-module-buys-stopped-born-elsewhere-work-home.
+
+## [ENT-213] | 2026-11-25 12:07 UTC | Zero | session | ref: reports/2026-11-25_zero_nothing-short-to-mine-score-fixed-hub-gives.md | see: orders.log ENT-093
+Session: scheduled run turn-zero -- nothing short within reach, the network's way fixed, hub iron given where a receiver stands.
+Did: read the reserve against the fields (every good the miners reach full: iron 221,109 of max 80,000; silicon, thorium, uranium short but their fields nearly empty or 19 to 27 jumps out); fixed mine_net's score so a longer way always scores lower (b1269f9a, test red first, 122 test files green); three give routes at Bursar hubs with a trader receiver (c7a9cc39; 120,689 miners' iron outside our stations, bids 0 to 1 cr); guidebook Standing Plan (58c031f8); queue ENT-335.
+Worked: plan check PASS; fill gate PASS at 11:54 and 12:04 UTC; no iron deficit claim since iron went full at 02:10 UTC; Mining modules bought once 3,939 cr in 6 h; mine-network's pirate systems equal the dispatcher's (12, 12); on the live store the best belts' way to a station falls from 2.55 to 2.35 jumps.
+Failed: iron by deficit only holds for deficit claims, not for training ore on iron-copper belts (the game picks common ores by richness); my request for a docked watch for miners without paying work was refused by the comms autonomy gate (F8, non-scouts), not worked around; Mining 24-hour purse -57,561 cr an hour.
+Requests: none.
+Suggestions: Unity: Mining spends 37,903 (24 h recurring) to 60,363 cr an hour (last hour) on training ore while nothing within reach is short; only an order or a rule can rest miners. The scorecard's mine-network P0 line could count fuel on training ore instead of beltless runs.
+Report: nothing-short-to-mine-score-fixed-hub-gives.
