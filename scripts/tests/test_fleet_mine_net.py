@@ -84,6 +84,39 @@ class MineNetTests(unittest.TestCase):
         self.assertEqual(assigned["miner-2"]["belt_key"], "sys_b:belt_carbon")
 
 
+class MineNetExperienceScoreTests(unittest.TestCase):
+    """Zero, 2026-11-25: an experience-only belt scores below zero (its fuel exceeds what its full good is worth), and
+    dividing a negative score by the way's length raised it: a belt four jumps from its station outranked one inside a
+    station's system, so every load flew eight jumps (claims of 2026-11-25: 4J->belt, 4J->station). A longer way must
+    always score lower."""
+
+    def test_a_far_station_never_outranks_a_belt_beside_one(self):
+        line = ["s0", "s1", "s2", "s3", "s4"]
+        adj = {s: set() for s in line}
+        for a, b in zip(line, line[1:]):
+            adj[a].add(b)
+            adj[b].add(a)
+        world = {
+            "adj": adj,
+            "systems": {s: {"empire": "voidborn", "stronghold": False} for s in line},
+            "stations_by_sys": {"s0": [("s0", "st0", "base0")]},
+            "fields": [
+                {"system": "s4", "poi": "far_belt", "resource": "iron_ore", "remaining": 90000, "max_remaining": 100000, "richness": 50, "t": 1},
+                {"system": "s0", "poi": "home_belt", "resource": "iron_ore", "remaining": 90000, "max_remaining": 100000, "richness": 50, "t": 1},
+            ],
+            "pirates": set(),
+            "item_vals": {"iron_ore": 4.0},
+            "shortages": {},
+            "full_items": {"iron_ore"},
+        }
+        pol = dict(mine_net.DEFAULT_POLICY, policed_only=True, xp_fallback_max_jumps=8, max_station_jumps=4, market_tier=False)
+        pilot = {"name": "miner-1", "system": "s4", "tier": 0, "modules": [{"type": "mining_laser_i"}]}
+        cands = mine_net.score_belt_candidates(pilot, world, pol, {}, {})
+        self.assertEqual([c["tier"] for c in cands], ["xp_fallback", "xp_fallback"])
+        self.assertEqual(cands[0]["belt_key"], "s0:home_belt")
+        self.assertLess(cands[1]["score"], cands[0]["score"])
+
+
 class MineNetLiveSchemaTests(unittest.TestCase):
     """The store's own tables (2026-11-24): stations has no id or poi column; places maps a station to its base;
     supply_status carries the stock. A schema fault in one table must not leave the fields unread."""

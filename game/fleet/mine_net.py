@@ -666,7 +666,11 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
 
         headroom_bonus = min(2.0, max(0.5, rem / 10000.0))
         fuel_pen = 35.0 * hops + 25.0 * st_hops
-        score = ((tier_mult * uval * 20.0 * headroom_bonus) - fuel_pen) / (1.0 + 0.6 * hops + 1.2 * st_hops)
+        # Zero, 2026-11-25: a longer way always scores lower. Dividing a negative score (fuel above what the good is worth,
+        # every experience-only belt) by the way raised it, and a belt 4 jumps from its station outranked one beside a station.
+        _num = (tier_mult * uval * 20.0 * headroom_bonus) - fuel_pen
+        _way = 1.0 + 0.6 * hops + 1.2 * st_hops
+        score = _num / _way if _num >= 0 else _num * _way
         cand = {
             "belt_key": belt_key, "system": sys_id, "poi": poi_id,
             "resource": res, "remaining": rem, "max_remaining": mx,
