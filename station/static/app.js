@@ -3982,7 +3982,7 @@ function fsTable(headers, rows, numericCols) {
 function renderFinancialStatements(panel, ops, w, t) {
   const headBar = el('div', 'fs-head-bar');
   headBar.append(
-    el('p', 'sub', 'Unaudited Institutional Short-Format Financial Statements (IFRS 18, IAS 7, IAS 2) -- exact reconciliation to live fleet ledgers, zero plugs.'),
+    el('p', 'sub', 'Unaudited Institutional Short-Format Financial Statements (IFRS 18, IAS 7, IAS 2, IFRS 8 & Buffett Owner Earnings) -- exact reconciliation to live fleet ledgers, zero plugs.'),
     linkButton('Financial Statements Blueprint ->', () => openDoc('governance/financial-statements.md'), 'doclink')
   );
   panel.append(headBar);
@@ -4000,41 +4000,45 @@ function renderFinancialStatements(panel, ops, w, t) {
   const standingN = (ops.fleet_capacity && ops.fleet_capacity.standing) || (t && t.ships) || 1;
 
   const numOr0 = (obj, k) => (obj && obj[k] !== null && obj[k] !== undefined ? Number(obj[k]) : 0);
-  const cfoOf = (a) => (a ? numOr0(a, 'recurring_cash_h') + numOr0(a, 'seed_net_h') + numOr0(a, 'treasury_own_h') : null);
+  const opexOf = (a) => (a && a.opex_breakdown ? a.opex_breakdown : null);
+  const revTotOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'inventory_accrual_h') : null);
+  const cashRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'seed_rewards_h') : null);
+  const dirOpExOf = (a) => (a ? -(numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h')) : null);
+  const grossProfitOf = (a) => (a ? revTotOf(a) + dirOpExOf(a) : null);
   const ebitOf = (a) => (a ? numOr0(a, 'accrual_operating_h') + numOr0(a, 'treasury_own_h') : null);
   const netOpOf = (a) => (a ? numOr0(a, 'accrual_operating_h') + numOr0(a, 'seed_net_h') + numOr0(a, 'treasury_own_h') : null);
-  const dirOpExOf = (a) => (a ? -(numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h')) : null);
-  const revTotOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'inventory_accrual_h') : null);
+  const cfoOf = (a) => (a ? numOr0(a, 'recurring_cash_h') + numOr0(a, 'seed_net_h') + numOr0(a, 'treasury_own_h') : null);
+  const fcfOf = (a) => (a ? cfoOf(a) + numOr0(a, 'capex_net_h') : null);
   const fuelSumOf = (a) => {
+    const ob = opexOf(a);
+    if (ob) return -Number(ob.fuel_h || 0);
     if (!a || !a.by_division) return null;
     let s = 0;
-    for (const v of Object.values(a.by_division)) s += Number((v && v.fuel_cr_h) || 0);
+    for (const d of Object.values(a.by_division)) s += Number((d && d.fuel_cr_h) || 0);
     return -Math.round(s);
   };
-  const cellVal = (v, mult, mode) => {
-    if (v === null || v === undefined || Number.isNaN(v)) return el('span', 'dim', '--');
-    const n = Math.round(v * (mult || 1));
-    if (mode === 'plain') return fmt(n);
-    if (mode === 'compact') return fmtCompact(n);
-    if (mode === 'signed_compact') return el('span', n > 0 ? 'pos' : n < 0 ? 'neg' : 'dim', (n > 0 ? '+' : n < 0 ? '-' : '') + fmtCompact(Math.abs(n)));
-    return tint(n);
+  const fmtSigned = (n) => {
+    if (n === null || n === undefined || Number.isNaN(n)) return '--';
+    const r = Math.round(n);
+    const sp = el('span', r < 0 ? 'fs-neg' : r > 0 ? 'fs-pos' : null, signed(r));
+    return sp;
   };
-  const row5 = (label, fn, cls, multDay) => {
+  const fmtPct = (num, den) => {
+    if (num === null || den === null || !den || Math.abs(den) < 100) return '--';
+    const p = (100 * Number(num)) / Number(den);
+    return el('span', p < 0 ? 'fs-neg' : p > 0 ? 'fs-pos' : null, (p >= 0 ? '+' : '') + p.toFixed(1) + '%');
+  };
+  const row5 = (label, fn, cls) => {
     const v1 = fn(a1), v6 = fn(a6), v24 = fn(a24);
-    return {
-      cls: cls || 'fs-ind',
-      cells: [
-        label,
-        cellVal(v1, 1),
-        cellVal(v6, 1),
-        cellVal(v24, 1),
-        v24 === null || v24 === undefined ? el('span', 'dim', '--') : cellVal(v24, multDay || 24, 'signed_compact'),
-      ],
-    };
+    return { cls: cls || '', cells: [label, fmtSigned(v1), fmtSigned(v6), fmtSigned(v24), fmtSigned(v24 !== null ? v24 * 24 : null)] };
   };
+  const pctRow = (label, numFn, denFn, cls, note) => ({
+    cls: cls || 'fs-memo',
+    cells: [label, fmtPct(numFn(a1), denFn(a1)), fmtPct(numFn(a6), denFn(a6)), fmtPct(numFn(a24), denFn(a24)), note || '--'],
+  });
 
-  // Top "Big 4" IR Executive Callout Cards (tracks selected metricWin)
-  const grid = el('div', 'kpis');
+  // Executive IR KPI Strip (6 institutional headlines)
+  const grid = el('div', 'grid');
   const kpi = (k, v, sub, cls) => {
     const b = el('div', 'kpi' + (cls ? ' ' + cls : ''));
     b.append(el('div', 'k', k), el('div', 'v', v));
@@ -4045,58 +4049,74 @@ function renderFinancialStatements(panel, ops, w, t) {
   const curNetOp = netOpOf(cur);
   const curCfo = cfoOf(cur);
   const curCapex = cur ? numOr0(cur, 'capex_net_h') : 0;
-  const curFcf = cur ? numOr0(cur, 'purse_h') : 0;
+  const curFcf = fcfOf(cur);
   const curRevTot = revTotOf(cur) || 0;
   const opMarginTxt = curRevTot > 0 && curNetOp !== null ? ((100 * curNetOp) / curRevTot).toFixed(1) + '% margin' : 'Ex-CapEx accrual';
+  const hardAssets = bs ? Number(bs.hard_assets || (Number(bs.fleet_book || 0) + Number(bs.facility_invested || 0))) : 0;
+  const dayOwner24 = a24 && netOpOf(a24) !== null ? netOpOf(a24) * 24 : null;
+  const hardRoicMo = hardAssets > 0 && dayOwner24 !== null ? ((dayOwner24 * 30 * 100) / hardAssets) : null;
+  const paybackDays = hardAssets > 0 && dayOwner24 !== null && dayOwner24 > 0 ? (hardAssets / dayOwner24) : null;
 
   kpi(
     'Owner earnings / net op. profit (' + (cur ? cur.hours + 'h' : metricWin) + ', Ex-CapEx)',
     curNetOp !== null ? signed(Math.round(curNetOp)) + ' /h' : '--',
     curNetOp !== null ? (curNetOp >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(curNetOp * 24))) + '/day pace | ' + opMarginTxt : '',
-    'main' + (curNetOp !== null ? tone(curNetOp) : '')
+    curNetOp !== null ? tone(curNetOp) : ''
   );
   kpi(
-    'Operating cash flow -- CFO (' + (cur ? cur.hours + 'h' : metricWin) + ')',
+    'Cash owner earnings / CFO (Ex-CapEx)',
     curCfo !== null ? signed(Math.round(curCfo)) + ' /h' : '--',
-    curCfo !== null ? (curCfo >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(curCfo * 24))) + '/day pure cash (Ex-CapEx, Ex-Inv)' : '',
-    'main' + (curCfo !== null ? tone(curCfo) : '')
+    curCfo !== null ? (curCfo >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(curCfo * 24))) + '/day pure cash' : '',
+    curCfo !== null ? tone(curCfo) : ''
   );
   kpi(
-    'Free cash flow -- FCF (' + (cur ? cur.hours + 'h' : metricWin) + ')',
-    cur ? signed(Math.round(curFcf)) + ' /h' : '--',
-    cur ? 'CFO ' + signed(Math.round(curCfo || 0)) + ' + CapEx ' + signed(Math.round(curCapex)) + ' (reinvestment)' : '',
-    'main' + (cur ? tone(curFcf) : '')
+    'Free cash flow (FCF = CFO + CapEx)',
+    curFcf !== null ? signed(Math.round(curFcf)) + ' /h' : '--',
+    'CapEx ' + signed(Math.round(curCapex)) + '/h (one-time growth)',
+    curFcf !== null ? tone(curFcf) : ''
   );
   kpi(
-    'Enterprise net worth (Total Equity)',
-    bs ? fmtCompact(bs.net_worth) + ' cr' : '--',
-    bs ? fmtCompact(Math.round(bs.net_worth / Math.max(1, standingN))) + ' / ship | 0 debt | LB catalog ' + fmtCompact(bs.net_worth_catalog || 0) : '',
-    'main pos'
+    'Hard-asset ROIC (Buffett RONTA, 30d)',
+    hardRoicMo !== null ? (hardRoicMo >= 0 ? '+' : '') + hardRoicMo.toFixed(1) + '% /mo' : '--',
+    paybackDays !== null ? 'Payback ' + paybackDays.toFixed(1) + 'd on ' + fmtCompact(hardAssets) + ' PP&E (ex-cash)' : 'Excludes idle cash & vaults',
+    hardRoicMo !== null ? tone(hardRoicMo) : ''
+  );
+  kpi(
+    'Enterprise net worth (Live NRV)',
+    bs ? fmtCompact(bs.net_worth || 0) + ' cr' : '--',
+    bs ? 'Cash ' + fmtCompact(bs.liquid_cash || 0) + ' | Vault ' + fmtCompact(bs.vault_live_market || bs.vault_worth || 0) + ' | PP&E ' + fmtCompact(hardAssets) : '',
+    'pos'
   );
   panel.append(grid);
 
-  // 1. CONDENSED CONSOLIDATED STATEMENT OF OPERATIONS (INCOME STATEMENT / P&L)
+  // 1. CONDENSED CONSOLIDATED STATEMENT OF OPERATIONS (INCOME STATEMENT / P&L -- IFRS 18)
   panel.append(el('h3', null, '1. Condensed Consolidated Statement of Operations (Income Statement)'));
   const pnlRows = [
-    { cls: 'fs-sec', sec: 'Operating Revenue & Value Creation' },
-    row5('Recurring Gross Revenue (Sales, Freight & Contracts)', (a) => (a ? numOr0(a, 'raw_income_h') : null), 'fs-ind'),
+    { cls: 'fs-sec', sec: 'Operating Revenue & Production Value Added' },
+    row5('Recurring Gross Revenue (Exchange Sales & Freight)', (a) => (a ? numOr0(a, 'raw_income_h') : null), 'fs-ind'),
     row5('Inventory & Production Accrual (Live-Market NRV)', (a) => (a ? numOr0(a, 'inventory_accrual_h') : null), 'fs-ind'),
     row5('Total Operating Revenue & Value Added', revTotOf, 'fs-sub'),
-    { cls: 'fs-sec', sec: 'Operating Expenses (Ex-CapEx)' },
-    row5('Direct Operating Costs (Matched Fuel, Repairs & Craft Inputs)', dirOpExOf, 'fs-ind'),
-    row5('Treasury Operating Overhead (NPC Rent & Direct Expenses)', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
+    { cls: 'fs-sec', sec: 'Direct Operating Costs (COGS & Fleet OpEx Subsections)' },
+    row5('Fleet Fuel Burn (Metered, All Operations)', fuelSumOf, 'fs-ind'),
+    row5('Hull & Module Repairs (Metered)', (a) => (opexOf(a) ? -Number(opexOf(a).repair_h || 0) : (a ? -numOr0(a, 'repair_cr_h') : null)), 'fs-ind'),
+    row5('Crafting Fees & Production Inputs', (a) => (opexOf(a) ? -Number(opexOf(a).craft_inputs_h || 0) : null), 'fs-ind'),
+    row5('Market Trading COGS, Ammo & Other Direct Spend', (a) => (opexOf(a) ? -Number(opexOf(a).other_cogs_h || 0) : null), 'fs-ind'),
+    row5('Less: Mission & CapEx Transit Fuel Reclassified (Matching)', (a) => (opexOf(a) ? Number(opexOf(a).reclassified_once_h || 0) : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
+    row5('Total Matched Direct Operating Costs', dirOpExOf, 'fs-sub'),
+    row5('Gross Profit (Total Operating Revenue less Direct OpEx)', grossProfitOf, 'fs-sub'),
+    { cls: 'fs-sec', sec: 'Operating Overhead (SG&A)' },
+    row5('Treasury Operating Overhead (NPC Facility Rent & Direct Expenses)', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
     row5('Core Operating Profit (EBIT, Recurring Accrual)', ebitOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Non-Recurring Operating Items' },
     row5('Seed & Repeatable Mission Net (Rewards less Direct Fuel)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
-    row5('Net Operating Profit (Ex-CapEx, Cash + Inventory)', netOpOf, 'fs-tot'),
-    { cls: 'fs-sec', sec: 'Memoranda (Cash Operating Basis & Efficiency)' },
-    row5('Pure Cash Operating Profit (Ex-CapEx, Ex-Inventory)', cfoOf, 'fs-memo'),
-    row5('Metered Fleet Fuel Burn (Included in Direct OpEx Above)', fuelSumOf, 'fs-memo'),
+    row5('Net Operating Profit / Total Owner Earnings (Ex-CapEx)', netOpOf, 'fs-tot'),
+    { cls: 'fs-sec', sec: 'Memoranda (Cash Operating Basis)' },
+    row5('Cash Owner Earnings (Pure Cash Ex-CapEx, Ex-Inventory == CFO)', cfoOf, 'fs-memo'),
   ];
   panel.append(fsTable(['Line Item (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], pnlRows, [1, 2, 3, 4]));
-  panel.append(el('p', 'sub', 'IFRS 18 basis: Core Operating Profit excludes permanent capital purchases (hulls, T2+ modules, outposts) and eliminates 100% of internal ship handovers and treasury transfers.'));
+  panel.append(el('p', 'sub', 'IFRS 18 basis: Every OpEx subsection reconciles exactly to Total Matched Direct Operating Costs with zero plugs; mission/fit transit fuel is reclassified out of recurring OpEx into Seed Missions and CapEx under the Matching Principle.'));
 
-  // 2. CONDENSED CONSOLIDATED BALANCE SHEET (STATEMENT OF FINANCIAL POSITION)
+  // 2. CONDENSED CONSOLIDATED BALANCE SHEET (STATEMENT OF FINANCIAL POSITION -- IAS 1)
   panel.append(el('h3', null, '2. Condensed Consolidated Balance Sheet (Statement of Financial Position)'));
   if (bs) {
     const totA = Math.max(1, Number(bs.net_worth || 0));
@@ -4105,28 +4125,32 @@ function renderFinancialStatements(panel, ops, w, t) {
     const escrowUnits = Number(bs.vault_sell_escrow_units || 0);
     const vaultHeld = Math.max(0, Number(bs.vault_live_market || bs.vault_worth || 0) - escrowNrv);
     const curAssets = Number(bs.liquid_cash || 0) + Number(bs.vault_live_market || bs.vault_worth || 0);
-    const fixedAssets = Number(bs.fleet_book || 0) + Number(bs.facility_invested || 0);
+    const hullsVal = Number(bs.fleet_hulls !== undefined ? bs.fleet_hulls : (bs.fleet_book || 0));
+    const modsVal = Number(bs.fleet_modules !== undefined ? bs.fleet_modules : 0);
+    const facVal = Number(bs.facility_invested || 0);
+    const fixedAssets = Number(bs.hard_assets || (Number(bs.fleet_book || 0) + facVal));
 
     const bsRows = [
-      { cls: 'fs-sec', sec: 'Assets -- Current Assets' },
-      { cls: 'fs-ind', cells: ['Cash -- Fleet Ship Wallets', fmt(bs.wallets || 0), pct(bs.wallets), fmt(standingN) + ' standing ships'] },
-      { cls: 'fs-ind', cells: ['Cash -- Faction Treasury', fmt(bs.treasury || 0), pct(bs.treasury), 'Central liquidity & CapEx reserve'] },
+      { cls: 'fs-sec', sec: 'Assets -- Current Assets (Liquidity & Working Capital)' },
+      { cls: 'fs-ind', cells: ['Cash -- Fleet Ship Wallets', fmt(bs.wallets || 0), pct(bs.wallets), fmt(standingN) + ' standing ships (working float)'] },
+      { cls: 'fs-ind', cells: ['Cash -- Faction Treasury (Excess Cash Reserve)', fmt(bs.treasury || 0), pct(bs.treasury), 'Central liquidity & CapEx pool (0% yield)'] },
       { cls: 'fs-sub', cells: ['Total Cash & Cash Equivalents', fmt(bs.liquid_cash || 0), pct(bs.liquid_cash), '100% immediately spendable'] },
       { cls: 'fs-ind', cells: ['Inventory -- Station & Faction Vaults (Live-Market NRV)', fmt(vaultHeld), pct(vaultHeld), 'Ask-capped, bid-depth & glut-adjusted'] },
       { cls: 'fs-ind', cells: ['Inventory -- Active Exchange Sell Escrow', fmt(escrowNrv), pct(escrowNrv), fmt(escrowUnits) + ' units actively listed on Exchanges'] },
       { cls: 'fs-sub', cells: ['Total Current Assets', fmt(curAssets), pct(curAssets), 'Liquid cash + realizable working inventory'] },
-      { cls: 'fs-sec', sec: 'Assets -- Non-Current (Fixed) Assets' },
-      { cls: 'fs-ind', cells: ['Fleet Property & Equipment (Hulls & Fitted Modules)', fmt(bs.fleet_book || 0), pct(bs.fleet_book), 'Replacement book basis across standing fleet'] },
-      { cls: 'fs-ind', cells: ['Space Infrastructure & Facilities (Outposts & Lockboxes)', fmt(bs.facility_invested || 0), pct(bs.facility_invested), 'Owned 0-rent outposts & station installations'] },
-      { cls: 'fs-sub', cells: ['Total Non-Current Assets', fmt(fixedAssets), pct(fixedAssets), 'Capitalized permanent productive assets'] },
-      { cls: 'fs-tot', cells: ['TOTAL ASSETS', fmt(bs.net_worth || 0), '100.0%', 'Consolidated 4-pillar balance sheet'] },
+      { cls: 'fs-sec', sec: 'Assets -- Non-Current Productive Hard Assets (Live-Updated Net PP&E, D&A = 0)' },
+      { cls: 'fs-ind', cells: ['Fleet Hulls (Dynamic Live Upgrade Book)', fmt(hullsVal), pct(hullsVal), 'Recomputed every 60s from live ships x hull_materials (updates automatically on T0->T5 upgrades)'] },
+      { cls: 'fs-ind', cells: ['Fitted Ship Modules (Dynamic Live Fit Book)', fmt(modsVal), pct(modsVal), 'Recomputed every 60s from live ship_modules x catalog value (updates automatically on module fits)'] },
+      { cls: 'fs-ind', cells: ['Space Infrastructure & Facilities (Outposts, Lockboxes & Bunkers)', fmt(facVal), pct(facVal), 'Recomputed live from faction_facilities & leaderboard investment'] },
+      { cls: 'fs-sub', cells: ['Total Productive Hard Assets (Net PP&E)', fmt(fixedAssets), pct(fixedAssets), 'Capitalized permanent productive base (zero depreciation)'] },
+      { cls: 'fs-tot', cells: ['TOTAL ASSETS', fmt(bs.net_worth || 0), '100.0%', 'Consolidated live balance sheet'] },
       { cls: 'fs-sec', sec: 'Liabilities & Collective Equity' },
       { cls: 'fs-ind', cells: ['Short-Term & Long-Term Debt', '0', '0.0%', '100% self-funded, zero external debt'] },
       { cls: 'fs-sub', cells: ['Total Liabilities', '0', '0.0%', 'Debt-free enterprise'] },
       { cls: 'fs-sub', cells: ['Total Collective Equity (Enterprise Net Worth)', fmt(bs.net_worth || 0), '100.0%', fmtCompact(Math.round((bs.net_worth || 0) / Math.max(1, standingN))) + ' cr / ship'] },
       { cls: 'fs-tot', cells: ['TOTAL LIABILITIES & COLLECTIVE EQUITY', fmt(bs.net_worth || 0), '100.0%', 'Reconciles: Assets == Liabilities + Equity'] },
     ];
-    panel.append(fsTable(['Account', 'Balance (cr)', '% Assets', 'Audit Basis & Notes'], bsRows, [1, 2]));
+    panel.append(fsTable(['Account', 'Balance (cr)', '% Assets', 'Audit Basis & Live Update Mechanism'], bsRows, [1, 2]));
 
     const gluts = (bs.vault_gluts || []).map((g) => g.item + ' (' + fmtCompact(g.units) + 'u, ' + g.ratio + 'x bid depth -> NRV ' + fmtCompact(g.live_market) + ')').join('; ');
     panel.append(el('p', 'sub',
@@ -4148,7 +4172,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Mission & Contract Cash (Net of Direct Fuel)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
     row5('Treasury Operating Rent & Direct Expenses', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
     row5('Cash Owner Earnings / Net Cash from Operations (CFO, Ex-CapEx)', cfoOf, 'fs-sub'),
-    { cls: 'fs-sec', sec: 'Cash Flows from Investing Activities (CFI / CapEx)' },
+    { cls: 'fs-sec', sec: 'Cash Flows from Investing Activities (CFI / Growth CapEx)' },
     row5('Capital Expenditures -- Hulls, Modules & Outposts (Gross)', (a) => (a ? numOr0(a, 'capex_gross_h') : null), 'fs-ind'),
     row5('Module Fit Salvage & Transit Adjustments', (a) => (a ? numOr0(a, 'capex_fit_direct_h') : null), 'fs-ind'),
     row5('Net Cash Used in Investing Activities (CFI)', (a) => (a ? numOr0(a, 'capex_net_h') : null), 'fs-sub'),
@@ -4157,14 +4181,85 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Net Cash from Financing Activities (CFF)', (a) => (a ? 0 : null), 'fs-sub'),
     row5('Net Change in Cash & Cash Equivalents (Purse Cash Flow)', (a) => (a ? numOr0(a, 'purse_h') : null), 'fs-tot'),
     { cls: 'fs-sec', sec: 'Non-GAAP Free Cash Flow (FCF) & Wealth Bridge' },
-    row5('Operating Cash Flow (CFO, Ex-CapEx)', cfoOf, 'fs-ind'),
+    row5('Cash Owner Earnings (CFO, Ex-CapEx)', cfoOf, 'fs-ind'),
     row5('Less: Growth & Fleet Capital Expenditures (CapEx)', (a) => (a ? numOr0(a, 'capex_net_h') : null), 'fs-ind'),
-    row5('Free Cash Flow (FCF = CFO + CapEx)', (a) => (a ? cfoOf(a) + numOr0(a, 'capex_net_h') : null), 'fs-sub'),
+    row5('Free Cash Flow (FCF = CFO + CapEx)', fcfOf, 'fs-sub'),
     row5('Add: Non-Cash Live-Market Inventory Build (Working Capital)', (a) => (a ? numOr0(a, 'inventory_accrual_h') : null), 'fs-memo'),
-    row5('Total Economic Wealth Creation (CFO + Inventory Accrual)', (a) => (a ? cfoOf(a) + numOr0(a, 'inventory_accrual_h') : null), 'fs-tot'),
+    row5('Total Economic Owner Earnings (CFO + Inventory Accrual)', netOpOf, 'fs-tot'),
   ];
   panel.append(fsTable(['Cash Flow Activity (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], cfRows, [1, 2, 3, 4]));
   panel.append(el('p', 'sub', 'IAS 7 & Buffett Owner Earnings identity: Hulls, modules, Lockboxes, and Outposts have zero depreciation (D&A = 0) and are 100% one-time Growth CapEx; CFO == Cash Owner Earnings and CFO + Inventory Accrual == Total Economic Owner Earnings. Negative FCF during positive CFO indicates self-funded expansion, not operating loss.'));
+
+  // 4. PROFITABILITY MARGINS & BUFFETT / MUNGER CAPITAL RETURN SCORECARD (ROIC / RONTA / ROE)
+  panel.append(el('h3', null, '4. Profitability Margins & Capital Returns (Buffett / Munger ROIC & RONTA)'));
+  const opInvCap = bs ? Number(bs.operating_invested_capital || (hardAssets + Number(bs.vault_live_market || bs.vault_worth || 0))) : 0;
+  const totEq = bs ? Number(bs.net_worth || 0) : 0;
+  const roicRow = (label, denom, basisNote, cls) => {
+    const m30 = (a) => {
+      if (!a || !denom || denom <= 0) return '--';
+      const oe = netOpOf(a);
+      if (oe === null) return '--';
+      const p = (oe * 24 * 30 * 100) / denom;
+      return el('span', p < 0 ? 'fs-neg' : p > 0 ? 'fs-pos' : null, (p >= 0 ? '+' : '') + p.toFixed(1) + '% /mo');
+    };
+    const ann24 = a24 && denom > 0 && netOpOf(a24) !== null ? ((netOpOf(a24) * 24 * 365 * 100) / denom) : null;
+    const pb24 = a24 && denom > 0 && netOpOf(a24) !== null && netOpOf(a24) > 0 ? (denom / (netOpOf(a24) * 24)) : null;
+    const noteCell = ann24 !== null
+      ? (ann24 >= 0 ? '+' : '') + ann24.toFixed(0) + '% ann.' + (pb24 !== null ? ' (' + pb24.toFixed(1) + 'd payback) | ' : ' | ') + basisNote
+      : basisNote;
+    return { cls: cls || 'fs-ind', cells: [label, m30(a1), m30(a6), m30(a24), noteCell] };
+  };
+  const ratioRows = [
+    { cls: 'fs-sec', sec: 'Operating & Cash Profitability Margins' },
+    pctRow('Gross Margin (Gross Profit / Total Operating Revenue)', grossProfitOf, revTotOf, 'fs-ind', 'Direct extraction, transit & craft efficiency'),
+    pctRow('Core Operating Margin (EBIT / Total Operating Revenue)', ebitOf, revTotOf, 'fs-ind', 'Repeatable business margin after facility rent'),
+    pctRow('Owner Earnings Margin (Net Operating Profit / Total Operating Revenue)', netOpOf, revTotOf, 'fs-sub', 'Total economic margin ex-Growth CapEx'),
+    pctRow('Cash Owner Earnings Margin (CFO / Total Cash Revenue)', cfoOf, cashRevOf, 'fs-ind', 'Pure spendable cash conversion on cash sales & missions'),
+    pctRow('Free Cash Flow Margin (FCF / Total Cash Revenue)', fcfOf, cashRevOf, 'fs-memo', 'Post-CapEx cash margin (negative during heavy fleet upgrades)'),
+    { cls: 'fs-sec', sec: 'Buffett / Munger Capital Efficiency (Monthly 30d Pace & Annualized)' },
+    roicRow('ROIC -- Productive Hard Assets (Buffett RONTA, Ex-Cash & Ex-Vault)', hardAssets, 'Denom: ' + fmtCompact(hardAssets) + ' PP&E (Hulls+Mods+Facilities)', 'fs-sub'),
+    roicRow('ROIC -- Operating Invested Capital (Ex-Excess Cash)', opInvCap, 'Denom: ' + fmtCompact(opInvCap) + ' (PP&E + Vault NRV; penalizes bloat)', 'fs-ind'),
+    roicRow('ROE -- Total Collective Equity (Incl. Cash Drag)', totEq, 'Denom: ' + fmtCompact(totEq) + ' Total Equity (shows idle Treasury drag)', 'fs-memo'),
+  ];
+  panel.append(fsTable(['Ratio / Return Metric', '1h Pace', '6h Pace', '24h Pace', 'Annualized / Audit Interpretation'], ratioRows, [1, 2, 3]));
+  panel.append(el('p', 'sub', 'Buffett/Munger principle (1983/1986 Letters): Idle Treasury cash earns 0% and drags down headline ROE. Compare Hard-Asset ROIC (deployed ships & outposts only) against Operating ROIC (adds working inventory) and Equity ROE (adds excess cash) to separate fleet earning power from cash drag.'));
+
+  // 5. IFRS 8 OPERATING SEGMENT FOOTNOTE & SYNERGY RECONCILIATION (24h WINDOW)
+  const segSrc = a24 || cur;
+  if (segSrc && segSrc.by_division) {
+    panel.append(el('h3', null, '5. Note -- Operating Segment Contribution & Synergy Bridge (IFRS 8, ' + segSrc.hours + 'h /h)'));
+    const segOrder = ['Mining', 'Logistics', 'Military', 'Trade', 'Intel', 'Command', 'Faction'];
+    const segRows = [];
+    let sCash = 0, sInv = 0, sTx = 0, sFuel = 0, sAcc = 0;
+    for (const d of segOrder) {
+      const r = segSrc.by_division[d];
+      if (!r) continue;
+      const rc = numOr0(r, 'recurring_cash_h');
+      const iv = numOr0(r, 'inv_accrual_h');
+      const nt = numOr0(r, 'net_transfer_h');
+      const fl = numOr0(r, 'fuel_cr_h');
+      const ac = numOr0(r, 'accrual_op_h');
+      if (d === 'Command' && rc === 0 && iv === 0 && nt === 0 && fl === 0 && ac === 0) continue;
+      sCash += rc; sInv += iv; sTx += nt; sFuel += fl; sAcc += ac;
+      segRows.push({
+        cls: 'fs-ind',
+        cells: [
+          d === 'Faction' ? 'Faction Lockboxes & Vaults' : d,
+          fmtSigned(rc),
+          fmtSigned(iv),
+          fmtSigned(nt),
+          fmtSigned(-fl),
+          fmtSigned(ac),
+        ],
+      });
+    }
+    const trOwn = numOr0(segSrc, 'treasury_own_h');
+    segRows.push({ cls: 'fs-ind', cells: ['Corporate / Treasury Overhead (Facility Rent)', fmtSigned(trOwn), fmtSigned(0), fmtSigned(0), fmtSigned(0), fmtSigned(trOwn)] });
+    segRows.push({ cls: 'fs-memo', cells: ['Intercompany Handover Eliminations (Check == 0)', fmtSigned(0), fmtSigned(0), fmtSigned(-sTx), fmtSigned(0), fmtSigned(-sTx)] });
+    segRows.push({ cls: 'fs-tot', cells: ['Consolidated Core Operating Profit (EBIT)', fmtSigned(sCash + trOwn), fmtSigned(sInv), fmtSigned(0), fmtSigned(-sFuel), fmtSigned(sAcc + trOwn - sTx)] });
+    panel.append(fsTable(['Operating Segment', 'Recurring Cash /h', 'Inv. Accrual /h', 'Net Handovers /h', 'Fuel Burn /h', 'Segment Profit /h'], segRows, [1, 2, 3, 4, 5]));
+    panel.append(el('p', 'sub', 'IFRS 8 principle: The Consolidated Statement of Operations above stays 100% whole-enterprise so internal F23 handovers never distort consolidated revenue; this footnote isolates each division\'s value added (Mining extracts -> Logistics moves/crafts -> Trade monetizes) and eliminates intercompany handovers to zero.'));
+  }
 }
 
 async function renderMetrics(panel, live) {

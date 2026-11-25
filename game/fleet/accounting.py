@@ -463,6 +463,8 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
     vv = vault_valuation(conn, data_dir=data_dir)
     wallets = 0
     treasury = 0
+    fleet_hulls = 0
+    fleet_modules = 0
     fleet_book = 0
     facility_invested = 0
     handed_over_24h = 0
@@ -523,7 +525,9 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
                 sc = str(sr[0] or "").lower()
                 for hid in hull_by_key.get(sc, ()):
                     hull_total += hm_cost.get(hid, 0)
-        fleet_book = int(mod_total + hull_total)
+        fleet_hulls = int(hull_total)
+        fleet_modules = int(mod_total)
+        fleet_book = int(fleet_hulls + fleet_modules)
 
         # Fallback only if hull_materials table is absent in minimal test fixtures
         if not fleet_book and _has_table(conn, "ships") and _has_table(conn, "hulls"):
@@ -531,7 +535,8 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
                 "SELECT COALESCE(h.tier, 0), COUNT(*) FROM ships s "
                 "LEFT JOIN hulls h ON LOWER(h.id) = LOWER(s.class) OR LOWER(h.name) = LOWER(s.class) GROUP BY 1"
             ):
-                fleet_book += int(_num(cnt)) * ({0: 5000, 1: 65000, 2: 350000, 3: 1500000, 4: 6000000, 5: 25000000}.get(int(_num(tier)), 5000))
+                fleet_hulls += int(_num(cnt)) * ({0: 5000, 1: 65000, 2: 350000, 3: 1500000, 4: 6000000, 5: 25000000}.get(int(_num(tier)), 5000))
+            fleet_book = int(fleet_hulls + fleet_modules)
 
         fac_lb = 0
         fac_sum = 0
@@ -578,8 +583,12 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
         "vault_liquid": int(vv["liquid"]),
         "vault_unbounded_bid": int(vv["unbounded_bid"]),
         "vault_top_gaps": vv["top_gaps"],
+        "fleet_hulls": fleet_hulls,
+        "fleet_modules": fleet_modules,
         "fleet_book": fleet_book,
         "facility_invested": facility_invested,
+        "hard_assets": fleet_book + facility_invested,
+        "operating_invested_capital": fleet_book + facility_invested + vault_eff,
         "net_worth": liquid_cash + vault_eff + fleet_book + facility_invested,
         "net_worth_ias2": liquid_cash + vault_nrv + fleet_book + facility_invested,
         "net_worth_catalog": liquid_cash + vault_cat + fleet_book + facility_invested,
@@ -680,6 +689,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     div_raw_once = {}
     div_purse = {}
     div_fuel_h = {}
+    repair_cr_h = 0.0
     win_minutes = 0.0
     cash_source = "fleet.json"
     onetime_span_h = None
@@ -715,6 +725,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     if isinstance(w, dict) and w and not use_smh:
         raw_income_h = _num(w.get("income_per_hour"))
         raw_costs_h = _num(w.get("costs_per_hour"))
+        repair_cr_h = _num(w.get("repair_cr_per_hour"))
         raw_steady_h = _num(w.get("cph"))
         rewards_h = _num(w.get("rewards_per_hour"))
         bought_once_h = _num(w.get("bought_once_per_hour"))
@@ -752,16 +763,22 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         cut_m = int(now) - hours * 3600
         smh_cols = {c[1] for c in conn.execute("PRAGMA table_info(stats_money_hour)")}
         has_fuel_col = "fuel" in smh_cols
+        has_rep_col = "repair" in smh_cols
         rows_m = conn.execute(
-            "SELECT minutes, income, costs, net, rewards, bought, once, total "
-            "FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?",
+            (
+                "SELECT minutes, income, costs, net, rewards, bought, total, treasury, repair "
+                "FROM stats_money_hour WHERE division = 'ALL' AND ships > 0 AND hour >= ?"
+            ) if has_rep_col else (
+                "SELECT minutes, income, costs, net, rewards, bought, total, treasury, 0 "
+                "FROM stats_money_hour WHERE division = 'ALL' AND ships > 0 AND hour >= ?"
+            ),
             (cut_m,),
         ).fetchall()
         tot_m = sum(_num(r[0]) for r in rows_m)
         if tot_m > 0:
-            win_minutes = tot_m
             raw_income_h = sum(_num(r[1]) * _num(r[0]) for r in rows_m) / tot_m
             raw_costs_h = sum(_num(r[2]) * _num(r[0]) for r in rows_m) / tot_m
+            repair_cr_h = sum(_num(r[8]) * _num(r[0]) for r in rows_m) / tot_m
             raw_steady_h = sum(_num(r[3]) * _num(r[0]) for r in rows_m) / tot_m
             rewards_h = sum(_num(r[4]) * _num(r[0]) for r in rows_m) / tot_m
             bought_once_h = sum(_num(r[5]) * _num(r[0]) for r in rows_m) / tot_m
@@ -1003,6 +1020,29 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             "one_time": int(round(rec["one_time"])),
         }
 
+    # Exact non-overlapping OpEx subsections reconciling to raw_costs_h & matched_direct_h (zero plugs)
+    fuel_opex_h = max(0.0, sum(div_fuel_h.values()))
+    if fuel_opex_h <= 0.0 and isinstance(w, dict):
+        fuel_opex_h = max(0.0, _num(w.get("fuel_cr_per_hour")))
+    repair_opex_h = max(0.0, repair_cr_h)
+    if repair_opex_h <= 0.0 and isinstance(w, dict):
+        repair_opex_h = max(0.0, _num(w.get("repair_cr_per_hour")))
+    craft_raw_h = max(0.0, -_num((support_out.get("crafting") or {}).get("credits_per_hour")))
+    rem_after_fr = max(0.0, raw_costs_h - fuel_opex_h - repair_opex_h)
+    craft_opex_h = min(craft_raw_h, rem_after_fr)
+    other_cogs_h = raw_costs_h - fuel_opex_h - repair_opex_h - craft_opex_h
+    reclass_once_h = -once_direct_h
+    matched_direct_h = raw_costs_h + once_direct_h
+    opex_breakdown = {
+        "fuel_h": int(round(fuel_opex_h)),
+        "repair_h": int(round(repair_opex_h)),
+        "craft_inputs_h": int(round(craft_opex_h)),
+        "other_cogs_h": int(round(other_cogs_h)),
+        "gross_direct_h": int(round(raw_costs_h)),
+        "reclassified_once_h": int(round(reclass_once_h)),
+        "matched_direct_h": int(round(matched_direct_h)),
+    }
+
     return {
         "hours": hours,
         "cash_source": cash_source,
@@ -1026,6 +1066,8 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "capex_net_h": int(round(capex_net_h)),
         "treasury_own_h": int(round(treasury_own_h)) if treasury_own_h is not None else None,
         "purse_h": int(round(purse_h)),
+        "repair_cr_h": int(round(repair_opex_h)),
+        "opex_breakdown": opex_breakdown,
         "by_division": by_division,
         "top_inv_builds": top_builds,
         "support_chains": support_out,
