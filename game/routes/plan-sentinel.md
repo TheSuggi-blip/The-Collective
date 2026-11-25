@@ -115,7 +115,7 @@ Kept by Apophis. Routes: 358. Ships: 45.
 | 93 | [mission-the-objection-deep](mission-the-objection-deep.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships | 1 of 45 |
 | 94 | [hunt-test-tanglewood-hollow-pilgrim](hunt-test-tanglewood-hollow-pilgrim.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, without piercing_railgun_i, empty hold, standing work | 1 of 45 |
 | 95 | [finish-wayfinder-full](finish-wayfinder-full.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships, under corporation_management 7, standing work | 2 of 45 |
-| 96 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 8 ships, standing work | 10 of 45 |
+| 96 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 20 ships, standing work | 10 of 45 |
 | 97 | [hunt-network](hunt-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 140 ships, standing work | all 45 |
 | 98 | [hunt-sunbeam-dust-veil-ray](hunt-sunbeam-dust-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | 1 of 45 |
 | 99 | [hunt-thin-breath-haze-veil-ray](hunt-thin-breath-haze-veil-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | 1 of 45 |
