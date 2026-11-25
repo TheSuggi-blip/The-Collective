@@ -239,13 +239,6 @@
             "mining_laser_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
           ]
         },
         "ice": {
@@ -255,13 +248,6 @@
             "ice_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
           ]
         },
         "gas": {
@@ -271,17 +257,11 @@
             "gas_harvester_ii",
             "cargo_expander_iii",
             "cargo_expander_ii"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
           ]
         }
       },
-      "_zero_note": "2026-11-24 23:49 UTC (Zero): mix [[\"ore\", 65], [\"ice\", 20], [\"gas\", 15]] -> ore 100. Laser-only miners are no longer refitted to ice or gas: every ice and gas good the bids take is held already (water ice 47,139 against a best bid 56 cr 834 deep; nitrogen ice 63,842 at 2 cr; argon, neon, nebula, ion, krypton, xenon bid 2 cr; hydrogen, plasma, chlorine bids >= 10 cr take 2,545 units against 6,549 held), while iron, the short chain, needs lasers; 147 miner fit-network runs in 6 h cost -352,388 cr steady and -248,391 cr once. Ships already fitted with a harvester keep their specialty (detect_by_module)."
+      "_zero_note": "2026-11-24 23:49 UTC (Zero): mix [[\"ore\", 65], [\"ice\", 20], [\"gas\", 15]] -> ore 100. Laser-only miners are no longer refitted to ice or gas: every ice and gas good the bids take is held already (water ice 47,139 against a best bid 56 cr 834 deep; nitrogen ice 63,842 at 2 cr; argon, neon, nebula, ion, krypton, xenon bid 2 cr; hydrogen, plasma, chlorine bids >= 10 cr take 2,545 units against 6,549 held), while iron, the short chain, needs lasers; 147 miner fit-network runs in 6 h cost -352,388 cr steady and -248,391 cr once. Ships already fitted with a harvester keep their specialty (detect_by_module).",
+      "_zero_note_defense": "2026-11-25 05:47 UTC (Zero, orders ENT-092 P1): the defense loadouts of ore, ice and gas are out. From 00:00 to 05:00 UTC fit-network ran 80 times on miners for -477,066 cr once, nearly all shield boosters II/III at 9,788 to 14,904 cr (runs.jsonl); 99 boosters stand fitted on miners (ship_modules), and no miner was lost since 2026-11-24 18:00 UTC (stats_pilot_hour ships_lost). Miners flee and keep to systems without pirates (mine_net 04cbb69a); a shield buys nothing measured. Fitted boosters stay. Back in when a miner loss is read on a belt the pirate gate cleared."
     },
     "Military": {
       "mix": [
