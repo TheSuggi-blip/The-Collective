@@ -131,9 +131,4 @@ Planned:
 
 | What | When |
 |---|---|
-| Read the new census cadences (home 35, watch 40, road lists 155, belt lists 160) from four hours of GAPS, SITES and BELTS; still over -> 10 min lower on that list, never more ships | next turn |
-| Read the envoy's replies through diplomacy.py threads twice a turn; beacons go out by themselves from 2026-11-25 03:33 and 09:26 UTC; replies to Unity as data | every turn |
-| Read the Survey Scanner II surveys (census-kit-herds): a faint signature resolved goes to Mining in queue.log | next turn |
-| Weigh a tier-2 scout hull only by fuel a read against the Threshold (tests.md); none bought while the census pays by reads, not by speed | once a T2 hull's fuel a jump is on record |
-| Read REFUSED and STUCK of the turn check: the afterburners stripped (6 left at 05:38 UTC) and census refuel hops (53bc129c) should bring refused legs under 10 in 2 h; Intel fuel an hour against 16,390-27,074 before the fits | next turn |
-| Read the one-ship tests: The Line (visit mission, Ironhearth) and the titawin hunt on the armed scout; a hunt with no kill leaves the plan | next turn |
+| Read four hours of census-frontier at 145 min and SITES of census-north and census-region-altais after the move: still over the 3-hour target -> 10 min lower, never more ships | next turn |
