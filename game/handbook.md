@@ -122,6 +122,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | credits hour by hour per division. | fleet view=history | hive.py history |
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
 | Draw credits from the shared faction treasury for one or more pilots of your division (rule F12... | fund | wallet.py fund --show |
+| what the fleet bought once by division and kind (modules, hulls, craft inputs, mission goods) and the... | hive verb=spend | hive.py spend [--hours H] |
 
 ### Markets
 

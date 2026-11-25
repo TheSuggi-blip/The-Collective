@@ -55,6 +55,8 @@ WHAT: reads the unit's data folder (fleet/, routes/runs.jsonl, market/, scouting
         store                 the history store (store.py): what it holds, and every route's credits per ship-hour over
                               the whole hours of a window, also beyond what the records still hold
         store price <item>    one item's lowest and highest best bid and best ask per station over a window
+        spend [--hours H]     what the fleet bought once by division and kind (modules, hulls, craft inputs, mission
+                              goods) and the rewards paid once, moves and market escrow left out (spend.py)
         empire                what we hold: the faction with its members and limit, our bases, our offices at other
                               stations and their rent, the sites proposed for a base, the next steps of the member
                               limit (empire.py show; the file: governance/empire.md)
@@ -330,17 +332,11 @@ def show_fleet(root, data, now):
                             % (gone.get("left") or 0, gone.get("back") or 0, num(gone.get("credits"))))
             if left:
                 print("      left out: " + "; ".join(left))
-    once = read(Path(data) / "fleet" / "onetime.json", [])
-    for label, seconds in (("1h", 3600), ("24h", 86400)):
-        near = [r for r in once if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and isinstance(r[3], (int, float)) and r[0] >= now - seconds
-                and r[2] != "Wallet top-up"]                    # wallet.py TITLE: half of a gift between our ships, no reward and no buy
-        kept = [-r[3] for r in near if str(r[2]).startswith(routefiles.TREASURY)]       # a deposit into the treasury: no buy either
-        near = [r for r in near if not str(r[2]).startswith(routefiles.TREASURY)]
-        rows, tax = [r[3] for r in near if r[2] != "Weekly tax"], [-r[3] for r in near if r[2] == "Weekly tax"]
-        print("    money booked once, last %-3s: rewards %s in %d bookings | bought once (tools, goods for a mission) %s in %d buys%s%s"
-              % (label, num(sum(v for v in rows if v > 0)), sum(1 for v in rows if v > 0), num(-sum(v for v in rows if v < 0)), sum(1 for v in rows if v < 0),
-                 " | weekly tax %s from %d pilots (once a week; kept out of the steady money)" % (num(sum(tax)), len(tax)) if tax else "",
-                 " | into the faction's treasury %s in %d deposits (a move between two purses of ours)" % (num(sum(kept)), len(kept)) if kept else ""))
+    try:                                                # what was bought once, by kind (spend.py): escrow, funds and gifts are moves
+        for line in __import__("spend").brief(data, now):
+            print(line)
+    except Exception as exc:                            # a figure that cannot be read is said, never guessed
+        print("    bought once: not read (%s)" % exc)
     hour = (windows.get("1h") or {}).get("divisions") or {}
     day = (windows.get("24h") or {}).get("divisions") or {}
     acc_div = {}
@@ -1847,6 +1843,8 @@ def main():
         if "--json" in args:
             wd_args.append("--json")
         return watchdog.main(wd_args)
+    if verb == "spend":                              # what the fleet bought once, by division and kind (spend.py, its own usage)
+        return __import__("spend").main(args[args.index(verb) + 1:] + ["--data", data])
     if verb == "stats":                              # the fleet's statistics, computed by the store (stats.py, its own usage)
         import stats
         return stats.main(args[args.index(verb) + 1:] + ["--data", data])

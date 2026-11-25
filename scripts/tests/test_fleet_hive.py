@@ -310,7 +310,7 @@ class HiveTests(unittest.TestCase):
         text = out.getvalue()
         self.assertIn("last 1h  (60 min measured): net -400 | income 1,500 | costs 1,900 (metered: fuel -- + repairs -- = --)", text)
         self.assertIn("left out: gifts between our ships, 18,000 an hour (0 of them name one side only and move no division); the first wallets of 1 new pilots, 100 cr", text)
-        self.assertIn("rewards 0 in 0 bookings | bought once (tools, goods for a mission) 0 in 0 buys", text)    # the halves of a gift are neither
+        self.assertIn("nothing | rewards 0 | escrow held in buy orders 0", text)    # the halves of a gift are neither (spend.py)
         number = lambda cell: int(cell.replace(",", ""))
         rows = {line.split()[0]: line.split() for line in text.splitlines() if line.strip().split()[:1] in (["Command"], ["Trade"])}
         self.assertEqual(sorted(rows), ["Command", "Trade"])

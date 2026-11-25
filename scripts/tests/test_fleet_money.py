@@ -519,7 +519,7 @@ class HiveFleetTests(unittest.TestCase):
         self.assertEqual(len(plain), 3)
         self.assertIn("held out: 189,040 cr of gifts not yet seen by their receivers", text)
         self.assertIn("into the faction's treasury 1,000 in 1 deposits", text)
-        self.assertIn("bought once (tools, goods for a mission) 0 in 0 buys", text)           # a deposit is no buy
+        self.assertIn("nothing | rewards 0", text)                                              # a deposit is no buy (spend.py)
 
     def test_the_headline_puts_the_treasury_beside_the_wallets(self):
         text = self.show(None)
