@@ -409,3 +409,12 @@ Failed: the network's four hours on held goods (-82,432 cr, errors.log ENT-201);
 Requests: none.
 Suggestions: Trinity names the owner in queue.log when a shared policy changes a division's work; Unity lets the upgrade service set a want file for a built hull; the AUTONET line shows a network's credits per ship-hour beside its ship count.
 Report: mine-network-market-tier-fixed-iron-gathers-reached.
+
+## [ENT-202] | 2026-11-25 01:12 UTC | Apophis | session | ref: reports/2026-11-25_apophis_escort-lane-stopped-after-four-pirate-losses.md | see: orders.log ENT-091
+Session: scheduled run military-turn -- escort lane stopped after four pirate losses, hunters close to the reach that fires.
+Did: four losses to NPC pirates in one hour on escort runs traced (public_battles kitalpha, 70_ophiuchi, sheliak); escort lane stopped and 16 escort runs ended (36c4d592), reopened by Trinity behind a pirate-threat gate (413f8093); packs wildlife only, members of Laser III class (44f16cd3); hunt.py closes to the shortest reach that can fire (9ef00c7c, 7 tests); fit-policy Military loadouts cut after 251 fits for -1,054,648 cr (10f52c9d); Laser III fit lifted, strip route off (a53eab35); kit hunts out of First (b416a495); one dry hunter towed and refuelled.
+Worked: gates PASS at 01:03 UTC (127 at work, 9 starting, 0 waiting); install green at the first try; 1,585 hunt runs and 2,276 kills since 19:09 UTC (runs.jsonl).
+Failed: four ships lost (escort lane widened to power 350 without a gate, errors.log ENT-202); a second dry hunter towed back to a station without fuel (Winterhold), still at 3 fuel; the strip route never flew (class guard).
+Requests: requests.log ENT-534 (Zero); queue.log ENT-325; admirals.log ENT-138.
+Suggestions: changes to game/hunt-policy.json go in as a variant beside the tested one or through Military (F37); the class guard could pass a strip route that requires another weapon kept.
+Report: escort-lane-stopped-after-four-pirate-losses.
