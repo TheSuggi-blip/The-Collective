@@ -3,7 +3,7 @@
   "policed_only": false,
   "stay_in_empire_first": false,
   "cycle_minutes": 30,
-  "poll_interval_s": 120,
+  "poll_interval_s": 60,
   "min_cash_keep": 30000,
   "buy": {
     "enabled": true,
@@ -63,6 +63,7 @@
     "max_runs_per_poll": 20,
     "max_buy_spend_cr": 50000,
     "min_margin_pct": 0.15,
-    "min_profit_cr": 100
+    "min_profit_cr": 50,
+    "cycles_per_poll": 3
   }
 }

@@ -964,6 +964,52 @@ def main(argv=None):
             nonlocal floor_hit
             if "field floor reached:" in line:
                 floor_hit = True
+        # Pre-run instant drain: if miner is ALREADY docked at any Lockbox hub, drain legacy personal storage immediately!
+        if policy.get("auto_drain_personal_to_lockbox", True) and (_lockboxes or _owned_outposts):
+            try:
+                import gate as _g_p, urllib.parse as _up_p
+                def _jp(_r):
+                    if isinstance(_r, dict): return _r
+                    try: return json.loads(_r) if isinstance(_r, str) and _r.strip() else {}
+                    except ValueError: return {}
+                def _jb(_d):
+                    if not isinstance(_d, dict): return {}
+                    for _k in ("structuredContent", "result", "data"):
+                        if isinstance(_d.get(_k), dict): return _d[_k]
+                    _cl = _d.get("content")
+                    if isinstance(_cl, list) and _cl and isinstance(_cl[0], dict): return _jp(_cl[0].get("text") or "")
+                    return _d
+                _pe0 = _up_p.quote(pilot, safe="")
+                _, _gs0r = _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt", "action": "get_status", "params": {}}, timeout=25)
+                _gs0 = _jb(_jp(_gs0r))
+                _pl0 = _gs0.get("player") if isinstance(_gs0.get("player"), dict) else {}
+                _sh0 = _gs0.get("ship") if isinstance(_gs0.get("ship"), dict) else {}
+                _db0 = str(_pl0.get("docked_at_base") or _gs0.get("docked_at_base") or _gs0.get("base_id") or "")
+                _fc0 = max(0, int(_sh0.get("cargo_capacity") or 0) - int(_sh0.get("cargo_used") or 0))
+                if _db0 and (_db0 in _lockboxes or _db0 in _owned_outposts) and _fc0 >= 5:
+                    _, _vw0r = _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt_storage", "action": "view", "params": {"station_id": _db0}}, timeout=25)
+                    _rows0 = (_jb(_jp(_vw0r)).get("items") or _jb(_jp(_vw0r)).get("storage") or [])
+                    _mv0 = 0
+                    for _it0 in (_rows0 if isinstance(_rows0, list) else []):
+                        if not isinstance(_it0, dict) or _mv0 >= 6: break
+                        _ii0, _iq0 = str(_it0.get("item_id") or ""), int(_it0.get("quantity") or 0)
+                        if not _ii0 or _iq0 <= 0 or _ii0 in ("fuel_cell", "fuel", "hull_patch", "repair_kit"): continue
+                        if _ii0.endswith(("_i", "_ii", "_iii", "_iv", "_v")) and any(w in _ii0 for w in ("laser", "shield", "armor", "scanner", "expander", "booster", "drone", "cannon", "turret", "beam", "railgun", "missile")): continue
+                        _tq0 = min(_iq0, _fc0)
+                        if _tq0 < 1: break
+                        _, _rw0 = _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt_storage", "action": "withdraw", "params": {"item_id": _ii0, "quantity": _tq0, "target": "self"}}, timeout=25)
+                        if "error" not in _jp(_rw0) and not _jp(_rw0).get("isError"):
+                            time.sleep(11.0)
+                            _, _rd0 = _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _ii0, "quantity": _tq0, "target": "faction", "source": "cargo"}}, timeout=25)
+                            time.sleep(11.0)
+                            if "error" not in _jp(_rd0) and not _jp(_rd0).get("isError"):
+                                _mv0 += 1
+                                print("%s %s mine_net: drained %d %s personal -> faction lockbox @ %s" % (utc_now(), pilot, _tq0, _ii0, _db0), flush=True)
+                            else:
+                                _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _ii0, "quantity": _tq0, "target": "self", "source": "cargo"}}, timeout=25)
+                                break
+            except Exception:
+                pass
         rc_run = _rh.run_in_thread(
             ROOT / "fleet" / "mine.py", cmd[4:], pilot, "mine_net " + route_id,
             env_extra={"FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch", "FLEET_HOLD": os.environ.get("FLEET_HOLD") or ("mine_net " + route_id)},

@@ -1311,11 +1311,14 @@ def main(argv=None):
                         pass
                 # Zero-fuel docked commercial crafting + IMMEDIATE live-bid cash conversion (Suggi directive)
                 craft_cfg = policy.get("craft") or {}
-                if craft_cfg.get("enabled", False) and (until - time.time()) > 45:
+                _max_c_cycles = max(1, int(craft_cfg.get("cycles_per_poll") or 3))
+                for _c_iter in range(_max_c_cycles):
+                    if not (craft_cfg.get("enabled", False) and (until - time.time()) > 45 and not stop_requested()):
+                        break
                     try:
                         _cr_now = get_credits()
                         _min_k = int(policy.get("min_cash_keep") or 20000)
-                        if _cr_now >= _min_k + 2000:
+                        if True:
                             import craft_net as _cn
                             _cpol = dict(_cn.read_json(REPO / "game" / "craft-policy.json", {}) or {})
                             _cpol["max_runs_per_cycle"] = int(craft_cfg.get("max_runs_per_poll") or 20)
@@ -1323,7 +1326,7 @@ def main(argv=None):
                             _cpol["min_wallet_keep_cr"] = _min_k
                             _tc = dict(_cpol.get("trade") or {})
                             _tc["min_margin_pct"] = float(craft_cfg.get("min_margin_pct") or _tc.get("min_margin_pct") or 0.15)
-                            _tc["min_profit_cr"] = int(craft_cfg.get("min_profit_cr") or _tc.get("min_profit_cr") or 100)
+                            _tc["min_profit_cr"] = int(craft_cfg.get("min_profit_cr") or _tc.get("min_profit_cr") or 50)
                             _cpol["trade"] = _tc
                             _cw = _cn.load_craft_world(DATA, REPO, _cpol)
                             _st_now = get_stored(base_id)
@@ -1340,6 +1343,8 @@ def main(argv=None):
                             for _fi, _fq in _fac_in_map.items():
                                 _combined_st[_fi] = _combined_st.get(_fi, 0) + _fq
                             _job = _cn.pick_craft_job("Trade", base_id, _combined_st, _cr_now, _cw, _cpol)
+                            if not _job:
+                                break
                             if _job:
                                 _rec_id = str(_job["recipe"])
                                 _out_id = str(_job["makes"])

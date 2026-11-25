@@ -1047,7 +1047,9 @@ def _load_books_uncached(data):
         tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
         if "books" not in tbls:
             return []
-        return [dict(r) for r in con.execute("SELECT base, item, ask, ask_qty, bid, bid_qty, t FROM books WHERE (ask > 0 AND ask_qty > 0) OR (bid > 0 AND bid_qty > 0)").fetchall()]
+        bcols = {r[1] for r in con.execute("PRAGMA table_info(books)").fetchall()}
+        bd_col = "COALESCE(bid_depth, bid_qty, 0) AS bid_depth" if "bid_depth" in bcols else "COALESCE(bid_qty, 0) AS bid_depth"
+        return [dict(r) for r in con.execute("SELECT base, item, ask, ask_qty, bid, bid_qty, %s, t FROM books WHERE (ask > 0 AND ask_qty > 0) OR (bid > 0 AND bid_qty > 0)" % bd_col).fetchall()]
     except sqlite3.Error:
         return []
     finally:
@@ -1404,9 +1406,13 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
             continue
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
+        bd = max(bq, int(r.get("bid_depth") or 0))
+        # Allow full-hold loading across multi-tier buy-walls (protected by live tier floor check at dest!)
+        eff_bq = min(bd, max(bq * 5, 250)) if (bp >= 20.0 and bd > bq) else bq
         iid = str(r.get("item") or "")
-        if not (iid and bp >= 5.0 and bq >= 1):
+        if not (iid and bp >= 5.0 and eff_bq >= 1):
             continue
+        bq = eff_bq
         if policed and not loc[3]:
             if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):
                 continue
@@ -2112,8 +2118,21 @@ def main(argv=None):
                         continue
                     ok_d, _ = go_dock(dloc)
                     if ok_d:
-                        raw("sell", {"item_id": iid, "quantity": have}, group="spacemolt")
-                        time.sleep(TICK)
+                        # Floor-protected multi-tier live bid liquidation: NEVER dump into 1-cr penny scrapers!
+                        min_ok_bid = max(5.0, float(liq.get("est_bid") or 0) * 0.55)
+                        for _tier_try in range(3):
+                            cur_have = get_cargo().get(iid, 0)
+                            if cur_have <= 0:
+                                break
+                            live_d = save_market(dloc[2], dloc[0])
+                            rd_row = live_d.get(iid) or {}
+                            lb_p = float(rd_row.get("best_buy") or 0)
+                            lb_q = int(rd_row.get("best_buy_qty") or rd_row.get("buy_quantity") or 0)
+                            if lb_p < min_ok_bid or lb_q <= 0:
+                                break
+                            sell_n = min(cur_have, lb_q)
+                            raw("sell", {"item_id": iid, "quantity": sell_n}, group="spacemolt")
+                            time.sleep(TICK)
                         rem = get_cargo().get(iid, 0)
                         if rem < have:
                             notes.append("liquidated %d %s @ %s" % (have - rem, iid, dloc[2]))

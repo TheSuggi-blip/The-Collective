@@ -21,7 +21,8 @@
     "water_ice",
     "sol_alloy_ore",
     "quantum_fragments",
-    "antimatter_containment_cell"
+    "antimatter_containment_cell",
+    "iron_ore"
   ],
   "pirate_avoid_hours": 6.0,
   "max_jumps": 14,
