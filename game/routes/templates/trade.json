@@ -5,6 +5,7 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "carry-bladder-alpha-to-sol",
     "carry-melt-nexus-to-sol",
     "carry-melt-nexus-to-frontier",
     "carry-melt-nexus-to-cargo-lanes",
