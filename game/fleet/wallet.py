@@ -900,9 +900,29 @@ def serve_funds_p2p(data, leader, pending_open, rows, now):
             changed = True
             print("FUND partial (P2P): %d donor(s) -> %s +%s cr (%s cr still open)"
                   % (ok_cnt, target, format(got, ","), format(amt - got, ",")))
+        if got > 0:
+            write_funds(data, rows)                             # each pilot's slices on disk before the next pilot
     if changed:
         write_funds(data, rows)
     return filled, changed, failed
+
+
+def gift_booked(data, donor, pilot, credits, since):
+    """The time of a gift donor -> pilot of exactly `credits` that gifts.jsonl holds at or after `since`, or 0: a
+    fund's gift the pass sent and booked before it died (a restart between the gift and its row's state)."""
+    try:
+        with open(Path(data) / "fleet" / "gifts.jsonl", encoding="utf-8") as handle:
+            for line in handle:
+                try:
+                    g = json.loads(line)
+                except ValueError:
+                    continue
+                if (g.get("from") == donor and g.get("to") == pilot and int(g.get("credits") or 0) == int(credits)
+                        and float(g.get("at") or 0) >= float(since or 0)):
+                    return int(g["at"]) or 1
+    except OSError:
+        return 0
+    return 0
 
 
 def serve_funds(data, leader, now, dry):
@@ -993,6 +1013,13 @@ def serve_funds(data, leader, now, dry):
             print("FUND given: %s %s cr (%s), by its own withdrawal; the sweep leaves it for %s hours"
                   % (actor, format(credits, ","), r.get("why"), r.get("hours") or FUND_HOURS))
             continue
+        booked_at = gift_booked(data, actor, pilot, credits, r.get("withdrawn_at") or r.get("at") or 0)
+        if booked_at:                                           # given by a pass that died before its row was written
+            r.update(state="given", given_at=int(booked_at), note="given at %d (gifts.jsonl); not sent again" % booked_at)
+            write_funds(data, rows)
+            print("FUND given before: %s -> %s %s cr is in gifts.jsonl since the withdrawal; not sent again"
+                  % (actor, pilot, format(credits, ",")))
+            continue
         ok, text = give(actor, pilot, credits)
         if not ok:
             r["note"] = "gift: %s" % text
@@ -1002,6 +1029,7 @@ def serve_funds(data, leader, now, dry):
             continue
         book(data, [(actor, pilot, credits)], time.time())
         r.update(state="given", given_at=int(time.time()))
+        write_funds(data, rows)                                 # each gift on disk at once: a restart never repeats it
         print("FUND given: %s -> %s %s cr (%s); the sweep leaves it for %s hours"
               % (actor, pilot, format(credits, ","), r.get("why"), r.get("hours") or FUND_HOURS))
     write_funds(data, rows)
@@ -1127,6 +1155,7 @@ def serve_topups(data, leader, now, dry):
             continue
         book(data, [(actor, r["pilot"], int(r["credits"]))], time.time())
         r.update(state="given", given_at=int(time.time()))
+        write_funds(data, rows)                                 # on disk at once: a restart never gives it twice
         print("TOP-UP given: %s -> %s %s cr from the treasury" % (actor, r["pilot"], format(int(r["credits"]), ",")))
     write_funds(data, rows)
     return failed

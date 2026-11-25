@@ -248,6 +248,44 @@ class FundTests(unittest.TestCase):
         w.serve_funds(str(self.data), "Prime Directive", now, False)
         self.assertEqual(self.calls[0], ("withdraw", "Prime Directive", 1000))                       # no probe after the first fund
 
+    def test_a_pass_killed_between_two_gifts_never_gives_the_first_again(self):
+        """2026-11-25 13:23 UTC: a deploy restarted the wallet service while serve_funds gave a batch withdrawn for
+        8 pilots; the states lived in memory until the loop's end, so the new process gave the first four again
+        (193,774 cr twice) and the last fund found the withdrawer empty. Each gift is written the moment it is given,
+        and a gift gifts.jsonl already holds since the withdrawal is never sent twice."""
+        w, now = self.wallet, time.time()
+        ships = [{"name": "Prime Directive", "credits": 61648, "docked": True}, {"name": "drone-4", "credits": 20000},
+                 {"name": "drone-9", "credits": 20000}]
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 50000, "hull one", 6, now), 0)
+        self.assertEqual(w.add_fund(str(self.data), "drone-9", 60000, "hull two", 6, now), 0)
+        real_give = w.give
+
+        def give_then_die(donor, pilot, credits):
+            if pilot == "drone-9":
+                raise SystemExit("killed by a restart")
+            return real_give(donor, pilot, credits)
+        w.give = give_then_die
+        with self.assertRaises(SystemExit):
+            w.serve_funds(str(self.data), "Prime Directive", now, False)
+        w.give = real_give
+        w.serve_funds(str(self.data), "Prime Directive", now, False)
+        gives = [c for c in self.calls if c[0] == "give"]
+        self.assertEqual(gives, [("give", "Prime Directive", "drone-4", 50000), ("give", "Prime Directive", "drone-9", 60000)])
+        self.assertEqual(sorted(r["state"] for r in w.funds(str(self.data))), ["given", "given"])
+
+    def test_a_gift_booked_before_its_row_was_written_is_not_sent_again(self):
+        w, now = self.wallet, time.time()
+        self.put(docked=True)
+        w.add_fund(str(self.data), "drone-4", 50000, "hull", 6, now)
+        rows = w.funds(str(self.data))
+        rows[0].update(state="withdrawn", withdrawn_at=int(now) - 30, withdrawer="Prime Directive")
+        w.write_funds(str(self.data), rows)
+        w.book(str(self.data), [("Prime Directive", "drone-4", 50000)], now - 10)   # given, then the process died
+        w.serve_funds(str(self.data), "Prime Directive", now, False)
+        self.assertEqual([c for c in self.calls if c[0] == "give"], [])
+        self.assertEqual(w.funds(str(self.data))[0]["state"], "given")
+
     def test_the_treasury_keeps_its_floor_and_a_funded_pilot_gives_nothing(self):
         w, now = self.wallet, time.time()
         self.treasury[0] = w.FUND_FLOOR + 1000

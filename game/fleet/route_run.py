@@ -710,6 +710,7 @@ def fit_pending(system, poi, base):
 
 
 def book_onetime(title, amount):
+    import gate                                       # noqa: E402  imported here, as handover and sqlite are (5b6ed9e0 named it unimported)
     gate.book_onetime(pilot, title, amount, data=os.path.dirname(os.path.dirname(os.path.abspath(ONETIME_FILE))))
 
 

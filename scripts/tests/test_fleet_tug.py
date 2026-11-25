@@ -101,3 +101,78 @@ class SettleTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DryStationTests(unittest.TestCase):
+    """2026-11-25: a hunter ran dry in Winterhold; the tug docked it at the only station there, which sells no fuel.
+    The pass printed `towed and refuelled` although `refuel` answered no_fuel_source, the dispatcher undocked the
+    ship again, and the next pass towed it to the same station: five tows of 500 cr in four hours. A refused refuel
+    is named and the tug is not called again for that ship in that system while its tank stays low."""
+
+    def setUp(self):
+        import json
+        import tempfile
+        import types
+        self.json = json
+        self.tmp = tempfile.TemporaryDirectory(prefix="tug-dry-")
+        self.addCleanup(self.tmp.cleanup)
+        self.data = Path(self.tmp.name)
+        (self.data / "fleet" / "ships").mkdir(parents=True)
+        self.calls = []
+        fake = types.ModuleType("gate")
+        fake.release = lambda pilot: "released %s" % pilot
+        fake.take = lambda pilot, *a: None
+        fake.hold_file = lambda pilot: str(self.data / ("hold-" + pilot))
+        self.old_gate = sys.modules.get("gate")
+        sys.modules["gate"] = fake
+        self.addCleanup(self.restore)
+        self.saved = (tug.raw, tug.fuelplan.chart, tug.safe_stations, tug.division.order_of, tug.division.may,
+                      tug.division.hand_mark)
+        self.addCleanup(self.unpatch)
+        tug.fuelplan.chart = lambda repo: (LANES,)
+        tug.safe_stations = lambda data, repo=None: STATIONS
+        tug.division.order_of = lambda pilot, data, now: ""
+        tug.division.may = lambda pilot, data: (True, "")
+        tug.division.hand_mark = lambda: "hand Unity"
+
+        def raw(pilot, action, params):
+            self.calls.append(action)
+            if action == "refuel":
+                return 500, '{"error":"API call failed: no_fuel_source: No fuel cells in cargo, and this station sells no fuel"}'
+            return 200, '{"result":{"location":{}}}'
+        tug.raw = raw
+
+    def restore(self):
+        if self.old_gate is None:
+            sys.modules.pop("gate", None)
+        else:
+            sys.modules["gate"] = self.old_gate
+
+    def unpatch(self):
+        (tug.raw, tug.fuelplan.chart, tug.safe_stations, tug.division.order_of, tug.division.may,
+         tug.division.hand_mark) = self.saved
+
+    def put(self, **kw):
+        (self.data / "fleet" / "ships" / "drone-1.json").write_text(self.json.dumps(ship(fuel=1, **kw)))
+
+    def test_a_refused_refuel_is_named_and_the_tug_is_not_called_again_there(self):
+        import io
+        from contextlib import redirect_stdout
+        self.put(docked="d_base")
+        (self.data / "fleet" / "tug.json").write_text(self.json.dumps({"drone-1": {"at": 0, "fuel": 1, "system": "d"}}))
+        out = io.StringIO()
+        with redirect_stdout(out):
+            tug.run_pass(str(self.data), now=1000)
+        text = out.getvalue()
+        self.assertNotIn("towed and refuelled", text)
+        self.assertIn("HALT: tug drone-1", text)
+        self.assertIn("refuel refused", text)
+        self.put(docked="")                                    # undocked again by a run, still dry, same system
+        self.calls.clear()
+        with redirect_stdout(io.StringIO()):
+            tug.run_pass(str(self.data), now=2000)
+        self.assertNotIn("distress_signal", self.calls)
+        self.put(docked="", system="c")                         # moved: the tug may serve it again
+        with redirect_stdout(io.StringIO()):
+            tug.run_pass(str(self.data), now=3000)
+        self.assertIn("distress_signal", self.calls)

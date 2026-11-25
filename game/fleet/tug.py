@@ -8,7 +8,10 @@ WHAT: reads every ship file (data/fleet/ships/) and picks a ship that stands in 
       `distress_type` tow: the game's tug docks the ship at the nearest public station in about five minutes for an
       idle-ship recovery fee (500 cr on 2026-11-22). The pass records the call in data/fleet/tug.json. A later pass
       settles each recorded tow: docked, the ship is refuelled (`refuel`) and released; still in space after --wait
-      minutes, it is released and named. Every answer is printed, with one RESULT line a ship.
+      minutes, it is released and named. Every answer is printed, with one RESULT line a ship. A tow that ends at a
+      station selling no fuel (`refuel` answers no_fuel_source) is named in a HALT line and kept in
+      data/fleet/tug_dry.json: no tow is called again for that ship in that system while its tank stays low (each tow
+      there costs the fee and docks it at the same dry station); a hand brings it fuel cells or a pump ship.
 RULES:
   - It never takes a ship a runner flies or another hand holds (division.may, gate.take): a runner that stops on a
     dry tank leaves its pilot free, and the tug takes it on the next pass.
@@ -80,6 +83,40 @@ def settle(row, ship, now, wait=WAIT):
     return "give up" if now - float(row.get("at") or 0) > wait * 60 else "wait"
 
 
+def refused_no_fuel(answer):
+    """True when a `refuel` answer says the station sells no fuel and the hold carries no cells."""
+    return "no_fuel_source" in str(answer or "")
+
+
+def dry_hold(row, ship):
+    """True while a ship recorded dry at a station without fuel stays in that system with its tank below the line
+    it was towed under: calling the tug again would only dock it at the same dry station for another fee."""
+    if not isinstance(row, dict):
+        return False
+    fuel = ship.get("fuel")
+    return (ship.get("system") == row.get("system") and isinstance(fuel, (int, float))
+            and fuel <= float(row.get("fuel") or 0) + 5)
+
+
+def dry_path(data):
+    return Path(data) / "fleet" / "tug_dry.json"
+
+
+def load_dry(data):
+    try:
+        rows = json.loads(dry_path(data).read_text(encoding="utf-8"))
+        return rows if isinstance(rows, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def save_dry(data, rows):
+    path = dry_path(data)
+    tmp = path.with_suffix(".json.%d.tmp" % os.getpid())
+    tmp.write_text(json.dumps(rows, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(tmp, path)
+
+
 def safe_stations(data, repo=REPO):
     """Fuel stations excluding pirate strongholds: a ship near only a pirate station still needs the tug."""
     far = fuelplan.strongholds(repo)
@@ -134,6 +171,8 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
     lanes = fuelplan.chart(REPO)[0]
     stations = safe_stations(data, REPO)
     state = load_state(data)
+    dry_rows = load_dry(data)
+    dry_before = dict(dry_rows)
     done = 0
     for pilot, row in sorted(state.items()):
         if only and pilot != only:
@@ -152,12 +191,21 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
             say("%s: would %s (dry run)" % (pilot, what))
             continue
         import gate
+        result = "the tug did not dock it in %d minutes" % wait
         if what == "refuel":
             status, out = raw(pilot, "refuel", {})
             say("%s refuel: %s %s" % (pilot, status, out))
+            result = "towed and refuelled"
+            if refused_no_fuel(out):
+                here = fleet.get(pilot, {})
+                dry_rows[pilot] = {"at": now, "system": here.get("system") or row.get("system"),
+                              "fuel": here.get("fuel") if isinstance(here.get("fuel"), (int, float)) else row.get("fuel")}
+                result = "towed, but the station sells no fuel: refuel refused"
+                print("HALT: tug %s: docked in %s at a station that sells no fuel; no tow is called for it there again: "
+                      "a hand brings fuel cells (buy, refuel) or a pump ship" % (pilot, dry_rows[pilot]["system"]), flush=True)
         say(gate.release(pilot))
-        print("RESULT tug %s: %s; called with fuel %s at %s" % (pilot, "towed and refuelled" if what == "refuel"
-              else "the tug did not dock it in %d minutes" % wait, row.get("fuel"), row.get("system")), flush=True)
+        print("RESULT tug %s: %s; called with fuel %s at %s" % (pilot, result, row.get("fuel"), row.get("system")),
+              flush=True)
         state.pop(pilot, None)
         done += 1
     for pilot, ship in sorted(fleet.items()):
@@ -165,8 +213,15 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
             continue
         if pilot in state or limit <= 0:
             continue
+        if pilot in dry_rows and not dry_hold(dry_rows[pilot], ship):
+            dry_rows.pop(pilot, None)                               # fuelled or moved since: the tug may serve it again
         why = stranded(ship, division.order_of(pilot, data, now), lanes, stations, below, mark)
         if not why:
+            continue
+        if pilot in dry_rows:
+            say("%s: no tow: dry at a station without fuel in %s since %s UTC (tug_dry.json)"
+                % (pilot, dry_rows[pilot].get("system"),
+                   time.strftime("%H:%M", time.gmtime(float(dry_rows[pilot].get("at") or 0)))))
             continue
         if dry:
             say("%s: would call the tug: %s (dry run)" % (pilot, why))
@@ -188,6 +243,8 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
         limit -= 1
     if not dry:
         save_state(data, state)
+        if dry_rows != dry_before:
+            save_dry(data, dry_rows)
     if done or state or only or dry:
         say("tug: %d settled, %d waiting%s" % (done, len(state), " (dry run)" if dry else ""))
     return 0
