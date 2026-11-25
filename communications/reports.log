@@ -400,3 +400,12 @@ Failed: freshness under 3 hours fell from 69.5% to 68.3% (1,588 of 2,325) and is
 Requests: none.
 Suggestions: Trinity lets an in_dialogue thread whose newest inbound asks nothing count as closed (queue ENT-322); a write to a division's plan file names its hand (queue ENT-320); the scouts' hull KPI weighs fuel a read.
 Report: census-cadences-under-targets-fit-network-kept.
+
+## [ENT-201] | 2026-11-25 00:02 UTC | Zero | session | ref: reports/2026-11-25_zero_mine-network-market-tier-fixed-iron-gathers-reached.md | see: orders.log ENT-091
+Session: scheduled run turn-zero -- mine-network stopped chasing goods we hold, beltless ships reach the iron gathers.
+Did: found mine-network at -465 cr a ship-hour over 228 runs (4 h to 23:35 UTC) with 51 of 84 claims on goods held past every bid (copper 792,590 at a 4 cr bid); fixed mine_net by fleet-build (d7ba405b: bid-and-depth market tier, pull marks, beltless run row; test red first, 119 test files green); policy market_min_bid 10, rest 30 s, fit mix Mining ore 100 (b0ff87df); cut the reserve templates to silicon so beltless ships reach the iron gathers (908f9daf, 105c7454); one built Resonance Miner switched in at 00:00:01 UTC via gate.py want; guidebook Standing Plan (de064ed9); queue ENT-324, errors ENT-201.
+Worked: plan check PASS (applied 23:58:24 UTC); fill gate PASS at 23:51, 23:58 and 00:00 UTC; after the install new claims read near training ore and iron, no far market good (route logs 23:49 to 00:00 UTC); 87 beltless rows let the dispatcher move those ships on.
+Failed: the network's four hours on held goods (-82,432 cr, errors.log ENT-201); iron chain 52,325 of 60,000 with 0 ships on its sources at 23:33 UTC; the second hull switch still waited for its pilot's run at report time; fit-network cost -352,388 cr steady and -248,391 cr once on miners in 6 h.
+Requests: none.
+Suggestions: Trinity names the owner in queue.log when a shared policy changes a division's work; Unity lets the upgrade service set a want file for a built hull; the AUTONET line shows a network's credits per ship-hour beside its ship count.
+Report: mine-network-market-tier-fixed-iron-gathers-reached.
