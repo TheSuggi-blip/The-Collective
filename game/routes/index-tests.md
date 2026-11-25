@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 97.
+Routes: 98.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -87,6 +87,7 @@ Routes: 97.
 | [outpost-kit-ironlight-to-node-beta](outpost-kit-ironlight-to-node-beta.json) | circuit | beyond the border, 6 jumps | The Atria outpost, step 1 of 3: one Outpost Kit bought at Ironlight Crossroads (LHS 1140, lawless) and stored at Node Beta, six jumps from Atria on the north road | up to 1 ships, 1 pilots in all, empty hold, from 152,000 cr, while 784309214f105860a16a0c100a70eb14 asks 148663 cr or less for outpost_kit | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-experiment-dheneb](sell-ember-experiment-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from The Experiment Research Station to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at the_experiment_research_station, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-hexstar-first-step](sell-ember-hexstar-first-step.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from Hex Star (Dheneb) to the First Step Memorial Station bid | up to 1 ships, with 4 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while first_step_memorial_station bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
+| [sell-ember-nexus-dheneb](sell-ember-nexus-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from Central Nexus to the Hex Star bid (Dheneb, lawless) | up to 1 ships, with 6 ember_gland stored at central_nexus, while b495c6003fc83e18f6d8cecbe6929133 bids 2000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-synchrony-dheneb](sell-ember-synchrony-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from Synchrony Hub to the Hex Star bid (Dheneb, lawless), up to 30 a run | up to 1 ships, with 6 ember_gland stored at synchrony_hub, while b495c6003fc83e18f6d8cecbe6929133 bids 4000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-dheneb](sell-loot-at-dheneb.json) | circuit | beyond the border, 11 jumps | Hunt loot stored by Trade's receiver at the outpost at Dheneb sold where it lies | up to 1 ships, with 3 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while b495c6003fc83e18f6d8cecbe6929133 bids 4500 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-first-step](sell-loot-at-first-step.json) | circuit | beyond the border, 18 jumps | Hunt loot stored by Trade's receiver at First Step Memorial Station sold where it lies | up to 1 ships, with 30 verdigris_curd stored at first_step_memorial_station, while first_step_memorial_station bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
