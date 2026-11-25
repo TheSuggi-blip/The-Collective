@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 7 | Public event stream |
+| Pilots carrying the tag on the public event stream | 5 | Public event stream |
 
 ## Bases
 
@@ -40,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Atervisus | The Experiment (`the_experiment`) | 0 | hells_bells |
 | Stoleas | Nexus Prime (`nexus_prime`) | 0 | paradox |
-| VedaFlux | Node Beta (`node_beta`) | 0 | threshold |
+| VedaFlux | The Experiment (`the_experiment`) | 0 | threshold |
 
 ## Standing History
 
