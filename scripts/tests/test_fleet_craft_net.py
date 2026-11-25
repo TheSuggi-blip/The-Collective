@@ -120,5 +120,56 @@ class TestCraftNet(unittest.TestCase):
         self.assertEqual(tj["local_bid"], 200)
 
 
+    def test_trade_lane_never_makes_nor_spends_a_good_the_needs_take(self):
+        """Rule F24 (requests.log ENT-533): the Trade lane listed 188 crafted control nodes for sale while two P1
+        needs took 50 from stock; a good an open need takes is neither made for sale nor drawn from storage."""
+        pol = {
+            "enabled": True, "max_runs_per_cycle": 5, "max_fee_per_run_cr": 500, "min_wallet_keep_cr": 10000,
+            "allow_buy_inputs_docked": True, "max_buy_spend_per_cycle_cr": 25000,
+            "trade": {"enabled": True, "allow_buy_inputs_docked": False, "min_margin_pct": 0.22, "min_profit_cr": 150, "min_bid_qty": 3},
+            "logistics": {"enabled": True, "allow_buy_inputs_docked": False},
+        }
+        world = {
+            "recipes": {
+                "assemble_control_node": {"id": "assemble_control_node", "name": "Assemble Control Node", "facility_only": False,
+                                          "inputs": [("circuit_board", 2), ("copper_wiring", 1)], "outputs": [("control_node", 1)]},
+                "make_rations": {"id": "make_rations", "name": "Make Rations", "facility_only": False,
+                                 "inputs": [("steel_plate", 2)], "outputs": [("ration_tin", 1)]},
+            },
+            "books_by_base": {"b1": {"control_node": {"bid": 1766.0, "bid_qty": 50}, "ration_tin": {"bid": 900.0, "bid_qty": 50}}},
+            "global_bid": {}, "item_vals": {"circuit_board": 60.0, "copper_wiring": 20.0, "steel_plate": 40.0},
+            "need_crafts": set(), "need_craft_caps": {}, "stock_by_item": {}, "demand": {},
+        }
+        stored = {"circuit_board": 40, "copper_wiring": 20, "steel_plate": 40}
+        world["reserve_items"] = set()
+        free = craft_net.pick_craft_job("Trade", "b1", stored, 50000, world, pol)
+        self.assertIsNotNone(free)                       # without a need both crafts pay
+        world["reserve_items"] = {"control_node", "steel_plate"}
+        self.assertIsNone(craft_net.pick_craft_job("Trade", "b1", stored, 50000, world, pol))
+        world["reserve_items"] = {"control_node"}
+        only = craft_net.pick_craft_job("Trade", "b1", stored, 50000, world, pol)
+        self.assertEqual(only["makes"], "ration_tin")    # the output a need takes is skipped, the other made
+        world["reserve_items"] = {"steel_plate"}
+        only = craft_net.pick_craft_job("Trade", "b1", stored, 50000, world, pol)
+        self.assertEqual(only["makes"], "control_node")  # a stored input a need takes is not spent
+        # the reserve set is read from need_status: what the needs take from stock, must craft, and lack
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data"
+            (data / "store").mkdir(parents=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE need_status (id TEXT, short_items TEXT, craft TEXT, stock TEXT);
+                INSERT INTO need_status VALUES ('kit', 'foil_scale 1,035, alloy_scale 662',
+                    'reinforced_frame 115 (assemble_reinforced_frame, facility); structural_frame 230 (assemble_structural_frame, facility)',
+                    'steel_plate 1,720, control_node 40');
+            """)
+            con.commit()
+            con.close()
+            w = craft_net._load_craft_world_uncached(str(data), tmp, {"demand_file": "none.json"})
+            for item in ("foil_scale", "alloy_scale", "reinforced_frame", "structural_frame", "steel_plate", "control_node"):
+                self.assertIn(item, w["reserve_items"])
+            self.assertNotIn("assemble_reinforced_frame", w["reserve_items"])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -76,6 +76,7 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
     item_vals = {}
     need_crafts = set()
     stock_by_item = {}
+    reserve_items = set()  # rule F24: goods the open needs take (need_status stock, craft, short_items)
 
     if db.is_file():
         import worldcache as _wc
@@ -120,6 +121,14 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
             need_craft_caps = {}
             if "need_status" in tbls:
                 ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
+                # Rule F24 (requests.log ENT-533): every good an open need takes from stock, must craft or lacks;
+                # the Trade lane neither makes it for sale nor spends it from storage.
+                r_cols = [c for c in ("stock", "craft", "short_items") if c in ns_cols]
+                if r_cols:
+                    for row in con.execute("SELECT %s FROM need_status" % ", ".join(r_cols)):
+                        for text in row:
+                            for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(text or "")):
+                                reserve_items.add(m.group(1))
                 if "colour" in ns_cols:
                     ns_rows = con.execute("SELECT craft FROM need_status WHERE craft IS NOT NULL AND LOWER(COALESCE(colour, '')) != 'green'").fetchall()
                 else:
@@ -153,7 +162,7 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
     return {
         "recipes": recipes, "books_by_base": books_by_base, "global_bid": global_bid,
         "item_vals": item_vals, "need_crafts": need_crafts, "need_craft_caps": need_craft_caps,
-        "stock_by_item": stock_by_item, "demand": demand,
+        "stock_by_item": stock_by_item, "demand": demand, "reserve_items": reserve_items,
     }
 
 
@@ -224,6 +233,9 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
     demand = world.get("demand") or {}
     stock_map = world.get("stock_by_item") or {}
     stored = {str(k): int(v or 0) for k, v in (stored_items or {}).items() if int(v or 0) > 0}
+    reserve = set(world.get("reserve_items") or ()) if is_trade else set()
+    if reserve:  # rule F24: the Trade lane spends no stored good an open need takes
+        stored = {k: v for k, v in stored.items() if k not in reserve}
     allow_buy = bool(sub.get("allow_buy_inputs_docked", policy.get("allow_buy_inputs_docked", True)))
     budget = min(
         max(0, int(credits or 0) - int(policy.get("min_wallet_keep_cr") or 15000)),
@@ -262,6 +274,8 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
             continue
         out_item, out_qty = rec["outputs"][0]
         if is_log and out_item not in ind_targets:
+            continue
+        if out_item in reserve:  # rule F24: a good an open need takes is never made for sale
             continue
 
         # Check how many runs we can supply from stored + optional docked buys
