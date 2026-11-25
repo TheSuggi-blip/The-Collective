@@ -935,37 +935,8 @@
         ]
       },
       "loadouts": {
-        "covert_recon": {
-          "utility": [
-            "phase_cloaking_device",
-            "cloaking_device_ii",
-            "cloaking_device_i",
-            "ship_scanner_iii",
-            "fuel_optimizer"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ]
-        },
-        "sensor_survey": {
-          "utility": [
-            "deep_core_survey_scanner",
-            "survey_scanner_ii",
-            "ship_scanner_iii",
-            "fuel_optimizer"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ]
-        }
+        "covert_recon": {},
+        "sensor_survey": {}
       }
     },
     "Command": {

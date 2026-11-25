@@ -94,6 +94,10 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 {"id": "mining_laser_i", "slot": "utility", "cpu_usage": 2, "power_usage": 5},
                 {"id": "pulse_laser_i", "slot": "weapon", "cpu_usage": 2, "power_usage": 5}]}), encoding="ascii")
             pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+            # The caps are judged against a loadout of this test's own: the live Intel loadouts buy nothing
+            # since 2026-11-25 (orders ENT-093 P1: no module without a measured payback within a week).
+            cap_loadout = {"defense": ["shield_booster_iv"], "utility": ["survey_scanner_ii"]}
+            pol["specialties"]["Intel"]["loadouts"] = {"covert_recon": dict(cap_loadout), "sensor_survey": dict(cap_loadout)}
             world = fit_net.load_fit_world(str(data), pol)
             ship = {"name": "scout-9", "division": "Intel", "system": "s1", "class": "Cobble", "credits": 60000,
                     "modules": [{"kind": "mining", "name": "Mining Laser I", "slot": "utility", "type": "mining_laser_i"},
@@ -112,6 +116,17 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             cost = {"shield_booster_iv": (8, 15), "survey_scanner_ii": (5, 7), "mining_laser_i": (2, 5), "pulse_laser_i": (2, 5)}
             self.assertLessEqual(sum(cost[m][0] for m in kept + bought), 12)
             self.assertLessEqual(sum(cost[m][1] for m in kept + bought), 24)
+
+    def test_live_intel_policy_buys_no_module_for_a_scout(self):
+        # Orders ENT-093 P1: a module only when its measured gain repays it within a week. No scout module
+        # has such a measure, so the live Intel loadouts are empty: a scout with free slots, nothing off-role
+        # aboard and a full wallet gets no fit plan (fit-network skips it at once, no fuel, no buy).
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        world = {"hulls": {"threshold": {"tier": 0, "weapon": 1, "defense": 2, "utility": 2}}}
+        for hull in ("Threshold", "Cobble", "Prospect", "Crimson Stiletto"):
+            ship = {"name": "scout-9", "division": "Intel", "system": "s1", "class": hull, "credits": 90000,
+                    "modules": [{"type": "shield_booster_ii", "slot": "defense"}]}
+            self.assertIsNone(fit_net.plan_ship_fit(ship, world, pol), hull)
 
     def test_royal_guard_command_and_military_support_specialties(self):
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
