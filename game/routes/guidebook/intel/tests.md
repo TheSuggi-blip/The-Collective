@@ -95,9 +95,10 @@ Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.
 Status: proven. Updated: 2026-11-25. Evidence: data/missions/; admirals.log ENT-099; game/routes/mission-confederacy-infrastructure-audit-confederacy.json, mission-the-line-ironhearth.json.
 
 - A visit mission is flown as a circuit route that docks at each station
-  its objectives name (`redock: true`), never left to a census jump: the
-  Confederacy infrastructure audit paid 24 of 25 runs, 4,000 cr each, 36
-  minutes on the mean (admirals.log ENT-099, 2026-11-22).
+  its objectives name (`redock: true`): the Confederacy infrastructure
+  audit paid 24 of 25 runs, 4,000 cr each, 36 minutes on the mean
+  (admirals.log ENT-099, 2026-11-22). A census read of a system logged a
+  survey mission's visit there too (Node Alpha 1 of 1, 2026-11-17).
 - routemaker.py writes such a route from the board and fill.py adds it
   as a one-ship test (The Line at Ironhearth Station, 2026-11-25: three
   stops after the accept). Local Sector Survey and Deep Space
