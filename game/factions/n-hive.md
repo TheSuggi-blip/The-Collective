@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 13.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 13.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 99 | Public event stream |
+| Pilots carrying the tag on the public event stream | 98 | Public event stream |
 
 ## Bases
 
@@ -42,19 +42,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Acubens (`acubens`) | 0 | workhorse |
-| 12e40e68ce0cb7189468fecb | Node Beta (`node_beta`) | 0 | gas_tanker |
-| 395530a76c237308aaa5b1dc | Pherkad (`pherkad`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Acubens (`acubens`) | 0 | workhorse |
-| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
-| 8054dbcf8fff7c0f8c4f0165 | Acubens (`acubens`) | 0 | workhorse |
-| 80ec580ea701fcce02ad0a02 | Acubens (`acubens`) | 0 | workhorse |
-| 841d796c5af478d71c4485d6 | Node Beta (`node_beta`) | 0 | gas_tanker |
-| 907a7ad5fc57ac61d6e57ad4 | Synchrony (`synchrony`) | 0 | workhorse |
-| cb9f390ad124b910d6bb336c | Hamal (`hamal`) | 0 | workhorse |
-| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
-| fb21ffeebed33a1f8ac75cdf | Node Alpha (`node_alpha`) | 0 | gas_tanker |
-| fdd4d2a524b48e0478b85d38 | Synchrony (`synchrony`) | 0 | workhorse |
+| 0a5266cdbbc00fe268e0948a | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 395530a76c237308aaa5b1dc | Acubens (`acubens`) | 0 | workhorse |
+| 404cabdaa14cd583b3a3cc98 | Node Gamma (`node_gamma`) | 0 | workhorse |
+| 841d796c5af478d71c4485d6 | Node Alpha (`node_alpha`) | 0 | gas_tanker |
+| b9eca5b6501443e6d0541e69 | Synchrony (`synchrony`) | 0 | workhorse |
 
 ## Standing History
 

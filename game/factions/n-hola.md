@@ -9,7 +9,7 @@ faction: Holographic Alliance
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Holographic Alliance [HOLA]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 10 | Public event stream |
+| Pilots carrying the tag on the public event stream | 9 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Jenny | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Marko | Nexus Prime (`nexus_prime`) | 0 | margin |
 
 ## Standing History
 

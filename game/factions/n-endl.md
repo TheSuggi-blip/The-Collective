@@ -15,7 +15,7 @@ updated: 2026-11-25
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -45,7 +45,12 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| ElChapo | The Experiment (`the_experiment`) | 2 | caravan |
+| Ferengi4 | The Experiment (`the_experiment`) | 0 | catalogue |
+| HAL 9000 | Pherkad (`pherkad`) | 0 | capacity |
+| SantaClaus | The Experiment (`the_experiment`) | 0 | archimedes |
 
 ## Standing History
 
