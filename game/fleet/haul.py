@@ -370,9 +370,24 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             demands.append((iid, deficit, urgency, jkey, False))
 
         for iid, deficit, urgency, jkey, bunker_fill in demands:
-            # Enforce sensible minimum lot size so haulers never fly 10+ jumps for 5 fuel_cell
-            lot_floor = max(25, int(hold_cap * 0.25)) if iid == "fuel_cell" else 20
+            # Keep steady fuel_cell trickles flowing (10+ cells) to top outpost bunkers continuously
+            lot_floor = 10 if iid == "fuel_cell" else 20
             min_lot = min(deficit, int(hold_cap), lot_floor)
+            # Local bunker conversion: if this outpost ALREADY holds >=15 fuel_cell in faction_storage, convert directly into its fuel bunker at 0 jumps!
+            if bunker_fill and iid == "fuel_cell" and int(cur_inv.get("fuel_cell") or 0) >= 15:
+                local_q = min(deficit, int(cur_inv.get("fuel_cell") or 0), int(hold_cap))
+                p_hops_loc = _bfs_hops(lanes, cur_sys, dloc[0]) if cur_sys and lanes else 0
+                if p_hops_loc is not None and p_hops_loc <= max_pick and local_q >= 10:
+                    sc_loc = urgency * 240.0 + local_q * 2.0 - p_hops_loc * 1.5
+                    cand_loc = (sc_loc, {
+                        "job_key": jkey, "mode": "internal", "source_target": "faction",
+                        "item": iid, "qty": local_q, "origin": dloc, "dest": dloc,
+                        "hub_kind": hub_kind, "bunker_fill": True,
+                        "pickup_hops": p_hops_loc, "delivery_hops": 0,
+                    })
+                    if best is None or cand_loc[0] > best[0]:
+                        best = cand_loc
+                    continue
 
             chosen = None
             _upk_srcs = (("faction", fac_by_base), ("self", self_by_base)) if can_fac else (("self", self_by_base),)
@@ -1410,7 +1425,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         # Allow full-hold loading across multi-tier buy-walls (protected by live tier floor check at dest!)
         eff_bq = min(bd, max(bq * 5, 250)) if (bp >= 20.0 and bd > bq) else bq
         iid = str(r.get("item") or "")
-        if not (iid and bp >= 5.0 and eff_bq >= 1):
+        if not (iid and bp >= 1.0 and eff_bq >= 1):
             continue
         bq = eff_bq
         if policed and not loc[3]:
@@ -1445,7 +1460,11 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                     continue
                 tot_hops = max(1, p_hops + d_hops)
                 est_rev = take_q * bid_p - tot_hops * 45.0
-                if est_rev < min_rev:
+                # Allow clearing huge excess gluts (>=500 units) into live 1-4 cr buy-walls whenever net revenue >= 250 cr!
+                eff_min_rev = 250.0 if (q >= 500 and bid_p >= 1.0) else min_rev
+                if bid_p < 5.0 and q < 500:
+                    continue
+                if est_rev < eff_min_rev:
                     continue
                 max_slots = min(int(policy.get('liquidate_max_slots') or 8), max(1, min(q, int(bid_q)) // max(1, int(hold_cap))))
                 jkey = None

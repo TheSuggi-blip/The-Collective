@@ -846,6 +846,10 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 ref_p = gal_bid
             else:
                 continue
+            # Zero-fuel glut clearing: if local excess stock >= 500 units, hit ANY live exchange/NPC bid >= 1 cr immediately!
+            if qty >= 500 and bid_q > 0 and bid >= 1 and (ask <= 0 or bid >= max(1, int(round(ask * hit_ratio)))):
+                actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
+                continue
             if ref_p < 2:
                 continue
             floor_p = max(2, int(round(ref_p * min_ratio)))
@@ -1309,6 +1313,53 @@ def main(argv=None):
                         sync_fleet_sells(DATA, pilot, base_id, own_orders)
                     except Exception:
                         pass
+                # Steady bounded internal fuel-cell trickle (<=15 cells/poll ONLY when faction fuel_cell < 1000) for outpost bunkers
+                if (policy.get("craft") or {}).get("enabled", False) and (until - time.time()) > 60 and not stop_requested() and base_id in _bursar_active_lockboxes(DATA) and _bursar_can_withdraw_faction(DATA, pilot):
+                    try:
+                        _tot_fc = 0
+                        _db_fc = DATA / "store" / "read.db"
+                        if _db_fc.exists():
+                            _c_fc = sqlite3.connect("file:%s?mode=ro&immutable=1" % _db_fc, uri=True)
+                            try:
+                                _r_fc = _c_fc.execute("SELECT COALESCE(SUM(units), 0) FROM faction_storage WHERE item='fuel_cell'").fetchone()
+                                _tot_fc = int(_r_fc[0] or 0) if _r_fc else 0
+                            finally:
+                                _c_fc.close()
+                        if _tot_fc < int((policy.get("craft") or {}).get("fuel_trickle_target", 1000)):
+                            _st_fc = get_stored(base_id)
+                            _fd_fc = body(raw("view", {"station_id": base_id, "target": "faction"}, group="spacemolt_storage"))
+                            _f_map = {str(_fr["item_id"]): int(_fr.get("quantity") or 0) for _fr in (_fd_fc.get("items") or _fd_fc.get("storage") or []) if isinstance(_fr, dict) and _fr.get("item_id")}
+                            _have_fc = lambda k: int(_st_fc.get(k, 0)) + int(_f_map.get(k, 0))
+                            _fc_plan = None
+                            if _have_fc("crystallized_biogas") >= 2:
+                                _fc_plan = ("biogas_fuel_synthesis", min(8, _have_fc("crystallized_biogas")), [("crystallized_biogas", 1)], "fuel_cell", 2)
+                            elif _have_fc("liquid_hydrogen") >= 6 and _have_fc("steel_plate") >= 3:
+                                _fc_plan = ("craft_fuel_cell", min(15, _have_fc("liquid_hydrogen") // 2, _have_fc("steel_plate")), [("liquid_hydrogen", 2), ("steel_plate", 1)], "fuel_cell", 1)
+                            elif _have_fc("hydrogen_gas") >= 24 and _have_fc("steel_plate") >= 3 and _have_fc("liquid_hydrogen") < 30:
+                                _fc_plan = ("compress_hydrogen_gas", min(10, _have_fc("hydrogen_gas") // 8), [("hydrogen_gas", 8)], "liquid_hydrogen", 3)
+                            if _fc_plan:
+                                _fr_id, _fr_runs, _fr_ins, _fr_out, _fr_per = _fc_plan
+                                _dry_f = raw("craft", {"recipe_id": _fr_id, "quantity": _fr_runs * _fr_per, "deliver_to": "storage", "dry_run": True}, group="spacemolt")
+                                _derr_f = str(_dry_f.get("error") or "") if isinstance(_dry_f, dict) else ""
+                                if not any(w in _derr_f.lower() for w in ("skill", "facility", "unlock", "unknown recipe", "not found")):
+                                    for _ii_f, _iu_f in _fr_ins:
+                                        _need_f = _iu_f * _fr_runs
+                                        _pull_i = min(max(0, _need_f - int(_st_fc.get(_ii_f, 0))), int(_f_map.get(_ii_f, 0)))
+                                        if _pull_i > 0:
+                                            raw("withdraw", {"item_id": _ii_f, "quantity": _pull_i, "target": "faction"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                                    _rc_f = raw("craft", {"recipe_id": _fr_id, "quantity": _fr_runs * _fr_per, "deliver_to": "storage"}, group="spacemolt")
+                                    time.sleep(TICK)
+                                    if isinstance(_rc_f, dict) and not _rc_f.get("error"):
+                                        say("bursar_fuel_trickle %dx %s (%s, fleet_fc=%d)" % (_fr_runs * _fr_per, _fr_out, _fr_id, _tot_fc))
+                                        if _fr_out == "fuel_cell":
+                                            raw("withdraw", {"item_id": "fuel_cell", "quantity": _fr_runs * _fr_per, "target": "self"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                                            raw("deposit", {"item_id": "fuel_cell", "quantity": _fr_runs * _fr_per, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                    except Exception:
+                        pass
+
                 # Zero-fuel docked commercial crafting + IMMEDIATE live-bid cash conversion (Suggi directive)
                 craft_cfg = policy.get("craft") or {}
                 _max_c_cycles = max(1, int(craft_cfg.get("cycles_per_poll") or 3))

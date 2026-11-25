@@ -388,22 +388,84 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertEqual(pk_j2["state"], "launched")
             self.assertEqual(pk_j2["leader"], "Prime Directive")
 
-        # 2. Verify live policy invariants (10J radius, Command leadership, zero noob prey, CapEx cash-bleed floor)
+
+        # 2. Verify live policy invariants (10J radius, Command leadership, lawless-only, zero hardcoded bans, 8M floor / unlimited 24h upgrades)
         root = Path(__file__).resolve().parents[2]
         hp = json.loads((root / "game" / "hunt-policy.json").read_text(encoding="utf-8"))
         self.assertTrue(hp["packs"]["require_command_leader"])
         self.assertTrue(hp["packs"]["pirates_enabled"])
+        self.assertTrue(hp["lawless_only"])
         self.assertEqual(hp["packs"]["max_jumps"], 10)
         self.assertFalse(hp["fallback"]["enabled"])
-        self.assertIn("belt_grazer", hp["exclude_species"])
+        self.assertEqual(hp["exclude_species"], [])
         mp = json.loads((root / "game" / "mine-policy.json").read_text(encoding="utf-8"))
         self.assertEqual(mp["max_station_jumps"], 10)
         self.assertGreaterEqual(mp["min_market_buyer_qty"], 20)
         self.assertFalse(mp["allow_xp_fallback"])
+        self.assertEqual(mp["exclude_resources"], [])
+        self.assertGreaterEqual(mp["market_min_bid"], 12)
         up = json.loads((root / "game" / "upgrade-policy.json").read_text(encoding="utf-8"))
-        self.assertGreaterEqual(up["treasury_floor_cr"], 8500000)
+        self.assertEqual(up["treasury_floor_cr"], 8000000)
+        self.assertEqual(up["max_spend_24h_cr"], 0)
+
+    def test_suggi_lawless_all10_cmd_unlimited_upgrades_and_fuel_loop(self):
+        """Verify 10/10 Command ships (incl. unarmed w=0), Lawless-Only Military, and zero-fuel glut sell_bid."""
+        import bursar
+        root = Path(__file__).resolve().parents[2]
+        ppol = hunt_net.load_policy(root / "game" / "hunt-policy-packs.json")
+        hpol = hunt_net.load_policy()
+        self.assertTrue(hpol.get("lawless_only"))
+        self.assertTrue(ppol.get("lawless_only"))
+        self.assertEqual(hpol.get("exclude_species"), [])
+        self.assertEqual(ppol.get("exclude_species"), [])
+        self.assertGreaterEqual(ppol["packs"]["max_forming_packs"], 10)
+
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            (tmp / "fleet").mkdir(parents=True)
+            (tmp / "fleet" / "flagships.json").write_text(json.dumps({
+                "Zero Point": {"flagship": True}, "Crimson Aegis": {"flagship": True}, "Prime Directive": {"flagship": True}
+            }), encoding="utf-8")
+            w_mix = {
+                "data_dir": tmp, "adj": {"sol": ["alpha"], "alpha": ["sol"]},
+                "systems": {"sol": {"empire": "solarian", "stronghold": False}, "alpha": {"empire": "", "stronghold": False}},
+                "stations_by_sys": {"sol": [("sol", "st_sol", "central_nexus")]},
+                "bursar_bases": {"central_nexus"}, "lockbox_bases": {"central_nexus"},
+                "ranch_pois": set(), "ranch_systems": set(), "pirates": set(), "pirate_details": {},
+                "species_hull": {"cloudwhale": 3433, "frost_moth": 260},
+                "species_loot_val": {"cloudwhale": 5000.0, "frost_moth": 4500.0},
+                "herds": [
+                    {"system": "sol", "poi": "sol_belt", "species": "frost_moth", "role": "grazer", "count": 5},
+                    {"system": "alpha", "poi": "alpha_belt", "species": "cloudwhale", "role": "grazer", "count": 5},
+                    {"system": "alpha", "poi": "alpha_belt2", "species": "frost_moth", "role": "grazer", "count": 5},
+                ],
+            }
+            solo_c = hunt_net.score_solo_herds(
+                {"name": "drone-1", "system": "sol"}, {"power": 1500.0, "dps": 40.0, "ehp": 400.0, "tier": 2},
+                w_mix, hpol, {}, {},
+            )
+            self.assertTrue(len(solo_c) >= 1 and all(c["system"] == "alpha" for c in solo_c))
+
+            zp_cands = hunt_net.score_pack_targets(
+                {"name": "Zero Point", "system": "sol"}, {"power": 0.0, "dps": 0.0, "ehp": 469.0, "tier": 2},
+                w_mix, ppol, {}, {},
+            )
+            self.assertTrue(len(zp_cands) >= 1 and all(c["system"] == "alpha" for c in zp_cands))
+            pk = hunt_net.pack_try_join_or_create(
+                tmp, "Zero Point", "sol", {"power": 0.0, "dps": 0.0, "ehp": 469.0, "tier": 2}, zp_cands, w_mix, ppol, active_military_n=60
+            )
+            self.assertIsNotNone(pk)
+            self.assertEqual(pk["leader"], "Zero Point")
+
+        bpol = json.loads((root / "game" / "bursar-policy.json").read_text(encoding="utf-8"))
+        acts = bursar.plan_bursar_actions(
+            book={"nitrogen_ice": {"best_buy": 2, "best_buy_qty": 1000, "best_sell": 0}},
+            stored_items={"nitrogen_ice": 800},
+            own_orders=[], open_needs={}, reserved=set(), live_market_vals={"nitrogen_ice": 2},
+            credits=50000, policy=bpol,
+        )
+        self.assertTrue(any(a[0] == "sell_bid" and a[1] == "nitrogen_ice" and a[2] == 800 for a in acts))
 
 
 if __name__ == "__main__":
     unittest.main()
-

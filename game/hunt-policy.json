@@ -12,16 +12,7 @@
   "allow_lawless_min_power": 350.0,
   "exclude_systems": [],
   "exclude_pois": [],
-  "exclude_species": [
-    "belt_grazer",
-    "patina_grazer",
-    "drift_ray",
-    "sift_ray",
-    "slag_tortoise",
-    "carrion_moth",
-    "halo_drifter",
-    "glacier_drifter"
-  ],
+  "exclude_species": [],
   "partner_factions": [
     "HEXC",
     "IRLC",
@@ -89,7 +80,7 @@
       "bulwark"
     ],
     "command_flagship_min_power": 150.0,
-    "max_forming_packs": 6,
+    "max_forming_packs": 10,
     "require_command_leader": true,
     "max_station_jumps": 10
   },
@@ -121,5 +112,6 @@
     "max_jumps": 20,
     "minutes": 45,
     "_note": "Dormant in peacetime (activates ONLY on active war in empire.json or explicit data/fleet/war-posture-on, rule F2)."
-  }
+  },
+  "lawless_only": true
 }

@@ -1002,6 +1002,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         if smeta.get("stronghold"):
             continue
         is_policed = bool(smeta.get("empire"))
+        if bool(policy.get("lawless_only", False)) and is_policed:
+            continue
         if not is_policed and (policed_only or ship_power["power"] < allow_lawless_p):
             continue
         hops = dists.get(sys_id) if p_sys else 0
@@ -1058,7 +1060,8 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
     pcfg = policy.get("packs") or {}
     _is_cmd_p = str(pilot_info.get("name") or "") in load_command_flagships(world.get("data_dir") or DATA)
     _min_mp = float(pcfg.get("command_flagship_min_power") or 150.0) if _is_cmd_p else float(pcfg.get("min_member_power") or 420.0)
-    if not pcfg.get("enabled", True) or ship_power["power"] < _min_mp:
+    _cmd_support_ok = _is_cmd_p and float(ship_power.get("ehp") or 0.0) >= 120.0
+    if not pcfg.get("enabled", True) or (ship_power["power"] < _min_mp and not _cmd_support_ok):
         return []
     _wing_floor = float(pcfg.get("min_member_power") or 750.0)
     _pack_eval_pwr = (
@@ -1104,6 +1107,8 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             continue
         if (systems.get(sys_id) or {}).get("stronghold"):
             continue
+        if bool(policy.get("lawless_only", False)) and (systems.get(sys_id) or {}).get("empire"):
+            continue
         hops = dists.get(sys_id) if p_sys else 0
         if hops is None or hops > max_j:
             continue
@@ -1132,7 +1137,11 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_pk_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup:
             continue
-        loot_v = float(species_loot.get(sp) or 4000.0) * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
+        raw_lv = float(species_loot.get(sp) or 0.0)
+        min_pk_lv = float(pcfg.get("min_loot_val") or (policy.get("solo") or {}).get("min_loot_val") or 450.0)
+        if raw_lv < min_pk_lv and role != "predator":
+            continue
+        loot_v = raw_lv * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
         _pk_pref = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
         _pk_hub_m = 1.18 if (st_tup[2] in _pk_pref and st_hops <= 2) else (1.10 if (st_tup[2] in _pk_pref and st_hops <= 4) else 1.0)
         score = (loot_v * (prey_hull / 60.0) * _pk_hub_m) / (1.0 + 0.6 * hops + 0.5 * st_hops)
@@ -1153,6 +1162,8 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             if sys_id in excl_sys or sys_id in ranch_sys or pkey in excl_pois:
                 continue
             if (systems.get(sys_id) or {}).get("stronghold"):
+                continue
+            if bool(policy.get("lawless_only", False)) and (systems.get(sys_id) or {}).get("empire"):
                 continue
             if ("pack:" + pkey) in busy_keys or cooldowns.get("pack:" + pkey, 0) > now_t:
                 continue
@@ -1232,7 +1243,8 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
     cmd_ships = load_command_flagships(data_dir)
     is_cmd = str(pilot) in cmd_ships
     min_mem_p = float(pcfg.get("command_flagship_min_power") or 150.0) if is_cmd else float(pcfg.get("min_member_power") or 420.0)
-    if ship_power["power"] < min_mem_p:
+    _cmd_sup_ok = is_cmd and float(ship_power.get("ehp") or 0.0) >= 120.0
+    if ship_power["power"] < min_mem_p and not _cmd_sup_ok:
         return None
     rally_max_j = int(pcfg.get("rally_max_jumps") or 8)
     rally_ttl = float(pcfg.get("rally_timeout_s") or 150)
@@ -1621,8 +1633,14 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
             if not target_id:
                 pack_update(DATA, pid, lambda p: p.update(state="done", flee=True, flee_reason=("ranch floor" if ranch_floor_hit else "no target")))
                 return "ranch_floor" if ranch_floor_hit else "no_target"
-            pack_update(DATA, pid, lambda p: p.update(state="fighting", target_id=target_id))
-            _raw(pilot, "attack" if is_pirate else "hunt", {"target_id": target_id}, "spacemolt")
+            _sd_lead = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
+            _lead_has_wep = any(isinstance(m, dict) and str(m.get("slot") or m.get("kind") or "") == "weapon" for m in (_sd_lead.get("modules") or []))
+            _opener = "" if _lead_has_wep else (arrived_non_leader[0] if arrived_non_leader else "")
+            pack_update(DATA, pid, lambda p: p.update(state="fighting", target_id=target_id, opener_pilot=_opener, unarmed_leader=(not _lead_has_wep)))
+            if _lead_has_wep or not _opener:
+                _raw(pilot, "attack" if is_pirate else "hunt", {"target_id": target_id}, "spacemolt")
+            else:
+                _raw(pilot, "default_stance", {"stance": "evade"}, "spacemolt_battle")
             time.sleep(10)
         else:
             t_wait = time.time() + 45.0
@@ -1632,6 +1650,9 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
                     return "no_target"
                 if cur.get("target_id"):
                     target_id = str(cur["target_id"])
+                    if str(cur.get("opener_pilot") or "") == pilot:
+                        _raw(pilot, "attack" if is_pirate else "hunt", {"target_id": target_id}, "spacemolt")
+                        time.sleep(10)
                     break
                 time.sleep(4)
             if not target_id:
@@ -1665,7 +1686,10 @@ def run_pack_mission(pilot, pack, policy, order_path, route_id):
             if cur.get("flee"):
                 _raw(pilot, "stance", {"stance": "flee"}, "spacemolt_battle")
             else:
-                if not is_leader and not fired_stance:
+                if is_leader and cur.get("unarmed_leader") and not fired_stance:
+                    _raw(pilot, "stance", {"stance": "evade"}, "spacemolt_battle")
+                    fired_stance = True
+                elif not is_leader and not fired_stance:
                     _raw(pilot, "stance", {"stance": "fire"}, "spacemolt_battle")
                     _raw(pilot, "target", {"target_id": target_id}, "spacemolt_battle")
                     fired_stance = True

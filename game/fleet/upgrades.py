@@ -1439,8 +1439,9 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 at_t = float(r.get("created_at") or 0)
                 if (now - at_t) <= 86400.0:
                     spend_24h += int(r.get("max_price") or 0)
-        cap_24h = int(policy.get("max_spend_24h_cr") or 1200000)
-        if spend_24h >= cap_24h:
+        raw_cap = policy.get("max_spend_24h_cr")
+        cap_24h = int(raw_cap) if raw_cap is not None else 0
+        if cap_24h > 0 and spend_24h >= cap_24h:
             return {"added": [], "skipped": "24h capex %d >= %d" % (spend_24h, cap_24h)}
 
         # 3. Live safe ship_listings mapped to 3-part `system:poi:base` stations

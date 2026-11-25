@@ -9,13 +9,15 @@
     "enabled": true,
     "unwind_when_off": true,
     "unwind_excess": true,
-    "max_escrow_per_station": 15000,
-    "max_orders_per_station": 4,
+    "max_escrow_per_station": 250000,
+    "max_orders_per_station": 12,
     "max_units_per_order": 200,
     "max_unit_price_ratio": 0.9,
     "outbid_cr": 1,
     "use_needs_tsv": true,
-    "extra_items": [],
+    "extra_items": [
+      "crystallized_biogas"
+    ],
     "exclude_buy_items": [
       "iron_ore",
       "copper_ore",
@@ -27,7 +29,7 @@
   },
   "sell": {
     "enabled": true,
-    "max_orders_per_station": 16,
+    "max_orders_per_station": 48,
     "undercut_cr": 1,
     "min_price_ratio": 0.65,
     "instant_hit_bid_ratio": 0.7,
@@ -60,10 +62,11 @@
   "priority_max_per_station": 2,
   "craft": {
     "enabled": true,
-    "max_runs_per_poll": 20,
-    "max_buy_spend_cr": 50000,
+    "max_runs_per_poll": 40,
+    "max_buy_spend_cr": 120000,
     "min_margin_pct": 0.15,
     "min_profit_cr": 50,
-    "cycles_per_poll": 3
+    "cycles_per_poll": 6,
+    "fuel_trickle_target": 1000
   }
 }
