@@ -445,3 +445,12 @@ Failed: fill gate HALT at 02:56 UTC, 2 of 500 waiting (a drone, Military's plan;
 Requests: ENT-537, ENT-538 (answers).
 Suggestions: Suggi may set a daily ceiling on fit spending in F12 (my advice about 1M cr a day until the 24-hour net is positive); Trinity runs the whole suite before a shared commit (b0a2eef6 left one test red).
 Report: keeper-gate-purse-fell-on-modules-hall-to-own-outpost.
+
+## [ENT-206] | 2026-11-25 05:50 UTC | Oracle | session | ref: reports/2026-11-25_oracle_afterburners-off-scouts-census-refuels-on-the-way.md | see: orders.log ENT-092
+Session: scheduled run intel-turn -- afterburners off the scouts, census legs refuel on the way, unpaying scout hunts out of the plan.
+Did: read the cause of the six tows of 01:28-01:34 UTC and 389 refused census legs (02:00-05:10): 32 afterburners on 25 scouts (fuelplan 7 to 11 fuel a jump against 3); fit-policy Intel strips them (45d42408, 16 stripped by 05:20 UTC, 5 left at 05:41); census.py refuel_hops for legs longer than one tank (53bc129c, test first, 121 files green); 9 ships' rows lost 11 hunts with 0 kills in 24 h; The Line accepted; one unarmed hunt test stopped; one dry scout towed and refuelled; 12 pirate, 5 ranch, 0 raid lines; guidebook: two tests proven, fits and Standing Plan; turn check prints REFUSED.
+Worked: fill gate PASS (last 05:50:38 UTC, 1 docked scout on watch); plan check PASS; idle 11 to 2 and division score 64.5 to 68.2 (scorecard); refused census legs 40 of 93 runs (05:00-05:20) to 10 of 35 (05:20-05:36); 0 scouts lost.
+Failed: frontier oldest read 184 min against 155 and freshness 71.1% to 69.2% (the refused legs; fixes judged next turn); slot KPI 47.6% to 36.2% fit by my choice; errors.log ENT-205.
+Requests: ENT-539 (to Unity: no hunt to a ship without a weapon).
+Suggestions: Trinity weighs fuel a jump in fit_net's choice for fuel-bound classes; Apophis reads his hunters' fuel after afterburners (queue ENT-329).
+Report: afterburners-off-scouts-census-refuels-on-the-way.
