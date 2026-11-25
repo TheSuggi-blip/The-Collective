@@ -129,6 +129,10 @@
   {
    "what": "Read REFUSED and STUCK of the turn check: the afterburners stripped (6 left at 05:38 UTC) and census refuel hops (53bc129c) should bring refused legs under 10 in 2 h; Intel fuel an hour against 16,390-27,074 before the fits",
    "when": "next turn"
+  },
+  {
+   "what": "Read the one-ship tests: The Line (visit mission, Ironhearth) and the titawin hunt on the armed scout; a hunt with no kill leaves the plan",
+   "when": "next turn"
   }
  ],
  "ships": {

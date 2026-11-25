@@ -144,3 +144,4 @@ Planned:
 | Read the Survey Scanner II surveys (census-kit-herds): a faint signature resolved goes to Mining in queue.log | next turn |
 | Weigh a tier-2 scout hull only by fuel a read against the Threshold (tests.md); none bought while the census pays by reads, not by speed | once a T2 hull's fuel a jump is on record |
 | Read REFUSED and STUCK of the turn check: the afterburners stripped (6 left at 05:38 UTC) and census refuel hops (53bc129c) should bring refused legs under 10 in 2 h; Intel fuel an hour against 16,390-27,074 before the fits | next turn |
+| Read the one-ship tests: The Line (visit mission, Ironhearth) and the titawin hunt on the armed scout; a hunt with no kill leaves the plan | next turn |
