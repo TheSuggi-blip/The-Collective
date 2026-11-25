@@ -12,12 +12,13 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 671.
+Routes: 672.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
 | [census-voidborn](census-voidborn.json) | census | home space | Read one Voidborn system whole: deposits, creatures, order book, mission board | up to 5 ships | 166 | 7 | -120 | -760 | 2026-11-25 |
 | [builder-home-node-beta](builder-home-node-beta.json) | circuit | home space | The faction's Builder flies home to Node Beta Industrial Station, the build site, once (Logistics) | once per pilot, up to 1 ships, standing work | 1 | 15 | -160 | one-time | 2026-11-24 |
+| [builder-home-outposts](builder-home-outposts.json) | circuit | home space | The faction's Builder flies home to Node Beta Industrial Station from one of our outposts after a build there (Logistics) | up to 1 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [bursar-desk-experiment](bursar-desk-experiment.json) | circuit | home space | Station Bursar desk at The Experiment: neon made into ionized neon by hand, the pilot's own surplus ionized neon and liquid nitrogen listed under the station's asks, a 15-minute docked watch | up to 1 ships, standing work | 26 | 18 | -80 | -240 | 2026-11-24 |
 | [buy-autocannon-rounds-central-nexus](buy-autocannon-rounds-central-nexus.json) | circuit | home space | Autocannon ammunition at home: standard rounds boxes at Central Nexus | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr, while central_nexus asks 2 cr or less for standard_rounds_box, standing work | 13 | 32 | -60 | one-time | 2026-11-25 |
 | [buy-autocannon-rounds-node-beta](buy-autocannon-rounds-node-beta.json) | circuit | home space | Autocannon ammunition at home: standard rounds boxes at Node Beta Industrial Station | once per pilot, up to 3 ships, 20 pilots in all, needs autocannon_i or autocannon_ii, from 3,000 cr, while node_beta_industrial_station asks 2 cr or less for standard_rounds_box, standing work | 9 | 2 | -790 | one-time | 2026-11-25 |

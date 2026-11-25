@@ -1,0 +1,21 @@
+{
+ "id": "builder-home-outposts",
+ "kind": "circuit",
+ "title": "The faction's Builder flies home to Node Beta Industrial Station from one of our outposts after a build there (Logistics)",
+ "note": "Written by Apollo, 2026-11-25 06:54 UTC (orders ENT-092 P3; rule F8). The Builder founded CLTV Outpost Atria and stood docked there with every route of its list closed (why_closed.py: builder-home-node-beta done once; haul-network-builder only in node_beta and nexus_prime). This route takes it home from an outpost of ours whenever it stands in one (requires.in_system the outposts' systems, requires.role builder), standing work judged by the builds it serves, never by its own pay. Not once: every build at an outpost ends there.",
+ "standing": true,
+ "max_ships": 1,
+ "requires": {
+  "role": "builder",
+  "in_system": [
+   "atria",
+   "gsc_0044"
+  ]
+ },
+ "stops": [
+  {
+   "at": "node_beta:node_beta_industrial_station:node_beta_industrial_station",
+   "store": "all"
+  }
+ ]
+}
