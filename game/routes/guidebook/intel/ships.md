@@ -1,7 +1,7 @@
 # Intel guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-25. Evidence: data/fleet/ships/; catalog tables hulls and items; the books of Central Nexus and Ironlight Crossroads (tool market); fuelplan.ship_jump_cost; stats_money_hour (Intel, 2026-11-24 14:00 to 11-25 04:00 UTC); errors.log ENT-205.
+Status: proven. Updated: 2026-11-25. Evidence: data/fleet/ships/; data/fleet/onetime.json; hive.py spend; catalog tables hulls and items; the books of Central Nexus and Ironlight Crossroads (tool market); fuelplan.ship_jump_cost; stats_money_hour (Intel, 2026-11-24 14:00 to 11-25 04:00 UTC); errors.log ENT-205.
 
 - The Threshold: hold 65, tank 95, hull 75, shield 80, two utility slots.
   Fuel (fuelplan, 2026-11-25): about 3 a jump, 7 with an Afterburner II,
@@ -23,7 +23,14 @@ Status: proven. Updated: 2026-11-25. Evidence: data/fleet/ships/; catalog tables
   the next fit for pirate readings, not tried yet.
 - Fuel beyond the border is cheaper than at home (Hive Antares,
   Ironlight Crossroads; tool market, item fuel).
-- A new module or hull is tried on one scout first (rule F17).
+- A loadout in fit-policy is a standing buy: fit-network buys each
+  listed module for every scout with a free slot and the wallet for it.
+  In the 7.8 h to 11:08 UTC on 2026-11-25 it spent 195,278 cr on scouts
+  (shield boosters, cloaks, a ship scanner), none with a measured gain;
+  the loadouts were emptied (34ebb36e). A module returns to a loadout
+  only with its gain measured, e.g. fuel a jump of the four scouts that
+  carry a fuel optimizer against the rest.
+- A new module or hull is tried on two or three scouts first (F37).
 
 ### Multi-Empire Ship Catalog (Voidborn, Outer Rim, Nebula)
 Status: proven. Updated: 2026-11-23. Evidence: table hulls; game/catalog/ships/voidborn.md; game/catalog/ships/outerrim.md; game/catalog/ships/nebula.md; hive.py guide intel.

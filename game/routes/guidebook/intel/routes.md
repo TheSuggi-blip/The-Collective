@@ -4,26 +4,26 @@
 Status: proven. Updated: 2026-11-25. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check and status; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN, STUCK, REFUSED).
 
 - First, every scout: the store routes, give-scout-stores-*, the missions
-  paid once and the Voidborn chain (F34, F35), fit-network last
-  (fit-policy Intel: no afterburner; survey_scanner_ii under its max
-  price, shield boosters, fuel optimizer). No census in First or Then: a
-  census is open to any empire's pilot.
-- Newborn scouts: @outerrim (Altais) and @nebula (Haven):
-  census-region-<capital> (120 min), its ring (360 min), then the far
-  lists, the roads; the Outer Rim scouts take census-north after their
-  region. Sol and Krynn (160 min) go to Voidborn readers.
+  paid once and the Voidborn chain (F34, F35), fit-network last: it only
+  strips off-role modules now; the Intel loadouts are empty, no module is
+  bought without a measured payback (orders ENT-093 P1). No hunt circuit:
+  an unarmed scout books no First Hunt. No census in First or Then.
+- Born elsewhere, work at home (F35): Outer Rim rows end @outerrim
+  (census-region-altais 120 min, 8 ships, with the north road's far end;
+  its ring 360), census-far-1, home-frontier-station; Nebula rows
+  @nebula, census-far-2..4, home-grand-exchange. Sol and Krynn (160 min)
+  go to Voidborn readers.
 - Kit herds: census-kit-herds (360 min, three ships); hive.py herds: a
   place at 3 or more goes to Military in admirals.log the same turn;
   tagged herds: file_ranches.py.
 - Readers (@reader): census-voidborn (35 min), the outpost watch (40),
-  census-worked (120), census-frontier (155), census-worked-far (160),
-  the roads. A cadence sits a trip under its target.
-- Explorers: their road (census-north up to 8 ships, Atria to Yildun;
-  -east, -south; 155 min), census-worked-far, their far list (1440 min).
-  A leg longer than a tank refuels on the way (census.py refuel_hops).
-- Hunters: only hunts that kill stay (Intercrus, Amberfall; one scout a
-  herd, F9; loot to a trader, P5); the rest left on 2026-11-25 (0 kills
-  in 24 h). A hunt test goes to an armed scout only.
+  census-worked (120), census-frontier (145), census-worked-far (160),
+  the roads. A cadence sits a trip under its target (3 hours).
+- Explorers: their road (census-north up to 8 ships, Atria to Yildun's
+  side; -east, -south; 155 min), census-worked-far, their far list (1440
+  min). A leg longer than a tank refuels on the way (refuel_hops).
+- Hunters: none. No scout hunt paid its fuel (Intercrus -610, Amberfall
+  -570 cr a ship-hour; 2026-11-25); a hunt test goes to an armed scout.
 - census-roads (960 min, four ships): no never-read system is left.
 - Then: the docked book watch (watch-book-*, 0 fuel), then park.
 - Changed by: a WORKED, SITES, FRESH or REFUSED HALT, a road pirate, a

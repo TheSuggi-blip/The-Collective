@@ -29,10 +29,11 @@ Status: proven. Updated: 2026-11-25. Evidence: read.db tables hulls, ship_listin
   Voidborn `Confluence` (120c, 4U), Solarian `Empirica` (125c, 5U).
 - Tier 3 (Piloting 20): Nebula `Survey Vessel` (305c, 5U), Solarian
   `Perigee` (270c, 6U), Voidborn `Noumenon` (215c, 5U).
-- Fit: `survey_scanner_ii` (every system surveyed on census), Mining
-  Survey Probe for faint signatures, `shield_booster_ii`, `fuel_optimizer`;
-  never an afterburner (2 to 3.7 times the fuel a jump, ships.md). Empty
-  hold beyond the border (F3), never fire first (F2).
+- Fit: what a scout carries stays; nothing is bought until its gain is
+  measured and repays it within a week (orders ENT-093 P1; the Intel
+  loadouts of fit-policy are empty, ships.md). Never an afterburner (2 to
+  3.7 times the fuel a jump). Empty hold beyond the border (F3), never
+  fire first (F2).
 - AutoNet feeder (ENT-088): keep `<6h` market books across `60+` safe empire & neutral hubs (feeds `bursar-network` & `haul-network`) and `<3h` `ship_listings` at major shipyards (feeds `upgrades.py` auto-buy); tracked live on `scorecard.py` `AutoNet`.
 
 ### Skills
