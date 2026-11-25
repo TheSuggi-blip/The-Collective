@@ -1785,6 +1785,16 @@ def serve(data, now, dry):
         except Exception as error:
             print("HALT: the upgrade queue's step failed: %s: %s" % (type(error).__name__, str(error)[:200]))
             failed = 1
+        try:
+            _tug_stamp = Path(data) / "fleet" / "tug_last_run"
+            _last_t = float(_tug_stamp.stat().st_mtime) if _tug_stamp.exists() else 0.0
+            if dry or (now - _last_t) >= 300.0:
+                import tug as _tug
+                _tug.run_pass(data, now=now, dry=dry, limit=4)
+                if not dry:
+                    _tug_stamp.write_text(str(int(now)), encoding="ascii")
+        except Exception as error:
+            print("tug: pass warning: %s: %s" % (type(error).__name__, str(error)[:160]))
         return failed
     finally:
         if lock_fh is not None:

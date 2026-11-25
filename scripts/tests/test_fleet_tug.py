@@ -90,5 +90,14 @@ class SettleTests(unittest.TestCase):
             self.assertNotIn("pirate_sys", got)
 
 
+    def test_afterburner_ship_with_11_fuel_two_jumps_out_or_4_fuel_in_system_is_towed(self):
+        # scout-6 case: afterburner_iii burns ~8.5/jump, so 11 fuel cannot reach station 2 jumps away
+        ab_scout = ship(system="c", fuel=11, max_fuel=95, modules=[{"type": "afterburner_iii"}])
+        self.assertIsNotNone(tug.stranded(ab_scout, "", LANES, STATIONS))
+        # drone-47 case: 2x afterburner_ii at 4 fuel in same system cannot afford POI travel to dock
+        ab_drone = ship(system="a", fuel=4, max_fuel=95, modules=[{"type": "afterburner_ii"}, {"type": "afterburner_ii"}])
+        self.assertIsNotNone(tug.stranded(ab_drone, "", LANES, STATIONS))
+
+
 if __name__ == "__main__":
     unittest.main()

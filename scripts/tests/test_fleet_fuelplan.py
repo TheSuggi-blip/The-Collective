@@ -134,5 +134,34 @@ class HuntWritesTheNotesTests(unittest.TestCase):
         self.assertIn("fuelplan.fuel_short", text)
 
 
+    def test_foreign_player_stations_excluded_and_afterburner_fuel_and_refuel_hops(self):
+        with tempfile.TemporaryDirectory() as td:
+            sc = Path(td) / "scouting"
+            sc.mkdir()
+            (sc / "pub.json").write_text(json.dumps({"pois": {"p1": {"poi": {"id": "p1"}, "base": {"id": "pub_station", "services": ["refuel"]}}}}))
+            (sc / "foreign.json").write_text(json.dumps({"pois": {"p2": {"poi": {"id": "p2"}, "base": {"id": "be5d7fd8ab1ffdee9720b0040d9bd298", "faction_id": "1e5f", "services": ["refuel"]}}}}))
+            sts = fuelplan.fuel_stations(td)
+            self.assertIn("pub", sts)
+            self.assertNotIn("foreign", sts)
+
+        ab_ship = {"max_fuel": 95, "modules": [{"type": "afterburner_iii"}]}
+        self.assertGreaterEqual(fuelplan.ship_jump_cost(ab_ship), 8.0)
+        self.assertTrue(fuelplan.fuel_short(20, 2, ship=ab_ship))
+        self.assertFalse(fuelplan.fuel_short(90, 2, ship=ab_ship))
+
+        # 10-hop chain with mid-way fuel station at s4: 40 fuel cannot reach s10 directly -> hops via s4
+        chain = {f"s{i}": [x for x in (f"s{i-1}" if i > 0 else "", f"s{i+1}" if i < 10 else "") if x] for i in range(11)}
+        sts_map = {"s4": ("p4", "base_s4"), "s8": ("p8", "base_s8")}
+        self.assertIsNone(fuelplan.plan_refuel_hop(chain, "s0", "s10", sts_map, fuel=30, max_fuel=95, ship=ab_ship))
+        hop = fuelplan.plan_refuel_hop(chain, "s0", "s10", sts_map, fuel=50, max_fuel=95, ship=ab_ship)
+        self.assertIsNotNone(hop)
+        self.assertEqual(hop[1], "s4")
+        self.assertEqual(fuelplan.route_max_gap(chain, "s0", "s10", sts_map), 4)
+        self.assertTrue(fuelplan.can_reach_with_refuels(chain, "s0", "s10", sts_map, ship=ab_ship))
+        desert = {f"d{i}": [x for x in (f"d{i-1}" if i > 0 else "", f"d{i+1}" if i < 14 else "") if x] for i in range(15)}
+        self.assertEqual(fuelplan.route_max_gap(desert, "d0", "d14", {}), 14)
+        self.assertFalse(fuelplan.can_reach_with_refuels(desert, "d0", "d14", {}, ship=ab_ship))
+
+
 if __name__ == "__main__":
     unittest.main()

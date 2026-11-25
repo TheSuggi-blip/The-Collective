@@ -665,19 +665,7 @@ def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
     return status == 200 and '"error"' not in str(out)[:240], data
 
 
-def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
-    # Hydrate blind fleet-engine sessions (empty location.system) before prepare-at-station so goals never hang!
-    try:
-        st_a, out_a = gate_mod.call("get", "/accounts/%s" % gate_mod.q(pilot), timeout=15)
-        if st_a == 200:
-            da = json.loads(out_a)
-            if da.get("hasExecutingGoal"):
-                return False, "A goal is already executing on this account. Try again shortly."
-            loc = ((da.get("state") or {}).get("location") or {})
-            if not str(loc.get("system") or ""):
-                _gate_raw(gate_mod, pilot, "get_status", {}, group="spacemolt")
-    except Exception:
-        pass
+def _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
     try:
         status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
                                     {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
@@ -689,6 +677,103 @@ def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
     except (ValueError, TypeError):
         return False, str(out)[:160]
     return status == 200 and bool(d.get("success")), str(d.get("message") or d.get("error") or "")[:160]
+
+
+def _read_live_fuel_loc(gate_mod, pilot, ship=None):
+    """Read live (system_id, fuel, max_fuel, has_executing_goal) from /accounts/<pilot> with ship fallback."""
+    cur_sys = str((ship or {}).get("system") or "")
+    cur_fuel = (ship or {}).get("fuel")
+    max_fuel = (ship or {}).get("max_fuel") or 95
+    busy = False
+    try:
+        st_a, out_a = gate_mod.call("get", "/accounts/%s" % gate_mod.q(pilot), timeout=15)
+        if st_a == 200:
+            da = json.loads(out_a)
+            busy = bool(da.get("hasExecutingGoal"))
+            st_obj = da.get("state") or {}
+            loc = st_obj.get("location") or {}
+            sh = st_obj.get("ship") or {}
+            if not str(loc.get("system") or ""):
+                _gate_raw(gate_mod, pilot, "get_status", {}, group="spacemolt")
+            else:
+                cur_sys = str(loc.get("system") or cur_sys)
+            if isinstance(sh.get("fuel"), (int, float)):
+                cur_fuel = sh["fuel"]
+            if isinstance(sh.get("max_fuel"), (int, float)) and sh["max_fuel"] > 0:
+                max_fuel = sh["max_fuel"]
+    except Exception:
+        pass
+    return cur_sys, cur_fuel, max_fuel, busy
+
+
+def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65, data_dir=None, ship=None):
+    """Dock pilot at sys_id:poi_id:base_id with automatic multi-hop public refuel staging when
+    the destination exceeds current single-tank jump range (prevents long-range upgrade deadlocks)."""
+    t_end = time.time() + max(25.0, float(timeout))
+    cur_sys, cur_fuel, max_fuel, busy = _read_live_fuel_loc(gate_mod, pilot, ship=ship)
+    if busy:
+        return False, "A goal is already executing on this account. Try again shortly."
+    if not data_dir:
+        return _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=timeout)
+
+    import fuelplan as _fp
+    game_dir = Path(__file__).resolve().parent.parent
+    lanes, _home = _fp.chart(game_dir)
+    fars = _fp.strongholds(game_dir)
+    stations = {s: v for s, v in _fp.fuel_stations(data_dir).items() if s not in fars}
+    tried_bases = set()
+
+    for _hop_i in range(4):
+        rem = t_end - time.time()
+        if rem < 20.0:
+            return False, "refuel staging in progress at %s (will continue next pass)" % (cur_sys or "space")
+        hop = None
+        if cur_sys and cur_sys != sys_id and lanes and stations and cur_fuel is not None:
+            hop = _fp.plan_refuel_hop(
+                lanes, cur_sys, sys_id, stations, cur_fuel, max_fuel,
+                ship=ship, skip=tried_bases, avoid=fars,
+            )
+        if hop is not None:
+            _d, h_sys, h_poi, h_base = hop
+            tried_bases.add(h_base)
+            ok_h, msg_h = _gate_dock_once(gate_mod, pilot, h_sys, h_poi, h_base, timeout=min(90.0, rem))
+            if not ok_h:
+                if "insufficient fuel" in msg_h.lower():
+                    if cur_fuel is not None and max_fuel and float(cur_fuel) >= 0.9 * float(max_fuel):
+                        return False, "UNREACHABLE_TANK: %s -> %s (%s)" % (cur_sys, h_sys, msg_h[:80])
+                    near = _fp.nearest_fuel(lanes, cur_sys, stations, skip=tried_bases)
+                    if near and near[0] < _d:
+                        tried_bases.add(near[3])
+                        _gate_dock_once(gate_mod, pilot, near[1], near[2], near[3], timeout=min(70.0, max(20.0, t_end - time.time())))
+                else:
+                    return False, "refuel hop %s failed: %s" % (h_sys, msg_h[:100])
+            else:
+                _gate_raw(gate_mod, pilot, "refuel", {}, group="spacemolt")
+            cur_sys, cur_fuel, max_fuel, _b = _read_live_fuel_loc(gate_mod, pilot, ship=ship)
+            continue
+
+        ok_d, msg_d = _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(120.0, rem))
+        if ok_d:
+            return True, msg_d
+        if "insufficient fuel" in msg_d.lower() and cur_sys and lanes and stations:
+            # Engine refused direct jump -> plan conservative hop using 60% of current fuel estimate
+            eff_fuel = float(cur_fuel) * 0.6 if isinstance(cur_fuel, (int, float)) else 25.0
+            hop2 = _fp.plan_refuel_hop(
+                lanes, cur_sys, sys_id, stations, eff_fuel, max_fuel,
+                ship=ship, skip=tried_bases, avoid=fars,
+            )
+            if hop2 is None:
+                hop2 = _fp.nearest_fuel(lanes, cur_sys, stations, skip=tried_bases)
+            if hop2 is not None:
+                tried_bases.add(hop2[3])
+                ok_h2, msg_h2 = _gate_dock_once(gate_mod, pilot, hop2[1], hop2[2], hop2[3], timeout=min(90.0, max(20.0, t_end - time.time())))
+                if ok_h2:
+                    _gate_raw(gate_mod, pilot, "refuel", {}, group="spacemolt")
+                    cur_sys, cur_fuel, max_fuel, _b = _read_live_fuel_loc(gate_mod, pilot, ship=ship)
+                    continue
+                return False, "refuel hop %s failed: %s" % (hop2[1], msg_h2[:100])
+        return False, msg_d
+    return False, "refuel staging advanced to %s (continuing next pass)" % (cur_sys or "space")
 
 
 def _try_hold_upgrade(data_dir, pilot, now, division_mod):
@@ -799,11 +884,14 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
         try:
             if str(ship.get("docked") or "") != base_id:
                 rem_t = max(30.0, budget_s - (time.time() - t0))
-                ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180.0, rem_t))
+                ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180.0, rem_t), data_dir=data_dir, ship=ship)
                 if not ok_d:
                     if "already executing" in msg_d.lower():
                         _request_pilot_stop(data_dir, pilot)
-                    r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
+                    if msg_d.startswith("UNREACHABLE_TANK:"):
+                        r["state"], r["note"], r["updated_at"] = "failed", msg_d[:120], int(now)
+                    else:
+                        r["note"], r["updated_at"] = "dock deferred: %s" % msg_d[:80], int(now)
                     row_changed = True
                     return
             ok_ls, ls_ans = _gate_raw(gate_mod, pilot, "list_ships", {})
@@ -948,7 +1036,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
             actions += 1
             try:
                 if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180, max(30, budget_s - (time.time() - t0))))
+                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180, max(30, budget_s - (time.time() - t0))), data_dir=data_dir, ship=ship)
                     if not ok_d:
                         if "already executing" in msg_d.lower():
                             _request_pilot_stop(data_dir, pilot)
@@ -1248,6 +1336,26 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
         con.close()
 
     bursar_desks = _load_bursar_desk_pilots(data_dir) if policy.get("exclude_bursar_desks", True) else set()
+    import fuelplan as _fp_enq
+    _lanes_enq, _ = _fp_enq.chart(Path(repo_root) / "game")
+    _fars_enq = _fp_enq.strongholds(Path(repo_root) / "game")
+    _sts_enq = {s: v for s, v in _fp_enq.fuel_stations(data_dir).items() if s not in _fars_enq}
+    _ships_dir_enq = Path(data_dir) / "fleet" / "ships"
+    _ship_cache_enq = {}
+
+    def _pilot_can_reach(pilot_name, target_st3):
+        if not _lanes_enq or not _sts_enq or not target_st3 or ":" not in str(target_st3):
+            return True
+        t_sys = str(target_st3).split(":", 1)[0]
+        if pilot_name not in _ship_cache_enq:
+            try:
+                _ship_cache_enq[pilot_name] = json.loads((_ships_dir_enq / (pilot_name + ".json")).read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                _ship_cache_enq[pilot_name] = None
+        sdoc = _ship_cache_enq[pilot_name]
+        if not isinstance(sdoc, dict) or not sdoc.get("system"):
+            return True
+        return _fp_enq.can_reach_with_refuels(_lanes_enq, str(sdoc["system"]), t_sys, _sts_enq, ship=sdoc, avoid=_fars_enq)
     max_new = max(1, int(policy.get("max_new_per_pass") or 4))
     default_div_cap = int(policy.get("max_active_per_div") or 6)
     max_auto_tier = int(policy.get("max_auto_tier") or 3)
@@ -1320,19 +1428,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                         continue
                     l_station = None
                     l_price = rmax
-                    if listed_only:
-                        cand_l = [
-                            (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
-                            if pr <= rmax and (hid, st3, pr) not in used_listings
-                        ]
-                        if not cand_l:
-                            continue
-                        l_price, l_station = cand_l[0]
-                    else:
-                        l_station = base_to_station.get("node_beta_industrial_station", "")
-                        if not l_station:
-                            continue
-                    elig = [
+                    base_elig = [
                         s for s in cohort_ships
                         if s["pilot"] not in active_pilots
                         and s["pilot"] not in bursar_desks
@@ -1340,8 +1436,28 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                         and s["piloting"] >= rpil
                         and not (min_t0_reserve > 0 and s["tier"] == 0 and t0_free_count <= min_t0_reserve)
                     ]
-                    if not elig:
+                    if not base_elig:
                         continue
+                    elig = []
+                    if listed_only:
+                        cand_l = [
+                            (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
+                            if pr <= rmax and (hid, st3, pr) not in used_listings
+                        ]
+                        for pr, st3 in cand_l:
+                            reach_elig = [s for s in base_elig if _pilot_can_reach(s["pilot"], st3)]
+                            if reach_elig:
+                                l_price, l_station, elig = pr, st3, reach_elig
+                                break
+                        if not elig:
+                            continue
+                    else:
+                        l_station = base_to_station.get("node_beta_industrial_station", "")
+                        if not l_station:
+                            continue
+                        elig = [s for s in base_elig if _pilot_can_reach(s["pilot"], l_station)]
+                        if not elig:
+                            continue
                     if emp_first:
                         elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, _emp_rank(s["empire"], pref_emps), -s["piloting"], s["tier"], s["pilot"]))
                     else:

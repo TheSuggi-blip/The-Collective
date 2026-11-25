@@ -315,5 +315,52 @@ class UpgradeQueueTests(unittest.TestCase):
         self.assertEqual((gate.calls[0][2] or {}).get("action"), "list_ships")
 
 
+    def test_gate_dock_multi_hop_refuel_reaches_distant_shipyard(self):
+        """Long-distance hull upgrade hops through intermediate public refuel station instead of deadlocking."""
+        import upgrades as upg
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            (data / "scouting").mkdir(parents=True)
+            # Use two real connected systems from game/map/galaxy.tsv (e.g. 70_ophiuchi -> the_anvil via intermediate)
+            import fuelplan as fp
+            lanes, _ = fp.chart(Path(__file__).resolve().parents[2] / "game")
+            path = fp.shortest_path(lanes, "70_ophiuchi", "the_anvil")
+            self.assertIsNotNone(path)
+            mid = path[4]
+            (data / "scouting" / (mid + ".json")).write_text(json.dumps({
+                "pois": {"p_mid": {"poi": {"id": "p_mid"}, "base": {"id": "mid_base", "services": ["refuel"]}}}
+            }), encoding="ascii")
+
+            state = {"sys": "70_ophiuchi", "fuel": 50}
+            goals = []
+
+            class FakeGate:
+                @staticmethod
+                def q(s):
+                    return s
+                @staticmethod
+                def call(method, url, body=None, timeout=30):
+                    if method == "get":
+                        return 200, json.dumps({"hasExecutingGoal": False, "state": {"location": {"system": state["sys"]}, "ship": {"fuel": state["fuel"], "max_fuel": 95}}})
+                    if url.endswith("/goal"):
+                        dst = body["options"]["systemId"]
+                        goals.append(dst)
+                        if dst == mid:
+                            state["sys"], state["fuel"] = mid, 95
+                            return 200, json.dumps({"success": True, "message": "docked at mid"})
+                        if dst == "the_anvil":
+                            if state["sys"] == mid:
+                                state["sys"] = "the_anvil"
+                                return 200, json.dumps({"success": True, "message": "docked at anvil"})
+                            return 400, json.dumps({"success": False, "error": "Insufficient fuel to reach the_anvil"})
+                    return 200, json.dumps({"ok": True})
+
+            ship = {"system": "70_ophiuchi", "fuel": 50, "max_fuel": 95, "modules": [{"type": "afterburner_ii"}]}
+            ok, msg = upg._gate_dock(FakeGate, "drone-6", "the_anvil", "the_anvil_arsenal", "the_anvil_arsenal", timeout=90, data_dir=str(data), ship=ship)
+            self.assertTrue(ok, msg)
+            self.assertEqual(goals[0], mid)
+            self.assertEqual(goals[-1], "the_anvil")
+
+
 if __name__ == "__main__":
     unittest.main()

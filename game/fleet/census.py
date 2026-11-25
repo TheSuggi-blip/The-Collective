@@ -296,6 +296,14 @@ def fuel_stations(data):
             poi = read.get('poi') if isinstance(read.get('poi'), dict) else {}
             services = read.get('services') or base.get('services') or []
             if isinstance(services, list) and 'refuel' in services and base.get('id'):
+                bid = str(base.get('id') or '').strip()
+                ftag = str(base.get('faction_tag') or '').strip().upper()
+                is_foreign = (ftag != 'CLTV') and (
+                    bool(base.get('faction_id') or base.get('owner') or base.get('owner_id'))
+                    or (len(bid) == 32 and all(ch in '0123456789abcdef' for ch in bid.lower()))
+                )
+                if is_foreign:
+                    continue
                 out.setdefault(f.stem, (poi.get('id') or pid, base['id']))
     return out
 
@@ -515,27 +523,34 @@ leg_started, leg_before = STARTED, WALLET_BEFORE
 LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
 FARS = strongholds()
 STATIONS = {s: v for s, v in fuel_stations(DATA).items() if s not in FARS}
+import fuelplan as _fp
+SHIP_DOC = None
 try:                                                           # home: the pilot's own capital, not ours for all
-    HOME = home_of(json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8')), STATIONS, HOME)
+    SHIP_DOC = json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8'))
+    HOME = home_of(SHIP_DOC, STATIONS, HOME)
 except (OSError, ValueError):
-    pass
+    SHIP_DOC = None
 if HOME['systemId'] != 'nexus_prime':                          # the way home counts to that capital
     HOME_JUMPS = jumps(LANES, HOME['systemId'], 99)
+_PJ = _fp.ship_jump_cost(SHIP_DOC)
+_SP = max(_fp.SAFE_SPARE, _fp.ship_dock_reserve(SHIP_DOC) * 2.0)
 HERE = ship_system()
 ONWARD = nearest_fuel(LANES, system_id, STATIONS)          # where the ship takes fuel after its read
 WAY = jumps(LANES, HERE, 99).get(system_id) if HERE else None
 if WAY is not None:
     WAY += ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0)
 TANK = fuel()
-if fuel_short(TANK, WAY):                     # never fly out on a tank that cannot take the ship on to fuel
+if _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):                     # never fly out on a tank that cannot take the ship on to fuel
     STOP = nearest_fuel(LANES, HERE, STATIONS)
-    say(f'fuel {TANK} short of {1.5 * WAY + 15:.0f} for {system_id} and on to fuel: '
+    say(f'fuel {TANK} short of {_PJ * WAY + _SP:.0f} for {system_id} and on to fuel: '
         + (f'fuel stop at {STOP[1]} first' if STOP else 'no station with fuel on the chart'))
     if STOP:
+        before_ref = TANK
         TANK = refuel_at(STOP)
-        WAY2 = jumps(LANES, STOP[1], 99).get(system_id)
-        WAY = None if WAY2 is None else WAY2 + (ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0))
-    if not STOP or fuel_short(TANK, WAY):
+        if TANK is not None and before_ref is not None and TANK > before_ref:
+            WAY2 = jumps(LANES, STOP[1], 99).get(system_id)
+            WAY = None if WAY2 is None else WAY2 + (ONWARD[0] if ONWARD else (HOME_JUMPS.get(system_id) or 0))
+    if not STOP or _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):
         write_row(system_id, STARTED, WALLET_BEFORE, wallet(), 0, 0, [f'fuel {TANK} short for {system_id}: not flown'])
         print(f'RESULT {pilot}: {system_id}: not flown, fuel {TANK} short of the way there and on to fuel', flush=True)
         sys.exit(0)
@@ -551,10 +566,12 @@ while True:
     if ok and legs < CHAIN:
         nxt = next_system(ROUTE, target, LANES, str(DATA), busy_systems(), done, time.time(), REACH)
         if nxt:
-            way = jumps(LANES, target, REACH).get(nxt, REACH) + (HOME_JUMPS.get(nxt) or 30)
+            nxt_near = nearest_fuel(LANES, nxt, STATIONS)
+            nxt_leg = nxt_near[0] if nxt_near else (HOME_JUMPS.get(nxt) or 30)
+            way = jumps(LANES, target, REACH).get(nxt, REACH) + nxt_leg
             tank = fuel()
-            if tank is None or tank < 1.5 * way + 15:
-                say(f'next {nxt}: fuel {tank} short of {1.5 * way + 15:.0f} for the way there and home: turning home')
+            if tank is None or _fp.fuel_short(tank, way, ship=SHIP_DOC):
+                say(f'next {nxt}: fuel {tank} short of {_PJ * way + _SP:.0f} for the way there and fuel: turning home')
                 why, nxt = f'chain ended on fuel {tank}', None
     if not nxt:
         break
@@ -563,7 +580,7 @@ while True:
     write_row(target, leg_started, leg_before, leg_after, n_places, n_creatures, [f'chain {legs + 1} of {CHAIN}: next {nxt}'])
     leg_started, leg_before, target, legs = time.time(), leg_after, nxt, legs + 1
 STAY = '--stay' in sys.argv
-END, STOP = end_stop(STAY, last_station, not last_station and fuel_short(fuel(), HOME_JUMPS.get(target)),
+END, STOP = end_stop(STAY, last_station, not last_station and _fp.fuel_short(fuel(), HOME_JUMPS.get(target), ship=SHIP_DOC),
                      None if last_station else nearest_fuel(LANES, target, STATIONS))
 if END in ('fuel', 'fuel-home'):                  # docked nowhere: the nearest station with fuel, and with --stay
     refuel_at(STOP)                               # end docked there, never sent home across the galaxy (2026-11-23)

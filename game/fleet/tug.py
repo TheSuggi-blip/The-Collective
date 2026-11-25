@@ -44,8 +44,13 @@ def stranded(ship, order, lanes, stations, below=BELOW, mark=""):
     `mark` is this shell's hand mark: a ship held by this hand may be towed, one held by any other may not."""
     fuel = ship.get("fuel")
     max_fuel = ship.get("max_fuel")
-    per_jump = max(fuelplan.PER_JUMP, round(float(max_fuel) / 55.0, 1)) if isinstance(max_fuel, (int, float)) and max_fuel > 0 else fuelplan.PER_JUMP
-    dock_way = max(DOCK_WAY, int(round(per_jump)))
+    has_mods = isinstance(ship.get("modules"), list)
+    if has_mods:
+        per_jump = fuelplan.ship_jump_cost(ship)
+        dock_way = int(round(fuelplan.ship_dock_reserve(ship)))
+    else:
+        per_jump = max(fuelplan.PER_JUMP, round(float(max_fuel) / 55.0, 1)) if isinstance(max_fuel, (int, float)) and max_fuel > 0 else fuelplan.PER_JUMP
+        dock_way = max(DOCK_WAY, int(round(per_jump)))
     eff_below = max(below, int(round(per_jump * 6 + dock_way)))
     if not isinstance(fuel, (int, float)) or fuel >= eff_below:
         return None
@@ -121,15 +126,10 @@ def raw(pilot, action, params):
     return status, str(out)[:300]
 
 
-def main(argv):
-    if "-h" in argv or "--help" in argv:
-        print(__doc__)
-        return 0
-    def opt(name, default):
-        return type(default)(argv[argv.index(name) + 1]) if name in argv else default
-    dry, below, limit, wait = "--dry-run" in argv, opt("--below", BELOW), opt("--limit", LIMIT), opt("--wait", WAIT)
-    only = opt("--pilot", "")
-    data, now, mark = division.DATA, time.time(), division.hand_mark()
+def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, only="", mark=None):
+    """Programmatic entry point for automated background tug passes (e.g. from wallet.py serve)."""
+    now = time.time() if now is None else float(now)
+    mark = division.hand_mark() if mark is None else mark
     fleet = ships(data)
     lanes = fuelplan.chart(REPO)[0]
     stations = safe_stations(data, REPO)
@@ -188,8 +188,25 @@ def main(argv):
         limit -= 1
     if not dry:
         save_state(data, state)
-    say("tug: %d settled, %d waiting%s" % (done, len(state), " (dry run)" if dry else ""))
+    if done or state or only or dry:
+        say("tug: %d settled, %d waiting%s" % (done, len(state), " (dry run)" if dry else ""))
     return 0
+
+
+def main(argv):
+    if "-h" in argv or "--help" in argv:
+        print(__doc__)
+        return 0
+    def opt(name, default):
+        return type(default)(argv[argv.index(name) + 1]) if name in argv else default
+    return run_pass(
+        division.DATA, time.time(),
+        dry="--dry-run" in argv,
+        below=opt("--below", BELOW),
+        limit=opt("--limit", LIMIT),
+        wait=opt("--wait", WAIT),
+        only=opt("--pilot", ""),
+    )
 
 
 if __name__ == "__main__":

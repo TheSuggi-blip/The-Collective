@@ -230,8 +230,15 @@ def fuel_first(game, data):
     leg = onward[0] if onward else fuelplan.way(lanes, system_id, sell_at[0])
     there = fuelplan.way(lanes, here, system_id)
     way = None if there is None or leg is None else there + leg
+    ship_doc = None
+    try:
+        sp = os.path.join(data, 'fleet', 'ships', f'{pilot}.json')
+        if os.path.isfile(sp):
+            ship_doc = json.load(open(sp, encoding='utf-8'))
+    except Exception:
+        ship_doc = None
     fuel, size = tank()
-    if not fuelplan.fuel_short(fuel, way) or (size and fuel is not None and fuel >= 0.9 * size):
+    if not fuelplan.fuel_short(fuel, way, ship=ship_doc) or (size and fuel is not None and fuel >= 0.9 * size):
         return None                                  # a tank about full flies as before: no stop could fill it more
     tried = set()
     for _ in range(2):                               # a station that answered with no fuel is passed over once
@@ -247,10 +254,12 @@ def fuel_first(game, data):
             after = tank()[0]
         say(f'fuel stop at {stop[1]} ({stop[3]}): fuel {fuel} -> {after}')
         tried.add(stop[3])
-        fuel, here = after, stop[1]
+        if after is not None and fuel is not None and after > fuel:
+            here = stop[1]
+        fuel = after
         there = fuelplan.way(lanes, here, system_id)
         way = None if there is None or leg is None else there + leg
-        if not fuelplan.fuel_short(fuel, way) or (size and fuel is not None and fuel >= 0.9 * size):
+        if not fuelplan.fuel_short(fuel, way, ship=ship_doc) or (size and fuel is not None and fuel >= 0.9 * size):
             return None
     return f'fuel {fuel} short for {system_id} and on to fuel ({way} jumps)' + dispatch.FUEL_NOT_FLOWN
 
