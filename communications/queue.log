@@ -473,3 +473,10 @@ Undo: git revert --no-edit <commit>.
 - Built and verified all 5 target hubs: CLTV Outpost Felis (zero-rent lockbox + fuel bunker) and 4 border-gateway Faction Lockboxes across remaining empires: the_levy (Nebula), last_light:ramens_rest (Outer Rim), procyon (Solarian), and the_rampart (Crimson).
 - Verified empire footprint: 3 zero-rent Owned Outposts (Atria, GSC-0044, Felis) and 10 active Faction Lockboxes spanning 5/5 empires.
 - Live upgrades deployed and synced: multi-hub routemaker auto-discovery, mine-network (10% depletion floor + Hub Gravity), hunt-network (5-empire lockbox spread), haul-network ((s,S) hub_upkeep + anti-ping-pong + spacemolt buy fix), and HUD Financial Statements v7.2.1.
+
+## [ENT-345] | 2026-11-25 19:54 UTC | Unity | general
+
+Strict GAAP/IFRS 15 Financial Statements v7.3 & 4J Pull-to-Cash AutoNet Upgrade Live (8af4361d):
+- Financial Statements v7.3: Realized Revenue & Realized Net Operating Profit (CFO / Credits - CapEx) strictly exclude unsold inventory per IFRS 15 / ASC 606; unsold inventory build sits cleanly on Balance Sheet & Working Capital memos with new Cash Conversion Ratio (%) and Days Inventory Outstanding (DIO).
+- 4J Multi-Hub AutoNet & Pull-to-Cash Pipeline: mine-network & hunt-network unlocked to 4J around all 10 active Faction Lockboxes (including 3 zero-rent Outposts) with live-bid scoring, shared faction deposit, and auto personal-locker drain.
+- Role-Guarded Hauler Consolidation & Bursar Lockbox Selling: wallet.py auto-promotes all seated Haulers/Traders to Officer (manage_treasury); haul-network adds consolidate_to_trader & 8-slot liquidation; bursar-network permanently staffs all 4 new Border Lockboxes, auto-syncs receivers.json, pulls faction lockbox surplus at 0 fuel, and boosts docked commercial crafting.
