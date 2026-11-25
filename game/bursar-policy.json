@@ -50,5 +50,12 @@
   "pirate_avoid_hours": 6.0,
   "include_empty_neutral_stations": true,
   "enabled": true,
-  "priority_max_per_station": 2
+  "priority_max_per_station": 2,
+  "craft": {
+    "enabled": true,
+    "max_runs_per_poll": 3,
+    "max_buy_spend_cr": 15000,
+    "min_margin_pct": 0.2,
+    "min_profit_cr": 150
+  }
 }

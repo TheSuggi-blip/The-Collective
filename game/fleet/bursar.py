@@ -330,24 +330,58 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             if not isinstance(claims, dict):
                 claims = {}
             cleaned = {}
-            for b_id, rec in claims.items():
+            for b_id, rec in (claims.items() if isinstance(claims, dict) else ()):
                 if not isinstance(rec, dict):
                     continue
-                holder = str(rec.get("pilot") or "")
-                at = float(rec.get("claimed_at") or 0)
-                if not holder or holder == pilot or now_t - at > ttl:
-                    continue
-                if str(orders.get(holder) or "").startswith("bursar ") or (now_t - at) < 90:
-                    cleaned[str(b_id)] = rec
+                raw_holders = rec.get("holders") if isinstance(rec.get("holders"), dict) else None
+                if raw_holders is None:
+                    h0 = str(rec.get("pilot") or "")
+                    at0 = float(rec.get("claimed_at") or 0)
+                    raw_holders = {h0: at0} if h0 else {}
+                kept_h = {}
+                for h_nm, h_at in raw_holders.items():
+                    h_s = str(h_nm or "")
+                    at_f = float(h_at or 0)
+                    if not h_s or h_s == pilot or (now_t - at_f) > ttl:
+                        continue
+                    if str(orders.get(h_s) or "").startswith("bursar ") or (now_t - at_f) < 90:
+                        kept_h[h_s] = int(at_f)
+                if kept_h:
+                    prim = min(kept_h.items(), key=lambda kv: (kv[1], kv[0]))[0]
+                    crec = dict(rec)
+                    crec["pilot"] = prim
+                    crec["claimed_at"] = max(kept_h.values())
+                    crec["holders"] = kept_h
+                    cleaned[str(b_id)] = crec
+
+            def _used_at(bid):
+                rec_c = cleaned.get(bid)
+                dyn = len(rec_c.get("holders") or ({rec_c["pilot"]: 1} if rec_c and rec_c.get("pilot") else {})) if isinstance(rec_c, dict) else 0
+                return dyn + static_counts.get(bid, 0)
+
+            def _put_holder(bid, sys_id, poi_id, emp_s, is_unwind=False):
+                rec_out = {"pilot": pilot, "system": sys_id, "poi": poi_id, "base": bid,
+                           "empire": emp_s, "claimed_at": int(now_t)}
+                if is_unwind:
+                    rec_out["unwind"] = True
+                    if _used_at(bid) > 0:
+                        return rec_out
+                prev = cleaned.get(bid)
+                holders = dict((prev or {}).get("holders") or {}) if isinstance(prev, dict) else {}
+                holders[pilot] = int(now_t)
+                stored = dict(rec_out)
+                stored["pilot"] = min(holders.items(), key=lambda kv: (kv[1], kv[0]))[0]
+                stored["holders"] = holders
+                cleaned[bid] = stored
+                return rec_out
 
             if explicit_station:
                 parts = str(explicit_station).split(":")
                 if len(parts) == 3:
                     sys_id, poi_id, base_id = parts
-                    used = (1 if base_id in cleaned else 0) + static_counts.get(base_id, 0)
-                    if used < max_per:
-                        rec = {"pilot": pilot, "system": sys_id, "poi": poi_id, "base": base_id, "claimed_at": int(now_t)}
-                        cleaned[base_id] = rec
+                    st_cap = max(max_per, int(policy.get("priority_max_per_station") or max_per)) if base_id in priority else max_per
+                    if _used_at(base_id) < st_cap:
+                        rec = _put_holder(base_id, sys_id, poi_id, "")
                         write_json(claims_path, cleaned)
                         return rec
                 write_json(claims_path, cleaned)
@@ -368,7 +402,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 b_id = st["base"]
                 if b_id in exclude:
                     continue
-                used = (1 if b_id in cleaned else 0) + static_counts.get(b_id, 0)
+                used = _used_at(b_id)
                 st_cap = max(max_per, int(policy.get("priority_max_per_station") or max_per)) if b_id in priority else max_per
                 if used >= st_cap and b_id not in unwind:
                     continue
@@ -379,8 +413,11 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 score = 0.0
                 if b_id in unwind:
                     score += 200000.0
+                # Always cover unstaffed safe hubs BEFORE doubling up on any already-staffed hub!
+                if used == 0:
+                    score += 60000.0
                 if cur_base and b_id == cur_base:
-                    score += 100000.0
+                    score += 100000.0 if used == 0 else 15000.0
                 if b_id in priority:
                     score += 5000.0
                 if st["empire"]:
@@ -399,14 +436,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 write_json(claims_path, cleaned)
                 return None
             chosen = dict(best[1])
-            rec = {"pilot": pilot, "system": chosen["system"], "poi": chosen["poi"], "base": chosen["base"],
-                   "empire": chosen.get("empire") or "", "claimed_at": int(now_t)}
-            if chosen["base"] in unwind:
-                rec["unwind"] = True
-                if chosen["base"] in cleaned or static_counts.get(chosen["base"], 0):
-                    write_json(claims_path, cleaned)
-                    return rec
-            cleaned[chosen["base"]] = rec
+            rec = _put_holder(chosen["base"], chosen["system"], chosen["poi"], chosen.get("empire") or "", is_unwind=(chosen["base"] in unwind))
             write_json(claims_path, cleaned)
             return rec
         finally:
@@ -425,9 +455,22 @@ def release_claim(data, pilot):
             claims = read_json(claims_path, {})
             if isinstance(claims, dict):
                 changed = False
-                for b_id in [k for k, v in claims.items() if isinstance(v, dict) and v.get("pilot") == pilot]:
-                    claims.pop(b_id, None)
-                    changed = True
+                for b_id in list(claims.keys()):
+                    v = claims.get(b_id)
+                    if not isinstance(v, dict):
+                        continue
+                    holders = v.get("holders") if isinstance(v.get("holders"), dict) else None
+                    if holders is not None and pilot in holders:
+                        holders.pop(pilot, None)
+                        if holders:
+                            v["pilot"] = min(holders.items(), key=lambda kv: (kv[1], kv[0]))[0]
+                            v["holders"] = holders
+                        else:
+                            claims.pop(b_id, None)
+                        changed = True
+                    elif v.get("pilot") == pilot:
+                        claims.pop(b_id, None)
+                        changed = True
                 if changed:
                     write_json(claims_path, claims)
         finally:
@@ -571,6 +614,63 @@ def sync_fleet_buys(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None, s
     if book_fills and filled_cr > 0:
         _book_escrow(data, pilot, "filled", filled_cr)
     return others
+
+
+def sync_fleet_sells(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
+    """Record pilot open sell-order escrow units at base_id in data/fleet/bursar_sells.json.
+
+    Allows store.py (stock_hour) and accounting.py (balance sheet / accrual P&L) to treat active
+    Exchange sell listings as inventory-in-escrow rather than a fake -100% write-off.
+    """
+    now_t = time.time() if now_t is None else float(now_t)
+    fdir = Path(data) / "fleet"
+    fdir.mkdir(parents=True, exist_ok=True)
+    lock_path = fdir / "bursar_sells.lock"
+    ledger_path = fdir / "bursar_sells.json"
+    my_items = {}
+    my_orders = {}
+    for o in own_orders or []:
+        if isinstance(o, dict) and str(o.get("side") or o.get("order_type") or "").lower() == "sell":
+            rem = int(o.get("remaining") or o.get("quantity") or 0)
+            iid = str(o.get("item_id") or "")
+            oid = str(o.get("order_id") or o.get("id") or "")
+            pr = int(o.get("price_each") or o.get("price") or 0)
+            if iid and rem > 0:
+                my_items[iid] = my_items.get(iid, 0) + rem
+                if oid:
+                    my_orders[oid] = {"item": iid, "rem": rem, "price": pr}
+    with open(lock_path, "a+", encoding="utf-8") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            doc = read_json(ledger_path, {})
+            entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+            cleaned = {}
+            for p_nm, bases in entries.items():
+                if not isinstance(bases, dict):
+                    continue
+                kept_b = {}
+                for b_id, rec in bases.items():
+                    if isinstance(rec, dict) and (now_t - float(rec.get("at") or 0)) <= ttl_s:
+                        im = rec.get("items")
+                        if isinstance(im, dict) and im:
+                            eobj = {"at": int(rec.get("at") or now_t), "items": {str(k): int(v) for k, v in im.items() if int(v or 0) > 0}}
+                            if isinstance(rec.get("orders"), dict) and rec["orders"]:
+                                eobj["orders"] = rec["orders"]
+                            kept_b[str(b_id)] = eobj
+                if kept_b:
+                    cleaned[str(p_nm)] = kept_b
+            if pilot and base_id:
+                p_map = cleaned.setdefault(str(pilot), {})
+                if my_items:
+                    p_map[str(base_id)] = {"at": int(now_t), "items": my_items, "orders": my_orders}
+                else:
+                    p_map.pop(str(base_id), None)
+                    if not p_map:
+                        cleaned.pop(str(pilot), None)
+            write_json(ledger_path, {"updated_at": int(now_t), "entries": cleaned})
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
+    return my_items
 
 
 def _is_excess_buy(listed_here, tot_need, other_q, max_units):
@@ -1030,14 +1130,62 @@ def main(argv=None):
                             _book_escrow(DATA, pilot, "locked", -int(qty) * int(np))
                         say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
                         acted += 1
-                if any(a[0] in ("buy_create", "buy_cancel", "buy_modify") for a in acts):
+                if any(a[0] in ("buy_create", "buy_cancel", "buy_modify", "sell_create", "sell_modify", "sell_bid") for a in acts):
                     try:
-                        sync_fleet_buys(
-                            DATA, pilot, base_id,
-                            body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or [],
-                            skip_fill_oids=cancelled_oids,
-                            book_fills=True,
-                        )
+                        _ord_after = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
+                        sync_fleet_buys(DATA, pilot, base_id, _ord_after, skip_fill_oids=cancelled_oids, book_fills=True)
+                        sync_fleet_sells(DATA, pilot, base_id, _ord_after)
+                    except Exception:
+                        pass
+                else:
+                    try:
+                        sync_fleet_sells(DATA, pilot, base_id, own_orders)
+                    except Exception:
+                        pass
+                # Zero-fuel docked commercial crafting between Bursar polls (Suggi directive)
+                craft_cfg = policy.get("craft") or {}
+                if craft_cfg.get("enabled", False) and (until - time.time()) > 45:
+                    try:
+                        _cr_now = get_credits()
+                        _min_k = int(policy.get("min_cash_keep") or 20000)
+                        if _cr_now >= _min_k + 3000:
+                            import craft_net as _cn
+                            _cpol = dict(_cn.read_json(REPO / "game" / "craft-policy.json", {}) or {})
+                            _cpol["max_runs_per_cycle"] = int(craft_cfg.get("max_runs_per_poll") or 3)
+                            _cpol["max_buy_spend_per_cycle_cr"] = int(craft_cfg.get("max_buy_spend_cr") or 15000)
+                            _cpol["min_wallet_keep_cr"] = _min_k
+                            _tc = dict(_cpol.get("trade") or {})
+                            _tc["min_margin_pct"] = float(craft_cfg.get("min_margin_pct") or _tc.get("min_margin_pct") or 0.20)
+                            _tc["min_profit_cr"] = int(craft_cfg.get("min_profit_cr") or _tc.get("min_profit_cr") or 150)
+                            _cpol["trade"] = _tc
+                            _cw = _cn.load_craft_world(DATA, REPO, _cpol)
+                            _st_now = get_stored(base_id)
+                            _job = _cn.pick_craft_job(pilot, "Trade", base_id, _st_now, _cr_now, _cw, _cpol)
+                            if _job:
+                                _ok_buy = True
+                                for _bi, _bq, _bp in (_job.get("buys") or ()):
+                                    _q_chk = body(raw("estimate_market_order", {"item_id": _bi, "quantity": int(_bq), "side": "buy"}, group="spacemolt_market"))
+                                    _est_u = float(_q_chk.get("average_price") or _q_chk.get("avg_price") or _bp)
+                                    if _est_u > _bp * 1.15:
+                                        _ok_buy = False
+                                        break
+                                    _rb = raw("buy", {"item_id": _bi, "quantity": int(_bq), "auto_list": False}, group="spacemolt_market")
+                                    time.sleep(TICK)
+                                    if "error" in _rb:
+                                        _ok_buy = False
+                                        break
+                                if _ok_buy:
+                                    _rc = raw("craft", {"recipe_id": _job["recipe_id"], "count": int(_job["runs"])}, group="spacemolt_crafting")
+                                    time.sleep(TICK)
+                                    if "error" not in _rc:
+                                        say("bursar_craft %dx %s (est +%d cr)" % (int(_job["runs"]), _job["output"], int(_job.get("est_profit") or 0)))
+                                        acted += 1
+                                        # Deposit crafted cargo so the next sell poll lists/liquidates it immediately
+                                        _h_cr = get_cargo()
+                                        for _ci, _cq in _h_cr.items():
+                                            if _cq > 0 and _ci not in PROTECTED_ITEMS:
+                                                raw("deposit", {"item_id": _ci, "quantity": _cq, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                                time.sleep(TICK)
                     except Exception:
                         pass
             except SystemExit:

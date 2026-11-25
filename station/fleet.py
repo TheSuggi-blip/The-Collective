@@ -1226,7 +1226,18 @@ def rates(history, now, one=None, gifts=None, seeds=None, presence=None, moves=N
         d, e = b[7].get(division) or [0, 0, 0, 0, 0, 0], a[7].get(division) or [0, 0, 0, 0, 0, 0]   # UNASSIGNED: no wallets
         out["divisions"][division] = dict(row, earned_per_hour=row["income_per_hour"], net_per_hour=per_hour(e[1], d[1]),
                                           ore_per_hour=per_hour(e[4], d[4]))
-    out["windows"] = {name: (first if seconds == WINDOW else window(history, now, seconds, one, gifts, seeds, presence, sides, regroups)) for name, seconds in WINDOWS}
+    _ot_ts = [r[0] for r in (one or ()) if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float))]
+    _ot_span_h = round(max(0.0, (now - min(_ot_ts)) / 3600.0), 2) if _ot_ts else 0.0
+    _ot_rows = len(_ot_ts)
+    out["onetime_span_hours"] = _ot_span_h
+    out["onetime_rows"] = _ot_rows
+    out["windows"] = {}
+    for name, seconds in WINDOWS:
+        win_obj = first if seconds == WINDOW else window(history, now, seconds, one, gifts, seeds, presence, sides, regroups)
+        if isinstance(win_obj, dict):
+            win_obj["onetime_span_hours"] = _ot_span_h
+            win_obj["onetime_rows"] = _ot_rows
+        out["windows"][name] = win_obj
     return out
 
 

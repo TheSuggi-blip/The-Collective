@@ -158,21 +158,73 @@ def release(pilot):
     return '%s carries no hand hold of yours (%s)' % (pilot, what or 'no order file')
 
 
-def book_onetime(pilot, title, amount, data=None):
-    """One row in data/fleet/onetime.json, under its lock: the collector keeps this money out of the steady income."""
+ONETIME_KEEP_HOURS = 72
+ONETIME_ARCHIVE_DAYS = 7
+ONETIME_SAFETY_MAX = 200000
+
+
+def _archive_and_prune_onetime(base_fleet_dir, aged_rows, now_ts):
+    """Archive aged onetime rows into daily gzip JSONL files and prune archives older than ONETIME_ARCHIVE_DAYS."""
+    import gzip
+    arch_dir = os.path.join(base_fleet_dir, 'archive')
+    os.makedirs(arch_dir, exist_ok=True)
+    by_day = {}
+    for row in aged_rows:
+        if not (isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float))):
+            continue
+        day = time.strftime('%Y-%m-%d', time.gmtime(float(row[0])))
+        by_day.setdefault(day, []).append(row)
+    for day, drows in by_day.items():
+        ap = os.path.join(arch_dir, 'onetime-%s.jsonl.gz' % day)
+        try:
+            with gzip.open(ap, 'at', encoding='ascii') as gz:
+                for r in drows:
+                    gz.write(json.dumps(r, separators=(',', ':')) + '\n')
+        except OSError:
+            pass
+    cutoff_day = time.strftime('%Y-%m-%d', time.gmtime(now_ts - ONETIME_ARCHIVE_DAYS * 86400))
+    try:
+        for fn in os.listdir(arch_dir):
+            if fn.startswith('onetime-') and fn.endswith('.jsonl.gz') and len(fn) == 27:
+                fday = fn[8:18]
+                if fday < cutoff_day:
+                    try:
+                        os.unlink(os.path.join(arch_dir, fn))
+                    except OSError:
+                        pass
+    except OSError:
+        pass
+
+
+def book_onetime(pilot, title, amount, data=None, now_ts=None):
+    """One row in data/fleet/onetime.json, under its lock: keeps >=72h live, archives older rows daily (.jsonl.gz), prunes >7d."""
     import fcntl
     base = str(data) if data else division.DATA
-    path = os.path.join(base, 'fleet', 'onetime.json')
+    fleet_dir = os.path.join(base, 'fleet')
+    os.makedirs(fleet_dir, exist_ok=True)
+    path = os.path.join(fleet_dir, 'onetime.json')
+    ts = int(time.time() if now_ts is None else now_ts)
     with open(path + '.lock', 'w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         try:
-            rows = json.load(open(path, encoding='utf-8'))
+            with open(path, encoding='utf-8') as rfh:
+                rows = json.load(rfh)
+            if not isinstance(rows, list):
+                rows = []
         except (OSError, ValueError):
             rows = []
-        rows.append([int(time.time()), pilot, title, amount])
+        rows.append([ts, pilot, title, amount])
+        cutoff = ts - ONETIME_KEEP_HOURS * 3600
+        aged = [r for r in rows if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and r[0] < cutoff]
+        kept = [r for r in rows if not (isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float)) and r[0] < cutoff)]
+        if len(kept) > ONETIME_SAFETY_MAX:
+            aged.extend(kept[:-ONETIME_SAFETY_MAX])
+            kept = kept[-ONETIME_SAFETY_MAX:]
+        if aged:
+            _archive_and_prune_onetime(fleet_dir, aged, ts)
         tmp = '%s.%d.tmp' % (path, os.getpid())
-        with open(tmp, 'w', encoding='utf-8') as fh:
-            json.dump(rows[-5000:], fh, separators=(',', ':'))
+        with open(tmp, 'w', encoding='ascii') as fh:
+            json.dump(kept, fh, separators=(',', ':'))
         os.replace(tmp, path)
 
 

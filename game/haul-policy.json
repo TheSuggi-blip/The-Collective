@@ -4,12 +4,12 @@
   "max_jumps_pickup": 16,
   "max_jumps_delivery": 35,
   "min_cr_per_jump": 60,
-  "min_total_profit": 500,
+  "min_total_profit": 300,
   "max_collateral": 25000,
   "fuel_reserve_cr": 6000,
-  "max_book_age_minutes": 20,
+  "max_book_age_minutes": 45,
   "max_buy_spend_cr": 15000,
-  "min_margin_pct": 0.25,
+  "min_margin_pct": 0.15,
   "partners_first": true,
   "lanes": [
     "active_freight",
@@ -31,5 +31,9 @@
   "enabled": true,
   "arb_bid_depth_cap": 0.8,
   "min_arb_bid_qty": 2,
-  "liquidate_min_revenue_cr": 300
+  "liquidate_min_revenue_cr": 300,
+  "allow_faction_surplus_liquidation": true,
+  "allow_calm_buywall_dest": true,
+  "buywall_min_bid": 50,
+  "buywall_min_qty": 200
 }

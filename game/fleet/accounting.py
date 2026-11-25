@@ -112,6 +112,239 @@ def _load_price_maps(conn):
     return base_map, max_bid_map, bids_by_item
 
 
+LIVE_DEEP_BID_QTY = 500.0
+THIN_SPOOF_QTY = 10.0
+GLUT_HOLD_MIN = 50000.0
+
+
+def _load_market_trends(conn, now=None):
+    """Return {item: 24h_avg_bid_hi} from read.db:market_hour for live market trend pricing."""
+    trends = {}
+    if conn is None or not _has_table(conn, "market_hour"):
+        return trends
+    now_t = int(time.time() if now is None else now)
+    cut = now_t - 86400
+    try:
+        for r in conn.execute(
+            "SELECT item, AVG(bid_hi) FROM market_hour WHERE bid_hi > 0 AND hour >= ? GROUP BY item",
+            (cut,),
+        ):
+            if r[0] and _num(r[1]) > 0:
+                trends[str(r[0])] = _num(r[1])
+    except sqlite3.Error:
+        pass
+    return trends
+
+
+def _load_ask_map(conn):
+    """Return {item: (min_ask, total_ask_qty)} from live books where ask > 0."""
+    asks = {}
+    if conn is None or not _has_table(conn, "books"):
+        return asks
+    try:
+        cols = {c[1] for c in conn.execute("PRAGMA table_info(books)")}
+        if "ask" not in cols:
+            return asks
+        qcol = "COALESCE(ask_qty, 1)" if "ask_qty" in cols else "1"
+        for r in conn.execute(
+            "SELECT item, MIN(ask), SUM(%s) FROM books WHERE ask > 0 GROUP BY item" % qcol
+        ):
+            if r[0] and _num(r[1]) > 0:
+                asks[str(r[0])] = (_num(r[1]), _num(r[2]))
+    except sqlite3.Error:
+        pass
+    return asks
+
+
+def _load_sell_escrow(data_dir, now=None, ttl_s=21600.0):
+    """Read active Exchange sell-order escrow from data/fleet/bursar_sells.json (fresh <= ttl_s).
+
+    Returns (by_item: {item: qty}, by_div_item: {(div, item): qty}, updated_at: int).
+    """
+    by_item = {}
+    by_div_item = {}
+    updated_at = 0
+    if not data_dir:
+        return by_item, by_div_item, updated_at
+    sp = Path(data_dir) / "fleet" / "bursar_sells.json"
+    if not sp.is_file():
+        return by_item, by_div_item, updated_at
+    try:
+        doc = json.loads(sp.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, ValueError):
+        return by_item, by_div_item, updated_at
+    if not isinstance(doc, dict):
+        return by_item, by_div_item, updated_at
+    updated_at = int(_num(doc.get("updated_at")))
+    entries = doc.get("entries") if isinstance(doc.get("entries"), dict) else {}
+    now_t = float(time.time() if now is None else now)
+    for p_nm, bases in entries.items():
+        if not isinstance(bases, dict):
+            continue
+        div_nm = _div_of_pilot(p_nm, {})
+        if div_nm == "Other":
+            div_nm = "Trade"
+        for _b_id, rec in bases.items():
+            if not isinstance(rec, dict):
+                continue
+            if (now_t - _num(rec.get("at"))) > ttl_s:
+                continue
+            for iid, qty in (rec.get("items") or {}).items():
+                q = int(_num(qty))
+                if iid and q > 0:
+                    s_id = str(iid)
+                    by_item[s_id] = by_item.get(s_id, 0) + q
+                    by_div_item[(div_nm, s_id)] = by_div_item.get((div_nm, s_id), 0) + q
+    return by_item, by_div_item, updated_at
+
+
+def _sanitized_bids(item, base_map, bids_by_item, trend_map=None):
+    """Return [(eff_price, qty)] with thin (<10-unit) spoof outliers capped to max(trend, base)."""
+    raw_bids = bids_by_item.get(item) or ()
+    bv = base_map.get(item, 0.0)
+    tv = (trend_map or {}).get(item, 0.0)
+    ref = max(bv, tv, 10.0)
+    out = []
+    for price, qty in raw_bids:
+        p = _num(price)
+        q = _num(qty)
+        if p <= 0 or q <= 0:
+            continue
+        if q < THIN_SPOOF_QTY and p > max(3.0 * ref, 100.0):
+            p = ref
+        out.append((p, q))
+    return out
+
+
+def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, ask_map=None):
+    """Live fair market valuation using BOTH sides of the live order book (bids + asks) & 24h trends:
+      - Never values an item above live replacement cost (min_ask) unless a deep live buy-wall pays more.
+      - Uses exact live bid walk for instant buy-walls & cheap raw-commodity gluts (e.g. copper_ore @ ask=1).
+      - Avoids 1-cr penny-scraper bid distortion on real crafted/loot goods with healthy live Exchange asks
+        (e.g. null_matter ask=201, armor_plate ask=299, circuit_board ask=292) by marking them to
+        conservative sell-order realizable value (0.70 * min_ask, bounded by base_value if ask > 2*base).
+      - Applies liquidity haircut (>1.5x galaxy bid depth on cheap commodities -> capped to absorbable book).
+    """
+    u = float(max(0, _num(units)))
+    if u <= 0:
+        return 0.0
+    bv = base_map.get(item, 0.0)
+    tv = (trend_map or {}).get(item, 0.0)
+    ask_info = (ask_map or {}).get(item)
+    min_ask = _num(ask_info[0]) if ask_info else 0.0
+    sbids = _sanitized_bids(item, base_map, bids_by_item, trend_map)
+
+    # Walk live bids (instant cash floor)
+    rem = u
+    bid_v = 0.0
+    tot_bid_q = 0.0
+    deep_real_q = 0.0
+    deep_real_v = 0.0
+    last_p = sbids[-1][0] if sbids else 0.0
+    for p, q in sbids:
+        tot_bid_q += q
+        if p >= 10.0:
+            deep_real_q += q
+            deep_real_v += p * q
+        if rem > 0:
+            take = min(rem, q)
+            bid_v += take * p
+            rem -= take
+            last_p = p
+    if rem > 0 and tot_bid_q > 0:
+        marg_p = min(last_p, tv) if tv > 0 else last_p
+        bid_v += min(rem, tot_bid_q) * 0.5 * marg_p
+
+    # Case 1: Deep live buy-wall (>=500 qty at >=10 cr) dominates!
+    if deep_real_q >= LIVE_DEEP_BID_QTY and u <= deep_real_q:
+        return bid_v
+
+    # Case 2: Live Exchange ask exists (bounds replacement cost and avoids 1-cr penny-scraper distortion)
+    if min_ask > 0:
+        # Cheap raw-material glut (e.g. copper_ore/iron_ore/carapace @ ask <= 5 cr): cap to live book/glut!
+        if min_ask < 10.0:
+            if u >= GLUT_HOLD_MIN and tot_bid_q > 0 and u > 1.5 * tot_bid_q:
+                return min(bid_v, u * min_ask)
+            return min(u * min_ask, max(bid_v, u * 0.70 * min_ask))
+        # Healthy traded Exchange good (ask >= 10 cr): conservative sell-order fair value
+        fair_u = 0.70 * min_ask
+        if bv > 0 and min_ask > 2.0 * bv and (deep_real_q < 50):
+            fair_u = min(fair_u, bv)
+        if tv > 0 and tv < fair_u * 1.5:
+            fair_u = min(min_ask, max(fair_u, 0.75 * tv))
+        # Apply gentle inventory-overhang discount if holding huge unbid stock (>5000 units)
+        if u > 5000.0 and deep_real_q < u * 0.1:
+            fair_u *= 0.80
+        return max(bid_v, u * fair_u) if deep_real_q >= LIVE_DEEP_BID_QTY else min(u * min_ask, max(bid_v, u * fair_u))
+
+    # Case 3: No live ask -- use bid walk or 24h trend
+    if sbids:
+        return bid_v
+    if tv > 0:
+        return u * 0.5 * tv
+    return 0.0 if bids_by_item else u * bv
+
+
+def live_market_unit_price(item, base_map, bids_by_item, trend_map=None, held_units=0, max_bid_map=None, glut_threshold=GLUT_HOLD_MIN, ask_map=None):
+    """Live market depth-weighted & trend-aware unit price for gathering/hunting/inventory flows.
+
+    - Deep live bids (>=500 qty, e.g. silver_ore @ 101, uranium_ore @ 600): uses depth-weighted live bid!
+    - Modest/thin bids (<500 qty): conservative IAS 2 min(base_value, depth_bid) against illiquid spoofs.
+    - Glut guard: if fleet holds >= glut_threshold AND >1.5x total galaxy bid depth at <10 cr, marginal value = 0!
+    - Zero live bids: 0.5x 24h market_hour trend if recent trades/bids existed, else 0 cr (when books exist).
+    """
+    bv = base_map.get(item, 0.0)
+    tv = (trend_map or {}).get(item, 0.0)
+    sbids = _sanitized_bids(item, base_map, bids_by_item or {}, trend_map)
+    if not sbids:
+        if tv > 0:
+            return 0.5 * tv
+        if bids_by_item:
+            return 0.0
+        return lcnrv_unit_price(item, base_map, max_bid_map or {})
+    tot_q = sum(q for _p, q in sbids)
+    sample_q = min(tot_q, 2000.0)
+    rem = sample_q
+    val_sum = 0.0
+    for p, q in sbids:
+        take = min(rem, q)
+        val_sum += take * p
+        rem -= take
+        if rem <= 0:
+            break
+    w_bid = val_sum / sample_q if sample_q > 0 else sbids[0][0]
+    ask_info = (ask_map or {}).get(item)
+    min_ask = _num(ask_info[0]) if ask_info else 0.0
+    if float(held_units or 0) >= float(glut_threshold) and float(held_units or 0) > 1.5 * tot_q and (w_bid < 10.0 or (0 < min_ask < 10.0)):
+        return 0.0
+    # Count real (>=10 cr) buy-wall depth separately from 1-cr penny-scraper bids
+    real_q = sum(q for p, q in sbids if p >= 10.0)
+    if real_q >= LIVE_DEEP_BID_QTY:
+        rq_s = min(real_q, 2000.0)
+        rrem, rval = rq_s, 0.0
+        for p, q in sbids:
+            if p < 10.0:
+                continue
+            tk = min(rrem, q)
+            rval += tk * p
+            rrem -= tk
+            if rrem <= 0:
+                break
+        return rval / rq_s if rq_s > 0 else w_bid
+    if min_ask > 0:
+        if min_ask < 10.0:
+            return min(min_ask, w_bid)
+        fair_u = 0.70 * min_ask
+        if bv > 0 and min_ask > 2.0 * bv and real_q < 50:
+            fair_u = min(fair_u, bv)
+        return min(min_ask, max(w_bid if w_bid <= min_ask else 0.0, fair_u))
+    if tot_q >= LIVE_DEEP_BID_QTY:
+        return w_bid
+    if bv > 0:
+        return min(bv, w_bid)
+    return w_bid
+
+
 def lcnrv_unit_price(item, base_map, max_bid_map):
     """IAS 2 / ASC 330 conservative unit price: min(base_value, best_bid) when both exist."""
     b = base_map.get(item, 0.0)
@@ -121,33 +354,50 @@ def lcnrv_unit_price(item, base_map, max_bid_map):
     return b
 
 
-def vault_valuation(conn):
+def vault_valuation(conn, data_dir=None):
     """Compute vault valuation under IAS 2 NRV, Catalog Base Value, Depth-Capped Liquidation, and Unbounded Bid."""
     empty = {
         "nrv": 0,
+        "live_market": 0,
         "catalog": 0,
         "liquid": 0,
         "unbounded_bid": 0,
+        "sell_escrow_nrv": 0,
+        "sell_escrow_units": 0,
         "items": 0,
         "units": 0,
         "top_gaps": [],
+        "gluts": [],
     }
     if conn is None or not _has_table(conn, "holdings"):
         return empty
     base_map, max_bid_map, bids_by_item = _load_price_maps(conn)
-    rows = conn.execute(
-        "SELECT item, SUM(COALESCE(units, 0)) FROM holdings GROUP BY item"
-    ).fetchall()
+    trend_map = _load_market_trends(conn)
+    ask_map = _load_ask_map(conn)
+    escrow_by_item, _esc_div, _esc_ts = _load_sell_escrow(data_dir) if data_dir else ({}, {}, 0)
+    qty_by_item = {}
+    for r in conn.execute("SELECT item, SUM(COALESCE(units, 0)) FROM holdings GROUP BY item").fetchall():
+        it = str(r[0] or "")
+        u = int(_num(r[1]))
+        if it and u > 0:
+            qty_by_item[it] = qty_by_item.get(it, 0) + u
+    escrow_nrv = 0.0
+    escrow_units = 0
+    for it, eq in escrow_by_item.items():
+        if eq > 0:
+            qty_by_item[it] = qty_by_item.get(it, 0) + eq
+            escrow_units += eq
+            escrow_nrv += eq * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=qty_by_item[it], max_bid_map=max_bid_map, ask_map=ask_map)
     tot_nrv = 0.0
+    tot_live = 0.0
     tot_cat = 0.0
     tot_liq = 0.0
     tot_unb = 0.0
     tot_units = 0
     item_cnt = 0
     gaps = []
-    for r in rows:
-        it = str(r[0] or "")
-        u = int(_num(r[1]))
+    gluts = []
+    for it, u in qty_by_item.items():
         if not it or u <= 0:
             continue
         item_cnt += 1
@@ -156,19 +406,25 @@ def vault_valuation(conn):
         mb = max_bid_map.get(it)
         cat_v = u * bv
         nrv_v = u * lcnrv_unit_price(it, base_map, max_bid_map)
+        live_v = depth_realizable_value(it, u, base_map, bids_by_item, trend_map, ask_map=ask_map)
         unb_v = u * (mb if (mb is not None and mb > 0) else bv)
         rem = float(u)
         liq_v = 0.0
+        tot_bid_q = 0.0
         for price, qty in bids_by_item.get(it, ()):
+            tot_bid_q += qty
             take = min(rem, qty)
             liq_v += take * price
             rem -= take
             if rem <= 0:
                 break
         tot_nrv += nrv_v
+        tot_live += live_v
         tot_cat += cat_v
         tot_liq += liq_v
         tot_unb += unb_v
+        if u >= GLUT_HOLD_MIN and tot_bid_q > 0 and u > 1.5 * tot_bid_q:
+            gluts.append({"item": it, "units": u, "bid_depth": int(round(tot_bid_q)), "ratio": round(u / tot_bid_q, 2), "live_market": int(round(live_v)), "nrv": int(round(nrv_v))})
         spread = max(abs(unb_v - nrv_v), abs(cat_v - nrv_v))
         if spread >= 10000:
             gaps.append((
@@ -179,26 +435,32 @@ def vault_valuation(conn):
                     "base": int(round(bv)),
                     "max_bid": int(round(mb)) if mb is not None else None,
                     "nrv": int(round(nrv_v)),
+                    "live_market": int(round(live_v)),
                     "catalog": int(round(cat_v)),
                     "liquid": int(round(liq_v)),
                     "unbounded_bid": int(round(unb_v)),
                 },
             ))
     gaps.sort(key=lambda x: -x[0])
+    gluts.sort(key=lambda x: -x["units"])
     return {
         "nrv": int(round(tot_nrv)),
+        "live_market": int(round(tot_live)),
         "catalog": int(round(tot_cat)),
         "liquid": int(round(tot_liq)),
         "unbounded_bid": int(round(tot_unb)),
+        "sell_escrow_nrv": int(round(escrow_nrv)),
+        "sell_escrow_units": int(round(escrow_units)),
         "items": item_cnt,
         "units": tot_units,
         "top_gaps": [g[1] for g in gaps[:5]],
+        "gluts": gluts[:5],
     }
 
 
-def compute_balance_sheet(conn, fleet_json=None):
+def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
     """Single source of truth for Consolidated Balance Sheet & Enterprise Net Worth across /api/ops, /api/progression, and /api/diplomacy."""
-    vv = vault_valuation(conn)
+    vv = vault_valuation(conn, data_dir=data_dir)
     wallets = 0
     treasury = 0
     fleet_book = 0
@@ -299,19 +561,27 @@ def compute_balance_sheet(conn, fleet_json=None):
     liquid_cash = wallets + treasury
     vault_nrv = int(vv["nrv"])
     vault_cat = int(vv["catalog"])
+    vault_live = int(vv.get("live_market", vault_nrv))
+    vault_eff = vault_live if vault_live > 0 else vault_nrv
     return {
         "liquid_cash": liquid_cash,
         "wallets": wallets,
         "treasury": treasury,
-        "vault_worth": vault_nrv,
-        "vault_nrv": vault_nrv,
+        "vault_worth": vault_eff,
+        "vault_nrv": vault_eff,
+        "vault_ias2_static": vault_nrv,
+        "vault_live_market": vault_live,
+        "vault_sell_escrow_nrv": int(vv.get("sell_escrow_nrv", 0)),
+        "vault_sell_escrow_units": int(vv.get("sell_escrow_units", 0)),
+        "vault_gluts": vv.get("gluts") or [],
         "vault_catalog": vault_cat,
         "vault_liquid": int(vv["liquid"]),
         "vault_unbounded_bid": int(vv["unbounded_bid"]),
         "vault_top_gaps": vv["top_gaps"],
         "fleet_book": fleet_book,
         "facility_invested": facility_invested,
-        "net_worth": liquid_cash + vault_nrv + fleet_book + facility_invested,
+        "net_worth": liquid_cash + vault_eff + fleet_book + facility_invested,
+        "net_worth_ias2": liquid_cash + vault_nrv + fleet_book + facility_invested,
         "net_worth_catalog": liquid_cash + vault_cat + fleet_book + facility_invested,
         "handed_over_24h": handed_over_24h,
         "hexc_wealth": hexc_wealth,
@@ -409,9 +679,40 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     div_raw_cash = {}
     div_raw_once = {}
     div_purse = {}
+    div_fuel_h = {}
     win_minutes = 0.0
+    cash_source = "fleet.json"
+    onetime_span_h = None
 
-    if isinstance(w, dict) and w:
+    if isinstance(w, dict) and w.get("onetime_span_hours") is not None:
+        onetime_span_h = _num(w.get("onetime_span_hours"))
+    else:
+        ot_p = data_p / "fleet" / "onetime.json"
+        if ot_p.is_file():
+            try:
+                ot_rows = json.loads(ot_p.read_text(encoding="utf-8", errors="replace"))
+                if isinstance(ot_rows, list) and ot_rows:
+                    ts_vals = [float(r[0]) for r in ot_rows if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float))]
+                    if ts_vals:
+                        onetime_span_h = round(max(0.0, (now - min(ts_vals)) / 3600.0), 2)
+            except (OSError, ValueError):
+                pass
+
+    use_smh = False
+    if conn is not None and _has_table(conn, "stats_money_hour"):
+        if not (isinstance(w, dict) and w):
+            use_smh = True
+        elif hours >= 6 and onetime_span_h is not None and onetime_span_h > 0.0 and onetime_span_h < hours * 0.85:
+            cut_chk = int(now) - hours * 3600
+            chk_m = conn.execute(
+                "SELECT COALESCE(SUM(minutes), 0) FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?",
+                (cut_chk,),
+            ).fetchone()
+            if chk_m and _num(chk_m[0]) >= hours * 60.0 * 0.75:
+                use_smh = True
+                cash_source = "stats_money_hour (onetime_span=%.1fh)" % onetime_span_h
+
+    if isinstance(w, dict) and w and not use_smh:
         raw_income_h = _num(w.get("income_per_hour"))
         raw_costs_h = _num(w.get("costs_per_hour"))
         raw_steady_h = _num(w.get("cph"))
@@ -424,15 +725,33 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             purse_h = _num(w.get("purse_per_hour"))
         elif w.get("total_per_hour") is not None:
             purse_h = _num(w.get("total_per_hour"))
+        fl_ship_counts = {}
+        for s in (fj.get("ships") or []) if isinstance(fj, dict) else ():
+            if isinstance(s, dict) and s.get("division"):
+                sd = str(s["division"])
+                fl_ship_counts[sd] = fl_ship_counts.get(sd, 0) + 1
         for d, dv in (w.get("divisions") or {}).items():
             if isinstance(dv, dict):
                 cph_d = _num(dv.get("cph"))
                 once_d = _num(dv.get("one_time_per_hour"))
+                unexp_d = _num(dv.get("unexplained_per_hour"))
+                rg_ships = int(_num((dv.get("regroup") or {}).get("ships")))
+                div_fuel_h[d] = _num(dv.get("fuel_cr_per_hour"))
+                if fl_ship_counts and fl_ship_counts.get(d, 0) == 0 and rg_ships < 0 and abs(unexp_d) > 10000.0:
+                    if cph_d < -10000.0 and _num(dv.get("spent_per_hour")) < 5000.0:
+                        adj = -cph_d - _num(dv.get("spent_per_hour"))
+                        cph_d += adj
+                        raw_steady_h += adj
+                        raw_costs_h = max(0.0, raw_costs_h - adj)
                 div_raw_cash[d] = cph_d
                 div_raw_once[d] = once_d
                 div_purse[d] = _num(dv.get("total_per_hour"), cph_d + once_d)
     elif conn is not None and _has_table(conn, "stats_money_hour"):
+        if cash_source == "fleet.json":
+            cash_source = "stats_money_hour"
         cut_m = int(now) - hours * 3600
+        smh_cols = {c[1] for c in conn.execute("PRAGMA table_info(stats_money_hour)")}
+        has_fuel_col = "fuel" in smh_cols
         rows_m = conn.execute(
             "SELECT minutes, income, costs, net, rewards, bought, once, total "
             "FROM stats_money_hour WHERE LOWER(division) IN ('fleet','all') AND ships > 0 AND hour >= ?",
@@ -447,16 +766,32 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             rewards_h = sum(_num(r[4]) * _num(r[0]) for r in rows_m) / tot_m
             bought_once_h = sum(_num(r[5]) * _num(r[0]) for r in rows_m) / tot_m
             purse_h = sum(_num(r[7]) * _num(r[0]) for r in rows_m) / tot_m
+            if isinstance(w, dict) and w.get("treasury_own_per_hour") is not None:
+                treasury_own_h = _num(w.get("treasury_own_per_hour"))
+                purse_h = raw_steady_h + (rewards_h - bought_once_h) + treasury_own_h
         for d in DIVISIONS:
-            dm = conn.execute(
-                "SELECT minutes, net, once, total FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?",
-                (d, cut_m),
-            ).fetchall()
+            q_d = (
+                "SELECT minutes, net, once, total, fuel FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
+                if has_fuel_col else
+                "SELECT minutes, net, once, total, 0 FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
+            )
+            dm = conn.execute(q_d, (d, cut_m)).fetchall()
             dm_m = sum(_num(r[0]) for r in dm)
             if dm_m > 0:
                 div_raw_cash[d] = sum(_num(r[1]) * _num(r[0]) for r in dm) / dm_m
                 div_raw_once[d] = sum(_num(r[2]) * _num(r[0]) for r in dm) / dm_m
                 div_purse[d] = sum(_num(r[3]) * _num(r[0]) for r in dm) / dm_m
+                div_fuel_h[d] = sum(_num(r[4]) * _num(r[0]) for r in dm) / dm_m
+        # Reconcile fleet sum if Command had 0-ship regroup hours skipped
+        if div_raw_cash and abs(sum(div_raw_cash.values()) - raw_steady_h) > 5000.0:
+            raw_steady_h = sum(div_raw_cash.values())
+            raw_costs_h = max(0.0, raw_income_h - raw_steady_h)
+            if treasury_own_h is not None:
+                purse_h = raw_steady_h + (rewards_h - bought_once_h) + treasury_own_h
+        if isinstance(w, dict):
+            for d, dv in (w.get("divisions") or {}).items():
+                if isinstance(dv, dict) and not div_fuel_h.get(d):
+                    div_fuel_h[d] = _num(dv.get("fuel_cr_per_hour"))
 
     span_h = max(1.0 / 12.0, (win_minutes / 60.0) if win_minutes >= 5.0 else float(hours))
 
@@ -466,7 +801,15 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         for r in conn.execute("SELECT pilot, division FROM ships"):
             if r[0] and r[1]:
                 pilot_div[str(r[0])] = str(r[1])
-    base_map, max_bid_map = price_maps if price_maps is not None else _load_price_maps(conn)[:2]
+    if price_maps is not None:
+        base_map, max_bid_map = price_maps
+        bids_by_item = {}
+        trend_map = {}
+        ask_map = {}
+    else:
+        base_map, max_bid_map, bids_by_item = _load_price_maps(conn)
+        trend_map = _load_market_trends(conn, now=now)
+        ask_map = _load_ask_map(conn)
 
     # 3. Matching Principle: extract direct steady-side credits (fuel/inputs/salvage) on once=true routes
     once_mission_direct_cr = 0.0
@@ -540,12 +883,22 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                         (str(r[0] or "Other"), str(r[1] or "")): int(_num(r[2]))
                         for r in conn.execute("SELECT division, item, units FROM stock_hour WHERE hour = ?", (prev_h,))
                     }
+                    now_item_tot = {}
+                    for (_d_k, _i_k), _u_v in now_s.items():
+                        now_item_tot[_i_k] = now_item_tot.get(_i_k, 0) + _u_v
+                    _esc_i, _esc_di, _esc_ts = _load_sell_escrow(data_p, now=now)
+                    if _esc_di and _esc_ts > max_h:
+                        for (ediv, eit), eq in _esc_di.items():
+                            now_s[(ediv, eit)] = now_s.get((ediv, eit), 0) + eq
+                            now_item_tot[eit] = now_item_tot.get(eit, 0) + eq
                     for (div, it) in (set(now_s) | set(old_s)):
                         du = now_s.get((div, it), 0) - old_s.get((div, it), 0)
                         if du == 0:
                             continue
                         fleet_item_delta[it] = fleet_item_delta.get(it, 0) + du
-                        inv_nrv_div[div] = inv_nrv_div.get(div, 0.0) + du * lcnrv_unit_price(it, base_map, max_bid_map)
+                        held_u = now_item_tot.get(it, 0) if du > 0 else 0
+                        up = live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=held_u, max_bid_map=max_bid_map, ask_map=ask_map)
+                        inv_nrv_div[div] = inv_nrv_div.get(div, 0.0) + du * up
                         inv_cat_div[div] = inv_cat_div.get(div, 0.0) + du * base_map.get(it, 0.0)
 
     # Intercompany handovers over exact same [prev_h, max_h] window (or [now - hours*3600, now] if no stock_hour)
@@ -569,7 +922,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     if gd == td:
                         continue
                     for it, u in (r.get("items") or {}).items():
-                        v = _num(u) * lcnrv_unit_price(str(it), base_map, max_bid_map)
+                        _hi = str(it)
+                        _hu = now_item_tot.get(_hi, 0) if "now_item_tot" in locals() else 0
+                        v = _num(u) * live_market_unit_price(_hi, base_map, bids_by_item, trend_map, held_units=_hu, max_bid_map=max_bid_map, ask_map=ask_map)
                         if v > 0:
                             tx_out_div[gd] = tx_out_div.get(gd, 0.0) + v
                             tx_in_div[td] = tx_in_div.get(td, 0.0) + v
@@ -591,7 +946,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     if has_inv_accrual:
         ranked = sorted(
             (
-                (du * lcnrv_unit_price(it, base_map, max_bid_map), it, du)
+                (du * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=(now_item_tot.get(it, 0) if (du > 0 and "now_item_tot" in locals()) else 0), max_bid_map=max_bid_map, ask_map=ask_map), it, du)
                 for it, du in fleet_item_delta.items()
                 if du != 0
             ),
@@ -618,6 +973,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         iv = (inv_nrv_div.get(d, 0.0) / inv_span_h) if has_inv_accrual else 0.0
         xo = tx_out_div.get(d, 0.0) / ho_span_h
         xi = tx_in_div.get(d, 0.0) / ho_span_h
+        fh = div_fuel_h.get(d, 0.0)
+        acc_d = mc + iv + xo - xi
+        fuel_roi = round((acc_d + fh) / fh, 2) if fh > 100.0 else None
         by_division[d] = {
             "raw_cash_h": int(round(rc)),
             "raw_once_h": int(round(ro)),
@@ -629,7 +987,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             "tx_out_h": int(round(xo)),
             "tx_in_h": int(round(xi)),
             "net_transfer_h": int(round(xo - xi)),
-            "accrual_op_h": int(round(mc + iv + xo - xi)),
+            "accrual_op_h": int(round(acc_d)),
+            "fuel_cr_h": int(round(fh)),
+            "fuel_roi": fuel_roi,
         }
 
     # Format support chain summary (per hour over span_h)
@@ -645,6 +1005,8 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
 
     return {
         "hours": hours,
+        "cash_source": cash_source,
+        "onetime_span_hours": onetime_span_h,
         "span_hours": round(span_h, 2),
         "inv_span_hours": round(inv_span_h, 2) if has_inv_accrual else 0.0,
         "has_inventory_accrual": has_inv_accrual,

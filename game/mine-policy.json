@@ -47,12 +47,18 @@
   "market_tier": true,
   "_zero_note": "2026-11-25 (Trinity, Suggi directive preserving Zero anti-copper fix): kept market_min_bid=10 against bloated copper/nitrogen, restored allow_lawless_for_deficit=true (calm 0-pirate/6h lawless deficit belts like iron/silicon/uranium), lawless_min_tier=1 for T1+ upgraded miners, needs_max_priority=3 (matches priority_resources silicon_ore), high_value_market_min_bid=25 (fury/phase crystals, plasma/chlorine gas), max_station_jumps=6, xp_fallback_max_jumps=8 (penalizing bloated junk) to eliminate 71% no-belt stalls.",
   "craft_demand_tier": true,
-  "allow_bursar_dropoffs": false,
+  "allow_bursar_dropoffs": true,
   "request_escort_for_pirate_deficits": false,
   "market_min_bid": 10,
   "needs_max_priority": 3,
   "high_value_market_min_bid": 25,
   "high_value_stock_cap": 2000,
   "_zero_note_pirates": "2026-11-25 (Zero, requests ENT-534): request_escort_for_pirate_deficits false while Military's escort lane stands stopped (errors ENT-202): a belt in a system the dispatcher's pirate stop closes is never offered, a deficit too; mine_net reads the dispatcher's pirate record (sightings and members' lines), not the store's observations alone.",
-  "_zero_note_dropoffs": "2026-11-25 05:54 UTC (Zero, orders ENT-092 block ZERO: store where it can be taken out): allow_bursar_dropoffs false. 63 of the 121 newest claims stored their iron in the miner's own storage at Bursar hubs outside deposit_stations, most at stations of other players, where no give route or receiver of ours stands. A dry run of the assignment on the live store with it off: 129 of 130 miners still placed (124 iron, 5 fluorine deficits), every deposit at one of the 12 stations of the list; the way grows from a median of 4 to 5 jumps belt plus station."
+  "_zero_note_dropoffs": "2026-11-25 05:54 UTC (Zero, orders ENT-092 block ZERO: store where it can be taken out): allow_bursar_dropoffs false. 63 of the 121 newest claims stored their iron in the miner's own storage at Bursar hubs outside deposit_stations, most at stations of other players, where no give route or receiver of ours stands. A dry run of the assignment on the live store with it off: 129 of 130 miners still placed (124 iron, 5 fluorine deficits), every deposit at one of the 12 stations of the list; the way grows from a median of 4 to 5 jumps belt plus station.",
+  "allow_lawless_bursar_dropoffs": false,
+  "allow_lawless_for_buywall": true,
+  "buywall_min_bid": 50,
+  "buywall_min_depth": 500,
+  "buywall_lawless_max_jumps": 6,
+  "hard_glut_skip_units": 200000
 }

@@ -376,11 +376,14 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
     bid_cap_ratio = max(0.2, min(1.0, float(policy.get("arb_bid_depth_cap") or 1.0)))
     min_bid_qty = max(1, int(policy.get("min_arb_bid_qty") or 1))
 
+    allow_bw = bool(policy.get("allow_calm_buywall_dest", False))
+    bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
+    bw_min_qty = int(policy.get("buywall_min_qty") or 200)
     by_item = {}
     for r in books_rows or []:
         b_id = str(r.get("base") or "")
         loc = base_map.get(b_id)
-        if not loc or (policed and not loc[3]):
+        if not loc:
             continue
         if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
             continue
@@ -390,8 +393,20 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
         iid = str(r.get("item") or "")
         if not iid or iid in PROTECTED_ITEMS:
             continue
-        by_item.setdefault(iid, []).append((b_id, loc, float(r.get("ask") or 0), int(r.get("ask_qty") or 0),
-                                            float(r.get("bid") or 0), int(r.get("bid_qty") or 0)))
+        ask_p, ask_q = float(r.get("ask") or 0), int(r.get("ask_qty") or 0)
+        bid_p, bid_q = float(r.get("bid") or 0), int(r.get("bid_qty") or 0)
+        is_pol = bool(loc[3])
+        is_bw_bid = (allow_bw and bid_p >= bw_min_bid and bid_q >= bw_min_qty)
+        if policed and not is_pol and not is_bw_bid:
+            continue
+        # Only buy from policed stations when policed_only is True; calm buy-wall hubs are sell destinations only!
+        eff_ask_p = ask_p if (not policed or is_pol) else 0.0
+        eff_ask_q = ask_q if (not policed or is_pol) else 0
+        eff_bid_p = bid_p if (not policed or is_pol or is_bw_bid) else 0.0
+        eff_bid_q = bid_q if (not policed or is_pol or is_bw_bid) else 0
+        if eff_ask_q <= 0 and eff_bid_q <= 0:
+            continue
+        by_item.setdefault(iid, []).append((b_id, loc, eff_ask_p, eff_ask_q, eff_bid_p, eff_bid_q))
 
     edges, hop_cache = [], {}
     def _hops(a, b):
@@ -410,7 +425,8 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
                     continue
-                jkey = "arb-bid:%s:%s" % (bb, iid)
+                # Deep buy-walls (>=500 qty) allow parallel origin asks without single-hauler lock
+                jkey = ("arb-bw:%s:%s:%s" % (ab, bb, iid)) if (bid_q >= 500 and bid_p >= bw_min_bid) else ("arb-bid:%s:%s" % (bb, iid))
                 if jkey in claimed_keys:
                     continue
                 d_hops = _hops(aloc[0], bloc[0])
@@ -894,15 +910,30 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
             pass
 
     stor = read_json(Path(data) / "stock" / "storage.json", {})
-    p_stor = (stor.get("pilots") or {}).get(pilot) if isinstance(stor, dict) else None
-    if not isinstance(p_stor, dict):
+    sources = []
+    if isinstance(stor, dict):
+        p_stor = (stor.get("pilots") or {}).get(pilot)
+        if isinstance(p_stor, dict):
+            for b_id, items in p_stor.items():
+                if isinstance(items, dict):
+                    sources.append(("self", b_id, items))
+        if policy.get("allow_faction_surplus_liquidation", True):
+            for f_stor in (stor.get("faction"), (stor.get("pilots") or {}).get("Faction")):
+                if isinstance(f_stor, dict):
+                    for b_id, items in f_stor.items():
+                        if isinstance(items, dict):
+                            sources.append(("faction", b_id, items))
+    if not sources:
         return None
 
+    allow_bw = bool(policy.get("allow_calm_buywall_dest", True))
+    bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
+    bw_min_qty = int(policy.get("buywall_min_qty") or 200)
     bids_by_item = {}
     for r in books_rows or []:
         b_id = str(r.get("base") or "")
         loc = base_map.get(b_id)
-        if not loc or (policed and not loc[3]):
+        if not loc:
             continue
         if exclude_bases and (b_id in exclude_bases or loc[0] in exclude_bases):
             continue
@@ -912,12 +943,16 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
         iid = str(r.get("item") or "")
-        if iid and bp >= 10.0 and bq >= 1:
-            bids_by_item.setdefault(iid, []).append((b_id, loc, bp, bq))
+        if not (iid and bp >= 10.0 and bq >= 1):
+            continue
+        if policed and not loc[3]:
+            if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):
+                continue
+        bids_by_item.setdefault(iid, []).append((b_id, loc, bp, bq))
 
     best = None
-    for b_id, items in p_stor.items():
-        if b_id not in base_map or not isinstance(items, dict):
+    for src_target, b_id, items in sources:
+        if b_id not in base_map:
             continue
         oloc = base_map[b_id]
         if policed and not oloc[3]:
@@ -940,13 +975,14 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                 est_rev = take_q * bid_p - tot_hops * 45.0
                 if est_rev < min_rev:
                     continue
-                jkey = "liq:%s:%s:%s:%s" % (pilot, b_id, sb, iid)
+                jkey = "liq:%s:%s:%s:%s" % (src_target, b_id, sb, iid)
                 if jkey in claimed_keys:
                     continue
                 score = est_rev / float(tot_hops)
                 if best is None or score > best[0]:
                     best = (score, {
                         "job_key": jkey, "item": iid, "qty": take_q,
+                        "source_target": src_target,
                         "origin": oloc, "dest": sloc, "est_bid": int(round(bid_p)),
                         "est_rev": int(round(est_rev)),
                     })
@@ -1081,7 +1117,24 @@ def main(argv=None):
         mods = [str(m).lower() for m in (ship_doc.get("modules") or [])]
         has_hazmat = any("hazmat" in m for m in mods)
         avail_cash = 0 if pilot_has_protected_fund(DATA, pilot) else max(0, before - int(policy.get("fuel_reserve_cr") or 6000))
-        strongholds = load_stronghold_bases(DATA) if policy.get("exclude_strongholds", True) else set()
+        strongholds = set(load_stronghold_bases(DATA)) if policy.get("exclude_strongholds", True) else set()
+        # Also exclude systems with recent pirate sightings (<6h) from calm buy-wall arbitrage/liquidation
+        try:
+            _pdb = DATA / "store" / "read.db"
+            if _pdb.is_file():
+                import worldcache as _wc_p
+                _pc = _wc_p.ro_db(_pdb, timeout=3.0)
+                try:
+                    _cut_p = time.time() - float(policy.get("pirate_avoid_hours") or 6.0) * 3600.0
+                    for (_psubj,) in _pc.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (_cut_p,)):
+                        if _psubj:
+                            strongholds.add(str(_psubj).split(":", 1)[0].strip())
+                except sqlite3.Error:
+                    pass
+                finally:
+                    _pc.close()
+        except Exception:
+            pass
         lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
         completed = 0
 
@@ -1394,7 +1447,8 @@ def main(argv=None):
                     if not ok_o:
                         release_job(DATA, pilot)
                         continue
-                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": "self"}, group="spacemolt_storage")
+                    _src_t = liq.get("source_target") or "self"
+                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": _src_t}, group="spacemolt_storage")
                     time.sleep(TICK)
                     have = get_cargo().get(iid, 0)
                     if have <= 0:

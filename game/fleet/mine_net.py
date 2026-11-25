@@ -380,7 +380,11 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
         if isinstance(bc, dict):
             for b_id, rec in bc.items():
                 if isinstance(rec, dict) and rec.get("system") and rec.get("poi") and rec.get("base"):
-                    tup = (str(rec["system"]), str(rec["poi"]), str(rec["base"]))
+                    bsys = str(rec["system"])
+                    bemp = str(rec.get("empire") or (systems.get(bsys) or {}).get("empire") or "")
+                    if not bemp and not policy.get("allow_lawless_bursar_dropoffs", False):
+                        continue
+                    tup = (bsys, str(rec["poi"]), str(rec["base"]))
                     lst = stations_by_sys.setdefault(tup[0], [])
                     if tup not in lst:
                         lst.append(tup)
@@ -634,8 +638,18 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _esc_ok = False
             if not _esc_ok:
                 continue
+        bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
+        bw_min_depth = int(policy.get("buywall_min_depth") or 500)
+        is_buywall = bool(mkt and mkt[0] >= bw_min_bid and mkt[1] >= bw_min_depth)
+        allow_lawless_bw = bool(policy.get("allow_lawless_for_buywall", True))
         if not is_policed:
-            lawless_ok = (not policed_only) or (sys_id in allow_sys) or (p_tier >= lawless_min_t) or (allow_lawless_def and is_deficit)
+            lawless_ok = (
+                (not policed_only)
+                or (sys_id in allow_sys)
+                or (p_tier >= lawless_min_t)
+                or (allow_lawless_def and is_deficit)
+                or (allow_lawless_bw and is_buywall and hops <= int(policy.get("buywall_lawless_max_jumps") or 6))
+            )
             if not lawless_ok:
                 continue
         if is_full and (not allow_xp or hops > xp_max_j):
@@ -653,14 +667,15 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             tier_mult = 6.0
         elif not is_full:
             tier = "market"
-            tier_mult = 2.0
             if mkt:
-                uval = max(1.0, mkt[0])   # what it sells for, never the catalog's base value
+                uval = max(1.0, mkt[0])   # live market bid, never stale static catalog base_value
+            tier_mult = 8.0 if is_buywall else 2.5
         else:
             tier = "xp_fallback"
             _held_u = int((world.get("held") or {}).get(res, 0))
             _bloated = (_held_u >= 25000 and uval < 12.0) or (res in full_items)
-            tier_mult = 0.05 if _bloated else 0.35
+            _hard_glut = (_held_u >= int(policy.get("hard_glut_skip_units") or 200000) and uval < 10.0)
+            tier_mult = 0.005 if _hard_glut else (0.05 if _bloated else 0.35)
         if tier == "market" and not policy.get("market_tier", True):
             continue
 

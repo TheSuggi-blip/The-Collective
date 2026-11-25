@@ -1377,11 +1377,9 @@ def snapshot_said(snap):
     return " | ".join(parts)
 
 
-def sample_stock(conn, now, fresh):
-    """The hour's sample of what each division holds (stock_hour), from the table holdings as the snapshot left it: written
-    when the storage book was loaded again in this pass (fresh) or when the hour has no sample yet; the hour's rows are
-    replaced, so an item gone to 0 leaves the hour. Rows written; 0 when nothing was due or the book holds nothing.
-    Runs record no goods stored, so this is the one source of what flows into storage (hive.py flow)."""
+def sample_stock(conn, now, fresh, data=None):
+    """The hour's sample of what each division holds (stock_hour), from holdings PLUS active Exchange sell-order escrow
+    (bursar_sells.json) so listing goods on the Exchange never registers as a fake inventory write-off."""
     hour = int(now) // HOUR * HOUR
     if not fresh and conn.execute("SELECT 1 FROM stock_hour WHERE hour = ? LIMIT 1", (hour,)).fetchone():
         return 0
@@ -1391,6 +1389,34 @@ def sample_stock(conn, now, fresh):
             held[(board.NAMES.get(member, member or "unknown"), item)] += int(units)
     if not held:
         return 0                                    # no storage book loaded yet: no sample, never a sample of nothing
+    # Add active Exchange sell-order escrow from data/fleet/bursar_sells.json (fresh <= 6h)
+    try:
+        base_d = Path(data) if data is not None else None
+        if base_d is None:
+            for row_db in conn.execute("PRAGMA database_list"):
+                if row_db[1] == "main" and row_db[2]:
+                    base_d = Path(row_db[2]).resolve().parent.parent
+                    break
+        if base_d is not None:
+            sp = base_d / "fleet" / "bursar_sells.json"
+            if sp.is_file():
+                sdoc = json.loads(sp.read_text(encoding="utf-8", errors="replace"))
+                entries = sdoc.get("entries") if isinstance(sdoc, dict) and isinstance(sdoc.get("entries"), dict) else {}
+                for p_nm, bases in entries.items():
+                    if not isinstance(bases, dict):
+                        continue
+                    div_nm = division.division_of(str(p_nm))[0] if hasattr(division, "division_of") else board.NAMES.get(division.owner(str(p_nm), str(base_d)), "Trade")
+                    if not div_nm or div_nm == "Unassigned":
+                        div_nm = "Trade"
+                    for _b_id, rec in bases.items():
+                        if not isinstance(rec, dict) or (float(now) - float(rec.get("at") or 0)) > 21600.0:
+                            continue
+                        for iid, qty in (rec.get("items") or {}).items():
+                            q = int(qty or 0)
+                            if iid and q > 0:
+                                held[(div_nm, str(iid))] += q
+    except Exception:
+        pass
     conn.execute("BEGIN IMMEDIATE")
     try:
         conn.execute("DELETE FROM stock_hour WHERE hour = ?", (hour,))

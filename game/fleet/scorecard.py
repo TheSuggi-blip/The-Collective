@@ -1979,8 +1979,8 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         idl = ld["idle"]
         # Strict Zero-Idle Accounting: parked without an active order is always IDLE
         eff_wrk = wrk
-        div_emp_pct = round(100.0 * eff_wrk / max(1, tot), 1)
-        raw_emp_pct = round(100.0 * wrk / max(1, tot), 1)
+        div_emp_pct = 100.0 if tot == 0 else round(100.0 * eff_wrk / max(1, tot), 1)
+        raw_emp_pct = 100.0 if tot == 0 else round(100.0 * wrk / max(1, tot), 1)
 
         # Hull upgrade completion (role & empire aware)
         elig_p10 = hd["eligible_p10"]
@@ -2044,7 +2044,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
         emp_warn_cut = 80.0 if div == "Command" else 90.0
         emp_sev = _severity_pct(div_emp_pct, emp_alarm_cut, emp_warn_cut)
 
-        if emp_sev != "OK":
+        if emp_sev != "OK" and tot > 0:
             triggers.append({
                 "severity": emp_sev, "code": "DIV_IDLE", "metric": "Idle Ships Gap",
                 "actual": f"{tot - eff_wrk} idle ({div_emp_pct:.1f}% working, {eff_wrk}/{tot})",
@@ -2093,22 +2093,37 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 })
 
         # Division-matched Role Success KPI
+        d_fuel_h = _num(_d_acc.get("fuel_cr_h")) if isinstance(_d_acc, dict) else 0.0
+        d_fuel_roi = _d_acc.get("fuel_roi") if isinstance(_d_acc, dict) else None
         if div == "Mining":
             ore_sh = round(_num(contrib_24h.get(("Mining", "ore_per_ship_hour"))), 1)
             ho_worth = int(_num(contrib_24h.get(("Mining", "handed_over_worth"))))
+            m_acc_ok = (not has_accrual_24h) or (d_acc24 > 0)
+            m_vol_pct = min(100.0, round(ore_sh / 25.0 * 100.0, 1)) if ore_sh > 0 else 0.0
+            m_pct = m_vol_pct if m_acc_ok else min(55.0, m_vol_pct)
+            if ore_sh <= 0 or (has_accrual_24h and d_acc24 < -25000):
+                m_status = "ALARM"
+            elif ore_sh >= 15.0 and ho_worth > 0 and m_acc_ok:
+                m_status = "OK"
+            else:
+                m_status = "WARN"
+            roi_s = f" | {d_fuel_roi:.1f}x fuel" if d_fuel_roi is not None else ""
+            acc_s = f" | live val {_fmt_cr(d_acc24)}/h" if has_accrual_24h else ""
             role_kpi = {
-                "name": "Extraction & Handover",
-                "value": f"{ore_sh:.1f} ore/ship-h | {_fmt_cr(ho_worth)} cr/24h handed",
-                "pct": min(100.0, round(ore_sh / 25.0 * 100.0, 1)) if ore_sh > 0 else 0.0,
-                "status": "OK" if (ore_sh >= 15.0 and ho_worth > 0) else ("WARN" if ore_sh > 0 else "ALARM"),
-                "cashflow_24h": round(d_net24, 1),
+                "name": "Realizable Extraction & Fuel ROI",
+                "value": f"{ore_sh:.1f} ore/ship-h{acc_s}{roi_s} | {_fmt_cr(ho_worth)} handed",
+                "pct": m_pct,
+                "status": m_status,
+                "cashflow_24h": round(d_rec24, 1),
+                "fuel_cr_h": int(round(d_fuel_h)),
+                "fuel_roi": d_fuel_roi,
             }
             if role_kpi["status"] != "OK":
                 triggers.append({
-                    "severity": role_kpi["status"], "code": "MINING_YIELD", "metric": "Extraction Yield",
-                    "actual": role_kpi["value"], "target": ">=15 ore/ship-h + active reserve handovers",
+                    "severity": role_kpi["status"], "code": "MINING_YIELD", "metric": "Realizable Extraction Value",
+                    "actual": role_kpi["value"], "target": ">=15 ore/ship-h & >0 cr/h realizable live value after fuel",
                     "direction": d_trend,
-                    "action": "Upgrade to Laser II/III & richer reserve belts (silicon, carbon, gold, nickel); gift loads inward (P2/P5)",
+                    "action": "Pivot off saturated low-bid ore (copper) onto live buy-walls (silver/uranium/silicon) & craft shortages; upgrade P10+ miners to T2",
                 })
         elif div == "Trade":
             sell_cph = round(_num(contrib_24h.get(("Trade", "sell_cph"))), 0)
@@ -2153,7 +2168,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "value": f"chains {supply_ok}/{supply_tot} OK ({chain_pct:.0f}%) | {bk_txt}",
                 "pct": chain_pct,
                 "status": log_sev,
-                "cashflow_24h": round(d_net24, 1),
+                "cashflow_24h": round(d_rec24, 1),
+                "fuel_cr_h": int(round(d_fuel_h)),
+                "fuel_roi": d_fuel_roi,
             }
             if log_sev != "OK":
                 triggers.append({
@@ -2191,7 +2208,9 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "value": f"{places_fresh}/{places_tot} fresh ({fresh_pct:.1f}%) | {neutral_cnt} neutral, {diplo_pending} pending reply",
                 "pct": fresh_pct,
                 "status": int_sev,
-                "cashflow_24h": round(d_net24, 1),
+                "cashflow_24h": round(d_rec24, 1),
+                "fuel_cr_h": int(round(d_fuel_h)),
+                "fuel_roi": d_fuel_roi,
             }
             if fresh_pct < TARGET_COMPLETION_PCT:
                 triggers.append({
