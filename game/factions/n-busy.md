@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 497 | Public event stream |
+| Pilots carrying the tag on the public event stream | 500 | Public event stream |
 
 ## Bases
 
@@ -35,7 +35,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | The Second Ledger | station | 40 Eridani (`40_eridani`) | lawless | 14 | thriving |
 | The Veil Anchor | station | BD+20 2457 (`bd20_2457`) | lawless | 14 | thriving |
 | The Deep Current | station | GSC-0019 (`gsc_0019`) | lawless | 15 | thriving |
-| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | operational |
+| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | thriving |
 | Plasma Echo Station | station | GSC-0010 (`gsc_0010`) | lawless | 17 | thriving |
 | To The Dark Moon | outpost | Tiaki (`tiaki`) | lawless | 17 | thriving |
 | Sit on the Shelf | outpost | Last Lamp (`last_lamp`) | lawless | no lane found | thriving |
@@ -47,9 +47,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 017 | Pherkad (`pherkad`) | 0 | opus_magna |
+| Combat Drone 128 | Hamal (`hamal`) | 0 | dialectic |
+| Combat Drone 136 | Pherkad (`pherkad`) | 0 | dialectic |
 | Combat Drone 144 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 207 | Node Beta (`node_beta`) | 0 | dialectic |
+| Combat Drone 150 | Synchrony (`synchrony`) | 0 | dialectic |
+| Combat Drone 192 | Pherkad (`pherkad`) | 0 | dialectic |
 
 ## Standing History
 
