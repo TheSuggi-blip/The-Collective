@@ -1899,73 +1899,73 @@
               "hull": "bulk_terms",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 160000
+              "max_price": 5500
             },
             {
               "hull": "caravan",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 200000
+              "max_price": 5500
             },
             {
               "hull": "junk_convoy",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 220000
+              "max_price": 5500
             },
             {
               "hull": "war_wagon",
               "tier": 2,
               "min_piloting": 10,
-              "max_price": 360000
+              "max_price": 5500
             },
             {
               "hull": "enterprise",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 650000
+              "max_price": 5500
             },
             {
               "hull": "fold_hauler",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 650000
+              "max_price": 5500
             },
             {
               "hull": "compendium",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 650000
+              "max_price": 5500
             },
             {
               "hull": "liability",
               "tier": 3,
               "min_piloting": 20,
-              "max_price": 950000
+              "max_price": 5500
             },
             {
               "hull": "frankenhauler",
               "tier": 4,
               "min_piloting": 30,
-              "max_price": 1800000
+              "max_price": 5500
             },
             {
               "hull": "conglomerate",
               "tier": 4,
               "min_piloting": 30,
-              "max_price": 1800000
+              "max_price": 5500
             },
             {
               "hull": "logistics_prime",
               "tier": 4,
               "min_piloting": 30,
-              "max_price": 1800000
+              "max_price": 5500
             },
             {
               "hull": "dimensional_fold",
               "tier": 4,
               "min_piloting": 30,
-              "max_price": 1800000
+              "max_price": 5500
             }
           ]
         }
