@@ -102,25 +102,28 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
             # Populate item_vals strictly from fresh (<6h) live market bids in read.db:books!
             if "books" in tbls:
                 _bcols = {r[1] for r in con.execute("PRAGMA table_info(books)").fetchall()}
-                _q = "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), COALESCE(ask,0), COALESCE(ask_qty,0) FROM books"
+                _bd_expr = "COALESCE(bid_depth, bid_qty, 0)" if "bid_depth" in _bcols else "COALESCE(bid_qty, 0)"
+                _q = "SELECT base, item, COALESCE(bid,0), COALESCE(bid_qty,0), %s, COALESCE(ask,0), COALESCE(ask_qty,0) FROM books" % _bd_expr
                 _p = ()
                 if "t" in _bcols:
                     _q += " WHERE t >= ?"
                     _p = (time.time() - 6.0 * 3600.0,)
-                for b_id, iid, bid, bq, ask, aq in con.execute(_q, _p):
+                for b_id, iid, bid, bq, bd, ask, aq in con.execute(_q, _p):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     if not b_s or not i_s:
                         continue
+                    eff_bq = max(int(bq or 0), int(bd or 0))
                     books_by_base.setdefault(b_s, {})[i_s] = {
-                        "bid": float(bid or 0), "bid_qty": int(bq or 0),
+                        "bid": float(bid or 0), "bid_qty": int(bq or 0), "bid_depth": eff_bq,
                         "ask": float(ask or 0), "ask_qty": int(aq or 0),
                     }
-                    if float(bid or 0) > 0 and int(bq or 0) > 0:
+                    if float(bid or 0) > 0 and eff_bq > 0:
                         prev_b, prev_q = global_bid.get(i_s, (0.0, 0))
-                        global_bid[i_s] = (max(prev_b, float(bid)), prev_q + int(bq))
+                        global_bid[i_s] = (max(prev_b, float(bid)), prev_q + eff_bq)
                         if float(bid) > item_vals.get(i_s, 0.0):
                             item_vals[i_s] = float(bid)
             need_craft_caps = {}
+            _raw_res_qty = {}
             if "need_status" in tbls:
                 ns_cols = {r[1] for r in con.execute("PRAGMA table_info(need_status)").fetchall()}
                 # Rule F24 (requests.log ENT-533): every good an open need takes from stock, must craft or lacks;
@@ -129,8 +132,8 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                 if r_cols:
                     for row in con.execute("SELECT %s FROM need_status" % ", ".join(r_cols)):
                         for text in row:
-                            for m in re.finditer(r"([a-z][a-z0-9_]*)\s+\d[\d,]*", str(text or "")):
-                                reserve_items.add(m.group(1))
+                            for m in re.finditer(r"([a-z][a-z0-9_]*)\s+(\d[\d,]*)", str(text or "")):
+                                _raw_res_qty[m.group(1)] = _raw_res_qty.get(m.group(1), 0) + int(m.group(2).replace(',', '')) if len(m.groups()) >= 2 else (_raw_res_qty.get(m.group(1), 0) + 100)
                 if "colour" in ns_cols:
                     ns_rows = con.execute("SELECT craft FROM need_status WHERE craft IS NOT NULL AND LOWER(COALESCE(colour, '')) != 'green'").fetchall()
                 else:
@@ -161,6 +164,13 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
     dem_rel = str(policy.get("demand_file") or "game/craft-demand.json")
     dem_p = Path(dem_rel) if Path(dem_rel).is_absolute() else (Path(repo_root) / dem_rel)
     demand = read_json(dem_p, {})
+    # Quantity-capped reserve_items: only protect scarce open needs (stock <= 1.25x need + 50) + hard keep=all items!
+    # Unlocks 10,000+ surplus ore/ingot/board stocks for high-margin zero-fuel commercial crafting!
+    for _ri, _rq in (locals().get("_raw_res_qty") or {}).items():
+        if stock_by_item.get(_ri, 0) <= int(_rq * 1.25) + 50:
+            reserve_items.add(_ri)
+    for _hard_i in ("fuel_cell", "hull_patch", "repair_kit", "antimatter_containment_cell", "station_core"):
+        reserve_items.add(_hard_i)
     return {
         "recipes": recipes, "books_by_base": books_by_base, "global_bid": global_bid,
         "item_vals": item_vals, "need_crafts": need_crafts, "need_craft_caps": need_craft_caps,
@@ -251,7 +261,7 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
         int(policy.get("max_buy_spend_per_cycle_cr") or 25000),
     )
     max_runs = max(1, int(policy.get("max_runs_per_cycle") or 10))
-    est_fee = float(policy.get("max_fee_per_run_cr") or 1500) * 0.2
+    est_fee = 0.0  # Realistic hand-craft fee calculated dynamically as 3% of revenue below
 
     ind_targets = set()
     ind_caps = {}
@@ -344,16 +354,25 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
             local_b = book.get(out_item) or {}
             local_bid = float(local_b.get("bid") or 0)
             local_bq = int(local_b.get("bid_qty") or 0)
-            bid, bq = local_bid, local_bq
+            local_bd = max(local_bq, int(local_b.get("bid_depth") or 0))
+            local_ask = float(local_b.get("ask") or 0)
+            bid, bq = local_bid, local_bd
+            sell_via_ask = False
             # When spending cash on market inputs, REQUIRE a live LOCAL buyer bid so cash converts back to profit immediately!
-            if bid <= 0:
+            if bid <= 0 or bq < min_bq:
                 if buys:
                     continue
-                bid, bq = gbid.get(out_item, (0.0, 0))
-            if bid <= 0 or bq < min_bq:
-                continue
-            if buys and local_bq > 0:
-                max_abs_runs = max(1, local_bq // max(1, out_qty))
+                # Using own stored inputs (0 cash spent!): sell at live galactic bid OR undercut active local ask!
+                gb_p, gb_q = gbid.get(out_item, (0.0, 0))
+                if local_ask >= 15 and gb_p >= 5 and local_ask <= gb_p * 4.0:
+                    bid, bq = max(5.0, local_ask - 1.0), max(min_bq, 10)
+                    sell_via_ask = True
+                elif gb_p > 0 and gb_q >= min_bq:
+                    bid, bq = gb_p, gb_q
+                else:
+                    continue
+            if buys and local_bd > 0:
+                max_abs_runs = max(1, local_bd // max(1, out_qty))
                 if runs > max_abs_runs:
                     runs = max_abs_runs
                     buys = []
@@ -365,7 +384,8 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
                             buys.append((in_item, short_q, ask))
                             tot_buy += short_q * ask
             rev_per_run = bid * out_qty
-            prof_per_run = rev_per_run - cost_per_run - est_fee
+            run_fee = min(25.0, rev_per_run * 0.03)
+            prof_per_run = rev_per_run - cost_per_run - run_fee
             margin = prof_per_run / max(1.0, cost_per_run) if cost_per_run > 0 else 1.0
             if prof_per_run < min_profit or margin < min_margin:
                 continue
@@ -376,7 +396,7 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
             cand = {
                 "recipe": rec["id"], "makes": out_item, "per_run": out_qty, "runs": runs,
                 "buys": buys, "est_profit": round(prof_per_run * runs, 1), "margin_pct": round(margin * 100.0, 1),
-                "sell_price": int(round(bid)), "local_bid": int(round(local_bid)),
+                "sell_price": int(round(bid)), "local_bid": (0 if sell_via_ask else int(round(local_bid))),
                 "mode": "commercial", "score": round(score, 2),
             }
         else:
