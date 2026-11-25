@@ -1,12 +1,17 @@
 # Intel guidebook -- Ships and Fits (ships.md)
 
 ### Ships and Fits
-Status: proven. Updated: 2026-11-21. Evidence: data/fleet/ships/; catalog tables hulls and items; the books of Central Nexus and Ironlight Crossroads (tool market).
+Status: proven. Updated: 2026-11-25. Evidence: data/fleet/ships/; catalog tables hulls and items; the books of Central Nexus and Ironlight Crossroads (tool market); fuelplan.ship_jump_cost; stats_money_hour (Intel, 2026-11-24 14:00 to 11-25 04:00 UTC); errors.log ENT-205.
 
-- The Threshold: hold 65, tank 95, hull 75, shield 80, two utility slots;
-  the mining laser takes one. Fuel: one unit a jump and one a leg inside
-  a system; a round trip six jumps out used 15 units (2026-11-15). A far
-  list is cut so that start, target and home stay under about 60 jumps.
+- The Threshold: hold 65, tank 95, hull 75, shield 80, two utility slots.
+  Fuel (fuelplan, 2026-11-25): about 3 a jump, 7 with an Afterburner II,
+  8.5 with a III, 11 with two; census.py keeps a spare of 20 for the way
+  there and on to fuel, and a leg longer than a tank calls at the
+  stations between (refuel_hops).
+- No afterburner on a scout: while 25 scouts flew 32 of them, Intel's
+  fuel went from 16,390-27,074 to 31,572-58,032 cr an hour with no gain
+  in freshness, and scouts were towed dry; fit-policy strips them as
+  off-role (2026-11-25). A fit is judged by fuel a read, not speed.
 - A census refuels at every station it docks and, on `--stay`, starts its
   next read from there: a station that sells no fuel is no place to end
   (data/station/stations.json, services).

@@ -12,7 +12,7 @@ rival surges (`rivals.py`), and run Phase-1 diplomatic hails & scout
 envoys behind `comms_guard.py` / `diplomacy.py` (F4, O10).
 
 ### Ships
-Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; tests.md.
+Status: proven. Updated: 2026-11-25. Evidence: read.db tables hulls, ship_listings; game/rules/05-galaxy.md; tests.md; ships.md.
 
 - Cross-empire rule (`05-galaxy.md`): flying another empire's hull
   carries **zero penalty** and keeps the pilot's native empire bonus.
@@ -30,8 +30,9 @@ Status: proven. Updated: 2026-11-24. Evidence: read.db tables hulls, ship_listin
 - Tier 3 (Piloting 20): Nebula `Survey Vessel` (305c, 5U), Solarian
   `Perigee` (270c, 6U), Voidborn `Noumenon` (215c, 5U).
 - Fit: `survey_scanner_ii` (every system surveyed on census), Mining
-  Survey Probe for faint signatures, `shield_booster_ii`. Empty hold
-  beyond the border (F3), never fire first (F2).
+  Survey Probe for faint signatures, `shield_booster_ii`, `fuel_optimizer`;
+  never an afterburner (2 to 3.7 times the fuel a jump, ships.md). Empty
+  hold beyond the border (F3), never fire first (F2).
 - AutoNet feeder (ENT-088): keep `<6h` market books across `60+` safe empire & neutral hubs (feeds `bursar-network` & `haul-network`) and `<3h` `ship_listings` at major shipyards (feeds `upgrades.py` auto-buy); tracked live on `scorecard.py` `AutoNet`.
 
 ### Skills

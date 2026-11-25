@@ -1,38 +1,33 @@
 # Intel guidebook -- Routes (routes.md)
 
 ### Standing Plan
-Status: proven. Updated: 2026-11-24. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check and status; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN).
+Status: proven. Updated: 2026-11-25. Evidence: the plan file (tool plan, show); hive.py briefing (MY STANDING FLEET); fill.py check and status; store table herds; intel turn check (WORKED, SITES, WATCH, ROADS, UNFLOWN, STUCK, REFUSED).
 
-- First, every scout: the store routes (Central Nexus, frontier station
-  near), give-scout-stores-*, the missions paid once and the Voidborn
-  chain (F34, F35), fit-network last (fit-policy Intel: survey_scanner_ii
-  under its max price, shield boosters). No census in First or Then: a
+- First, every scout: the store routes, give-scout-stores-*, the missions
+  paid once and the Voidborn chain (F34, F35), fit-network last
+  (fit-policy Intel: no afterburner; survey_scanner_ii under its max
+  price, shield boosters, fuel optimizer). No census in First or Then: a
   census is open to any empire's pilot.
-- Newborn scouts: their capital's region, @outerrim (Altais) and
-  @nebula (Haven): census-region-<capital> (120 min), its ring (360
-  min), then the far lists, the roads. The Outer Rim scouts take
-  census-north after their region (the cohort nearest it). Sol and
-  Krynn (160 min) go to Voidborn readers.
-- The kit's herds (orders P3): census-kit-herds (360 min, three ships)
-  reads the far places of the five species. hive.py herds: a place at 3
-  or more goes to Military in admirals.log the same turn; tagged herds:
-  file_ranches.py.
-- Readers (@reader): census-voidborn (home, 35 min; GAPS), the outpost
-  watch (40 min), census-worked (120), census-frontier (155),
-  census-worked-far (160), the roads. A cadence sits a trip under its
-  target: the read comes after the system falls due.
-- Lasers: no scout carries a Mining Laser I (strip-gift stays as a gate).
-- Explorers: their road (census-north up to 8 ships for the Atria to
-  Yildun road, -east, -south, 155 min),
-  census-worked-far, their far list (1440 min).
-- Hunters: one reader a hunt, one hunter a herd (F9), every scout hunt
-  gifts to a trader (P5); a hunt another claims drops; a tagged herd is
-  never prey (hunt.py).
+- Newborn scouts: @outerrim (Altais) and @nebula (Haven):
+  census-region-<capital> (120 min), its ring (360 min), then the far
+  lists, the roads; the Outer Rim scouts take census-north after their
+  region. Sol and Krynn (160 min) go to Voidborn readers.
+- Kit herds: census-kit-herds (360 min, three ships); hive.py herds: a
+  place at 3 or more goes to Military in admirals.log the same turn;
+  tagged herds: file_ranches.py.
+- Readers (@reader): census-voidborn (35 min), the outpost watch (40),
+  census-worked (120), census-frontier (155), census-worked-far (160),
+  the roads. A cadence sits a trip under its target.
+- Explorers: their road (census-north up to 8 ships, Atria to Yildun;
+  -east, -south; 155 min), census-worked-far, their far list (1440 min).
+  A leg longer than a tank refuels on the way (census.py refuel_hops).
+- Hunters: only hunts that kill stay (Intercrus, Amberfall; one scout a
+  herd, F9; loot to a trader, P5); the rest left on 2026-11-25 (0 kills
+  in 24 h). A hunt test goes to an armed scout only.
 - census-roads (960 min, four ships): no never-read system is left.
-- Then: the docked book watch (watch-book-*, one scout a station where
-  scouts wait docked, 0 fuel), then park.
-- Changed by: a WORKED, SITES or FRESH HALT, a road pirate, a once
-  mission (queue.log), an order naming herds or places.
+- Then: the docked book watch (watch-book-*, 0 fuel), then park.
+- Changed by: a WORKED, SITES, FRESH or REFUSED HALT, a road pirate, a
+  once mission (queue.log), an order naming herds or places.
 
 ### Census lists
 Status: proven. Updated: 2026-11-24. Evidence: game/routes/census-*.json; dispatch.py (pick, stalest_system); intel turn check (OVERLAP, ROADS, WORKED, GAPS, SITES, BELTS).

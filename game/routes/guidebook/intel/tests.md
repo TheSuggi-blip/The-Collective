@@ -1,7 +1,7 @@
 # Intel guidebook -- Tests (tests.md)
 
 ### Base sites on the three roads
-Status: test. Updated: 2026-11-21. Evidence: admirals.log ENT-063; reports/2026-11-17_oracle_three-roads-census-lists-site-candidates.md; tables fields, lanes, stations, observations kind pirate.
+Status: proven. Updated: 2026-11-25. Evidence: admirals.log ENT-063; reports/2026-11-17_oracle_three-roads-census-lists-site-candidates.md; tables fields, lanes, stations, observations kind pirate; orders.log ENT-092 P3; intel turn check SITES (2026-11-25 05:05 UTC).
 
 - Rank a site on supply and threat first: jumps to the nearest station
   with fuel and a market (BFS on lanes), pirate lines within two jumps,
@@ -21,7 +21,10 @@ Status: test. Updated: 2026-11-21. Evidence: admirals.log ENT-063; reports/2026-
   of them.
 - Southeast: GSC-0035 or GSC-0024 for the outpost, Fomalhaut or Yed
   Posterior for the station, 6 to 7 jumps from any fuel.
-- Open: the ranking is named again on the reads since 2026-11-21.
+- RESULT: the north road was sited on these readings (orders ENT-092
+  P3: Atria's kit, then Yildun); census-north, -east and -south read all
+  67 of their systems within 180 minutes (SITES, 2026-11-25 05:05 UTC).
+  East and Southeast stand as candidates.
 
 ### Uranium, thorium and seam glass
 Status: test. Updated: 2026-11-23. Evidence: tables fields, stats_refill (kind field), books (asks); intel turn check LEADS; requests.log ENT-435, ENT-443.
@@ -89,12 +92,16 @@ Status: proven. Updated: 2026-11-22. Evidence: rule F37; queue.log ENT-203.
 - A hull or a module: one first (F17), then two more ships.
 
 ### Visit missions
-Status: test. Updated: 2026-11-21. Evidence: data/fleet/ships/<pilot>.json missions; data/missions/node_beta_industrial_station.json.
+Status: proven. Updated: 2026-11-25. Evidence: data/missions/; admirals.log ENT-099; game/routes/mission-confederacy-infrastructure-audit-confederacy.json, mission-the-line-ironhearth.json.
 
-- Local Sector Survey and Deep Space Cartography (6,500 cr together) ask
-  visits to Sirius, Horizon and The Crucible. Open: whether a census jump
-  through a system completes an objective; read the holder's objectives
-  before a route is written.
+- A visit mission is flown as a circuit route that docks at each station
+  its objectives name (`redock: true`), never left to a census jump: the
+  Confederacy infrastructure audit paid 24 of 25 runs, 4,000 cr each, 36
+  minutes on the mean (admirals.log ENT-099, 2026-11-22).
+- routemaker.py writes such a route from the board and fill.py adds it
+  as a one-ship test (The Line at Ironhearth Station, 2026-11-25: three
+  stops after the accept). Local Sector Survey and Deep Space
+  Cartography (Sirius, Horizon, The Crucible) take the same form.
 
 ### Hunts of the scouts
 Status: proven. Updated: 2026-11-21. Evidence: hive.py route <id>; data/routes/runs.jsonl; errors.log ENT-095.
