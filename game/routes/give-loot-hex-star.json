@@ -1,0 +1,39 @@
+{
+ "id": "give-loot-hex-star",
+ "kind": "circuit",
+ "title": "Any ship of ours gives the high-value loot it stores at Hex Star (Dheneb) (ember gland, crystal melt, caustic sac, noble condensate) to the trader named there (strict classes)",
+ "note": "2026-11-25 13:14 UTC (Mercury): orders ENT-093 block MERCURY (offer Military and Intel a give route for their stored melt) and P5, rules F23, F24. A named variant (P7) of the give-<role>-stores-* routes: those open only when the giver stores 20 creature carapace or 50 iron ore, so a ship that stores only loot never gives it. This one opens on any of the four goods at 2 units or more (dispatch.stored_missing: an `items` list is met by any one of them), for every role (class deliver), and only for a ship within one jump (max_jumps 1). The goods go to the trader named for this station (data/fleet/receivers.json, handover.py); Trade's sell and carry routes take them where a bid stands: ember gland at Crimson War Citadel (Krynn) bid 6,299 x 18 at 13:00 UTC, caustic sac at Hex Star 1,368 x 28 at 13:07 UTC (table books); crystal melt waits stored for a bid to refill. No open need names any of the four (tool stock, view surplus, 13:09 UTC). Each Admiral puts it in its own plan or leaves it out.",
+ "max_ships": 2,
+ "requires": {
+  "stored": {
+   "at": "b495c6003fc83e18f6d8cecbe6929133",
+   "items": [
+    "ember_gland",
+    "crystal_melt",
+    "caustic_sac",
+    "noble_condensate"
+   ],
+   "min": 2
+  },
+  "strict": true,
+  "max_jumps": 1
+ },
+ "stops": [
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all",
+   "gift": [
+    {
+     "to": "trader",
+     "items": [
+      "ember_gland",
+      "crystal_melt",
+      "caustic_sac",
+      "noble_condensate"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
