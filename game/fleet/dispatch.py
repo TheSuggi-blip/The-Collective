@@ -937,6 +937,8 @@ def why_not(pilot, rid, route, state):
         allowed = [empires] if isinstance(empires, str) else [str(e) for e in empires]
         if pilot.get("empire") not in allowed:
             return "open only to pilots born %s (the pilot: %s)" % (", ".join(allowed), pilot.get("empire") or "not read"), None
+    if route.get("kind") in ("hunt", "hunt_net") and pilot.get("weapons") == 0:            # requests ENT-539: no unarmed hunter
+        return "no weapon fitted", None
     far_mission = mission_reach_reason(pilot, rid, route)         # rules F34, F35: keep foreign once-missions local unless far_ok
     if far_mission:
         return far_mission, None
@@ -1299,6 +1301,15 @@ def pick(pilot, plan, routes, state):
     return None, None
 
 
+def weapons_of(detail):
+    """How many modules of a pilot's live file sit in a weapon slot; None when the file holds no module list (not read).
+    requests ENT-539: a hunt is closed to a ship with none."""
+    mods = detail.get("modules") if isinstance(detail, dict) else None
+    if not isinstance(mods, list) or any(not isinstance(m, dict) or not (m.get("slot") or m.get("kind")) for m in mods):
+        return None                                   # a module without its slot is not read: never closed for it
+    return sum(1 for m in mods if "weapon" in (m.get("slot"), m.get("kind")))
+
+
 def pilot_of(ship, named, data, ammo):
     """What the rule needs to know of one pilot, from its row in fleet.json and its live file: role, wallet, docked, modules, goods aboard."""
     name = ship.get("name") or ""
@@ -1314,6 +1325,7 @@ def pilot_of(ship, named, data, ammo):
             "speed": int(ship.get("speed") or detail.get("speed") or 0),
             "cargo_capacity": int(ship.get("cargo_capacity") or detail.get("cargo_capacity") or 0),
             "modules": [m.get("type") or m.get("type_id") for m in detail.get("modules") or [] if isinstance(m, dict)],
+            "weapons": weapons_of(detail),
             "missions": [str(m.get("title") or "").strip().lower() for m in (detail.get("mission_list") or []) if isinstance(m, dict) and int(m.get("percent") or 0) < 100 and m.get("title")],
             "skills": {str(k): int((v or {}).get("level") or 0) if isinstance(v, dict) else int(v or 0)
                        for k, v in (detail.get("skills") or {}).items() if isinstance(v, (dict, int))} if isinstance(detail.get("skills"), dict) else {},

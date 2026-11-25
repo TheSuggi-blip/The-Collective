@@ -1455,5 +1455,42 @@ class PostedAndRoleTests(Tree):
         self.assertIsNone(self.dispatch.why_not(dict(pilot_t, missions=["prospectus levy"]), "finish-levy", r_fin, st1)[0])
 
 
+class UnarmedHuntTests(Tree):
+    """requests ENT-539 (Oracle): fill.py put a lawless hunt test on a scout that carried no weapon module and the
+    dispatcher sent it at once. A hunt (kind hunt or hunt_net) is closed to a pilot whose ship file shows no module
+    in a weapon slot; a pilot whose modules are not read is not closed for it."""
+
+    def ship(self, name, modules):
+        folder = self.data / "fleet" / "ships"
+        folder.mkdir(parents=True, exist_ok=True)
+        body = {"name": name}
+        if modules is not None:
+            body["modules"] = modules
+        (folder / (name + ".json")).write_text(json.dumps(body), encoding="ascii")
+        return self.dispatch.pilot_of({"name": name, "credits": 20000, "docked": True}, {}, str(self.data), set())
+
+    def test_pilot_of_counts_the_weapon_slot_modules_of_the_ship_file(self):
+        self.assertEqual(self.ship("scout-1", [{"slot": "utility", "type": "afterburner_ii"}, {"slot": "defense", "type": "shield_booster_i"}])["weapons"], 0)
+        self.assertEqual(self.ship("scout-2", [{"kind": "weapon", "slot": "weapon", "type": "autocannon_i"}])["weapons"], 1)
+        self.assertEqual(self.ship("scout-3", [])["weapons"], 0)
+        self.assertIsNone(self.ship("scout-4", None)["weapons"])                       # modules not read: not counted
+        self.assertIsNone(self.ship("scout-6", [{"type": "autocannon_i"}])["weapons"])   # a module without its slot: not read
+        self.assertIsNone(self.dispatch.pilot_of({"name": "scout-5"}, {}, str(self.data), set())["weapons"])   # no ship file
+
+    def test_a_hunt_is_closed_to_a_pilot_without_a_weapon_and_open_to_one_with_one(self):
+        rays = ROUTES["rays"]
+        net = {"id": "hunt-network", "kind": "hunt_net", "title": "t", "minutes": 45, "max_ships": 95, "policy": "game/hunt-policy.json"}
+        unarmed = dict(self.ship("scout-1", [{"slot": "utility", "type": "afterburner_ii"}]), role="scout")
+        armed = dict(self.ship("scout-2", [{"slot": "weapon", "type": "autocannon_i"}]), role="scout")
+        unread = dict(self.ship("scout-3", None), role="scout")
+        why = lambda pilot, rid, route: self.dispatch.why_not(pilot, rid, route, self.state())[0]
+        self.assertEqual(why(unarmed, "rays", rays), "no weapon fitted")
+        self.assertEqual(why(unarmed, "hunt-network", net), "no weapon fitted")
+        self.assertNotEqual(why(armed, "rays", rays), "no weapon fitted")
+        self.assertNotEqual(why(unread, "rays", rays), "no weapon fitted")
+        self.assertNotEqual(why(unarmed, "census", ROUTES["census"]), "no weapon fitted")    # other kinds stay open to it
+        self.assertNotEqual(why(unarmed, "mine", ROUTES["mine"]), "no weapon fitted")
+
+
 if __name__ == "__main__":
     unittest.main()

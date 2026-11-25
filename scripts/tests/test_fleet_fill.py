@@ -28,7 +28,8 @@ ROUTES = {
     "freight": {"id": "freight", "kind": "circuit", "title": "t", "max_ships": 1, "stops": [HOME], "measured": MEASURED(1500)},     # paying work that is no hunt: open to every role
 }
 PLANS = {"drone": ("Apophis", ["once", "rays", "park"]), "hauler": ("Apollo", ["once", "park"]), "miner": ("Zero", ["ice", "park"])}
-SHIPS = {"drone-1": [], "drone-2": [], "hauler-1": [], "hauler-2": [], "hauler-3": [], "miner-1": ["ice_harvester"], "miner-2": []}
+SHIPS = {"drone-1": ["autocannon_i"], "drone-2": ["autocannon_i"], "hauler-1": [], "hauler-2": [], "hauler-3": [], "miner-1": ["ice_harvester"], "miner-2": []}
+WEAPONS = {"autocannon_i"}                       # requests ENT-539: a hunter carries a weapon-slot module (dispatch.weapons_of)
 CANDIDATES = [
     {"id": "trade-x", "kind": "trade", "per_ship_hour": 900, "status": "new", "route_id": "",
      "route": {"id": "trade-x", "kind": "circuit", "title": "t", "note": "An estimate.", "max_ships": 1, "stops": [HOME]}},
@@ -73,7 +74,7 @@ class Tree(unittest.TestCase):
         ships = [{"name": name, "status": "connected", "activity": {"kind": "idle"}, "docked": True, "credits": 20000, "cargo_used": 0} for name in SHIPS]
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"updated_at": "now", "ships": ships}))
         for name, modules in SHIPS.items():
-            (self.data / "fleet" / "ships" / (name + ".json")).write_text(json.dumps({"modules": [{"type": m} for m in modules], "cargo": []}))
+            (self.data / "fleet" / "ships" / (name + ".json")).write_text(json.dumps({"modules": [dict({"type": m}, **({"slot": "weapon"} if m in WEAPONS else {})) for m in modules], "cargo": []}))
         with open(self.data / "routes" / "runs.jsonl", "w") as handle:
             for name in SHIPS:
                 handle.write(json.dumps({"route": "once", "pilot": name, "stops": 1, "of": 1}) + "\n")
@@ -649,6 +650,7 @@ class HuntRuleTests(Tree):
         self.assertEqual(got["closed"][self.fill.NO_HUNT], [(3000, "rays"), (2000, "herd2")])
 
     def test_a_hunt_an_admiral_put_into_its_own_plan_stays(self):
+        (self.data / "fleet" / "ships" / "miner-2.json").write_text(json.dumps({"modules": [{"type": "autocannon_i", "slot": "weapon"}], "cargo": []}))
         (self.root / "routes" / "plans" / "miner.json").write_text(json.dumps({"role": "miner", "owner": "Zero", "note": "n", "routes": ["ice", "herd2", "park"]}, indent=1) + "\n",
                                                                    encoding="ascii")
         _seen, got = self.read("miner")
