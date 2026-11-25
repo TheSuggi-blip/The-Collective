@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 7.
+Routes: 6.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -22,4 +22,3 @@ Routes: 7.
 | [carry-ember-crucible-to-krynn](carry-ember-crucible-to-krynn.json) | circuit | beyond the border, 20 jumps | Ember glands stored at The Crucible Garrison carried two jumps to the War Citadel (Krynn), where its bid and Station Need pay | up to 1 ships, empty hold, with 3 ember_gland stored at the_crucible_garrison | 1 | 8 | -70 | -530 | 2026-11-24 |
 | [carry-melt-sirius-to-experiment](carry-melt-sirius-to-experiment.json) | circuit | beyond the border, 9 jumps | Stored crystal_melt carried from sirius_observatory_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while the_experiment_research_station bids 1000 cr for crystal_melt | 2 | 26 | -320 | -750 | 2026-11-24 |
 | [need-ember-gland-krynn](need-ember-gland-krynn.json) | circuit | beyond the border, 20 jumps | Station Need: Ember Gland at the War Citadel (Krynn) filled from the pilot's own glands stored there, about 8,100 cr a gland | up to 1 ships, with 3 ember_gland stored at crimson_war_citadel | 2 | 2 | 0 | 0 | 2026-11-25 |
-| [sell-ember-first-step-dheneb](sell-ember-first-step-dheneb.json) | circuit | beyond the border, 18 jumps | Stored ember glands carried from First Step Memorial Station to the Hex Star bid (Dheneb, lawless), up to 30 a run | up to 1 ships, with 6 ember_gland stored at first_step_memorial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 4000 cr for ember_gland | 1 | 39 | -300 | -450 | 2026-11-25 |

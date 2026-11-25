@@ -20,14 +20,5 @@
  },
  "standing": true,
  "lift_to": 1,
- "measured": {
-  "date": "2026-11-24",
-  "runs": 13,
-  "minutes": 25,
-  "credits_per_run": -260,
-  "cph_per_ship": -570,
-  "hours": 12,
-  "last_run": "2026-11-24T05:50:38Z"
- },
  "gift_to": "trader"
 }

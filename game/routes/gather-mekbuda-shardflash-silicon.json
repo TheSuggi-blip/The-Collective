@@ -34,14 +34,5 @@
  "jettison_gangue": [
   "iron_ore",
   "copper_ore"
- ],
- "measured": {
-  "date": "2026-11-24",
-  "runs": 3,
-  "minutes": 161,
-  "credits_per_run": -1000,
-  "cph_per_ship": -460,
-  "hours": 12,
-  "last_run": "2026-11-24T16:57:26Z"
- }
+ ]
 }
