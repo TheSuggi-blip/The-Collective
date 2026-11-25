@@ -42,7 +42,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [drone](plan-drone.md) | Apophis | 357 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 116 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 4 | 95 |
 | [miner](plan-miner.md) | Zero | 187 | fit-t2-lasers-lhs-1140 > fit-liminal-lasers-lhs-1140 > resonance-parts-procyon-titanium-node-beta | 4 | 130 |
-| [scout](plan-scout.md) | Oracle | 111 | store-hold-central-nexus > store-hold-frontier-station-near > give-mining-laser-scout-central-nexus | 4 | 50 |
+| [scout](plan-scout.md) | Oracle | 109 | store-hold-central-nexus > store-hold-frontier-station-near > give-mining-laser-scout-central-nexus | 4 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 359 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 45 |
 | [trader](plan-trader.md) | Mercury | 198 | fit-network > voidborn-first-steps-board > voidborn-network-expansion | 4 | 85 |
 
