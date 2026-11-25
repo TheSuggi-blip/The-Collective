@@ -41,7 +41,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [command](plan-command.md) | Unity | 58 | finish-five-capitals-sol > voidborn-first-steps-board > voidborn-collective-provides | 0 | -- |
 | [drone](plan-drone.md) | Apophis | 358 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 95 |
 | [hauler](plan-hauler.md) | Apollo | 119 | voidborn-resonance-finish > voidborn-atmospheric-extraction > voidborn-hardware-cargo | 3 | 95 |
-| [miner](plan-miner.md) | Zero | 187 | fit-t2-lasers-lhs-1140 > fit-liminal-lasers-lhs-1140 > resonance-parts-procyon-titanium-node-beta | 4 | 130 |
+| [miner](plan-miner.md) | Zero | 190 | fit-t2-lasers-lhs-1140 > fit-liminal-lasers-lhs-1140 > resonance-parts-procyon-titanium-node-beta | 4 | 130 |
 | [scout](plan-scout.md) | Oracle | 97 | store-hold-central-nexus > store-hold-frontier-station-near > give-mining-laser-scout-central-nexus | 6 | 50 |
 | [sentinel](plan-sentinel.md) | Apophis | 359 | buy-autocannon-rounds-node-beta > buy-autocannon-rounds-central-nexus > buy-autocannon-rounds-the-anvil | 2 | 45 |
 | [trader](plan-trader.md) | Mercury | 204 | fit-network > voidborn-first-steps-board > voidborn-network-expansion | 4 | 85 |
