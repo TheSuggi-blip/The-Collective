@@ -42,13 +42,13 @@
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": true,
+    "pirates_enabled": false,
     "pirate_tiers": [
       "scout",
       "raider",
       "raider_elite"
     ],
-    "min_member_power": 500.0,
+    "min_member_power": 900.0,
     "min_target_hull": 120,
     "rally_max_jumps": 12,
     "rally_timeout_s": 180,
@@ -92,7 +92,7 @@
     "max_jumps": 6
   },
   "rest_seconds_when_empty": 120,
-  "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5). | Apophis 2026-11-25 00:40 UTC (rule 8.4, F22 danger): escort lane stopped. Four Military ships lost to NPC pirates in one hour on hunt-network escort runs (public_battles: kitalpha 23:34, 70_ophiuchi 23:38, sheliak 00:33 UTC; stats ships_lost 3 more at 00:00). The lane sends any ship of power >= 350 (sentinels and flagships >= 150, coded) to belts with pirates and has no gate of escort power against the pirates' threat. Back on when hunt_net weighs the escort side against the pirates read at the place (compute_target_threat role pirate) and sentinels obey min_power.",
+  "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5). | Apophis 2026-11-25 00:40 UTC (rule 8.4, F22 danger): escort lane stopped. Four Military ships lost to NPC pirates in one hour on hunt-network escort runs (public_battles: kitalpha 23:34, 70_ophiuchi 23:38, sheliak 00:33 UTC; stats ships_lost 3 more at 00:00). The lane sends any ship of power >= 350 (sentinels and flagships >= 150, coded) to belts with pirates and has no gate of escort power against the pirates' threat. Back on when hunt_net weighs the escort side against the pirates read at the place (compute_target_threat role pirate) and sentinels obey min_power. | 00:41 UTC packs: pirates_enabled false and min_member_power 900 (Pulse Laser III or better) until three wildlife packs read kills: the three pack RESULT lines of 00:16 to 00:40 UTC read looted=0 (pilot whale, glintfin), starter packs cannot kill a whale (lesson 2026-11-22), and four ships fell to pirates this hour. Was {\"pirates_enabled\": true, \"min_member_power\": 500.0}.",
   "war_wing": {
     "enabled": true,
     "war_share": 0.85,
