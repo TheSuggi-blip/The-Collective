@@ -5,6 +5,9 @@
   "trade-sell": {
    "title": "Stored goods sold where a station bid stands, at home and further out: each ship sells its own stores, nothing bought",
    "routes": [
+    "sell-noble-docked-lhs-1140",
+    "sell-lead-docked-central-nexus",
+    "sell-exotic-docked-grand-exchange",
     "carry-melt-sirius-to-dheneb",
     "carry-melt-sol-to-dheneb",
     "carry-melt-cargo-lanes-to-dheneb",
