@@ -418,3 +418,12 @@ Failed: four ships lost (escort lane widened to power 350 without a gate, errors
 Requests: requests.log ENT-534 (Zero); queue.log ENT-325; admirals.log ENT-138.
 Suggestions: changes to game/hunt-policy.json go in as a variant beside the tested one or through Military (F37); the class guard could pass a strip route that requires another weapon kept.
 Report: escort-lane-stopped-after-four-pirate-losses.
+
+## [ENT-203] | 2026-11-25 01:28 UTC | Apollo | session | ref: reports/2026-11-25_apollo_kit-line-at-node-beta-frames-staged-nodes-asked.md | see: orders.log ENT-091
+Session: scheduled run turn-apollo -- the kit line sited at Node Beta, its frames bought and staged, the build waiting on control nodes.
+Did: read where the Outpost Frame Assembler may stand (buildable at Node Beta, Central Nexus and GSC-0044; the outpost refuses crafting, no_service); one reinforced frame bought and read, then 159 more (160 for 681,951 cr) and 55 structural frames (42,055 cr) into the Builder's storage at Node Beta on a 730,000 cr treasury fund; 1,200 plate and 450 boards given there; a driver builds with the treasury's 600,000 cr fee once 40 control nodes stand (until 04:30 UTC); need kit-line-assembler added, passenger-cabin-test closed; Guild Hall gate read (24-hour net -100,045 cr an hour: not met); guidebook Standing Plan and Atria entry, drift entry retired.
+Worked: every staged good proved by the storage view at 01:24 UTC (1,221 plate, 450 boards, 160 reinforced, 55 structural frames); idle 13 -> 8 (scorecard), fill gate PASS at 01:27 UTC, plan check PASS.
+Failed: the build itself (no control nodes in our stores near Node Beta; asked of Mercury, ENT-533); the kit 5 structural frames short (one hold carries 55); the first outpost read read Central Nexus (my catch.py argument, 24 minutes lost; skill fixed); haul-network 120 cr in nine hours; hulls 0 of 20.
+Requests: ENT-533.
+Suggestions: Unity settles the Guild Hall's site (ENT-532 Node Beta against queue ENT-321, own outpost) before its gate opens; a public outpost frame assembler at Confederacy Central Command could be a second source of kits; base_plan warns when a production facility stands buildable where the station offers no crafting.
+Report: kit-line-at-node-beta-frames-staged-nodes-asked.
