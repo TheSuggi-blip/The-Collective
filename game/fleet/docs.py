@@ -98,6 +98,7 @@ KINDS = (                      # kind, its files (a glob: a repository path, or 
     ("blueprint", "governance/knowledge-and-memory-loop.md", "Fleet"),
     ("blueprint", "governance/kpi-and-strategy-system.md", "Fleet"),
     ("blueprint", "governance/accounting-and-hud-blueprint.md", "Fleet"),
+    ("blueprint", "governance/financial-statements.md", "Fleet"),
     ("blueprint", "governance/treasury-wallet-and-upgrades-blueprint.md", "Fleet"),
     ("blueprint", "governance/progression-roadmap.md", "Fleet"),
     ("blueprint", "governance/map.md", "Fleet"),

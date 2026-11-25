@@ -3,7 +3,7 @@ name: system-architecture
 id: 20261122T015958Z
 tier: governance
 author: Trinity
-updated: 2026-11-24
+updated: 2026-11-25
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
@@ -14,6 +14,7 @@ links:
   - governance/progression-roadmap.md
   - governance/kpi-and-strategy-system.md
   - governance/accounting-and-hud-blueprint.md
+  - governance/financial-statements.md
   - game/handbook.md
   - communications/protocol.md
 ---
@@ -123,13 +124,13 @@ Lock-free Readers (immutable read.db):
    - Full liquidity, parallel sweeping, mid-flight P2P funding, multi-officer banking, docked-leader errands, 15x batch upgrades, and guarded `faction_dismantle` architecture lives in `governance/treasury-wallet-and-upgrades-blueprint.md`. Per-pilot/per-route clean stops (`stop_pilot.py` / MCP `stop`) cancel individual runners cleanly without halting peers; read-only MCP `game_docs` (`game/fleet/game_docs.py`) exposes all 320+ live SpaceMolt v2 actions and 17 official guides on demand with zero prompt bloat and zero ship hold.
    - Combat pirate-farming routes may explicitly opt in via `"pirates_ok": true` (`dispatch.py`, `F9`/`F27`) while non-combat routes remain strictly blocked from pirate zones.
 5. **GAAP/IFRS Accounting, Adaptive KPI Scorecard & Watchdog (`accounting.py`, `scorecard.py`, `watchdog.py`):**
-   - Full financial architecture (IAS 2 NRV vault valuation, Matching Principle on `once` routes, CapEx isolation, Intercompany Transfer Pricing, and HUD data map) lives in `governance/accounting-and-hud-blueprint.md`.
+   - Full financial architecture (live two-sided order-book NRV, active Exchange sell-order escrow, glut haircuts, Matching Principle on `once` routes, CapEx isolation, Intercompany Transfer Pricing, and Investor Relations short-format P&L/Balance Sheet/Cash Flow/FCF statements) lives in `governance/financial-statements.md` and `governance/accounting-and-hud-blueprint.md`.
    - Dynamic Posture (`WAR_ALERT` / `CASHFLOW_RECOVERY` / `PEACETIME_GROWTH`), MAUT x WSJF triage scoring, shared faction KPIs, and 8 Strategy-Pinned Copy/Counter Playbooks live in `governance/kpi-and-strategy-system.md`.
 6. **Cross-turn Velocity & Loop Watchdog (`game/fleet/watchdog.py`):**
    - Evaluates 7 deterministic dimensions (`OK / WARN / STUCK`): (1) `10/10` service & `p95` tick lag health; (2) `S5` idle ship compliance; (3) fast `<= 0 cr` run loops (`FAST_ZERO_LOOP`), pilot churn, and commercial `ROUTE_BLEED`; (4) `P1/P2` need coverage velocity across snapshots (`watchdog.state.json`), `NEED_READY_NOW` (`>= 99.95%` stocked + `treasury >= fee`), `FACTION_CAP_NEAR`, and `OPEN_FACTION_SEATS` (`F11`); (5) `Piloting >= 10/20` Tier-0 hull upgrade backlog; (6) `P5` `strict-classes` countdown; (7) critical `< 25%` supply shortages, MAD `OUT` alerts, and `requests.log` items open `> 4.5h`.
 
 7. **All-5-Division Autonomous Network Engines (`AutoNet`) & Concurrency Guards (`2026-11-24`):**
-   - **Five self-optimizing network runners:** `game/fleet/mine_net.py` (`mine-network`, live `--min-left-pct 15` belt floor & 90m cooldown, tool matching, reserve-deficit priority), `game/fleet/hunt_net.py` (`hunt-network`, scale-free percentage combat-power ratio `T0->T5+`, on-demand escorts, `20-30%` coordinated `3/5/8/10` packs in `hunt_packs.json`, F38 `keep_herd=2` solo rotation), `game/fleet/bursar.py` (`bursar-network`, `60+` safe empire & neutral hubs via T0 desks `max_hull_tier: 0, max_cargo: 150`, excess-buy unwind `_is_excess_buy`), `game/fleet/haul.py` (`haul-network`, Bursar-combo `<30m` fresh-book arb with exclusive `sell_base:item` claim + P2P `spacemolt_shipping`), and `census.py` (`<6h` books + `ship_listings`).
+   - **Five self-optimizing corporate supply-chain runners:** `game/fleet/mine_net.py` (`mine-network`, `10%` belt floor & 90m cooldown, `T0 == T2` safe access with 6h pirate avoidance, auto-discovered 0-rent CLTV Owned Outpost Lockboxes via `--deposit faction` & Bursar cross-docking), `game/fleet/hunt_net.py` (`hunt-network`, scale-free combat-power ratio `T0->T5+`, on-demand escorts, coordinated packs, and staffed Bursar hub preference `+1` hop), `game/fleet/bursar.py` (`bursar-network`, `60+` safe empire & neutral hubs via T0 desks, dynamic `handover.py` Bursar auto-resolution, `bursar_sells.json` escrow tracking, and zero-fuel docked crafting), `game/fleet/haul.py` (`haul-network`, nested `storage.json` Lockbox/Owned Outpost `internal_supply` & `liquidate_surplus` with multi-hauler parallelism, fresh-book arbitrage, P2P `spacemolt_shipping`, and safe pre-bought `backhaul_mission` supply contracts), and `census.py` (`<6h` books + `ship_listings`).
    - **Concurrency & routing gates:** `game/fleet/upgrades.py` guards `upgrade_queue.json` with exclusive `fcntl.flock` (`upgrade_queue.lock`), merge-by-ID saves, and pre-commission cancel re-reads (eliminating concurrent Admiral/service queue clobber, `ENT-190`); `dispatch.py` / `routes.py` / `fill.py` enforce `requires.mission` and `is_holder_only_finish()` so holder-only `finish-*` routes never leak into fleet-wide `First` (`ENT-187`).
    - **Anti-flood AutoNet telemetry (`scorecard.py` + HUD):** Every division's live `AutoNet` status and `O4` 5-empire regional hub progress render in `hive.py briefing` and `:8445` with at most 1 threshold-gated `SMART_ENGINE_GAP` notice per division (zero alerts when healthy).
 
@@ -154,7 +155,7 @@ Lock-free Readers (immutable read.db):
 
 - **Top bar, Commander Medallions & Minimizable Multi-Agent Comms (HUD v6):** bespoke Collective hex emblem, dual top-bar Purse (`Liquid Credits + 24h /h` and `Enterprise Net Worth`), 6 division commander SVG portraits, live **Tick lag** badge, tactical alert chips, and minimizable `#chat-pill` dock supporting 1-to-6 multi-agent broadcasts (`All 6`, `5 Adm`, or custom selection).
 - **Tiny-Outliner Fleet Sidebar & Structured Map Hover Cards:** 1-click Division Focus strip (`All / Cmd / Min / Trd / Log / Mil / Int`), compact collapsible Executive Division Cards (`active/total`, `1h cph`, `Avg Lv`, embedded health bar), single-line ship rows with T2-ready badges, and viewport-clamped dark-glass map hover cards (`#tip`) with progressive disclosure.
-- **Progressive-Disclosure Selection Inspector, Metrics (`/api/ops`), Empire, Inventory & Docs:** 3-mode System/Building & Ship inspectors (`Overview / Ships / Intel` & `Loadout / Skills / Missions`), 4-pillar Consolidated Balance Sheet (`Enterprise Net Worth`), auto-scaling `T2->T5` Tech Frontier, 24h Flight Efficiency (`fuel_sinks`), `contracts.log`, Comms Firewall status, dark-console Docs reader with 1-click Admiral filters, live **Playbooks (6)** (`Anchor-and-Delta` division builds/rungs/caps), and live **Progression** (`Days -> Weeks -> Months` strategic rungs & milestone chronicle).
+- **Progressive-Disclosure Selection Inspector, Metrics (`/api/ops`), Empire, Inventory & Docs:** 3-mode System/Building & Ship inspectors (`Overview / Ships / Intel` & `Loadout / Skills / Missions`), sub-tabbed Metrics (`Overview & Operations` with top `By division` table above the 10 KPI boxes, and `Financial Statements (IR)` presenting Investor Relations short-format Income Statement, 4-pillar Balance Sheet, and Cash Flow Statement + FCF Bridge), auto-scaling `T2->T5` Tech Frontier, 24h Flight Efficiency (`fuel_sinks`), `contracts.log`, Comms Firewall status, dark-console Docs reader with 1-click Admiral filters, live **Playbooks (6)** (`Anchor-and-Delta` division builds/rungs/caps), and live **Progression** (`Days -> Weeks -> Months` strategic rungs & milestone chronicle).
 
 ## 8. Verification & CI Gates
 

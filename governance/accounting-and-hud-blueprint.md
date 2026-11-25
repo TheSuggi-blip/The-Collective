@@ -3,10 +3,11 @@ name: accounting-and-hud-blueprint
 id: 20261123T112200Z
 tier: governance
 author: Trinity
-updated: 2026-11-24
+updated: 2026-11-25
 links:
   - governance/the-collective-constitution.md
   - governance/system-architecture.md
+  - governance/financial-statements.md
   - governance/kpi-and-strategy-system.md
   - governance/treasury-wallet-and-upgrades-blueprint.md
   - game/metrics.md
@@ -185,7 +186,8 @@ in `station/server.py` (strict CSP, zero `innerHTML`, read-only SQLite):
 | **Metrics -- Cash Ledger & By Division** | `/api/fleet` + `/api/history` | `station/fleet.py` (`window()`) | Pure cash ledger for `1h / 6h / 24h`: Net/h, Steady Net/h, Paid Once/h, Treasury Own/h, Running Costs/h (with fuel/repair metering), Per-Division Cash Table, and trailing charts. |
 | **Metrics -- Scorecard Pulse** | `/api/ops` (`scorecard`) | `game/fleet/scorecard.py` + `accounting.py` | Enterprise Verdict, Dynamic Posture, Weighted Score, Matched Recurring Cash + IAS 2 Accrual Operating Income, Division Health Cards, and P0-P3 Triage Queues. |
 | **Metrics -- GAAP/IFRS Waterfall & Transfer-Priced Table** | `/api/ops` (`accounting`) | `game/fleet/accounting.py` (`6h` & `24h`) | 6-card Cash-to-Accrual Waterfall (`Recurring Cash`, `Inventory Accrual`, `Accrual Operating`, `Seed Net`, `CapEx`, `Purse Cash Flow`), Transfer-Priced Division Value-Added table (intercompany eliminated), and Full-Chain Support Overhead strip. |
-| **Metrics -- Balance Sheet** | `/api/ops` (`balance_sheet`) | `accounting.vault_valuation` + `ships` / `hulls` / `ship_modules` / `leaderboards` | Enterprise Net Worth (IAS 2 NRV + Catalog Leaderboard parity), Liquid Purse, Vault (IAS 2 NRV + Catalog + Instant Bid Depth + 24h Handovers), Fleet Book & Facilities. |
+| **Metrics -- Overview & Operations** | `/api/ops` (`accounting`, `scorecard`) + `/api/fleet` | `accounting.py` + `scorecard.py` + `fleet.py` | Top **By division (GAAP/IFRS accrual & cash)** table positioned above the 10 headline KPI boxes, followed by Division Scorecards, Readiness, Supply Chains, Routes, and trailing Charts. |
+| **Metrics -- Financial Statements (IR)** | `/api/ops` (`accounting`, `balance_sheet`) | `accounting.py` + `bursar_sells.json` | Dedicated Investor Relations short-format sub-tab presenting side-by-side `1h/6h/24h/24h-pace` **Income Statement (P&L)**, 4-pillar **Balance Sheet** (with active sell-order escrow & glut haircuts), and **Cash Flow Statement + FCF Bridge** (canonical spec: `governance/financial-statements.md`). |
 | **Metrics -- Where the Money Comes From** | `/api/income?q=<h>` | `read.db:runs` (exact `routes.earned()`, all route JSONs) | Two clean tables: (1) **Repeating (steady) routes** (`once=false`) sorted by credits & `/ship-h`; (2) **One-time missions & fits** (`once=true`) showing Fuel/Inputs, One-time Reward/CapEx, **Matched Net**, and **Matched / ship-h**. |
 | **Inventory Tab** | `/api/inventory` + `/api/ops` | `craftbook.py` (`storage.json`) + `balance_sheet` | Full item/station catalog inventory (`base_value`) with header reconciliation showing IAS 2 NRV and Instant Bid Depth so Inventory and Metrics never contradict each other. |
 | **Empire -> Progression Subtab** | `/api/progression` | `game/fleet/progression.py` + `accounting.py` | IAS 2 Enterprise Net Worth (+ Leaderboard Catalog basis), 12-Rung Roadmap across Days/Weeks/Months, and Weekly/Monthly `stats_money_hour` cash rollups. |
