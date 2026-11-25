@@ -40,10 +40,10 @@
   "sentinel"
  ],
  "measured": {
-  "date": "2026-11-24",
-  "runs": 7,
+  "date": "2026-11-25",
+  "runs": 9,
   "minutes": 2,
-  "credits_per_run": -880,
-  "cph_per_ship": -12210
+  "credits_per_run": -790,
+  "cph_per_ship": -6200
  }
 }

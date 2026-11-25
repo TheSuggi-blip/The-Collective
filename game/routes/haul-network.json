@@ -8,13 +8,13 @@
  "max_ships": 94,
  "standing": true,
  "measured": {
-  "date": "2026-11-24",
-  "runs": 7176,
-  "minutes": 2,
-  "credits_per_run": -20,
-  "cph_per_ship": -150,
+  "date": "2026-11-25",
+  "runs": 4905,
+  "minutes": 15,
+  "credits_per_run": -10,
+  "cph_per_ship": -50,
   "hours": 12,
-  "last_run": "2026-11-24T22:08:06Z"
+  "last_run": "2026-11-25T00:52:05Z"
  },
  "requires": {
   "skills_below": {

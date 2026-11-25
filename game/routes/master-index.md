@@ -22,7 +22,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 96 | 49 | 47 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 41 | 18 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 674 | 127 | 537 | craft-biogas-own-central-nexus: 97,810 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 8 | 3 | 5 | sell-ember-nexus-dheneb: -420 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 8 | 3 | 5 | need-ember-gland-krynn: 0 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 63 | 19 | 44 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
 | All | | 996 | 244 | 742 | |
 
