@@ -289,5 +289,55 @@ class HuntNetRuleF9Tests(unittest.TestCase):
             self.assertEqual(job["mode"], "war_defense")
             self.assertEqual(job["system"], "s2")
 
+    def test_escort_demands_stay_open_until_min_three_escorts_claim(self):
+        """Minimum 3 escorts per protected civilian: 1 or 2 claims keep demand open, 3 closes it."""
+        import tempfile, json
+        with tempfile.TemporaryDirectory() as tmp:
+            ships = Path(tmp) / "fleet" / "ships"
+            orders = Path(tmp) / "fleet" / "orders"
+            ships.mkdir(parents=True)
+            orders.mkdir(parents=True)
+            (ships / "miner-7.json").write_text(json.dumps({"name": "miner-7", "system": "lawless_x", "poi": "belt_1", "docked": False}), encoding="ascii")
+            (orders / "miner-7.json").write_text(json.dumps({"pilot": "miner-7", "what": "mine_net mine-network"}), encoding="ascii")
+            w = {"systems": {"lawless_x": {"empire": "", "stronghold": False}}, "pirates": {"lawless_x"}, "pirate_details": {}}
+            pol = dict(hunt_net.DEFAULT_POLICY)
+            c1 = {"drone-1": {"key": "escort:pilot:miner-7", "lane": "escort"}}
+            c2 = dict(c1, **{"drone-2": {"key": "escort:pilot:miner-7", "lane": "escort"}})
+            c3 = dict(c2, **{"drone-3": {"key": "escort:pilot:miner-7", "lane": "escort"}})
+            d0 = hunt_net.detect_escort_demands(tmp, w, pol, {})
+            self.assertEqual(len(d0), 1)
+            self.assertEqual(d0[0]["needed"], 3)
+            self.assertEqual(len(hunt_net.detect_escort_demands(tmp, w, pol, c1)), 1)
+            self.assertEqual(len(hunt_net.detect_escort_demands(tmp, w, pol, c2)), 1)
+            self.assertEqual(hunt_net.detect_escort_demands(tmp, w, pol, c3), [])
+
+    def test_escort_power_gate_blocks_starters_and_scales_to_pirate_threat(self):
+        """Lawless/pirate escorts block 75+50 T0 starters and gate pack size against pirate threat."""
+        pol = dict(hunt_net.DEFAULT_POLICY)
+        w = {
+            "systems": {
+                "safe_sys": {"empire": "voidborn", "stronghold": False},
+                "scout_sys": {"empire": "", "stronghold": False},
+                "heavy_sys": {"empire": "", "stronghold": False},
+            },
+            "pirates": {"scout_sys", "heavy_sys"},
+            "pirate_details": {
+                "scout_sys:belt": [{"max_hull": 80, "max_shield": 40}],
+                "heavy_sys:belt": [{"max_hull": 250, "max_shield": 105}, {"max_hull": 250, "max_shield": 105}],
+            },
+        }
+        starter = {"power": 620.0, "dps": 25.0, "ehp": 150.0, "max_hull": 75.0, "max_shield": 50.0, "tier": 0}
+        t1_ship = {"power": 1150.0, "dps": 38.0, "ehp": 240.0, "max_hull": 120.0, "max_shield": 120.0, "tier": 0}
+        heavy_ship = {"power": 1780.0, "dps": 90.0, "ehp": 320.0, "max_hull": 180.0, "max_shield": 110.0, "tier": 0}
+        self.assertTrue(hunt_net.escort_power_ok({}, starter, "safe_sys", "belt", w, pol)[0])
+        self.assertFalse(hunt_net.escort_power_ok({}, starter, "scout_sys", "belt", w, pol)[0])
+        ok_s, sz_s, _ = hunt_net.escort_power_ok({}, t1_ship, "scout_sys", "belt", w, pol)
+        self.assertTrue(ok_s)
+        self.assertEqual(sz_s, 3)
+        ok_h, sz_h, _ = hunt_net.escort_power_ok({}, heavy_ship, "heavy_sys", "belt", w, pol)
+        self.assertTrue(ok_h)
+        self.assertGreaterEqual(sz_h, 5)
+
+
 if __name__ == "__main__":
     unittest.main()

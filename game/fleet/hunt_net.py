@@ -72,6 +72,7 @@ DEFAULT_POLICY = {
     "gift_to": "trader",
     "escort": {
         "enabled": True,
+        "min_escorts": 3,
         "max_ships": 12,
         "max_fleet_share": 0.15,
         "threat_window_h": 4.0,
@@ -79,7 +80,10 @@ DEFAULT_POLICY = {
         "protect_pilots": [],
         "protect_places": [],
         "max_jumps": 10,
-        "min_power": 350.0,
+        "min_power": 600.0,
+        "lawless_min_hp": 180.0,
+        "pirate_min_power_ratio": 1.80,
+        "rally_timeout_s": 120,
         "minutes": 45,
     },
     "packs": {
@@ -636,26 +640,105 @@ def pick_war_assignment(pilot, ship_doc, spow, world, policy, claims, enemy_tags
     return best
 
 
+def assess_escort_threat(sys_id, poi_id, world):
+    """Estimate NPC pirate threat at sys_id:poi_id (or worst pirate sighting in sys_id).
+    Returns compute_target_threat(..., role='pirate') dict, or None for calm policed space."""
+    pdet = world.get("pirate_details") or {}
+    plist = None
+    if sys_id and poi_id:
+        cand = pdet.get("%s:%s" % (sys_id, poi_id))
+        if isinstance(cand, list) and cand:
+            plist = cand
+    worst = None
+    if plist:
+        ph = max(float(p.get("max_hull") or p.get("hull") or 100.0) for p in plist if isinstance(p, dict))
+        ps = max(float(p.get("max_shield") or p.get("shield") or 40.0) for p in plist if isinstance(p, dict))
+        worst = compute_target_threat(ph, ps, role="pirate", count_fighting=max(1, len(plist)))
+    else:
+        pref = str(sys_id or "") + ":"
+        for k, pl in pdet.items():
+            if not str(k).startswith(pref) or not isinstance(pl, list) or not pl:
+                continue
+            ph = max(float(p.get("max_hull") or p.get("hull") or 100.0) for p in pl if isinstance(p, dict))
+            ps = max(float(p.get("max_shield") or p.get("shield") or 40.0) for p in pl if isinstance(p, dict))
+            th = compute_target_threat(ph, ps, role="pirate", count_fighting=max(1, len(pl)))
+            if worst is None or th["threat"] > worst["threat"]:
+                worst = th
+    if worst is not None:
+        return worst
+    is_lawless = not bool(((world.get("systems") or {}).get(sys_id) or {}).get("empire"))
+    in_pirates = sys_id in (world.get("pirates") or set())
+    if is_lawless or in_pirates:
+        # Conservative baseline raider threat when pirates/lawless space lack exact hull reads
+        return compute_target_threat(110.0, 50.0, role="pirate", count_fighting=1)
+    return None
+
+
+def escort_power_ok(ship_doc, spow, sys_id, poi_id, world, policy, pack_size=3):
+    """Verify an escort ship meets min_power, lawless hull floor, and pack-vs-pirate threat gate.
+    Returns (ok: bool, needed_pack_size: int or None, threat_dict or None)."""
+    ecfg = (policy or {}).get("escort") or {}
+    min_pow = float(ecfg.get("min_power") or 350.0)
+    min_escorts = max(3, int(ecfg.get("min_escorts") or 3))
+    base_sz = max(min_escorts, int(pack_size or min_escorts))
+    if spow.get("dps", 0.0) <= 0.0 or spow.get("power", 0.0) < min_pow:
+        return False, None, None
+    is_lawless = not bool(((world.get("systems") or {}).get(sys_id) or {}).get("empire"))
+    threat = assess_escort_threat(sys_id, poi_id, world)
+    if threat is None and not is_lawless:
+        return True, base_sz, None
+    # Lawless / pirate space: block bare T0 starter hulls (e.g. 75+50=125 HP)
+    raw_hp = float(spow.get("max_hull") or 0.0) + float(spow.get("max_shield") or 0.0)
+    min_hp = float(ecfg.get("lawless_min_hp") or 180.0)
+    if int(spow.get("tier") or 0) < 1 and raw_hp < min_hp:
+        return False, None, threat
+    if threat is None:
+        return True, base_sz, None
+    pir_ratio = float(ecfg.get("pirate_min_power_ratio") or 1.80)
+    sizes = [s for s in (3, 5, 7, 10) if s >= base_sz]
+    if base_sz not in sizes:
+        sizes.insert(0, base_sz)
+    for sz in sorted(set(sizes)):
+        comb = {
+            "power": float(spow["power"]) * sz,
+            "dps": float(spow["dps"]) * sz,
+            "ehp": float(spow["ehp"]) * sz,
+        }
+        ok_g, _r = passes_combat_gate(comb, threat, pir_ratio, check_f9=True)
+        if ok_g:
+            return True, sz, threat
+    return False, None, threat
+
+
 def detect_escort_demands(data_dir, world, policy, claims, now_t=None):
-    """Find active civilian ships or configured sites needing Military escort/protection right now."""
+    """Find active civilian ships or configured sites needing Military escort/protection right now.
+    Keeps each demand open until at least `min_escorts` (default 3) escorts claim it."""
     now_t = time.time() if now_t is None else float(now_t)
     ecfg = policy.get("escort") or {}
     if not ecfg.get("enabled", True):
         return []
+    min_escorts = max(3, int(ecfg.get("min_escorts") or 3))
     demands = []
     seen_keys = set()
-    claimed_keys = {rec.get("key") for rec in (claims or {}).values() if isinstance(rec, dict) and rec.get("lane") == "escort"}
+    claimed_counts = {}
+    for rec in (claims or {}).values():
+        if isinstance(rec, dict) and rec.get("lane") == "escort" and rec.get("key"):
+            k = str(rec["key"])
+            claimed_counts[k] = claimed_counts.get(k, 0) + 1
 
     # 1. Explicit configured places
     for pl in ecfg.get("protect_places") or []:
         if not isinstance(pl, str) or ":" not in pl:
             continue
         key = "escort:place:" + pl
-        if key in claimed_keys or key in seen_keys:
+        if claimed_counts.get(key, 0) >= min_escorts or key in seen_keys:
             continue
         seen_keys.add(key)
         sys_id, poi_id = pl.split(":", 1)
-        demands.append({"key": key, "mode": "place", "system": sys_id, "poi": poi_id, "guards": "outpost", "priority": 100})
+        demands.append({
+            "key": key, "mode": "place", "system": sys_id, "poi": poi_id,
+            "guards": "outpost", "needed": min_escorts, "priority": 100,
+        })
 
     # 2. Explicit configured pilots + auto-detected lawless/pirate-threatened civilians
     explicit_pilots = set(str(x) for x in (ecfg.get("protect_pilots") or []))
@@ -688,12 +771,13 @@ def detect_escort_demands(data_dir, world, policy, claims, now_t=None):
             in_pirate_sys = psys in pirates
             if pname in explicit_pilots or (auto_lawless and (in_pirate_sys or is_lawless)):
                 key = "escort:pilot:" + pname
-                if key in claimed_keys or key in seen_keys:
+                if claimed_counts.get(key, 0) >= min_escorts or key in seen_keys:
                     continue
                 seen_keys.add(key)
                 demands.append({
                     "key": key, "mode": "follow", "follow": pname,
                     "system": psys, "poi": ppoi or psys, "guards": orid or okind,
+                    "needed": min_escorts,
                     "priority": 90 if (pname in explicit_pilots or in_pirate_sys) else 60,
                 })
     demands.sort(key=lambda d: (-d["priority"], d["key"]))
@@ -1514,7 +1598,7 @@ def main(argv=None):
                     pilot, wjob['system'], wjob['poi'],
                     '--guards', wjob['guards'], '--station', wjob['station'],
                     '--minutes', str(int((policy.get('war_wing') or {}).get('minutes') or minutes)),
-                    '--route', route_id,
+                    '--route', route_id, '--defend',
                 ]
                 print('%s %s hunt_net: WAR WING lane 0 -> %s (%s:%s)' % (utc_now(), pilot, wjob['key'], wjob['system'], wjob['poi']), flush=True)
                 import runhost as _rh
@@ -1534,9 +1618,11 @@ def main(argv=None):
         )
         base_cap = min(int(ecfg.get("max_ships") or 20), max(6, int(round(active_mil * float(ecfg.get("max_fleet_share") or 0.15)))))
         escort_cap = base_cap + (4 if (is_sentinel or is_flagship) else 0)
-        legacy_cap = max(2, base_cap // 3)
-        min_esc_pow = min(150.0, float(ecfg.get("min_power") or 350.0)) if (is_sentinel or is_flagship) else float(ecfg.get("min_power") or 350.0)
-        if ecfg.get("enabled", True) and spow["power"] >= min_esc_pow:
+        legacy_cap = max(6, base_cap // 2)
+        min_escorts = max(3, int(ecfg.get("min_escorts") or 3))
+        min_esc_pow = float(ecfg.get("min_power") or 350.0)
+        escort_rally_s = float(ecfg.get("rally_timeout_s") or 120.0)
+        if ecfg.get("enabled", True) and spow["power"] >= min_esc_pow and spow["dps"] > 0:
             p_dists = bfs_distances(world["adj"], str(ship_doc.get("system") or ""), max_hops=int(ecfg.get("max_jumps") or 12))
             try:
                 import escort_proto as _ep
@@ -1547,14 +1633,22 @@ def main(argv=None):
             except Exception:
                 _ep, _ereqs = None, []
             if _ep and _ereqs and req_escort_active < escort_cap:
-                _ereqs_near = [r for r in _ereqs if (not ship_doc.get("system") or r.get("system") in p_dists) and len(r.get("escorts") or {}) < int(r.get("needed") or 3)]
+                _ereqs_near = [
+                    r for r in _ereqs
+                    if (not ship_doc.get("system") or r.get("system") in p_dists)
+                    and len(r.get("escorts") or {}) < max(min_escorts, int(r.get("needed") or min_escorts))
+                ]
                 _ereqs_near.sort(key=lambda r: (-int(r.get("priority") or 0), p_dists.get(r.get("system"), 99)))
                 for req in _ereqs_near:
                     rk = str(req["key"])
+                    req_need = max(min_escorts, int(req.get("needed") or min_escorts))
+                    ok_esc, req_sz, _th = escort_power_ok(ship_doc, spow, req["system"], req.get("poi") or "", world, policy, pack_size=req_need)
+                    if not ok_esc:
+                        continue
+                    need_n = max(req_need, int(req_sz or req_need))
                     _, st_tup = nearest_station(world["adj"], world["stations_by_sys"], req["system"], max_hops=6)
                     if not st_tup:
                         continue
-                    need_n = max(1, int(req.get("needed") or 3))
                     joined = _ep.join_escort(DATA, rk, pilot, power=spow["power"], is_flagship=is_flagship)
                     if not joined:
                         continue
@@ -1562,8 +1656,32 @@ def main(argv=None):
                         _ep.release_escort_member(DATA, rk, pilot)
                         continue
                     claimed_key = "escort:" + rk
+                    _aborted_rally = False
                     try:
-                        print("%s %s hunt_net: ESCORT PACK (%s %d/%d) -> %s (%s:%s)" % (
+                        # Stage before jumping into lawless/pirate field belts so escorts enter together (min 3, never 1-by-1)
+                        _is_danger = (not (world["systems"].get(req["system"]) or {}).get("empire")) or (req["system"] in world["pirates"])
+                        if req["mode"] == "field" and _is_danger and escort_rally_s > 0:
+                            _r_end = time.time() + escort_rally_s
+                            _r_cnt = len(joined.get("escorts") or {})
+                            while _r_cnt < min_escorts and time.time() < _r_end and not (DATA / "fleet" / "STOP").exists():
+                                _crec = _ep.get_escort_request(DATA, rk)
+                                if not _crec:
+                                    _aborted_rally = True
+                                    break
+                                _r_cnt = len(_crec.get("escorts") or {})
+                                if _r_cnt >= min_escorts:
+                                    break
+                                try:
+                                    os.utime(order_path)
+                                except OSError:
+                                    pass
+                                time.sleep(5)
+                            if _aborted_rally or _r_cnt < min(2, min_escorts):
+                                print("%s %s hunt_net: ESCORT rally incomplete (%d/%d) for lawless %s; standing down" % (
+                                    utc_now(), pilot, _r_cnt, min_escorts, rk), flush=True)
+                                _aborted_rally = True
+                                continue
+                        print("%s %s hunt_net: ESCORT PACK (%s %d/%d) -> %s (%s:%s) [defend]" % (
                             utc_now(), pilot, req["mode"], len(joined.get("escorts") or {}), need_n, rk, req["system"], req["poi"]
                         ), flush=True)
                         ok_nav = _goal(pilot, "navigate-to-system", {"targetSystemId": req["system"]}, timeout_s=240)
@@ -1612,8 +1730,12 @@ def main(argv=None):
                                             _sd_e = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
                                             _mh_e = max(1.0, float(_sd_e.get("max_hull") or 100.0))
                                             _hp_e = 100.0 * float(_sd_e.get("hull") or _mh_e) / _mh_e
-                                            _raw(pilot, "stance", {"stance": "flee" if _hp_e < 45.0 else "fire"}, "spacemolt_battle")
-                                        time.sleep(15)
+                                            if _hp_e < 40.0:
+                                                _raw(pilot, "stance", {"stance": "flee"}, "spacemolt_battle")
+                                            else:
+                                                _raw(pilot, "stance", {"stance": "fire"}, "spacemolt_battle")
+                                                _raw(pilot, "advance", {}, "spacemolt_battle")
+                                        time.sleep(10)
                                 finally:
                                     try:
                                         _raw(pilot, "leave", {}, "spacemolt_fleet")
@@ -1632,6 +1754,7 @@ def main(argv=None):
                             "--minutes", str(int(ecfg.get("minutes") or minutes)),
                             "--route", route_id,
                             "--escort-key", rk,
+                            "--defend",
                         ]
                         if req["mode"] == "convoy" and req.get("requester"):
                             cmd += ["--follow", str(req["requester"])]
@@ -1640,6 +1763,9 @@ def main(argv=None):
                         return rc
                     finally:
                         _ep.release_escort_member(DATA, rk, pilot)
+                        if _aborted_rally:
+                            release_hunt_claim(DATA, pilot)
+                            claimed_key = None
 
             demands = detect_escort_demands(DATA, world, policy, claims) if legacy_escort_active < legacy_cap else []
             _covered_pilots = {str(r.get("requester") or "") for r in (_ereqs or []) if r.get("mode") == "convoy"}
@@ -1649,11 +1775,36 @@ def main(argv=None):
                     continue
                 if ship_doc.get("system") and dem["system"] not in p_dists:
                     continue
+                dem_need = max(min_escorts, int(dem.get("needed") or min_escorts))
+                ok_esc, dem_sz, _th = escort_power_ok(ship_doc, spow, dem["system"], dem.get("poi") or "", world, policy, pack_size=dem_need)
+                if not ok_esc:
+                    continue
+                need_n = max(dem_need, int(dem_sz or dem_need))
                 _, st_tup = nearest_station(world["adj"], world["stations_by_sys"], dem["system"], max_hops=6)
                 if not st_tup:
                     continue
-                if claim_hunt_key_atomic(DATA, pilot, dem["key"], "escort", policy, max_per_key=1):
+                if claim_hunt_key_atomic(DATA, pilot, dem["key"], "escort", policy, max_per_key=need_n):
                     claimed_key = dem["key"]
+                    _is_danger = (not (world["systems"].get(dem["system"]) or {}).get("empire")) or (dem["system"] in world["pirates"])
+                    if _is_danger and escort_rally_s > 0:
+                        _r_end = time.time() + escort_rally_s
+                        _r_cnt = 1
+                        while _r_cnt < min_escorts and time.time() < _r_end and not (DATA / "fleet" / "STOP").exists():
+                            _live_c, _ = load_hunt_claims(DATA, policy)
+                            _r_cnt = sum(1 for r in _live_c.values() if isinstance(r, dict) and r.get("key") == dem["key"])
+                            if _r_cnt >= min_escorts:
+                                break
+                            try:
+                                os.utime(order_path)
+                            except OSError:
+                                pass
+                            time.sleep(5)
+                        if _r_cnt < min(2, min_escorts):
+                            print("%s %s hunt_net: ESCORT rally incomplete (%d/%d) for %s; standing down" % (
+                                utc_now(), pilot, _r_cnt, min_escorts, dem["key"]), flush=True)
+                            release_hunt_claim(DATA, pilot)
+                            claimed_key = None
+                            continue
                     cmd = [
                         sys.executable, "-I", "-B", str(ROOT / "fleet" / "guard.py"),
                         pilot, dem["system"], dem["poi"],
@@ -1661,10 +1812,12 @@ def main(argv=None):
                         "--station", "%s:%s:%s" % st_tup,
                         "--minutes", str(int(ecfg.get("minutes") or minutes)),
                         "--route", route_id,
+                        "--defend",
                     ]
                     if dem["mode"] == "follow":
                         cmd += ["--follow", dem["follow"]]
-                    print("%s %s hunt_net: ESCORT lane -> %s (%s:%s)" % (utc_now(), pilot, dem["key"], dem["system"], dem["poi"]), flush=True)
+                    print("%s %s hunt_net: ESCORT lane (pack/%d) -> %s (%s:%s) [defend]" % (
+                        utc_now(), pilot, need_n, dem["key"], dem["system"], dem["poi"]), flush=True)
                     import runhost as _rh
                     rc = _rh.run_in_thread(ROOT / "fleet" / "guard.py", cmd[4:], pilot, "hunt_net " + route_id, caller_stdout=sys.stdout, caller_sleep=time.sleep) or 0
                     return rc

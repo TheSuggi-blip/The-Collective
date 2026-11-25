@@ -47,6 +47,9 @@ LOOK_EVERY = 60              # seconds between two looks at the place
 ESCORT_LOOK_EVERY = 20       # faster poll when bound to a dynamic --escort-key
 FIELD_ARRIVAL_GRACE_S = 300  # 5m grace for requesting miner to warp into guarded belt
 HULL_FLOOR = 0.6             # under this share of its hull the guard leaves (the fleet's stance: no fight it did not choose)
+DEFEND_FLEE_HULL = 40        # under --defend: keep shooting back until hull drops below 40 pct
+DEFEND_FLEE_SHIELD_HULL = 55 # under --defend: also flee if hull < 55 pct and shield < 15 pct
+DEFEND_MAX_TICKS = 60        # under --defend: max 10 min per defensive battle before disengaging
 GONE_LOOKS = 2               # looks in a row without the guarded order: a pilot between two runs of the route carries none for one dispatcher pass
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
 PLACED = ('mine', 'hunt', 'mine_net')    # the kinds a guard keeps (routes.py PLACES + mine_net field escorts)
@@ -72,6 +75,8 @@ def parse(args):
            'follow': option(args, '--follow')}
     if option(args, '--escort-key'):
         out['escort_key'] = option(args, '--escort-key')
+    if '--defend' in args:
+        out['defend'] = True
     return out
 
 
@@ -98,8 +103,69 @@ def raw(call, quoted, action, params=None, group='spacemolt'):
     return content(call('POST', '/accounts/%s/raw' % quoted, {'toolGroup': group, 'action': action, 'params': params or {}}, 120)[1])
 
 
+def battle_status(call, quoted):
+    """Return (is_participant, status_text) from spacemolt_battle status."""
+    ans = call('POST', '/accounts/%s/raw' % quoted, {'toolGroup': 'spacemolt_battle', 'action': 'status', 'params': {}}, 120)[1]
+    sc = content(ans)
+    parts = [c.get('text') or '' for c in (ans.get('content') or []) if isinstance(c, dict) and c.get('type') == 'text'] if isinstance(ans, dict) else []
+    return bool(sc.get('is_participant')), '\n'.join(parts)
+
+
 def in_battle(call, quoted):
-    return bool(raw(call, quoted, 'status', group='spacemolt_battle').get('is_participant'))
+    return battle_status(call, quoted)[0]
+
+
+def defend_battle(call, quoted, data, pilot, say, sleep, seen, own):
+    """Active self-defense loop (--defend): never fires first, but once attacked shoots back,
+    closes to weapon range, sends combat-heartbeat each tick, and retreats only if hull drops
+    below DEFEND_FLEE_HULL (40%) or hull < 55% with shield < 15%. Returns (outcome, hull_pct)."""
+    def _pct(val, default=100):
+        s = str(val or '').strip().rstrip('%')
+        return int(s) if s.isdigit() else default
+
+    now_h, top_h = hull(data, pilot)
+    own_hull = int(100 * now_h / top_h)
+    say('under attack (--defend): fighting back (stance fire)')
+    raw(call, quoted, 'stance', {'stance': 'fire'}, 'spacemolt_battle')
+    for tick in range(DEFEND_MAX_TICKS):
+        call('POST', '/accounts/%s/combat-heartbeat' % quoted, {}, 20)
+        fighting, txt = battle_status(call, quoted)
+        if not fighting:
+            now_h, top_h = hull(data, pilot)
+            live_pct = int(100 * now_h / top_h)
+            if live_pct < own_hull:
+                own_hull = live_pct
+            seen['lowest'] = min(seen['lowest'], own_hull)
+            seen['hull_now'] = own_hull / 100.0
+            return 'won', own_hull
+        cells = [c for c in (row.split('\t') for row in txt.splitlines()) if len(c) > 9 and c[0] != 'player']
+        own_row = next((c for c in cells if c[0] == pilot), None)
+        if own_row:
+            own_hull = _pct(own_row[6], own_hull)
+            own_shield = _pct(own_row[7], 100)
+        else:
+            now_h, top_h = hull(data, pilot)
+            own_hull = int(100 * now_h / top_h)
+            own_shield = 100
+        seen['lowest'] = min(seen['lowest'], own_hull)
+        seen['hull_now'] = own_hull / 100.0
+        if own_hull < DEFEND_FLEE_HULL or (own_hull < DEFEND_FLEE_SHIELD_HULL and own_shield < 15):
+            say('defending: hull %d%%, shield %d%% -> stance flee' % (own_hull, own_shield))
+            free_from_battle(call, quoted, say, sleep)
+            return 'fled', own_hull
+        reach_m = re.search(r'Max weapon reach: (\d+)', txt)
+        enemy_dists = [
+            int(c[5]) for c in cells
+            if c[0] != pilot and c[0] not in own and len(c) > 5 and c[5].isdigit()
+        ]
+        if reach_m and enemy_dists and min(enemy_dists) > int(reach_m.group(1)):
+            raw(call, quoted, 'advance', {}, 'spacemolt_battle')
+        elif tick % 3 == 0:
+            raw(call, quoted, 'stance', {'stance': 'fire'}, 'spacemolt_battle')
+        sleep(10)
+    say('defensive battle exceeded %d ticks: stance flee' % DEFEND_MAX_TICKS)
+    free_from_battle(call, quoted, say, sleep)
+    return 'timeout', own_hull
 
 
 def free_from_battle(call, quoted, say, sleep):
@@ -275,6 +341,14 @@ def escort(opts, call, quoted, data, say, sleep, clock, seen):
             seen['left'] = 'escort request closed'
             break
         if in_battle(call, quoted):
+            if opts.get('defend'):
+                outcome, hp_pct = defend_battle(call, quoted, data, opts['pilot'], say, sleep, seen, own)
+                seen['battles'] = seen.get('battles', 0) + 1
+                if outcome != 'won' or hp_pct < int(HULL_FLOOR * 100):
+                    seen['left'] = ('fled battle (hull %d%%)' if outcome != 'won' else 'hull %d%% after defense') % hp_pct
+                    break
+                say('defended beside %s (hull %d%%): resuming escort' % (target, hp_pct))
+                continue
             say('in a battle beside %s: stance flee, no shot fired' % target)
             free_from_battle(call, quoted, say, sleep)
             seen['left'] = 'in a fight'
@@ -315,75 +389,96 @@ def keep(opts, call, quoted, data, say, sleep, clock, seen, notes):
     """Fly to the place, look once a minute until there is a reason to leave, then dock at the station. Fills `seen`
     and `notes` as it goes, so that a run that ends in an exception still has them for its row."""
     pilot, poi = opts['pilot'], opts['poi']
-    status = call('PATCH', '/accounts/%s/combat-mode' % quoted, {'mode': 'flee'}, 30)[0]     # the engine's own answer to any fight
+    defend = bool(opts.get('defend'))
+    mode = 'fight' if defend else 'flee'
+    status = call('PATCH', '/accounts/%s/combat-mode' % quoted, {'mode': mode}, 30)[0]
     if status != 200:
-        say('combat mode flee: answered %s' % status)
-    if opts.get('follow'):
-        escort(opts, call, quoted, data, say, sleep, clock, seen)
-    elif not (goal(call, quoted, 'navigate-to-system', {'targetSystemId': opts['system']}, say, sleep)
-            and goal(call, quoted, 'go-to-poi', {'targetPoiId': poi}, say, sleep)):
-        notes.append('place not reached')
-    else:
-        seen['arrived'] = clock()
-        escort_key = opts.get('escort_key') or ''
-        poll_s = ESCORT_LOOK_EVERY if escort_key else LOOK_EVERY
-        is_field_escort = escort_key.startswith('field:')
-        own, marks, missing, belt_empty = own_names(data), {kind + ' ' + opts['guards'] for kind in PLACED}, 0, 0
-        say('at %s:%s, guarding %s%s' % (opts['system'], poi, opts['guards'], (' (escort %s)' % escort_key) if escort_key else ''))
-        while not seen['left']:
-            if os.path.exists(os.path.join(data, 'fleet', 'STOP')):
-                seen['left'] = 'STOP file'
-                break
-            if escort_key and not _escort_active(data, escort_key, clock()):
-                seen['left'] = 'escort request closed'
-                break
-            if in_battle(call, quoted):
-                say('in a battle at the place: stance flee, no shot fired')
-                free_from_battle(call, quoted, say, sleep)
-                seen['left'] = 'in a fight'
-                break
-            now, top = hull(data, pilot)
-            pct = int(100 * now / top)
-            seen['lowest'] = min(seen['lowest'], pct)
-            if now < top * HULL_FLOOR:
-                seen['left'] = 'hull %d%%' % pct
-                break
-            near = raw(call, quoted, 'get_nearby')
-            seen['looks'] += 1
-            rows = [r for r in near.get('nearby') or [] if isinstance(r, dict) and r.get('username') and r.get('username') != pilot]
-            ours = sorted(str(r['username']) for r in rows if r['username'] in own)
-            others = sorted((str(r['username']), str(r.get('faction_tag') or '')) for r in rows if r['username'] not in own)
-            seen['strangers'].update(others)                         # {name: faction tag}: a pilot seen in many looks counts once
-            guarded = guarded_pilots(data, marks, time.time())       # the files' times are the wall clock's
-            pirates = near.get('pirate_count') if isinstance(near.get('pirate_count'), int) else len(near.get('pirates') or [])
-            say('look %d at %s: %s | ours %s | strangers %s | pirates %d | hull %d%% | on %s: %s' % (
-                seen['looks'], poi, 'answered' if near else 'no answer', ', '.join(ours) or 'none',
-                ', '.join('%s [%s]' % (n, t) if t else n for n, t in others) or 'none', pirates, pct, opts['guards'], ', '.join(guarded) or 'nobody'))
-            if near.get('poi_id') not in (None, '', poi):            # moved away, by the engine or a hand: it keeps no place
-                seen['left'] = 'not at the place (at %s)' % near.get('poi_id')
-                break
-            if is_field_escort:
-                elapsed = clock() - seen['arrived']
-                if elapsed >= FIELD_ARRIVAL_GRACE_S:
-                    if _belt_has_friendly_miner(data, opts['system'], poi, ours, clock()):
-                        belt_empty = 0
-                    else:
-                        belt_empty += 1
-                        if belt_empty >= 2:
-                            _clear_escort(data, escort_key, clock())
-                            seen['left'] = 'no miner at belt'
-                            break
-            else:
-                missing = 0 if guarded else missing + 1
-                if missing >= GONE_LOOKS:
-                    seen['left'] = 'guarded ship gone'
+        say('combat mode %s: answered %s' % (mode, status))
+    if defend:
+        raw(call, quoted, 'default_stance', {'stance': 'fire'}, 'spacemolt_battle')
+    try:
+        if opts.get('follow'):
+            escort(opts, call, quoted, data, say, sleep, clock, seen)
+        elif not (goal(call, quoted, 'navigate-to-system', {'targetSystemId': opts['system']}, say, sleep)
+                and goal(call, quoted, 'go-to-poi', {'targetPoiId': poi}, say, sleep)):
+            notes.append('place not reached')
+        else:
+            seen['arrived'] = clock()
+            escort_key = opts.get('escort_key') or ''
+            poll_s = ESCORT_LOOK_EVERY if escort_key else LOOK_EVERY
+            is_field_escort = escort_key.startswith('field:')
+            own, marks, missing, belt_empty = own_names(data), {kind + ' ' + opts['guards'] for kind in PLACED}, 0, 0
+            say('at %s:%s, guarding %s%s%s' % (
+                opts['system'], poi, opts['guards'],
+                (' (escort %s)' % escort_key) if escort_key else '',
+                ' [defend]' if defend else '',
+            ))
+            while not seen['left']:
+                if os.path.exists(os.path.join(data, 'fleet', 'STOP')):
+                    seen['left'] = 'STOP file'
                     break
-            if clock() - seen['arrived'] >= opts['minutes'] * 60:
-                seen['left'] = '%g minutes passed' % opts['minutes']
-                break
-            sleep(poll_s)
-        seen['left_at'] = clock()
-        say('leaving %s: %s' % (poi, seen['left']))
+                if escort_key and not _escort_active(data, escort_key, clock()):
+                    seen['left'] = 'escort request closed'
+                    break
+                if in_battle(call, quoted):
+                    if defend:
+                        outcome, hp_pct = defend_battle(call, quoted, data, pilot, say, sleep, seen, own)
+                        seen['battles'] = seen.get('battles', 0) + 1
+                        if outcome != 'won' or hp_pct < int(HULL_FLOOR * 100):
+                            seen['left'] = ('fled battle (hull %d%%)' if outcome != 'won' else 'hull %d%% after defense') % hp_pct
+                            break
+                        say('defended at %s (hull %d%%): resuming guard' % (poi, hp_pct))
+                        continue
+                    say('in a battle at the place: stance flee, no shot fired')
+                    free_from_battle(call, quoted, say, sleep)
+                    seen['left'] = 'in a fight'
+                    break
+                now, top = hull(data, pilot)
+                pct = int(100 * now / top)
+                seen['lowest'] = min(seen['lowest'], pct)
+                if now < top * HULL_FLOOR:
+                    seen['left'] = 'hull %d%%' % pct
+                    break
+                near = raw(call, quoted, 'get_nearby')
+                seen['looks'] += 1
+                rows = [r for r in near.get('nearby') or [] if isinstance(r, dict) and r.get('username') and r.get('username') != pilot]
+                ours = sorted(str(r['username']) for r in rows if r['username'] in own)
+                others = sorted((str(r['username']), str(r.get('faction_tag') or '')) for r in rows if r['username'] not in own)
+                seen['strangers'].update(others)                         # {name: faction tag}: a pilot seen in many looks counts once
+                guarded = guarded_pilots(data, marks, time.time())       # the files' times are the wall clock's
+                pirates = near.get('pirate_count') if isinstance(near.get('pirate_count'), int) else len(near.get('pirates') or [])
+                say('look %d at %s: %s | ours %s | strangers %s | pirates %d | hull %d%% | on %s: %s' % (
+                    seen['looks'], poi, 'answered' if near else 'no answer', ', '.join(ours) or 'none',
+                    ', '.join('%s [%s]' % (n, t) if t else n for n, t in others) or 'none', pirates, pct, opts['guards'], ', '.join(guarded) or 'nobody'))
+                if near.get('poi_id') not in (None, '', poi):            # moved away, by the engine or a hand: it keeps no place
+                    seen['left'] = 'not at the place (at %s)' % near.get('poi_id')
+                    break
+                if is_field_escort:
+                    elapsed = clock() - seen['arrived']
+                    if elapsed >= FIELD_ARRIVAL_GRACE_S:
+                        if _belt_has_friendly_miner(data, opts['system'], poi, ours, clock()):
+                            belt_empty = 0
+                        else:
+                            belt_empty += 1
+                            if belt_empty >= 2:
+                                _clear_escort(data, escort_key, clock())
+                                seen['left'] = 'no miner at belt'
+                                break
+                else:
+                    missing = 0 if guarded else missing + 1
+                    if missing >= GONE_LOOKS:
+                        seen['left'] = 'guarded ship gone'
+                        break
+                if clock() - seen['arrived'] >= opts['minutes'] * 60:
+                    seen['left'] = '%g minutes passed' % opts['minutes']
+                    break
+                sleep(poll_s)
+            seen['left_at'] = clock()
+            say('leaving %s: %s' % (poi, seen['left']))
+    finally:
+        if defend:
+            raw(call, quoted, 'default_stance', {'stance': 'flee'}, 'spacemolt_battle')
+            call('PATCH', '/accounts/%s/combat-mode' % quoted, {'mode': 'flee'}, 30)
     station = opts['station']
     seen['docked'] = goal(call, quoted, 'prepare-at-station', {'systemId': station[0], 'poiId': station[1], 'baseId': station[2], 'refuel': True}, say, sleep)
     if not seen['docked']:

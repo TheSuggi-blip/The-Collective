@@ -3864,8 +3864,21 @@ function renderAlerts() {
       addChip('bad', 'Service down: ' + sv.down.join(', '), 'Open Metrics readiness', () => { tab = 'Metrics'; render(); });
     }
     const battles = (ops.alerts && ops.alerts.battles) || [];
-    battles.slice(0, 2).forEach((b) => {
-      addChip('bad', (b.category || 'battle').toUpperCase() + ': ' + (b.system_name || b.system), 'Jump camera to battle system',
+    const ourBattles = battles.filter((b) => b.is_cltv);
+    const otherPvp = battles.filter((b) => !b.is_cltv && String(b.category || '').toLowerCase() === 'pvp');
+    ourBattles.slice(0, 3).forEach((b) => {
+      const cat = (b.category || 'battle').toUpperCase();
+      const lostTag = b.destroyed > 0 ? ' (-' + b.destroyed + ')' : '';
+      const detail = (b.lost && b.lost.length ? 'Lost: ' + b.lost.join(', ') + ' | ' : '') +
+        (b.pilots && b.pilots.length ? 'Pilots: ' + b.pilots.join(', ') : 'Our fleet battle');
+      addChip('bad', 'CLTV ' + cat + ': ' + (b.system_name || b.system) + lostTag,
+        'OUR FLEET BATTLE -- ' + detail + ' (click to jump)',
+        () => { if (sys.has(b.system)) select(b.system, true); else { tab = 'Metrics'; render(); } });
+    });
+    otherPvp.slice(0, 1).forEach((b) => {
+      const tagStr = (b.tags && b.tags.length) ? ' [' + b.tags.join('/') + ']' : '';
+      addChip('warn', 'OTHER PVP' + tagStr + ': ' + (b.system_name || b.system),
+        'Other faction PvP battle (not CLTV) -- click to jump',
         () => { if (sys.has(b.system)) select(b.system, true); else { tab = 'Metrics'; render(); } });
     });
     const fac = (ops.readiness && ops.readiness.faction) || {};
@@ -4462,8 +4475,15 @@ async function renderMetrics(panel, live) {
           mad.map((m) => [m.figure, el('span', 'pill ' + (m.verdict.includes('LOW') || m.verdict.includes('HIGH') ? 'bad' : 'warn'), m.verdict), m.detail]))));
       }
       if (raids.length) {
-        panel.append(fitTable(table(['System', 'Kind', 'Status', 'Lost', 'Factions'],
-          raids.map((b) => [sys.has(b.system) ? sysLink(b.system) : b.system_name, b.category, b.status, fmt(b.destroyed), (b.tags || []).join(', ') || '--']), [3])));
+        panel.append(fitTable(table(['Side', 'System', 'Kind', 'Status', 'Lost', 'Factions'],
+          raids.map((b) => [
+            el('span', 'pill' + (b.is_cltv ? ' bad' : ''), b.is_cltv ? 'CLTV' : 'OTHER'),
+            sys.has(b.system) ? sysLink(b.system) : b.system_name,
+            b.category,
+            b.status,
+            b.lost && b.lost.length ? fmt(b.destroyed) + ' (' + b.lost.join(', ') + ')' : fmt(b.destroyed),
+            (b.tags || []).join(', ') || '--',
+          ]), [4])));
       }
     } else {
       panel.append(el('p', 'empty', 'No statistical anomalies (MAD) or active non-pirate battles.'));

@@ -1870,12 +1870,14 @@ def _build_ops():
         "services": {"running": 0, "total": 0, "down": []},
     }
     # 1. Pilot tick freshness + role-aware sweepable wallet estimate from fleet.json
+    cltv_names = set()
     try:
         fleet_doc = read_json(FLEET / "fleet.json")
         ships_list = fleet_doc.get("ships") if isinstance(fleet_doc, dict) else []
         away_list = fleet_doc.get("away") if isinstance(fleet_doc, dict) else []
         on_names = {str(s.get("name") or "") for s in (ships_list or []) if isinstance(s, dict) and s.get("name")}
         aw_names = {str(a.get("name") or "") for a in (away_list or []) if isinstance(a, dict) and a.get("name")} - on_names
+        cltv_names = on_names | aw_names
         away_count = len(aw_names)
         online_count = len(on_names) if on_names else (len(ships_list) if isinstance(ships_list, list) else 0)
         ages = []
@@ -2212,11 +2214,33 @@ def _build_ops():
             battles = raw_b if isinstance(raw_b, list) else []
         except (OSError, ValueError):
             battles = []
-    out["alerts"]["battles"] = [{
-        "system": text(b.get("system"), 40), "system_name": text(b.get("system_name") or b.get("system"), 40),
-        "category": text(b.get("category"), 16), "status": text(b.get("status"), 16),
-        "destroyed": int(num(b.get("destroyed"))), "tags": [text(t, 10) for t in (b.get("tags") or [])[:4]],
-    } for b in battles if b.get("status") == "active" or b.get("category") != "pirate"][:8]
+    tagged_battles = []
+    for b in battles:
+        if not isinstance(b, dict):
+            continue
+        tags = [text(t, 10) for t in (b.get("tags") or [])[:4]]
+        pilots = [text(p, 40) for p in (b.get("pilots") or [])[:8]]
+        lost = [text(x, 40) for x in (b.get("lost") or [])[:5]]
+        cat = text(b.get("category"), 16)
+        st = text(b.get("status"), 16)
+        is_cltv = ("CLTV" in {t.upper() for t in tags}) or bool(cltv_names & (set(pilots) | set(lost)))
+        if not (is_cltv or st == "active" or cat != "pirate"):
+            continue
+        tagged_battles.append({
+            "system": text(b.get("system"), 40),
+            "system_name": text(b.get("system_name") or b.get("system"), 40),
+            "category": cat, "status": st,
+            "destroyed": int(num(b.get("destroyed"))),
+            "tags": tags, "pilots": pilots, "lost": lost,
+            "is_cltv": is_cltv,
+            "ended_at": text(b.get("ended_at"), 30),
+        })
+    tagged_battles.sort(key=lambda x: (
+        0 if x["is_cltv"] else 1,
+        0 if x["status"] == "active" else 1,
+        0 if x["category"] == "pvp" else (1 if x["category"] == "pirate" else 2),
+    ))
+    out["alerts"]["battles"] = tagged_battles[:12]
 
     # 4. Unit services health (services/status.json beside data/)
     try:

@@ -235,6 +235,103 @@ class RunnerTests(unittest.TestCase):
         self.assertFalse((self.data / "intel").exists())
 
 
+
+    def test_defend_mode_fires_back_advances_and_stays_on_duty_when_healthy(self):
+        """With --defend: sets combat-mode fight + default_stance fire, advances & shoots back
+        when attacked, stays on guard duty if hull >= 60%, and restores flee on exit."""
+        self.ship(100, 100)
+        calls = []
+        battle_ticks = [0]
+
+        def defend_call(method, path, body=None, timeout=120):
+            calls.append((method, path, body))
+            if path.endswith("/goal"):
+                return 200, {"success": True, "message": "done"}
+            if path.endswith("/combat-mode") or path.endswith("/combat-heartbeat"):
+                return 200, {"ok": True}
+            if path.endswith("/raw"):
+                act = (body or {}).get("action")
+                grp = (body or {}).get("toolGroup")
+                if grp == "spacemolt_battle" and act == "status":
+                    if battle_ticks[0] == 0:
+                        battle_ticks[0] = 1
+                        return 200, {"structuredContent": {"is_participant": True}}
+                    if battle_ticks[0] == 1:
+                        battle_ticks[0] = 2
+                        tsv = (
+                            "Max weapon reach: 3\n"
+                            "player\tkind\ta\tb\tc\tdist\thull\tshield\tx\ty\n"
+                            "sentinel-1\tplayer\t0\t0\t0\t0\t85%\t60%\t0\t0\n"
+                            "Pirate Raider\tpirate\t0\t0\t0\t5\t100%\t80%\t0\t0\n"
+                        )
+                        return 200, {"structuredContent": {"is_participant": True}, "content": [{"type": "text", "text": tsv}]}
+                    return 200, {"structuredContent": {"is_participant": False}}
+                if act == "get_nearby":
+                    self.guarded(False)
+                    return 200, {"structuredContent": {"poi_id": "belt", "nearby": [], "pirate_count": 0}}
+                return 200, {"structuredContent": {}}
+            if method == "GET":
+                return 200, {"state": {"credits": 9000}}
+            return 200, {}
+
+        opts = self.guard.parse([
+            "sentinel-1", "sys", "belt", "--guards", "rays", "--station", "home:st:base",
+            "--minutes", "5", "--defend",
+        ])
+        row = self.guard.run(opts, defend_call, str(self.data), sleep=self.clock.sleep, clock=self.clock)
+        self.assertEqual(row["left"], "guarded ship gone")
+        self.assertEqual(row["lowest_hull_pct"], 85)
+        modes = [b["mode"] for m, p, b in calls if m == "PATCH" and p.endswith("/combat-mode")]
+        self.assertEqual(modes, ["fight", "flee"])
+        raws = [(b["toolGroup"], b["action"], b.get("params") or {}) for _m, p, b in calls if p.endswith("/raw")]
+        self.assertIn(("spacemolt_battle", "default_stance", {"stance": "fire"}), raws)
+        self.assertIn(("spacemolt_battle", "default_stance", {"stance": "flee"}), raws)
+        self.assertIn(("spacemolt_battle", "stance", {"stance": "fire"}), raws)
+        self.assertIn(("spacemolt_battle", "advance", {}), raws)
+        self.assertTrue(any(p.endswith("/combat-heartbeat") for _m, p, _b in calls))
+
+    def test_defend_mode_flees_below_40_percent_hull(self):
+        """With --defend: disengages via stance flee when hull falls below 40%."""
+        self.ship(100, 100)
+        calls = []
+        fighting = [True]
+
+        def hurt_call(method, path, body=None, timeout=120):
+            calls.append((method, path, body))
+            if path.endswith("/goal"):
+                return 200, {"success": True, "message": "done"}
+            if path.endswith("/combat-mode") or path.endswith("/combat-heartbeat"):
+                return 200, {"ok": True}
+            if path.endswith("/raw"):
+                act = (body or {}).get("action")
+                grp = (body or {}).get("toolGroup")
+                if grp == "spacemolt_battle" and act == "status":
+                    tsv = (
+                        "Max weapon reach: 3\n"
+                        "player\tkind\ta\tb\tc\tdist\thull\tshield\tx\ty\n"
+                        "sentinel-1\tplayer\t0\t0\t0\t0\t32%\t0%\t0\t0\n"
+                        "Pirate Raider\tpirate\t0\t0\t0\t2\t70%\t20%\t0\t0\n"
+                    )
+                    return 200, {"structuredContent": {"is_participant": fighting[0]}, "content": [{"type": "text", "text": tsv}]}
+                if grp == "spacemolt_battle" and act == "stance" and (body.get("params") or {}).get("stance") == "flee":
+                    fighting[0] = False
+                    return 200, {"structuredContent": {"stance": "flee"}}
+                return 200, {"structuredContent": {}}
+            if method == "GET":
+                return 200, {"state": {"credits": 9000}}
+            return 200, {}
+
+        opts = self.guard.parse([
+            "sentinel-1", "sys", "belt", "--guards", "rays", "--station", "home:st:base",
+            "--minutes", "5", "--defend",
+        ])
+        row = self.guard.run(opts, hurt_call, str(self.data), sleep=self.clock.sleep, clock=self.clock)
+        self.assertEqual(row["left"], "fled battle (hull 32%)")
+        self.assertEqual(row["lowest_hull_pct"], 32)
+        raws = [(b["toolGroup"], b["action"], b.get("params") or {}) for _m, p, b in calls if p.endswith("/raw")]
+        self.assertIn(("spacemolt_battle", "stance", {"stance": "flee"}), raws)
+
+
 class FollowTests(RunnerTests):
     """--follow <pilot>: the guard keeps beside one pilot of ours on a circuit (requests ENT-217, ENT-226): it reads that
     pilot's system and place from its live file once a minute, jumps and moves after it, looks, never fires, and ends
