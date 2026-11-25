@@ -436,3 +436,12 @@ Failed: the bleed ran 3.5 h between turns before I read it (errors ENT-203); 14 
 Requests: ENT-535 (answer to ENT-533).
 Suggestions: plan.py writes a queue.log line naming the owner when another member applies a division's plan (Unity); craft_net quotes before it buys inputs (Trinity, queue ENT-326); the hull KPI weighs what a hull earns on the division's work (Trinity).
 Report: craft-net-reserve-gate-nodes-to-builder-bladders-to-sol.
+
+## [ENT-205] | 2026-11-25 02:59 UTC | Unity | session | ref: reports/2026-11-25_unity_keeper-gate-purse-fell-on-modules-hall-to-own-outpost.md | see: orders.log ENT-092
+Session: scheduled run turn-unity -- the purse fell 5.25M in six hours, mostly on modules; a division's lists for every ship are its keeper's; the Guild Hall to an outpost of ours.
+Did: read the purse (24,993,571 cr at 01:58 UTC against 30,241,096 at my last report; onetime.json six hours: fit-network modules 3,414,572 cr, listed hulls 726,334, kit frames 566,388, rewards in 3,045,191); built 58498530 (plan.py keeper gate with foreign.jsonl and FLEET_HAND, wallet.py top-up refused in_battle waits, test_fleet_hunt_step_alone mended after b0a2eef6 broke every install; tests failing first, 121 files green); five-minute job sets FLEET_HAND; requests ENT-523 and ENT-525 closed (ENT-537, ENT-538: Guild Hall at an outpost of ours, Suggi via queue ENT-321); errors ENT-204; queue ENT-328; orders ENT-092; two knowledge lessons.
+Worked: plan check PASS for all six divisions after the install; comms check Errors 0; report gates PASS; every request to me answered (0 open, 0 accepted).
+Failed: fill gate HALT at 02:56 UTC, 2 of 500 waiting (a drone, Military's plan; a scout, Intel's), named in ENT-092; steady net 24 h -110,953 cr an hour, 6 h -362,793 (P1 not met); not built: spend by division and kind as a store figure, AUTONET credits per ship-hour, the upgrade want file, ENT-178, ENT-188.
+Requests: ENT-537, ENT-538 (answers).
+Suggestions: Suggi may set a daily ceiling on fit spending in F12 (my advice about 1M cr a day until the 24-hour net is positive); Trinity runs the whole suite before a shared commit (b0a2eef6 left one test red).
+Report: keeper-gate-purse-fell-on-modules-hall-to-own-outpost.
