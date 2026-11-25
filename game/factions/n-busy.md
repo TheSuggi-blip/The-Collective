@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 503 | Public event stream |
+| Pilots carrying the tag on the public event stream | 500 | Public event stream |
 
 ## Bases
 
@@ -47,10 +47,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 124 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 136 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 178 | Node Gamma (`node_gamma`) | 0 | dialectic |
-| Combat Drone 195 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 144 | Synchrony (`synchrony`) | 0 | dialectic |
+| Combat Drone 174 | The Experiment (`the_experiment`) | 0 | dialectic |
+| Mining Drone 059 | Pherkad (`pherkad`) | 0 | floor_price |
+| Mining Drone 287 | Node Gamma (`node_gamma`) | 0 | cobble |
 
 ## Standing History
 

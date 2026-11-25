@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 12.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 35 | Public event stream |
+| Pilots carrying the tag on the public event stream | 37 | Public event stream |
 
 ## Bases
 
@@ -38,13 +38,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicBasalt | Synchrony (`synchrony`) | 0 | cobble |
+| MimicCobalt | Synchrony (`synchrony`) | 0 | cobble |
+| MimicForge | Synchrony (`synchrony`) | 0 | cobble |
 | MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicHew | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicHew | Pherkad (`pherkad`) | 0 | cobble |
 | MimicLens | Nexus Prime (`nexus_prime`) | 0 | shard |
-| MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicRota | Synchrony (`synchrony`) | 0 | prospect |
+| MimicShale | Synchrony (`synchrony`) | 0 | cobble |
+| MimicTally | Synchrony (`synchrony`) | 0 | cobble |
 | MimicVega | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Synchrony (`synchrony`) | 0 | shard |
 
 ## Standing History
 

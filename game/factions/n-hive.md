@@ -15,7 +15,7 @@ updated: 2026-11-25
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 16.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -42,22 +42,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 12e40e68ce0cb7189468fecb | Node Beta (`node_beta`) | 0 | gas_tanker |
-| 15d19b56cf753aee3a9bca4e | Synchrony (`synchrony`) | 0 | gas_tanker |
+| 13170464db5eef0043ae9f5e | Pherkad (`pherkad`) | 0 | workhorse |
+| 2d6ffeda232aa324424edb53 | Synchrony (`synchrony`) | 0 | runner |
 | 4011f46410f19d6243276018 | Hamal (`hamal`) | 0 | workhorse |
-| 404cabdaa14cd583b3a3cc98 | Synchrony (`synchrony`) | 0 | workhorse |
-| 41f0a85ee5fe4d71232d03a8 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| 6df1320cdf9860614dbd3855 | The Experiment (`the_experiment`) | 0 | futures |
-| 706a154ccad49b2a57f5f914 | Node Gamma (`node_gamma`) | 0 | workhorse |
-| 820203467a484fae8d55d5f7 | Pherkad (`pherkad`) | 0 | gas_tanker |
-| 841d796c5af478d71c4485d6 | Pherkad (`pherkad`) | 0 | gas_tanker |
-| 9140cf6907be68f776da37ea | Pherkad (`pherkad`) | 0 | gas_tanker |
+| 636c1957c2349e4e27ec7db0 | Node Beta (`node_beta`) | 0 | deep_survey |
+| 706a154ccad49b2a57f5f914 | Synchrony (`synchrony`) | 0 | workhorse |
+| ac55ba07be5a48456875b4ff | Hamal (`hamal`) | 0 | workhorse |
 | ba6ca244f9215d9ee62431df | Synchrony (`synchrony`) | 0 | workhorse |
-| dd23b0ca1cc14350d2b0b023 | Hamal (`hamal`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Synchrony (`synchrony`) | 0 | futures |
-| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
-| ed54a64a82f3c4f9990829ad | Hamal (`hamal`) | 0 | workhorse |
-| f5736d218d41c0675a22c3d6 | Synchrony (`synchrony`) | 0 | workhorse |
+| c560f1f71312e41fa9c0f091 | Node Beta (`node_beta`) | 0 | deep_survey |
+| e3a724a14758022cda8c123e | Node Beta (`node_beta`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Hamal (`hamal`) | 0 | workhorse |
+| hiver | Node Alpha (`node_alpha`) | 0 | workhorse |
 
 ## Standing History
 

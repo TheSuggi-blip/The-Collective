@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 62 | Public event stream |
+| Pilots carrying the tag on the public event stream | 63 | Public event stream |
 
 ## Bases
 
@@ -50,8 +50,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| HexBot13 | Node Alpha (`node_alpha`) | 0 | frankenhauler |
-| HexBot2 | Node Beta (`node_beta`) | 0 | frankenhauler |
+| HexBot4 | Pherkad (`pherkad`) | 0 | ambrosia |
+| Morgan Drake | Pherkad (`pherkad`) | 0 | bulk_terms |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
 
 ## Standing History
