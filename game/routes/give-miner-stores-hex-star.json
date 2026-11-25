@@ -1,0 +1,36 @@
+{
+ "id": "give-miner-stores-hex-star",
+ "kind": "circuit",
+ "title": "A miner already within a jump of Hex Star (Dheneb) gives the iron and copper it stored there to the trader Trade named there (strict classes)",
+ "note": "Written by Zero, 2026-11-25T11:52Z (orders ENT-093 block ZERO: read the iron stored at Bursar hubs; give it where a receiver stands). The storage book of 11:35 UTC: 24 miners hold 22178 iron and 12265 copper in their own storage at Hex Star (Dheneb), stored there by mine-network before allow_bursar_dropoffs went false (3ef7d3cb). Iron and copper bid 0 to 1 cr at these hubs (market books 11:40 UTC), so no ship flies far for it: requires.max_jumps 1 sends only a miner already in or next to the system. A trader receiver stands named here (handover.py receivers, Mercury's). requires.stored opens on either good, 50 or more.",
+ "max_ships": 2,
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "b495c6003fc83e18f6d8cecbe6929133",
+   "items": [
+    "iron_ore",
+    "copper_ore"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 1
+ },
+ "stops": [
+  {
+   "at": "dheneb:98eba8b1a7ad0520d6a7c8ea44b2d6aa:b495c6003fc83e18f6d8cecbe6929133",
+   "store": "all",
+   "gift": [
+    {
+     "to": "trader",
+     "items": [
+      "iron_ore",
+      "copper_ore"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}

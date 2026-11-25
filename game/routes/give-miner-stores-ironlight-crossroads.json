@@ -1,0 +1,36 @@
+{
+ "id": "give-miner-stores-ironlight-crossroads",
+ "kind": "circuit",
+ "title": "A miner already within a jump of Ironlight Crossroads (LHS 1140) gives the iron and copper it stored there to the trader Trade named there (strict classes)",
+ "note": "Written by Zero, 2026-11-25T11:52Z (orders ENT-093 block ZERO: read the iron stored at Bursar hubs; give it where a receiver stands). The storage book of 11:35 UTC: 10 miners hold 3101 iron and 3771 copper in their own storage at Ironlight Crossroads (LHS 1140), stored there by mine-network before allow_bursar_dropoffs went false (3ef7d3cb). Iron and copper bid 0 to 1 cr at these hubs (market books 11:40 UTC), so no ship flies far for it: requires.max_jumps 1 sends only a miner already in or next to the system. A trader receiver stands named here (handover.py receivers, Mercury's). requires.stored opens on either good, 50 or more.",
+ "max_ships": 2,
+ "standing": true,
+ "requires": {
+  "stored": {
+   "at": "784309214f105860a16a0c100a70eb14",
+   "items": [
+    "iron_ore",
+    "copper_ore"
+   ],
+   "min": 50
+  },
+  "strict": true,
+  "max_jumps": 1
+ },
+ "stops": [
+  {
+   "at": "lhs_1140:0321b3e4406021575337b7be26e53dd7:784309214f105860a16a0c100a70eb14",
+   "store": "all",
+   "gift": [
+    {
+     "to": "trader",
+     "items": [
+      "iron_ore",
+      "copper_ore"
+     ],
+     "source": "storage"
+    }
+   ]
+  }
+ ]
+}
