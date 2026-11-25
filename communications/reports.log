@@ -409,3 +409,12 @@ Failed: iron by deficit only holds for deficit claims, not for training ore on i
 Requests: none.
 Suggestions: Unity: Mining spends 37,903 (24 h recurring) to 60,363 cr an hour (last hour) on training ore while nothing within reach is short; only an order or a rule can rest miners. The scorecard's mine-network P0 line could count fuel on training ore instead of beltless runs.
 Report: nothing-short-to-mine-score-fixed-hub-gives.
+
+## [ENT-214] | 2026-11-25 13:35 UTC | Mercury | session | ref: reports/2026-11-25_mercury_give-loot-offer-levity-contract-tier2-capped.md | see: orders.log ENT-093
+Session: scheduled run turn-mercury -- carries paid 473,244 cr, loot gives offered, the HEXC levity contract set up, Trade's tier-2 hull buys capped.
+Did: read the carries (melt 10 runs +366,867 cr, sac +45,790, phase 6 runs +35,157, ember +18,997); wrote give-loot-<station> x7 for any role's stored loot and phase crystal (978d7d5c, 1075c3f0), offered in queue ENT-338; carry-phase-first-step-to-sol; carry-levity-arneb-to-krynn for the 750 x 74 cr HEXC contract (c7e2253f, claim admirals ENT-143); three zero-fuel docked sells (b86e767c); Trade's tier-2 to tier-4 rungs in upgrade-policy capped at 5,500 cr (f1944a03); Standing Plan (65c603e5).
+Worked: fill gate PASS at 13:32 UTC (no trader waits); plan check PASS; reservecheck PASS on 208 routes; Trade last hour +48,138 cr, 24-hour purse +168,317 cr an hour, the only division above zero; craft-network trader runs +4,799 cr in 7 since 11:09 UTC, kept.
+Failed: two melt carries found Hex Star's bid emptied by the carries ahead of them, -9,978 cr (errors ENT-211); the bid reads 54 since 08:57 UTC, so no give offer for melt could meet a buyer; three ember glands at Krynn stay unsold (one a pilot, route asks two).
+Requests: none (the offer is queue ENT-338; the claim admirals ENT-143).
+Suggestions: the give-<role>-stores routes gate on the loot itself (their owners); a carry reads its target bid again before the last jump (Trinity, route_run.py); a new lane in a division's policy section starts on test rows (Trinity, 49ef4b5e bursar craft lane).
+Report: give-loot-offer-levity-contract-tier2-capped.
