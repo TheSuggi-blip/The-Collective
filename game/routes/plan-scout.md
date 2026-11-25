@@ -132,3 +132,4 @@ Planned:
 | What | When |
 |---|---|
 | Read four hours of census-frontier at 145 min and SITES of census-north and census-region-altais after the move: still over the 3-hour target -> 10 min lower, never more ships | next turn |
+| Read hive.py spend for Intel: modules bought once should read 0 after the loadouts were emptied; fit-network on scouts only strips | next turn |
