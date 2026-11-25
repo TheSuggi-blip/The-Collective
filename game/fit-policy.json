@@ -784,32 +784,12 @@
       },
       "loadouts": {
         "freight": {
-          "utility": [
-            "cargo_expander_iii",
-            "cargo_expander_ii",
-            "fuel_optimizer"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ]
+          "utility": [],
+          "defense": []
         },
         "passenger": {
-          "utility": [
-            "business_passenger_cabin",
-            "economy_passenger_cabin",
-            "fuel_optimizer"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
-          ]
+          "utility": [],
+          "defense": []
         }
       }
     },

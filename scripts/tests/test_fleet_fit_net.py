@@ -128,6 +128,23 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                     "modules": [{"type": "shield_booster_ii", "slot": "defense"}]}
             self.assertIsNone(fit_net.plan_ship_fit(ship, world, pol), hull)
 
+    def test_live_logistics_policy_buys_no_module_for_a_hauler(self):
+        # Orders ENT-093 P1: a module only when its measured gain repays it within a week. No hauler module
+        # has such a measure (fit-network bought shield boosters and cargo expanders for haulers, none measured),
+        # so the live Logistics loadouts are empty: a hauler with free slots, nothing off-role aboard and a full
+        # wallet gets no fit plan, freight and passenger hulls alike; what it carries stays fitted.
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        sold = ("shield_booster_ii", "shield_booster_iii", "cargo_expander_ii", "cargo_expander_iii", "fuel_optimizer",
+                "economy_passenger_cabin", "business_passenger_cabin", "adaptive_shield_iii", "quantum_shield_iv")
+        slots = {"tier": 0, "weapon": 1, "defense": 2, "utility": 3}
+        world = {"hulls": {h: dict(slots) for h in ("threshold", "prayer", "floor price", "nebula tender")},
+                 "adj": {"s1": []}, "stations": {"b1": ("s1", "p1", "b1", True)},
+                 "asks": {m: [(1000, "b1", 50)] for m in sold}}
+        for hull in ("Threshold", "Prayer", "Floor Price", "Nebula Tender"):
+            ship = {"name": "hauler-9", "division": "Logistics", "system": "s1", "class": hull, "credits": 90000,
+                    "modules": [{"type": "cargo_expander_ii", "slot": "utility"}]}
+            self.assertIsNone(fit_net.plan_ship_fit(ship, world, pol), hull)
+
     def test_royal_guard_command_and_military_support_specialties(self):
         pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
         # 1. Sentinels 60/40 split: royal_guard_escort + royal_guard_utility
