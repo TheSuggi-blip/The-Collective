@@ -21,10 +21,10 @@
   "date": "2026-11-25",
   "runs": 9,
   "minutes": 33,
-  "credits_per_run": -2930,
-  "cph_per_ship": -4450,
+  "credits_per_run": -3250,
+  "cph_per_ship": -6200,
   "hours": 12,
-  "last_run": "2026-11-25T06:01:34Z"
+  "last_run": "2026-11-25T07:06:45Z"
  },
  "gift_to": "trader"
 }
