@@ -15,7 +15,7 @@ updated: 2026-11-26
 # UNSANE. [SANE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 47.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 47.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 47 | Public event stream |
+| Pilots carrying the tag on the public event stream | 3 | Public event stream |
 
 ## Bases
 
@@ -38,38 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Aberrant Spark | Synchrony (`synchrony`) | 0 | threshold |
-| Agony Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Bedlam Lance | Nexus Prime (`nexus_prime`) | 0 | accretion |
-| Bedlam Spark | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Catatonia Dart | Acubens (`acubens`) | 0 | threshold |
-| Cortical Lacerator | Acubens (`acubens`) | 0 | threshold |
+| Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Cortical Spike | Nexus Prime (`nexus_prime`) | 0 | liminal |
-| Cortical Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Delirium Cutter | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Delirium Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Dread Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Entropy Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Fever Talon | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Fractured Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Frenzy Blade | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Ghost Needle | Node Beta (`node_beta`) | 0 | threshold |
-| Hysteric Pulse | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Hysteric Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Malignant Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mania Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mania Vector | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Mind-Rupture | Nexus Prime (`nexus_prime`) | 0 | liminal |
-| Morbid Claw | Node Beta (`node_beta`) | 0 | threshold |
-| Neural Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Neurotic Razor | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Null Spike | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Paranoia Lance | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Psychopathic Fang | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Psychotic Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Schism Dart | Nexus Prime (`nexus_prime`) | 0 | accretion |
-
-And 17 more.
+| Static Flail | Nexus Prime (`nexus_prime`) | 0 | liminal |
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Prospector Fleet [PSF2]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 13 jump(s) away, in Izar (`izar`).
-Pilots of it in our space in the last 24 hours: 9.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -41,7 +41,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Prospector_Void1 | Synchrony (`synchrony`) | 0 | threshold |
-| Prospector_Void10 | Node Gamma (`node_gamma`) | 0 | threshold |
 | Prospector_Void2 | Node Gamma (`node_gamma`) | 0 | threshold |
 | Prospector_Void3 | Node Gamma (`node_gamma`) | 0 | threshold |
 | Prospector_Void4 | Node Gamma (`node_gamma`) | 0 | threshold |
