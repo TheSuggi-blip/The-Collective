@@ -605,7 +605,7 @@ button.member:hover { background: var(--raise); box-shadow: inset 0 -2px 0 var(-
 .doc-reader-card { padding: 14px 16px; }
 
 /* ---- 2026-11-22 HUD v5: Stellaris Tiny Outliner, Rich Map Hover Card & Endless-Space Selection Inspector */
-.divstrip { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; }
+.divstrip { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 3px; }
 .divchip { padding: 3px 2px; background: rgba(10, 13, 20, 0.85); border: 1px solid var(--line); border-radius: 6px;
   color: var(--dim); font: 600 9.5px/1.2 var(--mono); text-transform: uppercase; letter-spacing: 0.02em; cursor: pointer; text-align: center; }
 .divchip:hover { color: var(--text); border-color: var(--c, var(--accent)); background: var(--raise); }
@@ -886,7 +886,7 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 
 .members { display: flex; align-items: stretch; flex: none; border-right: 1px solid var(--line); }
 .members-grid { display: flex; flex-direction: row; align-items: stretch; flex-wrap: nowrap; }
-.members-grid .member { gap: 6px; padding: 0 9px; height: 100%; border-right: 1px solid var(--line); border-bottom: 0;
+.members-grid .member { gap: 5px; padding: 0 7px; height: 100%; border-right: 1px solid var(--line); border-bottom: 0;
   font-size: 12px; }
 .members-grid .member:last-child { border-right: 0; }
 .members-grid .member .face-medallion { width: 24px; height: 24px; border-radius: 6px; }
@@ -989,3 +989,5 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .purse .pcol.inc { padding-left: 10px; border-left: 1px solid var(--line); }
 .purse .pcol.inc .v.pos { color: var(--good); }
 .purse .pcol.inc .v.neg { color: var(--bad); }
+
+.members-grid .member.on { background: rgba(164, 139, 224, 0.14); box-shadow: inset 0 -2px 0 var(--c, var(--accent)); }

@@ -98,7 +98,42 @@ function stampCet(text) {                          // convert UTC ISO/file stamp
 const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b))) : 0);
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
-const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b' };
+const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b',
+  'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c' };
+const JOB_DIVS = [
+  { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard' },
+  { key: 'Hunters', short: 'Hnt', top: 'Hunters', shape: 'Military' },
+  { key: 'Miners', short: 'Min', top: 'Miners', shape: 'Mining' },
+  { key: 'Traders & Bursars', short: 'Trd', top: 'Traders', shape: 'Trade' },
+  { key: 'Crafters & Refiners', short: 'Crf', top: 'Crafters', shape: 'Trade' },
+  { key: 'Logistics', short: 'Log', top: 'Logistics', shape: 'Logistics' },
+  { key: 'Intel', short: 'Int', top: 'Intel', shape: 'Intel' },
+];
+function jobDivision(r) {
+  const d = String(r.division || '');
+  const nm = String(r.name || '');
+  const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
+  const what = String(r.order || r.route || r.activity || '').toLowerCase();
+  const rl = String(r.role || '').toLowerCase();
+  if (d === 'Command') return 'Fleet & Defense';
+  if (d === 'Military') {
+    if (r.flagship || !nm.includes('-') || nm.startsWith('sentinel-') || rl === 'sentinel' || rl === 'command'
+      || ['concordance', 'vanguard', 'consensus', 'overlord', 'paramount', 'symposium', 'ascendancy', 'anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis', 'dualism', 'voidborn_event_horizon', 'apotheosis', 'membrane', 'palisade'].includes(cls)) {
+      return 'Fleet & Defense';
+    }
+    return 'Hunters';
+  }
+  if (d === 'Mining') return 'Miners';
+  if (d === 'Trade') {
+    if (['praxis', 'subcontract', 'poiesis', 'whetstone', 'some_assembly_required'].includes(cls) || rl === 'crafter' || rl === 'refiner' || what.includes('craft') || what.includes('refin')) {
+      return 'Crafters & Refiners';
+    }
+    return 'Traders & Bursars';
+  }
+  if (d === 'Logistics') return 'Logistics';
+  if (d === 'Intel') return 'Intel';
+  return 'Unassigned';
+}
 
 // Ship silhouettes, nose up, in a box of -10..10: a list of parts, each a polygon or a ring. The same
 // shapes draw the markers of the map (canvas) and the icons of the roster, the legend and the cards (SVG).
@@ -1693,21 +1728,22 @@ function renderMembers() {                       // the top bar: Credits (Wallet
   purse.onclick = () => { tab = 'Metrics'; render(); };
   purse.append(cCol, iCol, eCol);
 
-  F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
+  F.ships.forEach((r) => { const jd = jobDivision(r); if (!by.has(jd)) by.set(jd, []); by.get(jd).push(r); });
   const grid = el('div', 'members-grid');
-  for (const a of (S ? S.roster : []).filter((x) => x.division !== 'Command')) {
-    const list = by.get(a.division) || [], c = DIV[a.division] || DIV.Unassigned, b = el('button', 'member');
+  for (const jd of JOB_DIVS) {
+    const list = by.get(jd.key) || [], c = DIV[jd.key] || DIV.Unassigned;
+    const b = el('button', 'member' + (rosterDiv === jd.key ? ' on' : ''));
     const working = list.filter(isWorking).length, who = el('div', 'who');
     b.type = 'button';
     const med = el('span', 'face-medallion');
-    med.append(faceSvg(a.id, a.division, c, 18));
-    who.append(el('div', 'n', a.division));
+    med.append(shipSvg(jd.shape, c, 15));
+    who.append(el('div', 'n', jd.top));
     const cnt = el('div', 'c', String(list.length));
-    if (working < list.length) cnt.classList.add('has-idle');
+    if (list.length > 0 && working < list.length) cnt.classList.add('has-idle');
     b.append(med, who, cnt);
     b.style.setProperty('--c', c);
-    b.title = a.division + ' (Admiral ' + a.name + '): ' + working + '/' + list.length + ' active | Click to message ' + a.name;
-    b.addEventListener('click', () => openCommsFor(a.id));
+    b.title = jd.key + ': ' + working + '/' + list.length + ' active | Click to focus in Fleet Roster';
+    b.addEventListener('click', () => { rosterDiv = rosterDiv === jd.key ? 'all' : jd.key; renderRoster(); renderMembers(); });
     grid.append(b);
   }
   box.append(grid);
@@ -1809,36 +1845,53 @@ function shipMatches(r) {
   if (rosterMode === 'idle' && !['dock', 'idle'].includes(cls)) return false;
   if (rosterMode === 'alert' && !shipAlert(r)) return false;
   if (rosterQuery) {
-    const hay = (r.name + ' ' + (r.system_name || r.system || '') + ' ' + what + ' ' + (r.division || '') + ' ' + (r.class || '')).toLowerCase();
+    const hay = (r.name + ' ' + (r.system_name || r.system || '') + ' ' + what + ' ' + jobDivision(r) + ' ' + shipSubgroup(r)[1] + ' ' + (r.class || '')).toLowerCase();
     if (!hay.includes(rosterQuery)) return false;
   }
   return true;
 }
 const STARTER_HULLS = new Set(['threshold', 'prospect', 'theoria', 'cobble', 'shard']);
 function shipSubgroup(r) {
+  const jd = jobDivision(r);
   const nm = String(r.name || '');
   const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
-  const what = String(r.order || r.route || '').toLowerCase();
-  if (r.division === 'Military') {
-    if (r.flagship || !nm.includes('-')) return [0, 'Command Flagships'];
-    if (nm.startsWith('sentinel-')) return [1, 'Royal Guard Sentinels'];
-    return [2, 'Frontline Drones'];
+  const what = String(r.order || r.route || r.activity || '').toLowerCase();
+  const mods = Array.isArray(r.modules) ? r.modules.map((m) => String(m || '').toLowerCase()).join(' ') : '';
+  if (jd === 'Fleet & Defense') {
+    if (r.flagship || !nm.includes('-')) return [0, 'Command Task Forces'];
+    if (['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis'].includes(cls)) return [1, 'Support (Carriers / Medics / EWAR)'];
+    if (nm.startsWith('sentinel-')) return [2, 'Outpost Sentinels'];
+    return [3, 'Grand Battle Line'];
   }
-  if (r.division === 'Trade') {
+  if (jd === 'Hunters') {
+    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Heavy Hunters'];
+    return [1, 'Raiders & Drones'];
+  }
+  if (jd === 'Miners') {
+    if (mods.includes('rad_harvester') || mods.includes('deep_core') || ['deep_resonance'].includes(cls) || what.includes('uranium') || what.includes('deep_core')) return [0, 'Deep-Core & Rad'];
+    if (mods.includes('gas_harvester') || ['nebulous', 'revenue', 'nebulae', 'billhook', 'spit_and_prayer', 'phase_collector', 'gas_tanker', 'atmospheric_sampler', 'gas_raider', 'gas_trawler', 'rift_siphon'].includes(cls) || what.includes('_gas')) return [1, 'Gas Harvesters'];
+    if (mods.includes('ice_harvester') || ['hoarfrost', 'cold_storage', 'absolute_zero', 'permafrost', 'brain_freeze', 'canteen', 'ice_dividend', 'cryogenic_survey', 'absolute_entropy', 'thermal_lance', 'ice_trawler', 'cryo_industrial', 'rime', 'frost_dividend'].includes(cls) || what.includes('_ice')) return [2, 'Ice Harvesters'];
+    if (mods.includes('modulated_mining_laser') || what.includes('silver') || what.includes('titanium') || what.includes('lead')) return [3, 'Ore -- Precision'];
+    if (cls && !STARTER_HULLS.has(cls)) return [4, 'Ore -- Bulk'];
+    return [5, 'Ore -- Starters (Pre-Upgrade)'];
+  }
+  if (jd === 'Traders & Bursars') {
     if (what.includes('bursar')) return [1, 'Bursar Desks'];
-    return [0, 'Mobile Traders'];
+    if (['futures', 'dust_devil', 'syndicate', 'macguffin'].includes(cls)) return [0, 'Express Arbitrage'];
+    return [2, 'Mobile Traders'];
   }
-  if (r.division === 'Logistics') {
-    if (['futures', 'runner', 'consortium', 'omnibus'].includes(cls) || what.includes('passenger')) return [0, 'Express / Passenger'];
-    return [1, 'Bulk Freighters'];
+  if (jd === 'Crafters & Refiners') {
+    if (['praxis', 'subcontract', 'poiesis', 'whetstone', 'some_assembly_required'].includes(cls)) return [1, 'Field Workshops'];
+    return [0, 'Station Refiners'];
   }
-  if (r.division === 'Mining') {
-    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Upgraded Miners'];
-    return [1, 'Starter Miners'];
+  if (jd === 'Logistics') {
+    if (['consortium', 'omnibus', 'concordia', 'promenade', 'cloister', 'ambrosia', 'premiere', 'comet', 'futures', 'runner'].includes(cls) || what.includes('passenger')) return [1, 'Passenger Liners'];
+    if (['long_haul', 'capacity', 'morningstar', 'reserve', 'plenum', 'endowment', 'sustenance', 'entropy', 'chop_shop', 'yard_sale', 'dissolution', 'receivership', 'liquidator', 'archive', 'thermodynamic_end'].includes(cls) || what.includes('salvage') || what.includes('refuel')) return [2, 'Fuel & Salvage Tenders'];
+    return [0, 'Supply Chain Haulers'];
   }
-  if (r.division === 'Intel') {
-    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Upgraded Scouts'];
-    return [1, 'Recon Scouts'];
+  if (jd === 'Intel') {
+    if (mods.includes('survey_scanner') || ['eigenstate', 'lemma', 'confluence', 'peer_review', 'noumenon', 'perigee', 'survey_vessel', 'manifest_destiny'].includes(cls) || what.includes('survey')) return [1, 'Deep-Core Surveyors'];
+    return [0, 'Covert Recon'];
   }
   return [0, 'Ships'];
 }
@@ -1892,14 +1945,15 @@ function ensureDivStrip(divisions) {
     tools.prepend(strip);
   }
   strip.replaceChildren();
-  const shortLbl = { Command: 'Cmd', Mining: 'Min', Trade: 'Trd', Logistics: 'Log', Military: 'Mil', Intel: 'Int', Unassigned: 'Un' };
-  const items = [['all', 'All', 'var(--accent)']].concat(divisions.map(([d]) => [d, shortLbl[d] || d.slice(0, 3), DIV[d] || DIV.Unassigned]));
+  const shortMap = Object.fromEntries(JOB_DIVS.map((j) => [j.key, j.short]));
+  shortMap.Unassigned = 'Un';
+  const items = [['all', 'All', 'var(--accent)']].concat(divisions.map(([d]) => [d, shortMap[d] || d.slice(0, 3), DIV[d] || DIV.Unassigned]));
   for (const [key, lbl, col] of items) {
     const b = el('button', 'divchip' + (rosterDiv === key ? ' on' : ''), lbl);
     b.type = 'button';
     b.style.setProperty('--c', col);
-    b.title = key === 'all' ? 'Show all 5 divisions' : 'Focus ' + key + ' division';
-    b.addEventListener('click', () => { rosterDiv = rosterDiv === key && key !== 'all' ? 'all' : key; renderRoster(); });
+    b.title = key === 'all' ? 'Show all 7 job divisions' : 'Focus ' + key;
+    b.addEventListener('click', () => { rosterDiv = rosterDiv === key && key !== 'all' ? 'all' : key; renderRoster(); renderMembers(); });
     strip.append(b);
   }
 }
@@ -1912,8 +1966,9 @@ function renderRoster() {
     if (['work', 'move', 'wait'].includes(c)) counts.active++;
     if (['dock', 'idle'].includes(c)) counts.idle++;
     if (shipAlert(r)) counts.alert++;
-    if (!by.has(r.division)) by.set(r.division, []);
-    by.get(r.division).push(r);
+    const jd = jobDivision(r);
+    if (!by.has(jd)) by.set(jd, []);
+    by.get(jd).push(r);
   });
   document.querySelectorAll('#rfilters .rf').forEach((b) => {
     const m = b.dataset.mode, lbl = m === 'all' ? 'All' : m === 'active' ? 'Active' : m === 'idle' ? 'Idle' : 'Alerts';
@@ -1922,8 +1977,8 @@ function renderRoster() {
     b.classList.toggle('haswarn', m === 'idle' && counts.idle > 0);
     b.classList.toggle('hasbad', m === 'alert' && counts.alert > 0);
   });
-  const divisions = (S ? S.roster : []).filter((a) => a.division !== 'Command' || by.has('Command')).map((a) => [a.division, a]);
-  if (by.has('Unassigned')) divisions.push(['Unassigned', null]);
+  const divisions = JOB_DIVS.map((j) => [j.key, j]);
+  if (by.has('Unassigned')) divisions.push(['Unassigned', { key: 'Unassigned', shape: 'Unassigned' }]);
   ensureDivStrip(divisions);
 
   const filtering = rosterMode !== 'all' || Boolean(rosterQuery) || rosterDiv !== 'all';
@@ -1964,7 +2019,7 @@ function renderRoster() {
     name.type = 'button';
     const fold = el('span', 'fold', folded ? '+' : '-');
     name.prepend(fold);
-    fold.after(shipSvg(division === 'Command' ? 'Flagship' : division, c, 13));
+    fold.after(shipSvg((admiral && admiral.shape) || 'Unassigned', c, 13));
     name.style.color = c;
     name.title = (folded ? 'Unfold ' : 'Fold ') + division + ' (' + raw.length + ' ships)';
     name.setAttribute('aria-expanded', folded ? 'false' : 'true');
@@ -1976,10 +2031,12 @@ function renderRoster() {
     const metaRight = el('span', 'divmeta');
     metaRight.style.cursor = 'pointer';
     metaRight.addEventListener('click', toggleDivisionFold);
-    const crew = (((F.totals || {}).divisions || {})[division] || {}).crew;
-    if (crew && crew.ships) {
-      const lvEl = el('span', 'divcph', 'Lv ' + oneDecimal(crew.piloting));
-      lvEl.title = 'Avg Piloting ' + oneDecimal(crew.piloting) + ' | Avg Hull+Shield ' + fmt(crew.hp) + ' | Avg Firepower ' + oneDecimal(crew.firepower);
+    if (raw.length) {
+      let sumP = 0, sumHp = 0;
+      raw.forEach((r) => { sumP += (r.piloting || 0); sumHp += (r.max_hull || 0) + (r.max_shield || 0); });
+      const avgP = sumP / raw.length, avgHp = Math.round(sumHp / raw.length);
+      const lvEl = el('span', 'divcph', 'Lv ' + oneDecimal(avgP));
+      lvEl.title = 'Avg Piloting ' + oneDecimal(avgP) + ' | Avg Hull+Shield ' + fmt(avgHp);
       metaRight.append(lvEl);
     }
     const wp = el('span', 'divpill' + (atWork < raw.length ? ' warn' : ''), atWork + '/' + raw.length);
@@ -1991,7 +2048,7 @@ function renderRoster() {
     if (raw.length) card.append(divMeter(raw));
     block.append(card);
 
-    if (!raw.length) block.append(el('div', 'noships', 'No ships assigned'));
+    if (!raw.length) block.append(el('div', 'noships', 'Ready for rollout (0 ships)'));
     if (!folded) {
       const grpCounts = new Map();
       if (rosterSort === 'name') list.forEach((r) => { const g = shipSubgroup(r)[1]; grpCounts.set(g, (grpCounts.get(g) || 0) + 1); });
