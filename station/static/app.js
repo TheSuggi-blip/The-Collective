@@ -101,13 +101,13 @@ const LAWLESS = '#59607a';
 const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b',
   'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c' };
 const JOB_DIVS = [
-  { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard' },
-  { key: 'Hunters', short: 'Hnt', top: 'Hunters', shape: 'Military' },
-  { key: 'Miners', short: 'Min', top: 'Miners', shape: 'Mining' },
-  { key: 'Traders & Bursars', short: 'Trd', top: 'Traders', shape: 'Trade' },
-  { key: 'Crafters & Refiners', short: 'Crf', top: 'Crafters', shape: 'Trade' },
-  { key: 'Logistics', short: 'Log', top: 'Logistics', shape: 'Logistics' },
-  { key: 'Intel', short: 'Int', top: 'Intel', shape: 'Intel' },
+  { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard', subs: ['Command Task Forces', 'Grand Battle Line', 'Outpost Sentinels & Support'] },
+  { key: 'Hunters', short: 'Hnt', top: 'Hunters', shape: 'Military', subs: ['Heavy Pirate Hunters', 'Fast Wildlife & Raiders'] },
+  { key: 'Miners', short: 'Min', top: 'Miners', shape: 'Mining', subs: ['Ore -- Precision', 'Ore -- Bulk', 'Deep-Core & Rad', 'Gas Harvesters', 'Ice Harvesters'] },
+  { key: 'Traders & Bursars', short: 'Trd', top: 'Traders', shape: 'Trade', subs: ['Express Arbitrage', 'Bulk Trade Haulers', 'Bursar Desks'] },
+  { key: 'Crafters & Refiners', short: 'Crf', top: 'Crafters', shape: 'Trade', subs: ['Station Refiners & Bursars', 'Field Workshops'] },
+  { key: 'Logistics', short: 'Log', top: 'Logistics', shape: 'Logistics', subs: ['Supply Chain Haulers', 'Passenger Liners', 'Fuel & Salvage Tenders'] },
+  { key: 'Intel', short: 'Int', top: 'Intel', shape: 'Intel', subs: ['Covert Recon', 'Deep-Core Surveyors'] },
 ];
 function jobDivision(r) {
   const d = String(r.division || '');
@@ -288,13 +288,21 @@ let fetchedAt = 0;                             // when /api/fleet last answered 
 let noticeShut = '';                           // the wave notice closed by hand: its key (since and whether it ended)
 const NOTICE_GOOD_SECONDS = 120;               // the green 'all back' notice goes by itself this long after the wave ended
 let HIST = { rows: [], at: 0 };                // /api/history, for the Metrics tab
-const collapsed = new Set();                   // divisions folded in the roster; default folds bulk divisions for a clean outliner
+const collapsed = new Set();                   // divisions folded in the roster
+const openSubs = new Set();                    // sub-sections explicitly unfolded ('Division::SubSection'); default folded!
 try {
-  const savedFolds = localStorage.getItem('station.folded');
-  if (savedFolds === null) ['Mining', 'Trade', 'Logistics', 'Military', 'Intel'].forEach((d) => collapsed.add(d));
+  const savedFolds = localStorage.getItem('station.folded.v2');
+  if (savedFolds === null) JOB_DIVS.forEach((j) => collapsed.add(j.key));
   else JSON.parse(savedFolds).forEach((d) => collapsed.add(String(d)));
+  const savedSubs = localStorage.getItem('station.openSubs.v2');
+  if (savedSubs !== null) JSON.parse(savedSubs).forEach((k) => openSubs.add(String(k)));
 } catch (e) { /* no storage */ }
-function saveFolds() { try { localStorage.setItem('station.folded', JSON.stringify([...collapsed])); } catch (e) { /* no storage */ } }
+function saveFolds() {
+  try {
+    localStorage.setItem('station.folded.v2', JSON.stringify([...collapsed]));
+    localStorage.setItem('station.openSubs.v2', JSON.stringify([...openSubs]));
+  } catch (e) { /* no storage */ }
+}
 const shut = new Set();                        // what Suggi has hidden: the side panels, the messages of comms, the legend, the layers; remembered
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
@@ -1859,30 +1867,30 @@ function shipSubgroup(r) {
   const mods = Array.isArray(r.modules) ? r.modules.map((m) => String(m || '').toLowerCase()).join(' ') : '';
   if (jd === 'Fleet & Defense') {
     if (r.flagship || !nm.includes('-')) return [0, 'Command Task Forces'];
-    if (['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis'].includes(cls)) return [1, 'Support (Carriers / Medics / EWAR)'];
-    if (nm.startsWith('sentinel-')) return [2, 'Outpost Sentinels'];
-    return [3, 'Grand Battle Line'];
+    if (nm.startsWith('sentinel-') || ['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis', 'dualism', 'voidborn_event_horizon', 'apotheosis', 'membrane', 'palisade'].includes(cls)) return [2, 'Outpost Sentinels & Support'];
+    return [1, 'Grand Battle Line'];
   }
   if (jd === 'Hunters') {
-    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Heavy Hunters'];
-    return [1, 'Raiders & Drones'];
+    if (['recursion', 'junkyard_dog', 'insurance_fraud', 'juggernaut', 'hells_bells'].includes(cls)) return [1, 'Fast Wildlife & Raiders'];
+    if (cls && !STARTER_HULLS.has(cls)) return [0, 'Heavy Pirate Hunters'];
+    return [1, 'Fast Wildlife & Raiders'];
   }
   if (jd === 'Miners') {
-    if (mods.includes('rad_harvester') || mods.includes('deep_core') || ['deep_resonance'].includes(cls) || what.includes('uranium') || what.includes('deep_core')) return [0, 'Deep-Core & Rad'];
-    if (mods.includes('gas_harvester') || ['nebulous', 'revenue', 'nebulae', 'billhook', 'spit_and_prayer', 'phase_collector', 'gas_tanker', 'atmospheric_sampler', 'gas_raider', 'gas_trawler', 'rift_siphon'].includes(cls) || what.includes('_gas')) return [1, 'Gas Harvesters'];
-    if (mods.includes('ice_harvester') || ['hoarfrost', 'cold_storage', 'absolute_zero', 'permafrost', 'brain_freeze', 'canteen', 'ice_dividend', 'cryogenic_survey', 'absolute_entropy', 'thermal_lance', 'ice_trawler', 'cryo_industrial', 'rime', 'frost_dividend'].includes(cls) || what.includes('_ice')) return [2, 'Ice Harvesters'];
-    if (mods.includes('modulated_mining_laser') || what.includes('silver') || what.includes('titanium') || what.includes('lead')) return [3, 'Ore -- Precision'];
-    if (cls && !STARTER_HULLS.has(cls)) return [4, 'Ore -- Bulk'];
-    return [5, 'Ore -- Starters (Pre-Upgrade)'];
+    if (mods.includes('rad_harvester') || mods.includes('deep_core') || ['deep_resonance'].includes(cls) || what.includes('uranium') || what.includes('deep_core')) return [2, 'Deep-Core & Rad'];
+    if (mods.includes('gas_harvester') || ['nebulous', 'revenue', 'nebulae', 'billhook', 'spit_and_prayer', 'phase_collector', 'gas_tanker', 'atmospheric_sampler', 'gas_raider', 'gas_trawler', 'rift_siphon'].includes(cls) || what.includes('_gas')) return [3, 'Gas Harvesters'];
+    if (mods.includes('ice_harvester') || ['hoarfrost', 'cold_storage', 'absolute_zero', 'permafrost', 'brain_freeze', 'canteen', 'ice_dividend', 'cryogenic_survey', 'absolute_entropy', 'thermal_lance', 'ice_trawler', 'cryo_industrial', 'rime', 'frost_dividend'].includes(cls) || what.includes('_ice')) return [4, 'Ice Harvesters'];
+    if (mods.includes('modulated_mining_laser') || what.includes('silver') || what.includes('titanium') || what.includes('lead')) return [0, 'Ore -- Precision'];
+    if (cls && !STARTER_HULLS.has(cls)) return [1, 'Ore -- Bulk'];
+    return [5, 'Starters (Pre-Upgrade)'];
   }
   if (jd === 'Traders & Bursars') {
-    if (what.includes('bursar')) return [1, 'Bursar Desks'];
+    if (what.includes('bursar')) return [2, 'Bursar Desks'];
     if (['futures', 'dust_devil', 'syndicate', 'macguffin'].includes(cls)) return [0, 'Express Arbitrage'];
-    return [2, 'Mobile Traders'];
+    return [1, 'Bulk Trade Haulers'];
   }
   if (jd === 'Crafters & Refiners') {
     if (['praxis', 'subcontract', 'poiesis', 'whetstone', 'some_assembly_required'].includes(cls)) return [1, 'Field Workshops'];
-    return [0, 'Station Refiners'];
+    return [0, 'Station Refiners & Bursars'];
   }
   if (jd === 'Logistics') {
     if (['consortium', 'omnibus', 'concordia', 'promenade', 'cloister', 'ambrosia', 'premiere', 'comet', 'futures', 'runner'].includes(cls) || what.includes('passenger')) return [1, 'Passenger Liners'];
@@ -2048,22 +2056,58 @@ function renderRoster() {
     if (raw.length) card.append(divMeter(raw));
     block.append(card);
 
-    if (!raw.length) block.append(el('div', 'noships', 'Ready for rollout (0 ships)'));
     if (!folded) {
-      const grpCounts = new Map();
-      if (rosterSort === 'name') list.forEach((r) => { const g = shipSubgroup(r)[1]; grpCounts.set(g, (grpCounts.get(g) || 0) + 1); });
-      const showHeaders = rosterSort === 'name' && grpCounts.size > 1;
-      let lastGrp = '';
+      const bySub = new Map();
+      const canonicalSubs = (admiral && Array.isArray(admiral.subs)) ? admiral.subs : [];
+      canonicalSubs.forEach((s) => bySub.set(s, []));
       list.forEach((r) => {
-        if (showHeaders) {
-          const g = shipSubgroup(r)[1];
-          if (g !== lastGrp) {
-            lastGrp = g;
-            block.append(el('div', 'subgrp', g + ' (' + grpCounts.get(g) + ')'));
-          }
-        }
-        block.append(shipRow(r));
+        const g = shipSubgroup(r)[1];
+        if (!bySub.has(g)) bySub.set(g, []);
+        bySub.get(g).push(r);
       });
+      if (bySub.size > 0) {
+        const tree = el('div', 'subtree');
+        tree.style.setProperty('--c', c);
+        const autoExpandSubs = rosterMode !== 'all' || Boolean(rosterQuery);
+        for (const [subName, subShips] of bySub.entries()) {
+          if (autoExpandSubs && !subShips.length) continue;
+          const subKey = division + '::' + subName;
+          const subOpen = autoExpandSubs || openSubs.has(subKey);
+          let subWork = 0;
+          subShips.forEach((r) => { const st = shipState(r)[0]; if (st === 'work' || st === 'move' || st === 'wait') subWork++; });
+          const node = el('div', 'subnode');
+          const sh = el('button', 'subhead' + (!subShips.length ? ' empty' : ''));
+          sh.type = 'button';
+          sh.style.setProperty('--c', c);
+          sh.setAttribute('aria-expanded', subOpen ? 'true' : 'false');
+          const sleft = el('span', 'sleft');
+          sleft.append(el('span', 'sfold', subOpen ? '-' : '+'), el('span', 'slbl', subName));
+          const pillCls = !subShips.length ? 'spill' : (subWork < subShips.length ? 'spill warn' : 'spill good');
+          const spill = el('span', pillCls, subWork + '/' + subShips.length);
+          sh.append(sleft, spill);
+          sh.title = subName + ' (' + subWork + ' active of ' + subShips.length + ' ships) -- click to ' + (subOpen ? 'collapse' : 'expand');
+          sh.addEventListener('click', () => {
+            if (openSubs.has(subKey)) openSubs.delete(subKey);
+            else openSubs.add(subKey);
+            saveFolds();
+            renderRoster();
+          });
+          node.append(sh);
+          if (subOpen) {
+            const slist = el('div', 'sublist');
+            if (!subShips.length) {
+              slist.append(el('div', 'noships', 'Ready for rollout (0 ships)'));
+            } else {
+              subShips.forEach((r) => slist.append(shipRow(r)));
+            }
+            node.append(slist);
+          }
+          tree.append(node);
+        }
+        block.append(tree);
+      } else if (!raw.length) {
+        block.append(el('div', 'noships', 'Ready for rollout (0 ships)'));
+      }
     }
     box.append(block);
   }
@@ -2082,7 +2126,7 @@ function renderRoster() {
   box.scrollTop = keep;
   const all = $('fold-all'), names = divisions.map((d) => d[0]), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
   all.textContent = everyFolded ? 'Unfold all' : 'Fold all';
-  all.onclick = () => { rosterDiv = 'all'; names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); saveFolds(); renderRoster(); };
+  all.onclick = () => { rosterDiv = 'all'; names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); if (!everyFolded) openSubs.clear(); saveFolds(); renderRoster(); renderMembers(); };
   const fresh = $('fleet-fresh'), ok = fleetLive();
   fresh.textContent = ok ? F.ships.length + ' ships' : (F.age < 0 ? 'no data' : 'stale');
   fresh.className = 'fresh' + (ok ? '' : ' bad');
@@ -2304,9 +2348,12 @@ function renderShip(panel) {
 async function selectShip(name, center) {
   selShip = name; shipCard = null; shipMark = ''; pilotCard = null; docView = null; tab = 'Selection';
   const row = F.ships.find((r) => r.name === name);
-  if (row && row.division && collapsed.has(row.division)) {
-    collapsed.delete(row.division);
-    saveFolds();
+  if (row) {
+    const jd = jobDivision(row), subKey = jd + '::' + shipSubgroup(row)[1];
+    let changed = false;
+    if (collapsed.has(jd)) { collapsed.delete(jd); changed = true; }
+    if (!openSubs.has(subKey)) { openSubs.add(subKey); changed = true; }
+    if (changed) saveFolds();
   }
   if (row && sys.has(row.system)) {
     selected = row.system; route = pathFromHome(selected);
