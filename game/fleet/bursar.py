@@ -396,6 +396,21 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             p_emp = str((pilot_info or {}).get("empire") or "").strip().lower()
             stay_emp = bool(policy.get("stay_in_empire_first", True))
 
+            # Hybrid Lockbox Staffing: [CLTV] Officer Traders get dedicated priority claim on our safe Lockbox hubs
+            # so every safe Lockbox station has a permanent 24/7 Officer Bursar (<= 2m local sale or lockbox_push!).
+            is_officer = _bursar_can_withdraw_faction(data, pilot)
+            active_lbs = _bursar_active_lockboxes(data) if is_officer else set()
+
+            def _has_other_officer(bid):
+                rec_c = cleaned.get(bid)
+                if not isinstance(rec_c, dict):
+                    return False
+                holders_c = rec_c.get("holders") if isinstance(rec_c.get("holders"), dict) else {}
+                cands_c = list(holders_c.keys())
+                if rec_c.get("pilot") and rec_c["pilot"] not in cands_c:
+                    cands_c.append(str(rec_c["pilot"]))
+                return any(h != pilot and _bursar_can_withdraw_faction(data, h) for h in cands_c)
+
             unwind = set(str(x) for x in (unwind_bases or ()))
             best = None
             for st in stations:
@@ -404,6 +419,10 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                     continue
                 used = _used_at(b_id)
                 st_cap = max(max_per, int(policy.get("priority_max_per_station") or max_per)) if b_id in priority else max_per
+                needs_officer = bool(is_officer and b_id in active_lbs and not _has_other_officer(b_id))
+                if needs_officer and used >= st_cap:
+                    # Reserved +1 Officer seat so an outside-faction trader never blocks an Officer from staffing a Lockbox hub!
+                    st_cap = used + 1
                 if used >= st_cap and b_id not in unwind:
                     continue
                 hops = _bfs_hops(lanes, cur_sys, st["system"]) if cur_sys else 0
@@ -413,6 +432,10 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 score = 0.0
                 if b_id in unwind:
                     score += 200000.0
+                if needs_officer:
+                    # Stay put if already serving as this Lockbox's Officer (zero musical chairs); else move to nearest unstaffed Lockbox!
+                    # Must strictly beat non-lockbox cur_base+used==0 (~173k max) while staying below active unwind (~200k+).
+                    score += 210000.0 if (cur_base and b_id == cur_base) else 185000.0
                 # Always cover unstaffed safe hubs BEFORE doubling up on any already-staffed hub!
                 if used == 0:
                     score += 60000.0
@@ -806,26 +829,42 @@ def _bursar_active_lockboxes(data):
 
 
 def _sync_bursar_receivers(data, claims, now_t=None):
-    """Auto-register every live docked Bursar Trader into data/fleet/receivers.json['trader'][base_id] so Miners, Hunters, and Haulers always find the hub's docked Receiver."""
+    """Auto-register live docked Bursar Traders into data/fleet/receivers.json['trader'][base_id].
+
+    At active Faction Lockbox hubs, strictly prefer [CLTV] Officer Bursars over outside-faction co-holders
+    so non-faction Hunter handoffs go straight to the permanently docked Officer who can push to Lockbox!
+    """
     now_t = time.time() if now_t is None else float(now_t)
     rec_p = Path(data) / "fleet" / "receivers.json"
     rec = read_json(rec_p, {})
     if not isinstance(rec, dict):
         rec = {}
     tr = dict(rec.get("trader") or {}) if isinstance(rec.get("trader"), dict) else {}
+    active_lbs = _bursar_active_lockboxes(data)
     by_base = {}
     for _k, _v in (claims.items() if isinstance(claims, dict) else []):
         if not isinstance(_v, dict) or (now_t - float(_v.get("claimed_at") or 0)) > 7200.0:
             continue
         b_id = str(_v.get("base") or _k.split("#")[0] or "").strip()
-        p_nm = str(_v.get("pilot") or "").strip()
-        if b_id and p_nm:
+        if not b_id:
+            continue
+        holders = _v.get("holders") if isinstance(_v.get("holders"), dict) else {}
+        cand_ps = [str(hp).strip() for hp, hat in holders.items() if str(hp).strip() and (now_t - float(hat or 0)) <= 7200.0]
+        p0 = str(_v.get("pilot") or "").strip()
+        if p0 and p0 not in cand_ps:
+            cand_ps.append(p0)
+        for p_nm in cand_ps:
             by_base.setdefault(b_id, [])
             if p_nm not in by_base[b_id]:
                 by_base[b_id].append(p_nm)
     if by_base:
         for b_id, plist in by_base.items():
-            tr[b_id] = plist[0] if len(plist) == 1 else sorted(plist)
+            chosen_ps = plist
+            if b_id in active_lbs:
+                off_ps = [p for p in plist if _bursar_can_withdraw_faction(data, p)]
+                if off_ps:
+                    chosen_ps = off_ps
+            tr[b_id] = chosen_ps[0] if len(chosen_ps) == 1 else sorted(chosen_ps)
         rec["trader"] = tr
         write_json(rec_p, rec)
 

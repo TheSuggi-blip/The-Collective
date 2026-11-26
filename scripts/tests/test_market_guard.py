@@ -126,5 +126,98 @@ class MarketGuardTests(unittest.TestCase):
             self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "other_station", lbs, data), ["--gift-to", "trader"])
 
 
+
+    def test_hybrid_lockbox_routes_safe_hub_to_officer_trader_and_outpost_to_hauler(self):
+        import hunt_net
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "empire").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [
+                    {"pilot": "drone-1", "role": "Officer"},
+                    {"pilot": "trader-4", "role": "Officer"},
+                    {"pilot": "trader-8", "role": "Officer"},
+                ],
+                "facilities": [
+                    {"type": "faction_lockbox", "status": "active", "base": "central_nexus"},
+                    {"type": "faction_lockbox", "status": "active", "base": "gsc_0044_outpost"},
+                ],
+            }), encoding="ascii")
+            (data / "fleet" / "receivers.json").write_text(json.dumps({
+                "trader": {
+                    "*": "trader-4",
+                    "central_nexus": "trader-8",
+                    "node_beta": "trader-72",
+                }
+            }), encoding="ascii")
+            lbs = {"central_nexus", "node_beta", "gsc_0044_outpost"}
+            # 1. Safe Lockbox with explicit Officer Trader -> --gift-to trader (<= 2m local sale or lockbox_push!)
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "central_nexus", lbs, data), ["--gift-to", "trader"])
+            # 2. Lawless Outpost (only wildcard '*' matches, NO explicit trader docked there) -> --gift-to hauler!
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "gsc_0044_outpost", lbs, data), ["--gift-to", "hauler"])
+            # 3. Safe Lockbox whose receiver is still an outside-faction trader -> --gift-to hauler until Officer arrives!
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "node_beta", lbs, data), ["--gift-to", "hauler"])
+            # 4. In-faction Hunter at ANY Lockbox -> direct --deposit faction!
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-1", "gsc_0044_outpost", lbs, data), ["--deposit", "faction"])
+
+    def test_bursar_sync_receivers_prefers_officer_and_claim_prioritizes_lockbox(self):
+        import sqlite3
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (data / "empire").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            (data / "store").mkdir(parents=True)
+            (repo / "game").mkdir(parents=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [
+                    {"pilot": "trader-1", "role": "Officer"},
+                    {"pilot": "trader-4", "role": "Officer"},
+                ],
+                "facilities": [
+                    {"type": "faction_lockbox", "status": "active", "base": "central_nexus"},
+                    {"type": "faction_lockbox", "status": "active", "base": "the_experiment"},
+                ],
+            }), encoding="ascii")
+            # 1. _sync_bursar_receivers must pick ONLY Officer trader-4 at Lockbox the_experiment (ignoring outside trader-48!)
+            now = 1795658000.0
+            claims = {
+                "the_experiment": {
+                    "base": "the_experiment",
+                    "pilot": "trader-48",
+                    "claimed_at": int(now),
+                    "holders": {"trader-48": int(now - 60), "trader-4": int(now)},
+                }
+            }
+            bursar._sync_bursar_receivers(data, claims, now_t=now)
+            rec = json.loads((data / "fleet" / "receivers.json").read_text())
+            self.assertEqual(rec["trader"]["the_experiment"], "trader-4")
+            # 2. Officer trader-1 currently sitting at non-lockbox hub MUST claim central_nexus even though outside trader-72 is already there!
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER, police INTEGER);
+                CREATE TABLE places (system TEXT, poi TEXT, kind TEXT, name TEXT, base TEXT);
+                CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER, t REAL);
+                INSERT INTO systems VALUES ('sys_a', 'solarian', 0, 1), ('sys_b', 'solarian', 0, 1);
+                INSERT INTO places VALUES ('sys_a', 'poi_a', 'station', 'Other', 'other_hub'), ('sys_b', 'poi_b', 'station', 'Central', 'central_nexus');
+                INSERT INTO books VALUES ('other_hub', 'iron_ore', 5, 100, 7, 100, 1795658000), ('central_nexus', 'iron_ore', 5, 100, 7, 100, 1795658000);
+            """)
+            con.commit()
+            con.close()
+            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({
+                "central_nexus": {
+                    "base": "central_nexus", "system": "sys_b", "poi": "poi_b",
+                    "pilot": "trader-72", "claimed_at": int(now), "holders": {"trader-72": int(now)},
+                }
+            }), encoding="ascii")
+            pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+            pol["max_per_station"] = 1
+            pol["exclude_pirates"] = False
+            picked = bursar.claim_station(data, repo, "trader-1", {"system": "sys_a", "base": "other_hub", "empire": "solarian"}, pol, now_t=now)
+            self.assertIsNotNone(picked)
+            self.assertEqual(picked["base"], "central_nexus")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -232,16 +232,53 @@ def pilot_in_faction(data_dir, pilot):
     return False
 
 
+def _pilot_is_faction_officer(data_dir, pilot):
+    """True iff `pilot` is a [CLTV] Officer/Leader (or holds manage_treasury) in empire/empire.json."""
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    if not isinstance(emp, dict):
+        return False
+    allowed = {"leader", "officer"}
+    for r in (emp.get("roles") or []):
+        if isinstance(r, dict) and (r.get("permissions") or {}).get("manage_treasury"):
+            for k in ("id", "name"):
+                if r.get(k):
+                    allowed.add(str(r[k]).strip().lower())
+    p_s = str(pilot or "").strip()
+    for m in (emp.get("members") or []):
+        if isinstance(m, dict):
+            nm = str(m.get("pilot") or m.get("name") or m.get("username") or m.get("member") or "").strip()
+            if nm == p_s:
+                return str(m.get("role") or m.get("rank") or "").strip().lower() in allowed
+    return False
+
+
+def base_has_officer_trader_receiver(data_dir, dest_base):
+    """True iff `dest_base` has an explicit (non-wildcard) [CLTV] Officer Trader in fleet/receivers.json['trader']."""
+    if not dest_base:
+        return False
+    rec = read_json(Path(data_dir) / "fleet" / "receivers.json", {})
+    tr = (rec.get("trader") or {}) if isinstance(rec, dict) else {}
+    val = tr.get(str(dest_base))
+    if not val:
+        return False
+    pilots = val if isinstance(val, list) else [val]
+    return any(_pilot_is_faction_officer(data_dir, p) for p in pilots if p)
+
+
 def hunt_dropoff_args(pilot, dest_base, lockbox_bases, data_dir, gift_to_default="trader"):
-    """Return CLI delivery flags for hunt.py:
-      - In-faction hunter at a Lockbox hub -> ['--deposit', 'faction'] (direct shared Lockbox!).
-      - Outside-faction hunter at a Lockbox hub -> ['--gift-to', 'hauler'] (100% of Haulers are in-faction Officers
-        who immediately liquidate or drain into the Shared Faction Lockbox!).
-      - Otherwise -> ['--gift-to', gift_to_default] when configured.
+    """Hybrid Lockbox delivery flags for hunt.py:
+      - In-faction hunter at ANY Lockbox hub -> ['--deposit', 'faction'] (direct Shared Faction Lockbox!).
+      - Outside-faction hunter at a safe Lockbox hub with a permanently docked [CLTV] Officer Trader ->
+        ['--gift-to', 'trader'] (<= 2m local sale or zero-fuel lockbox_push!).
+      - Outside-faction hunter at a lawless Outpost Lockbox (or any Lockbox without an Officer Trader) ->
+        ['--gift-to', 'hauler'] (100% in-faction Officer Haulers -> direct sale or lockbox_drain!).
+      - Non-Lockbox station -> ['--gift-to', gift_to_default] when configured.
     """
     if dest_base and dest_base in (lockbox_bases or set()):
         if pilot_in_faction(data_dir, pilot):
             return ["--deposit", "faction"]
+        if base_has_officer_trader_receiver(data_dir, dest_base):
+            return ["--gift-to", "trader"]
         return ["--gift-to", "hauler"]
     if gift_to_default:
         return ["--gift-to", str(gift_to_default)]
