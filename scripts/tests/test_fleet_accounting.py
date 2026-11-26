@@ -432,7 +432,7 @@ class TestFleetAccounting(unittest.TestCase):
             # Pick real manifest pilots from 3A (Ore Precision), 3D (Gas), 3E (Ice)
             import manifest_wings as mw
             _repo = Path(__file__).resolve().parents[2]
-            wings = {r.split('\t')[0]: r.split('\t')[2] for r in (_repo / 'game' / 'fleet-500-manifest.tsv').read_text(encoding='utf-8').splitlines()[1:] if '\t' in r}
+            wings = mw._load(_repo)[0]
             p_3a = next(p for p, w in wings.items() if w.startswith("3A."))
             p_3d = next(p for p, w in wings.items() if w.startswith("3D."))
             p_3e = next(p for p, w in wings.items() if w.startswith("3E."))
