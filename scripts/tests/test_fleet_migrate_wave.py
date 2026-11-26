@@ -65,5 +65,26 @@ class MigrateWaveTests(unittest.TestCase):
             self.assertIn("miner-1", doc["reserves"])
 
 
+
+    def test_wave_seat_and_promo_maps_rule_f11(self):
+        # Verify total seated seats across W1..W6 + 10 Command == 275 exact cap
+        import migrate_wave
+        m = migrate_wave.load_manifest()
+        total_seats = 10
+        for w in range(1, 7):
+            inc_all = [r for r in m if r["wave"] == w and r["status"] == "planned"]
+            seats, promos = migrate_wave.wave_seat_and_promo_maps(w, inc_all, builder_role_id="builder-uuid-test")
+            total_seats += len(seats)
+            if w == 4:
+                self.assertEqual(len(seats), 15)
+                self.assertEqual(sum(1 for p in seats if p.startswith("MCV ")), 10)
+                self.assertEqual(sum(1 for p in seats if p.startswith("IFV ")), 5)
+                self.assertEqual(len(promos), 15)
+            elif w == 5:
+                self.assertEqual(len(seats), 90)
+                self.assertEqual(promos[inc_all[0]["pilot"]], "builder-uuid-test")
+                self.assertEqual(sum(1 for v in promos.values() if v == "officer"), 24)
+        self.assertEqual(total_seats, 275)
+
 if __name__ == "__main__":
     unittest.main()

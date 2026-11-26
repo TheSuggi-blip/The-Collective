@@ -279,6 +279,81 @@ def get_faction_id(data_dir):
     return str(sc.get("id") or fid)
 
 
+BUILDER_FALLBACK_ROLE_ID = "e9b0a14488b2b1b4f4ba12859cac5b39"
+
+
+def resolve_role_id(role_name, leader="Prime Directive"):
+    """Resolve custom faction role name (e.g. 'Builder') to its server role_id."""
+    low = str(role_name or "").strip().lower()
+    if low in ("officer", "member", "recruit", "leader"):
+        return low
+    st, txt = raw_call(leader, "spacemolt_faction", "info", {})
+    sc = parse_sc(txt)
+    for r in (sc.get("roles") or []):
+        if isinstance(r, dict) and str(r.get("name") or "").strip().lower() == low:
+            rid = str(r.get("id") or "").strip()
+            if rid:
+                return rid
+    return BUILDER_FALLBACK_ROLE_ID if low == "builder" else low
+
+
+def load_pilot_buy_order_ids(data_dir, pilot):
+    """Return active personal buy order IDs tracked for pilot in bursar_buys.json."""
+    p = Path(data_dir) / "fleet" / "bursar_buys.json"
+    if not p.is_file():
+        return []
+    try:
+        doc = json.loads(p.read_text(encoding="utf-8"))
+    except ValueError:
+        return []
+    entries = doc.get("entries") if isinstance(doc, dict) else {}
+    p_map = entries.get(pilot) if isinstance(entries, dict) else None
+    if not isinstance(p_map, dict):
+        return []
+    out = []
+    for st_doc in p_map.values():
+        if isinstance(st_doc, dict) and isinstance(st_doc.get("orders"), dict):
+            for oid in st_doc["orders"].keys():
+                if oid and oid not in out:
+                    out.append(str(oid))
+    return out
+
+
+def wave_seat_and_promo_maps(wave, inc_all, builder_role_id=BUILDER_FALLBACK_ROLE_ID):
+    """Return (seat_set, promo_map) for Rule F11 275-cap seating and role transfer across inc_all."""
+    seat_set = set()
+    promo_map = {}
+    if wave == 1:
+        seat_set = {r["pilot"] for r in inc_all}
+    elif wave == 2:
+        seat_set = {r["pilot"] for r in inc_all[:10]}
+    elif wave == 3:
+        seat_set = {r["pilot"] for r in inc_all[:10]}
+    elif wave == 4:
+        mcvs = [r["pilot"] for r in inc_all if r.get("prefix") == "MCV"][:10]
+        ifvs = [r["pilot"] for r in inc_all if r.get("prefix") == "IFV"][:5]
+        chosen = mcvs + ifvs
+        if len(chosen) < 15:
+            for r in inc_all:
+                if r["pilot"] not in chosen:
+                    chosen.append(r["pilot"])
+                if len(chosen) >= 15:
+                    break
+        seat_set = set(chosen)
+        for p in chosen:
+            promo_map[p] = "officer"
+    elif wave == 5:
+        seat_set = {r["pilot"] for r in inc_all}
+        for idx, r in enumerate(inc_all, 1):
+            if idx == 1:
+                promo_map[r["pilot"]] = builder_role_id
+            elif idx <= 25:
+                promo_map[r["pilot"]] = "officer"
+    elif wave == 6:
+        seat_set = {r["pilot"] for r in inc_all[:10]}
+    return seat_set, promo_map
+
+
 def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
     """Stop, cancel orders, sweep credits & docked cargo, leave CLTV, archive to Reserves, disconnect."""
     assert pilot not in KEPT_COMMAND
@@ -288,21 +363,26 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
     write_hand_hold(data_dir, pilot)
     gate_http("DELETE", "/accounts/%s/abort" % urllib.parse.quote(pilot, safe=""), {"force": True}, timeout=15)
 
-    # 2. Cancel open market orders on traders (Wave 4) so buy/sell escrow refunds to wallet
+    # 2. Cancel open BUY orders on traders (Wave 4) so cash buy-escrow refunds to wallet (skip sell orders)
+    buy_oids = []
     if str(pilot).startswith("trader-"):
+        buy_oids.extend(load_pilot_buy_order_ids(data_dir, pilot))
         st_o, txt_o = raw_call(pilot, "spacemolt_market", "view_orders", {}, timeout=25)
-    else:
-        st_o, txt_o = 0, ""
-    sc_o = parse_sc(txt_o)
+        sc_o = parse_sc(txt_o)
+        for o in (sc_o.get("orders") or []):
+            if not isinstance(o, dict):
+                continue
+            side = str(o.get("side") or o.get("order_type") or "").strip().lower()
+            oid = o.get("order_id") or o.get("id")
+            if side == "buy" and oid and str(oid) not in buy_oids:
+                buy_oids.append(str(oid))
     cancelled = 0
-    for o in (sc_o.get("orders") or []):
-        oid = o.get("order_id") or o.get("id") if isinstance(o, dict) else None
-        if oid:
-            st_c, _ = raw_call(pilot, "spacemolt_market", "cancel_order", {"order_id": oid})
-            if st_c == 200:
-                cancelled += 1
+    for oid in buy_oids:
+        st_c, txt_c = raw_call(pilot, "spacemolt_market", "cancel_order", {"order_id": oid})
+        if st_c == 200 and '"error"' not in txt_c[:240]:
+            cancelled += 1
     if cancelled:
-        res["steps"].append("cancelled_orders:%d" % cancelled)
+        res["steps"].append("cancelled_buy_orders:%d" % cancelled)
 
     # 3. Read fresh status (wallet + docked cargo)
     st_s, txt_s = raw_call(pilot, "spacemolt", "get_status", {})
@@ -397,8 +477,8 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
     return True, "retired+archived (swept %d cr, cargo %d u, disc=%s)" % (swept, dep_items, res["disconnected"]), res
 
 
-def birth_one(row, fid, leader="Prime Directive", inviter=None, promote_role=None, reg_lock=None):
-    """Register new Culture-prefixed pilot, invite & join CLTV, optionally promote."""
+def birth_one(row, fid, leader="Prime Directive", inviter=None, promote_role=None, reg_lock=None, should_seat=True):
+    """Register new Culture-prefixed pilot; when should_seat=True, invite & join CLTV and optionally promote."""
     pilot = row["pilot"]
     empire = row["empire"]
 
@@ -417,27 +497,33 @@ def birth_one(row, fid, leader="Prime Directive", inviter=None, promote_role=Non
         if reg_lock is not None:
             with reg_lock:
                 ok_r, st_r, txt_r = _do_reg()
-                time.sleep(0.8)
+                time.sleep(0.5)
         else:
             ok_r, st_r, txt_r = _do_reg()
         if not ok_r:
             return False, "register failed (%s): %s" % (st_r, txt_r[:120])
-        time.sleep(1.5)
+        time.sleep(1.0)
 
-    # Invite & Join CLTV (retry up to 3x; fallback to Prime Directive if assigned officer is busy/in_battle)
+    if not should_seat:
+        return True, "birthed (unseated; cap=275)"
+
+    # Invite & Join CLTV (handle faction_full cleanly without false-positive or dangling invites)
     joined = False
     txt_i = txt_j = ""
     inv_idx = INVITERS.index(inv) if inv in INVITERS else 0
     for att in range(4):
         who_inv = INVITERS[(inv_idx + att) % len(INVITERS)]
         st_i, txt_i = raw_call(who_inv, "spacemolt_faction", "invite", {"player_id": pilot}, timeout=30)
-        st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid})
+        st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid}, timeout=30)
         comb = (txt_i + " " + txt_j).lower()
-        if (st_j == 200 and '"error"' not in txt_j[:240]) or ("already" in comb and "member" in comb) or ("already in" in comb):
+        if "faction_full" in comb:
+            raw_call(who_inv, "spacemolt_faction", "withdraw_invite", {"player_id": pilot}, timeout=15)
+            return True, "birthed (faction_full; deferred)"
+        if (st_j == 200 and '"error"' not in txt_j[:240]) or ("already_member" in comb) or ("already in a faction" in comb) or ("already in this faction" in comb):
             joined = True
             break
-        if att < 2:
-            time.sleep(2.5)
+        if att < 3:
+            time.sleep(2.0)
     if not joined:
         return False, "join CLTV failed: inv=%s join=%s" % (txt_i[:80], txt_j[:80])
 
@@ -543,25 +629,26 @@ def main(argv=None):
                     tot_swept += int(rec.get("credits_swept") or 0)
         print("[%s] WAVE %d RETIRE SUMMARY: %d/%d archived, swept %s cr" % (utc_now(), w, ok_r, len(ret), format(tot_swept, ",")), flush=True)
 
-    # Phase B: Birth & Onboard new Culture pilots (serialized register, parallel 10-officer invite+join!)
+    # Phase B: Birth & Onboard new Culture pilots (serialized register, Rule F11 seat quota, exact Builder role)
     if not args.skip_birth and inc:
         ok_b = 0
         reg_lock = threading.Lock()
+        b_role = resolve_role_id("Builder") if w == 5 else BUILDER_FALLBACK_ROLE_ID
+        seat_set, promo_map = wave_seat_and_promo_maps(w, inc_all, builder_role_id=b_role)
         b_workers = max(1, min(len(INVITERS), int(args.workers or 10), len(inc)))
-        print("[%s] Birthing %d pilots with %d workers (10-officer inviter pool)..." % (utc_now(), len(inc), b_workers), flush=True)
+        print("[%s] Birthing %d pilots (seat_quota=%d, promos=%d) with %d workers..." % (
+            utc_now(), len(inc), sum(1 for r in inc if r["pilot"] in seat_set),
+            sum(1 for r in inc if r["pilot"] in promo_map), b_workers,
+        ), flush=True)
         done_b = 0
         with concurrent.futures.ThreadPoolExecutor(max_workers=b_workers) as ex:
             futs = {}
             for idx, row in enumerate(inc, 1):
-                promo = None
-                if w == 4 and idx <= 25:
-                    promo = "officer"
-                elif w == 5 and idx == 1:
-                    promo = "builder"
-                elif w == 5 and idx <= 25:
-                    promo = "officer"
+                pilot = row["pilot"]
+                should_seat = pilot in seat_set
+                promo = promo_map.get(pilot) if should_seat else None
                 inv = INVITERS[(idx - 1) % len(INVITERS)]
-                futs[ex.submit(birth_one, row, fid, "Prime Directive", inv, promo, reg_lock)] = row
+                futs[ex.submit(birth_one, row, fid, "Prime Directive", inv, promo, reg_lock, should_seat)] = row
             for fut in concurrent.futures.as_completed(futs):
                 row = futs[fut]
                 done_b += 1

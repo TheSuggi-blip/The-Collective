@@ -1222,7 +1222,9 @@ def pick_unseated(data, limit=None):
     for name, s in sorted(fleet.items()):
         if name in seated or name in queued:
             continue
-        role = (named.get(name) or {}).get("role") or name.split("-", 1)[0]
+        _cp = {"LSV ": "hauler", "EUV ": "miner", "MCV ": "trader", "IFV ": "trader",
+               "GSV ": "sentinel", "ROU ": "drone", "VSV ": "scout"}.get(name[:4])
+        role = (named.get(name) or {}).get("role") or _cp or name.split("-", 1)[0]
         div = s.get("division") or "Other"
         cands.append((role_rank.get(role, 9), int(s.get("number") or 0), name, div))
     cands.sort()
