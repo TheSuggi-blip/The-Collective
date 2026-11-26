@@ -1334,12 +1334,13 @@ def assign_cohort_pilots(div_ships, cohorts, wing_map=None):
         inc_t = tuple(sorted(str(x) for x in (coh.get("include_pilots") or [])))
         exc_t = tuple(sorted(str(x) for x in (coh.get("exclude_pilots") or [])))
         wp_f = str(coh.get("wing_prefix") or "")
-        sig = (emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f)
+        wc_f = str(coh.get("wing_contains") or "")
+        sig = (emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f, wc_f)
         groups.setdefault(sig, []).append(idx)
 
     _wmap = wing_map or {}
     for sig, idxs in groups.items():
-        emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f = sig
+        emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f, wc_f = sig
         inc_set, exc_set = set(inc_t), set(exc_t)
         pool = [
             s for s in div_ships
@@ -1349,6 +1350,7 @@ def assign_cohort_pilots(div_ships, cohorts, wing_map=None):
             and (not inc_set or s["pilot"] in inc_set)
             and (not exc_set or s["pilot"] not in exc_set)
             and (not wp_f or _wmap.get(s["pilot"], "").startswith(wp_f))
+            and (not wc_f or wc_f in _wmap.get(s["pilot"], ""))
         ]
         if not pool:
             continue

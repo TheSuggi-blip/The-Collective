@@ -1,12 +1,12 @@
 {
   "_owner": "Unity & All 5 Admirals",
-  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-26, 0.735.1 catalog, Suggi approved). Every wing binds deterministically via wing_prefix to game/fleet-500-manifest.tsv; zero prestige-locked hulls, zero unshielded transit barges, zero T4 Ice/Gas Refinery trap, strict rung priority. Smart Income Engine First enabled at max_auto_tier=1 (Miners 130, Hunters 80, Trade/Craft 85, Core Logistics 62); Fleet & Defense (60 GSV), Passenger Liners (28 LSV), and Intel hulls (45 VSV) remain planned-paused until T2/Passenger AutoNet.",
+  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-26, 0.735.1 catalog, Suggi approved). ALL wings enabled at max_auto_tier=1 EXCEPT 6B Passenger Liners (28 LSV held until Passenger AutoNet): Miners 130, Hunters 80, Fleet & Defense 70 (Command 10 + DPS 27 + Carriers 15 + Interdictors 9 + Medics 9), Trade/Craft 85, Core Logistics 62, Intel 45 = 472 active ships. Zero prestige-locked hulls, zero unshielded transit barges, strict rung priority, 5-empire shipyard routing.",
   "enabled": true,
   "max_auto_tier": 1,
   "treasury_floor_cr": 8000000,
   "max_spend_24h_cr": 0,
-  "max_new_per_pass": 12,
-  "max_active_per_div": 12,
+  "max_new_per_pass": 18,
+  "max_active_per_div": 14,
   "listed_only": false,
   "policed_listings_only": true,
   "exclude_bursar_desks": true,
@@ -203,7 +203,7 @@
     },
     "Military": {
       "enabled": true,
-      "max_active": 12,
+      "max_active": 18,
       "cohorts": [
         {
           "empire": "any",
@@ -278,12 +278,52 @@
           ]
         },
         {
-          "enabled": false,
           "empire": "any",
-          "wing_prefix": "1B.",
-          "specialty": "defense_battle_line",
+          "wing_prefix": "1A-",
+          "wing_contains": "-- Command",
+          "specialty": "defense_command",
           "share": 1.0,
-          "assign_priority": 30,
+          "assign_priority": 14,
+          "ladder": [
+            {
+              "hull": "axiom",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 52000
+            },
+            {
+              "hull": "theorem",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "concordance",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "consensus",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "symposium",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1A-",
+          "wing_contains": "-- DPS",
+          "specialty": "defense_tf_dps",
+          "share": 1.0,
+          "assign_priority": 15,
           "ladder": [
             {
               "hull": "cleaver",
@@ -318,18 +358,17 @@
           ]
         },
         {
-          "enabled": false,
           "empire": "any",
-          "wing_prefix": "1A-",
-          "specialty": "defense_task_force",
+          "wing_prefix": "1B.",
+          "specialty": "defense_battle_line",
           "share": 1.0,
-          "assign_priority": 31,
+          "assign_priority": 16,
           "ladder": [
             {
-              "hull": "axiom",
+              "hull": "cleaver",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 52000
+              "max_price": 55000
             },
             {
               "hull": "broadaxe",
@@ -338,26 +377,38 @@
               "max_price": 220000
             },
             {
-              "hull": "gestalt",
+              "hull": "dialectic",
               "tier": 3,
               "min_piloting": 20,
               "max_price": 900000
+            },
+            {
+              "hull": "crimson_devastator",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "annihilator",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
             }
           ]
         },
         {
-          "enabled": false,
           "empire": "any",
-          "wing_prefix": "1C.",
-          "specialty": "defense_sentinels",
+          "wing_prefix": "1A-",
+          "wing_contains": "-- Carrier",
+          "specialty": "defense_tf_carrier",
           "share": 1.0,
-          "assign_priority": 32,
+          "assign_priority": 17,
           "ladder": [
             {
-              "hull": "paradox",
+              "hull": "axiom",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 125000
+              "max_price": 52000
             },
             {
               "hull": "dualism",
@@ -370,6 +421,203 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 900000
+            },
+            {
+              "hull": "superposition",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "overmind",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1C. Outpost Sentinels (Tanks",
+          "specialty": "defense_sentinel_carrier",
+          "share": 1.0,
+          "assign_priority": 18,
+          "ladder": [
+            {
+              "hull": "axiom",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 52000
+            },
+            {
+              "hull": "dualism",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "gestalt",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "voidborn_event_horizon",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "apotheosis",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1A-",
+          "wing_contains": "-- Interdictor",
+          "specialty": "defense_tf_interdictor",
+          "share": 1.0,
+          "assign_priority": 19,
+          "ladder": [
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 34000
+            },
+            {
+              "hull": "penumbra",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "aporia",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "paradox_engine",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1C. Outpost Sentinels (Interdictors",
+          "specialty": "defense_sentinel_interdictor",
+          "share": 1.0,
+          "assign_priority": 20,
+          "ladder": [
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 34000
+            },
+            {
+              "hull": "penumbra",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "aporia",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "paradox_engine",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1A-",
+          "wing_contains": "-- Medic",
+          "specialty": "defense_tf_medic",
+          "share": 1.0,
+          "assign_priority": 21,
+          "ladder": [
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 34000
+            },
+            {
+              "hull": "anamnesis",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 260000
+            },
+            {
+              "hull": "remedy",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "panacea",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "pleroma",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
+            }
+          ]
+        },
+        {
+          "empire": "any",
+          "wing_prefix": "1C. Outpost Sentinels (Medics",
+          "specialty": "defense_sentinel_medic",
+          "share": 1.0,
+          "assign_priority": 22,
+          "ladder": [
+            {
+              "hull": "precept",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 34000
+            },
+            {
+              "hull": "anamnesis",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 260000
+            },
+            {
+              "hull": "remedy",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 900000
+            },
+            {
+              "hull": "panacea",
+              "tier": 4,
+              "min_piloting": 30,
+              "max_price": 3200000
+            },
+            {
+              "hull": "pleroma",
+              "tier": 5,
+              "min_piloting": 50,
+              "max_price": 14000000
             }
           ]
         }
@@ -649,8 +897,8 @@
       ]
     },
     "Intel": {
-      "enabled": false,
-      "max_active": 6,
+      "enabled": true,
+      "max_active": 8,
       "cohorts": [
         {
           "empire": "any",
@@ -693,10 +941,10 @@
           "assign_priority": 12,
           "ladder": [
             {
-              "hull": "warranty_void",
+              "hull": "lemma",
               "tier": 1,
               "min_piloting": 0,
-              "max_price": 46000
+              "max_price": 36000
             },
             {
               "hull": "confluence",

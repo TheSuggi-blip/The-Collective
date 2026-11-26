@@ -135,10 +135,14 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, 
         for spec_name, hull_list in (dspec.get("flagship_detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
                 return str(spec_name)
+    wrules = dspec.get("wing_rules") or []
     wmap = dspec.get("wing_prefix_specialty") or {}
-    if wmap and not is_fg:
+    if (wrules or wmap) and not is_fg:
         wing = _manifest_wing_of(pilot)
         if wing:
+            for wp, wc, sp_name in wrules:
+                if (not wp or wing.startswith(str(wp))) and (not wc or str(wc) in wing):
+                    return str(sp_name)
             for wp, sp_name in wmap.items():
                 if wing.startswith(str(wp)):
                     return str(sp_name)

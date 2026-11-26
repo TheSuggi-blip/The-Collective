@@ -69,7 +69,7 @@ Every wing in `game/fleet-500-manifest.tsv` (`target_t1`) and `game/upgrade-poli
 | **Logistics** | `6C. Fleet Fuel Tankers (6)` | `dividend` (`27.5k`, Nebula shielded `160` fuel, `D1 U2`) | `refueling_pump` + `expanded_fuel_tank` + `shield_booster_i` | **ENABLED NOW** |
 | **Logistics** | `6B. Passenger Liners (28)` | `loose_change` (`26.0k`, Outer Rim `Spd 5`, 4 berths) | `fuel_optimizer` + `expanded_fuel_tank` | PLANNED (Hold) |
 | **Fleet & Defense (`70`)** | `1A (26)` / `1B (20)` / `1C (24)` | DPS `cleaver` (`46.6k`) / Carrier `paradox` (`113.4k`) / EWAR `apeiron` (`125.8k`) / Medic `vigil` (`124.7k`) | Role-matched combat/drone/ewar/medic fits | PLANNED (Wait T2) |
-| **Intel (`45`)** | `7A (20)` / `7B (25)` | `absence` (`84.6k`, cloak 30) / `warranty_void` (`38.5k`, `Spd 5`, `+25%` fuel) | **NOW on starters:** `fuel_optimizer` only (`-15%` burn) | Hulls Wait T2 / Eco Mod NOW |
+| **Intel (`45`)** | `7A (20)` / `7B (25)` | `7A` `absence` (`84.6k`, cloak 30; `33k-46k` used) / `7B` `lemma` (`27.3k`, Sol `Spd 5`, `U3`, `survey 15`) | `cloaking_device_i` + `ship_scanner_ii` / `survey_scanner_i` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
 
 *Excluded prestige-locked hulls:* `ledger` (`Syndicate` achievement) and `workhorse` (`Lean Operation` achievement) are excluded across all policies.
 

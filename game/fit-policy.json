@@ -70,7 +70,7 @@
     "remote_armor_repairer_ii": 7500,
     "em_disruptor_i": 5000,
     "sensor_dampener": 3000,
-    "warp_disruptor": 3000,
+    "warp_disruptor": 4500,
     "shield_recharger_ii": 8000,
     "fleet_hospital": 145000,
     "shipboard_sickbay": 11000,
@@ -80,9 +80,9 @@
     "ship_maintenance_bay": 30000,
     "target_painter_i": 4000,
     "target_painter_ii": 8500,
-    "ship_scanner_ii": 10000,
+    "ship_scanner_ii": 9500,
     "ship_scanner_iii": 28000,
-    "cloaking_device_i": 8000,
+    "cloaking_device_i": 7500,
     "phase_cloaking_device": 15000,
     "combat_drone_bay": 5000,
     "light_drone_bay": 2500,
@@ -135,7 +135,7 @@
     "tractor_beam": 6000,
     "railgun_ii": 11000,
     "siege_railgun": 55000,
-    "stasis_webifier_ii": 14000,
+    "stasis_webifier_ii": 6500,
     "damage_control_system": 3000,
     "tracking_computer_ii": 12000,
     "compact_steel_refinery": 35000,
@@ -148,7 +148,8 @@
     "shield_booster_i": 3500,
     "hull_reinforcement_ii": 2000,
     "armor_repairer_ii": 11000,
-    "tracking_computer_i": 6500
+    "tracking_computer_i": 6500,
+    "survey_scanner_i": 6500
   },
   "specialties": {
     "Mining": {
@@ -873,6 +874,74 @@
             "fuel_optimizer",
             "tracking_computer_i"
           ]
+        },
+        "defense_dps": {
+          "min_tier": 1,
+          "weapon": [
+            "plasma_cannon_ii",
+            "plasma_cannon_ii",
+            "pulse_laser_ii",
+            "railgun_ii"
+          ],
+          "defense": [
+            "hull_reinforcement_ii",
+            "shield_booster_i",
+            "damage_control_system"
+          ],
+          "utility": [
+            "fuel_optimizer"
+          ]
+        },
+        "defense_carrier": {
+          "min_tier": 1,
+          "weapon": [
+            "pulse_laser_ii",
+            "pulse_laser_ii",
+            "plasma_cannon_ii"
+          ],
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii",
+            "damage_control_system"
+          ],
+          "utility": [
+            "combat_drone_bay",
+            "fuel_optimizer"
+          ]
+        },
+        "defense_interdictor": {
+          "min_tier": 1,
+          "weapon": [
+            "pulse_laser_ii",
+            "plasma_cannon_ii"
+          ],
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii",
+            "damage_control_system"
+          ],
+          "utility": [
+            "warp_disruptor",
+            "stasis_webifier_ii",
+            "fuel_optimizer"
+          ]
+        },
+        "defense_medic": {
+          "min_tier": 1,
+          "weapon": [
+            "pulse_laser_ii",
+            "plasma_cannon_ii"
+          ],
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii",
+            "damage_control_system"
+          ],
+          "utility": [
+            "remote_armor_repairer_i",
+            "remote_armor_repairer_i",
+            "fuel_optimizer"
+          ]
         }
       },
       "flagship_pilots": [
@@ -983,13 +1052,63 @@
         ]
       ],
       "_tune_apophis": "2026-11-25 (Suggi directive): full automatic T1-T5 weapon, defense, and utility loadouts restored across all Military drones and sentinels; fuel-guzzling afterburners remain off-role per empirical fuelplan data (3 fuel/jump vs 7-11).",
-      "wing_prefix_specialty": {
-        "2A.": "hunter_heavy",
-        "2B.": "hunter_fast",
-        "1A-": "defense_hold",
-        "1B.": "defense_hold",
-        "1C.": "defense_hold"
-      }
+      "wing_rules": [
+        [
+          "2A.",
+          "",
+          "hunter_heavy"
+        ],
+        [
+          "2B.",
+          "",
+          "hunter_fast"
+        ],
+        [
+          "1A-",
+          "-- Command",
+          "hunter_heavy"
+        ],
+        [
+          "1A-",
+          "-- DPS",
+          "defense_dps"
+        ],
+        [
+          "1B.",
+          "",
+          "defense_dps"
+        ],
+        [
+          "1A-",
+          "-- Carrier",
+          "defense_carrier"
+        ],
+        [
+          "1C. Outpost Sentinels (Tanks",
+          "",
+          "defense_carrier"
+        ],
+        [
+          "1A-",
+          "-- Interdictor",
+          "defense_interdictor"
+        ],
+        [
+          "1C. Outpost Sentinels (Interdictors",
+          "",
+          "defense_interdictor"
+        ],
+        [
+          "1A-",
+          "-- Medic",
+          "defense_medic"
+        ],
+        [
+          "1C. Outpost Sentinels (Medics",
+          "",
+          "defense_medic"
+        ]
+      ]
     },
     "Logistics": {
       "mix": [
@@ -1306,11 +1425,36 @@
           "utility": [
             "fuel_optimizer"
           ]
+        },
+        "intel_recon_t1": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "cloaking_device_i",
+            "ship_scanner_ii",
+            "fuel_optimizer"
+          ]
+        },
+        "intel_survey_t1": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "survey_scanner_i",
+            "cloaking_device_i",
+            "fuel_optimizer",
+            "ship_scanner_ii"
+          ]
         }
       },
       "wing_prefix_specialty": {
-        "7A.": "intel_starter_eco",
-        "7B.": "intel_starter_eco"
+        "7A.": "intel_recon_t1",
+        "7B.": "intel_survey_t1"
       }
     },
     "Command": {

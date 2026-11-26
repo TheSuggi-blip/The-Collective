@@ -450,13 +450,11 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         self.assertTrue(live_up.get("enabled"))
         self.assertEqual(live_up.get("max_auto_tier"), 1)
         self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 8000000)
-        for dname in ("Mining", "Military", "Logistics", "Trade"):
-            self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for Smart Income Engine T1")
-        self.assertFalse(divs["Intel"]["enabled"], "Intel hulls must stay paused for T2")
-        # Defense cohorts (1A/1B/1C) & Passenger Liners (6B) must stay disabled
+        for dname in ("Mining", "Military", "Logistics", "Trade", "Intel"):
+            self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for T1 fleet rollout")
+        # All Defense cohorts (1A/1B/1C) enabled; ONLY Passenger Liners (6B) stay paused!
         for coh in divs["Military"]["cohorts"]:
-            if str(coh.get("wing_prefix") or "").startswith("1"):
-                self.assertFalse(coh.get("enabled", True))
+            self.assertTrue(coh.get("enabled", True))
         for coh in divs["Logistics"]["cohorts"]:
             if str(coh.get("wing_prefix") or "").startswith("6B."):
                 self.assertFalse(coh.get("enabled", True))
@@ -484,11 +482,9 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         p_t1 = fit_net.plan_ship_fit(t1_miner, world, live_fp)
         self.assertIsNotNone(p_t1)
         self.assertEqual(p_t1["specialty"], "ore_precision")
-        # T0 VSV Intel fits ONLY fuel_optimizer!
+        # T0 VSV Intel waits for T1 hull (min_tier=1) so zero modules wasted on disposable starters!
         t0_intel = {"name": "VSV Vespera", "division": "Intel", "system": "s1", "class": "Theoria", "credits": 40000, "modules": []}
-        p_int = fit_net.plan_ship_fit(t0_intel, world, live_fp)
-        self.assertIsNotNone(p_int)
-        self.assertEqual([m for m, _ in p_int["buy_fit"]], ["fuel_optimizer"])
+        self.assertIsNone(fit_net.plan_ship_fit(t0_intel, world, live_fp))
 
 
 if __name__ == "__main__":
