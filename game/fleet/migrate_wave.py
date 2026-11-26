@@ -130,22 +130,27 @@ def plan_wave_retirements(wave, live_ships, officers):
         return pool
 
     if wave == 1:
-        retire = by_prefix("miner-", non_officer_first=True)[:130]
+        retire = by_prefix("miner-", non_officer_first=True)
     elif wave == 2:
-        retire = by_prefix("drone-", non_officer_first=True)[:80]
+        drones = by_prefix("drone-", non_officer_first=True)
+        # Idempotent: always leave 15 drones for Wave 3 regardless of retries
+        need_d = max(0, len(drones) - 15)
+        retire = drones[:need_d]
     elif wave == 3:
         drones = by_prefix("drone-", non_officer_first=True)
         sents = by_prefix("sentinel-", non_officer_first=True)
         haulers = by_prefix("hauler-", non_officer_first=True)
         scouts = by_prefix("scout-", non_officer_first=True)
-        # Keep non-officer / highest-numbered haulers & scouts for the +10 seat rebalance
-        haul_pick = [h for h in haulers if h not in officers][:5]
-        if len(haul_pick) < 5:
-            haul_pick = haulers[:5]
-        scout_pick = [s for s in scouts if s not in officers][:5]
-        if len(scout_pick) < 5:
-            scout_pick = scouts[:5]
-        retire = drones[:15] + sents[:35] + haul_pick + scout_pick
+        # Idempotent: retire all remaining drones+sentinels + trim haulers->90 and scouts->45
+        need_h = max(0, len(haulers) - 90)
+        need_s = max(0, len(scouts) - 45)
+        haul_pick = [h for h in haulers if h not in officers][:need_h]
+        if len(haul_pick) < need_h:
+            haul_pick = haulers[:need_h]
+        scout_pick = [sc for sc in scouts if sc not in officers][:need_s]
+        if len(scout_pick) < need_s:
+            scout_pick = scouts[:need_s]
+        retire = drones + sents + haul_pick + scout_pick
     elif wave == 4:
         retire = by_prefix("trader-", non_officer_first=True)[:85]
     elif wave == 5:
