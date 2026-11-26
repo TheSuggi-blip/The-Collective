@@ -378,7 +378,7 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
         if st_l == 403 and "leave-faction" in txt_l:
             return False, "BLOCKED by wall.py (leave-faction): %s" % txt_l[:140], res
         if "in_battle" in low or "in combat" in low:
-            raw_call(pilot, "spacemolt_battle", "battle", {"action": "stance", "stance": "flee"}, timeout=20)
+            raw_call(pilot, "spacemolt_battle", "stance", {"stance": "flee"}, timeout=20)
             time.sleep(11.0)
             continue
         if att < 2:
