@@ -1285,7 +1285,37 @@ def _largest_remainder_quotas(total, shares):
     return base
 
 
-def assign_cohort_pilots(div_ships, cohorts):
+
+EMPIRE_SHIPYARDS = {
+    "solarian": "sol:sol_central:confederacy_central_command",
+    "nebula": "factory_belt:factory_belt_manufacturing_hub:factory_belt_manufacturing_hub",
+    "outerrim": "first_step:first_step_memorial_station:first_step_memorial_station",
+    "crimson": "krynn:war_citadel:crimson_war_citadel",
+    "voidborn": "nexus_prime:the_core:central_nexus",
+}
+DEFAULT_NEUTRAL_SHIPYARD = "sol:sol_central:confederacy_central_command"
+
+
+def _load_manifest_wings(repo_root=REPO_DEFAULT):
+    """Return {pilot_name: wing_string} from game/fleet-500-manifest.tsv."""
+    p = Path(repo_root) / "game" / "fleet-500-manifest.tsv"
+    if not p.is_file():
+        return {}
+    out = {}
+    try:
+        with p.open("r", encoding="utf-8", errors="replace") as fh:
+            lines = [ln for ln in fh if ln.strip() and not ln.startswith("#")]
+        import csv as _csv
+        for r in _csv.DictReader(lines, delimiter="\t"):
+            pil = str(r.get("pilot") or "").strip()
+            if pil:
+                out[pil] = str(r.get("wing") or "").strip()
+    except OSError:
+        return {}
+    return out
+
+
+def assign_cohort_pilots(div_ships, cohorts, wing_map=None):
     """Deterministically partition `div_ships` across `cohorts` preserving exact shares and locking existing hulls.
 
     Cohorts sharing identical filter masks (`empire`, `pilot_prefix`, `exclude_prefix`, `include_pilots`,
@@ -1303,11 +1333,13 @@ def assign_cohort_pilots(div_ships, cohorts):
         exc_pre = str(coh.get("exclude_prefix") or "")
         inc_t = tuple(sorted(str(x) for x in (coh.get("include_pilots") or [])))
         exc_t = tuple(sorted(str(x) for x in (coh.get("exclude_pilots") or [])))
-        sig = (emp_f, inc_pre, exc_pre, inc_t, exc_t)
+        wp_f = str(coh.get("wing_prefix") or "")
+        sig = (emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f)
         groups.setdefault(sig, []).append(idx)
 
+    _wmap = wing_map or {}
     for sig, idxs in groups.items():
-        emp_f, inc_pre, exc_pre, inc_t, exc_t = sig
+        emp_f, inc_pre, exc_pre, inc_t, exc_t, wp_f = sig
         inc_set, exc_set = set(inc_t), set(exc_t)
         pool = [
             s for s in div_ships
@@ -1316,6 +1348,7 @@ def assign_cohort_pilots(div_ships, cohorts):
             and (not exc_pre or not s["pilot"].startswith(exc_pre))
             and (not inc_set or s["pilot"] in inc_set)
             and (not exc_set or s["pilot"] not in exc_set)
+            and (not wp_f or _wmap.get(s["pilot"], "").startswith(wp_f))
         ]
         if not pool:
             continue
@@ -1478,6 +1511,12 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                 listings_by_hull.setdefault(str(cid).lower(), []).append((int(price), st_3))
 
         # 4. Live ships + hulls + piloting skills
+        hull_factions = {}
+        if "hulls" in tbls:
+            _hcols = {r[1] for r in con.execute("PRAGMA table_info(hulls)").fetchall()}
+            if "faction" in _hcols:
+                for h_id, h_fac in con.execute("SELECT LOWER(id), LOWER(COALESCE(faction, '')) FROM hulls").fetchall():
+                    hull_factions[str(h_id)] = str(h_fac or "")
         ships = []
         if "ships" in tbls and "hulls" in tbls:
             pil_map = {}
@@ -1542,9 +1581,12 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
 
         # Deterministically partition pilots into their permanent specialty lanes & score T0->T5 upgrade need
         cohorts = list(dcfg.get("cohorts") or [])
-        assigned_map = assign_cohort_pilots(div_ships, cohorts)
+        _manifest_wings = _load_manifest_wings(repo_root)
+        assigned_map = assign_cohort_pilots(div_ships, cohorts, wing_map=_manifest_wings)
         ranked_cohorts = []
         for idx, coh in enumerate(cohorts):
+            if coh.get("enabled") is False:
+                continue
             ladder = list(coh.get("ladder") or [])
             cohort_ships = assigned_map.get(idx) or []
             if not ladder or not cohort_ships:
@@ -1552,13 +1594,14 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
             rungs_allowed = [r for r in ladder if 1 <= int(r.get("tier") or 1) <= max_auto_tier]
             if not rungs_allowed:
                 continue
+            _allow_bd = bool(coh.get("allow_bursar_desks", False))
             t0_need = sum(
                 1 for s in cohort_ships
-                if s["tier"] == 0 and s["pilot"] not in active_pilots and s["pilot"] not in bursar_desks
+                if s["tier"] == 0 and s["pilot"] not in active_pilots and (_allow_bd or s["pilot"] not in bursar_desks)
             )
             upg_need = sum(
                 1 for s in cohort_ships
-                if s["pilot"] not in active_pilots and s["pilot"] not in bursar_desks
+                if s["pilot"] not in active_pilots and (_allow_bd or s["pilot"] not in bursar_desks)
                 and any(int(r.get("tier") or 1) > s["tier"] and s["piloting"] >= int(r.get("min_piloting") or 0) for r in rungs_allowed)
             )
             if upg_need <= 0:
@@ -1593,7 +1636,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                     base_elig = [
                         s for s in cohort_ships
                         if s["pilot"] not in active_pilots
-                        and s["pilot"] not in bursar_desks
+                        and (bool(coh.get("allow_bursar_desks", False)) or s["pilot"] not in bursar_desks)
                         and s["tier"] < rtier
                         and s["piloting"] >= rpil
                         and not (min_t0_reserve > 0 and s["tier"] == 0 and t0_free_count <= min_t0_reserve)
@@ -1601,32 +1644,33 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                     if not base_elig:
                         continue
                     elig = []
-                    if listed_only:
-                        cand_l = [
-                            (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
-                            if pr <= rmax and (hid, st3, pr) not in used_listings
-                        ]
-                        for pr, st3 in cand_l:
-                            reach_elig = [s for s in base_elig if _pilot_can_reach(s["pilot"], st3)]
-                            if reach_elig:
-                                l_price, l_station, elig = pr, st3, reach_elig
-                                break
-                        if not elig:
+                    cand_l = [
+                        (pr, st3) for pr, st3 in (listings_by_hull.get(hid) or [])
+                        if pr <= rmax and (hid, st3, pr) not in used_listings
+                    ]
+                    for pr, st3 in cand_l:
+                        reach_elig = [s for s in base_elig if _pilot_can_reach(s["pilot"], st3)]
+                        if reach_elig:
+                            l_price, l_station, elig = pr, st3, reach_elig
+                            break
+                    if not elig:
+                        if listed_only:
                             continue
-                    else:
-                        l_station = base_to_station.get("node_beta_industrial_station", "")
+                        h_fac = hull_factions.get(hid, "")
+                        l_station = EMPIRE_SHIPYARDS.get(h_fac) or DEFAULT_NEUTRAL_SHIPYARD
                         if not l_station:
                             continue
                         elig = [s for s in base_elig if _pilot_can_reach(s["pilot"], l_station)]
                         if not elig:
                             continue
+                        l_price = rmax
                     if emp_first:
                         elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, _emp_rank(s["empire"], pref_emps), -s["piloting"], s["tier"], s["pilot"]))
                     else:
                         elig.sort(key=lambda s: (0 if s["pilot"] in pref_set else 1, -s["piloting"], _emp_rank(s["empire"], pref_emps), s["tier"], s["pilot"]))
                     tier_cands.append((l_price, r_idx, elig[0], hid, l_station, min(rmax, int(l_price * 1.02) + 500)))
                 if tier_cands:
-                    tier_cands.sort(key=lambda x: (x[0], x[1]))
+                    tier_cands.sort(key=lambda x: (x[1], x[0]))
                     lp_best, _ri, ps_best, hid_best, st_best, mp_best = tier_cands[0]
                     picked = (ps_best, hid_best, st_best, mp_best, lp_best, str(coh.get("specialty") or ""))
                     break

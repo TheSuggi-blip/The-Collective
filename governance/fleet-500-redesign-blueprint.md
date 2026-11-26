@@ -48,6 +48,31 @@ Every new ship gets a **3-letter Culture-style hull prefix** (cleanly parsed by 
 | **6** | **Logistics (`LSV`)** | **6A. Supply Chain Bulk Haulers (`50`)**<br>**6B. Passenger & Resort Liners (`28`)**<br>**6C. Fuel & Salvage Tenders (`12`: 6 Tank / 6 Salv)** | **`90`** | `50` Nebula (+10% cargo -> Haulers)<br>`40` Outer Rim (+10% speed -> Liners/Tankers + `outer_rim_survival` -> Salvagers) | **Haulers (50):** `prayer`/`congregation` -> `junk_convoy`/`war_wagon` -> `enterprise` -> `frankenhauler`/`conglomerate`<br>**Liners (28):** `consortium`/`omnibus` -> `concordia` (Spd 6) & `ambrosia` (16 1st berths) -> `comet` (Spd 6, 48 1st berths, +50% fuel eff.) & `premiere`<br>**Tankers (6):** `long_haul` -> `reserve` -> `plenum`/`endowment` (12k fuel)<br>**Salvagers (6):** `chop_shop` -> `dissolution` -> `liquidator`/`thermodynamic_end` | **Haulers:** `cargo_expander_iii` + `fuel_optimizer` + shields<br>**Liners:** `fuel_optimizer` + `expanded_fuel_tank` + `phase_cloaking_device`<br>**Tankers:** `refueling_pump` + `fuel_optimizer`<br>**Salvagers:** `salvage_module` + `outer_rim_salvage_array` + `tractor_beam` + `cargo_expander_iii` |
 | **7** | **Intel (`VSV`)** | **7A. Covert Recon (`20`)**<br>**7B. Deep-Core Surveyors (`25`)** | **`45`** | `20` Voidborn (+12% shld + `voidborn_mastery` cloak)<br>`25` Outer Rim (+10% speed) | **Recon (20):** `absence` -> `interstice`/`dust_devil` -> `catharsis` -> `solipsism` (Spd 5, cloak 60)<br>**Surveyors (25):** `eigenstate`/`lemma` -> `confluence`/`prospectus` -> `peer_review` (+60% fuel eff., survey 40) -> `manifest_destiny` | **Recon:** `phase_cloaking_device` (cloak 95) + `ship_scanner_iii` + `fuel_optimizer`<br>**Surveyors:** `deep_core_survey_scanner` + `phase_cloaking_device` + `fuel_optimizer` + `ship_scanner_iii` |
 
+## 3B. Verified T1 Bridge Blueprint (`0.735.1` Catalog, All `Piloting 0`, Wing-Locked)
+
+Every wing in `game/fleet-500-manifest.tsv` (`target_t1`) and `game/upgrade-policy.json` is locked to its #1 non-prestige T1 champion (strict rung priority -- never random cheapest; buys used `ship_listings` bargain of the exact target hull first, else commissions at that hull's policed empire shipyard). `game/fit-policy.json` enforces `min_tier: 1` on upgrading wings so zero modules are wasted on disposable T0 starters before the T1 switch (`Intel` starters fit `fuel_optimizer` immediately at `min_tier: 0`).
+
+| Division | Wing (`Ships`) | T1 Champion (`Live Quote`, Shipyard) | Verified T1 Modules (`100%` CPU/PWR Fit) | Smart Income Engine Rollout |
+| :--- | :--- | :--- | :--- | :---: |
+| **Miners (`130`)** | `3A. Ore -- Precision (38)` | `archimedes` (`35.9k`, Solarian `U4`, `+20%` ore) | `modulated_mining_laser` + `mining_laser_ii` + `fuel_optimizer` + `cargo_expander_ii` + `shield_booster_i` | **ENABLED NOW** |
+| **Miners** | `3B. Ore -- Bulk (22)` | `archimedes` (`35.9k`, Solarian `U4`, `+20%` ore) | `mining_laser_iii` + `mining_laser_ii` + `cargo_expander_iii` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
+| **Miners** | `3C. Deep-Core & Rad (18)` | `archimedes` (`35.9k`, Solarian `U4`, `+20%` ore) | `rad_harvester_ii/i` + `mining_laser_ii` + `cargo_expander_iii` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
+| **Miners** | `3D. Gas Harvesters (28)` | `aether` (`39.5k`, Solarian `U3`, `+35%` gas) | `gas_harvester_iii` + `cargo_expander_iii` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
+| **Miners** | `3E. Ice Harvesters (24)` | `glacius` (`32.3k`, Solarian `U3`, `+20%` ice, `160` fuel) | `ice_harvester_iii` + `cargo_expander_iii` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
+| **Hunters (`80`)** | `2A. Heavy Pirate Hunters (50)` | `axiom` (`42.7k`, Solarian `W2 D1 U2`, `120/75` HP) | `railgun_ii` + `plasma_cannon_ii` + `shield_booster_i` + `fuel_optimizer` | **ENABLED NOW** |
+| **Hunters** | `2B. Fast Wildlife & Raiders (30)` | `five_finger_discount` (`34.5k`, Outer Rim `Spd 5`, `80` crg) | `plasma_cannon_ii` + `pulse_laser_ii` + `shield_booster_i` + `fuel_optimizer` | **ENABLED NOW** |
+| **Traders (`45`)** | `4A. Express Arbitrage (12)` | `runner` (`42.8k`, Neutral `Spd 6`, `120->220` crg, `+30%` fuel) | `cargo_expander_iii` + `fuel_optimizer` | **ENABLED NOW** |
+| **Traders** | `4B. Bulk Trade Haulers (8)` | `dividend` (`27.5k`, Nebula shielded `110/55`, `220->420` crg) | `2x cargo_expander_iii` + `shield_booster_i` | **ENABLED NOW** |
+| **Traders & Crafters** | `4C (25)` / `5A (30)` / `5B (10)` | `congregation` (`25.5k`, Outer Rim docked `1,900` crg, `0` fuel) | *(0 slots -- permanent docked Bursar/Refiner hull)* | **ENABLED NOW** |
+| **Logistics (`90`)** | `6A. Supply Chain Haulers (50)` | `dividend` (`27.5k`, Nebula shielded `110/55`, `220->420` crg) | `2x cargo_expander_iii` + `shield_booster_i` | **ENABLED NOW** |
+| **Logistics** | `6C. Combat Salvage Tenders (6)` | `catalogue` (`29.9k`, Solarian `W1 D1 U4`, `100->300` crg) | `salvage_module` + `2x cargo_expander_iii` + `fuel_optimizer` + `shield_booster_i` | **ENABLED NOW** |
+| **Logistics** | `6C. Fleet Fuel Tankers (6)` | `dividend` (`27.5k`, Nebula shielded `160` fuel, `D1 U2`) | `refueling_pump` + `expanded_fuel_tank` + `shield_booster_i` | **ENABLED NOW** |
+| **Logistics** | `6B. Passenger Liners (28)` | `loose_change` (`26.0k`, Outer Rim `Spd 5`, 4 berths) | `fuel_optimizer` + `expanded_fuel_tank` | PLANNED (Hold) |
+| **Fleet & Defense (`70`)** | `1A (26)` / `1B (20)` / `1C (24)` | DPS `cleaver` (`46.6k`) / Carrier `paradox` (`113.4k`) / EWAR `apeiron` (`125.8k`) / Medic `vigil` (`124.7k`) | Role-matched combat/drone/ewar/medic fits | PLANNED (Wait T2) |
+| **Intel (`45`)** | `7A (20)` / `7B (25)` | `absence` (`84.6k`, cloak 30) / `warranty_void` (`38.5k`, `Spd 5`, `+25%` fuel) | **NOW on starters:** `fuel_optimizer` only (`-15%` burn) | Hulls Wait T2 / Eco Mod NOW |
+
+*Excluded prestige-locked hulls:* `ledger` (`Syndicate` achievement) and `workhorse` (`Lean Operation` achievement) are excluded across all policies.
+
 ## 4. Consolidated 500-Ship Birth Empire Summary
 
 | Birth Empire | Kept Command (`10`) | New Optimal Births (`490`) | Total (`500`) | Share | Primary Fleet Assignments |

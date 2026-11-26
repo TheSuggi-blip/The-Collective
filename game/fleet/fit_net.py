@@ -90,6 +90,35 @@ def _pilot_bucket(pilot):
     return h
 
 
+
+_FIT_MANIFEST_CACHE = {"mtime": -1.0, "by_pilot": {}}
+
+
+def _manifest_wing_of(pilot):
+    p = REPO / "game" / "fleet-500-manifest.tsv"
+    if not p.is_file():
+        return ""
+    try:
+        mt = p.stat().st_mtime
+    except OSError:
+        return ""
+    if mt != _FIT_MANIFEST_CACHE["mtime"]:
+        by_p = {}
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as fh:
+                lines = [ln for ln in fh if ln.strip() and not ln.startswith("#")]
+            import csv as _csv
+            for r in _csv.DictReader(lines, delimiter="\t"):
+                pil = str(r.get("pilot") or "").strip()
+                if pil:
+                    by_p[pil] = str(r.get("wing") or "").strip()
+        except OSError:
+            pass
+        _FIT_MANIFEST_CACHE["mtime"] = mt
+        _FIT_MANIFEST_CACHE["by_pilot"] = by_p
+    return _FIT_MANIFEST_CACHE["by_pilot"].get(str(pilot), "")
+
+
 def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, ship_class=""):
     """Deterministically resolve ship specialty via pilot pins, hull class, fitted tools, & division mix."""
     if division == "Trade" and is_bursar:
@@ -106,6 +135,13 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, 
         for spec_name, hull_list in (dspec.get("flagship_detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
                 return str(spec_name)
+    wmap = dspec.get("wing_prefix_specialty") or {}
+    if wmap and not is_fg:
+        wing = _manifest_wing_of(pilot)
+        if wing:
+            for wp, sp_name in wmap.items():
+                if wing.startswith(str(wp)):
+                    return str(sp_name)
     if is_sent and cls_l:
         for spec_name, hull_list in (dspec.get("sentinel_detect_by_hull") or {}).items():
             if cls_l in {str(x).lower() for x in (hull_list or [])}:
@@ -273,7 +309,7 @@ def plan_ship_fit(ship_doc, world, policy):
     specialty = resolve_specialty(pilot, division, fitted, policy, is_bursar=is_bursar, ship_class=cls_key)
 
     def _is_primary_harvester(mid_s):
-        return any(k in mid_s for k in ("mining_laser", "deep_core_extractor", "hyper_mining_laser", "damped_mining_head", "ice_harvester", "gas_harvester"))
+        return any(k in mid_s for k in ("mining_laser", "modulated_mining_laser", "deep_core_extractor", "hyper_mining_laser", "damped_mining_head", "ice_harvester", "gas_harvester", "rad_harvester"))
 
     # 1. Off-role modules to strip: division-level always safe; specialty-level (`spec_off`) only when
     # a matching primary tool is already kept OR bought at the station (prevents stranding a miner with 0 tools!).
@@ -301,6 +337,9 @@ def plan_ship_fit(ship_doc, world, policy):
         used_base[st] = used_base.get(st, 0) + 1
 
     loadout = (((policy.get("specialties") or {}).get(division) or {}).get("loadouts") or {}).get(specialty) or {}
+    min_t = int(loadout.get("min_tier") or 0)
+    if int(hspec.get("tier") or 0) < min_t:
+        return None
     has_any_open = any(max(0, int(hspec.get(st, 0)) - used_base.get(st, 0)) > 0 and (loadout.get(st) or []) for st in ("weapon", "defense", "utility"))
     if not base_unfit and not spec_unfit_cands and not heal_expander and not has_any_open:
         return None

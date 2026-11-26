@@ -209,44 +209,50 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                     ('t0_hull', 'Starter', 0),
                     ('broadaxe', 'Broadaxe', 2),
                     ('dualism', 'Dualism', 2),
-                    ('floor_price', 'Floor Price', 1);
+                    ('dividend', 'Dividend', 1);
                 INSERT INTO ships VALUES
-                    ('drone-1', 'Military', 'crimson', 't0_hull'),
-                    ('sentinel-1', 'Military', 'voidborn', 't0_hull'),
-                    ('trader-1', 'Trade', 'voidborn', 't0_hull'),
-                    ('trader-2', 'Trade', 'voidborn', 't0_hull'),
-                    ('trader-3', 'Trade', 'voidborn', 't0_hull');
+                    ('ROU Kestrel', 'Military', 'crimson', 't0_hull'),
+                    ('GSV Hector', 'Military', 'voidborn', 't0_hull'),
+                    ('MCV Kashgar', 'Trade', 'nebula', 't0_hull'),
+                    ('MCV Lubeck', 'Trade', 'nebula', 't0_hull'),
+                    ('MCV Malacca', 'Trade', 'nebula', 't0_hull');
                 INSERT INTO ship_skills VALUES
-                    ('drone-1', 'piloting', 12),
-                    ('sentinel-1', 'piloting', 11),
-                    ('trader-1', 'piloting', 5),
-                    ('trader-2', 'piloting', 5),
-                    ('trader-3', 'piloting', 5);
+                    ('ROU Kestrel', 'piloting', 12),
+                    ('GSV Hector', 'piloting', 11),
+                    ('MCV Kashgar', 'piloting', 5),
+                    ('MCV Lubeck', 'piloting', 5),
+                    ('MCV Malacca', 'piloting', 5);
                 INSERT INTO ship_listings VALUES
                     ('broadaxe', 'crimson_hub', 95000, 1795500000),
                     ('dualism', 'crimson_hub', 66920, 1795500000),
-                    ('floor_price', 'crimson_hub', 15000, 1795500000);
+                    ('dividend', 'crimson_hub', 15000, 1795500000);
             """)
             con.commit()
             con.close()
-            # trader-1 is a Bursar desk (excluded), trader-3 is already state="building" (must NOT duplicate!)
-            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({"crimson_hub": {"pilot": "trader-1"}}), encoding="ascii")
+            import shutil as _sh
+            _sh.copyfile(ROOT / "game" / "fleet-500-manifest.tsv", repo / "game" / "fleet-500-manifest.tsv")
+            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({"crimson_hub": {"pilot": "MCV Kashgar"}}), encoding="ascii")
             (data / "fleet" / "upgrade_queue.json").write_text(json.dumps([
-                {"id": "u-1", "pilot": "trader-3", "division": "Trade", "hull": "apophenia",
+                {"id": "u-1", "pilot": "MCV Malacca", "division": "Trade", "hull": "apophenia",
                  "station": "s1:p1:crimson_hub", "max_price": 200000, "state": "building", "created_at": 1795400000}
             ]), encoding="ascii")
-            pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
-            # Lower Trade min_t0_bursar_reserve to 1 for this 3-trader unit fixture so trader-2 is eligible, then test reserve=2 blocks it
+            pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
+            pol["enabled"] = True; pol["max_auto_tier"] = 3; pol["listed_only"] = True
+            for dcfg in (pol.get("divisions") or {}).values():
+                dcfg["enabled"] = True
+                for coh in (dcfg.get("cohorts") or []):
+                    coh["enabled"] = True
+                    coh["allow_bursar_desks"] = False
             pol["divisions"]["Trade"]["min_t0_bursar_reserve"] = 1
             (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
 
             res = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500100)
             pilots_added = {a["pilot"]: a["hull"] for a in res["added"]}
-            self.assertEqual(pilots_added.get("drone-1"), "broadaxe")
-            self.assertEqual(pilots_added.get("sentinel-1"), "dualism")
-            self.assertEqual(pilots_added.get("trader-2"), "floor_price")
-            self.assertNotIn("trader-1", pilots_added)
-            self.assertNotIn("trader-3", pilots_added)
+            self.assertEqual(pilots_added.get("ROU Kestrel"), "broadaxe")
+            self.assertEqual(pilots_added.get("GSV Hector"), "dualism")
+            self.assertEqual(pilots_added.get("MCV Lubeck"), "dividend")
+            self.assertNotIn("MCV Kashgar", pilots_added)
+            self.assertNotIn("MCV Malacca", pilots_added)
 
             # Verify exact serve_upgrades() schema on disk: state="queued", 3-part station, no "status" key
             q_disk = json.loads((data / "fleet" / "upgrade_queue.json").read_text(encoding="ascii"))
@@ -323,17 +329,20 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
         fpol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); fpol["enabled"] = True; fpol.pop("enabled_divisions", None); pol.pop("enabled_divisions", None)
 
-        # 1. Exact 65/20/15 Mining partition with empire affinity (Nebula -> Gas, Solarian -> Ore, Voidborn -> Ice)
-        mining_ships = (
-            [{"pilot": f"miner-n-{i}", "division": "Mining", "empire": "nebula", "class": "prospect", "hull_id": "prospect", "tier": 0, "piloting": 12} for i in range(35)]
-            + [{"pilot": f"miner-s-{i}", "division": "Mining", "empire": "solarian", "class": "theoria", "hull_id": "theoria", "tier": 0, "piloting": 12} for i in range(35)]
-            + [{"pilot": f"miner-v-{i}", "division": "Mining", "empire": "voidborn", "class": "threshold", "hull_id": "threshold", "tier": 0, "piloting": 12} for i in range(60)]
-        )
-        amap = upgrades.assign_cohort_pilots(mining_ships, pol["divisions"]["Mining"]["cohorts"])
+        # 1. Exact 5-wing 130-ship Mining manifest partition (38 Ore Prec / 22 Ore Bulk / 18 Deep-Core / 28 Gas / 24 Ice)
+        wmap = upgrades._load_manifest_wings(ROOT)
+        mining_ships = [
+            {"pilot": p, "division": "Mining", "empire": "nebula" if w.startswith("3D.") else "solarian",
+             "class": "theoria", "hull_id": "theoria", "tier": 0, "piloting": 12}
+            for p, w in wmap.items() if w.startswith("3")
+        ]
+        amap = upgrades.assign_cohort_pilots(mining_ships, pol["divisions"]["Mining"]["cohorts"], wing_map=wmap)
         by_spec = {pol["divisions"]["Mining"]["cohorts"][i]["specialty"]: amap[i] for i in amap}
-        self.assertEqual((len(by_spec["ore_miner"]), len(by_spec["ice_harvester"]), len(by_spec["gas_harvester"])), (85, 26, 19))
-        self.assertTrue(all(s["empire"] == "nebula" for s in by_spec["gas_harvester"]))
-        self.assertEqual(sum(1 for s in by_spec["ore_miner"] if s["empire"] == "solarian"), 35)
+        self.assertEqual(
+            (len(by_spec["ore_precision"]), len(by_spec["ore_bulk"]), len(by_spec["deep_core_rad"]), len(by_spec["gas"]), len(by_spec["ice"])),
+            (38, 22, 18, 28, 24),
+        )
+        self.assertTrue(all(s["empire"] == "nebula" for s in by_spec["gas"]))
 
         # 2. T1 -> T2 progression MUST continue even after 100% of a specialty reaches T1 (fixes deficit<=0 stall bug)
         with tempfile.TemporaryDirectory() as tmp:
@@ -355,27 +364,29 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 INSERT INTO systems VALUES ('s1', 'voidborn', 0);
                 INSERT INTO places VALUES ('s1', 'p1', 'hub1');
                 INSERT INTO hulls VALUES
-                    ('rime', 'Rime', 1),
-                    ('cold_storage', 'Cold Storage', 2),
-                    ('bonanza', 'Bonanza', 1),
-                    ('motherlode', 'Motherlode', 2);
+                    ('glacius', 'Glacius', 1),
+                    ('hoarfrost', 'Hoarfrost', 2),
+                    ('archimedes', 'Archimedes', 1),
+                    ('resonance_miner', 'Resonance Miner', 2);
                 INSERT INTO ships VALUES
-                    ('miner-1', 'Mining', 'voidborn', 'rime'),
-                    ('miner-2', 'Mining', 'solarian', 'bonanza');
-                INSERT INTO ship_skills VALUES ('miner-1', 'piloting', 15), ('miner-2', 'piloting', 15);
+                    ('EUV Glaciation', 'Mining', 'solarian', 'glacius'),
+                    ('EUV Obsidian', 'Mining', 'solarian', 'archimedes');
+                INSERT INTO ship_skills VALUES ('EUV Glaciation', 'piloting', 15), ('EUV Obsidian', 'piloting', 15);
                 INSERT INTO ship_listings VALUES
-                    ('cold_storage', 'hub1', 150000, 1795500000),
-                    ('motherlode', 'hub1', 140000, 1795500000);
+                    ('hoarfrost', 'hub1', 150000, 1795500000),
+                    ('resonance_miner', 'hub1', 140000, 1795500000);
             """)
             con.commit()
             con.close()
+            import shutil as _sh
+            _sh.copyfile(ROOT / "game" / "fleet-500-manifest.tsv", repo / "game" / "fleet-500-manifest.tsv")
+            pol["max_auto_tier"] = 3
+            pol["listed_only"] = True
             (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
             res = upgrades.auto_enqueue_upgrades(str(data), str(repo), now=1795500100)
             added_map = {a["pilot"]: a["hull"] for a in res["added"]}
-            # miner-1 (already T1 Ice Rime) MUST upgrade to T2 Ice Cold Storage, NEVER Ore Motherlode!
-            self.assertEqual(added_map.get("miner-1"), "cold_storage")
-            # miner-2 (already T1 Ore Bonanza) MUST upgrade to T2 Ore Motherlode, NEVER Ice Cold Storage!
-            self.assertEqual(added_map.get("miner-2"), "motherlode")
+            self.assertEqual(added_map.get("EUV Glaciation"), "hoarfrost")
+            self.assertEqual(added_map.get("EUV Obsidian"), "resonance_miner")
 
         # 3. fit_net detect_by_hull + sentinel_detect_by_hull + off_role_by_specialty
         self.assertEqual(fit_net.resolve_specialty("miner-99", "Mining", [], fpol, ship_class="rime"), "ice")
@@ -432,38 +443,52 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertIn("ice_harvester_ii", [m for m, _ in p2["buy_fit"]])
 
 
-    def test_live_auto_upgrade_pause_all_divisions_disabled(self):
-        """Suggi directive (2026-11-26): ALL hull & module auto-upgrades paused across every division pending T2-T5 config."""
+    def test_live_smart_income_engine_t1_policy(self):
+        """Suggi directive (2026-11-26): Smart Income Engine First T1 upgrades enabled, Defense/Intel/Liners held."""
         live_up = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
         divs = live_up.get("divisions") or {}
-        self.assertFalse(live_up.get("enabled"))
-        for dname in ("Military", "Intel", "Mining", "Logistics", "Trade"):
-            self.assertFalse(divs[dname]["enabled"], f"{dname} hull auto-upgrade must be paused")
+        self.assertTrue(live_up.get("enabled"))
+        self.assertEqual(live_up.get("max_auto_tier"), 1)
+        self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 8000000)
+        for dname in ("Mining", "Military", "Logistics", "Trade"):
+            self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for Smart Income Engine T1")
+        self.assertFalse(divs["Intel"]["enabled"], "Intel hulls must stay paused for T2")
+        # Defense cohorts (1A/1B/1C) & Passenger Liners (6B) must stay disabled
+        for coh in divs["Military"]["cohorts"]:
+            if str(coh.get("wing_prefix") or "").startswith("1"):
+                self.assertFalse(coh.get("enabled", True))
+        for coh in divs["Logistics"]["cohorts"]:
+            if str(coh.get("wing_prefix") or "").startswith("6B."):
+                self.assertFalse(coh.get("enabled", True))
+        # Zero prestige-locked hulls anywhere in policy
+        all_hulls = {r["hull"] for d in divs.values() for c in (d.get("cohorts") or []) for r in (c.get("ladder") or [])}
+        self.assertFalse(all_hulls & {"ledger", "workhorse"})
 
         live_fp = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
-        self.assertEqual(live_fp.get("enabled_divisions"), [])
-        sold = ("mining_laser_ii", "cargo_expander_ii", "pulse_laser_iii", "shield_booster_iv",
-                "shield_booster_ii", "cloaking_device_ii", "survey_scanner_ii", "tracking_computer_iii")
+        self.assertTrue(live_fp.get("enabled"))
+        self.assertEqual(set(live_fp.get("enabled_divisions") or []), {"Mining", "Military", "Logistics", "Trade", "Intel"})
         world = {
             "adj": {"s1": []},
             "stations": {"b1": ("s1", "p1", "b1", True)},
             "hulls": {
-                "t0_miner": {"tier": 0, "weapon": 1, "defense": 1, "utility": 2},
-                "prayer": {"tier": 1, "weapon": 0, "defense": 2, "utility": 4},
-                "drone_hull": {"tier": 2, "weapon": 2, "defense": 2, "utility": 2},
-                "scout_hull": {"tier": 2, "weapon": 0, "defense": 2, "utility": 3},
+                "theoria": {"tier": 0, "weapon": 1, "defense": 1, "utility": 1, "cpu": 16, "power": 28},
+                "archimedes": {"tier": 1, "weapon": 1, "defense": 1, "utility": 4, "cpu": 18, "power": 34},
             },
-            "asks": {m: [(1000, "b1", 50)] for m in sold},
+            "asks": {m: [(2000, "b1", 50)] for m in ("fuel_optimizer", "mining_laser_ii", "modulated_mining_laser", "shield_booster_i", "cargo_expander_ii")},
+            "mod_cost": {"fuel_optimizer": (3, 2), "mining_laser_ii": (4, 7), "modulated_mining_laser": (7, 12), "shield_booster_i": (2, 4), "cargo_expander_ii": (2, 2)},
         }
-        for pilot, div, hcls in (
-            ("miner-1", "Mining", "t0_miner"),
-            ("hauler-9", "Logistics", "prayer"),
-            ("trader-9", "Trade", "t0_miner"),
-            ("drone-1", "Military", "drone_hull"),
-            ("scout-1", "Intel", "scout_hull"),
-        ):
-            sh = {"name": pilot, "division": div, "system": "s1", "class": hcls, "credits": 90000, "modules": []}
-            self.assertIsNone(fit_net.plan_ship_fit(sh, world, live_fp), f"{div} must be paused")
+        # T0 EUV Miner waits for T1 hull (no wasted starter fit!); T1 Archimedes fits immediately!
+        t0_miner = {"name": "EUV Obsidian", "division": "Mining", "system": "s1", "class": "Theoria", "credits": 40000, "modules": []}
+        self.assertIsNone(fit_net.plan_ship_fit(t0_miner, world, live_fp))
+        t1_miner = {"name": "EUV Obsidian", "division": "Mining", "system": "s1", "class": "Archimedes", "credits": 40000, "modules": []}
+        p_t1 = fit_net.plan_ship_fit(t1_miner, world, live_fp)
+        self.assertIsNotNone(p_t1)
+        self.assertEqual(p_t1["specialty"], "ore_precision")
+        # T0 VSV Intel fits ONLY fuel_optimizer!
+        t0_intel = {"name": "VSV Vespera", "division": "Intel", "system": "s1", "class": "Theoria", "credits": 40000, "modules": []}
+        p_int = fit_net.plan_ship_fit(t0_intel, world, live_fp)
+        self.assertIsNotNone(p_int)
+        self.assertEqual([m for m, _ in p_int["buy_fit"]], ["fuel_optimizer"])
 
 
 if __name__ == "__main__":

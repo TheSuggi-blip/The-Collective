@@ -47,25 +47,25 @@
     ]
   },
   "max_price": {
-    "mining_laser_ii": 6000,
-    "mining_laser_iii": 11000,
+    "mining_laser_ii": 6500,
+    "mining_laser_iii": 14000,
     "mining_laser_iv": 32000,
     "ice_harvester_ii": 3500,
-    "ice_harvester_iii": 10000,
-    "gas_harvester_ii": 5500,
+    "ice_harvester_iii": 11000,
+    "gas_harvester_ii": 6000,
     "gas_harvester_iii": 8500,
-    "cargo_expander_ii": 2500,
-    "cargo_expander_iii": 4500,
+    "cargo_expander_ii": 2200,
+    "cargo_expander_iii": 5000,
     "pulse_laser_ii": 8500,
-    "pulse_laser_iii": 16000,
-    "shield_booster_ii": 11000,
+    "pulse_laser_iii": 18000,
+    "shield_booster_ii": 12000,
     "shield_booster_iv": 16500,
     "armor_plate_ii": 2500,
     "armor_plate_iii": 3500,
     "survey_scanner_ii": 22000,
     "economy_passenger_cabin": 5000,
     "business_passenger_cabin": 10000,
-    "expanded_fuel_tank": 2000,
+    "expanded_fuel_tank": 3000,
     "afterburner_ii": 4000,
     "remote_armor_repairer_ii": 7500,
     "em_disruptor_i": 5000,
@@ -122,24 +122,33 @@
     "field_hospital": 65000,
     "advanced_drone_bay": 12000,
     "neural_disruptor": 18000,
-    "modulated_mining_laser": 18000,
-    "electromagnetic_refinery": 35000,
-    "rad_harvester_iii": 28000,
+    "modulated_mining_laser": 7000,
+    "electromagnetic_refinery": 7000,
+    "rad_harvester_iii": 13000,
     "rad_harvester_iv": 55000,
-    "deep_core_extractor_mk_i": 12000,
+    "deep_core_extractor_mk_i": 6000,
     "deep_core_extractor_ii": 20000,
     "radiation_baffles_ii": 8000,
     "radiation_baffles_iii": 18000,
-    "salvage_module": 8000,
+    "salvage_module": 3500,
     "outer_rim_salvage_array": 15000,
     "tractor_beam": 6000,
-    "railgun_ii": 14000,
+    "railgun_ii": 11000,
     "siege_railgun": 55000,
     "stasis_webifier_ii": 14000,
-    "damage_control_system": 16000,
-    "tracking_computer_ii": 16000,
+    "damage_control_system": 3000,
+    "tracking_computer_ii": 12000,
     "compact_steel_refinery": 35000,
-    "compact_titanium_refinery": 45000
+    "compact_titanium_refinery": 45000,
+    "rad_harvester_i": 2000,
+    "rad_harvester_ii": 9500,
+    "radiation_baffles_i": 20000,
+    "railgun_i": 5500,
+    "plasma_cannon_ii": 5500,
+    "shield_booster_i": 3500,
+    "hull_reinforcement_ii": 2000,
+    "armor_repairer_ii": 11000,
+    "tracking_computer_i": 6500
   },
   "specialties": {
     "Mining": {
@@ -268,43 +277,112 @@
             "shield_booster_iv",
             "shield_booster_iii",
             "shield_booster_ii"
-          ]
+          ],
+          "min_tier": 0
         },
         "ice": {
+          "min_tier": 0,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
           "utility": [
-            "ice_harvester_iv",
             "ice_harvester_iii",
             "ice_harvester_ii",
             "cargo_expander_iii",
-            "cargo_expander_ii"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
+            "fuel_optimizer"
           ]
         },
         "gas": {
+          "min_tier": 0,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
           "utility": [
-            "gas_harvester_iv",
             "gas_harvester_iii",
             "gas_harvester_ii",
             "cargo_expander_iii",
-            "cargo_expander_ii"
-          ],
+            "fuel_optimizer"
+          ]
+        },
+        "ore_precision": {
+          "min_tier": 1,
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
+            "shield_booster_i",
             "shield_booster_ii"
+          ],
+          "utility": [
+            "modulated_mining_laser",
+            "mining_laser_ii",
+            "fuel_optimizer",
+            "cargo_expander_ii",
+            "electromagnetic_refinery"
+          ]
+        },
+        "ore_bulk": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "mining_laser_iii",
+            "mining_laser_ii",
+            "cargo_expander_iii",
+            "fuel_optimizer"
+          ]
+        },
+        "deep_core_rad": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "rad_harvester_ii",
+            "rad_harvester_i",
+            "mining_laser_ii",
+            "cargo_expander_iii",
+            "fuel_optimizer"
+          ]
+        },
+        "gas_wing": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "gas_harvester_iii",
+            "gas_harvester_ii",
+            "cargo_expander_iii",
+            "fuel_optimizer"
+          ]
+        },
+        "ice_wing": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "ice_harvester_iii",
+            "ice_harvester_ii",
+            "cargo_expander_iii",
+            "fuel_optimizer"
           ]
         }
       },
       "_zero_note": "2026-11-24 23:49 UTC (Zero): mix [[\"ore\", 65], [\"ice\", 20], [\"gas\", 15]] -> ore 100. Laser-only miners are no longer refitted to ice or gas: every ice and gas good the bids take is held already (water ice 47,139 against a best bid 56 cr 834 deep; nitrogen ice 63,842 at 2 cr; argon, neon, nebula, ion, krypton, xenon bid 2 cr; hydrogen, plasma, chlorine bids >= 10 cr take 2,545 units against 6,549 held), while iron, the short chain, needs lasers; 147 miner fit-network runs in 6 h cost -352,388 cr steady and -248,391 cr once. Ships already fitted with a harvester keep their specialty (detect_by_module).",
-      "_suggi_policy": "2026-11-25 (Suggi directive): full automatic T1-T5 utility + defense module fitting restored across ore, ice, and gas miners; upgrades are CapEx and never penalize division operating score."
+      "_suggi_policy": "2026-11-25 (Suggi directive): full automatic T1-T5 utility + defense module fitting restored across ore, ice, and gas miners; upgrades are CapEx and never penalize division operating score.",
+      "wing_prefix_specialty": {
+        "3A.": "ore_precision",
+        "3B.": "ore_bulk",
+        "3C.": "deep_core_rad",
+        "3D.": "gas_wing",
+        "3E.": "ice_wing"
+      }
     },
     "Military": {
       "mix": [
@@ -623,7 +701,8 @@
             "afterburner_iii",
             "cloaking_device_i",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_logi_rep": {
           "weapon": [
@@ -652,7 +731,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_medical": {
           "weapon": [
@@ -678,7 +758,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_carrier_screen": {
           "weapon": [
@@ -707,7 +788,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_stealth_ewar": {
           "weapon": [
@@ -741,6 +823,55 @@
             "plasma_afterburner",
             "afterburner_iii",
             "expanded_fuel_tank"
+          ],
+          "min_tier": 1
+        },
+        "hunter_heavy": {
+          "min_tier": 1,
+          "weapon": [
+            "railgun_ii",
+            "plasma_cannon_ii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii",
+            "damage_control_system"
+          ],
+          "utility": [
+            "fuel_optimizer",
+            "tracking_computer_i"
+          ]
+        },
+        "hunter_fast": {
+          "min_tier": 1,
+          "weapon": [
+            "plasma_cannon_ii",
+            "pulse_laser_ii",
+            "railgun_i"
+          ],
+          "defense": [
+            "shield_booster_i",
+            "hull_reinforcement_ii"
+          ],
+          "utility": [
+            "fuel_optimizer"
+          ]
+        },
+        "defense_hold": {
+          "min_tier": 2,
+          "weapon": [
+            "railgun_ii",
+            "plasma_cannon_ii",
+            "pulse_laser_ii"
+          ],
+          "defense": [
+            "shield_booster_ii",
+            "damage_control_system"
+          ],
+          "utility": [
+            "fuel_optimizer",
+            "tracking_computer_i"
           ]
         }
       },
@@ -851,7 +982,14 @@
           16
         ]
       ],
-      "_tune_apophis": "2026-11-25 (Suggi directive): full automatic T1-T5 weapon, defense, and utility loadouts restored across all Military drones and sentinels; fuel-guzzling afterburners remain off-role per empirical fuelplan data (3 fuel/jump vs 7-11)."
+      "_tune_apophis": "2026-11-25 (Suggi directive): full automatic T1-T5 weapon, defense, and utility loadouts restored across all Military drones and sentinels; fuel-guzzling afterburners remain off-role per empirical fuelplan data (3 fuel/jump vs 7-11).",
+      "wing_prefix_specialty": {
+        "2A.": "hunter_heavy",
+        "2B.": "hunter_fast",
+        "1A-": "defense_hold",
+        "1B.": "defense_hold",
+        "1C.": "defense_hold"
+      }
     },
     "Logistics": {
       "mix": [
@@ -916,17 +1054,17 @@
       },
       "loadouts": {
         "freight": {
+          "min_tier": 0,
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii",
+            "shield_booster_i"
+          ],
           "utility": [
+            "cargo_expander_iii",
             "cargo_expander_iii",
             "cargo_expander_ii",
             "fuel_optimizer"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
           ]
         },
         "passenger": {
@@ -941,8 +1079,54 @@
             "shield_booster_iv",
             "shield_booster_iii",
             "shield_booster_ii"
+          ],
+          "min_tier": 1
+        },
+        "salvage_tender": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "salvage_module",
+            "cargo_expander_iii",
+            "cargo_expander_iii",
+            "fuel_optimizer"
+          ]
+        },
+        "fuel_tanker": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
+          "utility": [
+            "refueling_pump",
+            "expanded_fuel_tank",
+            "fuel_optimizer"
+          ]
+        },
+        "freight_wing": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_iv",
+            "shield_booster_ii",
+            "shield_booster_i"
+          ],
+          "utility": [
+            "cargo_expander_iii",
+            "cargo_expander_iii",
+            "cargo_expander_ii",
+            "fuel_optimizer"
           ]
         }
+      },
+      "wing_prefix_specialty": {
+        "6A.": "freight_wing",
+        "6B.": "passenger",
+        "6C. Combat Salvage": "salvage_tender",
+        "6C. Fleet Fuel": "fuel_tanker"
       }
     },
     "Trade": {
@@ -990,21 +1174,37 @@
           "defense": []
         },
         "mobile": {
+          "min_tier": 1,
+          "defense": [
+            "shield_booster_i",
+            "shield_booster_ii"
+          ],
           "utility": [
+            "cargo_expander_iii",
             "cargo_expander_iii",
             "cargo_expander_ii",
             "fuel_optimizer"
-          ],
+          ]
+        },
+        "express_trade": {
+          "min_tier": 1,
           "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
+            "shield_booster_i"
+          ],
+          "utility": [
+            "cargo_expander_iii",
+            "fuel_optimizer"
           ]
         }
       },
-      "_note": "Tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (no fit); every T1-T4 mobile trader hull is shielded bulk freight."
+      "_note": "Tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (no fit); every T1-T4 mobile trader hull is shielded bulk freight.",
+      "wing_prefix_specialty": {
+        "4A.": "express_trade",
+        "4B.": "mobile",
+        "4C.": "bursar",
+        "5A.": "bursar",
+        "5B.": "bursar"
+      }
     },
     "Intel": {
       "mix": [
@@ -1099,7 +1299,18 @@
             "shield_booster_iii",
             "shield_booster_ii"
           ]
+        },
+        "intel_starter_eco": {
+          "min_tier": 0,
+          "defense": [],
+          "utility": [
+            "fuel_optimizer"
+          ]
         }
+      },
+      "wing_prefix_specialty": {
+        "7A.": "intel_starter_eco",
+        "7B.": "intel_starter_eco"
       }
     },
     "Command": {
@@ -1247,7 +1458,8 @@
             "afterburner_iii",
             "cloaking_device_i",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_logi_rep": {
           "weapon": [
@@ -1276,7 +1488,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_medical": {
           "weapon": [
@@ -1302,7 +1515,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_carrier_screen": {
           "weapon": [
@@ -1331,7 +1545,8 @@
             "ecm_jammer",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         },
         "command_stealth_ewar": {
           "weapon": [
@@ -1365,11 +1580,18 @@
             "plasma_afterburner",
             "afterburner_iii",
             "expanded_fuel_tank"
-          ]
+          ],
+          "min_tier": 1
         }
       }
     }
   },
-  "enabled_divisions": [],
+  "enabled_divisions": [
+    "Mining",
+    "Military",
+    "Logistics",
+    "Trade",
+    "Intel"
+  ],
   "_suggi_pause_note": "2026-11-26 (Suggi directive): ALL module auto-upgrades paused (all divisions) pending T2-T5 fleet reconfiguration."
 }
