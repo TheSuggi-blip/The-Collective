@@ -1152,6 +1152,7 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
     out.update({"minutes": round((b[0] - a[0]) / 60), "ships_changed": a[2] != b[2], "divisions": {}, "seed": seed(born), "presence": absent(""),
                 "transfers_per_hour": round(sum(given.values()) / hours), "transfers_moved_per_hour": round(moved / hours),
                 "transfers_unpaired_per_hour": round(unpaired / hours), "treasury_moved_per_hour": round(treasury / hours),
+                "escrow_moved_per_hour": round(-sum(escrowed.values()) / hours),
                 "gifts_unseen": unseen, "gifts_early": early})
     xa, xb = (a[8] if len(a) > 8 else {}), (b[8] if len(b) > 8 else {})
     ta, tb = xa.get("t"), xb.get("t")

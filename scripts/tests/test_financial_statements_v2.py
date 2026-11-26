@@ -189,6 +189,35 @@ class FinancialStatementsV2Tests(unittest.TestCase):
             self.assertEqual(rb["trade_sales_h"] + rb["freight_sales_h"] + rb["other_sales_h"] + rb["passive_escrow_h"], 504000)
 
 
+
+
+class BuyEscrowBalanceSheetTests(unittest.TestCase):
+    def test_buy_escrow_booked_as_current_asset_on_balance_sheet(self):
+        import json, time
+        with tempfile.TemporaryDirectory() as td:
+            fdir = Path(td) / "fleet"
+            fdir.mkdir(parents=True)
+            (fdir / "bursar_buys.json").write_text(json.dumps({
+                "updated_at": int(time.time()),
+                "entries": {
+                    "trader-1": {
+                        "central_nexus": {
+                            "at": int(time.time()),
+                            "items": {"fuel_cell": 200},
+                            "orders": {"o1": {"item": "fuel_cell", "rem": 200, "price": 50}},
+                        }
+                    }
+                },
+            }), encoding="utf-8")
+            cash_cr, ords, units, _ts = accounting._load_buy_escrow(td)
+            self.assertEqual((cash_cr, ords, units), (10000, 1, 200))
+            bs = accounting.compute_balance_sheet(conn=None, fleet_json={"ships": [{"name": "trader-1", "credits": 50000}]}, data_dir=td)
+            self.assertEqual(bs["liquid_cash"], 50000)
+            self.assertEqual(bs["buy_escrow_cash"], 10000)
+            self.assertEqual(bs["total_cash_and_escrow"], 60000)
+            self.assertEqual(bs["net_worth"], 60000)
+
+
 if __name__ == "__main__":
     unittest.main()
 

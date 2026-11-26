@@ -183,6 +183,54 @@ def _load_ask_map(conn):
     return asks
 
 
+def _load_buy_escrow(data_dir, now=None, ttl_s=21600.0):
+    """Read active Exchange buy-order cash escrow from data/fleet/bursar_buys.json (fresh <= ttl_s).
+
+    Under IAS 7 / ASC 230, cash locked in open buy bids is a Current Asset (Restricted Cash / Escrow Deposits),
+    NOT an operating expense. Returns (cash_locked_cr, order_count, unit_count, updated_at).
+    """
+    if not data_dir:
+        return 0, 0, 0, 0
+    now_t = time.time() if now is None else float(now)
+    path = Path(data_dir) / "fleet" / "bursar_buys.json"
+    if not path.is_file():
+        return 0, 0, 0, 0
+    try:
+        doc = json.loads(path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, ValueError):
+        return 0, 0, 0, 0
+    if not isinstance(doc, dict):
+        return 0, 0, 0, 0
+    updated_at = int(_num(doc.get("updated_at")))
+    entries = doc.get("entries")
+    if not isinstance(entries, dict):
+        return 0, 0, 0, updated_at
+    cash_cr = 0
+    orders_n = 0
+    units_n = 0
+    for _pilot, bases in entries.items():
+        if not isinstance(bases, dict):
+            continue
+        for _base, rec in bases.items():
+            if not isinstance(rec, dict):
+                continue
+            at = _num(rec.get("at"))
+            if at > 0 and (now_t - at) > ttl_s:
+                continue
+            ords = rec.get("orders")
+            if isinstance(ords, dict):
+                for _oid, o in ords.items():
+                    if not isinstance(o, dict):
+                        continue
+                    rem = int(_num(o.get("rem")))
+                    pr = int(_num(o.get("price")))
+                    if rem > 0 and pr > 0:
+                        cash_cr += rem * pr
+                        units_n += rem
+                        orders_n += 1
+    return int(cash_cr), int(orders_n), int(units_n), updated_at
+
+
 def _load_sell_escrow(data_dir, now=None, ttl_s=21600.0):
     """Read active Exchange sell-order escrow from data/fleet/bursar_sells.json (fresh <= ttl_s).
 
@@ -654,12 +702,18 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
             handed_over_24h = int(round(_num(r[0]))) if r else 0
 
     liquid_cash = wallets + treasury
+    buy_escrow_cash, buy_escrow_orders, buy_escrow_units, _be_ts = _load_buy_escrow(data_dir) if data_dir else (0, 0, 0, 0)
+    total_cash_and_escrow = liquid_cash + buy_escrow_cash
     vault_nrv = int(vv["nrv"])
     vault_cat = int(vv["catalog"])
     vault_live = int(vv.get("live_market", vault_nrv))
     vault_eff = vault_live if vault_live > 0 else vault_nrv
     return {
         "liquid_cash": liquid_cash,
+        "buy_escrow_cash": buy_escrow_cash,
+        "buy_escrow_orders": buy_escrow_orders,
+        "buy_escrow_units": buy_escrow_units,
+        "total_cash_and_escrow": total_cash_and_escrow,
         "wallets": wallets,
         "treasury": treasury,
         "treasury_in_transit": treasury_in_transit,
@@ -680,9 +734,9 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
         "facility_invested": facility_invested,
         "hard_assets": fleet_book + facility_invested,
         "operating_invested_capital": fleet_book + facility_invested + vault_eff,
-        "net_worth": liquid_cash + vault_eff + fleet_book + facility_invested,
-        "net_worth_ias2": liquid_cash + vault_nrv + fleet_book + facility_invested,
-        "net_worth_catalog": liquid_cash + vault_cat + fleet_book + facility_invested,
+        "net_worth": total_cash_and_escrow + vault_eff + fleet_book + facility_invested,
+        "net_worth_ias2": total_cash_and_escrow + vault_nrv + fleet_book + facility_invested,
+        "net_worth_catalog": total_cash_and_escrow + vault_cat + fleet_book + facility_invested,
         "handed_over_24h": handed_over_24h,
         "hexc_wealth": hexc_wealth,
     }
@@ -1236,6 +1290,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "capex_net_h": int(round(capex_net_h)),
         "mission_buy_once_h": int(round(-mission_buy_once_h)),
         "treasury_own_h": int(round(treasury_own_h)) if treasury_own_h is not None else None,
+        "buy_escrow_flow_h": int(round(_num(w.get("escrow_moved_per_hour")) if isinstance(w, dict) else 0.0)),
         "purse_h": int(round(purse_h)),
         "repair_cr_h": int(round(repair_opex_h)),
         "revenue_breakdown": revenue_breakdown,

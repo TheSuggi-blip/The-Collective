@@ -4293,10 +4293,11 @@ function renderFinancialStatements(panel, ops, w, t) {
     (dioDays !== null ? 'DIO ' + dioDays.toFixed(1) + 'd | ' : '') + 'Unsold inv. ' + (cur ? signed(Math.round(numOr0(cur, 'inventory_accrual_h'))) + '/h' : '--'),
     curConv !== null ? (curConv < 25 ? ' neg' : curConv >= 60 ? ' pos' : '') : ''
   );
+  const buyEscrowKpi = bs ? Number(bs.buy_escrow_cash || 0) : 0;
   kpi(
     'Enterprise Net Worth (Live NRV)',
     bs ? fmtCompact(bs.net_worth) + ' cr' : '--',
-    bs ? 'Cash ' + fmtCompact(bs.liquid_cash) + ' | Vault ' + fmtCompact(vaultNrv) + ' | PP&E ' + fmtCompact(hardAssets) : '',
+    bs ? ('Cash ' + fmtCompact(bs.liquid_cash) + (buyEscrowKpi > 0 ? ' + Escrow ' + fmtCompact(buyEscrowKpi) : '') + ' | Vault ' + fmtCompact(vaultNrv) + ' | PP&E ' + fmtCompact(hardAssets)) : '',
     ''
   );
   panel.append(grid);
@@ -4336,10 +4337,13 @@ function renderFinancialStatements(panel, ops, w, t) {
   if (bs) {
     const totA = Math.max(1, Number(bs.net_worth || 0));
     const pct = (v) => ((100 * Number(v || 0)) / totA).toFixed(1) + '%';
+    const buyEscrowCash = Number(bs.buy_escrow_cash || 0);
+    const buyEscrowOrders = Number(bs.buy_escrow_orders || 0);
+    const buyEscrowUnits = Number(bs.buy_escrow_units || 0);
     const escrowNrv = Number(bs.vault_sell_escrow_nrv || 0);
     const escrowUnits = Number(bs.vault_sell_escrow_units || 0);
     const vaultHeld = Math.max(0, vaultNrv - escrowNrv);
-    const curAssets = Number(bs.liquid_cash || 0) + vaultNrv;
+    const curAssets = Number(bs.liquid_cash || 0) + buyEscrowCash + vaultNrv;
     const hullsVal = Number(bs.fleet_hulls !== undefined ? bs.fleet_hulls : (bs.fleet_book || 0));
     const modsVal = Number(bs.fleet_modules !== undefined ? bs.fleet_modules : 0);
     const facVal = Number(bs.facility_invested || 0);
@@ -4354,6 +4358,7 @@ function renderFinancialStatements(panel, ops, w, t) {
       { cls: 'fs-ind', cells: ['Cash -- Fleet Ship Wallets', fmt(bs.wallets || 0), pct(bs.wallets), fmt(standingN) + ' standing ships (working float)'] },
       { cls: 'fs-ind', cells: [fsLbl('Cash -- Faction Treasury (Excess Cash Reserve)', ['Command']), fmt(bs.treasury || 0), pct(bs.treasury), trNote] },
       { cls: 'fs-sub', cells: ['Total Cash & Cash Equivalents', fmt(bs.liquid_cash || 0), pct(bs.liquid_cash), '100% immediately spendable (sweep-continuous)'] },
+      { cls: 'fs-ind', cells: [fsLbl('Restricted Cash -- Active Exchange Buy Escrow (IAS 7)', ['Trade']), fmt(buyEscrowCash), pct(buyEscrowCash), fmt(buyEscrowOrders) + ' open bids (' + fmt(buyEscrowUnits) + ' u) -- asset reclass, 0 P&L expense'] },
       { cls: 'fs-ind', cells: ['Inventory -- Station & Faction Vaults (IAS 2 Live-Market NRV)', fmt(vaultHeld), pct(vaultHeld), 'Unsold asset (not profit until sold); bid-depth & glut adjusted'] },
       { cls: 'fs-ind', cells: [fsLbl('Inventory -- Active Exchange Sell Escrow', ['Trade']), fmt(escrowNrv), pct(escrowNrv), fmt(escrowUnits) + ' units actively listed for sale'] },
       { cls: 'fs-sub', cells: ['Total Current Assets', fmt(curAssets), pct(curAssets), 'Spendable cash + unsold working-capital inventory'] },
@@ -4403,6 +4408,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Operating Cash Flow (CFO, Ex-CapEx)', cfoOf, 'fs-ind'),
     row5('Less: Growth Capital Expenditures (Hulls, Modules, Hubs)', (a) => (a ? numOr0(a, 'capex_net_h') : null), 'fs-ind'),
     row5('Free Cash Flow (FCF = CFO + CapEx)', fcfOf, 'fs-sub'),
+    row5('Working Capital Memo: Exchange Buy Escrow Flow (Restricted Cash)', (a) => (a ? numOr0(a, 'buy_escrow_flow_h') : null), 'fs-memo'),
     row5('Working Capital Memo: Unsold Inventory Build (Trapped Cash Until Sold)', invBuildOf, 'fs-memo'),
   ];
   panel.append(fsTable(['Cash Flow Activity (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], cfRows, [1, 2, 3, 4]));
