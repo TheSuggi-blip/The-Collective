@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 81.
+folder; never edited by hand. Scripts listed: 82.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -68,6 +68,7 @@ folder; never edited by hand. Scripts listed: 81.
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
+| `manifest_wings.py` | Shared cached resolver for game/fleet-500-manifest.tsv wings & Task Forces. | By hand |
 | `market_guard.py` | Open-Market Anti-Manipulation & Manipulation-Resistant Fair-Price Engine (`market_guard.py`). | By hand |
 | `migrate_wave.py` | Safe section-by-section fleet migration and Reserve archiver for the 500-ship redesign. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
@@ -714,6 +715,16 @@ Run by hand.
 
 ```
 loot_own.py <pilot> [--any-creature]
+```
+
+### `manifest_wings.py`
+
+Shared cached resolver for game/fleet-500-manifest.tsv wings & Task Forces.
+
+Run by hand.
+
+```
+game/fleet/manifest_wings.py
 ```
 
 ### `market_guard.py`

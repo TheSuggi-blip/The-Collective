@@ -100,7 +100,7 @@ Kept by Apophis. Routes: 358. Ships: 95.
 | 78 | [store-hold-frontier-station-near](store-hold-frontier-station-near.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 17 jumps | up to 12 ships, goods aboard, standing work | 1 of 95 |
 | 79 | [hunt-taygeta-frozen-drift-hollow-pilgrim](hunt-taygeta-frozen-drift-hollow-pilgrim.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 3 ships, empty hold, standing work | 1 of 95 |
 | 80 | [finish-wayfinder-full](finish-wayfinder-full.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships, under corporation_management 7, standing work | 2 of 95 |
-| 81 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 65 ships, standing work | 55 of 95 |
+| 81 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 26 ships, standing work | 55 of 95 |
 | 82 | [mission-first-hunt-iron-reach](mission-first-hunt-iron-reach.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 1 ships | 30 of 95 |
 | 83 | [mission-first-hunt-ironhearth](mission-first-hunt-ironhearth.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 1 ships | 30 of 95 |
 | 84 | [mission-cracking-the-shell-krynn](mission-cracking-the-shell-krynn.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 1 ships, after the reward First Hunt: Belt-Grazers | 30 of 95 |

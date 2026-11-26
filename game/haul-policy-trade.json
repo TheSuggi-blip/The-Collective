@@ -1,0 +1,104 @@
+{
+  "policed_only": true,
+  "exclude_strongholds": true,
+  "max_jumps_pickup": 16,
+  "max_jumps_delivery": 32,
+  "min_cr_per_jump": 80,
+  "min_total_profit": 400,
+  "max_collateral": 25000,
+  "fuel_reserve_cr": 6000,
+  "max_book_age_minutes": 30,
+  "max_buy_spend_cr": 35000,
+  "min_margin_pct": 0.12,
+  "partners_first": true,
+  "lanes": [
+    "active_freight",
+    "arbitrage",
+    "liquidate_surplus",
+    "public_freight",
+    "consolidate_to_trader",
+    "backhaul_mission"
+  ],
+  "home_bases": [
+    "node_beta_industrial_station",
+    "central_nexus",
+    "the_experiment_research_station"
+  ],
+  "note": "2026-11-26 (Trinity): Dedicated Mobile Trade policy for 4A Express Arbitrage (12 runner) & 4B Bulk Trade Haulers (8 dividend). Keeps mobile traders flying high-margin arbitrage & freight contracts for cash + fast P10 XP instead of parking on Bursar desks.",
+  "allow_escorted_lawless": true,
+  "escort_min_reward_cr": 15000,
+  "escort_rally_timeout_s": 240,
+  "never_trust_lawless_player_solo": true,
+  "enabled": true,
+  "arb_bid_depth_cap": 0.65,
+  "min_arb_bid_qty": 10,
+  "liquidate_min_revenue_cr": 300,
+  "allow_faction_surplus_liquidation": true,
+  "allow_calm_buywall_dest": true,
+  "buywall_min_bid": 12,
+  "buywall_min_qty": 100,
+  "backhaul_min_profit_cr": 400,
+  "backhaul_min_margin_pct": 0.2,
+  "hub_upkeep_reorder_pct": 0.7,
+  "hub_upkeep_targets": {
+    "outpost": {
+      "fuel_cell": 400,
+      "steel_plate": 260,
+      "circuit_board": 70,
+      "hull_patch": 35
+    },
+    "station": {
+      "fuel_cell": 1000,
+      "steel_plate": 400,
+      "circuit_board": 100,
+      "flex_polymer": 150,
+      "copper_wiring": 150,
+      "hull_patch": 40,
+      "repair_kit": 50
+    }
+  },
+  "hub_upkeep_max_unit_price": {
+    "fuel_cell": 115,
+    "steel_plate": 120,
+    "circuit_board": 900,
+    "hull_patch": 350,
+    "repair_kit": 400,
+    "flex_polymer": 250,
+    "copper_wiring": 250
+  },
+  "hub_bunker_fuel_targets": {
+    "outpost": 50000,
+    "station": 50000
+  },
+  "consolidate_min_units": 10,
+  "consolidate_min_value_cr": 300,
+  "liquidate_max_slots": 40,
+  "rest_seconds_when_empty": 45,
+  "idle_poll_interval_s": 30,
+  "idle_watch_minutes": 1,
+  "hub_bunker_reorder_pct": 0.96,
+  "central_depot_base": "node_beta_industrial_station",
+  "central_depot_targets": {
+    "fuel_cell": 2000,
+    "steel_plate": 2000,
+    "circuit_board": 400,
+    "hull_patch": 150
+  },
+  "wing_lanes": {
+    "4A.": [
+      "active_freight",
+      "arbitrage",
+      "public_freight",
+      "backhaul_mission",
+      "liquidate_surplus"
+    ],
+    "4B.": [
+      "active_freight",
+      "liquidate_surplus",
+      "arbitrage",
+      "public_freight",
+      "consolidate_to_trader",
+      "backhaul_mission"
+    ]
+  }
+}

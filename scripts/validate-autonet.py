@@ -13,6 +13,7 @@ REPO = Path(__file__).resolve().parent.parent
 
 REQUIRED_POLICIES = (
     "game/haul-policy.json",
+    "game/haul-policy-trade.json",
     "game/mine-policy.json",
     "game/hunt-policy.json",
     "game/bursar-policy.json",
@@ -27,7 +28,7 @@ REQUIRED_PLAN_ROUTES = {
     "game/routes/plans/drone.json": ("hunt-network", "fit-network"),
     "game/routes/plans/sentinel.json": ("hunt-network", "fit-network"),
     "game/routes/plans/hauler.json": ("haul-network", "fit-network"),
-    "game/routes/plans/trader.json": ("bursar-network", "fit-network"),
+    "game/routes/plans/trader.json": ("bursar-network", "haul-network-trade", "fit-network"),
     "game/routes/plans/scout.json": ("fit-network",),
 }
 

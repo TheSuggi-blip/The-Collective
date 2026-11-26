@@ -97,7 +97,7 @@ Kept by Apophis. Routes: 359. Ships: 45.
 | 75 | [fit-network](fit-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 40 ships, standing work | all 45 |
 | 76 | [mission-the-colonies-crimson](mission-the-colonies-crimson.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships | all 45 |
 | 77 | [mission-the-line-ironhearth](mission-the-line-ironhearth.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships | all 45 |
-| 78 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 65 ships, standing work | 42 of 45 |
+| 78 | [hunt-network-packs](hunt-network-packs.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 26 ships, standing work | 42 of 45 |
 | 79 | [store-hold-sol-central](store-hold-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 35 ships, goods aboard, born solarian, standing work | 5 of 45 |
 | 80 | [hunt-sol-jovian-extraction-zone-drift-ray](hunt-sol-jovian-extraction-zone-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | 5 of 45 |
 | 81 | [hunt-nihal-gas-plume-drift-ray](hunt-nihal-gas-plume-drift-ray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, standing work | 5 of 45 |

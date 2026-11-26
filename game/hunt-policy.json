@@ -37,22 +37,24 @@
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.3,
+    "target_share": 0.4,
     "sizes": [
       3,
       5,
-      7
+      7,
+      8,
+      10
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": false,
+    "pirates_enabled": true,
     "pirate_tiers": [
       "scout",
       "raider",
       "raider_elite"
     ],
-    "min_member_power": 750.0,
-    "min_target_hull": 150,
+    "min_member_power": 350.0,
+    "min_target_hull": 60,
     "rally_max_jumps": 12,
     "rally_timeout_s": 180,
     "arrive_timeout_s": 240,
@@ -87,8 +89,8 @@
       "bulwark"
     ],
     "command_flagship_min_power": 150.0,
-    "max_forming_packs": 10,
-    "require_command_leader": true,
+    "max_forming_packs": 14,
+    "require_command_leader": false,
     "max_station_jumps": 8,
     "min_loot_val": 750.0,
     "standing_outpost_squads": true,
@@ -111,8 +113,8 @@
     "tier_s_min_loot_val": 550.0
   },
   "fallback": {
-    "enabled": false,
-    "max_jumps": 6
+    "enabled": true,
+    "max_jumps": 8
   },
   "rest_seconds_when_empty": 60,
   "_tune": "Apophis 2026-11-24 15:29 UTC (orders ENT-089 block APOPHIS and P7: one pack first above the starters' gauges, F9/F37): first flight after hunt_net read the store (it found 0 herds before). One pack of 3 at a time (target_share 0.02 gives a quota of 3), members with a Pulse Laser III or better (min_member_power 900), wildlife only until three packs are read (pirates_enabled false), a rally of 10 minutes so a test group can meet; one escort at a time and only a tier-2 hull (min_power 1500). Lift after three pack results. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5). | Apophis 2026-11-25 00:40 UTC (rule 8.4, F22 danger): escort lane stopped. Four Military ships lost to NPC pirates in one hour on hunt-network escort runs (public_battles: kitalpha 23:34, 70_ophiuchi 23:38, sheliak 00:33 UTC; stats ships_lost 3 more at 00:00). The lane sends any ship of power >= 350 (sentinels and flagships >= 150, coded) to belts with pirates and has no gate of escort power against the pirates' threat. Back on when hunt_net weighs the escort side against the pirates read at the place (compute_target_threat role pirate) and sentinels obey min_power. | 00:41 UTC packs: pirates_enabled false and min_member_power 900 (Pulse Laser III or better) until three wildlife packs read kills: the three pack RESULT lines of 00:16 to 00:40 UTC read looted=0 (pilot whale, glintfin), starter packs cannot kill a whale (lesson 2026-11-22), and four ships fell to pirates this hour. Was {\"pirates_enabled\": true, \"min_member_power\": 500.0}. | Trinity 2026-11-25 00:50 UTC (Suggi doctrine + Apophis 00:40 UTC gate): escort lane re-enabled with min_escorts=3 everywhere (eliminated 1-ship legacy escorts), escort_power_ok() pirate-threat gate (compute_target_threat role=pirate, ratio>=1.8, hull+shield>=180, sentinels/flagships obey min_power=600 with no 150 bypass), lawless pre-entry rally wait (120s), and guard.py --defend active self-defense (fires back on attack, flees <40% hull). Apophis packs wildlife-only / min_member_power=900 gate preserved untouched.",
@@ -129,5 +131,6 @@
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
   "pirate_battle_avoid_hours": 2.0,
-  "allow_command_solo": true
+  "allow_command_solo": true,
+  "_trinity_500_note": "2026-11-26: Tuned for 500-ship T0/T1 fast-P10 farming: packs min_member_power=350, pirates_enabled=true, sizes [3,5,7,8,10], 2B fast solo sweeps, 2A/1B heavy herds & packs, 1C farming + on-demand escort."
 }

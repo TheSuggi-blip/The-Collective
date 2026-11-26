@@ -1180,6 +1180,17 @@ def why_not(pilot, rid, route, state):
     mods_below = req.get("modules_below")
     if isinstance(mods_below, dict) and mods_below and all(p_mods.count(m_id) >= want_n for m_id, want_n in mods_below.items()):
         return "has target modules already", None
+    w_pfx = req.get("wing_prefix")
+    w_cnt = req.get("wing_contains")
+    w_exc = req.get("exclude_wing_prefix")
+    if w_pfx or w_cnt or w_exc:
+        try:
+            import manifest_wings as _mw_d
+            _wok, _wrsn = _mw_d.matches_wing(pilot["name"], wing_prefix=w_pfx, wing_contains=w_cnt, exclude_wing_prefix=w_exc)
+            if not _wok:
+                return _wrsn, None
+        except Exception:
+            pass
     min_cargo = req.get("min_cargo")
     if isinstance(min_cargo, (int, float)) and min_cargo > 0:
         cap = int(pilot.get("cargo_capacity") or 0)

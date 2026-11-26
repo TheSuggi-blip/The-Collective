@@ -1919,6 +1919,17 @@ def main(argv=None):
         except Exception:
             pass
         lane_order = list(policy.get("lanes") or DEFAULT_POLICY["lanes"])
+        _wlanes = policy.get("wing_lanes")
+        if isinstance(_wlanes, dict):
+            try:
+                import manifest_wings as _mw_hl
+                _hl_w = _mw_hl.wing_of(pilot)
+                for _wpfx, _wl in _wlanes.items():
+                    if _hl_w.startswith(str(_wpfx)) and isinstance(_wl, list) and _wl:
+                        lane_order = list(_wl)
+                        break
+            except Exception:
+                pass
         completed = 0
 
         # Flush any leftover non-protected cargo from prior runs if docked so hold capacity stays clean

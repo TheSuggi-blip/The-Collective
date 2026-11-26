@@ -85,5 +85,38 @@
     "steel_plate": 2000,
     "circuit_board": 400,
     "hull_patch": 150
+  },
+  "wing_lanes": {
+    "6A.": [
+      "active_freight",
+      "internal_supply",
+      "hub_upkeep",
+      "liquidate_surplus",
+      "public_freight",
+      "consolidate_to_trader",
+      "backhaul_mission",
+      "arbitrage"
+    ],
+    "6B.": [
+      "active_freight",
+      "public_freight",
+      "backhaul_mission",
+      "internal_supply"
+    ],
+    "6C. Fleet Fuel": [
+      "hub_upkeep",
+      "active_freight",
+      "internal_supply",
+      "public_freight",
+      "backhaul_mission"
+    ],
+    "6C. Combat Salvage": [
+      "active_freight",
+      "liquidate_surplus",
+      "consolidate_to_trader",
+      "internal_supply",
+      "public_freight",
+      "backhaul_mission"
+    ]
   }
 }

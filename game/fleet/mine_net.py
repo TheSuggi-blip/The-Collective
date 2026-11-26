@@ -119,6 +119,78 @@ def resource_tool_kind(resource_id):
 
 
 RAD_RESOURCES = frozenset({"uranium_ore", "thorium_ore", "radium_ore", "polonium_ore"})
+PRECISION_ORE_RESOURCES = frozenset({
+    "energy_crystal", "phase_crystal", "quantum_fragments", "fury_crystal", "trade_crystal",
+    "platinum_ore", "gold_ore", "silver_ore", "silicon_ore", "lithium_ore", "sol_alloy_ore",
+})
+BULK_ORE_RESOURCES = frozenset({
+    "iron_ore", "titanium_ore", "aluminum_ore", "nickel_ore", "vanadium_ore",
+    "tungsten_ore", "carbon_ore", "lead_ore", "copper_ore",
+})
+DEEP_CORE_RAD_RESOURCES = RAD_RESOURCES | frozenset({
+    "darksteel_ore", "null_matter", "plasma_residue", "dark_matter_residue",
+    "seam_glass", "energy_crystal", "phase_crystal", "quantum_fragments", "fury_crystal",
+})
+
+
+def _wing_mine_multiplier(wing, res, tools):
+    """Return score multiplier matching manifest mining wing specialization (3A-3E)."""
+    w = str(wing or "")
+    r = str(res or "").lower()
+    rk = resource_tool_kind(r)
+    if w.startswith("3D."):
+        if "gas" in tools:
+            return 4.0 if rk == "gas" else 0.15
+        return 1.0  # T0 starter before aether upgrade: farm local ore cleanly for P10 XP
+    if w.startswith("3E."):
+        if "ice" in tools:
+            return 4.0 if rk == "ice" else 0.15
+        return 1.0  # T0 starter before glacius upgrade: farm local ore cleanly for P10 XP
+    if w.startswith("3C."):
+        if r in DEEP_CORE_RAD_RESOURCES:
+            return 3.5
+        return 0.65 if rk == "ore" else 0.25
+    if w.startswith("3A."):
+        if r in PRECISION_ORE_RESOURCES:
+            return 3.0
+        return 0.65 if rk == "ore" else 0.25
+    if w.startswith("3B."):
+        if r in BULK_ORE_RESOURCES:
+            return 3.0
+        return 0.70 if rk == "ore" else 0.25
+    return 1.0
+
+
+def _load_unreachable_belts(data_dir, pilot, now_t):
+    p = Path(data_dir) / "fleet" / "mine_unreachable.json"
+    raw = read_json(p, {})
+    if not isinstance(raw, dict):
+        return set()
+    p_map = raw.get(str(pilot)) if isinstance(raw.get(str(pilot)), dict) else {}
+    return {str(bk) for bk, exp in p_map.items() if float(exp or 0) > now_t}
+
+
+def _mark_unreachable_belt(data_dir, pilot, belt_key, ttl_s=21600.0, now_t=None):
+    now_t = time.time() if now_t is None else float(now_t)
+    p = Path(data_dir) / "fleet" / "mine_unreachable.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lock_p = p.with_suffix(".lock")
+    with open(lock_p, "a+") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            raw = read_json(p, {})
+            if not isinstance(raw, dict):
+                raw = {}
+            cleaned = {}
+            for kp, mp in raw.items():
+                if isinstance(mp, dict):
+                    sub = {bk: float(exp) for bk, exp in mp.items() if float(exp or 0) > now_t}
+                    if sub:
+                        cleaned[kp] = sub
+            cleaned.setdefault(str(pilot), {})[str(belt_key)] = now_t + float(ttl_s)
+            write_json(p, cleaned)
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
 PRECISION_RESOURCES = frozenset({
     "silver_ore", "titanium_ore", "lead_ore", "palladium_ore", "platinum_ore",
     "gold_ore", "iridium_ore", "neodymium_ore", "osmium_ore", "rhodium_ore",
@@ -705,6 +777,12 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     p_sys = str(pilot_info.get("system") or "")
     p_tier = int(pilot_info.get("tier") or pilot_info.get("hull_tier") or 0)
     p_name = str(pilot_info.get("name") or "")
+    try:
+        import manifest_wings as _mw_m
+        _p_wing = _mw_m.wing_of(p_name)
+    except Exception:
+        _p_wing = ""
+    _unreach_belts = _load_unreachable_belts(world.get("data_dir") or DATA, p_name, now_t)
     max_jumps = int(policy.get("max_jumps") or 6)
     max_st_jumps = int(policy.get("max_station_jumps") or 6)
     scarce_max_j = max(max_jumps, int(policy.get("scarce_max_jumps") or max_jumps))
@@ -746,7 +824,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         sys_id = f["system"]
         poi_id = f["poi"]
         belt_key = "%s:%s" % (sys_id, poi_id)
-        if sys_id in excl_sys or belt_key in excl_pois or poi_id in excl_pois:
+        if sys_id in excl_sys or belt_key in excl_pois or poi_id in excl_pois or belt_key in _unreach_belts:
             continue
         _in_pirate_sys = sys_id in pirates
         if cooldowns.get(belt_key, 0) > now_t:
@@ -889,7 +967,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= 4 else (1.04 if st_hops <= hub_rad else 1.0)))
                 _net_cr *= _hub_mult
         # Divide directly by round-trip fuel burn so shorter station-adjacent, higher-value fields strictly dominate on Rev/Fuel!
-        score = (_net_cr / _rt_fuel) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
+        _wm = _wing_mine_multiplier(_p_wing, res, tools)
+        score = ((_net_cr * _wm) / _rt_fuel) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
         if score <= 0.0 and tier != "deficit" and policy.get("block_negative_score", True):
             continue
         cand = {
@@ -1264,10 +1343,26 @@ def main(argv=None):
         return rc_run
     finally:
         hb.set()
+        _unreach_hit = False
+        if claimed_belt and not floor_hit:
+            try:
+                _rj = DATA / "routes" / "runs.jsonl"
+                if _rj.is_file():
+                    for _ln in reversed(_rj.read_text(encoding="utf-8", errors="replace").splitlines()[-40:]):
+                        if ('"pilot":"' + pilot + '"') in _ln or ('"pilot": "' + pilot + '"') in _ln:
+                            _row = json.loads(_ln)
+                            if _row.get("route") == route_id and int(_row.get("ore") or 0) == 0:
+                                _nt = " ".join(str(x) for x in (_row.get("notes") or []))
+                                if "Target system not found" in _nt or ("loop ended by itself" in _nt and float(_row.get("minutes") or 99) < 6.5):
+                                    _unreach_hit = True
+                                    _mark_unreachable_belt(DATA, pilot, claimed_belt, ttl_s=21600.0)
+                            break
+            except Exception:
+                pass
         if claimed_belt:
             rem_miners = release_belt_claim(
                 DATA, pilot,
-                cooldown_belt=(claimed_belt if floor_hit else None),
+                cooldown_belt=(claimed_belt if (floor_hit or _unreach_hit) else None),
                 cooldown_minutes=float(policy.get("cooldown_minutes") or 90),
                 policy=policy,
             )

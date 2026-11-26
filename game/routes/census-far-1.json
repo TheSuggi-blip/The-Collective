@@ -28,7 +28,8 @@
  "chain": 3,
  "chain_jumps": 2,
  "requires": {
-  "empty_hold": true
+  "empty_hold": true,
+  "wing_prefix": "7A."
  },
  "measured": {
   "date": "2026-11-26",

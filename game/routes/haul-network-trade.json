@@ -1,0 +1,19 @@
+{
+ "id": "haul-network-trade",
+ "kind": "haul",
+ "title": "Mobile Trade AutoNet for 4A Express Arbitrage (12) & 4B Bulk Trade Haulers (8): arbitrage, surplus liquidation, high-jump freight",
+ "note": "2026-11-26 (Trinity): Wing-locked mobile trade route (requires.wing_prefix ['4A.', '4B.']) governed by game/haul-policy-trade.json. Prevents 4A/4B mobile traders from parking at Bursar desks while maximizing profit & Piloting XP.",
+ "policy": "game/haul-policy-trade.json",
+ "minutes": 45,
+ "max_ships": 20,
+ "open_to": [
+  "trader"
+ ],
+ "standing": true,
+ "requires": {
+  "wing_prefix": [
+   "4A.",
+   "4B."
+  ]
+ }
+}

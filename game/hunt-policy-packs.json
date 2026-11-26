@@ -33,11 +33,11 @@
   },
   "packs": {
     "enabled": true,
-    "target_share": 0.3,
+    "target_share": 1.0,
     "sizes": [
       3,
       5,
-      7,
+      8,
       10
     ],
     "min_power_ratio": 1.8,
@@ -48,10 +48,10 @@
       "raider",
       "raider_elite"
     ],
-    "min_member_power": 750.0,
+    "min_member_power": 350.0,
     "min_target_hull": 40,
     "rally_max_jumps": 12,
-    "rally_timeout_s": 600,
+    "rally_timeout_s": 240,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
@@ -87,10 +87,11 @@
     "max_forming_packs": 10,
     "command_flagship_min_power": 150.0,
     "max_station_jumps": 10,
-    "min_loot_val": 450.0
+    "min_loot_val": 450.0,
+    "standing_outpost_squads": true
   },
   "solo": {
-    "enabled": false,
+    "enabled": true,
     "min_power_ratio": 1.35,
     "ideal_ratio_low": 1.45,
     "ideal_ratio_high": 3.2,
@@ -102,13 +103,14 @@
     "min_loot_val": 200.0
   },
   "fallback": {
-    "enabled": false,
-    "max_jumps": 6
+    "enabled": true,
+    "max_jumps": 8
   },
   "rest_seconds_when_empty": 60,
   "_tune": "Apophis 2026-11-24 15:38 UTC: the four Recursions flew 46 hunts in 6 hours on starter prey, 2.63 kills a run, -127,062 cr, -7,950 cr a ship-hour (runs.jsonl 09:36 to 15:36 UTC); a starter's T0 hunts read -918 cr a ship-hour. Packs and escorts as hunt-network's first flight. 16:13 UTC: the stopgap list of 18 systems docking at our outpost emptied: hunt_net drops outposts from the docks (2eb93ba5). 2026-11-24 18:47 UTC: no pack launched from 16:26 to 18:45 UTC (hunt_packs.json: three packs forming, one member each, at Alkaid, Adhafera and Harborlight; no RESULT pack line). Two causes in pack_try_join_or_create: the quota max(3, round(active x target_share)) = 3 at 0.02, filled by three singletons; and a creator picks a target up to packs.max_jumps 12 while a joiner must stand within rally_max_jumps 8 of it. target_share 0.07 (quota about 9), packs.max_jumps 6 (inside the rally reach of a ship beside the creator). Escort max_jumps 10 -> 6: a Recursion on the escort lane stood at Revati (lawless, 15 jumps) with 10 of 360 fuel at 18:40 UTC.",
   "lawless_only": true,
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
-  "allow_command_solo": true
+  "allow_command_solo": true,
+  "_trinity_500_note": "2026-11-26: Dedicated Command Task Force pack-farming policy (1A-Prime 10 / 1A-Alpha 8 / 1A-Beta 8) with min_member_power=350 + solo fallback enabled so zero Task Force ships ever stall idle while racing to P10."
 }

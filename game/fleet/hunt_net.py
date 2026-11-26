@@ -252,10 +252,20 @@ def _pilot_is_faction_officer(data_dir, pilot):
     return False
 
 
+def _active_fleet_pilots(data_dir):
+    fj = read_json(Path(data_dir) / "fleet" / "fleet.json", {})
+    out = {str(s.get("name")) for s in (fj.get("ships") or []) if isinstance(s, dict) and s.get("name")}
+    fg = read_json(Path(data_dir) / "fleet" / "flagships.json", {})
+    if isinstance(fg, dict):
+        out.update(str(k) for k in fg.keys())
+    return out
+
+
 def base_has_officer_trader_receiver(data_dir, dest_base):
-    """True iff `dest_base` has an explicit (non-wildcard) [CLTV] Officer Trader in fleet/receivers.json['trader']."""
+    """True iff `dest_base` has an explicit active [CLTV] Officer Trader in fleet/receivers.json['trader']."""
     if not dest_base:
         return False
+    active_p = _active_fleet_pilots(data_dir)
     rec = read_json(Path(data_dir) / "fleet" / "receivers.json", {})
     tr = (rec.get("trader") or {}) if isinstance(rec, dict) else {}
     val = tr.get(str(dest_base))
@@ -312,14 +322,31 @@ STANDING_SQUAD_SPECS = (
 
 
 def standing_squad_for_pilot(data_dir, pilot, policy=None):
-    """Deterministically assign 48 Military pilots into 10 permanent standing squads (4x3, 3x5, 3x7)
-    anchored at our 3 lawless Outposts (gsc_0044, atria, felis). Returns squad dict or None."""
+    """Assign 1A Command Task Force pilots into exact manifest Task Forces (Prime 10, Alpha 8, Beta 8)
+    anchored at our 3 outposts (gsc_0044, atria, felis); falls back to legacy specs if manifest absent."""
     pcfg = (policy or {}).get("packs") or {}
     if not pcfg.get("standing_outpost_squads", True):
         return None
     p_s = str(pilot or "").strip()
     if not p_s:
         return None
+    try:
+        import manifest_wings as _mw_h
+        tfs = _mw_h.task_forces()
+        if tfs:
+            for sq_id, sq in tfs.items():
+                if p_s in sq["members"]:
+                    return {
+                        "squad_id": sq_id,
+                        "outpost_system": sq["outpost_system"],
+                        "leader": sq["leader"],
+                        "size": sq["size"],
+                        "members": list(sq["members"]),
+                        "is_leader": p_s in (sq.get("command_ships") or [sq["leader"]]),
+                    }
+            return None
+    except Exception:
+        pass
     # Collect deterministic sorted Military sentinel-* and drone-* pool from fleet.json (or ships/ dir)
     fj = read_json(Path(data_dir) / "fleet" / "fleet.json", {})
     sents, drones = [], []
@@ -1247,6 +1274,15 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             elif st_hops <= 8:
                 fit_mult *= 1.04
 
+        try:
+            import manifest_wings as _mw_hs
+            _hw = _mw_hs.wing_of(pilot_info.get("name"))
+            if (_hw.startswith("2A.") or _hw.startswith("1B.")) and prey_hull >= 65:
+                fit_mult *= 1.25  # Heavy Hunters & Battle Line favor tougher high-XP herds
+            elif _hw.startswith("2B.") and prey_hull <= 75:
+                fit_mult *= 1.20  # Fast Hunters favor quick turnaround wildlife & raiders
+        except Exception:
+            pass
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - keep_h))
         loot_est = float(species_loot.get(sp) or 0.0) * kills_avail
         fuel_est = 90.0 * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
@@ -1504,6 +1540,12 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
     pcfg = policy.get("packs") or {}
     if not pcfg.get("enabled", True):
         return None
+    try:
+        import manifest_wings as _mw_pk
+        if _mw_pk.wing_of(pilot).startswith("2B."):
+            return None  # 2B Fast Wildlife & Raiders: rapid solo sweeps for max kills/hr & P10 XP
+    except Exception:
+        pass
     target_share = float(pcfg.get("target_share") or 0.25)
     cmd_ships = load_command_flagships(data_dir)
     is_cmd = str(pilot) in cmd_ships
