@@ -1,6 +1,6 @@
 # Skills
 
-Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.734.6; never edited by hand.
+Built by `python3 -B scripts/catalog-index.py` from the game's catalog, version 0.735.1; never edited by hand.
 Up: [master-index.md](master-index.md). Skills: 30.
 
 | Skill | Kind | Top level | What a level gives |
