@@ -8,7 +8,7 @@ author: Unity
 # index.md -- Systems We Know
 
 Built by `scripts/intel-index.py` from the system files of this folder;
-never edited by hand. Files listed: 496. The format of a system file:
+never edited by hand. Files listed: 497. The format of a system file:
 `BLUEPRINT.md`.
 
 ## Voidborn space
@@ -462,6 +462,7 @@ never edited by hand. Files listed: 496. The format of a system file:
 | Alioth | neutral | unknown | 0 | 23 | 2026-11-17 | [n-alioth.md](n-alioth.md) |
 | Alrescha | neutral | unknown | 0 | 23 | 2026-11-17 | [n-alrescha.md](n-alrescha.md) |
 | Ashford | neutral | unknown | 0 | 23 | 2026-11-17 | [n-ashford.md](n-ashford.md) |
+| Blackthorn | neutral | unknown | 0 | 23 | 2026-11-26 | [n-blackthorn.md](n-blackthorn.md) |
 | Copperfield | neutral | unknown | 0 | 23 | 2026-11-17 | [n-copperfield.md](n-copperfield.md) |
 | Cursa | neutral | unknown | 0 | 23 | 2026-11-17 | [n-cursa.md](n-cursa.md) |
 | Graffias | neutral | unknown | 0 | 23 | 2026-11-17 | [n-graffias.md](n-graffias.md) |

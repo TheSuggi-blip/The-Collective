@@ -9,13 +9,13 @@ faction: You Sexy Mother Truckers
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # You Sexy Mother Truckers [YSMT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -39,7 +39,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Cornelius 'Commerce' Col | Node Beta (`node_beta`) | 0 | congregation |
-| Marcus 'Mercury' Mercer | Node Beta (`node_beta`) | 0 | prospect |
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
@@ -35,7 +35,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | The Second Ledger | station | 40 Eridani (`40_eridani`) | lawless | 14 | thriving |
 | The Veil Anchor | station | BD+20 2457 (`bd20_2457`) | lawless | 14 | thriving |
 | The Deep Current | station | GSC-0019 (`gsc_0019`) | lawless | 15 | thriving |
-| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | thriving |
+| The Obsidian Well | station | Arneb (`arneb`) | lawless | 16 | operational |
 | Plasma Echo Station | station | GSC-0010 (`gsc_0010`) | lawless | 17 | thriving |
 | To The Dark Moon | outpost | Tiaki (`tiaki`) | lawless | 17 | thriving |
 | Sit on the Shelf | outpost | Last Lamp (`last_lamp`) | lawless | no lane found | thriving |
@@ -47,10 +47,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 017 | Synchrony (`synchrony`) | 0 | opus_magna |
-| Combat Drone 124 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 179 | Hamal (`hamal`) | 0 | dialectic |
-| Combat Drone 195 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 131 | Synchrony (`synchrony`) | 0 | dialectic |
 
 ## Standing History
 

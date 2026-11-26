@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | OLSV, VEIL | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 98 | Public event stream |
+| Pilots carrying the tag on the public event stream | 96 | Public event stream |
 
 ## Bases
 
@@ -42,10 +42,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 907a7ad5fc57ac61d6e57ad4 | Acubens (`acubens`) | 0 | workhorse |
-| a41fe11e5e1e54e9d8f60ebb | Node Alpha (`node_alpha`) | 0 | futures |
-| ac55ba07be5a48456875b4ff | Acubens (`acubens`) | 0 | workhorse |
-| dffe230ab864d7efef98b1fc | Acubens (`acubens`) | 0 | workhorse |
+| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
+| 492927e413c5b9ce2fe52212 | Synchrony (`synchrony`) | 0 | runner |
+| 91cba4fc8631acb92b8db26f | Nexus Prime (`nexus_prime`) | 0 | runner |
+| c09a6a25dc5785fc01d126c3 | Node Gamma (`node_gamma`) | 0 | runner |
+| c413294b4b6a11879da15614 | Nexus Prime (`nexus_prime`) | 0 | futures |
+| dffe230ab864d7efef98b1fc | Pherkad (`pherkad`) | 0 | workhorse |
+| f202f17f1c83f02a54492789 | Pherkad (`pherkad`) | 0 | runner |
+| f4fb0d5cfa446f5ef0f33b3f | Pherkad (`pherkad`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Pherkad (`pherkad`) | 0 | workhorse |
+| fb21ffeebed33a1f8ac75cdf | Synchrony (`synchrony`) | 0 | gas_tanker |
+| hiver | Node Gamma (`node_gamma`) | 0 | workhorse |
 
 ## Standing History
 

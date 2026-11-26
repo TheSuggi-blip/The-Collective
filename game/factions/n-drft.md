@@ -9,13 +9,13 @@ faction: Driftline Survey & Salvage
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Driftline Survey & Salvage [DRFT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,7 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Douglas Ludgate | Nexus Prime (`nexus_prime`) | 0 | junk_convoy |
+| Henry Murillo | Node Gamma (`node_gamma`) | 0 | shell_company |
+| Richard Clark | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History
 

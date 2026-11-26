@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Wexler's Void Safari [WEXL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 141 | Public event stream |
+| Pilots carrying the tag on the public event stream | 138 | Public event stream |
 
 ## Bases
 
@@ -38,14 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler 2V5-BB | The Experiment (`the_experiment`) | 0 | cobble |
-| Wexler 7GE-1S | Synchrony (`synchrony`) | 0 | cobble |
-| Wexler B8W-2T | Acubens (`acubens`) | 0 | cobble |
-| Wexler JG3-H5 | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler SD3-VA | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler Z25-QC | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler ZFU-HK | Synchrony (`synchrony`) | 0 | cobble |
-| WexlerLegionnaire | Synchrony (`synchrony`) | 0 | theoria |
+| Wexler 41U-RH | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler GHM-33 | Node Gamma (`node_gamma`) | 1 | cobble |
+| Wexler P8E-E4 | The Experiment (`the_experiment`) | 0 | cobble |
 
 ## Standing History
 
