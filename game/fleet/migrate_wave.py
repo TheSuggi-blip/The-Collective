@@ -327,22 +327,38 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
                     dep_items += int(c["quantity"])
     res["cargo_deposited"] = dep_items
 
-    # 5. Sweep ALL wallet credits directly to CLTV treasury (fallback: gift to leader)
+    # 5. Sweep ALL wallet credits directly to CLTV treasury (handles live fuel ticks & retries cleanly)
     swept = 0
     if credits > 0:
-        st_w, txt_w = raw_call(pilot, "spacemolt_storage", "deposit", {
-            "item_id": "credits", "quantity": credits, "target": "faction",
-        })
-        if st_w == 200 and '"error"' not in txt_w[:240]:
-            swept = credits
-        else:
+        amt_try = credits
+        for sw_att in range(2):
+            st_w, txt_w = raw_call(pilot, "spacemolt_storage", "deposit", {
+                "item_id": "credits", "quantity": amt_try, "target": "faction",
+            }, timeout=45)
+            if st_w == 200 and '"error"' not in txt_w[:240]:
+                swept = amt_try
+                break
+            m_have = re.search(r"only have\s+([0-9,]+)\s+credits", txt_w, re.I)
+            if m_have:
+                have = int(m_have.group(1).replace(",", ""))
+                if have == 0:
+                    swept = credits  # earlier call already landed on server
+                    break
+                amt_try = have
+                continue
+            time.sleep(2.0)
+        if swept == 0 and amt_try > 0:
             st_w2, txt_w2 = raw_call(pilot, "spacemolt_storage", "deposit", {
-                "item_id": "credits", "quantity": credits, "target": leader,
-            })
+                "item_id": "credits", "quantity": amt_try, "target": leader,
+            }, timeout=45)
             if st_w2 == 200 and '"error"' not in txt_w2[:240]:
-                swept = credits
+                swept = amt_try
             else:
-                res["steps"].append("sweep_err:%s" % txt_w2[:80])
+                m_have2 = re.search(r"only have\s+([0-9,]+)\s+credits", txt_w2, re.I)
+                if m_have2 and int(m_have2.group(1).replace(",", "")) == 0:
+                    swept = credits
+                else:
+                    res["steps"].append("sweep_err:%s" % txt_w2[:80])
     res["credits_swept"] = swept
 
     # 6. Leave CLTV faction (pilot's own leave -- scoped pass in wall.py; retry up to 3x)
@@ -402,9 +418,10 @@ def birth_one(row, fid, leader="Prime Directive", inviter=None, promote_role=Non
     # Invite & Join CLTV (retry up to 3x; fallback to Prime Directive if assigned officer is busy/in_battle)
     joined = False
     txt_i = txt_j = ""
-    for att in range(3):
-        who_inv = inv if att < 2 else leader
-        st_i, txt_i = raw_call(who_inv, "spacemolt_faction", "invite", {"player_id": pilot}, timeout=25)
+    inv_idx = INVITERS.index(inv) if inv in INVITERS else 0
+    for att in range(4):
+        who_inv = INVITERS[(inv_idx + att) % len(INVITERS)]
+        st_i, txt_i = raw_call(who_inv, "spacemolt_faction", "invite", {"player_id": pilot}, timeout=30)
         st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid})
         comb = (txt_i + " " + txt_j).lower()
         if (st_j == 200 and '"error"' not in txt_j[:240]) or ("already" in comb and "member" in comb) or ("already in" in comb):
@@ -432,6 +449,7 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--skip-retire", action="store_true")
     ap.add_argument("--skip-birth", action="store_true")
+    ap.add_argument("--seat-only", action="store_true")
     ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--data", default=str(DATA))
     args = ap.parse_args(argv)
@@ -466,7 +484,7 @@ def main(argv=None):
     conn_set = live_connected_set() if not args.dry_run else None
     live_eff = [s for s in live if (conn_set is None or s["name"] in conn_set)]
     inc_all = [r for r in manifest if r["wave"] == w and r["status"] == "planned"]
-    inc = [r for r in inc_all if (conn_set is None or r["pilot"] not in conn_set)]
+    inc = inc_all if args.seat_only else [r for r in inc_all if (conn_set is None or r["pilot"] not in conn_set)]
     ret = plan_wave_retirements(w, live_eff, officers)
     ship_by_name = {s["name"]: s for s in live_eff}
     if args.limit > 0:
