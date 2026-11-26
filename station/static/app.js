@@ -319,7 +319,8 @@ let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all'
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Regions: true, 'Our space': true, 'Blocs & Empires': true, 'Fleet zones': true, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layers = { Regions: true, 'Our space': true, 'Blocs & Empires': false, 'Fleet zones': false, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layerBoxes = {};
 const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
 const holdBy = new Map();                      // system id -> the buildings of ours there (what the faction owns, read from the game)
 try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ }   // the last-hour space of round 3, no longer drawn
@@ -742,8 +743,8 @@ function paintTerritory(k) {
 
     const polities = getPolities();
 
-    // 2. Dynamic 2-Jump Merged Sovereign Territories for Major Blocs & Serious Solo Empires
-    if (layers['Blocs & Empires'] || layers['Fleet zones']) {
+    // 2. Dynamic 2-Jump Merged Sovereign Territories for Major Blocs & Contacted Solo Empires
+    if (layers['Blocs & Empires'] || layers['Fleet zones'] || focusId) {
       const ordered = polities.filter((p) => p.kind !== 'us').sort((a, b) => {
         if (a.id === focusId) return 1;
         if (b.id === focusId) return -1;
@@ -758,7 +759,7 @@ function paintTerritory(k) {
         const coreSet = new Set(p.core_systems || []);
         const terrRad = R * (isFoc ? 1.02 : 0.94);
 
-        if (layers['Blocs & Empires'] && terrSys.length) {
+        if ((layers['Blocs & Empires'] || isFoc) && terrSys.length) {
           const baseFill = p.kind === 'bloc' ? 0.062 : 0.048;
           const baseEdge = p.kind === 'bloc' ? 0.48 : 0.40;
           areaStyled(
@@ -858,11 +859,12 @@ function polityAnchor(p) {
 
 function drawPolityLabels(k) {
   polityLabelHits = [];
-  if (!layers['Blocs & Empires'] && !layers['Our space'] && !layers['Fleet zones']) return;
-  const polities = getPolities();
-  if (!polities.length || k > 0.34) return;
   const focusId = polityFocusId();
-  const fade = k > 0.22 ? Math.max(0.22, (0.34 - k) / 0.12) : 1.0;
+  // Keep galaxy map clean: fleet zone & bloc names live in the side legend; show canvas nameplate ONLY for the single hovered/locked polity!
+  if (!focusId) return;
+  const polities = getPolities();
+  if (!polities.length || k > 0.42) return;
+  const fade = k > 0.28 ? Math.max(0.28, (0.42 - k) / 0.14) : 1.0;
   const fontSize = Math.max(9.5, Math.min(13.0, 9 + k * 22));
   const subSize = Math.max(7.8, fontSize - 2.3);
   ctx.textAlign = 'center';
@@ -870,12 +872,7 @@ function drawPolityLabels(k) {
   const placed = [];
 
   for (const p of polities) {
-    if (p.kind === 'us' && !layers['Our space']) continue;
-    if (p.kind !== 'us') {
-      const hasTerr = layers['Blocs & Empires'] && ((p.territory_systems || p.core_systems || []).length > 0);
-      const hasConc = layers['Fleet zones'] && ((p.concentration_systems || []).length > 0);
-      if (!hasTerr && !hasConc && p.id !== focusId) continue;
-    }
+    if (p.id !== focusId) continue;
     const anc = polityAnchor(p);
     if (!anc) continue;
     let [sx, sy] = toScreen({ x: anc.x, y: anc.topY });
@@ -1348,6 +1345,20 @@ function renderPolityCard() {
   if (fresh.activity_state === 'live') pills.append(el('span', 'pill good', 'LIVE'));
   else if (fresh.activity_state === 'quiet') pills.append(el('span', 'pill', 'QUIET'));
   if (fresh.rel_power && fresh.rel_power !== 'US') pills.append(relPowerPill(fresh.rel_power));
+  if (fresh.contacted && fresh.diplo_status) {
+    const dpMap = {
+      neutrality_agreed: ['good', 'NEUTRALITY PACT'],
+      trade_active: ['good', 'TRADE ACTIVE'],
+      info_sharing_active: ['good', 'INFO SHARING'],
+      in_dialogue: ['info', 'IN DIALOGUE'],
+      hailed: ['warn', 'HAILED'],
+      no_response: ['', 'NO REPLY'],
+      declined: ['bad', 'DECLINED'],
+      hostile: ['bad', 'HOSTILE'],
+    };
+    const dm = dpMap[fresh.diplo_status] || ['info', String(fresh.diplo_status).toUpperCase()];
+    pills.append(el('span', 'pill ' + dm[0], dm[1] + (fresh.diplo_summary && fresh.diplo_summary.includes('/') ? ' (' + fresh.diplo_summary.split(' ')[0] + ')' : '')));
+  }
   if (fresh.wars && fresh.wars.length) pills.append(el('span', 'pill bad', 'WAR: ' + fresh.wars.join(',')));
   box.append(pills);
 
@@ -1391,6 +1402,23 @@ function renderPolityCard() {
   if (fresh.ship_value > 0) wBits.push('Ships ' + fmtCompact(fresh.ship_value));
   if (fresh.facility_inv > 0) wBits.push('Fac ' + fmtCompact(fresh.facility_inv));
   if (wBits.length) box.append(el('div', 'tip-sub', wBits.join('  |  ')));
+
+  const fZones = fresh.concentration_systems || [];
+  if (fZones.length) {
+    const zRow = el('div', 'pc-zones');
+    zRow.append(el('span', 'pc-zhead', 'Fleet zones:'));
+    for (const c of fZones.slice(0, 6)) {
+      const so = sys.get(c.system);
+      const sName = so ? so.name : c.system;
+      const lbl = sName + (c.kind === 'wrecked' ? ' (wrecked)' : c.count > 0 ? ' (' + c.count + ')' : '');
+      const zb = el('button', 'pc-zchip', lbl);
+      zb.type = 'button';
+      zb.title = 'Jump to ' + sName;
+      zb.addEventListener('click', () => { if (so) select(so.id, true); });
+      zRow.append(zb);
+    }
+    box.append(zRow);
+  }
 
   const acts = el('div', 'pc-acts');
   const zBtn = el('button', 'rf', 'Fit on Map');
@@ -6610,32 +6638,100 @@ function politySwatch(p) {
   return i;
 }
 
+function setZonesLayers(on) {
+  layers['Fleet zones'] = !!on;
+  layers['Blocs & Empires'] = !!on;
+  if (layerBoxes['Fleet zones']) layerBoxes['Fleet zones'].checked = !!on;
+  if (layerBoxes['Blocs & Empires']) layerBoxes['Blocs & Empires'].checked = !!on;
+  realmVer++;
+  renderPowers();
+  draw();
+}
+
+function diploBadge(st) {
+  if (st === 'neutrality_agreed') return ['dp-neut', 'NEUT'];
+  if (st === 'trade_active') return ['dp-neut', 'TRADE'];
+  if (st === 'info_sharing_active') return ['dp-neut', 'INFO'];
+  if (st === 'in_dialogue') return ['dp-chat', 'CHAT'];
+  if (st === 'hailed') return ['dp-hail', 'HAIL'];
+  if (st === 'no_response') return ['dp-none', 'SILENT'];
+  if (st === 'declined' || st === 'hostile') return ['dp-bad', st.toUpperCase()];
+  return null;
+}
+
 function renderPowers() {
   const box = $('powers');
   if (!box) return;
   box.replaceChildren();
   const polities = getPolities();
   if (!polities.length) {
-    box.append(el('div', 'pow-empty', 'Loading galactic powers...'));
+    box.append(el('div', 'pow-empty', 'Loading fleet zones & blocs...'));
     return;
   }
-  // Order cleanly: The Collective FIRST at top, then Coalition Blocs, then Solo Powers
+
+  const zonesOn = !!(layers['Fleet zones'] || layers['Blocs & Empires']);
   const us = polities.filter((p) => p.kind === 'us');
-  const blocs = polities.filter((p) => p.kind === 'bloc');
-  const solos = polities.filter((p) => p.kind === 'solo');
+  const contacted = polities.filter((p) => p.kind !== 'us' && p.contacted);
+  const others = polities.filter((p) => p.kind !== 'us' && !p.contacted);
+  const cTagSet = new Set();
+  for (const p of contacted) for (const t of (p.contacted_tags || p.tags || [])) cTagSet.add(t);
+
+  // Compact header bar synced directly with Layers > Fleet zones / Blocs & Empires
+  const bar = el('div', 'pow-bar');
+  const tog = el('button', 'pow-tog' + (zonesOn ? ' on' : ''), zonesOn ? 'Zones: ON' : 'Zones: OFF');
+  tog.type = 'button';
+  tog.title = 'Toggle all Blocs & Empires + Fleet Zones overlays on map (OFF by default)';
+  tog.addEventListener('click', () => setZonesLayers(!zonesOn));
+  bar.append(tog, el('span', 'pow-cnt', contacted.length + ' blocs / ' + cTagSet.size + ' contacted'));
+  box.append(bar);
+
+  const dpRank = { neutrality_agreed: 7, trade_active: 6, info_sharing_active: 5, in_dialogue: 4, hailed: 3, no_response: 2, declined: 1, hostile: 0 };
+  contacted.sort((a, b) => (dpRank[b.diplo_status] || -1) - (dpRank[a.diplo_status] || -1) || (b.healthy_bases || 0) - (a.healthy_bases || 0) || (b.wealth || 0) - (a.wealth || 0));
 
   const addGroup = (title, items) => {
     if (!items.length) return;
     if (title) box.append(el('div', 'pow-head', title));
     for (const p of items) {
       const isOn = lockPolity && lockPolity.id === p.id;
-      const btn = el('button', 'lpol' + (p.kind === 'us' ? ' us' : '') + (isOn ? ' on' : ''));
+      const conc = p.concentration_systems || [];
+      const hasMapArea = ((p.territory_systems || p.core_systems || []).length > 0) || conc.length > 0;
+      const btn = el('button', 'lpol' + (p.kind === 'us' ? ' us' : '') + (isOn ? ' on' : '') + (!hasMapArea ? ' dim' : ''));
       btn.type = 'button';
-      const meta = p.kind === 'us'
-        ? fmt(p.standing_ships || p.total_members) + ' ships'
-        : ((p.healthy_bases ? p.healthy_bases + 'b ' : '') + (p.active_1h ? p.active_1h + ' live' : fmt(p.total_members) + 'm'));
-      btn.append(politySwatch(p), el('span', 'lpol-n', p.name), el('span', 'lpol-m', meta));
-      // Gentle border spotlight on hover ONLY -- zero annoying cursor popup! Click to select & open profile card.
+
+      const swWrap = el('span', 'lpol-sw');
+      swWrap.append(politySwatch(p));
+      if (conc.length) {
+        const ring = el('i', 'lpol-z');
+        ring.style.borderColor = HEX.test(p.color || '') ? p.color : '#aa915b';
+        swWrap.append(ring);
+      }
+
+      const metaBits = [];
+      if (p.kind === 'us') {
+        metaBits.push(fmt(p.standing_ships || p.total_members) + 's');
+        if (conc.length) metaBits.push(conc.length + 'z');
+      } else {
+        if (p.healthy_bases > 0) metaBits.push(p.healthy_bases + 'b');
+        else if (p.wrecked_bases > 0) metaBits.push(p.wrecked_bases + 'w');
+        if (conc.length > 0) metaBits.push(conc.length + 'z');
+        else if (!hasMapArea) metaBits.push('--');
+      }
+
+      const zNames = conc.slice(0, 5).map((c) => {
+        const so = sys.get(c.system);
+        return (so ? so.name : c.system) + (c.kind === 'wrecked' ? ' [wrecked]' : c.count > 0 ? ' (' + c.count + ')' : '');
+      });
+      const tagsTxt = (p.tags && p.tags.length) ? '[' + p.tags.join(', ') + '] ' : '';
+      btn.title = tagsTxt + p.name
+        + (p.diplo_summary && p.kind !== 'us' ? ' | Diplo: ' + p.diplo_summary : '')
+        + (zNames.length ? ' | Fleet zones: ' + zNames.join(', ') : (hasMapArea ? ' | Base territory' : ' | Unsighted on map'))
+        + ' (hover to highlight, click to isolate)';
+
+      btn.append(swWrap, el('span', 'lpol-n', p.name));
+      const db = p.contacted ? diploBadge(p.diplo_status) : null;
+      if (db) btn.append(el('span', 'lpol-dp ' + db[0], db[1]));
+      btn.append(el('span', 'lpol-m', metaBits.join(' ')));
+
       btn.addEventListener('mouseenter', () => {
         hoverPolity = p;
         realmVer++;
@@ -6644,14 +6740,14 @@ function renderPowers() {
       btn.addEventListener('mouseleave', () => {
         if (hoverPolity && hoverPolity.id === p.id) { hoverPolity = null; realmVer++; draw(); }
       });
-      btn.addEventListener('click', () => focusPolityOnMap(p, true));
+      btn.addEventListener('click', () => focusPolityOnMap(p, hasMapArea));
       box.append(btn);
     }
   };
 
   addGroup('', us);
-  addGroup('Coalition Blocs', blocs);
-  addGroup('Solo Powers', solos);
+  addGroup('Contacted Blocs & Empires', contacted);
+  addGroup('Other Spotted Powers', others);
 }
 
 function renderLegend() {
@@ -6663,7 +6759,7 @@ function renderLegend() {
   const swatch = (edge, fill) => { const i = el('i', 'swatch'); i.style.borderColor = edge; i.style.background = fill; return i; };
 
   head('Borders & Backdrop');
-  row(swatch('rgba(200,210,235,0.65)', 'rgba(200,210,235,0.10)'), '2J merged base borders (unique style per bloc) | dotted ring: fleet hub', true);
+  row(swatch('rgba(110,168,98,0.75)', 'rgba(110,168,98,0.14)'), 'our space (double border) | see Fleet Zones & Blocs above', true);
   for (const [name, c] of Object.entries(S.empires || {})) {
     const colour = HEX.test(c) ? c : LAWLESS;
     row(swatch(rgba(colour, 0.40), rgba(colour, 0.10)), name === 'outerrim' ? 'outer rim' : name);
@@ -6748,7 +6844,7 @@ const SHUTTERS = {                               // name: [the element that fold
   right: ['main-right', 'hide-right', 'Hide the right panel', 'Show the right panel'],
   dock: ['chat-dock', 'dock-toggle', 'Hide the messages', 'Show the messages'],
   layers: ['layers-box', 'layers-toggle', 'Hide the layers', 'Show the layers'],
-  powers: ['powers-box', 'powers-toggle', 'Hide Empires & Blocs', 'Show Empires & Blocs'],
+  powers: ['powers-box', 'powers-toggle', 'Hide Fleet Zones & Blocs', 'Show Fleet Zones & Blocs'],
   legend: ['legend-box', 'legend-toggle', 'Hide the legend', 'Show the legend'],
 };
 function applyShut(name) {
@@ -6782,7 +6878,16 @@ function init() {
   for (const name of Object.keys(layers)) {
     const label = el('label'), box = el('input');
     box.type = 'checkbox'; box.checked = layers[name];
-    box.addEventListener('change', () => { layers[name] = box.checked; draw(); });
+    layerBoxes[name] = box;
+    box.addEventListener('change', () => {
+      if (name === 'Fleet zones') {
+        setZonesLayers(box.checked);
+        return;
+      }
+      layers[name] = box.checked;
+      if (name === 'Blocs & Empires') { realmVer++; renderPowers(); }
+      draw();
+    });
     label.append(box, ' ' + name); lay.append(label);
   }
   const nav = $('tabs');
@@ -6810,15 +6915,15 @@ function init() {
     const grp = !badge && !inf && S && groupAt(mx, my);
     const plab = !badge && !inf && !grp && S && polityLabelAt(mx, my);
     const s = !badge && !inf && !grp && !plab && S && nearest(mx, my);
+    const pzone = !badge && !inf && !grp && !plab && !s && (layers['Fleet zones'] || layers['Blocs & Empires']) && S && polityZoneAt(mx, my);
     hover = inf ? inf.system : s ? s.id : null;
     hoverBadge = badge || null;
-    // Highlight polity borders ONLY when hovering its deliberate nameplate (never flickering wildly across empty space!)
-    const nextPol = plab || null;
+    const nextPol = plab || (pzone ? pzone.primary : null);
     if ((hoverPolity ? hoverPolity.id : '') !== (nextPol ? nextPol.id : '')) {
       hoverPolity = nextPol;
       realmVer++;
     }
-    canvas.style.cursor = badge || inf || grp || plab ? 'pointer' : '';
+    canvas.style.cursor = badge || inf || grp || plab || pzone ? 'pointer' : '';
     const placeName = (b) => { const o = sys.get(b.system); return o ? o.name : b.system; };
     const tipKV = (grid, k, v) => { const c = el('div', 'tip-cell'); c.append(el('span', null, k), el('b', null, String(v))); grid.append(c); };
 
@@ -6909,6 +7014,12 @@ function init() {
         }
         tip.append(ft);
       });
+    } else if (pzone && pzone.primary) {
+      const zp = pzone.primary;
+      scheduleTip('pzone:' + zp.id, mx, my, (tip) => {
+        tip.classList.add('polity-tip');
+        renderPolityMiniTip(tip, zp);
+      });
     } else {
       hideTipNow();
     }
@@ -6927,7 +7038,11 @@ function init() {
     if (plab) { hideTipNow(); focusPolityOnMap(plab, true); return; }
     const s = nearest(mx, my);
     if (pop) closePop();
-    if (s) select(s.id, false);
+    if (s) { select(s.id, false); return; }
+    if (layers['Fleet zones'] || layers['Blocs & Empires']) {
+      const pz = polityZoneAt(mx, my);
+      if (pz && pz.primary) { hideTipNow(); focusPolityOnMap(pz.primary, false); return; }
+    }
   });
   canvas.addEventListener('wheel', (e) => {
     e.preventDefault();

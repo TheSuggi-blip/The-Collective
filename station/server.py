@@ -3577,11 +3577,68 @@ def _build_diplomacy(_allow_snapshot=False):
             "d_bases": d_bas,
         }
 
+    # Load official diplomatic outreach ledger so ALL contacted blocs & factions appear on map + legend
+    pacts_snap = read_diplomacy_pacts()
+    contacted_map = {}
+    bloc_target_tags = {}
+    tag_to_target_bloc = {}
+    for _pr in (pacts_snap.get("rows") or []):
+        _pt = clean_ascii(_pr.get("tag") or "", 8)
+        if not _pt:
+            continue
+        _bid = clean_ascii(_pr.get("bloc_id") or _pr.get("bloc") or "", 32)
+        if _bid:
+            bloc_target_tags.setdefault(_bid, []).append(_pt)
+            tag_to_target_bloc[_pt] = _bid
+        _pst = clean_ascii(_pr.get("status") or "", 24)
+        if _pst and _pst != "uncontacted":
+            contacted_map[_pt] = {
+                "status": _pst,
+                "bloc_id": _bid,
+                "name": clean_ascii(_pr.get("faction") or _pr.get("name") or _pt, 60),
+                "leader": clean_ascii(_pr.get("leader") or "--", 40),
+            }
+    try:
+        _dip_fp = FLEET.parent / "comms" / "diplomacy.json"
+        if _dip_fp.is_file():
+            _dip_raw = json.loads(_dip_fp.read_text(encoding="utf-8", errors="replace")) or {}
+            for _se in (_dip_raw.get("sent_log") or []):
+                _st = clean_ascii(_se.get("tag") or "", 8)
+                if _st and _st not in contacted_map:
+                    contacted_map[_st] = {"status": "hailed", "bloc_id": tag_to_target_bloc.get(_st, ""), "name": _st, "leader": "--"}
+    except Exception:
+        pass
+
+    _DIPLO_RANK = {
+        "neutrality_agreed": 7, "trade_active": 6, "info_sharing_active": 5,
+        "in_dialogue": 4, "hailed": 3, "no_response": 2, "declined": 1, "hostile": 0,
+    }
+    def _diplo_summary(tags_in):
+        c_tags = [t for t in tags_in if t in contacted_map]
+        if not c_tags:
+            return False, "", "", []
+        sts = [contacted_map[t]["status"] for t in c_tags]
+        best = max(sts, key=lambda s: _DIPLO_RANK.get(s, -1))
+        n_best = sum(1 for s in sts if s == best)
+        lbl = {
+            "neutrality_agreed": "neutral",
+            "trade_active": "trade",
+            "info_sharing_active": "intel",
+            "in_dialogue": "dialogue",
+            "hailed": "hailed",
+            "no_response": "no reply",
+            "declined": "declined",
+            "hostile": "hostile",
+        }.get(best, best)
+        summ = f"{n_best}/{len(c_tags)} {lbl}" if len(c_tags) > 1 else lbl
+        return True, best, summ, c_tags
+
     all_rows = []
     seen_tags = set()
     all_tags = (
         set(factions_raw.keys()) | {"CLTV"} | set(st_by_tag.keys())
         | set(sse_by_tag.keys()) | set(met_24h_by_tag.keys())
+        | set(contacted_map.keys())
     )
     for mp_bd in lb_maps.values():
         all_tags |= set(mp_bd.keys())
@@ -3654,8 +3711,9 @@ def _build_diplomacy(_allow_snapshot=False):
                 dom_emp = f"{top_e} {pct_e}%"
             else:
                 dom_emp = "--"
-            fname = clean_ascii(f.get("name") or tg, 60)
-            fleader = clean_ascii(f.get("leader") or "--", 40)
+            _cm = contacted_map.get(tg) or {}
+            fname = clean_ascii(f.get("name") or _cm.get("name") or tg, 60)
+            fleader = clean_ascii(f.get("leader") or _cm.get("leader") or "--", 40)
             allies_l = [clean_ascii(x, 8) for x in (f.get("allies") or []) if clean_ascii(x, 8)]
             enemies_l = [clean_ascii(x, 8) for x in (f.get("enemies") or []) if clean_ascii(x, 8)]
             wars_l = [clean_ascii(x, 8) for x in (f.get("wars") or []) if clean_ascii(x, 8)]
@@ -3715,7 +3773,7 @@ def _build_diplomacy(_allow_snapshot=False):
             "tag": tg, "name": fname, "leader": fleader,
             "members": members_v, "fleet_ships": our_standing_ships if tg == "CLTV" else None,
             "bases": bases_v, "wrecked_bases": wrecked_v,
-            "base_systems": base_syss[:14], "base_names": st_inf["names"][:6],
+            "base_systems": base_syss[:14], "wrecked_systems": st_inf.get("wrecked_systems", [])[:10], "base_names": st_inf["names"][:6],
             "nearest_jumps": nearest_jumps_of(base_syss),
             "sighted": our_standing_ships if tg == "CLTV" else mt_inf["sighted"],
             "active_1h": active_1h, "active_24h": active_24h, "activity_state": act_state,
@@ -3744,7 +3802,7 @@ def _build_diplomacy(_allow_snapshot=False):
         _append_rival_snapshot(all_rows, now, force=False)
 
     by_tag = {r["tag"]: r for r in all_rows}
-    keep_tags = {"CLTV"}
+    keep_tags = {"CLTV"} | set(contacted_map.keys())
     for key_fn, n_keep in (
         (lambda r: r["wealth"], 30),
         (lambda r: r["members"], 25),
@@ -3915,6 +3973,10 @@ def _build_diplomacy(_allow_snapshot=False):
             "dominant_empire": cltv_row["empire"],
             "rel_power": "US",
             "standing": "us",
+            "contacted": False,
+            "diplo_status": "us",
+            "diplo_summary": "us",
+            "contacted_tags": ["CLTV"],
             "wars": our_wars,
             "activity_state": cltv_row["activity_state"],
             "delta_members": cltv_row["delta_members"],
@@ -3924,18 +3986,28 @@ def _build_diplomacy(_allow_snapshot=False):
             "concentration_systems": our_conc,
         })
 
-    # 2. Serious Coalition Blocs (dynamic: >=2 bases, OR >=1 base with real scale/activity, OR major active wealth bloc)
+    # 2. Serious Coalition Blocs (dynamic + ALL officially contacted coalition blocs)
     bloc_idx = 0
     for b in alliances_out:
+        tags_l = [m["tag"] for m in b["factions"]]
+        # Fold any officially contacted target-bloc partners (e.g. dissolved/unlisted partner tags) into this bloc
+        ext_tags = list(tags_l)
+        for _t in tags_l:
+            _bid = tag_to_target_bloc.get(_t)
+            if _bid:
+                for _pt in bloc_target_tags.get(_bid, []):
+                    if _pt in contacted_map and _pt not in ext_tags:
+                        ext_tags.append(_pt)
+        b_contacted, b_dst, b_dsum, b_ctags = _diplo_summary(ext_tags)
         is_serious = (
-            b["total_bases"] >= 2
+            b_contacted
+            or b["total_bases"] >= 2
             or (b["total_bases"] >= 1 and (b["active_1h"] >= 15 or b["total_wealth"] >= 250_000_000))
             or (b["active_1h"] >= 30 and b["total_wealth"] >= 200_000_000)
         )
         if not is_serious:
             continue
-        tags_l = [m["tag"] for m in b["factions"]]
-        bloc_member_tags.update(tags_l)
+        bloc_member_tags.update(ext_tags)
         col = _polity_color(b["lead_tag"], used_colors)
         b_style, b_hatch = BLOC_STYLES[bloc_idx % len(BLOC_STYLES)]
         bloc_idx += 1
@@ -3965,7 +4037,7 @@ def _build_diplomacy(_allow_snapshot=False):
             "border_style": b_style,
             "hatch": b_hatch,
             "territory_systems": terr_syss,
-            "tags": tags_l,
+            "tags": ext_tags,
             "members_breakdown": b["factions"][:8],
             "total_members": b["total_members"],
             "standing_ships": None,
@@ -3993,6 +4065,10 @@ def _build_diplomacy(_allow_snapshot=False):
             "dominant_empire": dom_e,
             "rel_power": brel,
             "standing": "neutral",
+            "contacted": b_contacted,
+            "diplo_status": b_dst,
+            "diplo_summary": b_dsum,
+            "contacted_tags": b_ctags,
             "wars": sorted({w for t in tags_l if t in by_tag for w in by_tag[t]["wars"]}),
             "activity_state": b["activity_state"],
             "delta_members": b["delta_members"],
@@ -4002,29 +4078,47 @@ def _build_diplomacy(_allow_snapshot=False):
             "concentration_systems": conc,
         })
 
-    # 3. Serious Unaligned Solo Powers (multi-base, major active/wealthy power, or border neighbor <= 5j from home)
-    solo_cands = [
+    # 3. Officially Contacted Solo Factions (ALL included, never capped) + Other Serious Unaligned Solo Powers
+    contacted_solos = [
         r for r in all_rows
-        if r["tag"] != "CLTV" and r["tag"] not in bloc_member_tags and (
+        if r["tag"] != "CLTV" and r["tag"] not in bloc_member_tags and r["tag"] in contacted_map
+    ]
+    contacted_solos.sort(
+        key=lambda r: (_DIPLO_RANK.get(contacted_map[r["tag"]]["status"], -1), r["bases"], r["wealth"], r["active_24h"]),
+        reverse=True,
+    )
+    other_solos = [
+        r for r in all_rows
+        if r["tag"] != "CLTV" and r["tag"] not in bloc_member_tags and r["tag"] not in contacted_map and (
             (r["bases"] >= 2 and r["active_24h"] >= 10)
             or (r["bases"] >= 1 and (r["active_1h"] >= 20 or (r["wealth"] >= 200_000_000 and r["active_24h"] >= 5)))
             or (r["bases"] >= 1 and r["nearest_jumps"] is not None and r["nearest_jumps"] <= 5 and r["active_24h"] >= 3)
             or (r["active_1h"] >= 25 and r["wealth"] >= 200_000_000)
         )
     ]
-    solo_cands.sort(key=lambda r: (r["bases"] > 0, r["wealth"], r["active_24h"]), reverse=True)
-    for r in solo_cands[:10]:
+    other_solos.sort(key=lambda r: (r["bases"] > 0, r["wealth"], r["active_24h"]), reverse=True)
+    for r in contacted_solos + other_solos[:10]:
+        s_contacted, s_dst, s_dsum, s_ctags = _diplo_summary([r["tag"]])
         col = _polity_color(r["tag"], used_colors)
         core_syss = list(dict.fromkeys(r["base_systems"]))
         terr_syss = _expand_territory(core_syss, sys_adj, sys_emp, hops=2, keep_npc_seeds=True) if core_syss else []
         terr_set = set(terr_syss)
-        min_conc = 4 if core_syss else 2
+        min_conc = 4 if core_syss else (2 if not s_contacted else 1)
         conc = [
             {"system": sy, "count": cnt}
             for sy, cnt in sorted(r["_sys_density"].items(), key=lambda kv: kv[1], reverse=True)
             if cnt >= min_conc and sy not in terr_set
-        ][:4]
-        if not terr_syss and not conc:
+        ][:5]
+        # For contacted factions with 0 live fleet sightings, surface historical sightings or wrecked base sites
+        if s_contacted and not terr_syss and not conc:
+            for wsy in (r.get("wrecked_systems") or [])[:4]:
+                if wsy and wsy not in terr_set:
+                    conc.append({"system": wsy, "count": 0, "kind": "wrecked"})
+            if not conc:
+                for hsy in (r.get("sight_systems") or [])[:4]:
+                    if hsy and hsy not in terr_set:
+                        conc.append({"system": hsy, "count": 1, "kind": "historical"})
+        if not s_contacted and not terr_syss and not conc:
             continue
         s_label = r["name"].upper() if len(r["name"]) <= 16 else r["tag"]
         territories_out.append({
@@ -4067,6 +4161,10 @@ def _build_diplomacy(_allow_snapshot=False):
             "dominant_empire": r["empire"],
             "rel_power": r["rel_power"],
             "standing": r["standing"],
+            "contacted": s_contacted,
+            "diplo_status": s_dst,
+            "diplo_summary": s_dsum,
+            "contacted_tags": s_ctags,
             "wars": r["wars"],
             "activity_state": r["activity_state"],
             "delta_members": r["delta_members"],
