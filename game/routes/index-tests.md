@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 128.
+Routes: 127.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -91,7 +91,6 @@ Routes: 128.
 | [carry-melt-sirius-to-dheneb](carry-melt-sirius-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from sirius_observatory_station to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-sirius-to-experiment](carry-melt-sirius-to-experiment.json) | circuit | beyond the border, 9 jumps | Stored crystal_melt carried from sirius_observatory_station to the the_experiment_research_station bid at 1000 cr or more | up to 1 ships, with 10 crystal_melt stored at sirius_observatory_station, while the_experiment_research_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [carry-melt-sol-to-dheneb](carry-melt-sol-to-dheneb.json) | circuit | beyond the border, 11 jumps | Stored crystal_melt carried from confederacy_central_command to the b495c6003fc83e18f6d8cecbe6929133 bid at 3000 cr or more | up to 1 ships, with 5 crystal_melt stored at confederacy_central_command, while b495c6003fc83e18f6d8cecbe6929133 bids 3000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
-| [carry-null-matter-nexus-to-crucible](carry-null-matter-nexus-to-crucible.json) | circuit | beyond the border, 18 jumps | Null matter stored by Trade at Central Nexus carried to the station bid at The Crucible Garrison and sold there | up to 1 ships, with 65 null_matter stored at central_nexus, while the_crucible_garrison bids 300 cr for null_matter | TBD | TBD | TBD | TBD | -- |
 | [carry-phase-deep-range-to-sol](carry-phase-deep-range-to-sol.json) | circuit | beyond the border, 19 jumps | Stored phase_crystal carried from deep_range_outpost to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at deep_range_outpost, while confederacy_central_command bids 100 cr for phase_crystal | TBD | TBD | TBD | TBD | -- |
 | [carry-phase-first-step-to-sol](carry-phase-first-step-to-sol.json) | circuit | beyond the border, 18 jumps | Stored phase_crystal carried from first_step_memorial_station to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at first_step_memorial_station, while confederacy_central_command bids 100 cr for phase_crystal | TBD | TBD | TBD | TBD | -- |
 | [carry-sac-beta-to-hex-star](carry-sac-beta-to-hex-star.json) | circuit | beyond the border, 11 jumps | Caustic sacs stored by Trade at Node Beta carried to the deep player bid at Hex Star (Dheneb) and sold there | up to 1 ships, with 30 caustic_sac stored at node_beta_industrial_station, while b495c6003fc83e18f6d8cecbe6929133 bids 1250 cr for caustic_sac | TBD | TBD | TBD | TBD | -- |
