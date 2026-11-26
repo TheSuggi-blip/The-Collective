@@ -9,7 +9,7 @@ faction: Stellar Alliance
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Stellar Alliance [STLR]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 6.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 158 | Public event stream |
+| Pilots carrying the tag on the public event stream | 160 | Public event stream |
 
 ## Bases
 
@@ -40,10 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| STLR-004-RIM | Node Beta (`node_beta`) | 0 | billhook |
-| STLR-041-NEB | Node Beta (`node_beta`) | 0 | prospect |
-| STLR-075-CRI | Synchrony (`synchrony`) | 0 | shard |
-| STLR-089-VOI | GSC-0027 (`gsc_0027`) | 0 | threshold |
+| STLR-006-RIM | Nexus Prime (`nexus_prime`) | 0 | billhook |
+| STLR-041-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| STLR-089-VOI | Node Beta (`node_beta`) | 0 | threshold |
+| STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-164-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 

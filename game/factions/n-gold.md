@@ -9,13 +9,13 @@ faction: Golden Age Compact
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Golden Age Compact [GOLD]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 4 jump(s) away, in GSC-0041 (`gsc_0041`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,7 +38,10 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Kratos2010 | Node Beta (`node_beta`) | 0 | omnibus |
+| Zheng He | Node Alpha (`node_alpha`) | 0 | congregation |
 
 ## Standing History
 
