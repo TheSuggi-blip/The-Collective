@@ -9,13 +9,13 @@ faction: Pepemos Trading Company
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -38,18 +38,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicBasalt | Synchrony (`synchrony`) | 0 | cobble |
-| MimicCobalt | Synchrony (`synchrony`) | 0 | cobble |
-| MimicForge | Synchrony (`synchrony`) | 0 | cobble |
+| MimicBasalt | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicCobalt | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicFrost | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| MimicHew | Pherkad (`pherkad`) | 0 | cobble |
 | MimicLens | Nexus Prime (`nexus_prime`) | 0 | shard |
-| MimicRota | Synchrony (`synchrony`) | 0 | prospect |
-| MimicShale | Synchrony (`synchrony`) | 0 | cobble |
-| MimicTally | Synchrony (`synchrony`) | 0 | cobble |
+| MimicShale | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicVega | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicVent | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| Pepemos | Synchrony (`synchrony`) | 0 | shard |
 
 ## Standing History
 
