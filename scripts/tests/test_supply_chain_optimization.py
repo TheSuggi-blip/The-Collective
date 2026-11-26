@@ -128,3 +128,72 @@ class TestSupplyChainOptimization(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestStageBPolishFixes(unittest.TestCase):
+    def test_stage_b_polish_fixes_bursar_hunt_mine(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "game" / "fleet"))
+        import bursar, hunt_net, mine_net
+
+        # 1. Bursar central_depot_floors blocks faction_pull below Node Beta target (zero ping-pong)
+        floors = bursar._central_depot_floors(Path(__file__).resolve().parents[2], "node_beta_industrial_station")
+        self.assertGreaterEqual(floors.get("circuit_board", 0), 400)
+        self.assertGreaterEqual(floors.get("steel_plate", 0), 2000)
+        fac = {"circuit_board": 185, "fuel_cell": 192, "hull_patch": 11, "steel_plate": 2250}
+        book = {k: {"best_buy": 250, "best_buy_qty": 100, "best_sell": 260} for k in fac}
+        picks = dict(bursar._select_faction_surplus_to_pull(
+            fac, book, set(), 500, max_kinds=8, catalog_vals={k: 100 for k in fac}, depot_floors=floors
+        ))
+        self.assertNotIn("circuit_board", picks)
+        self.assertNotIn("fuel_cell", picks)
+        self.assertNotIn("hull_patch", picks)
+        self.assertLessEqual(picks.get("steel_plate", 0), 250)
+
+        # 2. hunt_net score_solo_herds allows armed Command Flagship on hunt-policy-packs when allow_cmd_override=True
+        hpp = hunt_net.load_policy("game/hunt-policy-packs.json")
+        self.assertTrue(hpp.get("allow_command_solo"))
+        world_h = {
+            "adj": {"sys_a": ["sys_b"], "sys_b": ["sys_a"]},
+            "systems": {"sys_a": {"police": 0}, "sys_b": {"police": 0}},
+            "pirates": set(),
+            "ranch_pois": set(),
+            "ranch_systems": set(),
+            "stations_by_sys": {"sys_a": [("sys_a", "poi_st", "base_a")]},
+            "species_hull": {"belt_grazer": 40.0},
+            "species_loot_val": {"belt_grazer": 600.0},
+            "herds": [{"system": "sys_b", "poi": "poi_h", "species": "belt_grazer", "role": "grazer", "count": 6, "hull": 40.0, "hostile": False}],
+        }
+        pinfo = {"name": "Golden Chariot", "system": "sys_a"}
+        armed = {"power": 600.0, "ehp": 400.0, "dps": 40.0, "tier": 1}
+        unarmed = {"power": 0.0, "ehp": 300.0, "dps": 0.0, "tier": 1}
+        self.assertEqual(hunt_net.score_solo_herds(pinfo, armed, world_h, hpp, {}, {}, allow_cmd_override=False), [])
+        self.assertEqual(hunt_net.score_solo_herds(pinfo, unarmed, world_h, hpp, {}, {}, allow_cmd_override=True), [])
+        res_cmd = hunt_net.score_solo_herds(pinfo, armed, world_h, hpp, {}, {}, allow_cmd_override=True)
+        self.assertGreaterEqual(len(res_cmd), 1)
+
+        # 3. mine_net blocks negative-score non-deficit belts (score <= 0)
+        world_m = {
+            "adj": {"s0": ["s1"], "s1": ["s0", "s2"], "s2": ["s1", "s3"], "s3": ["s2", "s4"], "s4": ["s3", "s5"], "s5": ["s4"]},
+            "systems": {f"s{i}": {"police": 1, "stronghold": False} for i in range(6)},
+            "pirates": set(),
+            "stations_by_sys": {"s0": [("s0", "p0", "b0")]},
+            "fields": [{
+                "system": "s5", "poi": "p5_ice", "resource": "tritium_ice",
+                "remaining": 5000, "max_remaining": 5000, "kind": "ice",
+            }],
+            "market": {"tritium_ice": (12.0, 1000, 1, 1000, 1000)},
+            "shortages": {},
+            "full_items": set(),
+            "craft_demand": {},
+            "held": {"tritium_ice": 2000},
+            "item_vals": {"tritium_ice": 12.0},
+            "owned_outpost_bases": set(),
+            "lockbox_bases": {"b0"},
+            "bursar_bases": set(),
+        }
+        pol_m = dict(mine_net.DEFAULT_POLICY)
+        pol_m.update({"allow_xp_fallback": False, "max_jumps": 6, "max_station_jumps": 6, "min_left_pct": 5.0})
+        ship_m = {"name": "miner-test", "system": "s0", "tier": 1, "modules": [{"item_id": "ice_harvester_i"}]}
+        cands_neg = mine_net.score_belt_candidates(ship_m, world_m, pol_m, {}, {})
+        self.assertEqual([c for c in cands_neg if c["score"] <= 0 and c["tier"] != "deficit"], [])

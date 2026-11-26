@@ -1147,16 +1147,19 @@ def release_hunt_claim(data_dir, pilot, cooldown_key=None, cooldown_minutes=90, 
             fcntl.flock(lf, fcntl.LOCK_UN)
 
 
-def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None, f9=None):
+def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, now_t=None, f9=None, allow_cmd_override=False):
     """Score all eligible wild grazer herds for solo hunting, gated by percentage combat power ratio."""
     now_t = time.time() if now_t is None else float(now_t)
     scfg = policy.get("solo") or {}
-    if not scfg.get("enabled", True) or ship_power["power"] <= 0:
+    if (not scfg.get("enabled", True) and not allow_cmd_override) or ship_power["power"] <= 0:
         return []
     p_sys = str(pilot_info.get("system") or "")
     p_name = str(pilot_info.get("name") or "")
     max_j = int(scfg.get("max_jumps") or 6)
     tier_s_j = max(max_j, int(scfg.get("tier_s_max_jumps") or 8))
+    if allow_cmd_override:
+        max_j = min(max_j, 6)
+        tier_s_j = min(tier_s_j, 8)
     tier_s_min = float(scfg.get("tier_s_min_loot_val") or 550.0)
     min_ratio = float(scfg.get("min_power_ratio") or 1.35)
     ideal_lo = float(scfg.get("ideal_ratio_low") or 1.45)
@@ -2362,7 +2365,8 @@ def main(argv=None):
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
                 time.sleep(min(15.0, max(1.0, end_nap - time.time())))
             return 0
-        cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
+        _cmd_solo_ov = bool(pilot in load_command_flagships(DATA) and policy.get("allow_command_solo", False) and float(spow.get("power") or 0) > 0)
+        cands = score_solo_herds(ship_doc, spow, world, policy, claims, cooldowns, f9=f9, allow_cmd_override=_cmd_solo_ov)
         chosen = None
         for cand in cands:
             _mk = 2 if int(cand.get("count") or 0) >= 8 else 1

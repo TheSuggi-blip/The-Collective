@@ -872,6 +872,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _net_cr *= _hub_mult
         # Divide directly by round-trip fuel burn so shorter station-adjacent, higher-value fields strictly dominate on Rev/Fuel!
         score = (_net_cr / _rt_fuel) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
+        if score <= 0.0 and tier != "deficit" and policy.get("block_negative_score", True):
+            continue
         cand = {
             "belt_key": belt_key, "system": sys_id, "poi": poi_id,
             "resource": res, "remaining": rem, "max_remaining": mx,

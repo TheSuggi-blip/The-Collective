@@ -869,7 +869,20 @@ def _sync_bursar_receivers(data, claims, now_t=None):
         write_json(rec_p, rec)
 
 
-def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4, catalog_vals=None):
+def _central_depot_floors(repo_root, base_id):
+    """Return {item_id: min_faction_stock} for central_depot_base so faction_pull never drains strategic reserves."""
+    if not base_id:
+        return {}
+    try:
+        hp = json.loads((Path(repo_root) / "game" / "haul-policy.json").read_text())
+        if str(hp.get("central_depot_base") or "") == str(base_id):
+            return {str(k): int(v) for k, v in (hp.get("central_depot_targets") or {}).items() if int(v or 0) > 0}
+    except Exception:
+        pass
+    return {}
+
+
+def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4, catalog_vals=None, depot_floors=None):
     """Pure planner: select non-reserved marketable faction lockbox items at this hub to pull for immediate Bursar selling/crafting."""
     if not fac_items or free_hold < 1:
         return []
@@ -877,6 +890,9 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
     cands = []
     for iid, q in fac_items.items():
         qty = int(q or 0)
+        _df = int((depot_floors or {}).get(iid) or 0)
+        if _df > 0:
+            qty = max(0, qty - _df)
         if qty <= 0 or iid in PROTECTED_ITEMS or iid in reserved:
             continue
         row = book.get(iid) or {}
@@ -1330,7 +1346,7 @@ def main(argv=None):
                         _, sd_b = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
                         sh_b = ((sd_b.get("state") or {}).get("ship") or {}) if isinstance(sd_b, dict) else {}
                         free_h = max(0, int(sh_b.get("cargo_capacity") or 80) - int(sh_b.get("cargo_used") or 0))
-                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8, catalog_vals=catalog_vals)
+                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8, catalog_vals=catalog_vals, depot_floors=_central_depot_floors(REPO, base_id))
                         for p_iid, p_q in picks:
                             rw = raw("withdraw", {"item_id": p_iid, "quantity": p_q, "target": "faction"}, group="spacemolt_storage")
                             time.sleep(TICK)
