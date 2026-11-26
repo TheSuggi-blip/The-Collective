@@ -2698,8 +2698,8 @@ def read_comms_summary(our_pilots):
             },
             "direct_in": direct_in[:500],
             "sent_out": sent_out[:500],
-            "local_radio": local_radio[:40],
-            "npc_notices": npc_notices[:25],
+            "local_radio": local_radio[:10],
+            "npc_notices": npc_notices[:10],
             "pacts": pacts,
         }
         COMMS_MEM["value"] = res

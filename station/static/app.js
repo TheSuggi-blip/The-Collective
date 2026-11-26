@@ -264,7 +264,7 @@ const shut = new Set();                        // what Suggi has hidden: the sid
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
-let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout', openStationKey = null, diploThread = null, diploDirFilter = 'all', diploQuery = '', diploNewestFirst = false;
+let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout', openStationKey = null, diploThread = null, diploDirFilter = 'all', diploSenderFilter = 'all', diploQuery = '', diploNewestFirst = true;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
@@ -5670,15 +5670,15 @@ function buildDiploThreads(p, c) {
     const partyLow = partyName.toLowerCase();
     let k = (mTag && keyByTag.get(mTag)) || (partyLow && keyByLeader.get(partyLow)) || null;
     if (!k) {
-      k = mTag ? ('TAG:' + mTag) : ('PILOT:' + (partyName || 'UNKNOWN').toUpperCase());
+      k = '__OTHER_DIRECT__';
       if (!byKey.has(k)) {
         const extra = {
           key: k,
-          tag: mTag,
-          faction: mTag ? ('[' + mTag + '] ' + (partyName || mTag)) : (partyName || 'Direct Contact'),
-          bloc: 'Direct / Independent Contact',
-          leader: partyName || 'Unknown',
-          envoy: m.pilot || '',
+          tag: 'OTHER',
+          faction: 'Other Direct Hails & Independent Contacts',
+          bloc: 'Unaligned / non-roster pilots (grouped)',
+          leader: '',
+          envoy: '',
           status: 'direct_contact',
           unanswered_hails: 0,
           max_unanswered: 3,
@@ -5686,8 +5686,11 @@ function buildDiploThreads(p, c) {
           last_reply_at: '',
           last_sent_at: '',
           next_hail_at: '',
-          last_stance: m.stance || 'none',
+          last_stance: 'none',
           isRoster: false,
+          isGroupedOther: true,
+          senders: [],
+          senderSet: new Set(),
           messages: [],
           inCount: 0,
           outCount: 0,
@@ -5697,6 +5700,13 @@ function buildDiploThreads(p, c) {
         byKey.set(k, extra);
         order.push(extra);
       }
+      const grp = byKey.get(k);
+      const sLbl = (mTag ? '[' + mTag + '] ' : '') + (partyName || 'Unknown');
+      if (!grp.senderSet.has(sLbl)) {
+        grp.senderSet.add(sLbl);
+        grp.senders.push(sLbl);
+      }
+      grp.leader = grp.senders.length + ' contacts (' + grp.senders.slice(0, 3).join(', ') + (grp.senders.length > 3 ? ', ...' : '') + ')';
     }
     const bucket = byKey.get(k);
     bucket.messages.push(m);
@@ -5753,10 +5763,11 @@ function renderOutreachTables(panel, p, c) {
     const contacted = (p && p.contacted_total != null)
       ? p.contacted_total
       : rows.filter((r) => r.status && r.status !== 'uncontacted').length;
-    const extraContacts = threads.order.filter((x) => !x.isRoster).length;
-    const hTitle = 'Neutrality outreach roster & chat threads -- ' + blocCount + ' target blocs (' + contacted + '/' + rows.length + ' contacted, O10' + (extraContacts ? ' + ' + extraContacts + ' direct contacts' : '') + ')';
+    const otherGrp = threads.byKey.get('__OTHER_DIRECT__');
+    const otherCnt = otherGrp ? otherGrp.senders.length : 0;
+    const hTitle = 'Neutrality outreach roster & chat threads -- ' + blocCount + ' target blocs (' + contacted + '/' + rows.length + ' contacted, O10' + (otherCnt ? ' + ' + otherCnt + ' other pilots grouped' : '') + ')';
     panel.append(el('h3', null, hTitle));
-    panel.append(el('p', 'sub', 'Click any faction row below to open its full chronological chat history (Docs-style thread viewer).'));
+    panel.append(el('p', 'sub', 'Click any faction row below to open its full chat history (newest first, Docs-style thread viewer).'));
 
     const twoLine = (top, sub) => {
       const box = el('div', 'twoline');
@@ -5781,6 +5792,7 @@ function renderOutreachTables(panel, p, c) {
       tr.addEventListener('click', () => {
         diploThread = r.key;
         diploDirFilter = 'all';
+        diploSenderFilter = 'all';
         diploQuery = '';
         empSub = 'Comms';
         render();
@@ -5854,6 +5866,7 @@ function renderDiploThreadReader(panel, p, c) {
       if (!isCur) {
         diploThread = item.key;
         diploDirFilter = 'all';
+        diploSenderFilter = 'all';
         diploQuery = '';
         render();
       }
@@ -5888,6 +5901,26 @@ function renderDiploThreadReader(panel, p, c) {
   ctrl.append(ordBtn);
   card.append(ctrl);
 
+  if (active.isGroupedOther && active.senders && active.senders.length > 1) {
+    const sBar = el('div', 'diplo-thread-controls');
+    const allBtn = el('button', 'rf' + (diploSenderFilter === 'all' ? ' on' : ''), 'All senders (' + active.senders.length + ')');
+    allBtn.type = 'button';
+    allBtn.addEventListener('click', () => { diploSenderFilter = 'all'; render(); });
+    sBar.append(allBtn);
+    for (const sName of active.senders) {
+      const cnt = active.messages.filter((m) => {
+        const mTag = String(m.tag || '').trim().toUpperCase();
+        const pn = String(m._dir === 'OUT' ? (m.to || '') : (m.sender || '')).trim();
+        return ((mTag ? '[' + mTag + '] ' : '') + (pn || 'Unknown')) === sName;
+      }).length;
+      const sb = el('button', 'rf' + (diploSenderFilter === sName ? ' on' : ''), sName + ' (' + cnt + ')');
+      sb.type = 'button';
+      sb.addEventListener('click', () => { diploSenderFilter = sName; render(); });
+      sBar.append(sb);
+    }
+    card.append(sBar);
+  }
+
   const sRow = el('div', 'rsearch');
   const inp = el('input');
   inp.type = 'search';
@@ -5901,6 +5934,13 @@ function renderDiploThreadReader(panel, p, c) {
     let msgs = active.messages.slice();
     if (diploDirFilter === 'in') msgs = msgs.filter((m) => m._dir === 'IN');
     else if (diploDirFilter === 'out') msgs = msgs.filter((m) => m._dir === 'OUT');
+    if (active.isGroupedOther && diploSenderFilter !== 'all') {
+      msgs = msgs.filter((m) => {
+        const mTag = String(m.tag || '').trim().toUpperCase();
+        const pn = String(m._dir === 'OUT' ? (m.to || '') : (m.sender || '')).trim();
+        return ((mTag ? '[' + mTag + '] ' : '') + (pn || 'Unknown')) === diploSenderFilter;
+      });
+    }
     if (q) {
       msgs = msgs.filter((m) =>
         String(m.text || '').toLowerCase().includes(q)
@@ -6055,12 +6095,13 @@ function renderEmpireComms(panel, dip) {
   // Integrated clickable Outreach Roster + Direct Contacts (replaces bloated Direct Diplomatic Hails wall!)
   renderOutreachTables(panel, p, c);
 
-  panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));
-  if (!(c.local_radio || []).length) {
+  const radioTop = (c.local_radio || []).slice(0, 10);
+  panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + radioTop.length + ' newest)'));
+  if (!radioTop.length) {
     panel.append(el('p', 'empty', 'No nearby human local radio captured yet.'));
   } else {
     const feedWrap = el('div', 'icards');
-    for (const m of (c.local_radio || []).slice(0, 25)) {
+    for (const m of radioTop) {
       const card = el('div', 'ibldg');
       const bh = el('div', 'ibhead');
       if (m.tag) bh.append(el('span', 'rtag', '[' + m.tag + ']'));
@@ -6076,10 +6117,11 @@ function renderEmpireComms(panel, dip) {
     panel.append(feedWrap);
   }
 
-  if ((c.npc_notices || []).length) {
-    panel.append(el('h3', null, 'Station & authority dispatches to our ships (' + c.npc_notices.length + ' newest)'));
+  const npcTop = (c.npc_notices || []).slice(0, 10);
+  if (npcTop.length) {
+    panel.append(el('h3', null, 'Station & authority dispatches to our ships (' + npcTop.length + ' newest)'));
     panel.append(fitTable(table(['When', 'Authority', 'Notice'],
-      c.npc_notices.slice(0, 12).map((m) => [stampCet(m.t), m.sender, m.text]))));
+      npcTop.map((m) => [stampCet(m.t), m.sender, m.text]))));
   }
 }
 
