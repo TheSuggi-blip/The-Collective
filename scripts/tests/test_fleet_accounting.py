@@ -275,5 +275,49 @@ class TestFleetAccounting(unittest.TestCase):
             self.assertNotIn("steady net", drags_txt)
 
 
+
+    def test_other_cogs_never_negative_when_passive_fills_or_escrow_unwind_dominate(self):
+        import tempfile
+        # Simulate Trade escrow unwind + passive sell-order fills making fleet.py costs_per_hour negative (-308k)!
+        fj = {
+            "totals": {
+                "rates": {
+                    "windows": {
+                        "1h": {
+                            "minutes": 60,
+                            "income_per_hour": 307000,
+                            "costs_per_hour": -308000,
+                            "cph": 615000,
+                            "rewards_per_hour": 270000,
+                            "bought_once_per_hour": 60000,
+                            "fuel_cr_per_hour": 270000,
+                            "repair_cr_per_hour": 500,
+                            "spent_per_hour": 512000,
+                            "unexplained_per_hour": 760000,
+                            "treasury_own_per_hour": -5000,
+                            "purse_per_hour": 820000,
+                            "divisions": {
+                                "Trade": {"cph": 720000, "one_time_per_hour": 0, "fuel_cr_per_hour": 10000, "unexplained_per_hour": 760000, "spent_per_hour": 140000},
+                                "Logistics": {"cph": 140000, "one_time_per_hour": 25000, "fuel_cr_per_hour": 70000, "unexplained_per_hour": 0, "spent_per_hour": 115000},
+                                "Mining": {"cph": -65000, "one_time_per_hour": 175000, "fuel_cr_per_hour": 65000, "unexplained_per_hour": 0, "spent_per_hour": 90000},
+                                "Military": {"cph": -80000, "one_time_per_hour": 10000, "fuel_cr_per_hour": 85000, "unexplained_per_hour": 0, "spent_per_hour": 105000},
+                                "Intel": {"cph": -40000, "one_time_per_hour": -5000, "fuel_cr_per_hour": 40000, "unexplained_per_hour": 0, "spent_per_hour": 45000},
+                            },
+                        }
+                    }
+                }
+            }
+        }
+        with tempfile.TemporaryDirectory() as td:
+            p = accounting.compute_pnl(None, repo_root=td, data_dir=td, fleet_json=fj, hours=1)
+            ob = p["opex_breakdown"]
+            # Expense MUST NEVER be negative (which rendered as positive expense credit on HUD!)
+            self.assertGreaterEqual(ob["other_cogs_h"], 0, ob)
+            self.assertEqual(p["passive_inflows_h"], 760000)
+            self.assertEqual(ob["gross_direct_h"], ob["fuel_h"] + ob["repair_h"] + ob["craft_inputs_h"] + ob["other_cogs_h"])
+            # Exact zero-plug reconciliation: (active_rev + passive_inflows) - matched_direct == recurring_cash_h!
+            self.assertEqual((p["raw_income_h"] + p["passive_inflows_h"]) - ob["matched_direct_h"], p["recurring_cash_h"])
+
+
 if __name__ == "__main__":
     unittest.main()

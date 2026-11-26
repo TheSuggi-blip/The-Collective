@@ -4001,10 +4001,12 @@ function renderFinancialStatements(panel, ops, w, t) {
 
   const numOr0 = (obj, k) => (obj && obj[k] !== null && obj[k] !== undefined ? Number(obj[k]) : 0);
   const opexOf = (a) => (a && a.opex_breakdown ? a.opex_breakdown : null);
-  // Strict IFRS 15 / ASC 606: ONLY realized cash sales & contracts count as Operating Revenue
-  const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') : null);
-  const totalCashInOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'seed_rewards_h') : null);
-  const dirOpExOf = (a) => (a ? -(numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h')) : null);
+  // Strict IFRS 15 / ASC 606: Active cash sales + Passive Exchange Fills / Escrow Unwind separated cleanly from COGS
+  const activeRevOf = (a) => (a ? numOr0(a, 'raw_income_h') : null);
+  const passiveRevOf = (a) => (a ? numOr0(a, 'passive_inflows_h') : null);
+  const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') : null);
+  const totalCashInOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') + numOr0(a, 'seed_rewards_h') : null);
+  const dirOpExOf = (a) => (a ? -(opexOf(a) ? numOr0(opexOf(a), 'matched_direct_h') : (numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h'))) : null);
   const realizedGrossOf = (a) => (a ? realizedRevOf(a) + dirOpExOf(a) : null);
   const realizedEbitOf = (a) => (a ? numOr0(a, 'recurring_cash_h') + numOr0(a, 'treasury_own_h') : null);
   // Realized Net Operating Profit / Cash Owner Earnings == Credits Before CapEx (CFO)
@@ -4115,8 +4117,9 @@ function renderFinancialStatements(panel, ops, w, t) {
   panel.append(el('h3', null, '1. Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15 / GAAP Realized)'));
   const pnlRows = [
     { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- Point of Sale Only)' },
-    row5('Realized Exchange Sales & Freight Contracts (Cash)', realizedRevOf, 'fs-ind'),
-    row5('Total Realized Operating Revenue', realizedRevOf, 'fs-sub'),
+    row5('Realized Active Exchange Sales & Freight Contracts (Cash)', activeRevOf, 'fs-ind'),
+    row5('Passive Exchange Order Fills & Escrow Unwind (Net Inflow)', passiveRevOf, 'fs-ind'),
+    row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
     row5('Fuel Burn (All Fleet Transit & Operations)', fuelSumOf, 'fs-ind'),
     row5('Hull & Shield Repairs (Station Docking)', (a) => (a ? -numOr0(opexOf(a) || a, opexOf(a) ? 'repair_h' : 'repair_cr_h') : null), 'fs-ind'),

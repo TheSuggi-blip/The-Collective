@@ -680,6 +680,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
 
     raw_income_h = 0.0
     raw_costs_h = 0.0
+    raw_unexplained_h = 0.0
     raw_steady_h = 0.0
     rewards_h = 0.0
     bought_once_h = 0.0
@@ -725,6 +726,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     if isinstance(w, dict) and w and not use_smh:
         raw_income_h = _num(w.get("income_per_hour"))
         raw_costs_h = _num(w.get("costs_per_hour"))
+        raw_unexplained_h = max(0.0, _num(w.get("unexplained_per_hour")))
         repair_cr_h = _num(w.get("repair_cr_per_hour"))
         raw_steady_h = _num(w.get("cph"))
         rewards_h = _num(w.get("rewards_per_hour"))
@@ -1044,17 +1046,25 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     if repair_opex_h <= 0.0 and isinstance(w, dict):
         repair_opex_h = max(0.0, _num(w.get("repair_cr_per_hour")))
     craft_raw_h = max(0.0, -_num((support_out.get("crafting") or {}).get("credits_per_hour")))
-    rem_after_fr = max(0.0, raw_costs_h - fuel_opex_h - repair_opex_h)
+    # GAAP/IFRS sign invariant: fleet.py defines costs_per_hour = earned - wallets - bought_once,
+    # which subtracts positive unexplained_per_hour (passive Exchange limit sell-order fills & cancelled
+    # buy-escrow refunds). Never let unmetered wallet inflows turn COGS into a positive expense credit!
+    # Reclassify them cleanly as passive_inflows_h so gross_direct_h & other_cogs_h stay strictly >= 0
+    # while (raw_income_h + passive_inflows_h) - matched_direct_h == recurring_cash_h (exact zero-plug!).
+    passive_inflows_h = max(raw_unexplained_h, max(0.0, (fuel_opex_h + repair_opex_h) - raw_costs_h))
+    gross_direct_h = raw_costs_h + passive_inflows_h
+    rem_after_fr = max(0.0, gross_direct_h - fuel_opex_h - repair_opex_h)
     craft_opex_h = min(craft_raw_h, rem_after_fr)
-    other_cogs_h = raw_costs_h - fuel_opex_h - repair_opex_h - craft_opex_h
+    other_cogs_h = max(0.0, gross_direct_h - fuel_opex_h - repair_opex_h - craft_opex_h)
     reclass_once_h = -once_direct_h
-    matched_direct_h = raw_costs_h + once_direct_h
+    matched_direct_h = gross_direct_h + once_direct_h
     opex_breakdown = {
         "fuel_h": int(round(fuel_opex_h)),
         "repair_h": int(round(repair_opex_h)),
         "craft_inputs_h": int(round(craft_opex_h)),
         "other_cogs_h": int(round(other_cogs_h)),
-        "gross_direct_h": int(round(raw_costs_h)),
+        "gross_direct_h": int(round(gross_direct_h)),
+        "passive_inflows_h": int(round(passive_inflows_h)),
         "reclassified_once_h": int(round(reclass_once_h)),
         "matched_direct_h": int(round(matched_direct_h)),
     }
@@ -1067,6 +1077,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "inv_span_hours": round(inv_span_h, 2) if has_inv_accrual else 0.0,
         "has_inventory_accrual": has_inv_accrual,
         "raw_income_h": int(round(raw_income_h)),
+        "passive_inflows_h": int(round(passive_inflows_h)),
         "raw_costs_h": int(round(raw_costs_h)),
         "raw_steady_h": int(round(raw_steady_h)),
         "once_direct_h": int(round(once_direct_h)),

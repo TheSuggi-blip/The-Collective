@@ -1823,6 +1823,31 @@ def main(argv=None):
         # and holds non-reserved goods in its personal storage (e.g., gifted by non-faction Hunters!), drain them into
         # Shared Faction Lockbox so ALL 95 Haulers, Officer Crafters, and Officer Bursars immediately share them!
         if _cur_base and _cur_base in _active_lbs0 and _pilot_can_withdraw_faction(DATA, pilot):
+            # Auto-register this docked Officer Hauler into receivers.json['hauler'][_cur_base] (up to 4 active
+            # local Officers) so lawless Outpost Lockboxes always have live local Officer Hauler receivers!
+            try:
+                _rec_p = Path(DATA) / "fleet" / "receivers.json"
+                _rec_l = Path(DATA) / "fleet" / "receivers.lock"
+                with open(_rec_l, "a+", encoding="utf-8") as _rlf:
+                    fcntl.flock(_rlf, fcntl.LOCK_EX)
+                    try:
+                        _rdoc = read_json(_rec_p, {})
+                        if not isinstance(_rdoc, dict):
+                            _rdoc = {}
+                        _hmap = dict(_rdoc.get("hauler") or {}) if isinstance(_rdoc.get("hauler"), dict) else {}
+                        _cur_v = _hmap.get(_cur_base)
+                        _hlst = list(_cur_v) if isinstance(_cur_v, list) else ([_cur_v] if isinstance(_cur_v, str) and _cur_v else [])
+                        if pilot not in _hlst:
+                            _hlst.append(pilot)
+                            if len(_hlst) > 4:
+                                _hlst = _hlst[-4:]
+                            _hmap[_cur_base] = _hlst[0] if len(_hlst) == 1 else _hlst
+                            _rdoc["hauler"] = _hmap
+                            write_json(_rec_p, _rdoc)
+                    finally:
+                        fcntl.flock(_rlf, fcntl.LOCK_UN)
+            except Exception:
+                pass
             try:
                 _sv_r = body(raw("view", {"station_id": _cur_base, "target": "self"}, group="spacemolt_storage"))
                 _sv_rows = _sv_r.get("items") or _sv_r.get("storage") or []
