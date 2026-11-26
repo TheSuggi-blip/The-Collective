@@ -514,8 +514,17 @@ def _load_needs_and_reserves_uncached(repo_root, data):
             for iid, nq in open_needs.items():
                 if fleet_stock.get(iid, 0) <= int(nq * 1.25) + 50:
                     reserved.add(iid)
-            # Strict live market reference map from fresh (<6h) read.db books -- ZERO static catalog base_value!
-            if "books" in tbls:
+            # Manipulation-resistant cross-station VWM + rolling LULD TWAP oracle (NEVER naive MAX(bid)!)
+            try:
+                import market_guard as _mg
+                _fm = _mg.load_fair_price_map(data, db_path=db)
+                for _iid, _rec in _fm.items():
+                    _fp = float((_rec or {}).get("fair_price") or 0.0)
+                    if _fp > 0:
+                        live_market_vals[str(_iid)] = _fp
+            except Exception:
+                pass
+            if not live_market_vals and "books" in tbls:
                 cutoff = time.time() - 6.0 * 3600.0
                 for iid, mb in con.execute("SELECT item, MAX(bid) FROM books WHERE bid > 0 AND bid_qty > 0 AND t >= ? GROUP BY item", (cutoff,)).fetchall():
                     if iid and mb:
@@ -849,7 +858,7 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             break
     return picks
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None):
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -990,17 +999,13 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             ask = float(row.get("best_sell") or 0)
             if bid <= 0 and ask <= 0:
                 continue
+            # Anti-self-outbid: never compete with another CLTV Bursar already bidding this item at THIS station!
+            if same_station_cltv_buys and iid in same_station_cltv_buys and not (own_buy.get(iid) or []):
+                continue
             gal_bid = float((live_market_vals or {}).get(iid) or 0)
-            if ask > 0:
-                ceiling = int(ask * max_ratio)
-                # Anti-gouge guard: NEVER let a troll 1,000 cr ask trick a Bursar into bidding 795 cr on an 11 cr ore!
-                if gal_bid > 0:
-                    ceiling = min(ceiling, max(10, int(gal_bid * 1.25)))
-            elif gal_bid > 0:
-                ceiling = int(gal_bid * 1.05)
-            elif bid > 0:
-                ceiling = int(bid * 1.05)
-            else:
+            import market_guard as _mg_p
+            ceiling = _mg_p.safe_buy_ceiling(iid, bid, ask, gal_bid, max_ratio=max_ratio, max_fair_mult=1.25)
+            if ceiling < 1:
                 continue
             if ceiling < 1:
                 continue
@@ -1294,7 +1299,16 @@ def main(argv=None):
                 _sells_doc = read_json(DATA / "fleet" / "bursar_sells.json", {})
                 _p_ord_meta = (((_sells_doc.get("entries") or {}).get(pilot) or {}).get(base_id) or {}).get("orders") or {}
                 _order_fs = {str(k): int(v.get("first_seen") or 0) for k, v in _p_ord_meta.items() if isinstance(v, dict) and v.get("first_seen")}
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs)
+                _same_st_buys = set()
+                try:
+                    import market_guard as _mg_b
+                    _, _bp_map = _mg_b.load_cltv_buy_orders(DATA)
+                    for (_kb, _ki), _pset in _bp_map.items():
+                        if _kb == str(base_id) and any(_op != str(pilot) for _op in _pset):
+                            _same_st_buys.add(_ki)
+                except Exception:
+                    pass
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break

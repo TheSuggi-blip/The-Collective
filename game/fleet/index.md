@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 79.
+folder; never edited by hand. Scripts listed: 80.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -68,6 +68,7 @@ folder; never edited by hand. Scripts listed: 79.
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
+| `market_guard.py` | Open-Market Anti-Manipulation & Manipulation-Resistant Fair-Price Engine (`market_guard.py`). | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
 | `mine_net.py` | Policy-driven dynamic smart Mining network (`mine-network`). | By hand |
 | `mobile.py` | Where a moving station stands now, for a route stop that names the system it stood in when written. | By hand |
@@ -712,6 +713,17 @@ Run by hand.
 
 ```
 loot_own.py <pilot> [--any-creature]
+```
+
+### `market_guard.py`
+
+Open-Market Anti-Manipulation & Manipulation-Resistant Fair-Price Engine
+(`market_guard.py`).
+
+Run by hand.
+
+```
+Imported by game/fleet/bursar.py and game/fleet/haul.py (stdlib only, ASCII only).
 ```
 
 ### `mine.py`

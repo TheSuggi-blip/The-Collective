@@ -639,7 +639,7 @@ def active_claimed_pilots(data, ttl_s=2400, now_t=None):
             if isinstance(v, dict) and v.get("pilot") and (now_t - float(v.get("at") or 0)) < ttl_s}
 
 
-def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed_keys, now_t=None, exclude_bases=None):
+def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed_keys, now_t=None, exclude_bases=None, fair_prices=None, cltv_buy_keys=None):
     """Global greedy 1-to-1 optimal matcher across available haulers and fresh arbitrage spreads."""
     now_t = time.time() if now_t is None else float(now_t)
     if not peers:
@@ -699,11 +699,18 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
         bids = [e for e in entries if e[4] > 0 and e[5] > 0]
         if not asks or not bids:
             continue
+        _fp_i = (fair_prices or {}).get(iid)
         for ab, aloc, ask_p, ask_q, _, _ in asks:
             unit_cost = ask_p * 1.05
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
                     continue
+                if cltv_buy_keys and (bb, iid) in cltv_buy_keys:
+                    continue
+                if _fp_i is not None:
+                    import market_guard as _mg_a
+                    if _mg_a.is_mirage_arbitrage_trap(iid, ask_p, bid_p, _fp_i):
+                        continue
                 # Deep buy-walls (>=500 qty) allow parallel origin asks without single-hauler lock
                 jkey = ("arb-bw:%s:%s:%s" % (ab, bb, iid)) if (bid_q >= 500 and bid_p >= bw_min_bid) else ("arb-bid:%s:%s" % (bb, iid))
                 if jkey in claimed_keys:
@@ -941,7 +948,7 @@ def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash,
     return best[1] if best else None
 
 
-def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None):
+def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None, fair_prices=None, cltv_buy_keys=None):
     """Pure selector: returns best safe fresh cross-station arbitrage job dict or None."""
     now_t = time.time() if now_t is None else now_t
     policed = bool(policy.get("policed_only", True))
@@ -980,10 +987,17 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
         bids = [e for e in entries if e[4] > 0 and e[5] > 0]
         if not asks or not bids:
             continue
+        _fp_i = (fair_prices or {}).get(iid)
         for ab, aloc, ask_p, ask_q, _, _ in asks:
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin):
                     continue
+                if cltv_buy_keys and (bb, iid) in cltv_buy_keys:
+                    continue
+                if _fp_i is not None:
+                    import market_guard as _mg_a
+                    if _mg_a.is_mirage_arbitrage_trap(iid, ask_p, bid_p, _fp_i):
+                        continue
                 jkey = "arb-bid:%s:%s" % (bb, iid)
                 if jkey in claimed_keys:
                     continue
@@ -2038,7 +2052,15 @@ def main(argv=None):
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
                 peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
-                job = assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed, exclude_bases=strongholds).get(pilot)
+                _cltv_buys_a = _load_cltv_open_buy_keys(DATA)
+                _fair_p_a = None
+                try:
+                    import market_guard as _mg_h
+                    _vwm_a = _mg_h.compute_book_vwm_map(books_rows, cltv_buy_keys=_cltv_buys_a)
+                    _fair_p_a = _mg_h.update_price_oracle(DATA, _vwm_a)
+                except Exception:
+                    _fair_p_a = None
+                job = assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed, exclude_bases=strongholds, fair_prices=_fair_p_a, cltv_buy_keys=_cltv_buys_a).get(pilot)
                 if job and claim_job(DATA, pilot, job["job_key"]):
                     iid, bloc, sloc = job["item"], job["buy_loc"], job["sell_loc"]
                     say("arb %s: %d units %s (%d cr) -> %s (%d cr) | est +%d cr" % (
