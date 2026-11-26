@@ -1,16 +1,16 @@
 # Master 500-Ship Min-Max Fleet Manifest (Approved 2026-11-26, Catalog 0.734.6.json)
 # Wave 0 = 10 Kept Command | W1 Miners (130) | W2 Hunters (80) | W3 Fleet & Defense (60) | W4 Trade & Crafters (85) | W5 Logistics (90) | W6 Intel (45)
 wave	division	wing	prefix	pilot	empire	target_t2	target_t3	target_t4	target_t5	status
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Prime Directive	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Zero Point	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Golden Chariot	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Mercurys Ledger	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Hades	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Vision	voidborn	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Solar Mandate	solarian	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Nebula Charter	nebula	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Rimward Pact	outerrim	theorem	concordance	consensus	symposium	keep
-0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Crimson Aegis	crimson	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Command	CMD	Prime Directive	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Command	CMD	Zero Point	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Command	CMD	Golden Chariot	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Command	CMD	Mercurys Ledger	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Command	CMD	Hades	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Command	CMD	Vision	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Command	CMD	Solar Mandate	solarian	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Command	CMD	Nebula Charter	nebula	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Command	CMD	Rimward Pact	outerrim	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Command	CMD	Crimson Aegis	crimson	theorem	concordance	consensus	symposium	keep
 1	Miners	3A. Ore -- Precision	EUV	EUV Obsidian	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
 1	Miners	3A. Ore -- Precision	EUV	EUV Basalt Choir	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
 1	Miners	3A. Ore -- Precision	EUV	EUV Borealis	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
@@ -221,22 +221,22 @@ wave	division	wing	prefix	pilot	empire	target_t2	target_t3	target_t4	target_t5	s
 2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Estoc	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
 2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Falchion	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
 2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Gladius	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Hyperion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Iron Axiom	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Nemesis	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Caliban	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Aegis Crown	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Bastion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Citadel	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Dominion	voidborn	dualism	gestalt	superposition	overmind	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Empyrean	voidborn	dualism	gestalt	superposition	overmind	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Fortitude	voidborn	dualism	gestalt	superposition	overmind	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Goliath	solarian	penumbra	aporia	paradox_engine	symposium	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Helios	solarian	penumbra	aporia	paradox_engine	symposium	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Imperium	solarian	penumbra	aporia	paradox_engine	symposium	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Juggernautis	voidborn	anamnesis	remedy	panacea	pleroma	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Kronos	voidborn	anamnesis	remedy	panacea	pleroma	planned
-3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Leviathanis	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- DPS	GSV	GSV Hyperion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- DPS	GSV	GSV Iron Axiom	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- DPS	GSV	GSV Nemesis	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- DPS	GSV	GSV Caliban	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- DPS	GSV	GSV Aegis Crown	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Beta. Task Force Beta (8) -- DPS	GSV	GSV Bastion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Beta. Task Force Beta (8) -- DPS	GSV	GSV Citadel	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Carrier	GSV	GSV Dominion	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Carrier	GSV	GSV Empyrean	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Carrier	GSV	GSV Fortitude	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Interdictor	GSV	GSV Goliath	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Interdictor	GSV	GSV Helios	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Interdictor	GSV	GSV Imperium	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A-Prime. Task Force Prime (10) -- Medic	GSV	GSV Juggernautis	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1A-Alpha. Task Force Alpha (8) -- Medic	GSV	GSV Kronos	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1A-Beta. Task Force Beta (8) -- Medic	GSV	GSV Leviathanis	voidborn	anamnesis	remedy	panacea	pleroma	planned
 3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Monarch	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
 3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Nemean	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
 3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Olympus	crimson	broadaxe	dialectic	axiomata	opus_magna	planned

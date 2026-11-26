@@ -101,7 +101,7 @@ const LAWLESS = '#59607a';
 const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b',
   'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c' };
 const JOB_DIVS = [
-  { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard', subs: ['Command Task Forces', 'Grand Battle Line', 'Outpost Sentinels & Support'] },
+  { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard', subs: ['Task Force Prime (10)', 'Task Force Alpha (8)', 'Task Force Beta (8)', 'Grand Battle Line', 'Outpost Sentinels & Support'] },
   { key: 'Hunters', short: 'Hnt', top: 'Hunters', shape: 'Military', subs: ['Heavy Pirate Hunters', 'Fast Wildlife & Raiders'] },
   { key: 'Miners', short: 'Min', top: 'Miners', shape: 'Mining', subs: ['Ore -- Precision', 'Ore -- Bulk', 'Deep-Core & Rad', 'Gas Harvesters', 'Ice Harvesters'] },
   { key: 'Traders & Bursars', short: 'Trd', top: 'Traders', shape: 'Trade', subs: ['Express Arbitrage', 'Bulk Trade Haulers', 'Bursar Desks'] },
@@ -110,6 +110,7 @@ const JOB_DIVS = [
   { key: 'Intel', short: 'Int', top: 'Intel', shape: 'Intel', subs: ['Covert Recon', 'Deep-Core Surveyors'] },
 ];
 function jobDivision(r) {
+  if (r && r.job_division && DIV[r.job_division]) return String(r.job_division);
   const d = String(r.division || '');
   const nm = String(r.name || '');
   const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
@@ -1867,15 +1868,16 @@ function shipMatches(r) {
 }
 const STARTER_HULLS = new Set(['threshold', 'prospect', 'theoria', 'cobble', 'shard']);
 function shipSubgroup(r) {
+  if (r && r.roster_group) return [Number(r.roster_order) || 0, String(r.roster_group)];
   const jd = jobDivision(r);
   const nm = String(r.name || '');
   const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
   const what = String(r.order || r.route || r.activity || '').toLowerCase();
   const mods = Array.isArray(r.modules) ? r.modules.map((m) => String(m || '').toLowerCase()).join(' ') : '';
   if (jd === 'Fleet & Defense') {
-    if (r.flagship || (!nm.includes('-') && !nm.startsWith('GSV '))) return [0, 'Command Task Forces'];
-    if (nm.startsWith('sentinel-') || ['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis', 'dualism', 'voidborn_event_horizon', 'apotheosis', 'membrane', 'palisade'].includes(cls)) return [2, 'Outpost Sentinels & Support'];
-    return [1, 'Grand Battle Line'];
+    if (r.flagship || (!nm.includes('-') && !nm.startsWith('GSV '))) return [0, 'Task Force Prime (10)'];
+    if (nm.startsWith('sentinel-') || ['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis', 'dualism', 'voidborn_event_horizon', 'apotheosis', 'membrane', 'palisade'].includes(cls)) return [4, 'Outpost Sentinels & Support'];
+    return [3, 'Grand Battle Line'];
   }
   if (jd === 'Hunters') {
     if (['recursion', 'junkyard_dog', 'insurance_fraud', 'juggernaut', 'hells_bells'].includes(cls)) return [1, 'Fast Wildlife & Raiders'];
@@ -1887,8 +1889,7 @@ function shipSubgroup(r) {
     if (mods.includes('gas_harvester') || ['nebulous', 'revenue', 'nebulae', 'billhook', 'spit_and_prayer', 'phase_collector', 'gas_tanker', 'atmospheric_sampler', 'gas_raider', 'gas_trawler', 'rift_siphon'].includes(cls) || what.includes('_gas')) return [3, 'Gas Harvesters'];
     if (mods.includes('ice_harvester') || ['hoarfrost', 'cold_storage', 'absolute_zero', 'permafrost', 'brain_freeze', 'canteen', 'ice_dividend', 'cryogenic_survey', 'absolute_entropy', 'thermal_lance', 'ice_trawler', 'cryo_industrial', 'rime', 'frost_dividend'].includes(cls) || what.includes('_ice')) return [4, 'Ice Harvesters'];
     if (mods.includes('modulated_mining_laser') || what.includes('silver') || what.includes('titanium') || what.includes('lead')) return [0, 'Ore -- Precision'];
-    if (cls && !STARTER_HULLS.has(cls)) return [1, 'Ore -- Bulk'];
-    return [5, 'Starters (Pre-Upgrade)'];
+    return [1, 'Ore -- Bulk'];
   }
   if (jd === 'Traders & Bursars') {
     if (what.includes('bursar')) return [2, 'Bursar Desks'];

@@ -299,16 +299,109 @@ def apply_orders(rows, now):
     return rows
 
 
+
+_MANIFEST_CACHE = {"mtime": -1.0, "by_pilot": {}}
+
+
+def _wing_to_roster_group(wing):
+    w = str(wing or "").strip()
+    if w.startswith("1A-Prime."):
+        return (0, "Task Force Prime (10)")
+    if w.startswith("1A-Alpha."):
+        return (1, "Task Force Alpha (8)")
+    if w.startswith("1A-Beta."):
+        return (2, "Task Force Beta (8)")
+    if w.startswith("1A."):
+        return (0, "Task Force Prime (10)")
+    if w.startswith("1B."):
+        return (3, "Grand Battle Line")
+    if w.startswith("1C."):
+        return (4, "Outpost Sentinels & Support")
+    if w.startswith("2A."):
+        return (0, "Heavy Pirate Hunters")
+    if w.startswith("2B."):
+        return (1, "Fast Wildlife & Raiders")
+    if w.startswith("3A."):
+        return (0, "Ore -- Precision")
+    if w.startswith("3B."):
+        return (1, "Ore -- Bulk")
+    if w.startswith("3C."):
+        return (2, "Deep-Core & Rad")
+    if w.startswith("3D."):
+        return (3, "Gas Harvesters")
+    if w.startswith("3E."):
+        return (4, "Ice Harvesters")
+    if w.startswith("4A."):
+        return (0, "Express Arbitrage")
+    if w.startswith("4B."):
+        return (1, "Bulk Trade Haulers")
+    if w.startswith("4C."):
+        return (2, "Bursar Desks")
+    if w.startswith("5A."):
+        return (0, "Station Refiners & Bursars")
+    if w.startswith("5B."):
+        return (1, "Field Workshops")
+    if w.startswith("6A."):
+        return (0, "Supply Chain Haulers")
+    if w.startswith("6B."):
+        return (1, "Passenger Liners")
+    if w.startswith("6C."):
+        return (2, "Fuel & Salvage Tenders")
+    if w.startswith("7A."):
+        return (0, "Covert Recon")
+    if w.startswith("7B."):
+        return (1, "Deep-Core Surveyors")
+    return (0, "")
+
+
+def manifest_roster_entry(name):
+    """Return {'job_division', 'roster_group', 'roster_order', 'wing'} from fleet-500-manifest.tsv."""
+    p = Path(__file__).resolve().parent.parent / "game" / "fleet-500-manifest.tsv"
+    if not p.is_file():
+        return {}
+    try:
+        mt = p.stat().st_mtime
+    except OSError:
+        return {}
+    if mt != _MANIFEST_CACHE["mtime"]:
+        by_p = {}
+        try:
+            with p.open("r", encoding="utf-8", errors="replace") as f:
+                lines = [ln for ln in f if ln.strip() and not ln.startswith("#")]
+            import csv as _csv
+            for r in _csv.DictReader(lines, delimiter="\t"):
+                pil = str(r.get("pilot") or "").strip()
+                if not pil:
+                    continue
+                ord_i, grp = _wing_to_roster_group(r.get("wing"))
+                by_p[pil] = {
+                    "job_division": str(r.get("division") or "").strip(),
+                    "roster_group": grp,
+                    "roster_order": ord_i,
+                    "wing": str(r.get("wing") or "").strip(),
+                }
+        except OSError:
+            pass
+        _MANIFEST_CACHE["mtime"] = mt
+        _MANIFEST_CACHE["by_pilot"] = by_p
+    return _MANIFEST_CACHE["by_pilot"].get(name) or {}
+
+
 def ship_row(account):
     """The short row of fleet.json for one account of the engine's dashboard data."""
     st = account.get("state") or {}
     player, ship, loc = st.get("player") or {}, st.get("ship") or {}, st.get("location") or {}
     name = text(account.get("username"), 40)
     division, admiral, number = division_of(name)
+    m_ent = manifest_roster_entry(name)
     loop = account.get("loop") or {}
     return {
         "name": name, "division": division, "admiral": admiral, "number": number, "flagship": name in FLAGSHIPS,
         "flagship_of": text((FLAGSHIPS.get(name) or {}).get("of"), 20),
+        "job_division": text(m_ent.get("job_division"), 40),
+        "roster_group": text(m_ent.get("roster_group"), 48),
+        "roster_order": int(m_ent.get("roster_order") or 0),
+        "wing": text(m_ent.get("wing"), 64),
         "empire": text(player.get("empire"), 20), "status": text(account.get("status"), 20),
         "credits": num(player.get("credits")),
         "class": text(ship.get("class_name") or ship.get("class_id"), 40),
