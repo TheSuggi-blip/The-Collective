@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 83.
+Routes: 84.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -98,4 +98,5 @@ Routes: 83.
 | [mine-floodlight-flats](mine-floodlight-flats.json) | mine | beyond the border, 12 jumps | Floodlight Flats: iron_ore, copper_ore, silicon_ore, neodymium_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-long-errand-band](mine-long-errand-band.json) | mine | beyond the border, 10 jumps | Long Errand Band: nickel_ore; sold at Ironlight Crossroads | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
 | [mine-zubenelhakrabi-crystal-sand](mine-zubenelhakrabi-crystal-sand.json) | mine | beyond the border, 11 jumps | Zubenelhakrabi Crystal Sand: iron_ore, copper_ore, silicon_ore; sold at Node Gamma Relay Station | up to 1 ships, empty hold, off | TBD | TBD | TBD | TBD | -- |
+| [pirate-network](pirate-network.json) | pirate_net | -- | Corsair Proxy AutoNet -- 3-Phase Leveling, Staging & Plunder/Tow Warfare (disabled) | up to 120 ships, standing work, off | TBD | TBD | TBD | TBD | -- |
 | [salvage-network](salvage-network.json) | salvage_net | -- | Salvage AutoNet -- 6C Combat Salvage Tenders (disabled until enabled) | up to 6 ships, standing work, off | TBD | TBD | TBD | TBD | -- |

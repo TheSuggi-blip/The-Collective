@@ -1,0 +1,133 @@
+{
+  "enabled": false,
+  "raiding_enabled": false,
+  "dry_run": true,
+  "version": 1,
+  "note": "Autonomous Corsair Proxy AutoNet (pirate_net.py) for far-future Duskmere/TOI-700 military faction. DISABLED by default; zero live CLTV ships match wing_prefix.",
+  "wing_prefix": "CORSAIR-",
+  "naming_default_style": "barcode",
+  "barcode_length": 20,
+  "rest_seconds_when_empty": 30,
+  "fortress": {
+    "chokepoint_outside": "duskmere",
+    "gatekeeper_citadel": "toi_700",
+    "interior_systems": [
+      "toi_700",
+      "copperfield",
+      "rustpoint",
+      "praecipua",
+      "taiyi"
+    ],
+    "sensor_watch_systems": [
+      "duskmere",
+      "edgewater",
+      "dusthaven",
+      "minkar",
+      "mothallah"
+    ]
+  },
+  "shared_intel_tap": {
+    "enabled": true,
+    "read_db_readonly": true,
+    "jitter_min_seconds": 180,
+    "jitter_max_seconds": 720,
+    "exclude_tags": [
+      "CLTV"
+    ],
+    "exclude_cltv_core_systems": [
+      "atria",
+      "felis",
+      "gsc_0044",
+      "ridgecrest",
+      "acrux",
+      "yildun"
+    ],
+    "min_cltv_distance_jumps": 10,
+    "max_raid_jumps_from_choke": 12,
+    "lawless_only": true
+  },
+  "phases": {
+    "leveling_until_piloting": 20,
+    "leveling_until_tier": 3,
+    "staging_armada_min_ships": 12,
+    "target_armada_size": 30
+  },
+  "combat_doctrine": {
+    "tackle_first": true,
+    "tackle_modules": [
+      "warp_disruptor",
+      "stasis_webifier_ii",
+      "stasis_webifier_i"
+    ],
+    "sustain_stance": "brace",
+    "flee_hull_pct": 35,
+    "abort_enemy_power_ratio": 1.35,
+    "plunder_and_tow": true,
+    "scrap_mode": "field",
+    "tow_high_value_prizes": true,
+    "toll_extortion": {
+      "enabled": true,
+      "min_credits": 150000,
+      "max_credits": 500000,
+      "safe_passage_ticks": 2160
+    }
+  },
+  "hull_ladders": {
+    "gunship": [
+      "cleaver",
+      "broadaxe",
+      "insurance_fraud",
+      "crimson_devastator",
+      "annihilator"
+    ],
+    "heavy_brawler": [
+      "cleaver",
+      "warmaul",
+      "hells_bells",
+      "juggernaut",
+      "armageddon"
+    ],
+    "boarder": [
+      "shiv",
+      "broadaxe",
+      "palinode",
+      "usurper",
+      "reckoning"
+    ],
+    "carrier": [
+      "cleaver",
+      "broadaxe",
+      "silent_tide",
+      "executioner",
+      "subjugator"
+    ],
+    "interdictor": [
+      "cleaver",
+      "broadaxe",
+      "aporia",
+      "portcullis",
+      "apotheosis"
+    ],
+    "medic": [
+      "cleaver",
+      "broadaxe",
+      "remedy",
+      "cauterizer",
+      "pleroma"
+    ],
+    "plunder_tow": [
+      "crowbar",
+      "finders_keepers",
+      "hold_my_beer",
+      "guillotine",
+      "thermodynamic_end"
+    ],
+    "command": [
+      "cleaver",
+      "broadaxe",
+      "annihilation",
+      "plausible_deniability",
+      "overlord"
+    ]
+  }
+}

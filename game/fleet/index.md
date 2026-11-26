@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 83.
+folder; never edited by hand. Scripts listed: 84.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -77,6 +77,7 @@ folder; never edited by hand. Scripts listed: 83.
 | `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
 | `passive_sense.py` | Zero-fuel opportunistic market & herd freshness updates when any fleet ship docks or works. | By hand |
+| `pirate_net.py` | 3-Phase Autonomous Corsair Proxy AutoNet & Naming Generator (Duskmere/TOI-700). | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
 | `plate.py` | Make our pilots' stored creature carapace into armor plate where each is docked, and sell plates into the bid there. | By hand |
 | `playbook_anchor.py` | Live division telemetry anchor, chapter high-watermark monitor, and empirical drift scanner. | By hand |
@@ -834,6 +835,17 @@ Run by hand.
 
 ```
 imported by mine.py, hunt.py and route_run.py: maybe_refresh_market(call_raw, base_id, system_id)
+```
+
+### `pirate_net.py`
+
+3-Phase Autonomous Corsair Proxy AutoNet & Naming Generator (Duskmere/TOI-700).
+
+Run by hand.
+
+```
+game/fleet/pirate_net.py <pilot> [--minutes 45] [--policy game/pirate-policy.json] [--route pirate-network] [--dry-run]
+game/fleet/pirate_net.py roster [--count 120] [--style barcode|organic_pirate|mixed] [--seed 2026] [--out <tsv_path>]
 ```
 
 ### `plan.py`

@@ -1,0 +1,14 @@
+{
+  "id": "pirate-network",
+  "title": "Corsair Proxy AutoNet -- 3-Phase Leveling, Staging & Plunder/Tow Warfare (disabled)",
+  "kind": "pirate_net",
+  "policy": "game/pirate-policy.json",
+  "standing": true,
+  "max_ships": 120,
+  "minutes": 45,
+  "requires": {
+    "wing_prefix": "CORSAIR-"
+  },
+  "status": "off",
+  "notes": "Standing AutoNet route for future Duskmere/TOI-700 Corsair faction. Double-locked disabled (status=off + pirate-policy.json enabled=false + CORSAIR- wing prefix) until activated."
+}
