@@ -991,3 +991,62 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .purse .pcol.inc .v.neg { color: var(--bad); }
 
 .members-grid .member.on { background: rgba(164, 139, 224, 0.14); box-shadow: inset 0 -2px 0 var(--c, var(--accent)); }
+
+/* Collapsible indented sub-menu tree inside each Left Roster job division */
+.subtree {
+  margin: 4px 0 4px 12px;
+  padding-left: 8px;
+  border-left: 2px solid color-mix(in srgb, var(--c, var(--line2)) 42%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.subnode { display: flex; flex-direction: column; }
+.subhead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+  padding: 5px 8px;
+  background: rgba(16, 21, 32, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  color: var(--text);
+  font: 600 11px/1.2 var(--sans);
+  text-align: left;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+.subhead:hover {
+  background: var(--raise);
+  border-color: color-mix(in srgb, var(--c, var(--accent)) 65%, var(--line));
+}
+.subhead.empty { opacity: 0.55; }
+.subhead .sleft { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.subhead .sfold {
+  display: inline-block;
+  width: 11px;
+  text-align: center;
+  font: 700 11px/1 var(--mono);
+  color: var(--c, var(--accent));
+}
+.subhead .slbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.subhead .spill {
+  flex: none;
+  font: 600 10px/1.1 var(--mono);
+  padding: 2px 5px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--dim);
+}
+.subhead .spill.warn { color: var(--warn); background: rgba(240, 179, 90, 0.12); }
+.subhead .spill.good { color: var(--good); background: rgba(95, 191, 140, 0.12); }
+.sublist {
+  margin: 3px 0 4px 8px;
+  padding-left: 6px;
+  border-left: 1px dashed var(--line2);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
