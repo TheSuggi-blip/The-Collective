@@ -447,5 +447,8 @@
  "templates": {
   "trade-sell": 85,
   "trade-craft": 85
+ },
+ "max_ships": {
+  "fit-cargo-expander-ii-krynn": 0
  }
 }

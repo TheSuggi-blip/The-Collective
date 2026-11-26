@@ -233,5 +233,8 @@
   "reader": 20,
   "outerrim": 12,
   "nebula": 8
+ },
+ "max_ships": {
+  "fit-survey-scanner-ii-central-nexus": 0
  }
 }

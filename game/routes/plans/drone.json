@@ -738,5 +738,11 @@
   "hunter": 88,
   "krynn-newborn": 30,
   "sol-newborn": 15
+ },
+ "max_ships": {
+  "fit-pulse-laser-iii-lhs-1140": 0,
+  "fit-shield-booster-ii-lhs-1140": 0,
+  "fit-armor-plate-ii-krynn-test": 0,
+  "fit-armor-plate-ii-sol-test": 0
  }
 }

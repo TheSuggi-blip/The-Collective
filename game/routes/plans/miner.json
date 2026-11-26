@@ -410,5 +410,19 @@
   "ice-sell": 130,
   "reserve-prism": 99,
   "reserve-hamal": 31
+ },
+ "max_ships": {
+  "fit-t2-lasers-lhs-1140": 0,
+  "fit-liminal-lasers-lhs-1140": 0,
+  "fit-mining-laser-iii-lhs-1140": 0,
+  "fit-mining-laser-ii-lhs-1140": 0,
+  "fit-mining-laser-ii-second-central-nexus": 0,
+  "fit-second-laser-ii-lhs-1140": 0,
+  "fit-second-laser-ii-pair-lhs-1140": 0,
+  "fit-second-laser-i-sol-central": 0,
+  "fit-laser-i-beside-ii-sol-central": 0,
+  "fit-third-laser-i-sol-central": 0,
+  "fit-cargo-expander-factory-belt": 0,
+  "fit-mining-laser-ii-sol-central": 0
  }
 }

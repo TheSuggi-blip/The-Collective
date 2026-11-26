@@ -304,7 +304,14 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
     sc_s = parse_sc(txt_s)
     player = sc_s.get("player") if isinstance(sc_s.get("player"), dict) else {}
     ship = sc_s.get("ship") if isinstance(sc_s.get("ship"), dict) else {}
-    credits = int(player.get("credits") if player.get("credits") is not None else (ship_doc.get("credits") or 0))
+    _res_txt = str((json.loads(txt_s).get("result") if txt_s.startswith("{") else "") or "")
+    _m_cr = re.search(r"\|\s*([0-9,]+)cr\b", _res_txt)
+    if player.get("credits") is not None:
+        credits = int(player.get("credits") or 0)
+    elif _m_cr:
+        credits = int(_m_cr.group(1).replace(",", ""))
+    else:
+        credits = int(ship_doc.get("credits") or 0)
     docked = bool(player.get("docked_at_base") or (sc_s.get("location") or {}).get("docked_at") or ship_doc.get("docked"))
 
     # 4. Best-effort deposit cargo if docked
