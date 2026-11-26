@@ -42,7 +42,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Agony Needle | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Bedlam Lance | Nexus Prime (`nexus_prime`) | 0 | accretion |
 | Bedlam Spark | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Catatonia Dart | Acubens (`acubens`) | 0 | threshold |
 | Cortical Lacerator | Acubens (`acubens`) | 0 | threshold |
 | Cortical Spike | Nexus Prime (`nexus_prime`) | 0 | liminal |
 | Cortical Stinger | Nexus Prime (`nexus_prime`) | 0 | threshold |
