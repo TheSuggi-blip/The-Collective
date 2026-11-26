@@ -9,7 +9,7 @@ faction: The Prime
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # The Prime [PRME]
@@ -40,10 +40,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| AsteroidAme | Nexus Prime (`nexus_prime`) | 0 | bonanza_king |
+| MLM-17735 | The Experiment (`the_experiment`) | 0 | bonanza_king |
 | MLM-27603 | Acubens (`acubens`) | 0 | threshold |
 | MLM-39101 | The Experiment (`the_experiment`) | 0 | threshold |
-| MLM-98780 | Nexus Prime (`nexus_prime`) | 0 | archimedes |
+| MLM-56217 | Acubens (`acubens`) | 0 | archimedes |
 
 ## Standing History
 

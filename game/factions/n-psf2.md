@@ -9,7 +9,7 @@ faction: Prospector Fleet
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Prospector Fleet [PSF2]
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 13 | Public event stream |
 
 ## Bases
 
