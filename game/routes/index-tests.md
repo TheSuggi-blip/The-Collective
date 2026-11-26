@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 127.
+Routes: 128.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -112,6 +112,7 @@ Routes: 127.
 | [sell-ember-nexus-krynn](sell-ember-nexus-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Central Nexus to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 3 ember_gland stored at central_nexus, while crimson_war_citadel bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-node-beta-krynn](sell-ember-node-beta-krynn.json) | circuit | beyond the border, 20 jumps | Stored ember glands carried from Node Beta to the Crimson War Citadel (Krynn) bid | up to 1 ships, with 4 ember_gland stored at node_beta_industrial_station, while crimson_war_citadel bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-ember-synchrony-dheneb](sell-ember-synchrony-dheneb.json) | circuit | beyond the border, 11 jumps | Stored ember glands carried from Synchrony Hub to the Hex Star bid (Dheneb, lawless), up to 30 a run | up to 1 ships, with 6 ember_gland stored at synchrony_hub, while b495c6003fc83e18f6d8cecbe6929133 bids 4000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
+| [sell-exotic-docked-grand-exchange](sell-exotic-docked-grand-exchange.json) | circuit | beyond the border, 21 jumps | Stored exotic_matter sold where it lies, at grand_exchange_station, at 45 cr or more | up to 1 ships, with 20 exotic_matter stored at grand_exchange_station, while grand_exchange_station bids 45 cr for exotic_matter | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-dheneb](sell-loot-at-dheneb.json) | circuit | beyond the border, 11 jumps | Hunt loot stored by Trade's receiver at the outpost at Dheneb sold where it lies | up to 1 ships, with 3 ember_gland stored at b495c6003fc83e18f6d8cecbe6929133, while b495c6003fc83e18f6d8cecbe6929133 bids 4500 cr for ember_gland | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-first-step](sell-loot-at-first-step.json) | circuit | beyond the border, 18 jumps | Hunt loot stored by Trade's receiver at First Step Memorial Station sold where it lies | up to 1 ships, with 30 verdigris_curd stored at first_step_memorial_station, while first_step_memorial_station bids 300 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-krynn](sell-loot-at-krynn.json) | circuit | beyond the border, 20 jumps | Hunt loot stored by Trade's receiver at the Crimson War Citadel (Krynn) sold where it lies | up to 1 ships, with 2 ember_gland stored at crimson_war_citadel, while crimson_war_citadel bids 5000 cr for ember_gland | TBD | TBD | TBD | TBD | -- |

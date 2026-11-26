@@ -19,12 +19,12 @@
  },
  "measured": {
   "date": "2026-11-26",
-  "runs": 2,
-  "minutes": 50,
-  "credits_per_run": -800,
-  "cph_per_ship": -970,
+  "runs": 4,
+  "minutes": 49,
+  "credits_per_run": -780,
+  "cph_per_ship": -950,
   "hours": 12,
-  "last_run": "2026-11-25T15:02:03Z"
+  "last_run": "2026-11-26T02:24:09Z"
  },
  "min_left": {
   "nitrogen_ice": 7500
