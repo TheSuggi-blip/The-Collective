@@ -1355,14 +1355,14 @@ def main(argv=None):
                                 _nt = " ".join(str(x) for x in (_row.get("notes") or []))
                                 if "Target system not found" in _nt or ("loop ended by itself" in _nt and float(_row.get("minutes") or 99) < 6.5):
                                     _unreach_hit = True
-                                    _mark_unreachable_belt(DATA, pilot, claimed_belt, ttl_s=21600.0)
+                                    _mark_unreachable_belt(DATA, pilot, claimed_belt, ttl_s=7200.0)
                             break
             except Exception:
                 pass
         if claimed_belt:
             rem_miners = release_belt_claim(
                 DATA, pilot,
-                cooldown_belt=(claimed_belt if (floor_hit or _unreach_hit) else None),
+                cooldown_belt=(claimed_belt if floor_hit else None),
                 cooldown_minutes=float(policy.get("cooldown_minutes") or 90),
                 policy=policy,
             )

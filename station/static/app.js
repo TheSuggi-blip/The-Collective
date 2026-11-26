@@ -4216,10 +4216,20 @@ function renderFinancialStatements(panel, ops, w, t) {
   const numOr0 = (obj, k) => (obj && obj[k] !== null && obj[k] !== undefined ? Number(obj[k]) : 0);
   const opexOf = (a) => (a && a.opex_breakdown ? a.opex_breakdown : null);
   const revbOf = (a) => (a && a.revenue_breakdown ? a.revenue_breakdown : null);
-  // Strict IFRS 15 / ASC 606: Market Sales (Trade) + Freight/Deliveries (Logistics) + Other Sales + Passive Fills/Escrow (Trade)
-  const tradeSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'trade_sales_h') : numOr0(a, 'raw_income_h')) : null);
-  const freightSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'freight_sales_h') : 0) : null);
-  const otherSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'other_sales_h') : 0) : null);
+  // Strict IFRS 15 / ASC 606: Realized Operating Revenue segmented by Functional Wing & Division
+  const revField = (a, k, fb) => {
+    if (!a) return null;
+    const rb = revbOf(a);
+    if (rb && rb[k] !== undefined && rb[k] !== null) return Number(rb[k]);
+    return fb ? fb(a) : 0;
+  };
+  const bursarActiveOf = (a) => revField(a, 'bursar_active_h', (x) => (revbOf(x) ? numOr0(revbOf(x), 'trade_sales_h') : numOr0(x, 'raw_income_h')));
+  const mobileTradeOf = (a) => revField(a, 'mobile_trade_h', () => 0);
+  const logCoreOf = (a) => revField(a, 'logistics_core_h', (x) => (revbOf(x) ? numOr0(revbOf(x), 'freight_sales_h') : 0));
+  const paxLinersOf = (a) => revField(a, 'passenger_liners_h', () => 0);
+  const militaryRevOf = (a) => revField(a, 'military_h', (x) => (revbOf(x) ? numOr0(revbOf(x), 'other_sales_h') : 0));
+  const miningRevOf = (a) => revField(a, 'mining_h', () => 0);
+  const intelRevOf = (a) => revField(a, 'intel_h', () => 0);
   const passiveRevOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'passive_escrow_h') : numOr0(a, 'passive_inflows_h')) : null);
   const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') : null);
   const totalCashInOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') + numOr0(a, 'seed_rewards_h') : null);
@@ -4334,18 +4344,22 @@ function renderFinancialStatements(panel, ops, w, t) {
   // 1. CONDENSED CONSOLIDATED STATEMENT OF OPERATIONS (STRICT GAAP / IFRS 15 -- REALIZED ONLY)
   panel.append(el('h3', null, '1. Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15 / GAAP Realized)'));
   const pnlRows = [
-    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- Separated by Stream)' },
-    row5(fsLbl('Realized Active Exchange Sales', ['Trade']), tradeSalesOf, 'fs-ind'),
-    row5(fsLbl('Freight, Hauling & Delivery Contracts', ['Logistics']), freightSalesOf, 'fs-ind'),
-    row5(fsLbl('Other Direct Sales & Field Bounties', ['Military', 'Mining', 'Intel']), otherSalesOf, 'fs-ind'),
-    row5(fsLbl('Passive Exchange Order Fills & Escrow Unwind (Net Inflow)', ['Trade']), passiveRevOf, 'fs-ind'),
+    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- By Wing & Division)' },
+    row5(fsLbl('Bursars & Station Refining -- Active Exchange & Craft (4C/5A/5B, 65)', ['Trade']), bursarActiveOf, 'fs-ind'),
+    row5(fsLbl('Bursars -- Passive Limit-Order Fills & Escrow Unwind (Net Inflow)', ['Trade']), passiveRevOf, 'fs-ind'),
+    row5(fsLbl('Mobile Trade -- Express & Bulk Arbitrage (4A/4B, 20)', ['Trade']), mobileTradeOf, 'fs-ind'),
+    row5(fsLbl('Core Logistics -- Supply, Fuel & Salvage Contracts (6A/6C, 62)', ['Logistics']), logCoreOf, 'fs-ind'),
+    row5(fsLbl('Passenger & Resort Liners (6B, 28)', ['Logistics']), paxLinersOf, 'fs-ind'),
+    row5(fsLbl('Military & Hunters -- Task Forces, Defense & Bounties (1A-1C, 2A/2B, 150)', ['Military']), militaryRevOf, 'fs-ind'),
+    row5(fsLbl('Mining -- Direct Ore, Gas & Ice Sales (3A-3E, 130; transfers via Bursars)', ['Mining']), miningRevOf, 'fs-ind'),
+    row5(fsLbl('Intel -- Covert Recon & Deep-Core Surveyors (7A/7B, 45)', ['Intel']), intelRevOf, 'fs-ind'),
     row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
     row5('Fuel Burn (Paid Station Refuels -- Excludes Free Bunkers)', fuelSumOf, 'fs-ind'),
     row5('Hull & Shield Repairs (Station Docking)', (a) => (a ? -numOr0(opexOf(a) || a, opexOf(a) ? 'repair_h' : 'repair_cr_h') : null), 'fs-ind'),
     row5(fsLbl('Direct Crafting Inputs & Materials Purchased', ['Logistics']), (a) => (opexOf(a) ? -numOr0(opexOf(a), 'craft_inputs_h') : null), 'fs-ind'),
     row5(fsLbl('Other Direct COGS (Market Fees, Trade Purchases & Misc)', ['Trade']), (a) => (opexOf(a) ? -numOr0(opexOf(a), 'other_cogs_h') : null), 'fs-ind'),
-    row5('Less: Reclassified Mission & CapEx Transit Fuel (Matched Out)', (a) => (opexOf(a) ? numOr0(opexOf(a), 'reclassified_once_h') : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
+    row5('Less: Reclassified Mission & CapEx Transit Fuel (Credited Out of Core OpEx)', (a) => (opexOf(a) ? numOr0(opexOf(a), 'reclassified_once_h') : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
     row5('Total Matched Direct Operating Costs (COGS & OpEx)', dirOpExOf, 'fs-sub'),
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Corporate Overhead & Realized Operating Income (EBIT)' },

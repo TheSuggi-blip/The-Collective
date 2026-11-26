@@ -362,5 +362,65 @@ class TestFleetAccounting(unittest.TestCase):
             con.close()
 
 
+    def test_revenue_breakdown_reconciles_all_operating_wings_and_divisions(self):
+        conn = sqlite3.connect(":memory:")
+        conn.execute("CREATE TABLE ships (pilot TEXT, division TEXT)")
+        conn.execute("CREATE TABLE runs (pilot TEXT, route TEXT, kind TEXT, minutes REAL, credits REAL, one_time REAL, readable INTEGER, t REAL)")
+        now = time.time()
+        conn.executemany(
+            "INSERT INTO ships VALUES (?, ?)",
+            [
+                ("MCV Alexandria", "Trade"), ("MCV Bukhara", "Trade"),
+                ("LSV Aether Drift", "Logistics"), ("LSV Belvedere", "Logistics"),
+                ("ROU Ashen Blade", "Military"), ("EUV Alabaster", "Mining"), ("VSV Azimuth", "Intel"),
+            ],
+        )
+        conn.executemany(
+            "INSERT INTO runs VALUES (?, ?, ?, ?, ?, ?, 1, ?)",
+            [
+                ("MCV Alexandria", "bursar-network", "bursar", 30, 6000, 0, now - 600),
+                ("MCV Bukhara", "haul-network-trade", "haul", 30, 4000, 0, now - 600),
+                ("LSV Aether Drift", "haul-network", "haul", 30, 8000, 0, now - 600),
+                ("LSV Belvedere", "haul-network", "haul", 30, 2000, 0, now - 600),
+                ("ROU Ashen Blade", "hunt-network", "hunt", 30, 5000, 0, now - 600),
+            ],
+        )
+        fj = {
+            "windows": {
+                "1h": {
+                    "minutes": 60.0,
+                    "income_per_hour": 30000.0,
+                    "costs_per_hour": 10000.0,
+                    "unexplained_per_hour": 5000.0,
+                    "cph": 20000.0,
+                    "rewards_per_hour": 0.0,
+                    "bought_once_per_hour": 0.0,
+                    "divisions": {
+                        "Trade": {"income_per_hour": 10000.0, "cph": 8000.0},
+                        "Logistics": {"income_per_hour": 10000.0, "cph": 7000.0},
+                        "Military": {"income_per_hour": 7000.0, "cph": 4000.0},
+                        "Mining": {"income_per_hour": 2500.0, "cph": 800.0},
+                        "Intel": {"income_per_hour": 500.0, "cph": 200.0},
+                    },
+                }
+            }
+        }
+        res = acc.compute_pnl(conn, repo_root=str(ROOT), data_dir=str(ROOT), fleet_json=fj, hours=1, now=now, price_maps=({}, {}))
+        rb = res["revenue_breakdown"]
+        self.assertEqual(rb["bursar_active_h"], 6000)
+        self.assertEqual(rb["mobile_trade_h"], 4000)
+        self.assertEqual(rb["logistics_core_h"], 8000)
+        self.assertEqual(rb["passenger_liners_h"], 2000)
+        self.assertEqual(rb["military_h"], 7000)
+        self.assertEqual(rb["mining_h"], 2500)
+        self.assertEqual(rb["intel_h"], 500)
+        self.assertEqual(rb["passive_escrow_h"], 5000)
+        seg_sum = (
+            rb["bursar_active_h"] + rb["mobile_trade_h"] + rb["logistics_core_h"]
+            + rb["passenger_liners_h"] + rb["military_h"] + rb["mining_h"] + rb["intel_h"]
+        )
+        self.assertEqual(seg_sum, res["raw_income_h"])
+        self.assertEqual(seg_sum + rb["passive_escrow_h"], res["raw_income_h"] + res["passive_inflows_h"])
+
 if __name__ == "__main__":
     unittest.main()

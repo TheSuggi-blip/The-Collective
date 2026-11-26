@@ -984,6 +984,17 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     capex_fit_direct_cr = 0.0
     once_direct_by_div = {}
     support_chains = {}
+    seg_run_pos = {
+        "bursar_active": 0.0, "mobile_trade": 0.0,
+        "logistics_core": 0.0, "passenger_liners": 0.0,
+        "defense": 0.0, "hunters": 0.0,
+        "mining": 0.0, "intel": 0.0,
+    }
+    _mw_acc = None
+    try:
+        import manifest_wings as _mw_acc
+    except Exception:
+        _mw_acc = None
     if conn is not None and _has_table(conn, "runs"):
         cut_r = now - span_h * 3600.0
         for r in conn.execute(
@@ -1003,6 +1014,28 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     capex_fit_direct_cr += cr
                 else:
                     once_mission_direct_cr += cr
+            elif cr > 0.0:
+                d_r = _div_of_pilot(pilot, pilot_div)
+                w_r = _mw_acc.wing_of(pilot, repo_root) if _mw_acc is not None else ""
+                if d_r == "Trade":
+                    if w_r.startswith(("4A.", "4B.")) or (not w_r and kind not in ("bursar", "craft_net", "craft") and "bursar" not in route):
+                        seg_run_pos["mobile_trade"] += cr
+                    else:
+                        seg_run_pos["bursar_active"] += cr
+                elif d_r == "Logistics":
+                    if w_r.startswith("6B.") or "passenger" in route:
+                        seg_run_pos["passenger_liners"] += cr
+                    else:
+                        seg_run_pos["logistics_core"] += cr
+                elif d_r in ("Military", "Command"):
+                    if w_r.startswith(("2A.", "2B.")) or (not w_r and pilot.startswith("drone-")):
+                        seg_run_pos["hunters"] += cr
+                    else:
+                        seg_run_pos["defense"] += cr
+                elif d_r == "Mining":
+                    seg_run_pos["mining"] += cr
+                elif d_r == "Intel":
+                    seg_run_pos["intel"] += cr
             b = _support_bucket(route, kind, all_once)
             rec = support_chains.setdefault(b, {"runs": 0, "ship_hours": 0.0, "credits": 0.0, "one_time": 0.0})
             rec["runs"] += 1
@@ -1240,20 +1273,96 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     reclass_once_h = -once_direct_h
     matched_direct_h = gross_direct_h + once_direct_h
 
-    # Clean IFRS 15 Revenue Breakdown separating Trade Market Sales, Logistics Freight/Deliveries,
-    # Other Direct Sales, and Passive Exchange Order Fills & Escrow Unwind (sums exactly to realized revenue!)
-    trade_sales_h = max(0.0, div_income_h.get("Trade", 0.0))
-    freight_sales_h = max(0.0, div_income_h.get("Logistics", 0.0))
-    if trade_sales_h + freight_sales_h > raw_income_h and (trade_sales_h + freight_sales_h) > 0:
-        _sc = raw_income_h / (trade_sales_h + freight_sales_h)
-        trade_sales_h *= _sc
-        freight_sales_h *= _sc
-    other_sales_h = raw_income_h - trade_sales_h - freight_sales_h
+    # Clean IFRS 15 Revenue Breakdown by Functional Operating Wing & Division (reconciles 100% to realized revenue!)
+    raw_inc_i = int(round(raw_income_h))
+    d_trade = max(0.0, div_income_h.get("Trade", 0.0))
+    d_log = max(0.0, div_income_h.get("Logistics", 0.0))
+    d_mil = max(0.0, div_income_h.get("Military", 0.0) + div_income_h.get("Command", 0.0))
+    d_mine = max(0.0, div_income_h.get("Mining", 0.0))
+    d_intel = max(0.0, div_income_h.get("Intel", 0.0))
+    d_sum = d_trade + d_log + d_mil + d_mine + d_intel
+    if raw_inc_i <= 0:
+        trade_i = log_i = mil_i = mine_i = intel_i = 0
+    elif d_sum > 0.0:
+        _sc = raw_income_h / d_sum
+        trade_i = int(round(d_trade * _sc))
+        log_i = int(round(d_log * _sc))
+        mil_i = int(round(d_mil * _sc))
+        mine_i = int(round(d_mine * _sc))
+        intel_i = int(round(d_intel * _sc))
+        _rem = raw_inc_i - (trade_i + log_i + mil_i + mine_i + intel_i)
+        if _rem != 0:
+            _tops = [("trade", d_trade), ("log", d_log), ("mil", d_mil), ("mine", d_mine), ("intel", d_intel)]
+            _top_k = max(_tops, key=lambda x: x[1])[0]
+            if _top_k == "trade":
+                trade_i += _rem
+            elif _top_k == "log":
+                log_i += _rem
+            elif _top_k == "mil":
+                mil_i += _rem
+            elif _top_k == "mine":
+                mine_i += _rem
+            else:
+                intel_i += _rem
+    else:
+        # Fallback when per-division income_per_hour is absent: apportion by positive recurring run credits
+        _rt = seg_run_pos["bursar_active"] + seg_run_pos["mobile_trade"]
+        _rl = seg_run_pos["logistics_core"] + seg_run_pos["passenger_liners"]
+        _rm = seg_run_pos["defense"] + seg_run_pos["hunters"]
+        _rn = seg_run_pos["mining"]
+        _ri = seg_run_pos["intel"]
+        _rsum = _rt + _rl + _rm + _rn + _ri
+        if _rsum > 0.0:
+            trade_i = int(round(raw_inc_i * _rt / _rsum))
+            log_i = int(round(raw_inc_i * _rl / _rsum))
+            mil_i = int(round(raw_inc_i * _rm / _rsum))
+            mine_i = int(round(raw_inc_i * _rn / _rsum))
+            intel_i = raw_inc_i - (trade_i + log_i + mil_i + mine_i)
+        else:
+            trade_i = raw_inc_i
+            log_i = mil_i = mine_i = intel_i = 0
+
+    # Split Trade -> Bursars & Station Refining (4C/5A/5B) vs Mobile Trade Express/Bulk (4A/4B)
+    _tr_tot = seg_run_pos["bursar_active"] + seg_run_pos["mobile_trade"]
+    if _tr_tot > 0.0:
+        mobile_trade_i = int(round(trade_i * (seg_run_pos["mobile_trade"] / _tr_tot)))
+        bursar_active_i = trade_i - mobile_trade_i
+    else:
+        bursar_active_i = trade_i
+        mobile_trade_i = 0
+
+    # Split Logistics -> Core Logistics (6A/6C) vs Passenger & Resort Liners (6B)
+    _lg_tot = seg_run_pos["logistics_core"] + seg_run_pos["passenger_liners"]
+    if _lg_tot > 0.0:
+        passenger_liners_i = int(round(log_i * (seg_run_pos["passenger_liners"] / _lg_tot)))
+        logistics_core_i = log_i - passenger_liners_i
+    else:
+        logistics_core_i = log_i
+        passenger_liners_i = 0
+
+    # Split Military & Hunters -> Defense/Task Forces (1A-1C) vs Hunters (2A/2B)
+    _ml_tot = seg_run_pos["defense"] + seg_run_pos["hunters"]
+    if _ml_tot > 0.0:
+        hunters_i = int(round(mil_i * (seg_run_pos["hunters"] / _ml_tot)))
+        defense_i = mil_i - hunters_i
+    else:
+        hunters_i = mil_i
+        defense_i = 0
+
     revenue_breakdown = {
-        "trade_sales_h": int(round(trade_sales_h)),
-        "freight_sales_h": int(round(freight_sales_h)),
-        "other_sales_h": int(round(raw_income_h)) - int(round(trade_sales_h)) - int(round(freight_sales_h)),
+        "trade_sales_h": trade_i,
+        "freight_sales_h": log_i,
+        "other_sales_h": mil_i + mine_i + intel_i,
         "passive_escrow_h": int(round(passive_inflows_h)),
+        "bursar_active_h": bursar_active_i,
+        "mobile_trade_h": mobile_trade_i,
+        "logistics_core_h": logistics_core_i,
+        "passenger_liners_h": passenger_liners_i,
+        "military_h": mil_i,
+        "defense_h": defense_i,
+        "hunters_h": hunters_i,
+        "mining_h": mine_i,
+        "intel_h": intel_i,
     }
     opex_breakdown = {
         "fuel_h": int(round(fuel_opex_h)),
