@@ -30,6 +30,8 @@ import os
 import re
 import sqlite3
 import sys
+import concurrent.futures
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -49,6 +51,7 @@ KEPT_COMMAND = frozenset({
     "Vision", "Solar Mandate", "Nebula Charter", "Rimward Pact", "Crimson Aegis",
 })
 
+_FILE_LOCK = threading.Lock()
 _OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
@@ -168,7 +171,7 @@ def gate_http(method, path, body=None, timeout=60):
         return 0, str(e)
 
 
-def raw_call(pilot, group, action, params=None, timeout=60):
+def raw_call(pilot, group, action, params=None, timeout=30):
     return gate_http(
         "POST",
         "/accounts/%s/raw" % urllib.parse.quote(pilot, safe=""),
@@ -205,6 +208,10 @@ def release_hand_hold(data_dir, pilot):
 
 
 def append_rejoin_off(data_dir, pilot):
+    with _FILE_LOCK:
+        _append_rejoin_off_unlocked(data_dir, pilot)
+
+def _append_rejoin_off_unlocked(data_dir, pilot):
     p = Path(data_dir) / "fleet" / "rejoin-off"
     cur = set()
     if p.is_file():
@@ -217,6 +224,10 @@ def append_rejoin_off(data_dir, pilot):
 
 
 def record_reserve(data_dir, rec):
+    with _FILE_LOCK:
+        _record_reserve_unlocked(data_dir, rec)
+
+def _record_reserve_unlocked(data_dir, rec):
     p = Path(data_dir) / "fleet" / "reserves.json"
     doc = {"updated_at": utc_now(), "reserves": {}}
     if p.is_file():
@@ -266,10 +277,13 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
 
     # 1. Hand-hold and abort any active loop/run
     write_hand_hold(data_dir, pilot)
-    gate_http("DELETE", "/accounts/%s/abort" % urllib.parse.quote(pilot, safe=""), timeout=30)
+    gate_http("DELETE", "/accounts/%s/abort" % urllib.parse.quote(pilot, safe=""), timeout=15)
 
-    # 2. Best-effort cancel open market orders so escrow refunds to wallet
-    st_o, txt_o = raw_call(pilot, "spacemolt_market", "view_orders", {})
+    # 2. Cancel open market orders on traders (Wave 4) so buy/sell escrow refunds to wallet
+    if str(pilot).startswith("trader-"):
+        st_o, txt_o = raw_call(pilot, "spacemolt_market", "view_orders", {}, timeout=25)
+    else:
+        st_o, txt_o = 0, ""
     sc_o = parse_sc(txt_o)
     cancelled = 0
     for o in (sc_o.get("orders") or []):
@@ -282,7 +296,7 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
         res["steps"].append("cancelled_orders:%d" % cancelled)
 
     # 3. Read fresh status (wallet + docked cargo)
-    st_s, txt_s = raw_call(pilot, "spacemolt_query", "get_status", {})
+    st_s, txt_s = raw_call(pilot, "spacemolt", "get_status", {})
     sc_s = parse_sc(txt_s)
     player = sc_s.get("player") if isinstance(sc_s.get("player"), dict) else {}
     ship = sc_s.get("ship") if isinstance(sc_s.get("ship"), dict) else {}
@@ -397,6 +411,7 @@ def main(argv=None):
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--skip-retire", action="store_true")
     ap.add_argument("--skip-birth", action="store_true")
+    ap.add_argument("--workers", type=int, default=10)
     ap.add_argument("--data", default=str(DATA))
     args = ap.parse_args(argv)
 
@@ -460,15 +475,24 @@ def main(argv=None):
         time.sleep(3.0)
         ok_r = 0
         tot_swept = 0
-        for idx, p in enumerate(ret, 1):
-            ok, msg, rec = retire_one(p, ship_by_name.get(p, {}), w, data_dir)
-            print("[%s] RETIRE %d/%d %s: %s -- %s" % (utc_now(), idx, len(ret), p, "OK" if ok else "FAIL", msg), flush=True)
-            if not ok and "BLOCKED by wall.py" in msg:
-                sys.exit("HALT: " + msg)
-            if ok:
-                ok_r += 1
-                tot_swept += int(rec.get("credits_swept") or 0)
-            time.sleep(0.5)
+        workers = max(1, min(int(args.workers or 10), len(ret)))
+        print("[%s] Retiring %d pilots with %d workers..." % (utc_now(), len(ret), workers), flush=True)
+        done_n = 0
+        with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as ex:
+            futs = {ex.submit(retire_one, p, ship_by_name.get(p, {}), w, data_dir): p for p in ret}
+            for fut in concurrent.futures.as_completed(futs):
+                p = futs[fut]
+                done_n += 1
+                try:
+                    ok, msg, rec = fut.result()
+                except Exception as exc:
+                    ok, msg, rec = False, "exception: %s" % exc, {}
+                print("[%s] RETIRE %d/%d %s: %s -- %s" % (utc_now(), done_n, len(ret), p, "OK" if ok else "FAIL", msg), flush=True)
+                if not ok and "BLOCKED by wall.py" in msg:
+                    sys.exit("HALT: " + msg)
+                if ok:
+                    ok_r += 1
+                    tot_swept += int(rec.get("credits_swept") or 0)
         print("[%s] WAVE %d RETIRE SUMMARY: %d/%d archived, swept %s cr" % (utc_now(), w, ok_r, len(ret), format(tot_swept, ",")), flush=True)
 
     # Phase B: Birth & Onboard new Culture pilots
