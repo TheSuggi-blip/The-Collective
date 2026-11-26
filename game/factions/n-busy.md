@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 11.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 11.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 502 | Public event stream |
+| Pilots carrying the tag on the public event stream | 501 | Public event stream |
 
 ## Bases
 
@@ -47,17 +47,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 011 | Node Alpha (`node_alpha`) | 0 | opus_magna |
-| Combat Drone 128 | Acubens (`acubens`) | 0 | dialectic |
-| Combat Drone 131 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 144 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 178 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 017 | Synchrony (`synchrony`) | 0 | opus_magna |
+| Combat Drone 124 | Synchrony (`synchrony`) | 0 | dialectic |
 | Combat Drone 179 | Hamal (`hamal`) | 0 | dialectic |
-| Combat Drone 192 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 194 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 198 | The Experiment (`the_experiment`) | 0 | dialectic |
-| Mining Drone 225 | Node Gamma (`node_gamma`) | 0 | theoria |
-| Mining Drone 287 | Node Gamma (`node_gamma`) | 0 | cobble |
+| Combat Drone 195 | Pherkad (`pherkad`) | 0 | dialectic |
 
 ## Standing History
 
