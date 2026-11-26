@@ -31,10 +31,10 @@
   "Endorsements"
  ],
  "measured": {
-  "date": "2026-11-23",
-  "runs": 346,
+  "date": "2026-11-26",
+  "runs": 696,
   "minutes": 15,
-  "credits_per_run": 5550,
-  "cph_per_ship": 21040
+  "credits_per_run": 4770,
+  "cph_per_ship": 20150
  }
 }

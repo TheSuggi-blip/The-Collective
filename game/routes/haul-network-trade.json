@@ -15,5 +15,14 @@
    "4A.",
    "4B."
   ]
+ },
+ "measured": {
+  "date": "2026-11-26",
+  "runs": 3,
+  "minutes": 5,
+  "credits_per_run": 980,
+  "cph_per_ship": 8410,
+  "hours": 12,
+  "last_run": "2026-11-26T21:54:45Z"
  }
 }
