@@ -473,6 +473,99 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
 
             if chosen and (best is None or chosen[0] > best[0]):
                 best = chosen
+
+    # Central Supply Depot restock (Node Beta Industrial Station: permanent Voidborn depot feeding all Outposts!)
+    # Runs at urgency 0.95 (strictly behind Outpost fuel/repair emergencies, ahead of idle/surplus liquidation).
+    depot_base = str(policy.get("central_depot_base") or "")
+    depot_tgts = policy.get("central_depot_targets") or {}
+    if depot_base and depot_tgts and depot_base in base_map and depot_base not in sh_set:
+        dloc_dp = base_map[depot_base]
+        if dloc_dp[0] not in sh_set:
+            dp_inv = fac_by_base.get(depot_base) or {}
+            for iid, tgt_raw in depot_tgts.items():
+                tgt = int(tgt_raw or 0)
+                if tgt <= 0:
+                    continue
+                have_dp = int(dp_inv.get(iid) or 0)
+                if have_dp >= int(round(tgt * reorder_pct)):
+                    continue
+                jk_dp = "depot:%s:%s" % (depot_base, iid)
+                if jk_dp in claimed_keys:
+                    continue
+                deficit = max(1, tgt - have_dp)
+                lot_floor = 10 if iid in ("fuel_cell", "circuit_board", "hull_patch") else 20
+                min_lot = min(deficit, int(hold_cap), lot_floor)
+                urg_dp = max(0.35, (1.0 - (float(have_dp) / float(tgt))) * 0.95)
+                # Priority 1: 0-jump personal->faction flush at Node Beta (unlocks hauler-6's 3,108 circuit_boards & 20,945 steel_plates!)
+                self_at_dp = int((self_by_base.get(depot_base) or {}).get(iid) or 0)
+                if self_at_dp >= min_lot:
+                    p_hops_dp = _bfs_hops(lanes, cur_sys, dloc_dp[0]) if cur_sys and lanes else 0
+                    if p_hops_dp is not None and p_hops_dp <= max_pick:
+                        fq = min(deficit, self_at_dp, int(hold_cap))
+                        sc_f = (urg_dp * 950.0 + fq * 2.0) / max(1.0, 1.0 + 0.5 * float(p_hops_dp))
+                        cand_f = (sc_f, {
+                            "job_key": jk_dp, "mode": "transfer", "source_target": "self",
+                            "item": iid, "qty": fq, "origin": dloc_dp, "dest": dloc_dp,
+                            "hub_kind": "depot", "max_unit_price": 0, "bunker_fill": False,
+                            "pickup_hops": p_hops_dp, "delivery_hops": 0,
+                        })
+                        if best is None or cand_f[0] > best[0]:
+                            best = cand_f
+                        continue
+                # Priority 2: transfer from other Empire Lockboxes or personal storage (NEVER steal from owned Outposts or Node Beta itself!)
+                chosen_dp = None
+                _dp_srcs = (("faction", fac_by_base), ("self", self_by_base)) if can_fac else (("self", self_by_base),)
+                for src_t, src_map in _dp_srcs:
+                    for sb_id, sitems in src_map.items():
+                        if sb_id == depot_base or sb_id in owned_hubs or sb_id in sh_set or sb_id not in base_map:
+                            continue
+                        sq = int((sitems or {}).get(iid) or 0)
+                        if sq < min_lot:
+                            continue
+                        oloc = base_map[sb_id]
+                        if policy.get("policed_only", True) and not oloc[3]:
+                            continue
+                        p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+                        d_hops = _bfs_hops(lanes, oloc[0], dloc_dp[0]) if lanes else 1
+                        if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                            continue
+                        qty = min(deficit, sq, int(hold_cap))
+                        if qty < min_lot:
+                            continue
+                        sc = (urg_dp * 900.0 + qty * 1.5) / max(1.0, float(p_hops + d_hops))
+                        if chosen_dp is None or sc > chosen_dp[0]:
+                            chosen_dp = (sc, {
+                                "job_key": jk_dp, "mode": "transfer", "source_target": src_t,
+                                "item": iid, "qty": qty, "origin": oloc, "dest": dloc_dp,
+                                "hub_kind": "depot", "max_unit_price": 0, "bunker_fill": False,
+                                "pickup_hops": p_hops, "delivery_hops": d_hops,
+                            })
+                # Priority 3: cheap policed NPC market buy fallback (e.g. 100 cr fuel_cells!)
+                if chosen_dp is None and max_spend >= 200:
+                    cap_p = float(max_prices.get(iid) or 0)
+                    if cap_p > 0:
+                        for ask_p, ask_q, oloc in sorted(asks_by_item.get(iid) or [], key=lambda x: x[0]):
+                            if ask_p > cap_p:
+                                break
+                            p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
+                            d_hops = _bfs_hops(lanes, oloc[0], dloc_dp[0]) if lanes else 1
+                            if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                                continue
+                            qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
+                            if qty < min_lot:
+                                continue
+                            sc = (urg_dp * 750.0 + qty * 1.2) / max(1.0, float(p_hops + d_hops))
+                            if chosen_dp is None or sc > chosen_dp[0]:
+                                chosen_dp = (sc, {
+                                    "job_key": jk_dp, "mode": "buy", "source_target": "market",
+                                    "item": iid, "qty": qty, "origin": oloc, "dest": dloc_dp,
+                                    "hub_kind": "depot", "max_unit_price": int(round(cap_p)),
+                                    "est_ask": int(round(ask_p)), "bunker_fill": False,
+                                    "pickup_hops": p_hops, "delivery_hops": d_hops,
+                                })
+                            break
+                if chosen_dp and (best is None or chosen_dp[0] > best[0]):
+                    best = chosen_dp
     return best[1] if best else None
 
 
@@ -1331,6 +1424,8 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
             q = int(qty or 0)
             if b_id in owned_hubs:
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
+            if b_id == str(policy.get("central_depot_base") or ""):
+                q -= int((policy.get("central_depot_targets") or {}).get(iid) or 0)
             if q < min_u or iid in reserved:
                 continue
             for d_hops, db, dloc, b_pilot in reach_dsts:
@@ -1532,6 +1627,8 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
             q = int(qty or 0)
             if b_id in owned_hubs:
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
+            if b_id == str(policy.get("central_depot_base") or ""):
+                q -= int((policy.get("central_depot_targets") or {}).get(iid) or 0)
             if q < 1 or iid in reserved or iid not in bids_by_item:
                 continue
             for sb, sloc, bid_p, bid_q in bids_by_item[iid]:

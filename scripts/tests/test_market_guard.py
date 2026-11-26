@@ -383,5 +383,50 @@ class MarketGuardTests(unittest.TestCase):
             self.assertEqual(j["mode"], "transfer")
 
 
+
+    def test_node_beta_central_depot_self_flush_and_restock(self):
+        import haul, sqlite3
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "store").mkdir(parents=True)
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            con = sqlite3.connect(data / "store" / "read.db")
+            con.execute("CREATE TABLE bases (base TEXT, system TEXT, poi TEXT, kind TEXT)")
+            con.execute("CREATE TABLE places (base TEXT, poi TEXT)")
+            con.execute("INSERT INTO bases VALUES ('op1', 'atria', 'poi_atria', 'outpost')")
+            con.commit(); con.close()
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {
+                    "Faction": {"stations": {
+                        "node_beta_industrial_station": {"fuel_cell": 2000, "steel_plate": 2000, "circuit_board": 5, "hull_patch": 150},
+                        "op1": {"fuel_cell": 400, "steel_plate": 260, "circuit_board": 70, "hull_patch": 35},
+                    }},
+                    "hauler-6": {"stations": {
+                        "node_beta_industrial_station": {"circuit_board": 3108},
+                    }},
+                }
+            }), encoding="ascii")
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"pilot": "hauler-6", "role": "Officer"}],
+                "facilities": [{"type": "faction_fuel_bunker", "status": "active", "base": "op1"}],
+                "faction_storage": [{"base": "op1", "item": "fuel", "units": 49000}],
+            }), encoding="ascii")
+            base_map = {
+                "node_beta_industrial_station": ("node_beta", "node_beta_industrial_station", "node_beta_industrial_station", "voidborn"),
+                "op1": ("atria", "poi_atria", "op1", ""),
+            }
+            lanes = {"node_beta": ["atria"], "atria": ["node_beta"]}
+            pol = haul.load_policy()
+            j = haul._pick_hub_upkeep(data, "hauler-6", [], base_map, lanes, "node_beta", 200, 20000, pol, set())
+            self.assertIsNotNone(j)
+            self.assertEqual(j["hub_kind"], "depot")
+            self.assertEqual(j["item"], "circuit_board")
+            self.assertEqual(j["source_target"], "self")
+            self.assertEqual(j["dest"][2], "node_beta_industrial_station")
+            self.assertEqual(j["pickup_hops"], 0)
+            self.assertEqual(j["delivery_hops"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

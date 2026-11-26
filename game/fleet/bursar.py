@@ -1503,17 +1503,19 @@ def main(argv=None):
                             finally:
                                 _c_fc.close()
                         _st_fc = get_stored(base_id)
-                        # Auto-flush personal Trader fuel_cell reserves into local Faction Lockbox (unlocks 6,800+ free cells for Outpost Bunkers!)
-                        _self_fc = int(_st_fc.get("fuel_cell") or 0)
-                        if _self_fc >= 20:
-                            _flush_q = min(120, _self_fc)
-                            raw("withdraw", {"item_id": "fuel_cell", "quantity": _flush_q, "target": "self"}, group="spacemolt_storage")
-                            time.sleep(TICK)
-                            raw("deposit", {"item_id": "fuel_cell", "quantity": _flush_q, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
-                            time.sleep(TICK)
-                            say("bursar_fuel_flush +%d fuel_cell self->faction @ %s" % (_flush_q, base_id))
-                            _tot_fc += _flush_q
-                            _st_fc["fuel_cell"] = max(0, _self_fc - _flush_q)
+                        # Auto-flush personal Trader strategic supply reserves into local Faction Lockbox (fuel_cell, circuit_board, steel_plate, hull_patch!)
+                        for _strat_i, _strat_min in (("fuel_cell", 20), ("circuit_board", 10), ("steel_plate", 20), ("hull_patch", 10)):
+                            _self_q = int(_st_fc.get(_strat_i) or 0)
+                            if _self_q >= _strat_min:
+                                _flush_q = min(120, _self_q)
+                                raw("withdraw", {"item_id": _strat_i, "quantity": _flush_q, "target": "self"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                raw("deposit", {"item_id": _strat_i, "quantity": _flush_q, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                                say("bursar_depot_flush +%d %s self->faction @ %s" % (_flush_q, _strat_i, base_id))
+                                if _strat_i == "fuel_cell":
+                                    _tot_fc += _flush_q
+                                _st_fc[_strat_i] = max(0, _self_q - _flush_q)
                         if _tot_fc < int((policy.get("craft") or {}).get("fuel_trickle_target", 3000)):
                             _fd_fc = body(raw("view", {"station_id": base_id, "target": "faction"}, group="spacemolt_storage"))
                             _f_map = {str(_fr["item_id"]): int(_fr.get("quantity") or 0) for _fr in (_fd_fc.get("items") or _fd_fc.get("storage") or []) if isinstance(_fr, dict) and _fr.get("item_id")}

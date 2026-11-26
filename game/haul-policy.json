@@ -78,5 +78,12 @@
   "rest_seconds_when_empty": 60,
   "idle_poll_interval_s": 30,
   "idle_watch_minutes": 2,
-  "hub_bunker_reorder_pct": 0.96
+  "hub_bunker_reorder_pct": 0.96,
+  "central_depot_base": "node_beta_industrial_station",
+  "central_depot_targets": {
+    "fuel_cell": 2000,
+    "steel_plate": 2000,
+    "circuit_board": 400,
+    "hull_patch": 150
+  }
 }

@@ -1061,7 +1061,7 @@ def treasury_topups(data, stranded, now, dry):
     busy = {
         r["pilot"] for r in tops
         if r.get("state") in ("open", "withdrawn")
-        or (r.get("state") == "unsure" and (now - float(r.get("at") or 0)) < 600)
+        or (r.get("state") == "unsure" and (now - float(r.get("at") or 0)) < 90)
     }
     late = {r["pilot"] for r in tops if r.get("state") == "given" and now - (r.get("given_at") or 0) < TREASURY_EVERY}
     if not TREASURY_TOPUP:

@@ -2285,6 +2285,10 @@ def _build_ops():
                     if _it == "fuel" and _pl in _bunker_live_by_name:
                         _bid_s, _have = _bunker_live_by_name[_pl]
                         _ships += sum(len(_vp) for _hk, _vp in _hj_claims.items() if _hk == ("upkeep_bunker:" + _bid_s) or _hk.startswith("upkeep_bunker:" + _bid_s + ":"))
+                    elif str(r["chain"] or "").startswith("depot-"):
+                        _dp_b = str(_hpol.get("central_depot_base") or "node_beta_industrial_station")
+                        _have = int((_fs_by_base.get(_dp_b) or {}).get(_it) or 0)
+                        _ships = len(_hj_claims.get("depot:%s:%s" % (_dp_b, _it)) or [])
                     _st_s = "OK" if (_keep <= 0 or _have >= _keep) else ("LOW" if _have > 0 and _have >= int(_keep * 0.5) else "SHORT")
                     _sup_out.append({
                         "chain": text(r["chain"], 40), "item": _it, "place": _pl,

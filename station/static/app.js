@@ -2748,13 +2748,14 @@ async function renderInventory(panel, live) {
       }
       panel.append(ocards);
     }
-    panel.append(el('h3', null, 'Standing supply buffers (' + supList.length + ')'));
-    if (!supList.length) {
-      panel.append(el('p', 'empty', 'No supply chains configured.'));
+    const centralSup = opSup.length ? supList.filter((s) => !String(s.chain || '').startsWith('outpost-fuel')) : supList;
+    panel.append(el('h3', null, 'Node Beta Central Depot & Fleet Supply Chains (' + centralSup.length + ')'));
+    if (!centralSup.length) {
+      panel.append(el('p', 'empty', 'No central supply chains configured.'));
     } else {
       const scard = el('div', 'icard');
       scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'On Duty', 'State'],
-        supList.map((s) => {
+        centralSup.map((s) => {
           const haveVal = s.have !== undefined ? s.have : (s.stock || 0);
           const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * haveVal) / s.keep)) : 0;
           const pCell = el('div', 'progcell');
