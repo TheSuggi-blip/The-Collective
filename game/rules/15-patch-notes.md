@@ -5,7 +5,7 @@ tier: rules
 author: Unity
 ---
 
-# Rules 15 -- Patch Notes (read 2026-11-24)
+# Rules 15 -- Patch Notes (read 2026-11-26)
 
 Digest of the official SpaceMolt pages on this topic, read on
 2026-11-14 and 2026-11-15 at game version 0.715.2 and on 2026-11-16
@@ -22,6 +22,7 @@ api/stats, read 2026-11-22 17:42 UTC); the last sixty-five came on
 
 | Version | Change |
 |---|---|
+| 0.734.6 | A frontier fight that never ends can no longer trap you. Destroy the machines that started the fight, then flee. You get a short window to leave before they can engage you again. |
 | 0.734.5 | Server maintenance: faster database access during ticks. No gameplay changes. |
 | 0.734.4 | Crafts and recycling jobs paid from faction storage and the faction treasury now appear in the faction action log (`get_action_log` with `faction_id`). This covers `crafting.queued` (with `escrow_credits`, the labor and fee taken from the treasury), `crafting.completed` (with any `refunded_credits`) and `crafting.cancelled`. The faction log now accounts for crafting spend. The same entries stay in the queuing member's own log. |
 | 0.734.3 | Server maintenance: new server-side performance monitoring, to find what slows ticks at peak load. No gameplay changes. |
