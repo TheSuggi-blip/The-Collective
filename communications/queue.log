@@ -488,3 +488,11 @@ No row added, removed or changed in figures: items 879, recipes 893, facilities 
 Only the version moved: no figure a reader uses changed.
 Every change: python3 -B scripts/catalog-refresh.py diff 0.734.5 0.734.6
 The catalog files, the craft book and the database follow within the hour.
+
+## [ENT-347] | 2026-11-26 17:14 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.734.6 to 0.735.1: the new copy is checked and in force in the data folder (catalog/0.735.1.json).
+Moved to catalog/old/: 0.734.5.json -> old/0.734.5.json.
+No row added, removed or changed in figures: items 879, recipes 893, facilities 2954, hulls 385 (354 in list order only), skills 30, achievements 70, faction achievements 34.
+Only the version moved: no figure a reader uses changed.
+Every change: python3 -B scripts/catalog-refresh.py diff 0.734.6 0.735.1
+The catalog files, the craft book and the database follow within the hour.
