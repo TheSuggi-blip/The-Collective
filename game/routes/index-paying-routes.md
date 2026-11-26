@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 7.
+Routes: 6.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -22,4 +22,3 @@ Routes: 7.
 | [carry-phase-deep-range-to-sol](carry-phase-deep-range-to-sol.json) | circuit | beyond the border, 19 jumps | Stored phase_crystal carried from deep_range_outpost to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at deep_range_outpost, while confederacy_central_command bids 100 cr for phase_crystal | 9 | 36 | 4,570 | 7,520 | 2026-11-25 |
 | [carry-phase-first-step-to-sol](carry-phase-first-step-to-sol.json) | circuit | beyond the border, 18 jumps | Stored phase_crystal carried from first_step_memorial_station to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 50 phase_crystal stored at first_step_memorial_station, while confederacy_central_command bids 100 cr for phase_crystal | 2 | 22 | 3,230 | 8,770 | 2026-11-25 |
 | [sell-exotic-docked-grand-exchange](sell-exotic-docked-grand-exchange.json) | circuit | beyond the border, 21 jumps | Stored exotic_matter sold where it lies, at grand_exchange_station, at 45 cr or more | up to 1 ships, with 20 exotic_matter stored at grand_exchange_station, while grand_exchange_station bids 45 cr for exotic_matter | 1 | 1 | 2,850 | 244,290 | 2026-11-25 |
-| [sell-methane-at-dheneb](sell-methane-at-dheneb.json) | circuit | beyond the border, 11 jumps | Stored methane_ice sold where it lies, at b495c6003fc83e18f6d8cecbe6929133, at 34 cr or more | up to 1 ships, with 1 methane_ice stored at b495c6003fc83e18f6d8cecbe6929133, while b495c6003fc83e18f6d8cecbe6929133 bids 34 cr for methane_ice | 1 | 6 | 1,610 | 15,850 | 2026-11-25 |
