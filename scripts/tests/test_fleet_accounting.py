@@ -386,7 +386,7 @@ class TestFleetAccounting(unittest.TestCase):
             ],
         )
         fj = {
-            "windows": {
+            "totals": {"rates": {"windows": {
                 "1h": {
                     "minutes": 60.0,
                     "income_per_hour": 30000.0,
@@ -403,9 +403,10 @@ class TestFleetAccounting(unittest.TestCase):
                         "Intel": {"income_per_hour": 500.0, "cph": 200.0},
                     },
                 }
-            }
+            }}}
         }
-        res = acc.compute_pnl(conn, repo_root=str(ROOT), data_dir=str(ROOT), fleet_json=fj, hours=1, now=now, price_maps=({}, {}))
+        repo_r = str(Path(__file__).resolve().parents[2])
+        res = accounting.compute_pnl(conn, repo_root=repo_r, data_dir=repo_r, fleet_json=fj, hours=1, now=now, price_maps=({}, {}))
         rb = res["revenue_breakdown"]
         self.assertEqual(rb["bursar_active_h"], 6000)
         self.assertEqual(rb["mobile_trade_h"], 4000)
