@@ -346,5 +346,42 @@ class MarketGuardTests(unittest.TestCase):
             self.assertTrue(j_top2 is None or not j_top2.get("bunker_fill"))
 
 
+
+    def test_outpost_repair_bill_guard_triggers_before_wreck_shortfall(self):
+        import haul, sqlite3
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "store").mkdir(parents=True)
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            con = sqlite3.connect(data / "store" / "read.db")
+            con.execute("CREATE TABLE bases (base TEXT, system TEXT, poi TEXT, kind TEXT)")
+            con.execute("CREATE TABLE places (base TEXT, poi TEXT)")
+            con.execute("INSERT INTO bases VALUES ('op1', 'atria', 'poi_atria', 'outpost')")
+            con.commit(); con.close()
+            # Bunker FULL (49,000/50,000), fuel_cell stocked (400/400), but steel_plate=175 (<180) & circuit_board=35 (<45)!
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {"Faction": {"stations": {
+                    "nb": {"steel_plate": 1000, "circuit_board": 200},
+                    "op1": {"fuel_cell": 400, "steel_plate": 175, "circuit_board": 35, "hull_patch": 35},
+                }}}
+            }), encoding="ascii")
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"pilot": "hauler-1", "role": "Officer"}],
+                "facilities": [{"type": "faction_fuel_bunker", "status": "active", "base": "op1"}],
+                "faction_storage": [{"base": "op1", "item": "fuel", "units": 49000}],
+            }), encoding="ascii")
+            base_map = {
+                "nb": ("node_beta", "nb", "nb", "voidborn"),
+                "op1": ("atria", "poi_atria", "op1", ""),
+            }
+            lanes = {"node_beta": ["atria"], "atria": ["node_beta"]}
+            pol = haul.load_policy()
+            j = haul._pick_hub_upkeep(data, "hauler-1", [], base_map, lanes, "node_beta", 200, 20000, pol, set())
+            self.assertIsNotNone(j)
+            self.assertIn(j["item"], ("steel_plate", "circuit_board"))
+            self.assertEqual(j["mode"], "transfer")
+
+
 if __name__ == "__main__":
     unittest.main()

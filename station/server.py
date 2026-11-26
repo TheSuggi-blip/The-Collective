@@ -2249,13 +2249,23 @@ def _build_ops():
                                 "pct": round(min(100.0, 100.0 * _uhave / max(1, _utn)), 1),
                                 "active_haulers": len(_uact),
                             })
+                        _sp_have = int(_inv_b.get("steel_plate") or 0)
+                        _cb_have = int(_inv_b.get("circuit_board") or 0)
+                        _rep_ready = (_sp_have >= 180 and _cb_have >= 45)
+                        _rep_parts = []
+                        if _sp_have < 180:
+                            _rep_parts.append("+%d steel_plate" % (180 - _sp_have))
+                        if _cb_have < 45:
+                            _rep_parts.append("+%d circuit_board" % (45 - _cb_have))
                         _outpost_supply.append({
                             "base": _bid, "name": _bnm, "system": _bsys, "kind": _bkind,
                             "bunker_fuel": _bfuel, "bunker_target": _btgt,
                             "bunker_pct": round(min(100.0, 100.0 * _bfuel / max(1, _btgt)), 1),
                             "surge_tier": _tier, "target_haulers": _tgt_h,
                             "active_haulers": len(_act_h), "hauler_names": _act_h[:8],
-                            "raided": _bsys in _raided_ops, "upkeep": _upk_rows,
+                            "raided": _bsys in _raided_ops,
+                            "repair_ready": _rep_ready, "repair_gap": ", ".join(_rep_parts),
+                            "upkeep": _upk_rows,
                         })
             except Exception:
                 pass

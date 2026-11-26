@@ -45,9 +45,9 @@
   "hub_upkeep_targets": {
     "outpost": {
       "fuel_cell": 400,
-      "steel_plate": 180,
-      "circuit_board": 45,
-      "hull_patch": 25
+      "steel_plate": 260,
+      "circuit_board": 70,
+      "hull_patch": 35
     },
     "station": {
       "fuel_cell": 1000,

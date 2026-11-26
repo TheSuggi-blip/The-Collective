@@ -2724,6 +2724,9 @@ async function renderInventory(panel, live) {
           el('b', null, ob.name + ' (' + ob.system + ')'),
           el('span', 'pill ' + tierCls, ob.surge_tier + ' (' + ob.active_haulers + '/' + ob.target_haulers + ' haulers)'),
         );
+        if (ob.repair_ready !== undefined) {
+          oh.append(el('span', 'pill ' + (ob.repair_ready ? 'good' : 'warn'), ob.repair_ready ? 'REPAIR READY' : ('REPAIR SHORT (' + ob.repair_gap + ')')));
+        }
         if (ob.raided) oh.append(el('span', 'pill bad', 'PIRATE RAID SHIELD'));
         oc.append(oh);
         const fbar = el('div', 'progcell');

@@ -384,12 +384,21 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             if jkey in claimed_keys:
                 continue
             deficit = max(1, tgt - have_here)
-            urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
+            # Outpost wreck-repair readiness guard: full self-repair bill is 180 steel_plate + 45 circuit_board.
+            # If an Outpost dips below a full repair bill, elevate priority right behind CRITICAL fuel!
+            _below_repair_bill = (
+                hub_kind == "outpost"
+                and ((iid == "steel_plate" and have_here < 180) or (iid == "circuit_board" and have_here < 45))
+            )
+            if _below_repair_bill:
+                urgency = 1.15
+            else:
+                urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
             demands.append((iid, deficit, urgency, jkey, False, max_pick))
 
         for iid, deficit, urgency, jkey, bunker_fill, eff_max_pick in demands:
             # Keep steady fuel_cell trickles flowing (10+ cells) to top outpost bunkers continuously
-            lot_floor = 10 if iid == "fuel_cell" else 20
+            lot_floor = 10 if iid in ("fuel_cell", "circuit_board") else 20
             min_lot = min(deficit, int(hold_cap), lot_floor)
             # Local bunker conversion: if this outpost ALREADY holds >=15 fuel_cell in faction_storage AND pilot can withdraw,
             # convert directly into its fuel bunker at 0 jumps!
