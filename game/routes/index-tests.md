@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 126.
+Routes: 127.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -70,6 +70,7 @@ Routes: 126.
 | [train-navigation-home](train-navigation-home.json) | circuit | home space | Navigation test: five jumps through our own stations (Node Alpha, Synchrony, Node Gamma, Node Beta, Central Nexus), nothing carried, for the drones that do not yet reach navigation 3 | up to 1 ships | TBD | TBD | TBD | TBD | -- |
 | [hunt-test-acubens-patina-grazer](hunt-test-acubens-patina-grazer.json) | hunt | home space | Yield test: patina_grazer at acubens_shadow_pocket; what a kill drops and whether a bid takes it | up to 1 ships, without piercing_railgun_i | TBD | TBD | TBD | TBD | -- |
 | [buy-gold-ironlight-boards](buy-gold-ironlight-boards.json) | circuit | beyond the border, 6 jumps | Gold ore bought at Ironlight Crossroads (LHS 1140, lawless) and made into circuit boards by hand at Node Beta with the pilot's own stored copper ore and energy crystal | up to 1 ships, empty hold, with 3 copper_ore stored at node_beta_industrial_station, 1 energy_crystal stored at node_beta_industrial_station | TBD | TBD | TBD | TBD | -- |
+| [carry-bladder-alpha-to-sol](carry-bladder-alpha-to-sol.json) | circuit | beyond the border, 11 jumps | Stored nitrogen_bladder carried from alpha_centauri_colonial_station to the confederacy_central_command bid at 100 cr or more | up to 1 ships, with 20 nitrogen_bladder stored at alpha_centauri_colonial_station, while confederacy_central_command bids 100 cr for nitrogen_bladder | TBD | TBD | TBD | TBD | -- |
 | [carry-curd-beta-to-procyon](carry-curd-beta-to-procyon.json) | circuit | beyond the border, 9 jumps | Stored verdigris curd carried from node_beta_industrial_station to procyon_colonial_station and sold into its bid at 315 cr or more | up to 1 ships, with 25 verdigris_curd stored at node_beta_industrial_station, while procyon_colonial_station bids 315 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
 | [carry-curd-nexus-to-procyon](carry-curd-nexus-to-procyon.json) | circuit | beyond the border, 9 jumps | Stored verdigris curd carried from central_nexus to procyon_colonial_station and sold into its bid at 315 cr or more | up to 1 ships, with 25 verdigris_curd stored at central_nexus, while procyon_colonial_station bids 315 cr for verdigris_curd | TBD | TBD | TBD | TBD | -- |
 | [carry-ember-crucible-to-krynn](carry-ember-crucible-to-krynn.json) | circuit | beyond the border, 20 jumps | Ember glands stored at The Crucible Garrison carried two jumps to the War Citadel (Krynn), where its bid and Station Need pay | up to 1 ships, empty hold, with 3 ember_gland stored at the_crucible_garrison | TBD | TBD | TBD | TBD | -- |
