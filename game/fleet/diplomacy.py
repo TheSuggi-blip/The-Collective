@@ -221,7 +221,7 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer
     flagship_set = set(division.flagships(str(data)).keys()) | {"Prime Directive"}
 
     def is_allowed_pilot(pilot):
-        if pilot.startswith("scout-") and division.owner(pilot, str(data)) == "Oracle":
+        if pilot.startswith(("scout-", "VSV ")) and division.owner(pilot, str(data)) == "Oracle":
             return True, ""
         if member_name == "Unity" and (pilot in flagship_set or division.owner(pilot, str(data)) == "Unity"):
             return True, ""
@@ -242,10 +242,10 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer
         if flagships:
             return flagships[0], ""
 
-    if preferred_pilot and preferred_pilot in connected and preferred_pilot.startswith("scout-"):
+    if preferred_pilot and preferred_pilot in connected and preferred_pilot.startswith(("scout-", "VSV ")):
         return preferred_pilot, ""
 
-    scouts = sorted(n for n in connected if n.startswith("scout-"))
+    scouts = sorted(n for n in connected if n.startswith(("scout-", "VSV ")))
     if not scouts:
         return "", "no connected Oracle scout- ship found in fleet.json"
     unheld = [s for s in scouts if not division.order_of(s, str(data))]

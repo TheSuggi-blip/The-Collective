@@ -169,10 +169,18 @@ def flagships(data):
     return {name: entry for name, entry in found.items() if isinstance(entry, dict)} if isinstance(found, dict) else {}
 
 
+CULTURE_ROLES = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
+
+
 def role_of(name, ships):
-    """A pilot's role: the one its flagship entry names, else the word before the dash of its name."""
+    """A pilot's role: the one its flagship entry names, else its Culture prefix, else the word before the dash of its name."""
     entry = ships.get(name)
-    return str(entry.get("role") or "") if entry else name.split("-")[0]
+    if entry:
+        return str(entry.get("role") or "")
+    s = str(name or "")
+    if len(s) > 4 and s[3] == " " and s[:3] in CULTURE_ROLES:
+        return CULTURE_ROLES[s[:3]]
+    return s.split("-")[0]
 
 
 def ship_file(name):
@@ -1303,7 +1311,7 @@ def pick(pilot, plan, routes, state):
     """(route, argument) for the first route open to the pilot, or (None, None).
     Routes without `utility_group` stay strictly deterministic top-to-bottom.
     Contiguous routes sharing the same `utility_group` compete by proximity-weighted RTS Utility."""
-    role = pilot.get("role") or pilot["name"].split("-")[0]
+    role = pilot.get("role") or role_of(pilot["name"], {})
     rids = (plan.get("pilots") or {}).get(pilot["name"]) or (plan.get("roles") or {}).get(role) or []
     i = 0
     while i < len(rids):

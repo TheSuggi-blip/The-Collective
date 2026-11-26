@@ -230,7 +230,9 @@ def closes(pilot, rid, route, state):
     """The dispatcher's hook (dispatch.why_not): the class guard's reason, then the pull rule's, each only while its
     switch is on; None when neither closes the route (both off: always None)."""
     if guard_on(state):
-        role = pilot.get("role") or str(pilot.get("name") or "").split("-")[0]
+        _pnm = str(pilot.get("name") or "")
+        _pfx = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
+        role = pilot.get("role") or (_pfx[_pnm[:3]] if (len(_pnm) > 4 and _pnm[3] == " " and _pnm[:3] in _pfx) else _pnm.split("-")[0])
         why = class_reason(role, route, rid)
         if why:
             return why

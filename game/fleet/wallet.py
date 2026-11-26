@@ -782,7 +782,7 @@ def ready_withdrawer(data, leader, request_stop=True):
         is_hex_outpost = len(dock) == 32 and all(ch in "0123456789abcdef" for ch in dock.lower())
         if is_hex_outpost:
             continue
-        is_trader = 0 if str(actor).startswith("trader-") else 1
+        is_trader = 0 if str(actor).startswith(("trader-", "MCV ", "IFV ")) else 1
         cands.append((is_trader, idx, actor))
     if cands:
         cands.sort()

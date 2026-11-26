@@ -287,7 +287,9 @@ def sale_refused(pilot, rid, route, state):
     follow((state or {}).get("data"))
     if not strict_on():
         return None
-    role = pilot.get("role") or str(pilot.get("name") or "").split("-")[0]
+    _pnm = str(pilot.get("name") or "")
+    _pfx = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
+    role = pilot.get("role") or (_pfx[_pnm[:3]] if (len(_pnm) > 4 and _pnm[3] == " " and _pnm[:3] in _pfx) else _pnm.split("-")[0])
     if role == "trader" or not sells(route) or work_class(route, rid) == "once":
         return None
     return SALE

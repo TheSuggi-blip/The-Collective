@@ -121,7 +121,25 @@
     "plasma_afterburner": 8500,
     "field_hospital": 65000,
     "advanced_drone_bay": 12000,
-    "neural_disruptor": 18000
+    "neural_disruptor": 18000,
+    "modulated_mining_laser": 18000,
+    "electromagnetic_refinery": 35000,
+    "rad_harvester_iii": 28000,
+    "rad_harvester_iv": 55000,
+    "deep_core_extractor_mk_i": 12000,
+    "deep_core_extractor_ii": 20000,
+    "radiation_baffles_ii": 8000,
+    "radiation_baffles_iii": 18000,
+    "salvage_module": 8000,
+    "outer_rim_salvage_array": 15000,
+    "tractor_beam": 6000,
+    "railgun_ii": 14000,
+    "siege_railgun": 55000,
+    "stasis_webifier_ii": 14000,
+    "damage_control_system": 16000,
+    "tracking_computer_ii": 16000,
+    "compact_steel_refinery": 35000,
+    "compact_titanium_refinery": 45000
   },
   "specialties": {
     "Mining": {

@@ -207,7 +207,19 @@ ROLES = {
     "miner": ("Mining", "Zero"), "trader": ("Trade", "Mercury"), "hauler": ("Logistics", "Apollo"),
     "drone": ("Military", "Apophis"), "scout": ("Intel", "Oracle"), "sentinel": ("Military", "Apophis"),
 }
+CULTURE_ROLES = {
+    "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler",
+    "ROU": "drone", "VSV": "scout", "GSV": "sentinel",
+}
 ROLE_NAME = re.compile(r"([a-z]+)-(\d{1,4})")
+
+
+def role_word(name):
+    s = str(name or "")
+    if len(s) > 4 and s[3] == " " and s[:3] in CULTURE_ROLES:
+        return CULTURE_ROLES[s[:3]]
+    m = ROLE_NAME.fullmatch(s)
+    return m.group(1) if m and m.group(1) in ROLES else ""
 # The line of a window's money that no division holds: what division_of names a pilot outside every division, and the
 # unknown side of a gift whose record names one side only (ONE_SIDED). window() shows it as a division of its own, so the
 # divisions always add up to the fleet: 2026-11-17 20:00 UTC a reader that had not loaded the flagship entries put the
@@ -227,11 +239,14 @@ def num(v):
 
 def division_of(name):
     """(division, admiral, number) from a pilot's name; a flagship from its entry (number 0: first of its division);
-    pilots outside both are unassigned."""
+    Culture-prefixed ships map to their job division (number 0); pilots outside all are unassigned."""
     entry = FLAGSHIPS.get(name or "")
     if entry:
         return (text(entry.get("division"), 20) or "Unassigned", text(entry.get("admiral"), 20), 0)
-    m = ROLE_NAME.fullmatch(name or "")
+    s = str(name or "")
+    if len(s) > 4 and s[3] == " " and s[:3] in CULTURE_ROLES:
+        return ROLES[CULTURE_ROLES[s[:3]]] + (0,)
+    m = ROLE_NAME.fullmatch(s)
     if m and m.group(1) in ROLES:
         return ROLES[m.group(1)] + (int(m.group(2)),)
     return ("Unassigned", "", 0)
@@ -856,8 +871,8 @@ def division_then(name, t, regroups=()):
     division, the one it came from. A gift, a reward or a reading counts for the division that held the pilot then."""
     division = division_of(name)[0]
     for at, frm, to, pilots, role, _gone, _come in reversed(regroups):
-        found = ROLE_NAME.fullmatch(name or "")
-        if at > t and division == to and (name in pilots or (role and found and found.group(1) == role)):
+        rw = role_word(name)
+        if at > t and division == to and (name in pilots or (role and rw == role)):
             division = frm
     return division
 
@@ -898,7 +913,7 @@ def note_regroup(old, rows, now, path=None):
         sums = lambda side: {"ships": len(pairs), "credits": sum(num(x[side].get("credits")) for x in pairs), "earned": sum(num(x[side].get("earned")) for x in pairs),
                              "spent": sum(num(x[side].get("spent")) for x in pairs), "ore": sum(num(x[side].get("ore_mined")) for x in pairs),
                              "missions": sum(num(x[side].get("missions_done")) for x in pairs)}
-        found = {ROLE_NAME.fullmatch(r["name"]).group(1) if ROLE_NAME.fullmatch(r["name"]) else "" for _b, r in pairs}
+        found = {role_word(r["name"]) for _b, r in pairs}
         lines.append({"at": int(now), "from": frm, "to": to, "role": found.pop() if len(found) == 1 else "", "pilots": sorted(r["name"] for _b, r in pairs),
                       "out": sums(0), "in": sums(1), "note": "read by the collector: the last picture and this pass"})
     if lines:
@@ -924,7 +939,7 @@ def regroup_from_history(data, before, after, role, frm, to, dry_run=False):
                 "spent": sign * (num(sb.get(division)) - num(sa.get(division))), "ore": sign * (d[4] - e[4]), "missions": sign * (d[5] - e[5])}
     fleet = read(data / "fleet.json", {})
     pilots = sorted(r["name"] for r in fleet.get("ships") or [] if isinstance(r, dict) and isinstance(r.get("name"), str)
-                    and ROLE_NAME.fullmatch(r["name"]) and ROLE_NAME.fullmatch(r["name"]).group(1) == role)
+                    and role_word(r["name"]) == role)
     line = {"at": after, "from": frm, "to": to, "role": role, "pilots": pilots, "out": side(frm, -1), "in": side(to, 1),
             "note": "from the history samples of %s and %s UTC: what %s lost and what %s gained" % (
                 time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime(before)), time.strftime("%H:%M:%S", time.gmtime(after)), frm, to)}

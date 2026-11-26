@@ -60,7 +60,7 @@ def pick_shipping_pilot(data_dir, prefer_docked=True):
             for pilot, div, docked, base in rows:
                 if not pilot:
                     continue
-                is_hauler = 1 if (div == "Logistics" or str(pilot).startswith("hauler-")) else 0
+                is_hauler = 1 if (div == "Logistics" or str(pilot).startswith(("hauler-", "LSV "))) else 0
                 is_docked = 1 if (int(docked or 0) == 1 and str(base or "").strip()) else 0
                 is_station = 1 if (base and "outpost" not in str(base).lower() and not str(base).startswith("443f")) else 0
                 candidates.append((is_docked if prefer_docked else 1, is_station, is_hauler, str(pilot)))
@@ -78,7 +78,7 @@ def pick_shipping_pilot(data_dir, prefer_docked=True):
                     name = s.get("name") or ""
                     if not name:
                         continue
-                    is_hauler = 1 if (s.get("division") == "Logistics" or name.startswith("hauler-")) else 0
+                    is_hauler = 1 if (s.get("division") == "Logistics" or name.startswith(("hauler-", "LSV "))) else 0
                     is_docked = 1 if s.get("docked") else 0
                     candidates.append((is_docked if prefer_docked else 1, 1, is_hauler, name))
             except Exception:

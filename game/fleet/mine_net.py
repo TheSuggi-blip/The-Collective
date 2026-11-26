@@ -118,8 +118,17 @@ def resource_tool_kind(resource_id):
     return "ore"
 
 
+RAD_RESOURCES = frozenset({"uranium_ore", "thorium_ore", "radium_ore", "polonium_ore"})
+PRECISION_RESOURCES = frozenset({
+    "silver_ore", "titanium_ore", "lead_ore", "palladium_ore", "platinum_ore",
+    "gold_ore", "iridium_ore", "neodymium_ore", "osmium_ore", "rhodium_ore",
+    "darksteel_ore", "energy_crystal", "fury_crystal", "phase_crystal",
+    "dark_matter_residue", "seam_glass", "quantum_fragments",
+})
+
+
 def pilot_tools(ship_doc):
-    """Return set of tool kinds ('ore', 'ice', 'gas') fitted on the pilot's ship."""
+    """Return set of tool kinds ('ore', 'ice', 'gas', 'rad', 'deep_core', 'precision') fitted on the pilot's ship."""
     tools = set()
     mods = ship_doc.get("modules") or []
     for m in mods:
@@ -128,6 +137,15 @@ def pilot_tools(ship_doc):
             tools.add("ice")
         elif "gas_harvester" in tid or "gas_scoop" in tid or "gas_collector" in tid:
             tools.add("gas")
+        elif "rad_harvester" in tid:
+            tools.add("rad")
+            tools.add("ore")
+        elif "deep_core_extractor" in tid or "core_drill" in tid:
+            tools.add("deep_core")
+            tools.add("ore")
+        elif "modulated_mining_laser" in tid:
+            tools.add("precision")
+            tools.add("ore")
         elif "mining_laser" in tid or "strip_miner" in tid or "ore_laser" in tid:
             tools.add("ore")
     return tools

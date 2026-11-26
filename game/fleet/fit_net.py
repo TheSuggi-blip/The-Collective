@@ -98,7 +98,7 @@ def resolve_specialty(pilot, division, fitted_modules, policy, is_bursar=False, 
     pinned = (dspec.get("pin_pilots") or {}).get(str(pilot))
     if pinned:
         return str(pinned)
-    is_sent = str(pilot).startswith("sentinel-")
+    is_sent = str(pilot).startswith(("sentinel-", "GSV "))
     fg_set = set(str(x) for x in (dspec.get("flagship_pilots") or []))
     is_fg = str(pilot) in fg_set
     cls_l = str(ship_class or "").lower().replace(" ", "_")

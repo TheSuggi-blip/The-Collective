@@ -151,5 +151,25 @@ class GateTests(unittest.TestCase):
         self.assertIn("REFUSED: drone-3 is commanded by Apophis", done.stdout)
 
 
+
+
+class CulturePrefixTests(unittest.TestCase):
+    def test_culture_prefixes_resolve_alongside_legacy(self):
+        div = load("division")
+        cases = [
+            ("EUV Obsidian", "miner", "Zero"),
+            ("ROU Kestrel", "drone", "Apophis"),
+            ("GSV Hyperion", "sentinel", "Apophis"),
+            ("MCV Samarkand", "trader", "Mercury"),
+            ("IFV Daedalus", "trader", "Mercury"),
+            ("LSV Mistral", "hauler", "Apollo"),
+            ("VSV Vespera", "scout", "Oracle"),
+            ("miner-12", "miner", "Zero"),
+        ]
+        for pilot, exp_role, exp_owner in cases:
+            self.assertEqual(div.role_of(pilot, data="/nonexistent"), exp_role, pilot)
+            self.assertEqual(div.owner(pilot, data="/nonexistent"), exp_owner, pilot)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -93,7 +93,11 @@ def role_of(name, data=None):
     """A pilot's role: its flagship entry's, else the word before the dash of its name (dispatch.role_of)."""
     flags = read_json(Path(data or DATA) / "fleet" / "flagships.json", {})
     entry = flags.get(name) if isinstance(flags, dict) else None
-    return str(entry.get("role") or "") if isinstance(entry, dict) else str(name).split("-")[0]
+    if isinstance(entry, dict):
+        return str(entry.get("role") or "")
+    _pfx = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
+    _s = str(name or "")
+    return _pfx[_s[:3]] if (len(_s) > 4 and _s[3] == " " and _s[:3] in _pfx) else _s.split("-")[0]
 
 
 def receivers(data=None):

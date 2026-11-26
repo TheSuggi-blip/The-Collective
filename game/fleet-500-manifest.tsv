@@ -1,0 +1,503 @@
+# Master 500-Ship Min-Max Fleet Manifest (Approved 2026-11-26, Catalog 0.734.6.json)
+# Wave 0 = 10 Kept Command | W1 Miners (130) | W2 Hunters (80) | W3 Fleet & Defense (60) | W4 Trade & Crafters (85) | W5 Logistics (90) | W6 Intel (45)
+wave	division	wing	prefix	pilot	empire	target_t2	target_t3	target_t4	target_t5	status
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Prime Directive	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Zero Point	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Golden Chariot	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Mercurys Ledger	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Hades	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Vision	voidborn	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Solar Mandate	solarian	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Nebula Charter	nebula	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Rimward Pact	outerrim	theorem	concordance	consensus	symposium	keep
+0	Fleet & Defense	1A. Command Task Forces (Kept)	CMD	Crimson Aegis	crimson	theorem	concordance	consensus	symposium	keep
+1	Miners	3A. Ore -- Precision	EUV	EUV Obsidian	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Basalt Choir	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Borealis	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Zircon	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Onyx	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Porphyry	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Rhyolite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Beryl	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Corundum	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Feldspar	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Garnet	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Hematite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Jasper	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Kyanite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Lapis	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Malachite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Nephrite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Opaline	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Peridot	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Quartzite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Rhodonite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Sardonyx	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Topaz	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Turquoise	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Variscite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Wulfenite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Aventurine	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Carnelian	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Chalcedony	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Citrine	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Diopside	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Epidote	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Fluorite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Galena	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Heliodor	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Iolite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Jadeite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3A. Ore -- Precision	EUV	EUV Kunzite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Anvil Ridge	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Iron Mesa	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Cragspire	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Stonemarch	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Granite Wake	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Deep Quarry	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Slag Crown	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Kiln Drift	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Caldera	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Tecton	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Monolith	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Cairn	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Bedrock Echo	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Shale Veil	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Scree Line	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Mantle Song	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Trenchline	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Cinder Ridge	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Gneiss	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Gabbro	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Dolerite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3B. Ore -- Bulk	EUV	EUV Andesite	solarian	resonance_miner	bonanza_king	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Pitchblende	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Isotope	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Cherenkov	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Half Life	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Actinium	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Becquerel	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Curie Spire	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Fission Drift	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Radon Choir	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Thorite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Uraninite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Monazite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Autunite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Carnotite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Torbernite	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Cobalt Glow	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Corefire	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3C. Deep-Core & Rad	EUV	EUV Deep Halo	solarian	resonance_miner	deep_resonance	lithosphere	tellurian	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Aether Veil	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Cumulus	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Nebulon	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Sirocco	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Corona Drift	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Heliosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Ion Plume	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Mistralis	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Nimbostratus	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Ozone Crest	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Plasmoid	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Vapor Loom	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Zephyrine	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Breeze Song	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Cirrus Loom	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Exosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Fumarole	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Gale Spire	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Haze Runner	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Ionosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Jetstream	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Karman Drift	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Luminous Mist	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Mesosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Nacre Cloud	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Oort Wisp	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Photosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3D. Gas Harvesters	EUV	EUV Stratosphere	nebula	nebulous	phase_collector	SKIP_T4	rift_siphon	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Glaciation	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Hoarspire	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Cryo Veil	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Frostline	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Rime Crest	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Permafrost	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Avalanche	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Bergschrund	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Crevasse	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Firn Drift	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Glacier Song	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Hailstone	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Icicle Spire	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Nivalis	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Packice	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Serac	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Sleet Veil	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Snowmelt	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Subzero	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Tundra Echo	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Verglas	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Winterborn	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Whiteout	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+1	Miners	3E. Ice Harvesters	EUV	EUV Crystalfrost	solarian	hoarfrost	cryogenic_survey	SKIP_T4	cryo_industrial	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Kestrel	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Peregrine	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Cold Ember	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Glass Fang	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Gyrfalcon	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Harrier	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Goshawk	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Osprey	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Shrike	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Merlin	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Caracara	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Baza	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Buzzard	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Condor	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Elanus	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Falco	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Hobby	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Kitewing	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Lammergeier	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Lanner	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Nankeen	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Osprey Claw	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Saker	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Secreta	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Sparrowhawk	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Tercel	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Vesper Claw	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Windhover	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Ashen Blade	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Black Talon	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Bloodhawk	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Cinder Fang	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Crimson Dart	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Dark Lance	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Dreadwing	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Edgewalker	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Firebrand	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Flintlock	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Gale Fang	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Grim Talon	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Iron Beak	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Javelin	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Kukri	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Longbow	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Manticore	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Nightjar	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Obsidian Claw	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Prowler	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Quicksilver	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2A. Heavy Pirate Hunters	ROU	ROU Raptor Dawn	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Razorwing	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Redshift	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Sabre	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Scimitar	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Shadowfang	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Silverbolt	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Skirmisher	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Spitfire	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Starlance	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Steelwing	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Stormcrow	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Sunstrike	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Swiftblade	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Tempest	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Thornback	crimson	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Thunderbolt	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Valkyrie	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Vipera	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Warhawk	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Wildfire	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Windblade	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Wolfpack	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Wrathwing	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Zephyr Fang	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Broadsword	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Cutlass	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Dirk	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Estoc	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Falchion	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+2	Hunters	2B. Fast Wildlife & Raiders	ROU	ROU Gladius	solarian	recursion	insurance_fraud	juggernaut	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Hyperion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Iron Axiom	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Nemesis	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Caliban	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Aegis Crown	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Bastion	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (DPS)	GSV	GSV Citadel	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Dominion	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Empyrean	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Carrier)	GSV	GSV Fortitude	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Goliath	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Helios	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Interdictor)	GSV	GSV Imperium	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Juggernautis	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Kronos	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1A. Command Task Force Escorts (Medic)	GSV	GSV Leviathanis	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Monarch	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Nemean	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Olympus	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Paladin	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Quintessence	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Resolute	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Sovereign	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Triumph	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Unyielding	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Vanguardis	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Warden	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Xenophon	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Zenith	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Achilles	crimson	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Bellona	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Centurion	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Dauntless	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Excalibur	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Formidable	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1B. Grand Battle Line	GSV	GSV Gorgon	solarian	broadaxe	dialectic	axiomata	opus_magna	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Hector	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Invincible	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Justicar	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Leonidas	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Minerva	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Nestor	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Orion Shield	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Perseus	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Rampart	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Sentinelis	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Theseus	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Tanks/Carriers)	GSV	GSV Ulysses	voidborn	dualism	gestalt	superposition	overmind	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Valiant	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Watchtower	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Argonaut	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Bellerophon	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Chiron	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Interdictors)	GSV	GSV Diomedes	solarian	penumbra	aporia	paradox_engine	symposium	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Asclepius	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Hygieia	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Iaso	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Panakeia	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Epione	voidborn	anamnesis	remedy	panacea	pleroma	planned
+3	Fleet & Defense	1C. Outpost Sentinels (Medics)	GSV	GSV Machaon	voidborn	anamnesis	remedy	panacea	pleroma	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Samarkand	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Gold Current	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Petra	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Aurelia	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Bukhara	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Carthage	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Damascus	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Ephesus	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Florence	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Genoa	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Hansa	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4A. Express Arbitrage	MCV	MCV Isfahan	outerrim	dust_devil	syndicate	macguffin	macguffin	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Kashgar	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Lubeck	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Malacca	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Novgorod	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Palmyra	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Quanzhou	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Ragusa	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4B. Bulk Trade Haulers	MCV	MCV Sogdiana	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Timbuktu	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Venetia	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Xian	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Zanzibar	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Alexandria	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Antioch	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Bruges	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Byzantium	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Cadiz	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Corinth	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Delos	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Ducat	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Florin	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Guilder	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Krona	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Lira	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Maravedi	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Obol	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Shekel	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Solidus	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Stater	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Talent	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Thaler	outerrim	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Zecchino	outerrim	congregation	congregation	conglomerate	conglomerate	planned
+4	Traders & Bursars	4C. Pure Bursar Desks	MCV	MCV Bourse	outerrim	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Daedalus	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Star Anvil	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Vulcan	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Crucible Dawn	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Hephaestus	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Brokkr	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Eitri	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Goibniu	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Ilmarinen	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Kaveh	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Luchtaine	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Masamune	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Muramasa	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Ptah	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Svarog	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Telchines	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Tvashtar	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Wayland	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Alembic	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Athanor	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Bellows	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Bloomery	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Calkin	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Cupola	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Foundry	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Furnace	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Hearthfire	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Ingot	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Kilnfire	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5A. Station Refiners & Bursars	IFV	IFV Mandrel	nebula	congregation	congregation	conglomerate	conglomerate	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Quench	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Retort	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Smeltery	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Swage	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Tongs	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Tuyere	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Crucible	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Slaghammer	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Tinker	outerrim	subcontract	subcontract	praxis	praxis	planned
+4	Crafters & Refiners	5B. Mobile Field Workshops	IFV	IFV Artificer	outerrim	subcontract	subcontract	praxis	praxis	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Mistral	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Atlas Bridge	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Zephyr	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Aether Drift	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Alize	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Bise	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Bora	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Chinook	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Etesian	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Foehn	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Gregale	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Harmattan	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Khamsin	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Leste	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Levanter	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Libeccio	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Marin	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Meltemi	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Monsoon	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Norte	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Ostro	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Pampero	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Ponente	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Samiel	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Shamali	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Simoom	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Solano	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Tramontana	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Vendaval	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Zonda	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Caravan	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Causeway	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Conduit	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Corridor	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Dromon	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Ferryman	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Galleon	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Indiaman	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Knarr	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Longship	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Merchantman	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Oxcart	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Packtrain	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Portage	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Relay	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Span	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Stevedore	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Transit	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Viaduct	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6A. Supply Chain Bulk Haulers	LSV	LSV Wayfarer	nebula	junk_convoy	enterprise	frankenhauler	frankenhauler	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Albatross	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Arcadia	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Aurora	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Belvedere	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Calypso	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Celestia	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Clarion	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Coronet	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Elysium	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Esperanza	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Estrella	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Evangeline	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Galatea	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Halcyon	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Hesperia	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Illustria	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Lumina	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Majestic	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Mariposa	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Mirabelle	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Oceana	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Odyssey	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Oriana	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Paradiso	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Regalia	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Serenade	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Solstice	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6B. Passenger & Resort Liners	LSV	LSV Valeria	outerrim	consortium	concordia	comet	comet	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Cistern	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Decanter	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Flagon	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Reservoir	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Siphon	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Fleet Fuel Tankers	LSV	LSV Wellspring	outerrim	long_haul	reserve	plenum	endowment	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Beachcomber	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Dredger	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Gleaner	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Hulkrunner	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Reclaimer	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+5	Logistics	6C. Combat Salvage Tenders	LSV	LSV Wreckwright	outerrim	chop_shop	dissolution	liquidator	thermodynamic_end	planned
+6	Intel	7A. Covert Recon	VSV	VSV Vespera	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Night Whisper	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Cassiopeia	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Umbra	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Alcor	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Altair	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Andromeda	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Antares	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Arcturus	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Bellatrix	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Canopus	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Capella	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Deneb	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Fomalhaut	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Mirfak	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Polaris	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Procyonus	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Regulus	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Rigel	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7A. Covert Recon	VSV	VSV Spica	voidborn	interstice	catharsis	solipsism	solipsism	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Astrolabe	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Azimuth	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Binnacle	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Caliper	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Chronometer	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Compass	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Declination	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Ecliptic	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Ephemeris	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Equinox	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Gnomon	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Horizon	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Meridian	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Nadir	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Octant	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Parallax	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Perihelion	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Plumbline	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Quadrant	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Sextant	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Sidereal	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Theodolite	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Vernier	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Waymark	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned
+6	Intel	7B. Deep-Core Surveyors	VSV	VSV Zenithal	outerrim	confluence	peer_review	manifest_destiny	manifest_destiny	planned

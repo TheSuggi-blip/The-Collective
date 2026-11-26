@@ -115,6 +115,13 @@ function jobDivision(r) {
   const cls = String(r.class || '').toLowerCase().replace(/\s+/g, '_');
   const what = String(r.order || r.route || r.activity || '').toLowerCase();
   const rl = String(r.role || '').toLowerCase();
+  if (nm.startsWith('GSV ')) return 'Fleet & Defense';
+  if (nm.startsWith('ROU ')) return 'Hunters';
+  if (nm.startsWith('EUV ')) return 'Miners';
+  if (nm.startsWith('MCV ')) return 'Traders & Bursars';
+  if (nm.startsWith('IFV ')) return 'Crafters & Refiners';
+  if (nm.startsWith('LSV ')) return 'Logistics';
+  if (nm.startsWith('VSV ')) return 'Intel';
   if (d === 'Command') return 'Fleet & Defense';
   if (d === 'Military') {
     if (r.flagship || !nm.includes('-') || nm.startsWith('sentinel-') || rl === 'sentinel' || rl === 'command'
@@ -1866,7 +1873,7 @@ function shipSubgroup(r) {
   const what = String(r.order || r.route || r.activity || '').toLowerCase();
   const mods = Array.isArray(r.modules) ? r.modules.map((m) => String(m || '').toLowerCase()).join(' ') : '';
   if (jd === 'Fleet & Defense') {
-    if (r.flagship || !nm.includes('-')) return [0, 'Command Task Forces'];
+    if (r.flagship || (!nm.includes('-') && !nm.startsWith('GSV '))) return [0, 'Command Task Forces'];
     if (nm.startsWith('sentinel-') || ['anamnesis', 'triage', 'remedy', 'anvil', 'panacea', 'cauterizer', 'pleroma', 'gestalt', 'superposition', 'pantheon', 'overmind', 'aporia', 'bastille', 'paradox_engine', 'portcullis', 'dualism', 'voidborn_event_horizon', 'apotheosis', 'membrane', 'palisade'].includes(cls)) return [2, 'Outpost Sentinels & Support'];
     return [1, 'Grand Battle Line'];
   }

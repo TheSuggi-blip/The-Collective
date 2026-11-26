@@ -456,5 +456,23 @@ class MineNetPirateTests(unittest.TestCase):
             self.assertIn("s1:belt1", belts)
 
 
+
+
+class SpecialistMiningToolTests(unittest.TestCase):
+    def test_specialist_mining_tools_detected(self):
+        import sys
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "game" / "fleet"))
+        import mine_net
+        t_rad = mine_net.pilot_tools({"modules": [{"type_id": "rad_harvester_iii"}]})
+        self.assertIn("rad", t_rad)
+        self.assertIn("ore", t_rad)
+        t_dc = mine_net.pilot_tools({"modules": [{"type_id": "deep_core_extractor_ii"}]})
+        self.assertIn("deep_core", t_dc)
+        self.assertIn("ore", t_dc)
+        t_pr = mine_net.pilot_tools({"modules": [{"type_id": "modulated_mining_laser"}]})
+        self.assertIn("precision", t_pr)
+        self.assertIn("ore", t_pr)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -51,6 +51,7 @@ from pathlib import Path
 
 DATA = "/srv/collective/data"
 ROLES = {"miner": "Zero", "trader": "Mercury", "hauler": "Apollo", "drone": "Apophis", "scout": "Oracle", "sentinel": "Apophis", "command": "Unity"}
+CULTURE_PREFIXES = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
 # The sentinels are lent to Military (Suggi, 2026-11-17 about 18:25 CET): Apophis commands and trains them like his
 # drones, in Military's plan; each comes back to the command group at Piloting 20 (the Fleet Admiral's turn reads the
 # levels). The Fleet Admiral may still take any of them by hand. Back: "sentinel": "Unity" and the rows into plan-command.
@@ -92,13 +93,24 @@ def flagships(data=DATA):
     return found if isinstance(found, dict) else {}
 
 
+def culture_prefix(pilot):
+    """Return the 3-letter Culture prefix ('GSV', 'ROU', 'EUV', 'MCV', 'IFV', 'LSV', 'VSV') or ''."""
+    s = str(pilot or "")
+    if len(s) > 4 and s[3] == " " and s[:3] in CULTURE_PREFIXES:
+        return s[:3]
+    return ""
+
+
 def role_of(pilot, data=DATA):
-    """The role whose plan a pilot flies: its flagship entry's, else the word before the dash; '' for any other name."""
+    """The role whose plan a pilot flies: its flagship entry's, else its Culture prefix, else the word before the dash; '' for any other name."""
     entry = flagships(data).get(pilot)
     if isinstance(entry, dict):
         return str(entry.get("role") or "command")
-    word = pilot.split("-")[0]
-    return word if "-" in pilot and word in ROLES else ""
+    pfx = culture_prefix(pilot)
+    if pfx:
+        return CULTURE_PREFIXES[pfx]
+    word = str(pilot or "").split("-")[0]
+    return word if "-" in str(pilot or "") and word in ROLES else ""
 
 
 def owner(pilot, data=DATA):

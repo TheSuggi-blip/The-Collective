@@ -278,7 +278,7 @@ def _clear_escort(data, escort_key, now=None):
 
 def _belt_has_friendly_miner(data, sys_id, poi_id, ours, now):
     """True if any friendly miner is live at this POI or holds an active claim on sys_id:poi_id."""
-    if any(str(n).startswith('miner-') for n in (ours or ())):
+    if any(str(n).startswith(('miner-', 'EUV ')) for n in (ours or ())):
         return True
     belt_key = '%s:%s' % (sys_id, poi_id)
     try:

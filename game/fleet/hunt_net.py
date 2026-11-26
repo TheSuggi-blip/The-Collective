@@ -327,18 +327,18 @@ def standing_squad_for_pilot(data_dir, pilot, policy=None):
         if not isinstance(sh, dict):
             continue
         nm = str(sh.get("name") or sh.get("pilot") or "").strip()
-        if nm.startswith("sentinel-"):
+        if nm.startswith(("sentinel-", "GSV ")):
             sents.append(nm)
-        elif nm.startswith("drone-"):
+        elif nm.startswith(("drone-", "ROU ")):
             drones.append(nm)
     if not sents and not drones:
         sdir = Path(data_dir) / "fleet" / "ships"
         if sdir.is_dir():
             for fp in sorted(sdir.glob("*.json")):
                 nm = fp.stem
-                if nm.startswith("sentinel-"):
+                if nm.startswith(("sentinel-", "GSV ")):
                     sents.append(nm)
-                elif nm.startswith("drone-"):
+                elif nm.startswith(("drone-", "ROU ")):
                     drones.append(nm)
     def _num_key(nm):
         parts = nm.split("-")
@@ -1060,7 +1060,8 @@ def detect_escort_demands(data_dir, world, policy, claims, now_t=None):
         for sp in sorted(ships_dir.glob("*.json")):
             sd = read_json(sp, {})
             pname = str(sd.get("name") or sp.stem)
-            role = pname.split("-")[0]
+            _pfx = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "trader", "IFV": "trader", "LSV": "hauler", "VSV": "scout"}
+            role = _pfx[pname[:3]] if (len(pname) > 4 and pname[3] == " " and pname[:3] in _pfx) else pname.split("-")[0]
             if role not in ("miner", "hauler", "trader"):
                 continue
             psys = str(sd.get("system") or "")
@@ -1600,7 +1601,7 @@ def pack_try_join_or_create(data_dir, pilot, ship_sys, ship_power, pack_targets,
                 for sp in sdir.glob("*.json"):
                     sd = read_json(sp, {})
                     nm = str(sd.get("name") or sd.get("username") or sp.stem)
-                    if nm.startswith(("drone-", "sentinel-")) or nm in cmd_ships:
+                    if nm.startswith(("drone-", "sentinel-", "ROU ", "GSV ")) or nm in cmd_ships:
                         ss = str(sd.get("system") or "")
                         if ss:
                             combat_by_sys[ss] = combat_by_sys.get(ss, 0) + 1
@@ -2073,7 +2074,7 @@ def main(argv=None):
 
         # Count active Military ships for dynamic share calculations
         orders_dir = DATA / "fleet" / "orders"
-        active_mil = sum(1 for p in (orders_dir.glob("*.json") if orders_dir.is_dir() else []) if p.stem.startswith(("drone-", "sentinel-")))
+        active_mil = sum(1 for p in (orders_dir.glob("*.json") if orders_dir.is_dir() else []) if p.stem.startswith(("drone-", "sentinel-", "ROU_", "GSV_", "ROU ", "GSV ")))
         active_mil = max(12, active_mil)
 
         # --- LANE 0: DORMANT WAR WING (ACTIVATES STRICTLY ON POSTURE == WAR, F2) ---
@@ -2095,7 +2096,7 @@ def main(argv=None):
 
         # --- LANE 1: ON-DEMAND CONVOY & FIELD ESCORT PACKS (3/5/7/10 nearest Military + Flagship/Sentinels) ---
         ecfg = policy.get("escort") or {}
-        is_sentinel = str(pilot).startswith("sentinel-")
+        is_sentinel = str(pilot).startswith(("sentinel-", "GSV "))
         is_flagship = pilot in load_command_flagships(DATA)
         req_escort_active = sum(
             1 for r in claims.values()
