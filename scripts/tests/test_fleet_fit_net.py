@@ -36,7 +36,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             con.close()
             (data / "fleet" / "bursar_claims.json").write_text(json.dumps({"b1": {"pilot": "trader-1"}}), encoding="ascii")
 
-            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
             world = fit_net.load_fit_world(str(data), pol)
 
             # 1. Ice miner keeps ice specialty (detect_by_module), strips pulse_laser_i, fits ice_harvester_iii + shield_booster_iv
@@ -93,7 +93,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 {"id": "survey_scanner_ii", "slot": "utility", "cpu_usage": 5, "power_usage": 7},
                 {"id": "mining_laser_i", "slot": "utility", "cpu_usage": 2, "power_usage": 5},
                 {"id": "pulse_laser_i", "slot": "weapon", "cpu_usage": 2, "power_usage": 5}]}), encoding="ascii")
-            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
             # The caps are judged against a loadout of this test's own: the live Intel loadouts buy nothing
             # since 2026-11-25 (orders ENT-093 P1: no module without a measured payback within a week).
             cap_loadout = {"defense": ["shield_booster_iv"], "utility": ["survey_scanner_ii"]}
@@ -120,7 +120,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
     def test_live_intel_policy_auto_fits_scout_without_afterburners(self):
         # Suggi mandate (2026-11-25): all non-bursar fleet divisions always auto-upgrade modules (scanners, cloaks, shields, fuel_optimizer),
         # while fuel-guzzling afterburners remain off-role for Intel scouts.
-        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
         sold = ("shield_booster_iv", "shield_booster_ii", "cloaking_device_i", "survey_scanner_ii", "fuel_optimizer", "afterburner_ii")
         world = {"hulls": {"threshold": {"tier": 0, "weapon": 1, "defense": 2, "utility": 2}},
                  "adj": {"s1": []}, "stations": {"b1": ("s1", "p1", "b1", True)},
@@ -136,7 +136,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
 
     def test_live_logistics_and_military_policies_auto_fit_all_slots(self):
         # Suggi mandate (2026-11-25): Logistics haulers and Military drones/sentinels auto-fit full utility, weapon & defense ladders.
-        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
         sold = ("shield_booster_iv", "shield_booster_ii", "cargo_expander_iii", "cargo_expander_ii", "fuel_optimizer",
                 "economy_passenger_cabin", "pulse_laser_iii", "tracking_computer_iii", "expanded_fuel_tank")
         slots = {"tier": 2, "weapon": 2, "defense": 2, "utility": 2}
@@ -157,7 +157,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         self.assertIn("shield_booster_iv", db)
 
     def test_royal_guard_command_and_military_support_specialties(self):
-        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
         # 1. Sentinels 60/40 split: royal_guard_escort + royal_guard_utility
         specs = {fit_net.resolve_specialty(f"sentinel-{n}", "Military", [], pol) for n in range(1, 36)}
         self.assertEqual(specs, {"royal_guard_escort", "royal_guard_utility"})
@@ -235,7 +235,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                 {"id": "u-1", "pilot": "trader-3", "division": "Trade", "hull": "apophenia",
                  "station": "s1:p1:crimson_hub", "max_price": 200000, "state": "building", "created_at": 1795400000}
             ]), encoding="ascii")
-            pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
+            pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
             # Lower Trade min_t0_bursar_reserve to 1 for this 3-trader unit fixture so trader-2 is eligible, then test reserve=2 blocks it
             pol["divisions"]["Trade"]["min_t0_bursar_reserve"] = 1
             (repo / "game" / "upgrade-policy.json").write_text(json.dumps(pol), encoding="ascii")
@@ -320,8 +320,8 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
 
     def test_minmax_cohort_partition_t1_to_t3_climb_and_hull_locked_fits(self):
         """Pilots stay locked in their exact specialty split across T1->T2->T3 and never cross-overwrite."""
-        pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
-        fpol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); fpol.pop("enabled_divisions", None); pol.pop("enabled_divisions", None)
+        pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; [c.update({"enabled": True}) for c in (pol.get("divisions") or {}).values()]
+        fpol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); fpol["enabled"] = True; fpol.pop("enabled_divisions", None); pol.pop("enabled_divisions", None)
 
         # 1. Exact 65/20/15 Mining partition with empire affinity (Nebula -> Gas, Solarian -> Ore, Voidborn -> Ice)
         mining_ships = (
@@ -411,7 +411,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             """)
             con.commit()
             con.close()
-            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol.pop("enabled_divisions", None)
+            pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii")); pol["enabled"] = True; pol.pop("enabled_divisions", None)
             world = fit_net.load_fit_world(str(data), pol)
             # 1. Rime (ice specialty) with only mining_laser_i at b1 (no ice harvester at b1, only at b2):
             # MUST go to b2 to swap mining_laser_i -> ice_harvester_ii, NEVER strip mining_laser_i at b1!
@@ -432,18 +432,16 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             self.assertIn("ice_harvester_ii", [m for m, _ in p2["buy_fit"]])
 
 
-    def test_live_auto_upgrade_pause_only_military_and_intel_enabled(self):
-        """Suggi directive (2026-11-26): hull & module auto-upgrades paused for Mining, Logistics, Trade; Military & Intel ON."""
+    def test_live_auto_upgrade_pause_all_divisions_disabled(self):
+        """Suggi directive (2026-11-26): ALL hull & module auto-upgrades paused across every division pending T2-T5 config."""
         live_up = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
         divs = live_up.get("divisions") or {}
-        self.assertTrue(divs["Military"]["enabled"])
-        self.assertTrue(divs["Intel"]["enabled"])
-        self.assertFalse(divs["Mining"]["enabled"])
-        self.assertFalse(divs["Logistics"]["enabled"])
-        self.assertFalse(divs["Trade"]["enabled"])
+        self.assertFalse(live_up.get("enabled"))
+        for dname in ("Military", "Intel", "Mining", "Logistics", "Trade"):
+            self.assertFalse(divs[dname]["enabled"], f"{dname} hull auto-upgrade must be paused")
 
         live_fp = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
-        self.assertEqual(live_fp.get("enabled_divisions"), ["Military", "Intel"])
+        self.assertEqual(live_fp.get("enabled_divisions"), [])
         sold = ("mining_laser_ii", "cargo_expander_ii", "pulse_laser_iii", "shield_booster_iv",
                 "shield_booster_ii", "cloaking_device_ii", "survey_scanner_ii", "tracking_computer_iii")
         world = {
@@ -457,19 +455,15 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
             },
             "asks": {m: [(1000, "b1", 50)] for m in sold},
         }
-        # Mining, Logistics, Trade MUST return None under live fit-policy.json
         for pilot, div, hcls in (
             ("miner-1", "Mining", "t0_miner"),
             ("hauler-9", "Logistics", "prayer"),
             ("trader-9", "Trade", "t0_miner"),
+            ("drone-1", "Military", "drone_hull"),
+            ("scout-1", "Intel", "scout_hull"),
         ):
             sh = {"name": pilot, "division": div, "system": "s1", "class": hcls, "credits": 90000, "modules": []}
             self.assertIsNone(fit_net.plan_ship_fit(sh, world, live_fp), f"{div} must be paused")
-        # Military & Intel MUST still produce active fit plans!
-        mil = {"name": "drone-1", "division": "Military", "system": "s1", "class": "drone_hull", "credits": 90000, "modules": []}
-        intel = {"name": "scout-1", "division": "Intel", "system": "s1", "class": "scout_hull", "credits": 90000, "modules": []}
-        self.assertIsNotNone(fit_net.plan_ship_fit(mil, world, live_fp))
-        self.assertIsNotNone(fit_net.plan_ship_fit(intel, world, live_fp))
 
 
 if __name__ == "__main__":
