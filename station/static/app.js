@@ -4350,9 +4350,10 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5(fsLbl('Mobile Trade -- Express & Bulk Arbitrage (4A/4B, 20)', ['Trade']), mobileTradeOf, 'fs-ind'),
     row5(fsLbl('Core Logistics -- Supply, Fuel & Salvage Contracts (6A/6C, 62)', ['Logistics']), logCoreOf, 'fs-ind'),
     row5(fsLbl('Passenger & Resort Liners (6B, 28)', ['Logistics']), paxLinersOf, 'fs-ind'),
-    row5(fsLbl('Military & Hunters -- Task Forces, Defense & Bounties (1A-1C, 2A/2B, 150)', ['Military']), militaryRevOf, 'fs-ind'),
-    row5(fsLbl('Mining -- Direct Ore, Gas & Ice Sales (3A-3E, 130; transfers via Bursars)', ['Mining']), miningRevOf, 'fs-ind'),
-    row5(fsLbl('Intel -- Covert Recon & Deep-Core Surveyors (7A/7B, 45)', ['Intel']), intelRevOf, 'fs-ind'),
+    row5(fsLbl('Military & Hunters -- Bounties & Frontier Loot (1A-1C, 2A/2B, 150)', ['Military']), militaryRevOf, 'fs-ind'),
+    ...([a1, a6, a24].some((x) => (miningRevOf(x) || 0) + (intelRevOf(x) || 0) !== 0)
+      ? [row5(fsLbl('Other Direct Sales (Mining / Intel residual)', ['Mining', 'Intel']), (a) => (a ? (miningRevOf(a) || 0) + (intelRevOf(a) || 0) : null), 'fs-ind')]
+      : []),
     row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
     row5('Fuel Burn (Paid Station Refuels -- Excludes Free Bunkers)', fuelSumOf, 'fs-ind'),
