@@ -1526,7 +1526,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
     used_listings = set()
 
     for div_name, dcfg in div_cfgs.items():
-        if len(added) >= max_new or spend_24h >= cap_24h:
+        if len(added) >= max_new or (cap_24h > 0 and spend_24h >= cap_24h):
             break
         if not isinstance(dcfg, dict) or not dcfg.get("enabled", False):
             continue
@@ -1568,7 +1568,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
         ranked_cohorts.sort(reverse=True)
 
         for _t0_frac, _upg_need, _neg_i, coh, cohort_ships in ranked_cohorts:
-            if len(added) >= max_new or spend_24h >= cap_24h or active_by_div.get(div_name, 0) >= div_cap:
+            if len(added) >= max_new or (cap_24h > 0 and spend_24h >= cap_24h) or active_by_div.get(div_name, 0) >= div_cap:
                 break
             # Group ladder rungs by tier descending (T5 -> T1 <= max_auto_tier); pick cheapest live bargain per tier
             rungs_by_tier = {}
@@ -1586,7 +1586,7 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
                     hid = str(rung.get("hull") or "").lower()
                     rpil = int(rung.get("min_piloting") or 0)
                     rmax = int(rung.get("max_price") or 0)
-                    if not hid or rmax <= 0 or (spend_24h + rmax) > cap_24h or (treasury - rmax) < floor_cr:
+                    if not hid or rmax <= 0 or (cap_24h > 0 and (spend_24h + rmax) > cap_24h) or (treasury - rmax) < floor_cr:
                         continue
                     l_station = None
                     l_price = rmax

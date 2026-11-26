@@ -1262,7 +1262,7 @@
       ]
     },
     "Mining": {
-      "enabled": true,
+      "enabled": false,
       "max_active": 5,
       "cohorts": [
         {
@@ -1685,7 +1685,7 @@
       ]
     },
     "Logistics": {
-      "enabled": true,
+      "enabled": false,
       "max_active": 5,
       "cohorts": [
         {
@@ -1910,7 +1910,7 @@
       ]
     },
     "Trade": {
-      "enabled": true,
+      "enabled": false,
       "max_active": 7,
       "min_t0_bursar_reserve": 50,
       "cohorts": [
@@ -2268,5 +2268,6 @@
         }
       ]
     }
-  }
+  },
+  "_suggi_pause_note": "2026-11-26 (Suggi directive): hull auto-upgrades paused for Mining, Logistics, Trade; Military and Intel (scouts) remain enabled."
 }

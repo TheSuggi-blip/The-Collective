@@ -1351,5 +1351,10 @@
         }
       }
     }
-  }
+  },
+  "enabled_divisions": [
+    "Military",
+    "Intel"
+  ],
+  "_suggi_pause_note": "2026-11-26 (Suggi directive): module auto-upgrades paused for Mining, Logistics, Trade; Military and Intel (scouts) remain enabled."
 }

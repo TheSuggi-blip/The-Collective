@@ -255,6 +255,12 @@ def plan_ship_fit(ship_doc, world, policy):
         division = _rm.get(str(ship_doc.get("role") or "").lower(), "")
     if not pilot or not division:
         return None
+    en_divs = policy.get("enabled_divisions")
+    if isinstance(en_divs, list) and division not in en_divs:
+        return None
+    _dspec_en = (policy.get("specialties") or {}).get(division)
+    if isinstance(_dspec_en, dict) and _dspec_en.get("enabled") is False:
+        return None
     cur_sys = str(ship_doc.get("system") or "")
     credits = int(ship_doc.get("credits") or 0)
     min_keep = int(policy.get("min_wallet_keep_cr") or 10000)
