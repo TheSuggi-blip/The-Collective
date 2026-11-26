@@ -66,7 +66,7 @@ DEFAULT_POLICY = {
     "needs_max_priority": 2,
     "gift_surplus_to_trader": False,
     "priority_resources": [],
-    "rest_seconds_when_empty": 120,
+    "rest_seconds_when_empty": 60,
 }
 
 ICE_SUFFIXES = ("_ice",)
@@ -751,7 +751,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         cap = adaptive_belt_cap(rem, mx, policy, min_left_pct=eff_min_pct)
         if cap <= 0 or claimed_counts.get(belt_key, 0) >= cap:
             continue
-        is_scarce = bool(mkt and float(mkt[0] or 0) >= float(policy.get("scarce_min_bid_cr") or 100.0))
+        is_scarce = bool(mkt and float(mkt[0] or 0) >= float(policy.get("scarce_min_bid") or policy.get("scarce_min_bid_cr") or 100.0))
         hops = dists.get(sys_id) if p_sys else 0
         _allow_j = scarce_max_j if (is_scarce or is_deficit) else max_jumps
         if hops is None or hops > _allow_j:
@@ -1095,9 +1095,9 @@ def main(argv=None):
                         return 0
                     except Exception as _re:
                         print("%s %s mine_net: relocate err: %s" % (utc_now(), pilot, str(_re)[:80]), flush=True)
-            print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, int(policy.get("rest_seconds_when_empty") or 120)), flush=True)
+            print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, min(60, int(policy.get("rest_seconds_when_empty") or 60))), flush=True)
             started = time.time()
-            end_nap = started + float(policy.get("rest_seconds_when_empty") or 120)
+            end_nap = started + min(60.0, float(policy.get("rest_seconds_when_empty") or 60))
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
                 time.sleep(min(20.0, max(1.0, end_nap - time.time())))
             record_no_belt(DATA, pilot, route_id, started)

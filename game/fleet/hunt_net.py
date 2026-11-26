@@ -124,7 +124,7 @@ DEFAULT_POLICY = {
         "enabled": True,
         "max_jumps": 6,
     },
-    "rest_seconds_when_empty": 120,
+    "rest_seconds_when_empty": 60,
 }
 
 # Known baseline creature hull & loot values (overridden live from data/wildlife & read.db)
@@ -2359,7 +2359,7 @@ def main(argv=None):
                     ), flush=True)
                     _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
                     return 0
-            nap = min(90, int(policy.get("rest_seconds_when_empty") or 90))
+            nap = min(60, int(policy.get("rest_seconds_when_empty") or 60))
             print("%s %s hunt_net: Command Support Flagship awaiting pack/escort/war wing; resting %ds" % (utc_now(), pilot, nap), flush=True)
             end_nap = time.time() + nap
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
@@ -2384,7 +2384,7 @@ def main(argv=None):
                     ), flush=True)
                     _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
                     return 0
-            nap = int(policy.get("rest_seconds_when_empty") or 120)
+            nap = min(60, int(policy.get("rest_seconds_when_empty") or 60))
             print("%s %s hunt_net: no eligible herd/pack/escort matched power=%.0f; resting %ds" % (utc_now(), pilot, spow["power"], nap), flush=True)
             end_nap = time.time() + nap
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:

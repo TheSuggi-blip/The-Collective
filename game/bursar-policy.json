@@ -14,8 +14,18 @@
     "max_units_per_order": 200,
     "max_unit_price_ratio": 0.9,
     "outbid_cr": 1,
-    "use_needs_tsv": false,
-    "extra_items": [],
+    "use_needs_tsv": true,
+    "extra_items": [
+      "titanium_ore",
+      "silicon_ore",
+      "plasma_gas",
+      "methane_ice",
+      "silver_ore",
+      "lead_ore",
+      "palladium_ore",
+      "uranium_ore",
+      "fuel_cell"
+    ],
     "exclude_buy_items": [
       "iron_ore",
       "copper_ore",
