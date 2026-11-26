@@ -1527,6 +1527,14 @@ def main(argv=None):
                                 _fc_plan = ("craft_fuel_cell", min(15, _have_fc("liquid_hydrogen") // 2, _have_fc("steel_plate")), [("liquid_hydrogen", 2), ("steel_plate", 1)], "fuel_cell", 1)
                             elif _have_fc("hydrogen_gas") >= 24 and _have_fc("steel_plate") >= 3 and _have_fc("liquid_hydrogen") < 30:
                                 _fc_plan = ("compress_hydrogen_gas", min(10, _have_fc("hydrogen_gas") // 8), [("hydrogen_gas", 8)], "liquid_hydrogen", 3)
+                            # Node Beta Central Depot repair-part auto-crafting (circuit_board < 400 or steel_plate < 2000)
+                            if _fc_plan is None and base_id == "node_beta_industrial_station":
+                                if int(_f_map.get("circuit_board", 0)) < 400 and _have_fc("copper_ore") >= 6 and _have_fc("silicon_ore") >= 4 and _have_fc("energy_crystal") >= 2:
+                                    _cb_r = min(10, _have_fc("copper_ore") // 3, _have_fc("silicon_ore") // 2, _have_fc("energy_crystal"))
+                                    _fc_plan = ("fabricate_circuit_boards", _cb_r, [("copper_ore", 3), ("silicon_ore", 2), ("energy_crystal", 1)], "circuit_board", 2)
+                                elif int(_f_map.get("steel_plate", 0)) < 2000 and _have_fc("iron_ore") >= 25:
+                                    _sp_r = min(20, _have_fc("iron_ore") // 5)
+                                    _fc_plan = ("refine_steel", _sp_r, [("iron_ore", 5)], "steel_plate", 2)
                             if _fc_plan:
                                 _fr_id, _fr_runs, _fr_ins, _fr_out, _fr_per = _fc_plan
                                 _dry_f = raw("craft", {"recipe_id": _fr_id, "quantity": _fr_runs * _fr_per, "deliver_to": "storage", "dry_run": True}, group="spacemolt")
@@ -1542,10 +1550,10 @@ def main(argv=None):
                                     time.sleep(TICK)
                                     if isinstance(_rc_f, dict) and not _rc_f.get("error"):
                                         say("bursar_fuel_trickle %dx %s (%s, fleet_fc=%d)" % (_fr_runs * _fr_per, _fr_out, _fr_id, _tot_fc))
-                                        if _fr_out == "fuel_cell":
-                                            raw("withdraw", {"item_id": "fuel_cell", "quantity": _fr_runs * _fr_per, "target": "self"}, group="spacemolt_storage")
+                                        if _fr_out in ("fuel_cell", "steel_plate", "circuit_board"):
+                                            raw("withdraw", {"item_id": _fr_out, "quantity": _fr_runs * _fr_per, "target": "self"}, group="spacemolt_storage")
                                             time.sleep(TICK)
-                                            raw("deposit", {"item_id": "fuel_cell", "quantity": _fr_runs * _fr_per, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                            raw("deposit", {"item_id": _fr_out, "quantity": _fr_runs * _fr_per, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
                                             time.sleep(TICK)
                     except Exception:
                         pass

@@ -2748,29 +2748,32 @@ async function renderInventory(panel, live) {
       }
       panel.append(ocards);
     }
-    const centralSup = opSup.length ? supList.filter((s) => !String(s.chain || '').startsWith('outpost-fuel')) : supList;
-    panel.append(el('h3', null, 'Node Beta Central Depot & Fleet Supply Chains (' + centralSup.length + ')'));
-    if (!centralSup.length) {
-      panel.append(el('p', 'empty', 'No central supply chains configured.'));
-    } else {
-      const scard = el('div', 'icard');
-      scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'On Duty', 'State'],
-        centralSup.map((s) => {
-          const haveVal = s.have !== undefined ? s.have : (s.stock || 0);
-          const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * haveVal) / s.keep)) : 0;
-          const pCell = el('div', 'progcell');
-          pCell.append(el('span', 'mono', fmt(haveVal) + ' / ' + fmt(s.keep)), pbar(pctFill, 100, s.state === 'OK' ? 'good' : 'warn'));
-          const isFull = s.state === 'OK' && pctFill >= 100;
-          return [
-            s.chain,
-            s.item ? itemLink(s.item, s.item.replace(/_/g, ' ')) : '--',
-            s.place || '--',
-            pCell,
-            el('span', 'mono', fmt(s.ships || 0) + ' ships'),
-            el('span', 'pill ' + (s.state === 'OK' ? 'good' : s.state === 'LOW' ? 'warn' : 'bad'), isFull ? 'STOCKED' : s.state),
-          ];
-        }))));
-      panel.append(scard);
+    const cDepot = ops && ops.central_depot;
+    if (cDepot && cDepot.items && cDepot.items.length) {
+      panel.append(el('h3', null, 'Central Supply Depot (Permanent Voidborn Hub)'));
+      const dcards = el('div', 'icards');
+      const dc = el('div', 'icard ' + (cDepot.ready ? 'ownbase' : 'sitecard'));
+      const dh = el('div', 'ichead');
+      dh.append(
+        el('b', null, cDepot.name + ' (' + cDepot.system + ')'),
+        el('span', 'pill ' + (cDepot.ready ? 'good' : 'warn'), cDepot.ready ? 'DEPOT STOCKED' : ('RESTOCKING (' + fmt(cDepot.active_haulers || 0) + ' haulers)')),
+      );
+      dc.append(dh);
+      for (const it of cDepot.items) {
+        const ibar = el('div', 'progcell');
+        const cls = it.state === 'OK' ? 'good' : (it.state === 'LOW' ? 'warn' : 'bad');
+        ibar.append(
+          el('span', 'mono', it.item.replace(/_/g, ' ') + ': ' + fmt(it.have) + ' / ' + fmt(it.target) + ' (' + it.pct.toFixed(0) + '%)'),
+          pbar(it.pct, 100, cls),
+        );
+        dc.append(ibar);
+      }
+      const dsub = cDepot.hauler_names && cDepot.hauler_names.length
+        ? 'Active depot haulers: ' + cDepot.hauler_names.join(', ') + ' | Auto-flush + Node Beta craft + haul backstop active'
+        : 'Auto-flush (Traders & Haulers) + Node Beta crafting (fuel cells, plates, boards) + haul backstop active';
+      dc.append(el('div', 'rmeta-sub', dsub));
+      dcards.append(dc);
+      panel.append(dcards);
     }
     panel.append(el('h3', null, 'Open priority build & upgrade needs (' + needs.length + ')'));
     if (!needs.length) {

@@ -2270,6 +2270,40 @@ def _build_ops():
             except Exception:
                 pass
             out["outpost_supply"] = _outpost_supply
+            # Structured Central Supply Depot card (Node Beta Industrial Station: permanent Voidborn hub!)
+            _depot_card = None
+            try:
+                _dp_base = str(_hpol.get("central_depot_base") or "node_beta_industrial_station")
+                _dp_tgts = _hpol.get("central_depot_targets") or {"fuel_cell": 2000, "steel_plate": 2000, "circuit_board": 400, "hull_patch": 150}
+                _dp_inv = _fs_by_base.get(_dp_base) or {}
+                _dp_items = []
+                _dp_haulers = []
+                _dp_ready_all = True
+                for _di, _dt in _dp_tgts.items():
+                    _dh = int(_dp_inv.get(_di) or 0)
+                    _dtn = int(num(_dt))
+                    _dpct = round(min(100.0, 100.0 * _dh / max(1, _dtn)), 1)
+                    _dh_list = list(_hj_claims.get("depot:%s:%s" % (_dp_base, _di)) or [])
+                    _dp_haulers.extend(_dh_list)
+                    if _dh < int(_dtn * 0.70):
+                        _dp_ready_all = False
+                    _dp_items.append({
+                        "item": text(_di, 32), "have": _dh, "target": _dtn,
+                        "pct": _dpct, "active_haulers": len(_dh_list), "hauler_names": _dh_list[:4],
+                        "state": "OK" if _dh >= _dtn else ("LOW" if _dh >= int(_dtn * 0.70) else "SHORT"),
+                    })
+                _depot_card = {
+                    "base": _dp_base,
+                    "name": "Node Beta Central Supply Depot",
+                    "system": "node_beta",
+                    "ready": _dp_ready_all,
+                    "active_haulers": len(_dp_haulers),
+                    "hauler_names": list(dict.fromkeys(_dp_haulers))[:8],
+                    "items": _dp_items,
+                }
+            except Exception:
+                pass
+            out["central_depot"] = _depot_card
             if "supply_status" in tables:
                 rows = conn.execute(
                     "SELECT chain, item, place, stock, keep, status, hours_left, ships FROM supply_status "

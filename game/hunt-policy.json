@@ -128,5 +128,6 @@
   "lawless_only": true,
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
-  "pirate_battle_avoid_hours": 2.0
+  "pirate_battle_avoid_hours": 2.0,
+  "allow_command_solo": true
 }

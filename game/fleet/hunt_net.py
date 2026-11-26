@@ -2329,8 +2329,9 @@ def main(argv=None):
                         return 0
                     if res != "rally_timeout":
                         return 0
-            # Command Flagship in a standing outpost squad: anchor docked at assigned Outpost (0 fuel burn when clear!)
-            if sq.get("is_leader") and sq.get("outpost_system") and not policy.get("allow_command_solo", False):
+            # Unarmed Command Support Flagship (e.g. Zero Point Triage, 0 weapon slots): anchor docked at assigned Outpost (0 fuel burn when clear!).
+            # Armed Command Flagships (spow["power"] > 0) seamlessly fall through to <=6J solo hunting for XP & income!
+            if sq.get("is_leader") and sq.get("outpost_system") and (float(spow.get("power") or 0) <= 0 or not policy.get("allow_command_solo", False)):
                 op_sys = sq["outpost_system"]
                 op_base = next((b for b in (world.get("owned_bases") or []) if b.get("system") == op_sys), None)
                 if op_base and str(ship_doc.get("system") or "") != op_sys and op_sys not in (world.get("active_pirate_raids") or set()):
@@ -2341,8 +2342,8 @@ def main(argv=None):
             # Rally timed out -> cleanly fall through to Lane 3 solo hunting!
 
         # --- LANE 3 & 4: SOLO OPTIMAL HERD HUNTING (POWER-RATIO GATED + F38 RANCH FLOOR) ---
-        # Command Support Flagships operate in War Wing / Escorts / Coordinated Packs -- never solo grazing!
-        if pilot in load_command_flagships(DATA) and not policy.get("allow_command_solo", False):
+        # Unarmed Command Support Flagships (weapon_slots=0, e.g. Triage) never solo graze; armed Flagships hunt when allow_command_solo=True!
+        if pilot in load_command_flagships(DATA) and (float(spow.get("power") or 0) <= 0 or not policy.get("allow_command_solo", False)):
             if not sq and not pack_targets and policy.get("allow_adaptive_relocate", True):
                 reloc = pick_relocation_hub(ship_doc, spow, world, policy, claims, cooldowns, is_cmd=True, f9=f9)
                 if reloc:
