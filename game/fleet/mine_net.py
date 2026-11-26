@@ -924,7 +924,7 @@ def pick_relocation_hub(pilot_info, world, policy, claims, cooldowns, static_cou
     for h_sys, st_list in stations_by_sys.items():
         if h_sys == p_sys or h_sys not in dists:
             continue
-        if (systems.get(h_sys) or {}).get("stronghold"):
+        if (systems.get(h_sys) or {}).get("stronghold") or h_sys in (world.get("pirates") or set()):
             continue
         st_tup = None
         for t in st_list:

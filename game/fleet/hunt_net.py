@@ -298,8 +298,8 @@ STANDING_SQUAD_SPECS = (
     # gsc_0044 Outpost: 3-pack + 5-pack + 7-pack + 4th 3-pack frontier reserve
     ("gsc-3a",   "gsc_0044", "Crimson Aegis",   1, 1),
     ("gsc-5a",   "gsc_0044", "Solar Mandate",   1, 3),
-    ("gsc-7a",   "gsc_0044", "Zero Point",      2, 4),
-    ("gsc-3b",   "gsc_0044", "Vision",          1, 1),
+    ("gsc-7a",   "gsc_0044", "Vision",          2, 4),
+    ("gsc-3b",   "gsc_0044", "Zero Point",      1, 1),
     # atria Outpost: 3-pack + 5-pack + 7-pack
     ("atria-3a", "atria",    "Nebula Charter",  1, 1),
     ("atria-5a", "atria",    "Mercurys Ledger", 1, 3),
@@ -1329,7 +1329,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         )
         # Command Flagships NEVER solo-graze (they exist to lead strike packs & earn leadership XP!),
         # so allow Command ships to start packs on big priority prey even if a heavy flagship passed solo_ok!
-        if solo_ok and not (_is_cmd_p and (sp in prio_sp or prey_hull >= min_thull)):
+        if solo_ok and not (_is_cmd_p and (sp in prio_sp or prey_hull >= min_thull)) and not pcfg.get("allow_healer_patrol", False):
             continue
         if sp in set(str(x) for x in (policy.get("exclude_species") or [])):
             continue
@@ -1422,7 +1422,7 @@ def pick_relocation_hub(pilot_info, ship_power, world, policy, claims, cooldowns
     for h_sys, st_list in stations_by_sys.items():
         if h_sys == p_sys or h_sys not in dists:
             continue
-        if (systems.get(h_sys) or {}).get("stronghold"):
+        if (systems.get(h_sys) or {}).get("stronghold") or h_sys in (world.get("pirates") or set()):
             continue
         st_tup = None
         for t in st_list:
@@ -2311,14 +2311,18 @@ def main(argv=None):
         # --- LANE 2: PERMANENT STANDING 10-PACKS ANCHORED AT OUR 3 LAWLESS OUTPOSTS (4x3, 3x5, 3x7 = 48 SHIPS) ---
         sq = standing_squad_for_pilot(DATA, pilot, policy)
         if sq:
-            # Non-squad ships stay in pure solo/escort lanes; standing squad ships ONLY form packs for
-            # high-ROI bosses (>= 250 cr/ship) or (once upgraded EHP>=220) defending their assigned Outpost!
-            # When space is clear & no worthy boss exists -> seamlessly fall through to <=6J Tier-S solo hunting (0% idle, 0 wasted fuel)!
-            pack_targets = score_pack_targets(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
-            # Filter pack targets to our squad's exact size & anchored near our assigned Outpost
+            # Dedicated Healer 3-Pack Patrol (gsc-3b: Zero Point Triage + 1 Sentinel + 1 Drone @ GSC-0044):
+            # Always hunts profitable Tier-S >=750 cr herds together so Zero Point is NEVER AFK and levels continuously!
+            _eff_pol = policy
+            if sq.get("squad_id") == "gsc-3b":
+                _eff_pol = deep_merge(policy, {"packs": {
+                    "sizes": [3], "min_target_hull": 35, "min_loot_val": 750.0,
+                    "min_loot_per_ship": 250.0, "allow_healer_patrol": True,
+                }})
+            pack_targets = score_pack_targets(ship_doc, spow, world, _eff_pol, claims, cooldowns, f9=f9)
             pack_targets = [pt for pt in pack_targets if int(pt.get("desired_size") or 3) <= sq["size"]]
             if pack_targets:
-                pack = pack_try_join_or_create(DATA, pilot, str(ship_doc.get("system") or ""), spow, pack_targets, world, policy, active_mil)
+                pack = pack_try_join_or_create(DATA, pilot, str(ship_doc.get("system") or ""), spow, pack_targets, world, _eff_pol, active_mil)
                 if pack:
                     print("%s %s hunt_net: STANDING SQUAD %s (%s) PACK lane -> %s (%s x%d @ %s:%s, leader=%s)" % (
                         utc_now(), pilot, sq["squad_id"], sq["outpost_system"], pack["pack_id"],

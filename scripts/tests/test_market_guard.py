@@ -428,5 +428,45 @@ class MarketGuardTests(unittest.TestCase):
             self.assertEqual(j["delivery_hops"], 0)
 
 
+
+    def test_zero_point_healer_patrol_3pack_always_active_on_tier_s_herds(self):
+        import hunt_net
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "fleet").mkdir(parents=True)
+            ships = (
+                [{"name": f"sentinel-{i}"} for i in range(1, 20)]
+                + [{"name": f"drone-{i}"} for i in range(1, 40)]
+            )
+            (data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+            (data / "fleet" / "flagships.json").write_text(json.dumps({"Zero Point": {"role": "command"}}), encoding="ascii")
+            sq = hunt_net.standing_squad_for_pilot(data, "Zero Point", {"packs": {"standing_outpost_squads": True}})
+            self.assertIsNotNone(sq)
+            self.assertEqual(sq["squad_id"], "gsc-3b")
+            self.assertEqual(sq["size"], 3)
+            self.assertEqual(sq["outpost_system"], "gsc_0044")
+            world = {
+                "adj": {"gsc_0044": {"s1"}, "s1": {"gsc_0044"}},
+                "systems": {"gsc_0044": {"empire": "", "stronghold": False}, "s1": {"empire": "", "stronghold": False}},
+                "stations_by_sys": {"gsc_0044": [("gsc_0044", "op_poi", "op_base")]},
+                "herds": [{"system": "s1", "poi": "p1", "species": "quantum_moth", "role": "grazer", "count": 6}],
+                "pirates": set(), "ranch_pois": set(), "ranch_systems": set(),
+                "species_hull": {"quantum_moth": 45.0},
+                "species_loot_val": {"quantum_moth": 2100.0},
+                "bursar_bases": set(), "lockbox_bases": {"op_base"}, "data_dir": str(data),
+            }
+            pol = hunt_net.deep_merge(hunt_net.load_policy(), {"packs": {
+                "sizes": [3], "min_target_hull": 35, "min_loot_val": 750.0,
+                "min_loot_per_ship": 250.0, "allow_healer_patrol": True,
+            }})
+            # Unarmed Zero Point Triage (power=0, ehp=255) scores quantum_moth as a 3-pack!
+            zp_cands = hunt_net.score_pack_targets(
+                {"name": "Zero Point", "system": "gsc_0044"}, {"power": 0.0, "ehp": 255.0}, world, pol, {}, {}
+            )
+            self.assertTrue(len(zp_cands) >= 1)
+            self.assertEqual(zp_cands[0]["species"], "quantum_moth")
+            self.assertEqual(zp_cands[0]["desired_size"], 3)
+
+
 if __name__ == "__main__":
     unittest.main()
