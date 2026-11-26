@@ -2203,7 +2203,7 @@ def _build_ops():
             _bunker_live_by_name = {}
             _outpost_supply = []
             try:
-                _hpol = read_json(ROOT / "game" / "haul-policy.json") or {}
+                _hpol = read_json(REPO / "game" / "haul-policy.json") or {}
                 _btgts = _hpol.get("hub_bunker_fuel_targets") or {"outpost": 50000, "station": 50000}
                 _utgts = _hpol.get("hub_upkeep_targets") or {}
                 _raided_ops = set()
@@ -2275,7 +2275,7 @@ def _build_ops():
                     if _it == "fuel" and _pl in _bunker_live_by_name:
                         _bid_s, _have = _bunker_live_by_name[_pl]
                         _ships += sum(len(_vp) for _hk, _vp in _hj_claims.items() if _hk == ("upkeep_bunker:" + _bid_s) or _hk.startswith("upkeep_bunker:" + _bid_s + ":"))
-                    _st_s = "OK" if (_keep <= 0 or _have >= _keep) else ("LOW" if _have >= int(_keep * 0.5) else "SHORT")
+                    _st_s = "OK" if (_keep <= 0 or _have >= _keep) else ("LOW" if _have > 0 and _have >= int(_keep * 0.5) else "SHORT")
                     _sup_out.append({
                         "chain": text(r["chain"], 40), "item": _it, "place": _pl,
                         "have": _have, "keep": _keep, "state": _st_s, "ships": _ships,
