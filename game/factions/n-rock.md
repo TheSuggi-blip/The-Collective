@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 10 | Public event stream |
+| Pilots carrying the tag on the public event stream | 9 | Public event stream |
 
 ## Bases
 
@@ -41,7 +41,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Bodil Ballasthand | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Dagna Stonehand | Synchrony (`synchrony`) | 0 | theoria |
 | Durgan Forgebeard | Nexus Prime (`nexus_prime`) | 0 | threshold |
-| Kettil Longstrider | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Mirna Tallowkeg | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Ragna Cartwright | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Space Hulk | Pherkad (`pherkad`) | 0 | shard |

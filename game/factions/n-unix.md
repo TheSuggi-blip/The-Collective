@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 0.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Rivetshell Ranch | outpost | Alsephina (`alsephina`) | lawless | 22 | thriving |
+| Rivetshell Ranch | outpost | Alsephina (`alsephina`) | lawless | 22 | thriving, wrecked |
 
 ## Pilots in Our Space
 
