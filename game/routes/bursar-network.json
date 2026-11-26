@@ -9,12 +9,12 @@
  "standing": true,
  "measured": {
   "date": "2026-11-26",
-  "runs": 1507,
+  "runs": 1021,
   "minutes": 30,
-  "credits_per_run": 540,
-  "cph_per_ship": 1180,
+  "credits_per_run": 400,
+  "cph_per_ship": 920,
   "hours": 12,
-  "last_run": "2026-11-26T12:58:57Z"
+  "last_run": "2026-11-26T23:10:09Z"
  },
  "requires": {
   "wing_prefix": [

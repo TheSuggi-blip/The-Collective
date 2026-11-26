@@ -32,11 +32,11 @@
   "First Steps in the Void"
  ],
  "measured": {
-  "date": "2026-11-23",
-  "runs": 81,
+  "date": "2026-11-26",
+  "runs": 136,
   "minutes": 11,
   "credits_per_run": 470,
-  "cph_per_ship": 2410
+  "cph_per_ship": 1870
  },
  "requires": {
   "empire": "nebula"
