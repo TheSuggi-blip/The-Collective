@@ -984,3 +984,8 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .diplo-chat-msg.in { border-left-color: #5fbfad; background: rgba(95, 191, 173, 0.06); }
 .diplo-chat-msg.quarantined { border-left-color: var(--bad); background: rgba(235, 95, 95, 0.08); }
 .diplo-chat-body { font-size: 12.2px; color: var(--text); line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Top-left Income box between Credits and Enterprise */
+.purse .pcol.inc { padding-left: 10px; border-left: 1px solid var(--line); }
+.purse .pcol.inc .v.pos { color: var(--good); }
+.purse .pcol.inc .v.neg { color: var(--bad); }

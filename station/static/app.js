@@ -1631,42 +1631,67 @@ function liveAge() { return F.age < 0 ? -1 : F.age + Math.round((Date.now() - fe
 
 function isWorking(r) { return ['work', 'move', 'wait'].includes(shipState(r)[0]); }
 
-function renderMembers() {                       // the top bar: dual purse (Liquid Credits + 24h /h & Enterprise Value), six bespoke Admiral cards, and Fleet total
+function renderMembers() {                       // the top bar: Credits (Wallets+Treas), Income (1h vs 6h CFO), Enterprise (24h Pace & Payback), Division cards, and Fleet total
   const box = $('members'), by = new Map();
   box.replaceChildren();
   const purse = $('purse'), have = F.totals || {};
   const wins = (have.rates && have.rates.windows) || {};
-  const win24 = wins['24h'] || wins[metricWin] || null;
-  const treasury = (S && S.holdings && S.holdings.treasury) || 0;
-  const liquid = (have.credits || 0) + treasury;
   const bs = (OPS.data && OPS.data.balance_sheet) || null;
-  const netWorth = bs && bs.net_worth ? bs.net_worth : null;
+  const acc = (OPS.data && OPS.data.accounting) || null;
+  const wallets = bs && bs.wallets !== undefined ? Number(bs.wallets) : (have.credits || 0);
+  const treasury = bs && bs.treasury !== undefined ? Number(bs.treasury) : ((S && S.holdings && S.holdings.treasury) || 0);
+  const liquid = bs && bs.liquid_cash !== undefined ? Number(bs.liquid_cash) : (wallets + treasury);
+  const netWorth = bs && bs.net_worth ? Number(bs.net_worth) : null;
+
+  const cfoVal = (a) => (a ? (Number(a.recurring_cash_h || 0) + Number(a.seed_net_h || 0) + Number(a.treasury_own_h || 0)) : null);
+  const inc1 = acc && acc['1h'] ? cfoVal(acc['1h']) : (wins['1h'] ? purseNet(wins['1h']) : null);
+  const inc6 = acc && acc['6h'] ? cfoVal(acc['6h']) : (wins['6h'] ? purseNet(wins['6h']) : null);
+  const inc24 = acc && acc['24h'] ? cfoVal(acc['24h']) : (wins['24h'] ? purseNet(wins['24h']) : null);
+  const fmtRate = (n) => (n >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(n))) + '/h';
 
   purse.replaceChildren();
+  // 1. Credits box: Combined Liquid Cash + Wallets / Treasury breakdown
   const cCol = el('div', 'pcol');
-  cCol.append(el('div', 'k', 'Credits'), el('div', 'v', have.ships ? fmt(liquid) : '--'));
-  if (win24) {
-    const line = el('div', 's');
-    line.append(tint(purseNet(win24)), ' /h ', el('span', 'win', wins['24h'] ? '24h' : WINDOWS[metricWin][0].toLowerCase()));
-    cCol.append(line);
-  }
-  cCol.title = 'Liquid Purse: ship wallets (' + fmt(have.credits) + ' cr) + faction treasury (' + fmt(treasury) + ' cr). Rate below is net cash flow /h over 24 hours.';
+  cCol.append(el('div', 'k', 'Credits'), el('div', 'v', (have.ships || bs) ? fmt(liquid) : '--'));
+  cCol.append(el('div', 's', (have.ships || bs) ? ('Wallets ' + fmtCompact(wallets) + ' | Treas ' + fmtCompact(treasury)) : 'loading cash'));
+  cCol.title = 'Liquid Purse: ship wallets (' + fmt(wallets) + ' cr) + faction treasury (' + fmt(treasury) + ' cr'
+    + (bs && bs.treasury_in_transit ? ', incl. ' + signed(bs.treasury_in_transit) + ' in-transit' : '') + '). Click to open Metrics.';
 
+  // 2. Income box: 1h Realized Net Operating Profit (CFO / Cash Owner Earnings) + 6h trend below
+  const iCol = el('div', 'pcol inc');
+  iCol.append(el('div', 'k', 'Income'));
+  const iVal = el('div', 'v' + (inc1 !== null ? (inc1 < 0 ? ' neg' : inc1 > 0 ? ' pos' : '') : ''), inc1 !== null ? fmtRate(inc1) : '--');
+  iCol.append(iVal);
+  const trendMark = (inc1 !== null && inc6 !== null) ? (inc1 > inc6 ? ' ^' : inc1 < inc6 ? ' v' : '') : '';
+  iCol.append(el('div', 's', inc6 !== null ? ('6h ' + fmtRate(inc6) + trendMark) : 'loading trend'));
+  iCol.title = 'Realized Net Operating Profit / Cash Owner Earnings (Credits - CapEx, strict IFRS 15)\n'
+    + '- Last 1h: ' + (inc1 !== null ? signed(Math.round(inc1)) + ' cr/h' : '--') + '\n'
+    + '- Last 6h: ' + (inc6 !== null ? signed(Math.round(inc6)) + ' cr/h' : '--') + '\n'
+    + '- Last 24h: ' + (inc24 !== null ? signed(Math.round(inc24)) + ' cr/h' : '--') + '\nClick to open Financial Statements.';
+
+  // 3. Enterprise box: Net Worth + 24h Daily Cash Pace & Hard-Asset Payback (no NRV vault jargon!)
   const eCol = el('div', 'pcol ent');
   eCol.append(el('div', 'k', 'Enterprise'), el('div', 'v', netWorth ? fmtCompact(netWorth) + ' cr' : '--'));
-  const eSub = el('div', 's', bs ? 'NRV vault ' + fmtCompact(bs.vault_worth || 0) + ' + bases' : 'loading balance sheet');
-  eCol.append(eSub);
+  const hardAssets = bs ? Number(bs.hard_assets || (Number(bs.fleet_book || 0) + Number(bs.facility_invested || 0))) : 0;
+  let eSubTxt = 'loading balance sheet';
+  if (bs && inc24 !== null) {
+    const dayCash = inc24 * 24;
+    const dayStr = (dayCash >= 0 ? '+' : '-') + fmtCompact(Math.abs(Math.round(dayCash))) + '/d';
+    const pbStr = (hardAssets > 0 && dayCash > 0) ? (' | PB ' + (hardAssets / dayCash).toFixed(1) + 'd') : (' | Ships ' + fmtCompact(bs.fleet_book || 0));
+    eSubTxt = '24h ' + dayStr + pbStr;
+  } else if (bs) {
+    eSubTxt = 'Ships ' + fmtCompact(bs.fleet_book || 0) + ' | Bases ' + fmtCompact(bs.facility_invested || 0);
+  }
+  eCol.append(el('div', 's', eSubTxt));
   if (bs) {
-    eCol.title = 'Consolidated Enterprise Value (IAS 2 NRV): ' + fmt(bs.net_worth) + ' cr\n'
-      + (bs.net_worth_catalog ? '- Leaderboard/Catalog Basis: ' + fmt(bs.net_worth_catalog) + ' cr\n' : '')
-      + '- Liquid Cash: ' + fmt(bs.liquid_cash) + ' cr\n'
-      + '- Vault (IAS 2 Lower of Base/Bid): ' + fmt(bs.vault_worth) + ' cr'
-      + (bs.vault_catalog ? ' (catalog ' + fmt(bs.vault_catalog) + ' cr | instant bid depth ' + fmt(bs.vault_liquid || 0) + ' cr)' : '') + '\n'
+    eCol.title = 'Consolidated Enterprise Net Worth: ' + fmt(bs.net_worth) + ' cr\n'
+      + '- Liquid Cash: ' + fmt(bs.liquid_cash) + ' cr (' + (bs.net_worth ? ((100 * bs.liquid_cash) / bs.net_worth).toFixed(0) : '0') + '%)\n'
       + '- Fleet Hulls & Fitted Modules: ' + fmt(bs.fleet_book) + ' cr\n'
-      + '- Sovereign Facilities: ' + fmt(bs.facility_invested) + ' cr\nClick to open Metrics.';
+      + '- Sovereign Outposts & Facilities: ' + fmt(bs.facility_invested) + ' cr\n'
+      + '- 24h Realized Cash Pace: ' + (inc24 !== null ? signed(Math.round(inc24 * 24)) + ' cr/day' : '--') + '\nClick to open Metrics.';
   }
   purse.onclick = () => { tab = 'Metrics'; render(); };
-  purse.append(cCol, eCol);
+  purse.append(cCol, iCol, eCol);
 
   F.ships.forEach((r) => { if (!by.has(r.division)) by.set(r.division, []); by.get(r.division).push(r); });
   const grid = el('div', 'members-grid');
@@ -1676,12 +1701,12 @@ function renderMembers() {                       // the top bar: dual purse (Liq
     b.type = 'button';
     const med = el('span', 'face-medallion');
     med.append(faceSvg(a.id, a.division, c, 18));
-    who.append(el('div', 'n', a.name));
+    who.append(el('div', 'n', a.division));
     const cnt = el('div', 'c', String(list.length));
     if (working < list.length) cnt.classList.add('has-idle');
     b.append(med, who, cnt);
     b.style.setProperty('--c', c);
-    b.title = a.name + ' (' + a.rank + ' -- ' + a.division + '): ' + working + '/' + list.length + ' active | Click to message ' + a.name;
+    b.title = a.division + ' (Admiral ' + a.name + '): ' + working + '/' + list.length + ' active | Click to message ' + a.name;
     b.addEventListener('click', () => openCommsFor(a.id));
     grid.append(b);
   }
@@ -1946,11 +1971,7 @@ function renderRoster() {
     name.addEventListener('click', toggleDivisionFold);
     head.append(name);
 
-    if (admiral) {
-      const b = linkButton('@' + admiral.name, (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); openCommsFor(admiral.id); }, 'adm');
-      b.title = 'Message ' + admiral.name + ' in Comms';
-      head.append(b);
-    }
+
 
     const metaRight = el('span', 'divmeta');
     metaRight.style.cursor = 'pointer';
