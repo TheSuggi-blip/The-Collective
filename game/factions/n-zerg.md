@@ -22,7 +22,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Field | Value | Source |
 |---|---|---|
 | Leader | OvermindHive | Daily feed, factions |
-| Members | 4 | Daily feed, factions |
+| Members | 9 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Overqueen | Nexus Prime (`nexus_prime`) | 0 | liminal |
+| Overqueen | Node Alpha (`node_alpha`) | 0 | liminal |
 | Vesperugo777 | Nexus Prime (`nexus_prime`) | 0 | threshold |
 
 ## Standing History
