@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Prospector Fleet [PSF2]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 13 jump(s) away, in Izar (`izar`).
-Pilots of it in our space in the last 24 hours: 0.
+Pilots of it in our space in the last 24 hours: 9.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 42 | Public event stream |
 
 ## Bases
 
@@ -38,7 +38,17 @@ Pilots of it in our space in the last 24 hours: 0.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-None in the last 24 hours.
+| Pilot | System | Player ships destroyed | Ship when one of ours met it |
+|---|---|---|---|
+| Prospector_Void1 | Synchrony (`synchrony`) | 0 | threshold |
+| Prospector_Void10 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void2 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void3 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void4 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void5 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void6 | Node Beta (`node_beta`) | 0 | threshold |
+| Prospector_Void7 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Prospector_Void8 | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 

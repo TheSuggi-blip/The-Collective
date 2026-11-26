@@ -15,7 +15,7 @@ updated: 2026-11-26
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | HLLW, OLSV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 96 | Public event stream |
+| Pilots carrying the tag on the public event stream | 95 | Public event stream |
 
 ## Bases
 
@@ -42,13 +42,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 10c1432ce43efedb9c7f9632 | Acubens (`acubens`) | 0 | workhorse |
-| 4c671b9675ba73f0025d603d | Node Beta (`node_beta`) | 0 | deep_survey |
-| 75685d10376ae488b84c6f6e | Node Beta (`node_beta`) | 0 | runner |
-| c560f1f71312e41fa9c0f091 | Hamal (`hamal`) | 0 | deep_survey |
-| cf4b7e30a1bd46d6579db7e7 | Node Beta (`node_beta`) | 0 | workhorse |
-| e039279d45eefa288b1c7717 | Node Alpha (`node_alpha`) | 0 | futures |
-| ec43cfe9e4293184f10e08ca | Hamal (`hamal`) | 0 | workhorse |
+| 4c671b9675ba73f0025d603d | Node Alpha (`node_alpha`) | 0 | deep_survey |
+| 67194c43c43f74e1b9267ed5 | Hamal (`hamal`) | 0 | workhorse |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
+| a41fe11e5e1e54e9d8f60ebb | Node Gamma (`node_gamma`) | 0 | futures |
+| ddac9c7dba6b0465e059d88b | The Experiment (`the_experiment`) | 0 | workhorse |
 
 ## Standing History
 
