@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 80.
+folder; never edited by hand. Scripts listed: 81.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -69,6 +69,7 @@ folder; never edited by hand. Scripts listed: 80.
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `market_guard.py` | Open-Market Anti-Manipulation & Manipulation-Resistant Fair-Price Engine (`market_guard.py`). | By hand |
+| `migrate_wave.py` | Safe section-by-section fleet migration and Reserve archiver for the 500-ship redesign. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
 | `mine_net.py` | Policy-driven dynamic smart Mining network (`mine-network`). | By hand |
 | `mobile.py` | Where a moving station stands now, for a route stop that names the system it stood in when written. | By hand |
@@ -724,6 +725,17 @@ Run by hand.
 
 ```
 Imported by game/fleet/bursar.py and game/fleet/haul.py (stdlib only, ASCII only).
+```
+
+### `migrate_wave.py`
+
+Safe section-by-section fleet migration and Reserve archiver for the 500-ship redesign.
+
+Run by hand.
+
+```
+migrate_wave.py --wave <1..6> [--dry-run] [--limit N] [--skip-birth] [--skip-retire]
+migrate_wave.py --plan-all    (read-only dry-run audit of all 6 waves against live fleet.json)
 ```
 
 ### `mine.py`
