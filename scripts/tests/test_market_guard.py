@@ -219,5 +219,26 @@ class MarketGuardTests(unittest.TestCase):
             self.assertEqual(picked["base"], "central_nexus")
 
 
+
+    def test_guarded_bid_price_and_routemaker_best_bids_block_spoof_and_self_buys(self):
+        import routemaker
+        fair_map = {"lumen_honey_cake": {"fair_price": 2.0, "stations": 4, "total_qty": 10000}}
+        # Single-station 78,350 cr spoof MUST be capped near oracle fair value (never 78,350!)
+        self.assertLessEqual(mg.guarded_bid_price("lumen_honey_cake", 78350.0, fair_map), 5.0)
+        world = {
+            "books": {
+                "cltv_own_base": {"items": {"silicon_ore": {"bid": 795, "bid_qty": 500}}},
+                "spoof_base": {"items": {"silicon_ore": {"bid": 670, "bid_qty": 9}}},
+                "real_base": {"items": {"silicon_ore": {"bid": 7, "bid_qty": 50000}}},
+            },
+            "cltv_buys": {("cltv_own_base", "silicon_ore")},
+            "fair_map": {"silicon_ore": {"fair_price": 7.0, "stations": 6, "total_qty": 260000}},
+        }
+        bids = routemaker.best_bids(world, "silicon_ore")
+        # CLTV's own buy order excluded, spoof_base capped from 670 -> 10.5!
+        self.assertTrue(all(b[2] != "cltv_own_base" for b in bids), bids)
+        self.assertLessEqual(max(b[0] for b in bids), 11.0, bids)
+
+
 if __name__ == "__main__":
     unittest.main()

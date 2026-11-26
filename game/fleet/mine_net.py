@@ -289,22 +289,47 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                         shortages[iid] = max(shortages.get(iid, 0), keep - stk)
 
             def _market():
-                # Strictly REAL top-of-book bid_qty live market map (<6h fresh books ONLY; NEVER 1-cr trash bid_depth!).
+                # Strictly REAL EXTERNAL top-of-book bid_qty guarded by market_guard VWM+LULD oracle!
+                # Excludes [CLTV]'s own open buy orders and caps single-station spoof spikes.
                 # Stores [vwap_bid, net_absorption_qty, buyer_stations, real_bid_qty, real_bid_qty].
                 min_bid = float(policy.get("market_min_bid") or 5.0)
                 bcols = {r[1] for r in cur.execute("PRAGMA table_info(books)").fetchall()}
                 t_where = " AND t >= ?" if "t" in bcols else ""
                 params = (min_bid, now_t - 6.0 * 3600.0) if "t" in bcols else (min_bid,)
                 b_col = "base" if "base" in bcols else ("station" if "station" in bcols else "''")
-                q = (
-                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), COUNT(DISTINCT %s), MAX(bid) "
-                    "FROM books WHERE bid >= ? AND bid_qty > 0%s GROUP BY item"
-                ) % (b_col, t_where)
-                for iid, wsum, tq, st_cnt, max_b in cur.execute(q, params):
-                    if iid and tq and int(tq) > 0:
-                        vwap = float(wsum or 0.0) / float(tq)
-                        eff_p = vwap if int(tq) >= 20 else min(vwap, float(max_b or vwap))
-                        market[str(iid)] = [eff_p, int(tq), int(st_cnt or 1), int(tq), int(tq)]
+                cltv_buys, fair_map = set(), {}
+                try:
+                    import market_guard as _mg_m
+                    cltv_buys, _ = _mg_m.load_cltv_buy_orders(data_dir, now_t=now_t)
+                    fair_map = _mg_m.read_price_oracle(data_dir, now_t=now_t)
+                except Exception:
+                    _mg_m = None
+                q = "SELECT %s, item, bid, bid_qty FROM books WHERE bid >= ? AND bid_qty > 0%s" % (b_col, t_where)
+                agg = {}
+                for b_id, iid, bid, bq in cur.execute(q, params):
+                    b_s, i_s = str(b_id or ""), str(iid or "")
+                    q_i = int(bq or 0)
+                    p_f = float(bid or 0.0)
+                    if not i_s or q_i <= 0 or p_f <= 0.0:
+                        continue
+                    if cltv_buys and b_s and (b_s, i_s) in cltv_buys:
+                        continue
+                    if _mg_m is not None and fair_map:
+                        p_f = _mg_m.guarded_bid_price(i_s, p_f, fair_map, max_mult=1.50)
+                    rec = agg.get(i_s)
+                    if rec is None:
+                        agg[i_s] = [p_f * q_i, q_i, {b_s}, p_f]
+                    else:
+                        rec[0] += p_f * q_i
+                        rec[1] += q_i
+                        rec[2].add(b_s)
+                        if p_f > rec[3]:
+                            rec[3] = p_f
+                for iid, (wsum, tq, bset, max_b) in agg.items():
+                    if tq > 0:
+                        vwap = float(wsum) / float(tq)
+                        eff_p = vwap if int(tq) >= 20 else min(vwap, float(max_b))
+                        market[iid] = [eff_p, int(tq), max(1, len(bset)), int(tq), int(tq)]
                 market_read[0] = True
 
             def _held():

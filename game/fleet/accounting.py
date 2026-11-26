@@ -85,26 +85,52 @@ def _div_of_pilot(name, pilot_div=None):
     return "Other"
 
 
-def _load_price_maps(conn):
-    """Return (base_map, max_bid_map, bids_by_item) from read.db."""
+def _load_oracle_fair_map(data_dir):
+    """Read-only loader of market_guard VWM+LULD fair price oracle (zero SQLite/disk writes)."""
+    if not data_dir:
+        return {}
+    try:
+        import market_guard as _mg_a
+        return _mg_a.read_price_oracle(data_dir)
+    except Exception:
+        return {}
+
+
+def _load_price_maps(conn, data_dir=None):
+    """Return (base_map, max_bid_map, bids_by_item) from read.db (excluding CLTV self-buy orders when data_dir given)."""
     base_map = {}
     max_bid_map = {}
     bids_by_item = {}
     if conn is None:
         return base_map, max_bid_map, bids_by_item
+    cltv_buys = set()
+    if data_dir:
+        try:
+            import market_guard as _mg_p
+            cltv_buys, _ = _mg_p.load_cltv_buy_orders(data_dir)
+        except Exception:
+            cltv_buys = set()
     if _has_table(conn, "items"):
         for r in conn.execute("SELECT id, COALESCE(base_value, 0) FROM items"):
             if r[0]:
                 base_map[str(r[0])] = _num(r[1])
     if _has_table(conn, "books"):
-        for r in conn.execute(
-            "SELECT item, bid, bid_qty FROM books WHERE bid > 0 AND bid_qty > 0 ORDER BY item, bid DESC"
-        ):
-            it = str(r[0] or "")
+        bcols = {c[1] for c in conn.execute("PRAGMA table_info(books)")}
+        has_base = "base" in bcols
+        q = (
+            "SELECT base, item, bid, bid_qty FROM books WHERE bid > 0 AND bid_qty > 0 ORDER BY item, bid DESC"
+            if has_base else
+            "SELECT '', item, bid, bid_qty FROM books WHERE bid > 0 AND bid_qty > 0 ORDER BY item, bid DESC"
+        )
+        for r in conn.execute(q):
+            b_id = str(r[0] or "")
+            it = str(r[1] or "")
             if not it:
                 continue
-            price = _num(r[1])
-            qty = _num(r[2])
+            if cltv_buys and b_id and (b_id, it) in cltv_buys:
+                continue
+            price = _num(r[2])
+            qty = _num(r[3])
             if price > 0 and qty > 0:
                 if it not in max_bid_map or price > max_bid_map[it]:
                     max_bid_map[it] = price
@@ -198,25 +224,29 @@ def _load_sell_escrow(data_dir, now=None, ttl_s=21600.0):
     return by_item, by_div_item, updated_at
 
 
-def _sanitized_bids(item, base_map, bids_by_item, trend_map=None):
-    """Return [(eff_price, qty)] with thin (<10-unit) spoof outliers capped to max(trend, base)."""
+def _sanitized_bids(item, base_map, bids_by_item, trend_map=None, fair_map=None):
+    """Return [(eff_price, qty)] with spoof outliers capped by market_guard oracle & thin-spoof guard."""
     raw_bids = bids_by_item.get(item) or ()
     bv = base_map.get(item, 0.0)
     tv = (trend_map or {}).get(item, 0.0)
     ref = max(bv, tv, 10.0)
+    frec = (fair_map or {}).get(item)
+    fp = _num(frec.get("fair_price") if isinstance(frec, dict) else frec)
     out = []
     for price, qty in raw_bids:
         p = _num(price)
         q = _num(qty)
         if p <= 0 or q <= 0:
             continue
+        if fp > 0.0:
+            p = min(p, max(fp * 1.50, fp + 2.0))
         if q < THIN_SPOOF_QTY and p > max(3.0 * ref, 100.0):
             p = ref
         out.append((p, q))
     return out
 
 
-def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, ask_map=None):
+def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, ask_map=None, fair_map=None):
     """Live fair market valuation using BOTH sides of the live order book (bids + asks) & 24h trends:
       - Never values an item above live replacement cost (min_ask) unless a deep live buy-wall pays more.
       - Uses exact live bid walk for instant buy-walls & cheap raw-commodity gluts (e.g. copper_ore @ ask=1).
@@ -232,7 +262,7 @@ def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, 
     tv = (trend_map or {}).get(item, 0.0)
     ask_info = (ask_map or {}).get(item)
     min_ask = _num(ask_info[0]) if ask_info else 0.0
-    sbids = _sanitized_bids(item, base_map, bids_by_item, trend_map)
+    sbids = _sanitized_bids(item, base_map, bids_by_item, trend_map, fair_map=fair_map)
 
     # Walk live bids (instant cash floor)
     rem = u
@@ -272,6 +302,14 @@ def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, 
             fair_u = min(fair_u, bv)
         if tv > 0 and tv < fair_u * 1.5:
             fair_u = min(min_ask, max(fair_u, 0.75 * tv))
+        # Oracle anti-distortion anchor: if deep galaxy bids (>= 500u) trade far below an overpriced ask
+        # (e.g. null_matter 97k bids @ 2 cr vs ask 428 cr), NEVER mark inventory 30-60x above real bids!
+        _frec = (fair_map or {}).get(item)
+        if isinstance(_frec, dict):
+            _fp = _num(_frec.get("fair_price"))
+            _fq = max(_num(_frec.get("total_qty")), tot_bid_q)
+            if _fp > 0.0 and _fq >= LIVE_DEEP_BID_QTY and _fp < min_ask * 0.50:
+                fair_u = min(fair_u, _fp * 1.25)
         # Apply gentle inventory-overhang discount if holding huge unbid stock (>5000 units)
         if u > 5000.0 and deep_real_q < u * 0.1:
             fair_u *= 0.80
@@ -285,7 +323,7 @@ def depth_realizable_value(item, units, base_map, bids_by_item, trend_map=None, 
     return 0.0 if bids_by_item else u * bv
 
 
-def live_market_unit_price(item, base_map, bids_by_item, trend_map=None, held_units=0, max_bid_map=None, glut_threshold=GLUT_HOLD_MIN, ask_map=None):
+def live_market_unit_price(item, base_map, bids_by_item, trend_map=None, held_units=0, max_bid_map=None, glut_threshold=GLUT_HOLD_MIN, ask_map=None, fair_map=None):
     """Live market depth-weighted & trend-aware unit price for gathering/hunting/inventory flows.
 
     - Deep live bids (>=500 qty, e.g. silver_ore @ 101, uranium_ore @ 600): uses depth-weighted live bid!
@@ -295,7 +333,7 @@ def live_market_unit_price(item, base_map, bids_by_item, trend_map=None, held_un
     """
     bv = base_map.get(item, 0.0)
     tv = (trend_map or {}).get(item, 0.0)
-    sbids = _sanitized_bids(item, base_map, bids_by_item or {}, trend_map)
+    sbids = _sanitized_bids(item, base_map, bids_by_item or {}, trend_map, fair_map=fair_map)
     if not sbids:
         if tv > 0:
             return 0.5 * tv
@@ -337,6 +375,12 @@ def live_market_unit_price(item, base_map, bids_by_item, trend_map=None, held_un
         fair_u = 0.70 * min_ask
         if bv > 0 and min_ask > 2.0 * bv and real_q < 50:
             fair_u = min(fair_u, bv)
+        _frec = (fair_map or {}).get(item)
+        if isinstance(_frec, dict):
+            _fp = _num(_frec.get("fair_price"))
+            _fq = max(_num(_frec.get("total_qty")), tot_q)
+            if _fp > 0.0 and _fq >= LIVE_DEEP_BID_QTY and _fp < min_ask * 0.50:
+                fair_u = min(fair_u, _fp * 1.25)
         return min(min_ask, max(w_bid if w_bid <= min_ask else 0.0, fair_u))
     if tot_q >= LIVE_DEEP_BID_QTY:
         return w_bid
@@ -371,9 +415,10 @@ def vault_valuation(conn, data_dir=None):
     }
     if conn is None or not _has_table(conn, "holdings"):
         return empty
-    base_map, max_bid_map, bids_by_item = _load_price_maps(conn)
+    base_map, max_bid_map, bids_by_item = _load_price_maps(conn, data_dir=data_dir)
     trend_map = _load_market_trends(conn)
     ask_map = _load_ask_map(conn)
+    fair_map = _load_oracle_fair_map(data_dir)
     escrow_by_item, _esc_div, _esc_ts = _load_sell_escrow(data_dir) if data_dir else ({}, {}, 0)
     qty_by_item = {}
     for r in conn.execute("SELECT item, SUM(COALESCE(units, 0)) FROM holdings GROUP BY item").fetchall():
@@ -387,7 +432,7 @@ def vault_valuation(conn, data_dir=None):
         if eq > 0:
             qty_by_item[it] = qty_by_item.get(it, 0) + eq
             escrow_units += eq
-            escrow_nrv += eq * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=qty_by_item[it], max_bid_map=max_bid_map, ask_map=ask_map)
+            escrow_nrv += eq * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=qty_by_item[it], max_bid_map=max_bid_map, ask_map=ask_map, fair_map=fair_map)
     tot_nrv = 0.0
     tot_live = 0.0
     tot_cat = 0.0
@@ -406,7 +451,7 @@ def vault_valuation(conn, data_dir=None):
         mb = max_bid_map.get(it)
         cat_v = u * bv
         nrv_v = u * lcnrv_unit_price(it, base_map, max_bid_map)
-        live_v = depth_realizable_value(it, u, base_map, bids_by_item, trend_map, ask_map=ask_map)
+        live_v = depth_realizable_value(it, u, base_map, bids_by_item, trend_map, ask_map=ask_map, fair_map=fair_map)
         unb_v = u * (mb if (mb is not None and mb > 0) else bv)
         rem = float(u)
         liq_v = 0.0
@@ -827,7 +872,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         trend_map = {}
         ask_map = {}
     else:
-        base_map, max_bid_map, bids_by_item = _load_price_maps(conn)
+        base_map, max_bid_map, bids_by_item = _load_price_maps(conn, data_dir=data_p)
         trend_map = _load_market_trends(conn, now=now)
         ask_map = _load_ask_map(conn)
 
@@ -906,27 +951,26 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     now_item_tot = {}
                     for (_d_k, _i_k), _u_v in now_s.items():
                         now_item_tot[_i_k] = now_item_tot.get(_i_k, 0) + _u_v
-                    _esc_i, _esc_di, _esc_ts = _load_sell_escrow(data_p, now=now)
-                    if _esc_di and _esc_ts > max_h:
-                        for (ediv, eit), eq in _esc_di.items():
-                            now_s[(ediv, eit)] = now_s.get((ediv, eit), 0) + eq
-                            now_item_tot[eit] = now_item_tot.get(eit, 0) + eq
+                    # Apples-to-apples stock_hour comparison: NEVER inject standing bursar_sells.json escrow into
+                    # now_s ONLY when old_s (stock_hour at prev_h) excludes sell escrow (that double-counted all
+                    # standing multi-day sell orders as +1M cr/h of brand-new 1h inventory build!).
+                    # Balance Sheet compute_balance_sheet() still includes standing vault_sell_escrow_nrv properly.
+                    fair_map = _load_oracle_fair_map(data_p)
                     old_item_tot = {}
                     for (_d_k, _i_k), _u_v in old_s.items():
                         old_item_tot[_i_k] = old_item_tot.get(_i_k, 0) + _u_v
-                    # Reconcile inventory accrual 1:1 with Balance Sheet marginal depth_realizable_value!
-                    # Prevents thin top-of-book bids (e.g. 600u water_ice @ 44 cr) from inflating 30,000u glut deltas.
+                    # Reconcile inventory accrual 1:1 with marginal depth_realizable_value guarded by market_guard oracle!
                     marginal_unit_nrv = {}
                     for it in (set(now_item_tot) | set(old_item_tot)):
                         u_now = now_item_tot.get(it, 0)
                         u_old = old_item_tot.get(it, 0)
                         du_tot = u_now - u_old
                         if du_tot != 0:
-                            v_now = depth_realizable_value(it, u_now, base_map, bids_by_item, trend_map, ask_map=ask_map)
-                            v_old = depth_realizable_value(it, u_old, base_map, bids_by_item, trend_map, ask_map=ask_map)
+                            v_now = depth_realizable_value(it, u_now, base_map, bids_by_item, trend_map, ask_map=ask_map, fair_map=fair_map)
+                            v_old = depth_realizable_value(it, u_old, base_map, bids_by_item, trend_map, ask_map=ask_map, fair_map=fair_map)
                             marginal_unit_nrv[it] = (v_now - v_old) / float(du_tot)
                         else:
-                            marginal_unit_nrv[it] = live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=u_now, max_bid_map=max_bid_map, ask_map=ask_map)
+                            marginal_unit_nrv[it] = live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=u_now, max_bid_map=max_bid_map, ask_map=ask_map, fair_map=fair_map)
                     for (div, it) in (set(now_s) | set(old_s)):
                         du = now_s.get((div, it), 0) - old_s.get((div, it), 0)
                         if du == 0:
@@ -959,7 +1003,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     for it, u in (r.get("items") or {}).items():
                         _hi = str(it)
                         _hu = now_item_tot.get(_hi, 0) if "now_item_tot" in locals() else 0
-                        v = _num(u) * live_market_unit_price(_hi, base_map, bids_by_item, trend_map, held_units=_hu, max_bid_map=max_bid_map, ask_map=ask_map)
+                        v = _num(u) * live_market_unit_price(_hi, base_map, bids_by_item, trend_map, held_units=_hu, max_bid_map=max_bid_map, ask_map=ask_map, fair_map=(fair_map if "fair_map" in locals() else _load_oracle_fair_map(data_p)))
                         if v > 0:
                             tx_out_div[gd] = tx_out_div.get(gd, 0.0) + v
                             tx_in_div[td] = tx_in_div.get(td, 0.0) + v
@@ -981,7 +1025,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     if has_inv_accrual:
         ranked = sorted(
             (
-                (du * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=(now_item_tot.get(it, 0) if (du > 0 and "now_item_tot" in locals()) else 0), max_bid_map=max_bid_map, ask_map=ask_map), it, du)
+                (du * live_market_unit_price(it, base_map, bids_by_item, trend_map, held_units=(now_item_tot.get(it, 0) if (du > 0 and "now_item_tot" in locals()) else 0), max_bid_map=max_bid_map, ask_map=ask_map, fair_map=(fair_map if "fair_map" in locals() else _load_oracle_fair_map(data_p))), it, du)
                 for it, du in fleet_item_delta.items()
                 if du != 0
             ),

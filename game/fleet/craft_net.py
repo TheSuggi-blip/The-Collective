@@ -107,21 +107,33 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                 if "t" in _bcols:
                     _q += " WHERE t >= ?"
                     _p = (time.time() - 6.0 * 3600.0,)
+                _c_cltv, _c_fair, _mg_c = set(), {}, None
+                try:
+                    import market_guard as _mg_c
+                    _c_cltv, _ = _mg_c.load_cltv_buy_orders(data_dir)
+                    _c_fair = _mg_c.read_price_oracle(data_dir)
+                except Exception:
+                    _mg_c = None
                 for b_id, iid, bid, bq, ask, aq in con.execute(_q, _p):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     if not b_s or not i_s:
                         continue
-                    # Strictly real top-of-book bid_qty (NEVER 1-cr trash bid_depth!)
+                    # Strictly real EXTERNAL top-of-book bid_qty guarded by market_guard VWM+LULD oracle!
                     real_bq = int(bq or 0)
+                    raw_bid = float(bid or 0)
+                    is_cltv_self = bool(_c_cltv and (b_s, i_s) in _c_cltv)
+                    eff_bid = 0.0 if is_cltv_self else (_mg_c.guarded_bid_price(i_s, raw_bid, _c_fair, max_mult=1.50) if (_mg_c is not None and _c_fair) else raw_bid)
+                    eff_bq = 0 if is_cltv_self else real_bq
                     books_by_base.setdefault(b_s, {})[i_s] = {
-                        "bid": float(bid or 0), "bid_qty": real_bq, "bid_depth": real_bq,
+                        "bid": eff_bid, "bid_qty": eff_bq, "bid_depth": eff_bq,
                         "ask": float(ask or 0), "ask_qty": int(aq or 0),
                     }
-                    if float(bid or 0) >= 5.0 and real_bq > 0:
+                    # Ignore 1-unit spoof spikes above oracle fair price when estimating global crafting demand!
+                    if eff_bid >= 5.0 and eff_bq > 0 and not (eff_bq == 1 and _c_fair and i_s in _c_fair and raw_bid > eff_bid):
                         prev_b, prev_q = global_bid.get(i_s, (0.0, 0))
-                        global_bid[i_s] = (max(prev_b, float(bid)), prev_q + real_bq)
-                        if float(bid) > item_vals.get(i_s, 0.0):
-                            item_vals[i_s] = float(bid)
+                        global_bid[i_s] = (max(prev_b, eff_bid), prev_q + eff_bq)
+                        if eff_bid > item_vals.get(i_s, 0.0):
+                            item_vals[i_s] = eff_bid
             need_craft_caps = {}
             _raw_res_qty = {}
             if "need_status" in tbls:

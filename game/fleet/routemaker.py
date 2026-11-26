@@ -224,9 +224,17 @@ def load_world(data, root, now):
                     open_needs.add(cols[3].strip())
         except OSError:
             pass
+    _rm_cltv, _rm_fair = set(), {}
+    try:
+        import market_guard as _mg_rm
+        _rm_cltv, _ = _mg_rm.load_cltv_buy_orders(data)
+        _rm_fair = _mg_rm.read_price_oracle(data)
+    except Exception:
+        pass
     world = {"now": now, "fields": [], "stations": {}, "books": {}, "boards": {}, "herds": [], "chart": Chart(load_chart(root)),
              "ladders": read_json(data / "market" / "ladders.json", {}), "wanted": {}, "skipped": [],
-             "strict": (data / "fleet" / "strict-classes-on").exists(), "open_needs": open_needs}
+             "strict": (data / "fleet" / "strict-classes-on").exists(), "open_needs": open_needs,
+             "cltv_buys": _rm_cltv, "fair_map": _rm_fair}
     for path in sorted((data / "scouting").glob("*.json")) if (data / "scouting").is_dir() else []:
         try:
             scout = read_json(path, {})
@@ -614,8 +622,22 @@ def fetch_ladders(world, data, look=read_ladder, pause=1.1):
 
 
 def best_bids(world, item):
-    """[(bid, depth at that price, base)] for an item, best first."""
-    out = [(row["bid"], row["bid_qty"], base) for base, book in world["books"].items() for row in [book["items"].get(item)] if row and row["bid"] > 0]
+    """[(bid, depth at that price, base)] for an item, best first (excludes CLTV self-buys & caps spoof spikes)."""
+    cltv_buys = world.get("cltv_buys") or set()
+    fair_map = world.get("fair_map") or {}
+    frec = fair_map.get(item)
+    fp = float(frec.get("fair_price") if isinstance(frec, dict) else (frec or 0.0))
+    out = []
+    for base, book in world["books"].items():
+        if cltv_buys and (base, item) in cltv_buys:
+            continue
+        row = book["items"].get(item)
+        if not row or row["bid"] <= 0:
+            continue
+        bp = float(row["bid"])
+        if fp > 0.0 and bp > max(fp * 1.75, fp + 2.0):
+            bp = max(fp * 1.50, fp + 2.0)
+        out.append((bp, row["bid_qty"], base))
     return sorted(out, reverse=True)
 
 

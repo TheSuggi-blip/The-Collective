@@ -706,21 +706,43 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                 _bcols = {r[1] for r in _ch.execute("PRAGMA table_info(books)").fetchall()}
                 _bc = "base" if "base" in _bcols else ("station" if "station" in _bcols else "''")
                 _hcut = time.time() - 6.0 * 3600.0
-                _q = (
-                    "SELECT item, SUM(bid * bid_qty), SUM(bid_qty), COUNT(DISTINCT %s) "
-                    "FROM books WHERE bid >= 15 AND bid_qty > 0 AND t >= ? GROUP BY item"
-                ) % _bc
-                for _iid, _wsum, _tq, _stc in _ch.execute(_q, (_hcut,)):
-                    if not _iid or not _tq or int(_tq) <= 0:
+                _h_cltv, _h_fair, _mg_h = set(), {}, None
+                try:
+                    import market_guard as _mg_h
+                    _h_cltv, _ = _mg_h.load_cltv_buy_orders(data_dir, now_t=now_t)
+                    _h_fair = _mg_h.read_price_oracle(data_dir, now_t=now_t)
+                except Exception:
+                    _mg_h = None
+                _q = "SELECT %s, item, bid, bid_qty FROM books WHERE bid >= 15 AND bid_qty > 0 AND t >= ?" % _bc
+                _h_agg = {}
+                for _hb, _hi, _hp, _hq in _ch.execute(_q, (_hcut,)):
+                    _bs, _is = str(_hb or ""), str(_hi or "")
+                    _qi, _pf = int(_hq or 0), float(_hp or 0.0)
+                    if not _is or _qi <= 0 or _pf <= 0.0:
                         continue
-                    _vwap = float(_wsum or 0.0) / float(_tq)
-                    # Strictly REAL top-of-book bid_qty liquidity & anti-flood saturation (NEVER 1-cr bid_depth!)
-                    _bw_m = 1.35 if (_vwap * float(_tq)) >= 500000.0 else (1.15 if int(_stc or 1) >= 3 else (1.0 if int(_stc or 1) >= 2 else 0.80))
+                    if _h_cltv and _bs and (_bs, _is) in _h_cltv:
+                        continue
+                    if _mg_h is not None and _h_fair:
+                        _pf = _mg_h.guarded_bid_price(_is, _pf, _h_fair, max_mult=1.50)
+                    _r = _h_agg.get(_is)
+                    if _r is None:
+                        _h_agg[_is] = [_pf * _qi, _qi, {_bs}]
+                    else:
+                        _r[0] += _pf * _qi
+                        _r[1] += _qi
+                        _r[2].add(_bs)
+                for _iid, (_wsum, _tq, _bset) in _h_agg.items():
+                    if _tq <= 0:
+                        continue
+                    _stc = max(1, len(_bset))
+                    _vwap = float(_wsum) / float(_tq)
+                    # Strictly REAL EXTERNAL top-of-book bid_qty liquidity & anti-flood saturation!
+                    _bw_m = 1.35 if (_vwap * float(_tq)) >= 500000.0 else (1.15 if _stc >= 3 else (1.0 if _stc >= 2 else 0.80))
                     _liq = min(1.0, float(_tq) / 30.0) * _bw_m
                     _abs = max(40.0, float(_tq) * 0.85)
-                    _h_u = float(_drop_held.get(str(_iid), 0))
+                    _h_u = float(_drop_held.get(_iid, 0))
                     _sat = 0.05 if _h_u >= _abs else max(0.15, 1.0 - (_h_u / _abs) * 0.75)
-                    live_drop_val[str(_iid)] = max(live_drop_val.get(str(_iid), 0.0), _vwap * _liq * _sat)
+                    live_drop_val[_iid] = max(live_drop_val.get(_iid, 0.0), _vwap * _liq * _sat)
             # Live delivery contracts (guaranteed repeatable buyer demand like HEXC 100k lumen_oil / 61k ember_gland!)
             if "missions" in _htbls:
                 for _rew, _obj in _ch.execute("SELECT reward, objectives FROM missions WHERE kind='delivery' AND reward >= 5000 AND objectives IS NOT NULL"):

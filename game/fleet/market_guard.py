@@ -270,6 +270,58 @@ def safe_buy_ceiling(iid, local_bid, local_ask, fair_val, max_ratio=0.90, max_fa
     return 0
 
 
+def read_price_oracle(data_dir, max_age_s=86400.0, now_t=None):
+    """Read-only, zero-write loader of data/fleet/price_oracle.json -> {item: rec}.
+
+    Safe for read-only HUD/analytics (accounting.py) and fast parallel planners (mine_net, hunt_net,
+    craft_net, routemaker) without opening SQLite or writing to disk; bursar.py keeps price_oracle.json fresh.
+    """
+    if not data_dir:
+        return {}
+    op = Path(data_dir) / "fleet" / "price_oracle.json"
+    if not op.is_file():
+        return {}
+    doc = _read_json(op, {})
+    items = (doc.get("items") or {}) if isinstance(doc, dict) else {}
+    if not isinstance(items, dict):
+        return {}
+    now_f = time.time() if now_t is None else float(now_t)
+    out = {}
+    for iid, rec in items.items():
+        if not isinstance(rec, dict):
+            continue
+        ts = float(rec.get("t") or doc.get("updated_at") or 0.0)
+        if ts > 0.0 and max_age_s > 0.0 and (now_f - ts) > float(max_age_s):
+            continue
+        fp = float(rec.get("fair_price") or rec.get("twap") or rec.get("vwm") or 0.0)
+        if fp > 0.0:
+            r2 = dict(rec)
+            r2["fair_price"] = fp
+            out[str(iid)] = r2
+    return out
+
+
+def guarded_bid_price(iid, spot_bid, fair_map, max_mult=1.50):
+    """Cap any raw spot/station bid using the manipulation-resistant VWM+LULD fair price oracle.
+
+    Used across ALL farming planners (mine_net, hunt_net, craft_net, routemaker) and analytics
+    (accounting.py) so a single-station spoof spike (e.g. 78,350 cr lumen_honey_cake or 670 cr
+    silicon_ore) NEVER hijacks miners/hunters/crafters or inflates Balance Sheet/P&L valuations,
+    while genuine regional premiums up to `max_mult` (default 1.50x) remain fully actionable.
+    """
+    sb = float(spot_bid or 0.0)
+    if sb <= 0.0 or not isinstance(fair_map, dict):
+        return sb
+    rec = fair_map.get(str(iid or ""))
+    if not rec:
+        return sb
+    fp = float(rec.get("fair_price") if isinstance(rec, dict) else (rec or 0.0))
+    if fp <= 0.0:
+        return sb
+    cap = max(fp * float(max_mult or 1.50), fp + 2.0)
+    return min(sb, cap)
+
+
 def safe_sell_floor(iid, local_bid, local_ask, fair_val, min_ratio=0.65, fair_floor_ratio=0.72):
     """Return manipulation-resistant minimum sell price for `iid` (defends against lowball-ask/dump-spoof traps!).
 

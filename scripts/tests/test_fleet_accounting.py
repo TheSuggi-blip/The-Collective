@@ -319,5 +319,48 @@ class TestFleetAccounting(unittest.TestCase):
             self.assertEqual((p["raw_income_h"] + p["passive_inflows_h"]) - ob["matched_direct_h"], p["recurring_cash_h"])
 
 
+
+    def test_compute_pnl_does_not_double_count_standing_sell_escrow_and_caps_overpriced_ask_with_oracle(self):
+        import sqlite3, tempfile, time
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            (data / "fleet").mkdir(parents=True)
+            # Standing sell-order escrow from days ago (80,000 units!) MUST NOT appear as +1M cr/h new 1h build!
+            (data / "fleet" / "bursar_sells.json").write_text(json.dumps({
+                "updated_at": 1795659999,
+                "entries": {
+                    "trader-1": {
+                        "central_nexus": {"at": 1795659999, "items": {"null_matter": 5000}}
+                    }
+                },
+            }), encoding="ascii")
+            (data / "fleet" / "price_oracle.json").write_text(json.dumps({
+                "updated_at": int(time.time()),
+                "items": {
+                    "null_matter": {"fair_price": 2.0, "twap": 2.0, "vwm": 2.0, "stations": 2, "total_qty": 97667, "t": int(time.time())}
+                }
+            }), encoding="ascii")
+            con = sqlite3.connect(":memory:")
+            con.executescript("""
+                CREATE TABLE items (id TEXT, base_value REAL);
+                CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER);
+                CREATE TABLE stock_hour (hour INTEGER, division TEXT, item TEXT, units INTEGER);
+                INSERT INTO items VALUES ('null_matter', 200.0);
+                INSERT INTO books VALUES ('deep_range', 'null_matter', 2.0, 48924, 428.0, 4759);
+                INSERT INTO stock_hour VALUES (1795654800, 'Trade', 'null_matter', 100);
+                INSERT INTO stock_hour VALUES (1795658400, 'Trade', 'null_matter', 100);
+            """)
+            p = accounting.compute_pnl(con, repo_root=td, data_dir=td, fleet_json={"totals": {"rates": {"windows": {"1h": {"minutes": 60}}}}}, hours=1, now=1795659000)
+            # Stock did not change (100 -> 100): inventory accrual MUST be 0, NOT +600k from standing sell escrow!
+            self.assertEqual(p["inventory_accrual_h"], 0)
+            # Oracle-anchored unit valuation of null_matter MUST be <= 2.5 cr (NEVER 125+ cr from overpriced 428 cr ask!)
+            fm = accounting._load_oracle_fair_map(data)
+            bm, mb, bbi = accounting._load_price_maps(con, data_dir=data)
+            am = accounting._load_ask_map(con)
+            u_p = accounting.live_market_unit_price("null_matter", bm, bbi, {}, held_units=5000, max_bid_map=mb, ask_map=am, fair_map=fm)
+            self.assertLessEqual(u_p, 2.5)
+            con.close()
+
+
 if __name__ == "__main__":
     unittest.main()
