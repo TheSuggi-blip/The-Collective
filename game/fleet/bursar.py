@@ -705,7 +705,7 @@ def sync_fleet_sells(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
 
 
 def reserve_fleet_buy(data, pilot, base_id, iid, want_qty, max_fleet_need, ttl_s=21600, now_t=None):
-    """Atomically reserve fleet-wide buy quota under bursar_buys.lock to prevent 60-trader buy_create/buy_cancel churn."""
+    """Atomically reserve fleet-wide buy quota under bursar_buys.lock (exact 'entries' schema matching sync_fleet_buys)."""
     want_qty = int(want_qty or 0)
     max_fleet_need = int(max_fleet_need or 0)
     if want_qty <= 0 or max_fleet_need <= 0 or not iid:
@@ -719,25 +719,34 @@ def reserve_fleet_buy(data, pilot, base_id, iid, want_qty, max_fleet_need, ttl_s
         fcntl.flock(lf, fcntl.LOCK_EX)
         try:
             doc = read_json(ledger_path, {})
-            pilots = doc.get("pilots") if isinstance(doc, dict) and isinstance(doc.get("pilots"), dict) else {}
-            live = {k: v for k, v in pilots.items() if isinstance(v, dict) and (now_t - float(v.get("at") or 0)) <= ttl_s}
+            entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+            cleaned = {}
             others_q = 0
-            for op, rec in live.items():
-                if op == str(pilot):
+            for p_nm, bases in entries.items():
+                if not isinstance(bases, dict):
                     continue
-                others_q += int((rec.get("items") or {}).get(str(iid)) or 0)
-            my_rec = live.get(str(pilot)) or {"base": str(base_id), "at": int(now_t), "items": {}, "orders": {}}
+                kept_b = {}
+                for b_id, rec in bases.items():
+                    if isinstance(rec, dict) and (now_t - float(rec.get("at") or 0)) <= ttl_s:
+                        im = rec.get("items")
+                        if isinstance(im, dict) and im:
+                            kept_b[str(b_id)] = dict(rec)
+                            if not (p_nm == str(pilot) and b_id == str(base_id)):
+                                others_q += int(im.get(str(iid)) or 0)
+                if kept_b:
+                    cleaned[str(p_nm)] = kept_b
+            p_map = cleaned.setdefault(str(pilot), {})
+            my_rec = dict(p_map.get(str(base_id)) or {"at": int(now_t), "items": {}, "orders": {}})
             my_items = dict(my_rec.get("items") or {})
             my_cur = int(my_items.get(str(iid)) or 0)
             rem_room = max(0, max_fleet_need - others_q - my_cur)
             grant = min(want_qty, rem_room)
             if grant > 0:
                 my_items[str(iid)] = my_cur + grant
-                my_rec["base"] = str(base_id)
                 my_rec["at"] = int(now_t)
                 my_rec["items"] = my_items
-                live[str(pilot)] = my_rec
-                write_json(ledger_path, {"updated_at": int(now_t), "pilots": live})
+                p_map[str(base_id)] = my_rec
+                write_json(ledger_path, {"updated_at": int(now_t), "entries": cleaned})
             return grant
         finally:
             fcntl.flock(lf, fcntl.LOCK_UN)
@@ -984,6 +993,9 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             gal_bid = float((live_market_vals or {}).get(iid) or 0)
             if ask > 0:
                 ceiling = int(ask * max_ratio)
+                # Anti-gouge guard: NEVER let a troll 1,000 cr ask trick a Bursar into bidding 795 cr on an 11 cr ore!
+                if gal_bid > 0:
+                    ceiling = min(ceiling, max(10, int(gal_bid * 1.25)))
             elif gal_bid > 0:
                 ceiling = int(gal_bid * 1.05)
             elif bid > 0:

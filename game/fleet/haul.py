@@ -1128,6 +1128,24 @@ def _load_faction_storage_by_base(data, stor=None):
     return out
 
 
+def _load_cltv_open_buy_keys(data, now_t=None, ttl_s=21600):
+    """Return set of (base_id, item_id) where our own CLTV Bursars currently hold open buy orders (anti-wash-trade guard!)."""
+    now_t = time.time() if now_t is None else float(now_t)
+    out = set()
+    doc = read_json(Path(data) / "fleet" / "bursar_buys.json", {})
+    entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+    for _p, bases in entries.items():
+        if not isinstance(bases, dict):
+            continue
+        for b_id, rec in bases.items():
+            if not isinstance(rec, dict) or (now_t - float(rec.get("at") or 0)) > ttl_s:
+                continue
+            for iid, q in (rec.get("items") or {}).items():
+                if iid and int(q or 0) > 0:
+                    out.add((str(b_id), str(iid)))
+    return out
+
+
 def _load_reserved_items_exact(data):
     """Return hard-reserved item IDs: PROTECTED_ITEMS + keep=all + open needs where fleet stock <= 1.25x need + 50."""
     reserved = set(PROTECTED_ITEMS) | {"fuel", "station_core"}
@@ -1215,12 +1233,13 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
     if not bursar_hubs:
         return None
 
-    # Require a LIVE LOCAL REAL BID at the EXACT destination Bursar hub (never bury liquid goods in a 0-bid trader locker!)
+    # Require a LIVE LOCAL REAL EXTERNAL BID at the EXACT destination Bursar hub (exclude our own CLTV buy orders!)
+    cltv_buys = _load_cltv_open_buy_keys(data, now_t=now_t)
     local_bids = {}
     for r in books_rows or []:
         b_s = str(r.get("base") or "")
         iid = str(r.get("item") or "")
-        if not b_s or not iid:
+        if not b_s or not iid or (b_s, iid) in cltv_buys:
             continue
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
@@ -1415,6 +1434,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     allow_bw = bool(policy.get("allow_calm_buywall_dest", True))
     bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
     bw_min_qty = int(policy.get("buywall_min_qty") or 200)
+    cltv_buys = _load_cltv_open_buy_keys(data, now_t=now_t)
     bids_by_item = {}
     for r in books_rows or []:
         b_id = str(r.get("base") or "")
@@ -1429,8 +1449,8 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
         iid = str(r.get("item") or "")
-        # Strictly load REAL top-of-book bid_qty (never 1-cr trash bid_depth!)
-        if not (iid and bp >= 1.0 and bq >= 1):
+        # Strictly load REAL EXTERNAL top-of-book bid_qty (never 1-cr bid_depth, NEVER CLTV self-wash-trade!)
+        if not (iid and bp >= 1.0 and bq >= 1) or (b_id, iid) in cltv_buys:
             continue
         if policed and not loc[3]:
             if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):

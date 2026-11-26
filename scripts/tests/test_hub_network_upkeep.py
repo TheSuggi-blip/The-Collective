@@ -620,5 +620,37 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertLessEqual(int(json.loads((_rp / "game" / "hunt-policy.json").read_text())["rest_seconds_when_empty"]), 120)
 
 
+
+    def test_bursar_antigouge_ceiling_and_haul_anti_washtrade_guard(self):
+        import bursar
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            now_t = time.time()
+            # 1. Troll asks 1,000 cr for 12 cr silicon_ore: Bursar ceiling MUST stay <= 15 cr (1.25x gal_bid), NEVER 795 cr!
+            book = {"silicon_ore": {"best_buy": 12, "best_buy_qty": 100, "best_sell": 1000, "best_sell_qty": 10}}
+            pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+            pol["buy"]["enabled"] = True
+            acts = bursar.plan_bursar_actions(book, {}, [], {"silicon_ore": 50}, set(), {"silicon_ore": 12}, 50000, pol)
+            buys = [a for a in acts if a[0] == "buy_create" and a[1] == "silicon_ore"]
+            self.assertEqual(len(buys), 1)
+            self.assertLessEqual(buys[0][3], 15)
+            # 2. sync_fleet_buys & reserve_fleet_buy share exact 'entries' schema!
+            bursar.sync_fleet_buys(str(data), "trader-10", "crucible", [{"side": "buy", "item_id": "silicon_ore", "order_id": "o1", "remaining": 40, "price_each": 14}], now_t=now_t)
+            self.assertEqual(bursar.reserve_fleet_buy(str(data), "trader-11", "other", "silicon_ore", 30, 50, now_t=now_t), 10)
+            self.assertEqual(bursar.reserve_fleet_buy(str(data), "trader-12", "third", "silicon_ore", 30, 50, now_t=now_t), 0)
+            # 3. Haul liquidate MUST NOT wash-trade into CLTV's own open buy order at crucible!
+            (data / "empire" / "empire.json").write_text(json.dumps({"members": [{"name": "hauler-1", "role": "officer"}]}), encoding="ascii")
+            (data / "stock" / "storage.json").write_text(json.dumps({"pilots": {}, "faction": {"hub_a": {"silicon_ore": 100}}}), encoding="ascii")
+            base_map = {"hub_a": ("sa", "pa", "hub_a", True), "crucible": ("sc", "pc", "crucible", True)}
+            lanes = {"sa": ["sc"], "sc": ["sa"]}
+            books = [{"base": "crucible", "item": "silicon_ore", "bid": 795.0, "bid_qty": 200, "t": now_t}]
+            hpol = {"policed_only": True, "allow_faction_surplus_liquidation": True, "max_book_age_minutes": 30}
+            job = haul._pick_surplus_liquidation(str(data), "hauler-1", books, base_map, lanes, "sa", 100, hpol, set(), now_t=now_t)
+            self.assertIsNone(job)
+
+
 if __name__ == "__main__":
     unittest.main()
