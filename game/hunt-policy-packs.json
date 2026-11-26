@@ -116,5 +116,6 @@
   "relocate_max_jumps": 45,
   "allow_command_solo": true,
   "_trinity_500_note": "2026-11-26: Dedicated Command Task Force pack-farming policy (1A-Prime 10 / 1A-Alpha 8 / 1A-Beta 8) with min_member_power=350 + solo fallback enabled so zero Task Force ships ever stall idle while racing to P10.",
-  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready."
+  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready.",
+  "pirate_battle_avoid_hours": 4.0
 }

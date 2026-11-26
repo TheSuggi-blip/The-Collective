@@ -130,7 +130,7 @@
   "lawless_only": true,
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
-  "pirate_battle_avoid_hours": 2.0,
+  "pirate_battle_avoid_hours": 4.0,
   "allow_command_solo": true,
   "_trinity_500_note": "2026-11-26: Tuned for 500-ship T0/T1 fast-P10 farming: packs min_member_power=350, pirates_enabled=true, sizes [3,5,7,8,10], 2B fast solo sweeps, 2A/1B heavy herds & packs, 1C farming + on-demand escort.",
   "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready."

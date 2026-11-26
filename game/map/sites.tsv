@@ -9,10 +9,11 @@
 # status: candidate (proposed, not decided), chosen (decided), built, dropped. poi: a place id, or - for none.
 system	poi	status	proposed_by	note
 gsc_0044	-	built	Zero, Apollo	east road inner outpost (built 2026-11-17, rule F33): 3 systems beyond border, 6 jumps from home; two belts of iron and copper near 100,000 each, sol alloy ore, grazer herds
-atria	-	chosen	Unity	north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers
+ridgecrest	-	chosen	Suggi	Station #1 Resort & Travel Hub (Suggi, 2026-11-27): 1J off Solarian border, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044, 6-7J clear of rival resorts
+atria	-	built	Unity	north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers
 yildun	-	chosen	Suggi	north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home
-oakridge	-	candidate	Unity	east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space
-felis	-	chosen	Suggi	south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge
+oakridge	-	dropped	Suggi	replaced by ridgecrest as Station #1 Resort & Travel Hub (Suggi, 2026-11-27): Ridgecrest has deg 6 vs Oakridge deg 3 and #1 galactic centrality (11.2J avg)
+felis	-	built	Suggi	south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge
 achernar	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
 alnair	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
 wolf_1061	-	dropped	Oracle	overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33
