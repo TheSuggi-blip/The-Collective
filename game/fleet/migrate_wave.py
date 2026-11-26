@@ -50,6 +50,10 @@ KEPT_COMMAND = frozenset({
     "Prime Directive", "Zero Point", "Golden Chariot", "Mercurys Ledger", "Hades",
     "Vision", "Solar Mandate", "Nebula Charter", "Rimward Pact", "Crimson Aegis",
 })
+INVITERS = (
+    "Prime Directive", "Zero Point", "Golden Chariot", "Mercurys Ledger", "Hades",
+    "Vision", "Solar Mandate", "Nebula Charter", "Rimward Pact", "Crimson Aegis",
+)
 
 _FILE_LOCK = threading.Lock()
 _OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -277,7 +281,7 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
 
     # 1. Hand-hold and abort any active loop/run
     write_hand_hold(data_dir, pilot)
-    gate_http("DELETE", "/accounts/%s/abort" % urllib.parse.quote(pilot, safe=""), timeout=15)
+    gate_http("DELETE", "/accounts/%s/abort" % urllib.parse.quote(pilot, safe=""), {"force": True}, timeout=15)
 
     # 2. Cancel open market orders on traders (Wave 4) so buy/sell escrow refunds to wallet
     if str(pilot).startswith("trader-"):
@@ -361,29 +365,39 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
     return True, "retired+archived (swept %d cr, cargo %d u, disc=%s)" % (swept, dep_items, res["disconnected"]), res
 
 
-def birth_one(row, fid, leader="Prime Directive", promote_role=None):
+def birth_one(row, fid, leader="Prime Directive", inviter=None, promote_role=None, reg_lock=None):
     """Register new Culture-prefixed pilot, invite & join CLTV, optionally promote."""
     pilot = row["pilot"]
     empire = row["empire"]
 
+    inv = inviter or leader
     # Idempotent check: already connected?
     st_g, _ = gate_http("GET", "/accounts/%s" % urllib.parse.quote(pilot, safe=""), timeout=20)
     if st_g != 200:
-        for attempt in range(3):
-            st_r, txt_r = gate_http("POST", "/accounts/register", {"username": pilot, "empire": empire}, timeout=60)
-            if st_r in (200, 201, 409):
-                break
-            if attempt < 2:
-                time.sleep(3.0)
+        def _do_reg():
+            for attempt in range(3):
+                st_r, txt_r = gate_http("POST", "/accounts/register", {"username": pilot, "empire": empire}, timeout=60)
+                if st_r in (200, 201, 409):
+                    return True, st_r, txt_r
+                if attempt < 2:
+                    time.sleep(3.0)
+            return False, st_r, txt_r
+        if reg_lock is not None:
+            with reg_lock:
+                ok_r, st_r, txt_r = _do_reg()
+                time.sleep(0.8)
         else:
+            ok_r, st_r, txt_r = _do_reg()
+        if not ok_r:
             return False, "register failed (%s): %s" % (st_r, txt_r[:120])
         time.sleep(1.5)
 
-    # Invite & Join CLTV (retry up to 3x in case newly registered socket finishes handshake)
+    # Invite & Join CLTV (retry up to 3x; fallback to Prime Directive if assigned officer is busy/in_battle)
     joined = False
     txt_i = txt_j = ""
     for att in range(3):
-        st_i, txt_i = raw_call(leader, "spacemolt_faction", "invite", {"player_id": pilot})
+        who_inv = inv if att < 2 else leader
+        st_i, txt_i = raw_call(who_inv, "spacemolt_faction", "invite", {"player_id": pilot}, timeout=25)
         st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid})
         comb = (txt_i + " " + txt_j).lower()
         if (st_j == 200 and '"error"' not in txt_j[:240]) or ("already" in comb and "member" in comb) or ("already in" in comb):
@@ -495,22 +509,35 @@ def main(argv=None):
                     tot_swept += int(rec.get("credits_swept") or 0)
         print("[%s] WAVE %d RETIRE SUMMARY: %d/%d archived, swept %s cr" % (utc_now(), w, ok_r, len(ret), format(tot_swept, ",")), flush=True)
 
-    # Phase B: Birth & Onboard new Culture pilots
+    # Phase B: Birth & Onboard new Culture pilots (serialized register, parallel 10-officer invite+join!)
     if not args.skip_birth and inc:
         ok_b = 0
-        for idx, row in enumerate(inc, 1):
-            promo = None
-            if w == 4 and idx <= 25:
-                promo = "officer"
-            elif w == 5 and idx == 1:
-                promo = "builder"
-            elif w == 5 and idx <= 25:
-                promo = "officer"
-            ok, msg = birth_one(row, fid, promote_role=promo)
-            print("[%s] BIRTH %d/%d %s (%s): %s -- %s" % (utc_now(), idx, len(inc), row["pilot"], row["empire"], "OK" if ok else "FAIL", msg), flush=True)
-            if ok:
-                ok_b += 1
-            time.sleep(1.2)
+        reg_lock = threading.Lock()
+        b_workers = max(1, min(len(INVITERS), int(args.workers or 10), len(inc)))
+        print("[%s] Birthing %d pilots with %d workers (10-officer inviter pool)..." % (utc_now(), len(inc), b_workers), flush=True)
+        done_b = 0
+        with concurrent.futures.ThreadPoolExecutor(max_workers=b_workers) as ex:
+            futs = {}
+            for idx, row in enumerate(inc, 1):
+                promo = None
+                if w == 4 and idx <= 25:
+                    promo = "officer"
+                elif w == 5 and idx == 1:
+                    promo = "builder"
+                elif w == 5 and idx <= 25:
+                    promo = "officer"
+                inv = INVITERS[(idx - 1) % len(INVITERS)]
+                futs[ex.submit(birth_one, row, fid, "Prime Directive", inv, promo, reg_lock)] = row
+            for fut in concurrent.futures.as_completed(futs):
+                row = futs[fut]
+                done_b += 1
+                try:
+                    ok, msg = fut.result()
+                except Exception as exc:
+                    ok, msg = False, "exception: %s" % exc
+                print("[%s] BIRTH %d/%d %s (%s): %s -- %s" % (utc_now(), done_b, len(inc), row["pilot"], row["empire"], "OK" if ok else "FAIL", msg), flush=True)
+                if ok:
+                    ok_b += 1
         print("[%s] WAVE %d BIRTH SUMMARY: %d/%d birthed+joined CLTV" % (utc_now(), w, ok_b, len(inc)), flush=True)
     return 0
 
