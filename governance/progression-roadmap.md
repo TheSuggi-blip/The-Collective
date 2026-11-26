@@ -44,10 +44,10 @@ Command Station HUD under `Docs -> Progression`).
 | Metric | Live Value | Strategic Context |
 | :--- | :--- | :--- |
 | Campaign Day | Day 13 (since 2026-11-14) | Staggered 6-agent 6h autonomous cycle |
-| Consolidated Enterprise Value | 46,949,951 cr | 22,630,283 cr purse (7,478,479 treasury) + 8,922,186 vault + 7,950,000 facilities + 7,447,482 hulls |
+| Consolidated Enterprise Value | 47,546,181 cr | 23,218,216 cr purse (7,908,687 treasury) + 8,969,606 vault + 7,950,000 facilities + 7,408,359 hulls |
 | Faction Seating & Standing Fleet | 275 / 500 (55.0%, cap 275) | 275 seated of 500 standing ships (0 open in current cap; 225 awaiting cap upgrades) -- voidborn 246, nebula 99, solarian 71, outerrim 43, crimson 41 |
-| Hull Modernization | 73 / 500 upgraded (14.6%) | 427 T0 starter hulls left (47 T1, 26 T2+); 309 pilots P10+ (max P15) |
-| Module Fit Saturation (T2-T5) | 392 / 500 ships (78.4%) | 108 ships unfitted; 767 / 2242 potential slots (34.2%; 831 empty slots) |
+| Hull Modernization | 73 / 500 upgraded (14.6%) | 427 T0 starter hulls left (47 T1, 26 T2+); 316 pilots P10+ (max P15) |
+| Module Fit Saturation (T2-T5) | 390 / 500 ships (78.0%) | 110 ships unfitted; 762 / 2242 potential slots (34.0%; 836 empty slots) |
 | Territory & Exploration | 3 / 8 outposts, 0 / 5 stations | 521 / 521 galaxy systems charted |
 
 ### Strategic Rung Progress Across Horizons (Days -> Weeks -> Months)
@@ -55,17 +55,17 @@ Command Station HUD under `Docs -> Progression`).
 | Horizon | Orders | Strategic Rung | Progress | Current State | Primary Rate-Limiting Step |
 | :--- | :--- | :--- | ---: | :--- | :--- |
 | Days (Now) | `G5, O7` | Full Galaxy Reconnaissance & Freshness Net | 100.0% | 521 / 521 systems charted (0 remaining) | All systems charted; maintain <3h market/belt freshness while trimming redundant census fuel |
-| Days (Now) | `G4, O1, O3` | Enterprise Steady Cashflow Flip & Zero Empty Jump Burn | 100.0% | 1h +174050 cr/h | 24h +54697 cr/h | 99.2% productive flight-h | 68.6 ship-h/24h on jump loops (shift idle hulls to home-empire extraction, missions & zero-fuel crafting) |
-| Days (Now) | `G2, O2` | First Tier-2 Hulls & Empire-Matched Fleet Upgrades | 100.0% | 26 T2+ active (47 T1, 427 T0 left) | 250 P10+ on T0 (309 P10+ total) | Resonance Miner 0% | Recursion 0% (250 P10+ pilots still on T0 (309 P10+ total)) |
+| Days (Now) | `G4, O1, O3` | Enterprise Steady Cashflow Flip & Zero Empty Jump Burn | 100.0% | 1h +241406 cr/h | 24h +92878 cr/h | 99.2% productive flight-h | 68.1 ship-h/24h on jump loops (shift idle hulls to home-empire extraction, missions & zero-fuel crafting) |
+| Days (Now) | `G2, O2` | First Tier-2 Hulls & Empire-Matched Fleet Upgrades | 100.0% | 26 T2+ active (47 T1, 427 T0 left) | 257 P10+ on T0 (316 P10+ total) | Resonance Miner 0% | Recursion 0% (257 P10+ pilots still on T0 (316 P10+ total)) |
 | Days (Now) | `G3, O4` | Frontier Outpost #2 (Strategic Footprint Anchor) | 100.0% | 3 / 8 outposts active | next outpost kit 0.0% stocked | No active outpost_kit need registered |
 | Weeks (1-3w) | `G2, O5` | Faction Seating (275 / 500 Fleet, 55.0%, Cap 275) | 55.0% | 275 / 500 seated (55.0%, cap 275, 0 open now) | 225 standing ships awaiting future cap upgrades | 0 open seat(s) in current 275 cap | next cap facility: Guild Hall Recruiting (400) (94% stocked; short: anchor_plate 1,200, silicon_ore 1,000 | fee 8,000,000 cr) |
-| Weeks (1-3w) | `G2, O2` | Fleet Hull Modernization & T2-T5 Module Fit Saturation | 44.2% | 73/500 hulls upgraded (427 T0 left) | 392/500 ships T2+ fitted (108 unfitted; 767/2242 slots = 34.2%) | 108 ships still unfitted (831 empty slots; 1475 slots below T2) | 250 P10+ pilots still on T0 (309 P10+ total) |
+| Weeks (1-3w) | `G2, O2` | Fleet Hull Modernization & T2-T5 Module Fit Saturation | 44.0% | 73/500 hulls upgraded (427 T0 left) | 390/500 ships T2+ fitted (110 unfitted; 762/2242 slots = 34.0%) | 110 ships still unfitted (836 empty slots; 1480 slots below T2) | 257 P10+ pilots still on T0 (316 P10+ total) |
 | Weeks (1-3w) | `G3, O4` | Maximal Footprint Outpost Network (Up to 8 Outposts) | 37.5% | 3 / 8 faction outposts active (5 open outpost slots) | 5 outpost slot(s) open; prioritize widest effective reach across multi-empire extraction & trade corridors |
 | Weeks (1-3w) | `G4, O3` | Station Bursar Market-Making & Bottleneck Contract Desk | 100.0% | 10 contract(s) logged in contracts.log | Expand automated Bursar buy-bids & escrow volume across Nebula, Solarian, Outer Rim & Crimson capitals |
-| Months (1-3m) | `G3, O4` | Sovereign Player Stations (Up to 5 Stations) | 75.7% | 0 / 5 stations | Foundry 84.4% | Core 86.9% | Purse 22.63M / 43M cr | short: anchor_plate 118,800, alloy_scale 54,200, foil_scale 37,800, silicon_ore 33,779, ferrous_nodule | fee 38,000,000 cr |
+| Months (1-3m) | `G3, O4` | Sovereign Player Stations (Up to 5 Stations) | 76.2% | 0 / 5 stations | Foundry 84.5% | Core 87.0% | Purse 23.22M / 43M cr | short: anchor_plate 118,800, alloy_scale 54,200, foil_scale 37,800, silicon_ore 33,069, ferrous_nodule | fee 38,000,000 cr |
 | Months (1-3m) | `G2, O5` | Multi-Empire Standing Fleet Consolidation (500 Ships) | 100.0% | 500 / 500 standing ships across 5 empires | 275 / 500 seated (55.0%, cap 275) | Fill 0 open seats in 275 cap & scale regional T2 corridors |
 | Months (1-3m) | `G2, O2` | Passenger Lines, Tier-3/4 Capital Ships & Tier-5 Mobile City | 48.1% | Transit Lounge 98% | Max Piloting 15/50 | 0 at P20+ | 0 T3+ hulls | short: silicon_ore 68 | fee 500,000 cr |
-| Months (1-3m) | `G1-G5, O1-O9` | Top-3 Galactic Faction Supremacy | 9.4% | EV 46.95M cr | Live ranks: #5 members, #10 dmg, #18 fac | Compounding empire-matched T2/T3 fleet throughput & sovereign stations (top rival 9.4B cr) |
+| Months (1-3m) | `G1-G5, O1-O9` | Top-3 Galactic Faction Supremacy | 9.5% | EV 47.55M cr | Live ranks: #5 members, #10 dmg, #18 fac | Compounding empire-matched T2/T3 fleet throughput & sovereign stations (top rival 9.6B cr) |
 
 ### Verified Milestone Chronicle
 
@@ -86,15 +86,15 @@ Command Station HUD under `Docs -> Progression`).
 
 | ISO Week | Date Span | Active Hours | Steady Income | Operating Costs | Steady Net | Paid-Once Net | Peak Purse |
 | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `2026-W47` | `2026-11-23..2026-11-26` | 84 | 17,242,613 cr | 23,740,007 cr | -6497394 cr | +20957077 cr | 22,563,634 cr |
+| `2026-W47` | `2026-11-23..2026-11-26` | 86 | 18,607,445 cr | 24,215,168 cr | -5607723 cr | +21121806 cr | 23,051,833 cr |
 | `2026-W46` | `2026-11-16..2026-11-22` | 76 | 5,700,253 cr | 5,532,119 cr | +168134 cr | +7490125 cr | 11,713,687 cr |
 
 ### Rolling Monthly Performance Ledger (Bounded to Last 12 Months)
 
 | Month | Date Span | Active Hours | Steady Income | Operating Costs | Steady Net | Paid-Once Net | Peak Purse |
 | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
-| `2026-11` | `2026-11-16..2026-11-26` | 160 | 22,942,866 cr | 29,272,126 cr | -6329260 cr | +28447202 cr | 22,563,634 cr |
+| `2026-11` | `2026-11-16..2026-11-26` | 162 | 24,307,698 cr | 29,747,287 cr | -5439589 cr | +28611931 cr | 23,051,833 cr |
 
-*Last live refresh: 2026-11-26 13:06 UTC (`game/fleet/progression.py`)*
+*Last live refresh: 2026-11-26 14:23 UTC (`game/fleet/progression.py`)*
 
 <!-- PROGRESSION-AUTO:END -->
