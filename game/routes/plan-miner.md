@@ -199,7 +199,7 @@ Kept by Zero. Routes: 190. Ships: 130.
 | 177 | [mine-guildless-facets](mine-guildless-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
 | 178 | [mine-saiph-major-belt](mine-saiph-major-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
 | 179 | [mine-markeb-quantum-eddy](mine-markeb-quantum-eddy.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
-| 180 | [mine-horizon-phase-drift](mine-horizon-phase-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
+| 180 | [mine-horizon-phase-drift](mine-horizon-phase-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 2 ships, standing work | all 130 |
 | 181 | [mine-the-old-seam](mine-the-old-seam.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
 | 182 | [mine-furud-legacy-drift](mine-furud-legacy-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 3 ships, standing work | all 130 |
 | 183 | [mine-bharani-ember-field](mine-bharani-ember-field.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
