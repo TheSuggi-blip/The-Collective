@@ -3393,7 +3393,7 @@ def _build_diplomacy(_allow_snapshot=False):
                                 st_nm = clean_ascii(m_hit.group(2).strip(), 48)
                                 p_nm = clean_ascii(mj.get("to") or mj.get("pilot") or mj.get("recipient") or "", 32)
                                 _h_slug_d = h_cls.lower().replace(" ", "_").replace("-", "_")
-                                if p_nm and pilot_cls_map.get(p_nm, "").lower() != h_cls.lower() and (p_nm, _h_slug_d) not in _reconciled_hangars:
+                                if p_nm and p_nm in pilot_cls_map and pilot_cls_map.get(p_nm, "").lower() != h_cls.lower() and (p_nm, _h_slug_d) not in _reconciled_hangars:
                                     hm = hull_meta.get(h_cls.lower()) or {"class": clean_ascii(h_cls, 32), "empire": "neutral", "tier": 2, "category": ""}
                                     seen_built[(p_nm, hm["class"])] = {
                                         "class": hm["class"], "empire": hm["empire"], "tier": hm["tier"],
