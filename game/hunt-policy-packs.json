@@ -24,12 +24,13 @@
     "max_ships": 1,
     "max_fleet_share": 0.15,
     "threat_window_h": 4.0,
-    "auto_protect_lawless_civilians": true,
+    "auto_protect_lawless_civilians": false,
     "protect_pilots": [],
     "protect_places": [],
     "max_jumps": 6,
-    "min_power": 1500.0,
-    "minutes": 45
+    "min_power": 99999,
+    "minutes": 45,
+    "pirate_min_power_ratio": 99.0
   },
   "packs": {
     "enabled": true,
@@ -42,7 +43,7 @@
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": true,
+    "pirates_enabled": false,
     "pirate_tiers": [
       "scout",
       "raider",
@@ -100,7 +101,9 @@
     "alone": true,
     "min_bid": 1500,
     "max_station_jumps": 10,
-    "min_loot_val": 200.0
+    "min_loot_val": 200.0,
+    "policed_alone_mode": "pirates",
+    "lawless_alone_mode": "pirates"
   },
   "fallback": {
     "enabled": true,
@@ -112,5 +115,6 @@
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
   "allow_command_solo": true,
-  "_trinity_500_note": "2026-11-26: Dedicated Command Task Force pack-farming policy (1A-Prime 10 / 1A-Alpha 8 / 1A-Beta 8) with min_member_power=350 + solo fallback enabled so zero Task Force ships ever stall idle while racing to P10."
+  "_trinity_500_note": "2026-11-26: Dedicated Command Task Force pack-farming policy (1A-Prime 10 / 1A-Alpha 8 / 1A-Beta 8) with min_member_power=350 + solo fallback enabled so zero Task Force ships ever stall idle while racing to P10.",
+  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready."
 }

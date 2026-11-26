@@ -6,7 +6,7 @@
  "policy": "game/hunt-policy-packs.json",
  "minutes": 45,
  "max_ships": 26,
- "pirates_ok": true,
+ "pirates_ok": false,
  "standing": true,
  "measured": {
   "date": "2026-11-26",

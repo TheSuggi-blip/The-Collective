@@ -24,15 +24,15 @@
     "max_ships": 20,
     "max_fleet_share": 0.15,
     "threat_window_h": 4.0,
-    "auto_protect_lawless_civilians": true,
+    "auto_protect_lawless_civilians": false,
     "protect_pilots": [],
     "protect_places": [],
     "max_jumps": 12,
-    "min_power": 600.0,
+    "min_power": 99999,
     "minutes": 45,
     "min_escorts": 3,
     "lawless_min_hp": 180.0,
-    "pirate_min_power_ratio": 1.8,
+    "pirate_min_power_ratio": 99.0,
     "rally_timeout_s": 120
   },
   "packs": {
@@ -47,7 +47,7 @@
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": true,
+    "pirates_enabled": false,
     "pirate_tiers": [
       "scout",
       "raider",
@@ -132,5 +132,6 @@
   "relocate_max_jumps": 45,
   "pirate_battle_avoid_hours": 2.0,
   "allow_command_solo": true,
-  "_trinity_500_note": "2026-11-26: Tuned for 500-ship T0/T1 fast-P10 farming: packs min_member_power=350, pirates_enabled=true, sizes [3,5,7,8,10], 2B fast solo sweeps, 2A/1B heavy herds & packs, 1C farming + on-demand escort."
+  "_trinity_500_note": "2026-11-26: Tuned for 500-ship T0/T1 fast-P10 farming: packs min_member_power=350, pirates_enabled=true, sizes [3,5,7,8,10], 2B fast solo sweeps, 2A/1B heavy herds & packs, 1C farming + on-demand escort.",
+  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready."
 }
