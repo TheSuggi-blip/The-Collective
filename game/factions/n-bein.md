@@ -34,7 +34,7 @@ Pilots of it in our space in the last 24 hours: 0.
 |---|---|---|---|---|---|
 | The Hush Chamber | station | Diphda (`diphda`) | lawless | 16 | thriving |
 | Echo Protocol Hub | station | Lilii Borea (`lilii_borea`) | lawless | 16 | thriving |
-| Ghost Runner Terminal | station | Thuban (`thuban`) | lawless | 16 | critical |
+| Ghost Runner Terminal | station | Thuban (`thuban`) | lawless | 16 | thriving |
 | Stellar Leap Station | station | Tiaki (`tiaki`) | lawless | 17 | thriving |
 | Event Horizon Relay | station | Alzirr (`alzirr`) | lawless | 21 | thriving |
 
