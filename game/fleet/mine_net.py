@@ -258,6 +258,12 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                 for (subj,) in cur.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
                     if subj:
                         pirates.add(str(subj).split(":", 1)[0].strip())     # a subject `system:poi` counts by its system
+                # Live public_battles pirate raid shield (stops unarmed miners flying into raided Outposts like felis!)
+                if "public_battles" in tbls:
+                    pb_cut = now_t - float(policy.get("pirate_battle_avoid_hours") or 2.0) * 3600.0
+                    for (pb_sys,) in cur.execute("SELECT DISTINCT system FROM public_battles WHERE category = 'pirate' AND t >= ?", (pb_cut,)):
+                        if pb_sys:
+                            pirates.add(str(pb_sys).strip())
 
             def _items():
                 # Strict live-market policy (Suggi directive): NEVER seed item_vals from static catalog base_value!
@@ -681,8 +687,10 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     p_sys = str(pilot_info.get("system") or "")
     p_tier = int(pilot_info.get("tier") or pilot_info.get("hull_tier") or 0)
     p_name = str(pilot_info.get("name") or "")
-    max_jumps = int(policy.get("max_jumps") or 10)
-    max_st_jumps = int(policy.get("max_station_jumps") or 4)
+    max_jumps = int(policy.get("max_jumps") or 6)
+    max_st_jumps = int(policy.get("max_station_jumps") or 6)
+    scarce_max_j = max(max_jumps, int(policy.get("scarce_max_jumps") or max_jumps))
+    scarce_st_j = max(max_st_jumps, int(policy.get("scarce_max_station_jumps") or max_st_jumps))
     min_pct = float(policy.get("min_left_pct") or 10.0)
     policed_only = bool(policy.get("policed_only", True))
     lawless_min_t = int(policy["lawless_min_tier"]) if policy.get("lawless_min_tier") is not None else 0
@@ -705,7 +713,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     market = world.get("market")
     stations_by_sys = world["stations_by_sys"]
 
-    dists = bfs_distances(adj, p_sys, max_hops=max_jumps) if p_sys else {}
+    dists = bfs_distances(adj, p_sys, max_hops=scarce_max_j) if p_sys else {}
     claimed_counts = dict(static_counts or {})
     for cp, rec in (claims or {}).items():
         if cp == p_name:
@@ -743,8 +751,10 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         cap = adaptive_belt_cap(rem, mx, policy, min_left_pct=eff_min_pct)
         if cap <= 0 or claimed_counts.get(belt_key, 0) >= cap:
             continue
+        is_scarce = bool(mkt and float(mkt[0] or 0) >= float(policy.get("scarce_min_bid_cr") or 100.0))
         hops = dists.get(sys_id) if p_sys else 0
-        if hops is None or hops > max_jumps:
+        _allow_j = scarce_max_j if (is_scarce or is_deficit) else max_jumps
+        if hops is None or hops > _allow_j:
             continue
         _held_chk = int((world.get("held") or {}).get(res, 0))
         _real_mkt_q = int(mkt[3]) if (mkt and len(mkt) > 3) else 0
@@ -777,8 +787,12 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _esc_ok = False
             if not _esc_ok:
                 continue
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=max_st_jumps)
+        _allow_st_j = scarce_st_j if (is_scarce or is_deficit) else max_st_jumps
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_allow_st_j)
         if not st_tup:
+            continue
+        # Never drop off at a station inside an actively pirate-raided system!
+        if st_tup[0] in pirates:
             continue
         hub_rad = int(policy.get("hub_radius_jumps") or 4)
         _st_base_chk = st_tup[2]
@@ -846,15 +860,18 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             _abs_m = max(400.0, float(_td_m) * 0.85) + float(craft_demand.get(res, 0))
             if not is_deficit:
                 _sat_m = max(0.10, 1.0 - min(0.90, (float(_held_u) / _abs_m) * 0.80))
-        fuel_pen = 42.0 * hops + 35.0 * st_hops
-        _num = (tier_mult * uval * _liq_m * _sat_m * 24.0 * headroom_bonus) - fuel_pen
-        if policy.get("hub_gravity_bonus", True) and _num > 0:
+        # Fuel-ROI min-max scoring: maximize oracle-guarded Net Revenue per Fuel Credit!
+        # Station round-trips (st_hops) burn 2x fuel every single load, while approach (hops) is paid once.
+        _rt_fuel = max(25.0, 35.0 * hops + 95.0 * st_hops + 25.0)
+        _est_hold = uval * 70.0 * _liq_m * _sat_m * headroom_bonus
+        _net_cr = (tier_mult * _est_hold) - (tier_mult * _rt_fuel if tier != "deficit" else _rt_fuel)
+        if policy.get("hub_gravity_bonus", True) and _net_cr > 0:
             _st_base = st_tup[2]
             if _st_base in (world.get("owned_outpost_bases") or set()) or _st_base in (world.get("lockbox_bases") or set()):
                 _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= 4 else (1.04 if st_hops <= hub_rad else 1.0)))
-                _num *= _hub_mult
-        _way = 1.0 + 0.6 * hops + 1.2 * st_hops
-        score = _num / _way if _num >= 0 else _num * _way
+                _net_cr *= _hub_mult
+        # Divide directly by round-trip fuel burn so shorter station-adjacent, higher-value fields strictly dominate on Rev/Fuel!
+        score = (_net_cr / _rt_fuel) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
         cand = {
             "belt_key": belt_key, "system": sys_id, "poi": poi_id,
             "resource": res, "remaining": rem, "max_remaining": mx,

@@ -41,26 +41,25 @@
     "sizes": [
       3,
       5,
-      7,
-      10
+      7
     ],
     "min_power_ratio": 1.8,
     "pirate_min_power_ratio": 2.2,
-    "pirates_enabled": true,
+    "pirates_enabled": false,
     "pirate_tiers": [
       "scout",
       "raider",
       "raider_elite"
     ],
     "min_member_power": 750.0,
-    "min_target_hull": 40,
+    "min_target_hull": 150,
     "rally_max_jumps": 12,
     "rally_timeout_s": 180,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 10,
+    "max_jumps": 8,
     "priority_species": [
       "cloudwhale",
       "crusher_mantis",
@@ -90,22 +89,26 @@
     "command_flagship_min_power": 150.0,
     "max_forming_packs": 10,
     "require_command_leader": true,
-    "max_station_jumps": 10,
-    "min_loot_val": 450.0
+    "max_station_jumps": 8,
+    "min_loot_val": 750.0,
+    "standing_outpost_squads": true,
+    "min_loot_per_ship": 250.0
   },
   "solo": {
     "enabled": true,
     "min_power_ratio": 1.35,
     "ideal_ratio_low": 1.45,
     "ideal_ratio_high": 3.2,
-    "max_jumps": 10,
+    "max_jumps": 6,
     "kills_per_run": 6,
     "alone": true,
     "min_bid": 1500,
     "policed_alone_mode": "pirates",
     "lawless_alone_mode": "pirates",
-    "max_station_jumps": 10,
-    "min_loot_val": 200.0
+    "max_station_jumps": 6,
+    "min_loot_val": 150.0,
+    "tier_s_max_jumps": 8,
+    "tier_s_min_loot_val": 550.0
   },
   "fallback": {
     "enabled": false,
@@ -124,5 +127,6 @@
   },
   "lawless_only": true,
   "allow_adaptive_relocate": true,
-  "relocate_max_jumps": 45
+  "relocate_max_jumps": 45,
+  "pirate_battle_avoid_hours": 2.0
 }

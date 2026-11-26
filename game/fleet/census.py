@@ -240,6 +240,42 @@ def scanner_fitted(ship):
                for m in mods)
 
 
+def cloak_fitted(ship):
+    """True when the ship's live file lists a cloaking device among its modules."""
+    mods = ship.get('modules') if isinstance(ship, dict) else None
+    if not isinstance(mods, list):
+        return False
+    return any(isinstance(m, dict) and 'cloak' in str(m.get('type') or m.get('name') or '').lower().replace(' ', '_')
+               for m in mods)
+
+
+def recent_pirate_raid_systems(data, hours=2.0, now_t=None):
+    """Systems with active pirate battles in read.db:public_battles over the last `hours`."""
+    out = set()
+    db = Path(data) / 'store' / 'read.db'
+    if not db.is_file():
+        return out
+    con = None
+    try:
+        import sqlite3
+        con = sqlite3.connect('file:%s?mode=ro&immutable=1' % db, uri=True, timeout=2.0)
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+        if 'public_battles' in tbls:
+            cut = (time.time() if now_t is None else float(now_t)) - float(hours) * 3600.0
+            for (s_id,) in con.execute("SELECT DISTINCT system FROM public_battles WHERE category='pirate' AND t >= ?", (cut,)):
+                if s_id:
+                    out.add(str(s_id))
+    except Exception:
+        pass
+    finally:
+        if con is not None:
+            try:
+                con.close()
+            except Exception:
+                pass
+    return out
+
+
 def jumps(lanes, src, reach):
     """{system: lanes from src} for every system within `reach` lanes, by the chart's lanes."""
     dist, todo = {src: 0}, [src]
@@ -260,9 +296,19 @@ def next_system(route, here, lanes, data, busy, done, now, reach):
     (`busy`) and not read on this run (`done`); the nearest first, a never-read one before a stale one, then the
     stalest. None when no system is due within reach."""
     near = jumps(lanes, here, reach)
+    raided = recent_pirate_raid_systems(data, hours=2.0, now_t=now) if 'recent_pirate_raid_systems' in globals() else set()
+    cands = list(route.get('systems') or [])
+    if route.get('all_systems'):
+        # Dynamic 100% galaxy sweep: include every reachable non-stronghold system (never-scouted prioritized first!)
+        sh_set = strongholds() if 'strongholds' in globals() else set()
+        seen_c = set(cands)
+        for s_id in near:
+            if s_id not in seen_c and s_id not in sh_set:
+                cands.append(s_id)
+                seen_c.add(s_id)
     best = None
-    for system in route.get('systems') or []:
-        if system in busy or system in done or system not in near:
+    for system in cands:
+        if system in busy or system in done or system not in near or system in raided:
             continue
         try:
             age = now - (Path(data) / 'scouting' / (system + '.json')).stat().st_mtime
@@ -305,6 +351,19 @@ def fuel_stations(data):
                 if is_foreign:
                     continue
                 out.setdefault(f.stem, (poi.get('id') or pid, base['id']))
+    # Also include our own active [CLTV] Lockbox/Outpost hubs (excluding any under active pirate raid!)
+    try:
+        emp_p = Path(data) / 'empire' / 'empire.json'
+        if emp_p.is_file():
+            emp_d = json.loads(emp_p.read_text(encoding='utf-8'))
+            raided_f = recent_pirate_raid_systems(data, hours=2.0)
+            for fac in (emp_d.get('facilities') or []):
+                if isinstance(fac, dict) and fac.get('type') in ('faction_lockbox', 'outpost') and fac.get('status') == 'active':
+                    fsys, fpoi, fbase = str(fac.get('system') or ''), str(fac.get('poi') or ''), str(fac.get('base') or '')
+                    if fsys and fpoi and fbase and fsys not in raided_f:
+                        out.setdefault(fsys, (fpoi, fbase))
+    except Exception:
+        pass
     return out
 
 
@@ -435,6 +494,23 @@ def chart():
         if cell.get('id'):
             lanes[cell['id']] = [x for x in (cell.get('lanes') or '').split(',') if x]
             home[cell['id']] = int(cell['jumps_from_home']) if str(cell.get('jumps_from_home', '')).isdigit() else None
+    # Merge live read.db:lanes so scouts dynamically discover & sweep new frontier systems not yet in galaxy.tsv!
+    try:
+        db_l = DATA / 'store' / 'read.db'
+        if db_l.is_file():
+            import sqlite3
+            _cl = sqlite3.connect('file:%s?mode=ro&immutable=1' % db_l, uri=True, timeout=2.0)
+            try:
+                for _la, _lb in _cl.execute('SELECT a, b FROM lanes'):
+                    if _la and _lb:
+                        if _lb not in lanes.get(_la, ()):
+                            lanes.setdefault(str(_la), []).append(str(_lb))
+                        if _la not in lanes.get(_lb, ()):
+                            lanes.setdefault(str(_lb), []).append(str(_la))
+            finally:
+                _cl.close()
+    except Exception:
+        pass
     return lanes, home
 
 
@@ -469,6 +545,11 @@ def read_system(sid):
     station = None
     if not goal('navigate-to-system', {'targetSystemId': sid}):
         return False, 0, 0, None
+    if CLOAK:
+        try:
+            raw('cloak')
+        except Exception:
+            pass
     survey = raw('survey_system') if SCANNER else None          # before get_system: a place it reveals is read too
     if survey is not None:
         say('survey: ' + (str(survey.get('message') or survey.get('result') or '') or 'answer keys ' + ','.join(sorted(survey))[:160])[:240])
@@ -496,10 +577,14 @@ def read_system(sid):
         res = read.get('resources') or (read.get('poi') or {}).get('resources') or []
         places += 1
         creatures += len(found)
+        p_cnt = int(near.get('pirate_count') or len(pirates) or 0)
         say(f'{p["id"]} ({p.get("type")}): ' + ('; '.join(f'{r.get("resource_id")} {r.get("remaining")}/{r.get("max_remaining")}' for r in res) or 'no deposit')
             + ' | creatures: ' + (', '.join(f'{n} {s} ({role})' for (s, role), n in species.most_common()) or 'none')
-            + f' | pirates {near.get("pirate_count") or len(pirates)}, pilots {near.get("count") or 0}'
+            + f' | pirates {p_cnt}, pilots {near.get("count") or 0}'
             + (' (' + ', '.join(f'{x.get("name")} {x.get("tier") or "?"} hull {x.get("hull")}' for x in pirates)[:200] + ')' if pirates else ''))
+        if p_cnt > 0:
+            say(f'pirates spotted at {sid}:{p["id"]} ({p_cnt}) -- bailing out of system immediately (scout safety)')
+            break
     for p in pois:
         if p.get('type') == 'station' and p.get('base_id'):
             if goal('prepare-at-station', {'systemId': sid, 'poiId': p['id'], 'baseId': p['base_id'], 'refuel': True}):
@@ -549,9 +634,12 @@ if ROUTE_ID:
 CHAIN = int(ROUTE.get('chain') or 0) if ROUTE.get('kind') == 'census' and isinstance(ROUTE.get('chain'), int) else 0
 REACH = int(ROUTE.get('chain_jumps') or 2) if isinstance(ROUTE.get('chain_jumps', 2), int) else 2
 try:                                                           # a survey scanner aboard: survey each system read
-    SCANNER = scanner_fitted(json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8')))
+    _ship_f = json.loads((DATA / 'fleet' / 'ships' / f'{pilot}.json').read_text(encoding='utf-8'))
+    SCANNER = scanner_fitted(_ship_f)
+    CLOAK = cloak_fitted(_ship_f)
 except (OSError, ValueError):
     SCANNER = False
+    CLOAK = False
 
 places = creatures_total = 0
 last_station = None

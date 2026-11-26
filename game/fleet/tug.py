@@ -127,7 +127,10 @@ def ships(data):
     out = {}
     for path in sorted((Path(data) / "fleet" / "ships").glob("*.json")):
         try:
-            out[path.stem] = json.loads(path.read_text(encoding="utf-8"))
+            doc = json.loads(path.read_text(encoding="utf-8"))
+            if isinstance(doc, dict):
+                nm = str(doc.get("pilot") or doc.get("name") or path.stem).strip()
+                out[nm or path.stem] = doc
         except (OSError, ValueError):
             continue
     return out

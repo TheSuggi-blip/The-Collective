@@ -2186,16 +2186,102 @@ def _build_ops():
                     "daily": daily_rows,
                 }
 
+            # Live haul_jobs claims for real-time Outpost Bunker & Upkeep hauler tracking
+            _hj_claims = {}
+            try:
+                _hjp = FLEET / "haul_jobs.json"
+                if _hjp.is_file():
+                    _hjd = json.loads(_hjp.read_text(encoding="utf-8", errors="replace"))
+                    _now_hj = time.time()
+                    for _hpil, _hrec in (_hjd.items() if isinstance(_hjd, dict) else ()):
+                        if isinstance(_hrec, dict) and float(_hrec.get("expires_at") or _hrec.get("exp") or (_now_hj + 1)) >= _now_hj - 60:
+                            _hkey = str(_hrec.get("job_key") or _hrec.get("key") or "")
+                            if _hkey:
+                                _hj_claims.setdefault(_hkey, []).append(text(_hpil, 32))
+            except Exception:
+                pass
+            _bunker_live_by_name = {}
+            _outpost_supply = []
+            try:
+                _hpol = read_json(ROOT / "game" / "haul-policy.json") or {}
+                _btgts = _hpol.get("hub_bunker_fuel_targets") or {"outpost": 50000, "station": 50000}
+                _utgts = _hpol.get("hub_upkeep_targets") or {}
+                _raided_ops = set()
+                if "public_battles" in tables:
+                    _rcut = time.time() - 7200.0
+                    for (_rs,) in conn.execute("SELECT DISTINCT system FROM public_battles WHERE category='pirate' AND t >= ?", (_rcut,)).fetchall():
+                        if _rs:
+                            _raided_ops.add(str(_rs))
+                _fs_by_base = {}
+                if "faction_storage" in tables:
+                    for _fb, _fi, _fu in conn.execute("SELECT base, item, units FROM faction_storage").fetchall():
+                        _fs_by_base.setdefault(str(_fb), {})[str(_fi)] = int(num(_fu))
+                if "bases" in tables:
+                    for _br in conn.execute("SELECT base, name, system, kind FROM bases ORDER BY name").fetchall():
+                        _bid, _bnm, _bsys = str(_br["base"]), text(_br["name"], 48), text(_br["system"], 32)
+                        _bkind = "station" if "station" in str(_br["kind"] or "").lower() else "outpost"
+                        _inv_b = _fs_by_base.get(_bid) or {}
+                        _bfuel = int(_inv_b.get("fuel") or 0)
+                        _bunker_live_by_name[_bnm] = (_bid, _bfuel)
+                        _btgt = int(_btgts.get(_bkind) or 50000)
+                        _fr = float(_bfuel) / float(max(1, _btgt))
+                        if _fr < 0.20:
+                            _tier, _tgt_h = "CRITICAL", 5
+                        elif _fr < 0.50:
+                            _tier, _tgt_h = "LOW", 3
+                        elif _fr < 0.80:
+                            _tier, _tgt_h = "STEADY", 2
+                        elif _fr < 0.96:
+                            _tier, _tgt_h = "TOP-OFF", 1
+                        else:
+                            _tier, _tgt_h = "FULL", 0
+                        _act_h = []
+                        for _hk, _hpils in _hj_claims.items():
+                            if _hk == ("upkeep_bunker:" + _bid) or _hk.startswith("upkeep_bunker:" + _bid + ":"):
+                                _act_h.extend(_hpils)
+                        _upk_rows = []
+                        for _ui, _ut in ((_utgts.get(_bkind) or {}).items()):
+                            _uhave = int(_inv_b.get(_ui) or 0)
+                            _utn = int(num(_ut))
+                            _uact = list(_hj_claims.get("upkeep:%s:%s" % (_bid, _ui)) or [])
+                            _upk_rows.append({
+                                "item": text(_ui, 32), "have": _uhave, "target": _utn,
+                                "pct": round(min(100.0, 100.0 * _uhave / max(1, _utn)), 1),
+                                "active_haulers": len(_uact),
+                            })
+                        _outpost_supply.append({
+                            "base": _bid, "name": _bnm, "system": _bsys, "kind": _bkind,
+                            "bunker_fuel": _bfuel, "bunker_target": _btgt,
+                            "bunker_pct": round(min(100.0, 100.0 * _bfuel / max(1, _btgt)), 1),
+                            "surge_tier": _tier, "target_haulers": _tgt_h,
+                            "active_haulers": len(_act_h), "hauler_names": _act_h[:8],
+                            "raided": _bsys in _raided_ops, "upkeep": _upk_rows,
+                        })
+            except Exception:
+                pass
+            out["outpost_supply"] = _outpost_supply
             if "supply_status" in tables:
                 rows = conn.execute(
-                    "SELECT chain, item, place, stock, keep, status, hours_left FROM supply_status "
-                    "ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 WHEN 'low' THEN 2 WHEN 'ok' THEN 3 ELSE 4 END, chain LIMIT 20"
+                    "SELECT chain, item, place, stock, keep, status, hours_left, ships FROM supply_status "
+                    "ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 WHEN 'low' THEN 2 WHEN 'ok' THEN 3 ELSE 4 END, chain LIMIT 25"
                 ).fetchall()
-                out["supply"] = [{
-                    "chain": text(r["chain"], 40), "item": text(r["item"], 40), "place": text(r["place"], 40),
-                    "have": int(num(r["stock"])), "keep": int(num(r["keep"])), "state": text(r["status"], 16).upper(),
-                    "hours": round(float(r["hours_left"]), 1) if isinstance(r["hours_left"], (int, float)) else None,
-                } for r in rows]
+                _sup_out = []
+                for r in rows:
+                    _pl = text(r["place"], 48)
+                    _it = text(r["item"], 40)
+                    _have = int(num(r["stock"]))
+                    _keep = int(num(r["keep"]))
+                    _ships = int(num(r["ships"]))
+                    if _it == "fuel" and _pl in _bunker_live_by_name:
+                        _bid_s, _have = _bunker_live_by_name[_pl]
+                        _ships += sum(len(_vp) for _hk, _vp in _hj_claims.items() if _hk == ("upkeep_bunker:" + _bid_s) or _hk.startswith("upkeep_bunker:" + _bid_s + ":"))
+                    _st_s = "OK" if (_keep <= 0 or _have >= _keep) else ("LOW" if _have >= int(_keep * 0.5) else "SHORT")
+                    _sup_out.append({
+                        "chain": text(r["chain"], 40), "item": _it, "place": _pl,
+                        "have": _have, "keep": _keep, "state": _st_s, "ships": _ships,
+                        "hours": round(float(r["hours_left"]), 1) if isinstance(r["hours_left"], (int, float)) else None,
+                    })
+                out["supply"] = _sup_out
             if "need_status" in tables:
                 rows = conn.execute(
                     "SELECT id, priority, kind, ref, division, project, place, units, stands, covered, colour, short_items, fee "
@@ -3230,6 +3316,16 @@ def _build_diplomacy(_allow_snapshot=False):
                 # Auto-detect commissioned hulls built & docked in pilot hangars awaiting switch_ship
                 msg_p = FLEET.parent / "comms" / "messages.jsonl"
                 if msg_p.is_file():
+                    _reconciled_hangars = set()
+                    try:
+                        _hrp = FLEET / "hangar_reconciled.json"
+                        if _hrp.is_file():
+                            for _rk in (json.loads(_hrp.read_text(encoding="utf-8", errors="replace")) or []):
+                                _pts = str(_rk).split(":")
+                                if len(_pts) >= 2:
+                                    _reconciled_hangars.add((_pts[0], _pts[1].lower().replace(" ", "_").replace("-", "_")))
+                    except Exception:
+                        pass
                     built_re = re.compile(r"Your commissioned ([A-Za-z0-9 _-]+?) is built and docked at ([^.]+)\.")
                     seen_built = {}
                     try:
@@ -3248,7 +3344,8 @@ def _build_diplomacy(_allow_snapshot=False):
                                 h_cls = m_hit.group(1).strip()
                                 st_nm = clean_ascii(m_hit.group(2).strip(), 48)
                                 p_nm = clean_ascii(mj.get("to") or mj.get("pilot") or mj.get("recipient") or "", 32)
-                                if p_nm and pilot_cls_map.get(p_nm, "").lower() != h_cls.lower():
+                                _h_slug_d = h_cls.lower().replace(" ", "_").replace("-", "_")
+                                if p_nm and pilot_cls_map.get(p_nm, "").lower() != h_cls.lower() and (p_nm, _h_slug_d) not in _reconciled_hangars:
                                     hm = hull_meta.get(h_cls.lower()) or {"class": clean_ascii(h_cls, 32), "empire": "neutral", "tier": 2, "category": ""}
                                     seen_built[(p_nm, hm["class"])] = {
                                         "class": hm["class"], "empire": hm["empire"], "tier": hm["tier"],

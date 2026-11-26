@@ -292,6 +292,80 @@ def load_command_flagships(data_dir):
     return {str(k) for k, v in fg.items() if isinstance(v, dict)}
 
 
+# Permanent 10-Pack Outpost Defense & High-Tier Strike Roster (4x 3-pack, 3x 5-pack, 3x 7-pack = 48 ships = 34% Military)
+# Anchored at our 3 lawless Outposts (gsc_0044, atria, felis) -- safe Lockboxes do not need armed guards!
+STANDING_SQUAD_SPECS = (
+    # gsc_0044 Outpost: 3-pack + 5-pack + 7-pack + 4th 3-pack frontier reserve
+    ("gsc-3a",   "gsc_0044", "Crimson Aegis",   1, 1),
+    ("gsc-5a",   "gsc_0044", "Solar Mandate",   1, 3),
+    ("gsc-7a",   "gsc_0044", "Zero Point",      2, 4),
+    ("gsc-3b",   "gsc_0044", "Vision",          1, 1),
+    # atria Outpost: 3-pack + 5-pack + 7-pack
+    ("atria-3a", "atria",    "Nebula Charter",  1, 1),
+    ("atria-5a", "atria",    "Mercurys Ledger", 1, 3),
+    ("atria-7a", "atria",    "Prime Directive", 2, 4),
+    # felis Outpost: 3-pack + 5-pack + 7-pack
+    ("felis-3a", "felis",    "Rimward Pact",    1, 1),
+    ("felis-5a", "felis",    "Golden Chariot",  1, 3),
+    ("felis-7a", "felis",    "Hades",           2, 4),
+)
+
+
+def standing_squad_for_pilot(data_dir, pilot, policy=None):
+    """Deterministically assign 48 Military pilots into 10 permanent standing squads (4x3, 3x5, 3x7)
+    anchored at our 3 lawless Outposts (gsc_0044, atria, felis). Returns squad dict or None."""
+    pcfg = (policy or {}).get("packs") or {}
+    if not pcfg.get("standing_outpost_squads", True):
+        return None
+    p_s = str(pilot or "").strip()
+    if not p_s:
+        return None
+    # Collect deterministic sorted Military sentinel-* and drone-* pool from fleet.json (or ships/ dir)
+    fj = read_json(Path(data_dir) / "fleet" / "fleet.json", {})
+    sents, drones = [], []
+    for sh in (fj.get("ships") or [] if isinstance(fj, dict) else []):
+        if not isinstance(sh, dict):
+            continue
+        nm = str(sh.get("name") or sh.get("pilot") or "").strip()
+        if nm.startswith("sentinel-"):
+            sents.append(nm)
+        elif nm.startswith("drone-"):
+            drones.append(nm)
+    if not sents and not drones:
+        sdir = Path(data_dir) / "fleet" / "ships"
+        if sdir.is_dir():
+            for fp in sorted(sdir.glob("*.json")):
+                nm = fp.stem
+                if nm.startswith("sentinel-"):
+                    sents.append(nm)
+                elif nm.startswith("drone-"):
+                    drones.append(nm)
+    def _num_key(nm):
+        parts = nm.split("-")
+        return (int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else 9999, nm)
+    sents = sorted(set(sents), key=_num_key)
+    drones = sorted(set(drones), key=_num_key)
+    si, di = 0, 0
+    for sq_id, outpost_sys, leader, n_sent, n_drone in STANDING_SQUAD_SPECS:
+        mem = [leader]
+        s_pick = sents[si : si + n_sent]
+        si += n_sent
+        d_pick = drones[di : di + n_drone]
+        di += n_drone
+        mem.extend(s_pick)
+        mem.extend(d_pick)
+        if p_s in mem:
+            return {
+                "squad_id": sq_id,
+                "outpost_system": outpost_sys,
+                "leader": leader,
+                "size": 1 + n_sent + n_drone,
+                "members": mem,
+                "is_leader": p_s == leader,
+            }
+    return None
+
+
 def deep_merge(base, override):
     out = json.loads(json.dumps(base))
     if not isinstance(override, dict):
@@ -630,6 +704,14 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             for (subj,) in _rows("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (cutoff,)):
                 if subj:
                     pirates.add(str(subj))
+            active_pirate_raids = set()
+            if _rows("SELECT name FROM sqlite_master WHERE type='table' AND name='public_battles'"):
+                pb_cut = now_t - float(policy.get("pirate_battle_avoid_hours") or 2.0) * 3600.0
+                for (pb_s,) in _rows("SELECT DISTINCT system FROM public_battles WHERE category = 'pirate' AND t >= ?", (pb_cut,)):
+                    if pb_s:
+                        s_clean = str(pb_s).strip()
+                        pirates.add(s_clean)
+                        active_pirate_raids.add(s_clean)
             for (subj,) in _rows("SELECT DISTINCT subject FROM observations WHERE kind = 'ranch'"):
                 if subj:
                     s_ = str(subj)
@@ -784,7 +866,7 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
 
     return {
         "adj": adj, "systems": systems, "stations_by_sys": stations_by_sys,
-        "herds": herds, "pirates": pirates, "pirate_details": pirate_details,
+        "herds": herds, "pirates": pirates, "active_pirate_raids": (active_pirate_raids if "active_pirate_raids" in locals() else set()), "pirate_details": pirate_details,
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
         "species_loot_val": species_loot_val, "owned_bases": owned_bases,
@@ -1073,7 +1155,9 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         return []
     p_sys = str(pilot_info.get("system") or "")
     p_name = str(pilot_info.get("name") or "")
-    max_j = int(scfg.get("max_jumps") or 10)
+    max_j = int(scfg.get("max_jumps") or 6)
+    tier_s_j = max(max_j, int(scfg.get("tier_s_max_jumps") or 8))
+    tier_s_min = float(scfg.get("tier_s_min_loot_val") or 550.0)
     min_ratio = float(scfg.get("min_power_ratio") or 1.35)
     ideal_lo = float(scfg.get("ideal_ratio_low") or 1.45)
     ideal_hi = float(scfg.get("ideal_ratio_high") or 3.20)
@@ -1094,7 +1178,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     species_hull = world["species_hull"]
     species_loot = world["species_loot_val"]
 
-    dists = bfs_distances(adj, p_sys, max_hops=max_j) if p_sys else {}
+    dists = bfs_distances(adj, p_sys, max_hops=tier_s_j) if p_sys else {}
     claimed_counts = {}
     for cp, r in (claims or {}).items():
         if cp != p_name and isinstance(r, dict) and r.get("key"):
@@ -1123,7 +1207,9 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         if not is_policed and (policed_only or ship_power["power"] < allow_lawless_p):
             continue
         hops = dists.get(sys_id) if p_sys else 0
-        if hops is None or hops > max_j:
+        _sp_lv_chk = float(species_loot.get(sp) or 0.0)
+        _eff_j = tier_s_j if _sp_lv_chk >= tier_s_min else max_j
+        if hops is None or hops > _eff_j:
             continue
 
         prey_hull = float(species_hull.get(sp) or 70.0)
@@ -1135,9 +1221,10 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         min_lv = float(scfg.get("min_loot_val") or 0.0)
         if min_lv > 0 and float(species_loot.get(sp) or 0.0) < min_lv:
             continue
-        _st_rad = int(scfg.get("max_station_jumps") or 10)
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
-        if not st_tup:
+        _st_rad = int(scfg.get("max_station_jumps") or 6)
+        _eff_st_rad = tier_s_j if _sp_lv_chk >= tier_s_min else _st_rad
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_eff_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+        if not st_tup or st_tup[0] in pirates:
             continue
 
         # Sweet-spot multiplier: encourages strong T2/T3/T4 hulls to graduate up to tougher high-value herds
@@ -1257,8 +1344,10 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if not st_tup:
             continue
         raw_lv = float(species_loot.get(sp) or 0.0)
-        min_pk_lv = float(pcfg.get("min_loot_val") or (policy.get("solo") or {}).get("min_loot_val") or 450.0)
-        if raw_lv < min_pk_lv and role != "predator":
+        min_pk_lv = float(pcfg.get("min_loot_val") or 450.0)
+        min_per_ship = float(pcfg.get("min_loot_per_ship") or 250.0)
+        # Zero-fuel-waste ROI gate: NEVER burn 3x/5x/7x pack fuel on noob/worthless prey (e.g. 6 cr pilot_whale)!
+        if raw_lv < max(min_pk_lv, min_per_ship * float(sz)):
             continue
         loot_v = raw_lv * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
         _pk_pref = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
@@ -2219,25 +2308,42 @@ def main(argv=None):
                     rc = _rh.run_in_thread(ROOT / "fleet" / "guard.py", cmd[4:], pilot, "hunt_net " + route_id, caller_stdout=sys.stdout, caller_sleep=time.sleep) or 0
                     return rc
 
-        # --- LANE 2: COORDINATED GROUP PACKS (3 / 5 / 8 / 10 SHIPS, ~20-30% SHARE) ---
-        pack_targets = score_pack_targets(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
-        pack = pack_try_join_or_create(DATA, pilot, str(ship_doc.get("system") or ""), spow, pack_targets, world, policy, active_mil)
-        if pack:
-            print("%s %s hunt_net: PACK lane -> %s (%s x%d @ %s:%s, leader=%s)" % (
-                utc_now(), pilot, pack["pack_id"], pack["species"], pack["desired_size"],
-                pack["system"], pack["poi"], pack["leader"]), flush=True)
-            res = run_pack_mission(pilot, pack, policy, order_path, route_id)
-            if res == "ranch_floor":
-                cooldown_key = pack["place_key"]
-                return 0
-            if res != "rally_timeout":
-                return 0
+        # --- LANE 2: PERMANENT STANDING 10-PACKS ANCHORED AT OUR 3 LAWLESS OUTPOSTS (4x3, 3x5, 3x7 = 48 SHIPS) ---
+        sq = standing_squad_for_pilot(DATA, pilot, policy)
+        if sq:
+            # Non-squad ships stay in pure solo/escort lanes; standing squad ships ONLY form packs for
+            # high-ROI bosses (>= 250 cr/ship) or (once upgraded EHP>=220) defending their assigned Outpost!
+            # When space is clear & no worthy boss exists -> seamlessly fall through to <=6J Tier-S solo hunting (0% idle, 0 wasted fuel)!
+            pack_targets = score_pack_targets(ship_doc, spow, world, policy, claims, cooldowns, f9=f9)
+            # Filter pack targets to our squad's exact size & anchored near our assigned Outpost
+            pack_targets = [pt for pt in pack_targets if int(pt.get("desired_size") or 3) <= sq["size"]]
+            if pack_targets:
+                pack = pack_try_join_or_create(DATA, pilot, str(ship_doc.get("system") or ""), spow, pack_targets, world, policy, active_mil)
+                if pack:
+                    print("%s %s hunt_net: STANDING SQUAD %s (%s) PACK lane -> %s (%s x%d @ %s:%s, leader=%s)" % (
+                        utc_now(), pilot, sq["squad_id"], sq["outpost_system"], pack["pack_id"],
+                        pack["species"], pack["desired_size"], pack["system"], pack["poi"], pack["leader"]), flush=True)
+                    res = run_pack_mission(pilot, pack, policy, order_path, route_id)
+                    if res == "ranch_floor":
+                        cooldown_key = pack["place_key"]
+                        return 0
+                    if res != "rally_timeout":
+                        return 0
+            # Command Flagship in a standing outpost squad: anchor docked at assigned Outpost (0 fuel burn when clear!)
+            if sq.get("is_leader") and sq.get("outpost_system") and not policy.get("allow_command_solo", False):
+                op_sys = sq["outpost_system"]
+                op_base = next((b for b in (world.get("owned_bases") or []) if b.get("system") == op_sys), None)
+                if op_base and str(ship_doc.get("system") or "") != op_sys and op_sys not in (world.get("active_pirate_raids") or set()):
+                    print("%s %s hunt_net: STANDING OUTPOST ANCHOR (%s) -> %s" % (
+                        utc_now(), pilot, sq["squad_id"], op_sys), flush=True)
+                    _goal(pilot, "prepare-at-station", {"systemId": op_base["system"], "poiId": op_base["poi"], "baseId": op_base["base"], "refuel": True}, timeout_s=420)
+                    return 0
             # Rally timed out -> cleanly fall through to Lane 3 solo hunting!
 
         # --- LANE 3 & 4: SOLO OPTIMAL HERD HUNTING (POWER-RATIO GATED + F38 RANCH FLOOR) ---
         # Command Support Flagships operate in War Wing / Escorts / Coordinated Packs -- never solo grazing!
         if pilot in load_command_flagships(DATA) and not policy.get("allow_command_solo", False):
-            if not pack_targets and policy.get("allow_adaptive_relocate", True):
+            if not sq and not pack_targets and policy.get("allow_adaptive_relocate", True):
                 reloc = pick_relocation_hub(ship_doc, spow, world, policy, claims, cooldowns, is_cmd=True, f9=f9)
                 if reloc:
                     print("%s %s hunt_net: ADAPTIVE RELOCATE (Command) -> %s (%dJ, %d targets, top=%s)" % (

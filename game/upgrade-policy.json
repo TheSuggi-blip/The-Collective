@@ -18,6 +18,55 @@
       "cohorts": [
         {
           "empire": "any",
+          "specialty": "command_flagships",
+          "share": 1.0,
+          "assign_priority": 1,
+          "include_pilots": [
+            "Prime Directive",
+            "Golden Chariot",
+            "Hades",
+            "Mercurys Ledger",
+            "Rimward Pact",
+            "Nebula Charter",
+            "Solar Mandate",
+            "Crimson Aegis",
+            "Vision"
+          ],
+          "ladder": [
+            {
+              "hull": "axiom",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "cleaver",
+              "tier": 1,
+              "min_piloting": 0,
+              "max_price": 45000
+            },
+            {
+              "hull": "broadaxe",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 190000
+            },
+            {
+              "hull": "recursion",
+              "tier": 2,
+              "min_piloting": 10,
+              "max_price": 240000
+            },
+            {
+              "hull": "dialectic",
+              "tier": 3,
+              "min_piloting": 20,
+              "max_price": 850000
+            }
+          ]
+        },
+        {
+          "empire": "any",
           "specialty": "strike_brawler",
           "share": 0.5,
           "assign_priority": 10,

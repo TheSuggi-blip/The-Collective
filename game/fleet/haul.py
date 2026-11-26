@@ -61,7 +61,8 @@ DEFAULT_POLICY = {
         "outpost": {"fuel_cell": 200, "steel_plate": 180, "circuit_board": 45, "hull_patch": 25},
         "station": {"fuel_cell": 1000, "steel_plate": 400, "circuit_board": 100, "flex_polymer": 150, "copper_wiring": 150, "hull_patch": 40, "repair_kit": 50},
     },
-    "hub_bunker_fuel_targets": {"outpost": 3000, "station": 5000},
+    "hub_bunker_fuel_targets": {"outpost": 50000, "station": 50000},
+    "hub_bunker_reorder_pct": 0.96,
     "hub_upkeep_max_unit_price": {
         "fuel_cell": 115, "steel_plate": 120, "circuit_board": 900,
         "hull_patch": 350, "repair_kit": 400, "flex_polymer": 250, "copper_wiring": 250,
@@ -343,17 +344,34 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
         tgts = targets_cfg.get(hub_kind) or {}
         cur_inv = fac_by_base.get(hub_id) or {}
 
-        # Build prioritized demand list: (item_id, deficit_units, urgency, job_key, bunker_fill_bool)
+        # Build prioritized demand list: (item_id, deficit_units, urgency, job_key, bunker_fill_bool, eff_max_pick)
         demands = []
         btgt = int(bunker_tgts.get(hub_kind) or 0)
+        b_reorder = float(policy.get("hub_bunker_reorder_pct") or 0.96)
         if btgt > 0 and hub_id in has_bunker_bases:
             have_f = int(bunker_fuel_by_base.get(hub_id, cur_inv.get("fuel") or 0))
-            if have_f < int(round(btgt * reorder_pct)):
-                jk_b = "upkeep_bunker:%s" % hub_id
-                if jk_b not in claimed_keys:
+            fill_r = float(have_f) / float(btgt)
+            if fill_r < b_reorder:
+                # Dynamic multi-hauler surge scaling by fill level (Suggi directive):
+                # <20% (<10k/50k): 5 haulers (CRITICAL, 16J) | 20-50% (<25k): 3 haulers (LOW, 12J)
+                # 50-80% (<40k): 2 haulers (STEADY, 10J)     | 80-96% (<48k): 1 hauler (TOP-OFF, 8J nearby only!)
+                if fill_r < 0.20:
+                    _max_slots, urg_b, _b_pick = 5, 10.0, max_pick
+                elif fill_r < 0.50:
+                    _max_slots, urg_b, _b_pick = 3, 6.0, min(max_pick, 12)
+                elif fill_r < 0.80:
+                    _max_slots, urg_b, _b_pick = 2, 3.0, min(max_pick, 10)
+                else:
+                    _max_slots, urg_b, _b_pick = 1, 1.2, min(max_pick, 8)
+                _free_jk = ""
+                for _si in range(_max_slots):
+                    _cand_jk = ("upkeep_bunker:%s" % hub_id) if _si == 0 else ("upkeep_bunker:%s:s%d" % (hub_id, _si))
+                    if _cand_jk not in claimed_keys:
+                        _free_jk = _cand_jk
+                        break
+                if _free_jk:
                     cells_need = max(1, (btgt - have_f + 19) // 20)
-                    urg_b = (1.0 - (float(have_f) / float(btgt))) * 4.0
-                    demands.append(("fuel_cell", cells_need, urg_b, jk_b, True))
+                    demands.append(("fuel_cell", cells_need, urg_b, _free_jk, True, _b_pick))
 
         for iid, tgt_raw in tgts.items():
             tgt = int(tgt_raw or 0)
@@ -367,17 +385,18 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 continue
             deficit = max(1, tgt - have_here)
             urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
-            demands.append((iid, deficit, urgency, jkey, False))
+            demands.append((iid, deficit, urgency, jkey, False, max_pick))
 
-        for iid, deficit, urgency, jkey, bunker_fill in demands:
+        for iid, deficit, urgency, jkey, bunker_fill, eff_max_pick in demands:
             # Keep steady fuel_cell trickles flowing (10+ cells) to top outpost bunkers continuously
             lot_floor = 10 if iid == "fuel_cell" else 20
             min_lot = min(deficit, int(hold_cap), lot_floor)
-            # Local bunker conversion: if this outpost ALREADY holds >=15 fuel_cell in faction_storage, convert directly into its fuel bunker at 0 jumps!
-            if bunker_fill and iid == "fuel_cell" and int(cur_inv.get("fuel_cell") or 0) >= 15:
+            # Local bunker conversion: if this outpost ALREADY holds >=15 fuel_cell in faction_storage AND pilot can withdraw,
+            # convert directly into its fuel bunker at 0 jumps!
+            if bunker_fill and can_fac and iid == "fuel_cell" and int(cur_inv.get("fuel_cell") or 0) >= 15:
                 local_q = min(deficit, int(cur_inv.get("fuel_cell") or 0), int(hold_cap))
                 p_hops_loc = _bfs_hops(lanes, cur_sys, dloc[0]) if cur_sys and lanes else 0
-                if p_hops_loc is not None and p_hops_loc <= max_pick and local_q >= 10:
+                if p_hops_loc is not None and p_hops_loc <= eff_max_pick and local_q >= 10:
                     sc_loc = urgency * 240.0 + local_q * 2.0 - p_hops_loc * 1.5
                     cand_loc = (sc_loc, {
                         "job_key": jkey, "mode": "internal", "source_target": "faction",
@@ -403,7 +422,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                         continue
                     p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
                     d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
-                    if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                    if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                         continue
                     qty = min(deficit, sq, int(hold_cap))
                     if qty < min_lot:
@@ -426,7 +445,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                             break
                         p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
                         d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
-                        if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
+                        if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                             continue
                         qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
                         if qty < min_lot:
@@ -1778,6 +1797,10 @@ def main(argv=None):
                     for (_psubj,) in _pc.execute("SELECT DISTINCT subject FROM observations WHERE kind = 'pirate' AND t >= ?", (_cut_p,)):
                         if _psubj:
                             strongholds.add(str(_psubj).split(":", 1)[0].strip())
+                    _pb_cut = time.time() - float(policy.get("pirate_battle_avoid_hours") or 2.0) * 3600.0
+                    for (_pbs,) in _pc.execute("SELECT DISTINCT system FROM public_battles WHERE category = 'pirate' AND t >= ?", (_pb_cut,)):
+                        if _pbs:
+                            strongholds.add(str(_pbs).strip())
                 except sqlite3.Error:
                     pass
                 finally:
@@ -1921,7 +1944,7 @@ def main(argv=None):
                         release_job(DATA, pilot)
                         continue
                     have = 0
-                    if upk["mode"] == "transfer":
+                    if upk["mode"] in ("transfer", "internal"):
                         raw("withdraw", {"item_id": iid, "quantity": qty, "target": upk.get("source_target") or "faction"}, group="spacemolt_storage")
                         time.sleep(TICK)
                         have = get_cargo().get(iid, 0)

@@ -314,6 +314,16 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
             continue
         if out_item in reserve:  # rule F24: a good an open need takes is never made for sale
             continue
+        # Trade overproduction & buy-wall cancellation guard:
+        # NEVER craft commercial items past min(target_cap, 50% of live external market_guard-verified bid depth)!
+        if is_trade:
+            _gb_p, _gb_q = (world.get("global_bid") or {}).get(out_item, (0.0, 0))
+            _comm_cfg = (demand.get("commercial_targets") or {}).get(out_item)
+            _comm_cap = int((_comm_cfg or {}).get("cap") or 0) if isinstance(_comm_cfg, dict) else 0
+            _live_abs_cap = max(20, int(float(_gb_q) * 0.50)) if _gb_q > 0 else 0
+            _eff_comm_cap = min(_comm_cap, _live_abs_cap) if (_comm_cap > 0 and _live_abs_cap > 0) else (_live_abs_cap or _comm_cap)
+            if _eff_comm_cap > 0 and stock_map.get(out_item, 0) >= _eff_comm_cap:
+                continue
 
         # Check how many runs we can supply from stored + optional docked buys
         max_possible = max_runs

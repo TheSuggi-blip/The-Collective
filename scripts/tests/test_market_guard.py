@@ -240,5 +240,111 @@ class MarketGuardTests(unittest.TestCase):
         self.assertLessEqual(max(b[0] for b in bids), 11.0, bids)
 
 
+
+    def test_standing_10_packs_at_3_outposts_and_public_battles_pirate_shield(self):
+        import hunt_net, sqlite3
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "fleet").mkdir(parents=True)
+            (data / "store").mkdir(parents=True)
+            ships = (
+                [{"name": f"sentinel-{i}"} for i in range(1, 20)]
+                + [{"name": f"drone-{i}"} for i in range(1, 40)]
+            )
+            (data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}), encoding="ascii")
+            # Verify all 10 Command Flagships map cleanly to 4x3, 3x5, 3x7 = 48 unique ships across gsc_0044/atria/felis!
+            all_members = []
+            sizes = []
+            outposts = set()
+            for sq_id, op_sys, leader, ns, nd in hunt_net.STANDING_SQUAD_SPECS:
+                sq = hunt_net.standing_squad_for_pilot(data, leader, {"packs": {"standing_outpost_squads": True}})
+                self.assertIsNotNone(sq)
+                self.assertEqual(sq["squad_id"], sq_id)
+                self.assertEqual(sq["outpost_system"], op_sys)
+                self.assertEqual(len(sq["members"]), 1 + ns + nd)
+                sizes.append(sq["size"])
+                outposts.add(op_sys)
+                all_members.extend(sq["members"])
+            self.assertEqual(sorted(sizes), [3, 3, 3, 3, 5, 5, 5, 7, 7, 7])
+            self.assertEqual(len(all_members), 48)
+            self.assertEqual(len(set(all_members)), 48)
+            self.assertEqual(outposts, {"gsc_0044", "atria", "felis"})
+
+    def test_craft_net_live_buywall_overproduction_cap_halts_when_stock_reaches_half_depth(self):
+        import craft_net
+        world = {
+            "recipes": {
+                "make_rations": {"id": "make_rations", "inputs": [("water_ice", 1)], "outputs": [("solarian_gourmet_rations", 1)], "facility_only": False},
+            },
+            "books": {"st1": {"solarian_gourmet_rations": {"bid": 270.0, "bid_qty": 100}, "water_ice": {"bid": 5.0, "ask": 5.0, "ask_qty": 500}}},
+            "global_bid": {"solarian_gourmet_rations": (270.0, 100)},
+            "item_vals": {"solarian_gourmet_rations": 270.0, "water_ice": 5.0},
+            "stock_by_item": {"solarian_gourmet_rations": 60, "water_ice": 200},
+            "reserve_items": set(),
+            "need_crafts": set(),
+            "demand": {"commercial_targets": {"solarian_gourmet_rations": {"cap": 400, "division": "Trade"}}},
+        }
+        pol = {"max_runs_per_cycle": 10, "trade": {"enabled": True, "min_margin_pct": 0.2, "min_profit_cr": 50, "min_bid_qty": 3, "allow_buy_inputs_docked": False}}
+        # Live external bid_qty=100 -> 50% cap = 50; fleet already holds 60 -> MUST NOT overproduce!
+        job = craft_net.pick_craft_job("Trade", "st1", {"water_ice": 200}, 50000, world, pol)
+        self.assertIsNone(job)
+        # Drop stock to 10 (< 50) -> crafts cleanly!
+        world["stock_by_item"]["solarian_gourmet_rations"] = 10
+        job2 = craft_net.pick_craft_job("Trade", "st1", {"water_ice": 200}, 50000, world, pol)
+        self.assertIsNotNone(job2)
+        self.assertEqual(job2["makes"], "solarian_gourmet_rations")
+
+    def test_outpost_bunker_dynamic_multi_hauler_surge_5_3_2_1(self):
+        import haul, sqlite3, time
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "store").mkdir(parents=True)
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            con = sqlite3.connect(data / "store" / "read.db")
+            con.execute("CREATE TABLE bases (base TEXT, system TEXT, poi TEXT, kind TEXT)")
+            con.execute("CREATE TABLE places (base TEXT, poi TEXT)")
+            con.execute("INSERT INTO bases VALUES ('op1', 'atria', 'poi_atria', 'outpost')")
+            con.commit(); con.close()
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {"Faction": {"stations": {
+                    "nb": {"fuel_cell": 2000},
+                    "op1": {"fuel_cell": 400, "steel_plate": 180, "circuit_board": 45, "hull_patch": 25},
+                }}}
+            }), encoding="ascii")
+            base_map = {
+                "nb": ("node_beta", "nb", "nb", "voidborn"),
+                "op1": ("atria", "poi_atria", "op1", ""),
+            }
+            lanes = {"node_beta": ["atria"], "atria": ["node_beta"]}
+            pol = haul.load_policy()
+            # 1) CRITICAL (0 / 50,000 -> <20%): MUST allow 5 concurrent haulers (slots 0..4), block 6th!
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"pilot": f"hauler-{i}", "role": "Officer"} for i in range(1, 8)],
+                "facilities": [{"type": "faction_fuel_bunker", "status": "active", "base": "op1"}],
+                "faction_storage": [{"base": "op1", "item": "fuel", "units": 0}],
+            }), encoding="ascii")
+            claimed = set()
+            for i in range(1, 6):
+                j = haul._pick_hub_upkeep(data, f"hauler-{i}", [], base_map, lanes, "node_beta", 200, 20000, pol, claimed)
+                self.assertIsNotNone(j, f"slot {i} must be assigned at 0/50k CRITICAL")
+                self.assertTrue(j["bunker_fill"])
+                claimed.add(j["job_key"])
+            self.assertEqual(len(claimed), 5)
+            j6 = haul._pick_hub_upkeep(data, "hauler-6", [], base_map, lanes, "node_beta", 200, 20000, pol, claimed)
+            self.assertTrue(j6 is None or not j6.get("bunker_fill"))
+            # 2) TOP-OFF (44,000 / 50,000 -> 88%): MUST allow exactly 1 hauler, NOT 2!
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"pilot": f"hauler-{i}", "role": "Officer"} for i in range(1, 8)],
+                "facilities": [{"type": "faction_fuel_bunker", "status": "active", "base": "op1"}],
+                "faction_storage": [{"base": "op1", "item": "fuel", "units": 44000}],
+            }), encoding="ascii")
+            j_top1 = haul._pick_hub_upkeep(data, "hauler-1", [], base_map, lanes, "node_beta", 200, 20000, pol, set())
+            self.assertIsNotNone(j_top1)
+            self.assertTrue(j_top1["bunker_fill"])
+            j_top2 = haul._pick_hub_upkeep(data, "hauler-2", [], base_map, lanes, "node_beta", 200, 20000, pol, {j_top1["job_key"]})
+            self.assertTrue(j_top2 is None or not j_top2.get("bunker_fill"))
+
+
 if __name__ == "__main__":
     unittest.main()

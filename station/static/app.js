@@ -2712,12 +2712,45 @@ async function renderInventory(panel, live) {
   if (invMode === 'supply') {
     const needs = (ops && ops.needs) || [];
     const reqs = (ops && ops.requests) || [];
+    const opSup = (ops && ops.outpost_supply) || [];
+    if (opSup.length) {
+      panel.append(el('h3', null, 'Outpost Fuel Bunkers & Dynamic Surge Supply (' + opSup.length + ')'));
+      const ocards = el('div', 'icards');
+      for (const ob of opSup) {
+        const oc = el('div', 'icard ' + (ob.bunker_pct >= 80 ? 'ownbase' : 'sitecard'));
+        const oh = el('div', 'ichead');
+        const tierCls = ob.surge_tier === 'FULL' ? 'good' : (ob.surge_tier === 'TOP-OFF' || ob.surge_tier === 'STEADY' ? 'info' : (ob.surge_tier === 'LOW' ? 'warn' : 'bad'));
+        oh.append(
+          el('b', null, ob.name + ' (' + ob.system + ')'),
+          el('span', 'pill ' + tierCls, ob.surge_tier + ' (' + ob.active_haulers + '/' + ob.target_haulers + ' haulers)'),
+        );
+        if (ob.raided) oh.append(el('span', 'pill bad', 'PIRATE RAID SHIELD'));
+        oc.append(oh);
+        const fbar = el('div', 'progcell');
+        fbar.append(
+          el('span', 'mono', 'Fuel Bunker: ' + fmt(ob.bunker_fuel) + ' / ' + fmt(ob.bunker_target) + ' (' + ob.bunker_pct.toFixed(1) + '%)'),
+          pbar(ob.bunker_pct, 100, ob.bunker_pct >= 80 ? 'good' : (ob.bunker_pct >= 25 ? 'warn' : 'bad')),
+        );
+        oc.append(fbar);
+        const hsub = ob.hauler_names && ob.hauler_names.length
+          ? 'Active haulers: ' + ob.hauler_names.join(', ')
+          : (ob.raided ? 'Haulers paused (2h pirate raid shield active)' : (ob.target_haulers > 0 ? 'Awaiting nearby haulers (surge target: ' + ob.target_haulers + ')' : 'Bunker full (>=96%)'));
+        oc.append(el('div', 'rmeta-sub', hsub));
+        if (ob.upkeep && ob.upkeep.length) {
+          const urow = el('div', 'ibsub');
+          urow.textContent = 'Upkeep buffers: ' + ob.upkeep.map((u) => u.item.replace(/_/g, ' ') + ' ' + fmt(u.have) + '/' + fmt(u.target)).join(' | ');
+          oc.append(urow);
+        }
+        ocards.append(oc);
+      }
+      panel.append(ocards);
+    }
     panel.append(el('h3', null, 'Standing supply buffers (' + supList.length + ')'));
     if (!supList.length) {
       panel.append(el('p', 'empty', 'No supply chains configured.'));
     } else {
       const scard = el('div', 'icard');
-      scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'State'],
+      scard.append(fitTable(table(['Chain', 'Item', 'Hub / Base', 'Buffer Progress', 'On Duty', 'State'],
         supList.map((s) => {
           const haveVal = s.have !== undefined ? s.have : (s.stock || 0);
           const pctFill = s.keep > 0 ? Math.min(100, Math.round((100 * haveVal) / s.keep)) : 0;
@@ -2729,7 +2762,8 @@ async function renderInventory(panel, live) {
             s.item ? itemLink(s.item, s.item.replace(/_/g, ' ')) : '--',
             s.place || '--',
             pCell,
-            el('span', 'pill ' + (s.state === 'OK' ? 'good' : s.state === 'SHORT' ? 'warn' : 'bad'), isFull ? 'STOCKED' : s.state),
+            el('span', 'mono', fmt(s.ships || 0) + ' ships'),
+            el('span', 'pill ' + (s.state === 'OK' ? 'good' : s.state === 'LOW' ? 'warn' : 'bad'), isFull ? 'STOCKED' : s.state),
           ];
         }))));
       panel.append(scard);

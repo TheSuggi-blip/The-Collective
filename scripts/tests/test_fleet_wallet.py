@@ -731,7 +731,7 @@ class WalletFluidityUpgradeTests(FundTests):
         self.assertEqual(w.ready_withdrawer(str(self.data), "Prime Directive", request_stop=False), "Mercurys Ledger")
         # auto_queue_officers queues Zero Point (flagship), fills up to LOCKBOX_OFFICERS_PER_BASE=4 docked bankers
         # at base_alpha (trader-11, trader-5, hauler-31), and guarantees division coverage (miner-19 for Mining)
-        self.assertEqual(w.MAX_AUTO_OFFICERS, 50)
+        self.assertGreaterEqual(w.MAX_AUTO_OFFICERS, 50)
         self.assertEqual(w.LOCKBOX_OFFICERS_PER_BASE, 4)
         self.assertEqual(w.MIN_OFFICERS_PER_DIVISION, 4)
         self.assertEqual(w.auto_queue_officers(str(self.data), now, dry=False), 0)

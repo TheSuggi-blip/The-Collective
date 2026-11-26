@@ -18,8 +18,8 @@
   "exclude_pois": [],
   "exclude_resources": [],
   "pirate_avoid_hours": 6.0,
-  "max_jumps": 14,
-  "max_station_jumps": 10,
+  "max_jumps": 6,
+  "max_station_jumps": 6,
   "prioritize_needs": true,
   "skip_full_reserves": true,
   "allow_xp_fallback": false,
@@ -60,12 +60,15 @@
   "auto_use_owned_outposts": true,
   "auto_lockbox_for_reserves": true,
   "hub_gravity_bonus": true,
-  "hub_radius_jumps": 8,
+  "hub_radius_jumps": 6,
   "auto_drain_personal_to_lockbox": true,
   "min_market_buyer_qty": 20,
   "scarce_min_left_pct": 3.0,
   "scarce_min_bid": 100.0,
   "scarce_min_real_cash": 500000,
   "allow_adaptive_relocate": true,
-  "relocate_max_jumps": 40
+  "relocate_max_jumps": 40,
+  "scarce_max_jumps": 10,
+  "scarce_max_station_jumps": 10,
+  "pirate_battle_avoid_hours": 2.0
 }

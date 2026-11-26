@@ -8,7 +8,7 @@
   "max_collateral": 25000,
   "fuel_reserve_cr": 6000,
   "max_book_age_minutes": 20,
-  "max_buy_spend_cr": 15000,
+  "max_buy_spend_cr": 25000,
   "min_margin_pct": 0.25,
   "partners_first": true,
   "lanes": [
@@ -44,7 +44,7 @@
   "hub_upkeep_reorder_pct": 0.7,
   "hub_upkeep_targets": {
     "outpost": {
-      "fuel_cell": 250,
+      "fuel_cell": 400,
       "steel_plate": 180,
       "circuit_board": 45,
       "hull_patch": 25
@@ -69,13 +69,14 @@
     "copper_wiring": 250
   },
   "hub_bunker_fuel_targets": {
-    "outpost": 4000,
-    "station": 6000
+    "outpost": 50000,
+    "station": 50000
   },
   "consolidate_min_units": 10,
   "consolidate_min_value_cr": 800,
   "liquidate_max_slots": 40,
   "rest_seconds_when_empty": 60,
   "idle_poll_interval_s": 30,
-  "idle_watch_minutes": 2
+  "idle_watch_minutes": 2,
+  "hub_bunker_reorder_pct": 0.96
 }

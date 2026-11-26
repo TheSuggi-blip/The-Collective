@@ -23,9 +23,10 @@
   "azelfafage",
   "mintaka",
   "gsc_0001",
-  "highcrest"
+  "highcrest",
+  "blackthorn"
  ],
- "every_minutes": 1440,
+ "every_minutes": 240,
  "max_ships": 2,
  "chain": 3,
  "chain_jumps": 2,
@@ -40,5 +41,6 @@
   "cph_per_ship": -650,
   "hours": 12,
   "last_run": "2026-11-26T01:18:56Z"
- }
+ },
+ "all_systems": true
 }

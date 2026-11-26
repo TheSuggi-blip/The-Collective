@@ -152,7 +152,7 @@ TREASURY_TOPUP = True          # on since 2026-11-23 after its dry run on live d
 TREASURY_UNDER = LOW           # a stranded pilot under rule F7's line is topped up ... (5,000 until 2026-11-23 08:50 CET: the
 TREASURY_LINE = 11000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
 TREASURY_DAY = 400000          # at most this much from the treasury for top-ups in 24 hours
-TREASURY_EVERY = 6 * 3600      # a pilot is topped up from the treasury at most once in this many seconds
+TREASURY_EVERY = 3600          # a pilot is topped up from the treasury at most once per hour (prevents 5 cr scout stalls!)
 TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
 TOPUP_WHY = "top-up from the treasury: no donor in the division (rule F7)"
 TOPUP_TITLE = "Treasury fund: credits withdrawn from the faction treasury for top-ups"  # never begins with routes.TREASURY
@@ -766,14 +766,27 @@ def withdrawers(data, leader):
 
 
 def ready_withdrawer(data, leader, request_stop=True):
-    """Return a docked treasury-authorized pilot (leader preferred, else any docked Officer/treasurer at an active
-    faction storage base: lockbox/warehouse/depot/stronghold), or '' (optionally asking leader's run to stop)."""
+    """Return a docked treasury-authorized pilot at a safe NPC storage station (strictly preferring permanently
+    docked Officer Traders over roaming ships and excluding 32-hex player outposts that return no_storage)."""
     boxes = storage_bases(data)
     fleet = ships(data)
-    for actor in withdrawers(data, leader):
-        dock = str((fleet.get(actor) or {}).get("docked") or "")
-        if dock and (not boxes or dock in boxes):
-            return actor
+    cands = []
+    for idx, actor in enumerate(withdrawers(data, leader)):
+        s = fleet.get(actor) or {}
+        dock = str(s.get("docked") or "")
+        if not dock:
+            continue
+        if boxes and dock not in boxes:
+            continue
+        # Exclude 32-hex-char player outpost base IDs (API returns no_storage on treasury withdraw)
+        is_hex_outpost = len(dock) == 32 and all(ch in "0123456789abcdef" for ch in dock.lower())
+        if is_hex_outpost:
+            continue
+        is_trader = 0 if str(actor).startswith("trader-") else 1
+        cands.append((is_trader, idx, actor))
+    if cands:
+        cands.sort()
+        return cands[0][2]
     if request_stop:
         run_marker = Path(data) / "fleet" / "host" / "running" / (leader + ".json")
         if run_marker.exists():
@@ -1043,7 +1056,12 @@ def treasury_topups(data, stranded, now, dry):
     TREASURY_EVERY, never more than TREASURY_DAY in 24 hours. Nothing while TREASURY_TOPUP is off."""
     rows = funds(data)
     tops = [r for r in rows if r.get("kind") == "topup"]
-    busy = {r["pilot"] for r in tops if r.get("state") in ("open", "withdrawn", "unsure")}
+    # Expire stale unsure topup rows (>30m) so a dropped RPC never locks a pilot out of top-ups permanently
+    busy = {
+        r["pilot"] for r in tops
+        if r.get("state") in ("open", "withdrawn")
+        or (r.get("state") == "unsure" and (now - float(r.get("at") or 0)) < 1800)
+    }
     late = {r["pilot"] for r in tops if r.get("state") == "given" and now - (r.get("given_at") or 0) < TREASURY_EVERY}
     if not TREASURY_TOPUP:
         return set()

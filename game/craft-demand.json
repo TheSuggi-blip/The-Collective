@@ -60,6 +60,26 @@
     "circuit_board": {
       "cap": 800,
       "division": "Trade"
+    },
+    "solarian_gourmet_rations": {
+      "cap": 400,
+      "division": "Trade"
+    },
+    "power_core": {
+      "cap": 600,
+      "division": "Trade"
+    },
+    "tracking_system": {
+      "cap": 400,
+      "division": "Trade"
+    },
+    "warhead_assembly": {
+      "cap": 400,
+      "division": "Trade"
+    },
+    "laser_focus_array": {
+      "cap": 400,
+      "division": "Trade"
     }
   },
   "raw_input_caps": {
