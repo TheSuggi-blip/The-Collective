@@ -1,0 +1,14 @@
+{
+  "id": "salvage-network",
+  "title": "Salvage AutoNet -- 6C Combat Salvage Tenders (disabled until enabled)",
+  "kind": "salvage_net",
+  "policy": "game/salvage-policy.json",
+  "standing": true,
+  "max_ships": 6,
+  "minutes": 35,
+  "requires": {
+    "wing_prefix": "6C. Combat Salvage"
+  },
+  "status": "off",
+  "notes": "Standing AutoNet route for 6C Combat Salvage Tenders. Double-locked disabled (status=off + salvage-policy.json enabled=false) until enabled."
+}

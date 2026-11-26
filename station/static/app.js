@@ -4500,6 +4500,44 @@ function renderFinancialStatements(panel, ops, w, t) {
   ];
   panel.append(fsTable(['Metric / Capital Return', '1h', '6h', '24h', 'Base, Formula & Audit Meaning'], mergedSec4Rows, [1, 2, 3]));
   panel.append(el('p', 'sub', 'Buffett/Munger capital discipline: Primary ROIC/RONTA/ROE rows use STRICT REALIZED CASH earnings (IFRS 15 / CFO) so unsold vault inventory never disguises cash-return weakness. The bottom memo line shows total economic return including unrealized inventory build for comparison.'));
+
+  // 5. OPERATING SEGMENT FOOTNOTE & INTERNAL PRODUCTION TRANSFERS (IFRS 8 / ASC 280 + IFRS 10.B86 ELIMINATION)
+  panel.append(el('h3', null, '5. Operating Segment Footnote & Internal Production Transfers (IFRS 8 / ASC 280)'));
+  const mSegOf = (a, code) => (a && a.mining_segments && a.mining_segments[code] ? a.mining_segments[code] : null);
+  const mSegValOf = (a, code) => { const s = mSegOf(a, code); return s ? numOr0(s, 'tx_nrv_h') : (a ? 0 : null); };
+  const mSegUnits24 = (code) => {
+    const s24 = mSegOf(a24, code) || mSegOf(a6, code) || mSegOf(a1, code);
+    if (!s24) return '';
+    const uh = Number(s24.units_h || 0);
+    return uh > 0 ? (' [' + fmt(uh) + ' u/h]') : '';
+  };
+  const itOf = (a) => (a && a.intersegment_totals ? a.intersegment_totals : null);
+  const mineTxTotOf = (a) => (itOf(a) ? numOr0(itOf(a), 'mining_tx_h') : (a && a.by_division && a.by_division.Mining ? numOr0(a.by_division.Mining, 'tx_out_h') : null));
+  const milTxTotOf = (a) => (itOf(a) ? numOr0(itOf(a), 'military_tx_h') : (a && a.by_division && a.by_division.Military ? numOr0(a.by_division.Military, 'tx_out_h') : null));
+  const logOthTxOf = (a) => (itOf(a) ? (numOr0(itOf(a), 'logistics_tx_h') + numOr0(itOf(a), 'other_tx_h')) : (a ? 0 : null));
+  const totTxOf = (a) => (itOf(a) ? numOr0(itOf(a), 'total_tx_h') : (a ? ((mineTxTotOf(a) || 0) + (milTxTotOf(a) || 0)) : null));
+  const elimTxOf = (a) => (itOf(a) ? numOr0(itOf(a), 'consolidation_elim_h') : (a ? -(totTxOf(a) || 0) : null));
+  const sec5Rows = [
+    { cls: 'fs-sec', sec: 'Mining Extraction & Lockbox Transfers by Sub-Wing (IAS 2 NRV Value Handed to Lockbox / Bursars)' },
+    row5(fsLbl('3A. Ore -- Precision (38)' + mSegUnits24('3A'), ['Mining']), (a) => mSegValOf(a, '3A'), 'fs-ind'),
+    row5(fsLbl('3B. Ore -- Bulk (22)' + mSegUnits24('3B'), ['Mining']), (a) => mSegValOf(a, '3B'), 'fs-ind'),
+    row5(fsLbl('3C. Deep-Core & Rad (18)' + mSegUnits24('3C'), ['Mining']), (a) => mSegValOf(a, '3C'), 'fs-ind'),
+    row5(fsLbl('3D. Gas Harvesters (28)' + mSegUnits24('3D'), ['Mining']), (a) => mSegValOf(a, '3D'), 'fs-ind'),
+    row5(fsLbl('3E. Ice Harvesters (24)' + mSegUnits24('3E'), ['Mining']), (a) => mSegValOf(a, '3E'), 'fs-ind'),
+    ...([a1, a6, a24].some((x) => (mSegValOf(x, 'other') || 0) > 0)
+      ? [row5(fsLbl('Other / Legacy Mining Transfers' + mSegUnits24('other'), ['Mining']), (a) => mSegValOf(a, 'other'), 'fs-ind')]
+      : []),
+    row5('Subtotal: Mining Intersegment Transfers (Mining -> Faction Lockbox / Bursars)', mineTxTotOf, 'fs-sub'),
+    { cls: 'fs-sec', sec: 'Other Upstream Intersegment Transfers (Loot & Internal Supply)' },
+    row5(fsLbl('Military & Hunters -- Loot Transfers (Military -> Logistics / Lockbox)', ['Military']), milTxTotOf, 'fs-ind'),
+    row5(fsLbl('Logistics & Other -- Internal Supply Transfers', ['Logistics']), logOthTxOf, 'fs-ind'),
+    row5('Total Gross Intersegment Production Transfers (IFRS 8 Segment Revenue)', totTxOf, 'fs-sub'),
+    { cls: 'fs-sec', sec: 'Consolidation Elimination (IFRS 10.B86 / ASC 810 -- Prevents Double-Counting)' },
+    row5('Less: Intersegment Consolidation Elimination (Eliminated vs Vault / Bursar COGS)', elimTxOf, 'fs-ind'),
+    row5('Net Impact on Section 1 Consolidated External Revenue', (a) => (a ? 0 : null), 'fs-tot'),
+  ];
+  panel.append(fsTable(['Internal Segment / Sub-Wing Transfer (IAS 2 NRV cr)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], sec5Rows, [1, 2, 3, 4]));
+  panel.append(el('p', 'sub', 'IFRS 8 / ASC 280 & IFRS 10.B86 compliance: Upstream divisions (Miners 3A-3E and Military) earn full intersegment transfer credit when depositing extracted ore or loot into Faction Lockboxes or Bursars, valued at live IAS 2 NRV. Because Bursars recognize external cash revenue when selling those same goods on the Exchange (Section 1), 100% of internal transfers are eliminated here (= 0 net consolidated revenue impact) to prevent double-counting. Bracketed [u/h] shows live 24h mined extraction rate per sub-wing.'));
 }
 
 async function renderMetrics(panel, live) {

@@ -450,9 +450,16 @@ def main():
     ore = None if ore_before is None or ore_after is None else ore_after - ore_before
     row = {"route": route_id, "kind": "mine", "pilot": pilot, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(started)), "minutes": round(took, 1),
            "credits_before": credits_before, "credits_after": credits_after, "delta": delta, "one_time": 0,
-           "ore": ore, "sold": sold, "notes": notes}
+           "ore": ore, "resource": floor_resource or "", "deposit": deposit, "station": station[2], "belt": belt[0] + ":" + belt[1],
+           "sold": sold, "notes": notes}
     if handed:                                           # r22: what the hand-over gave, and to whom (no wallet moves: no earning)
         row.update(given=handed["given"], given_to=handed["to"])
+    elif deposit == "faction" and ore and ore > 0 and floor_resource and not sold and "loop not started" not in notes:
+        try:
+            import handover as _ho_m
+            _ho_m.record(DATA, {"at": int(time.time()), "base": station[2], "from": pilot, "to": "Faction", "items": {floor_resource: int(ore)}, "route": route_id})
+        except Exception:
+            pass
     os.makedirs(os.path.join(DATA, "routes"), exist_ok=True)
     with open(os.path.join(DATA, "routes", "runs.jsonl"), "a", encoding="utf-8") as handle:
         fcntl.flock(handle, fcntl.LOCK_EX)

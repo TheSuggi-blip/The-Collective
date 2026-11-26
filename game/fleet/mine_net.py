@@ -1267,6 +1267,11 @@ def main(argv=None):
                             time.sleep(11.0)
                             if "error" not in _jp(_rd0) and not _jp(_rd0).get("isError"):
                                 _mv0 += 1
+                                try:
+                                    import handover as _ho_d0
+                                    _ho_d0.record(DATA, {"at": int(time.time()), "base": _db0, "from": pilot, "to": "Faction", "items": {_ii0: int(_tq0)}, "route": route_id})
+                                except Exception:
+                                    pass
                                 print("%s %s mine_net: drained %d %s personal -> faction lockbox @ %s" % (utc_now(), pilot, _tq0, _ii0, _db0), flush=True)
                             else:
                                 _g_p.call("POST", "/accounts/%s/raw" % _pe0, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _ii0, "quantity": _tq0, "target": "self", "source": "cargo"}}, timeout=25)
@@ -1334,6 +1339,11 @@ def main(argv=None):
                             time.sleep(11.0)
                             if isinstance(_rd, dict) and "error" not in _rd and not _rd.get("isError"):
                                 _moved += 1
+                                try:
+                                    import handover as _ho_d1
+                                    _ho_d1.record(DATA, {"at": int(time.time()), "base": _dest_base, "from": pilot, "to": "Faction", "items": {_iid: int(_tq)}, "route": route_id})
+                                except Exception:
+                                    pass
                                 print("%s %s mine_net: drained %d %s personal -> faction lockbox @ %s" % (utc_now(), pilot, _tq, _iid, _dest_base), flush=True)
                             else:
                                 _g_dr.call("POST", "/accounts/%s/raw" % _pe, {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": _iid, "quantity": _tq, "target": "self", "source": "cargo"}}, timeout=30)

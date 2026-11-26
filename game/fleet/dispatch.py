@@ -130,7 +130,7 @@ SPAWN_MOST = 30              # runners running as processes of their own at once
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py", "fit_net": "fit_net.py", "craft_net": "craft_net.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py", "fit_net": "fit_net.py", "craft_net": "craft_net.py", "salvage_net": "salvage_net.py"}
 MINE_POI_CAP = 3             # hard cap: max concurrent miners on any single belt/POI (spread miners across belts like hunters)
 BURSAR_STATION_CAP = 1       # hard cap: max concurrent static Bursar desks at any single station (spread across 61+ books)
 
@@ -1116,6 +1116,21 @@ def why_not(pilot, rid, route, state):
                 return "no docked craft job available", None
         except Exception:
             return "craft_net check unavailable", None
+    if route["kind"] == "salvage_net":
+        try:
+            import salvage_net as _sn
+            _repo_r = Path(state.get("root") or Path(__file__).resolve().parent.parent).parent
+            _data_d = state.get("data") or Path("/srv/collective/data")
+            _pol_p = Path(str(route.get("policy") or "game/salvage-policy.json"))
+            if not _pol_p.is_absolute():
+                _pol_p = _repo_r / _pol_p
+            _spol = _sn.read_policy(_pol_p)
+            if not _sn.is_enabled(_spol):
+                return "salvage_net disabled in policy", None
+            if not _sn.has_salvage_work(pilot.get("name", ""), pilot, data_dir=_data_d, repo_root=_repo_r, policy_path=_pol_p):
+                return "no eligible salvage target or tool", None
+        except Exception:
+            return "salvage_net check unavailable", None
     place = None
     if route["kind"] == "guard":                  # it keeps a place only while a pilot of ours flies the route it guards (requests ENT-070)
         folder = Path(state.get("root") or Path(__file__).resolve().parent.parent) / "routes"      # fill.py's state names no root: the default one
@@ -1406,7 +1421,7 @@ def command(route, pilot, argument, root):
     if route["kind"] in ("fit_net", "craft_net"):
         return (base + ["--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
-    if route["kind"] in ("haul", "mine_net", "hunt_net"):
+    if route["kind"] in ("haul", "mine_net", "hunt_net", "salvage_net"):
         return (base + ["--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot

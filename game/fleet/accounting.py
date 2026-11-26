@@ -68,22 +68,42 @@ def _has_table(conn, name):
 
 
 def _div_of_pilot(name, pilot_div=None):
+    low = str(name or "").strip().lower()
+    if low == "faction":
+        return "Faction"
     if pilot_div and name in pilot_div and pilot_div[name]:
         return pilot_div[name]
-    low = str(name or "").strip().lower()
-    if low.startswith(("miner", "excavator", "survey")):
+    if low.startswith(("miner", "excavator", "survey", "euv ")):
         return "Mining"
-    if low.startswith(("trader", "merchant", "bursar")):
+    if low.startswith(("trader", "merchant", "bursar", "mcv ", "ifv ")):
         return "Trade"
-    if low.startswith(("hauler", "freight", "craft", "courier", "builder")):
+    if low.startswith(("hauler", "freight", "craft", "courier", "builder", "lsv ")):
         return "Logistics"
-    if low.startswith(("drone", "sentinel", "vanguard", "hunter", "escort", "raider")):
+    if low.startswith(("drone", "sentinel", "vanguard", "hunter", "escort", "raider", "rou ", "gsv ")):
         return "Military"
-    if low.startswith(("scout", "probe", "watcher", "oracle")):
+    if low.startswith(("scout", "probe", "watcher", "oracle", "vsv ")):
         return "Intel"
     if low.startswith(("unity", "admiral", "cmd", "command")):
         return "Command"
     return "Other"
+
+
+MINING_SUBWINGS = (
+    ("3A", "3A. Ore -- Precision (38)", 38),
+    ("3B", "3B. Ore -- Bulk (22)", 22),
+    ("3C", "3C. Deep-Core & Rad (18)", 18),
+    ("3D", "3D. Gas Harvesters (28)", 28),
+    ("3E", "3E. Ice Harvesters (24)", 24),
+    ("other", "Other / Legacy Miners", 0),
+)
+
+
+def _mining_subwing(pilot, repo_root, mw_mod=None):
+    w = mw_mod.wing_of(pilot, repo_root) if mw_mod is not None else ""
+    for code, _lbl, _cnt in MINING_SUBWINGS[:5]:
+        if w.startswith(code + "."):
+            return code
+    return "other"
 
 
 def _load_oracle_fair_map(data_dir):
@@ -995,12 +1015,20 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         import manifest_wings as _mw_acc
     except Exception:
         _mw_acc = None
+    mining_seg_runs = {code: 0 for code, _l, _n in MINING_SUBWINGS}
+    mining_seg_units = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
+    mining_seg_tx_units = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
+    mining_seg_tx_nrv = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
     if conn is not None and _has_table(conn, "runs"):
         cut_r = now - span_h * 3600.0
-        for r in conn.execute(
-            "SELECT pilot, route, kind, minutes, credits, one_time FROM runs WHERE readable = 1 AND t >= ?",
-            (cut_r,),
-        ):
+        _run_cols = {c[1] for c in conn.execute("PRAGMA table_info(runs)")}
+        _has_row_col = "row" in _run_cols
+        _sel_sql = (
+            "SELECT pilot, route, kind, minutes, credits, one_time, row FROM runs WHERE readable = 1 AND t >= ?"
+            if _has_row_col else
+            "SELECT pilot, route, kind, minutes, credits, one_time, NULL FROM runs WHERE readable = 1 AND t >= ?"
+        )
+        for r in conn.execute(_sel_sql, (cut_r,)):
             pilot = str(r[0] or "")
             route = str(r[1] or "")
             kind = str(r[2] or "")
@@ -1036,6 +1064,18 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     seg_run_pos["mining"] += cr
                 elif d_r == "Intel":
                     seg_run_pos["intel"] += cr
+            if kind == "mine" or (kind == "mine_net"):
+                _sw = _mining_subwing(pilot, repo_root, _mw_acc)
+                mining_seg_runs[_sw] += 1
+                _raw_row = r[6]
+                if isinstance(_raw_row, str) and _raw_row:
+                    try:
+                        _rj = json.loads(_raw_row)
+                        _ore_u = _num(_rj.get("ore"))
+                        if _ore_u > 0.0:
+                            mining_seg_units[_sw] += _ore_u
+                    except ValueError:
+                        pass
             b = _support_bucket(route, kind, all_once)
             rec = support_chains.setdefault(b, {"runs": 0, "ship_hours": 0.0, "credits": 0.0, "one_time": 0.0})
             rec["runs"] += 1
@@ -1143,6 +1183,10 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                         if v > 0:
                             tx_out_div[gd] = tx_out_div.get(gd, 0.0) + v
                             tx_in_div[td] = tx_in_div.get(td, 0.0) + v
+                            if gd == "Mining":
+                                _msw = _mining_subwing(str(r.get("from") or ""), repo_root, _mw_acc)
+                                mining_seg_tx_nrv[_msw] += v
+                                mining_seg_tx_units[_msw] += max(0.0, _num(u))
         except OSError:
             pass
 
@@ -1375,6 +1419,31 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "matched_direct_h": int(round(matched_direct_h)),
     }
 
+    mining_segments = {}
+    for code, lbl, ships_n in MINING_SUBWINGS:
+        mining_segments[code] = {
+            "label": lbl,
+            "ships": ships_n,
+            "runs": int(mining_seg_runs[code]),
+            "units_h": int(round(mining_seg_units[code] / span_h)),
+            "tx_units_h": int(round(mining_seg_tx_units[code] / ho_span_h)),
+            "tx_nrv_h": int(round(mining_seg_tx_nrv[code] / ho_span_h)),
+        }
+    _mine_tx_i = sum(v["tx_nrv_h"] for v in mining_segments.values())
+    _mil_tx_i = int(round((tx_out_div.get("Military", 0.0) + tx_out_div.get("Command", 0.0)) / ho_span_h))
+    _log_tx_i = int(round(tx_out_div.get("Logistics", 0.0) / ho_span_h))
+    _oth_tx_i = int(round((tx_out_div.get("Trade", 0.0) + tx_out_div.get("Intel", 0.0) + tx_out_div.get("Other", 0.0)) / ho_span_h))
+    _tot_tx_i = _mine_tx_i + _mil_tx_i + _log_tx_i + _oth_tx_i
+    intersegment_totals = {
+        "mining_tx_h": _mine_tx_i,
+        "military_tx_h": _mil_tx_i,
+        "logistics_tx_h": _log_tx_i,
+        "other_tx_h": _oth_tx_i,
+        "total_tx_h": _tot_tx_i,
+        "consolidation_elim_h": -_tot_tx_i,
+        "net_consolidated_impact_h": 0,
+    }
+
     return {
         "hours": hours,
         "cash_source": cash_source,
@@ -1407,6 +1476,8 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "by_division": by_division,
         "top_inv_builds": top_builds,
         "support_chains": support_out,
+        "mining_segments": mining_segments,
+        "intersegment_totals": intersegment_totals,
     }
 
 

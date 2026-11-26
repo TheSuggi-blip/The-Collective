@@ -23,16 +23,16 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 672 | 127 | 534 | hunt-network-packs: 52,450 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 3 | 2 | 1 | sell-melt-at-dheneb: -1,860 cr per ship-hour |
-| [Off](index-off.md) | Written down, not flown. | 82 | 24 | 58 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 1026 | 249 | 766 | |
+| [Off](index-off.md) | Written down, not flown. | 83 | 24 | 58 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
+| All | | 1027 | 249 | 766 | |
 
 ## Routes by Zone and Kind
 
-| Zone | Routes | bursar | census | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | Farthest system, jumps from home |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| home space | 249 | 0 | 1 | 212 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 3 |
-| beyond the border | 766 | 0 | 25 | 280 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 29 |
-| not on the chart | 11 | 2 | 0 | 0 | 1 | 2 | 0 | 3 | 0 | 2 | 0 | 1 | -- |
+| Zone | Routes | bursar | census | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | salvage_net | Farthest system, jumps from home |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| home space | 249 | 0 | 1 | 212 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 0 | 3 |
+| beyond the border | 766 | 0 | 25 | 280 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 0 | 29 |
+| not on the chart | 12 | 2 | 0 | 0 | 1 | 2 | 0 | 3 | 0 | 2 | 0 | 1 | 1 | -- |
 
 ## Plans by Role
 

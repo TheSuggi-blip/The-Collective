@@ -423,5 +423,64 @@ class TestFleetAccounting(unittest.TestCase):
         self.assertEqual(seg_sum, res["raw_income_h"])
         self.assertEqual(seg_sum + rb["passive_escrow_h"], res["raw_income_h"] + res["passive_inflows_h"])
 
+
+    def test_mining_segments_and_ifrs10_elimination_reconcile(self):
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td)
+            (data / "stock").mkdir(parents=True)
+            now = time.time()
+            # Pick real manifest pilots from 3A (Ore Precision), 3D (Gas), 3E (Ice)
+            import manifest_wings as mw
+            _repo = Path(__file__).resolve().parents[2]
+            wings = {r.split('\t')[0]: r.split('\t')[2] for r in (_repo / 'game' / 'fleet-500-manifest.tsv').read_text(encoding='utf-8').splitlines()[1:] if '\t' in r}
+            p_3a = next(p for p, w in wings.items() if w.startswith("3A."))
+            p_3d = next(p for p, w in wings.items() if w.startswith("3D."))
+            p_3e = next(p for p, w in wings.items() if w.startswith("3E."))
+            p_mil = next(p for p, w in wings.items() if w.startswith("2A."))
+            (data / "stock" / "handover.jsonl").write_text(
+                "\n".join([
+                    json.dumps({"at": now - 600, "base": "sol_central", "from": p_3a, "to": "Faction", "items": {"gold_ore": 100}, "route": "mine-network"}),
+                    json.dumps({"at": now - 500, "base": "neb_hub", "from": p_3d, "to": "Faction", "items": {"helium_gas": 50}, "route": "mine-network"}),
+                    json.dumps({"at": now - 400, "base": "sol_central", "from": p_3e, "to": "Faction", "items": {"water_ice": 200}, "route": "mine-network"}),
+                    json.dumps({"at": now - 300, "base": "sol_central", "from": p_mil, "to": "LSV Aether Drift", "items": {"quantum_silk": 10}, "route": "hunt-network"}),
+                ]) + "\n",
+                encoding="ascii",
+            )
+            conn = sqlite3.connect(":memory:")
+            conn.execute("CREATE TABLE ships (pilot TEXT, division TEXT)")
+            conn.execute("CREATE TABLE items (id TEXT, base_value REAL)")
+            conn.execute("CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER)")
+            conn.execute("CREATE TABLE runs (pilot TEXT, route TEXT, kind TEXT, minutes REAL, credits REAL, one_time REAL, readable INTEGER, t REAL, row TEXT)")
+            conn.executemany("INSERT INTO ships VALUES (?, ?)", [(p_3a, "Mining"), (p_3d, "Mining"), (p_3e, "Mining"), (p_mil, "Military")])
+            conn.executemany("INSERT INTO items VALUES (?, ?)", [("gold_ore", 50.0), ("helium_gas", 80.0), ("water_ice", 10.0), ("quantum_silk", 500.0)])
+            conn.executemany("INSERT INTO books VALUES (?, ?, ?, ?, ?, ?)", [
+                ("sol_central", "gold_ore", 50.0, 1000, 60.0, 500),
+                ("neb_hub", "helium_gas", 80.0, 1000, 90.0, 500),
+                ("sol_central", "water_ice", 10.0, 1000, 15.0, 500),
+                ("sol_central", "quantum_silk", 500.0, 1000, 600.0, 500),
+            ])
+            conn.execute(
+                "INSERT INTO runs VALUES (?, 'mine-network', 'mine', 30, 0, 0, 1, ?, ?)",
+                (p_3a, now - 600, json.dumps({"ore": 100, "resource": "gold_ore"})),
+            )
+            fj = {"totals": {"rates": {"windows": {"1h": {"minutes": 60.0, "income_per_hour": 12000.0, "costs_per_hour": 4000.0, "cph": 8000.0}}}}}
+            res = accounting.compute_pnl(conn, repo_root=str(_repo), data_dir=str(data), fleet_json=fj, hours=1, now=now)
+            # _div_of_pilot must map "Faction" cleanly -> Faction
+            self.assertEqual(accounting._div_of_pilot("Faction"), "Faction")
+            ms = res["mining_segments"]
+            self.assertEqual(ms["3A"]["tx_nrv_h"], 5000)
+            self.assertEqual(ms["3A"]["units_h"], 100)
+            self.assertEqual(ms["3D"]["tx_nrv_h"], 4000)
+            self.assertEqual(ms["3E"]["tx_nrv_h"], 2000)
+            it = res["intersegment_totals"]
+            self.assertEqual(it["mining_tx_h"], 11000)
+            self.assertEqual(it["military_tx_h"], 5000)
+            self.assertEqual(it["total_tx_h"], 16000)
+            self.assertEqual(it["consolidation_elim_h"], -16000)
+            self.assertEqual(it["net_consolidated_impact_h"], 0)
+            # Section 1 Consolidated External Revenue MUST NOT double-count internal transfers!
+            self.assertEqual(res["raw_income_h"], 12000)
+            conn.close()
+
 if __name__ == "__main__":
     unittest.main()

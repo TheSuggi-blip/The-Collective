@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 82.
+folder; never edited by hand. Scripts listed: 83.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -91,6 +91,7 @@ folder; never edited by hand. Scripts listed: 82.
 | `routes.py` | Check the route files, write their index, and attach what the runs measured. | By hand |
 | `routes_hygiene.py` | Automated structural legacy-route cleanliness (strictly honoring Rule F22). | By hand |
 | `runhost.py` | One program that flies the runs the dispatcher starts, each run as a thread instead of a process. | Service |
+| `salvage_net.py` | Policy-driven autonomous Combat Salvage AutoNet for 6C Salvage Tenders. | By hand |
 | `scorecard.py` | Division KPI Scorecards, <80% Completion Triggers & Stagnation Detection. | By hand |
 | `shipping.py` | Read-only CLI for SpaceMolt's Player-to-Player Freight / Courier board (spacemolt_shipping). | By hand |
 | `sight.py` | What our ships see where they are: the pilots they meet, and a first read of a system nobody read. | Service |
@@ -1040,6 +1041,16 @@ A service: it runs by itself and is never started a second time.
 runhost.py              run forever (the service `runhost`)
 --fleet <dir>   the folder of the runners (default: this file's folder)
 --data <dir>    the unit's data folder (default /srv/collective/data)
+```
+
+### `salvage_net.py`
+
+Policy-driven autonomous Combat Salvage AutoNet for 6C Salvage Tenders.
+
+Run by hand.
+
+```
+game/fleet/salvage_net.py <pilot> [--minutes 35] [--policy game/salvage-policy.json] [--route salvage-network] [--dry-run]
 ```
 
 ### `scorecard.py`

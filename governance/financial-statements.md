@@ -1,4 +1,4 @@
-# Financial Statements Blueprint (v7.3 -- Strict GAAP / IFRS 15 Realized Basis)
+# Financial Statements Blueprint (v7.4 -- Strict GAAP / IFRS 15 Realized Basis & IFRS 8 Sub-Wing Transfers)
 
 Owner: Command (Unity) & All 5 Division Admirals
 Audience: Suggi (Owner / Investor Relations), Unity, and Division Admirals
@@ -22,7 +22,14 @@ The Collective reports consolidated corporate financial statements under strict 
 ## 2. Five Institutional Statements & Audit Sections
 
 ### Section 1 -- Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15)
-- **Realized Operating Revenue:** Cash Exchange sales and freight contract receipts (SOLD ONLY).
+- **Realized Operating Revenue (External Cash Only, Split by Functional Operating Wing):**
+  1. *Bursars & Station Refining -- Active Exchange & Craft (`4C`/`5A`/`5B`, 65)*
+  2. *Bursars -- Passive Limit-Order Fills & Escrow Unwind (Net Inflow)*
+  3. *Mobile Trade -- Express & Bulk Arbitrage (`4A`/`4B`, 20)*
+  4. *Core Logistics -- Supply, Fuel & Salvage Contracts (`6A`/`6C`, 62)*
+  5. *Passenger & Resort Liners (`6B`, 28)*
+  6. *Military & Hunters -- Bounties & Frontier Loot (`1A`-`1C`, `2A`/`2B`, 150)*
+  *(Mining/Intel direct-sale residual displays conditionally only when non-zero; internal ore/loot deposits NEVER appear in Section 1 per IFRS 10.B86.)*
 - **Less: Matched Direct Operating Costs:** Zero-plug sum of Fuel + Repairs + Craft Inputs + Other Direct COGS - Reclassified Mission/CapEx Fuel.
 - **= Realized Gross Profit** -> Less **Station Facility Rent** -> **= Realized Core Operating Profit (IFRS 15 EBIT)**.
 - **+ Realized Seed & Mission Rewards (Net of Direct Fuel)** -> **= Realized Net Operating Profit / Cash Owner Earnings (`Credits - CapEx`)**.
@@ -51,5 +58,7 @@ The Collective reports consolidated corporate financial statements under strict 
   3. **Realized Equity ROE:** Cash yield on Total Net Worth (quantifies idle cash drag).
 - Memo row displays **Economic Hard-Asset ROIC** including unrealized inventory build for transparent comparison.
 
-### Section 5 -- Operating Segment Footnote & Synergy Bridge (IFRS 8)
-- Isolates each division's **Realized Cash /h**, **Unsold Inventory Change /h**, **Net Intercompany Handovers /h** (eliminated cleanly to `0`), **Fuel Burn /h**, and **Economic Value-Add /h** so vertical synergies (`Mining/Military -> Logistics -> Trade -> Cash`) remain transparent without double-counting revenue.
+### Section 5 -- Operating Segment Footnote & Internal Production Transfers (IFRS 8 / ASC 280 + IFRS 10.B86)
+- Credits upstream divisions symmetrically whenever extracted ore (`mine.py` `deposit="faction"` -> `handover.jsonl` `to="Faction"`) or combat loot (`handover.py`) transfers into shared Faction Lockboxes or Bursars, valued conservatively at live IAS 2 NRV.
+- Splits **Mining Intersegment Transfers** across all five operational sub-wings (`3A` Ore Precision, `3B` Ore Bulk, `3C` Deep-Core & Rad, `3D` Gas Harvesters, `3E` Ice Harvesters) alongside live `u/h` extraction pace, Military loot transfers, and Logistics internal transfers.
+- Applies an explicit **`Less: Intersegment Consolidation Elimination` (`-100%`, IFRS 10.B86 / ASC 810)** proving **`Net Impact on Section 1 Consolidated External Revenue = 0`** so the exact same ore is never counted once on extraction and a second time when Bursars sell it.
