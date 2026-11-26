@@ -4,7 +4,7 @@
   "enabled": true,
   "demand_file": "game/craft-demand.json",
   "cycle_minutes": 30,
-  "idle_watch_minutes": 15,
+  "idle_watch_minutes": 2,
   "max_runs_per_cycle": 10,
   "max_fee_per_run_cr": 1500,
   "min_wallet_keep_cr": 15000,

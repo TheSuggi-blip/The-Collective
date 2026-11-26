@@ -2189,21 +2189,26 @@ def main(argv=None):
                         continue
                     ok_d, _ = go_dock(dloc)
                     if ok_d:
-                        bp = docked_bursar_at(DATA, dloc[2]) or cons.get("bursar_pilot")
+                        # Unified Shared Lockbox policy: deposit straight into shared Faction Lockbox FIRST so Bursars,
+                        # Crafters, and Haulers all share instant access; fall back to gifting docked Bursar only if no Lockbox!
                         handed = False
-                        if bp and bp != pilot:
-                            rg = raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": have}, group="spacemolt_social")
-                            time.sleep(TICK)
-                            if "error" not in rg:
-                                handed = True
-                                notes.append("cons->bursar %d %s @ %s" % (have, iid, dloc[2]))
+                        rd = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        if "error" not in rd:
+                            handed = True
+                            notes.append("cons->lockbox %d %s @ %s" % (have, iid, dloc[2]))
                         if not handed:
-                            rd = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
-                            time.sleep(TICK)
-                            if "error" in rd:
-                                raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            bp = docked_bursar_at(DATA, dloc[2]) or cons.get("bursar_pilot")
+                            if bp and bp != pilot:
+                                rg = raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": have}, group="spacemolt_social")
                                 time.sleep(TICK)
-                            notes.append("cons->hub %d %s @ %s" % (have, iid, dloc[2]))
+                                if "error" not in rg:
+                                    handed = True
+                                    notes.append("cons->bursar %d %s @ %s" % (have, iid, dloc[2]))
+                        if not handed:
+                            raw("deposit", {"item_id": iid, "quantity": have, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            notes.append("cons->self %d %s @ %s" % (have, iid, dloc[2]))
                         completed += 1
                     else:
                         release_job(DATA, pilot)

@@ -464,6 +464,48 @@ def _stamp_craft_cooldown(key, seconds, data_dir=DATA):
         write_json(p, cd)
 
 
+def _active_lockboxes(data_dir):
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    out = set()
+    if isinstance(emp, dict):
+        for f in (emp.get("facilities") or []):
+            if isinstance(f, dict) and str(f.get("type") or "") == "faction_lockbox" and str(f.get("status") or "active") == "active":
+                if f.get("base"):
+                    out.add(str(f["base"]))
+    return out
+
+
+def _pilot_can_withdraw_faction(data_dir, pilot):
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    if not isinstance(emp, dict):
+        return False
+    allowed = {"leader", "officer"}
+    for r in (emp.get("roles") or []):
+        if isinstance(r, dict) and (r.get("permissions") or {}).get("manage_treasury"):
+            for k in ("id", "name"):
+                if r.get(k):
+                    allowed.add(str(r[k]).strip().lower())
+    for m in (emp.get("members") or []):
+        if not isinstance(m, dict):
+            continue
+        nm = str(m.get("pilot") or m.get("name") or m.get("member") or m.get("username") or "").strip()
+        if nm == str(pilot):
+            return str(m.get("role") or m.get("rank") or "").strip().lower() in allowed
+    return False
+
+
+def _faction_items_at_base(stor_all, base_id):
+    out = {}
+    if not isinstance(stor_all, dict) or not base_id:
+        return out
+    for src in (stor_all.get("faction"), ((stor_all.get("pilots") or {}).get("Faction") or {}).get("stations")):
+        if isinstance(src, dict) and isinstance(src.get(base_id), dict):
+            for iid, q in src[base_id].items():
+                if iid and int(q or 0) > 0:
+                    out[str(iid)] = max(out.get(str(iid), 0), int(q))
+    return out
+
+
 def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=None, world_cache=None, stor_cache=None):
     """Fast 0ms dispatcher check: True iff `pilot` is docked at a station with an executable craft job."""
     if not isinstance(ship_doc, dict):
@@ -486,7 +528,10 @@ def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=No
     world = world_cache if world_cache is not None else load_craft_world(data_dir, repo_root, pol)
     stor_all = stor_cache if stor_cache is not None else read_json(Path(data_dir) / "stock" / "storage.json", {})
     p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
-    stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
+    stored = dict((p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {})
+    if base_id in _active_lockboxes(data_dir) and _pilot_can_withdraw_faction(data_dir, pilot):
+        for iid, fq in _faction_items_at_base(stor_all, base_id).items():
+            stored[iid] = int(stored.get(iid) or 0) + int(fq)
     credits = int(ship_doc.get("credits") or 0)
     job = pick_craft_job(div, base_id, stored, credits, world, pol)
     if not job:
@@ -555,8 +600,9 @@ def main(argv=None):
         except Exception:
             return 0
 
-    def get_live_stored(base_id):
-        ans = raw("view", {"station_id": base_id}, group="spacemolt_storage")
+    def get_live_stored(base_id, target="self"):
+        params = {"station_id": base_id} if target == "self" else {"station_id": base_id, "target": target}
+        ans = raw("view", params, group="spacemolt_storage")
         if not isinstance(ans, dict) or "error" in ans:
             return None
         d = _body(ans)
@@ -585,10 +631,24 @@ def main(argv=None):
             stor_all = _wc.read_json_cached(DATA / "stock" / "storage.json", {}, ttl_s=30.0)
             p_stor = (stor_all.get("pilots") or {}).get(pilot) or {}
             stored = (p_stor.get("stations") or {}).get(base_id) or p_stor.get(base_id) or {}
+        self_stored = dict(stored)
+        fac_stored = {}
+        use_fac = base_id in _active_lockboxes(DATA) and _pilot_can_withdraw_faction(DATA, pilot)
+        if use_fac:
+            fac_live = get_live_stored(base_id, target="faction")
+            if fac_live is not None:
+                fac_stored = fac_live
+            else:
+                import worldcache as _wc_f
+                _sa_f = _wc_f.read_json_cached(DATA / "stock" / "storage.json", {}, ttl_s=30.0)
+                fac_stored = _faction_items_at_base(_sa_f, base_id)
+            for _fi, _fq in fac_stored.items():
+                if int(_fq or 0) > 0:
+                    stored[_fi] = int(stored.get(_fi) or 0) + int(_fq)
         world = load_craft_world(DATA, REPO, policy)
         job = pick_craft_job(div, base_id, stored, before, world, policy)
         if not job:
-            watch_s = min(300.0, float(policy.get("idle_watch_minutes") or 5) * 60.0)
+            watch_s = min(120.0, float(policy.get("idle_watch_minutes") or 2) * 60.0)
             notes.append("docked watch %dm (no recipe)" % max(1, int(round(watch_s / 60.0))))
             end_nap = time.time() + watch_s
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists():
@@ -602,6 +662,25 @@ def main(argv=None):
         print("%s %s craft_net: starting %dx %s (%s) at %s" % (utc_now(), pilot, int(job["runs"] * job["per_run"]), job["makes"], job["mode"], base_id), flush=True)
         asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}
         max_fee_tot = float(policy.get("max_fee_per_run_cr") or 1500) * max(1, int(job["runs"]))
+
+        # 0a. Pull any needed inputs from shared Faction Lockbox -> personal workshop storage before crafting!
+        if use_fac and fac_stored:
+            _rec_obj = (world.get("recipes") or {}).get(job["recipe"]) or {}
+            _pull_cap = max(10, int(ship_doc.get("cargo_capacity") or 50) - 5)
+            for _in_i, _req_q in (_rec_obj.get("inputs") or []):
+                _need_tot = int(_req_q) * int(job["runs"])
+                _short_self = max(0, _need_tot - int(self_stored.get(_in_i) or 0))
+                _avail_fac = min(_short_self, int(fac_stored.get(_in_i) or 0))
+                while _avail_fac > 0:
+                    _ch_q = min(_avail_fac, _pull_cap)
+                    _rw_f = raw("withdraw", {"item_id": _in_i, "quantity": int(_ch_q), "target": "faction"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    if "error" in _rw_f:
+                        break
+                    raw("deposit", {"item_id": _in_i, "quantity": int(_ch_q), "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    self_stored[_in_i] = int(self_stored.get(_in_i) or 0) + int(_ch_q)
+                    _avail_fac -= _ch_q
 
         # 0. Pre-buy dry-run validation (ENT-326): NEVER buy inputs if recipe is invalid, lacks workshop/skill, or fee > max_fee!
         q_pre_raw = raw("craft", dict(asked_c, dry_run=True), group="spacemolt")

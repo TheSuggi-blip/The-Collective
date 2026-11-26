@@ -33,7 +33,7 @@
     "instant_hit_bid_ratio": 0.6,
     "respect_reserve": true,
     "sell_faction_storage": true,
-    "stale_step_minutes": 15,
+    "stale_step_minutes": 2,
     "stale_step_pct": 0.1
   },
   "exclude_stations": [

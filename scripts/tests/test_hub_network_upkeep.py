@@ -574,5 +574,51 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertEqual(g3, 0)
 
 
+
+    def test_craft_net_reads_shared_faction_lockbox_and_tight_idle_timers(self):
+        import craft_net
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            repo = Path(td) / "repo"
+            (data / "store").mkdir(parents=True)
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            (repo / "game").mkdir(parents=True)
+            con = sqlite3.connect(str(data / "store" / "read.db"))
+            con.executescript("""
+                CREATE TABLE recipes (id TEXT, name TEXT, facility_only INTEGER);
+                CREATE TABLE recipe_inputs (recipe TEXT, item TEXT, units INTEGER);
+                CREATE TABLE recipe_outputs (recipe TEXT, item TEXT, units INTEGER);
+                CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER);
+                INSERT INTO recipes VALUES ('refine_methane', 'Refine Methane', 0);
+                INSERT INTO recipe_inputs VALUES ('refine_methane', 'methane_ice', 5);
+                INSERT INTO recipe_outputs VALUES ('refine_methane', 'liquid_methane', 3);
+                INSERT INTO books VALUES ('lockbox_hub', 'methane_ice', 20, 500, 30, 500),
+                                         ('lockbox_hub', 'liquid_methane', 100, 500, 120, 500);
+            """)
+            con.commit()
+            con.close()
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"name": "trader-9", "role": "officer"}],
+                "facilities": [{"type": "faction_lockbox", "base": "lockbox_hub", "status": "active"}],
+            }), encoding="ascii")
+            # Self storage is EMPTY, but shared Faction Lockbox holds 50 methane_ice!
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {"trader-9": {"stations": {"lockbox_hub": {}}}},
+                "faction": {"lockbox_hub": {"methane_ice": 50}},
+            }), encoding="ascii")
+            _rp = Path(__file__).resolve().parents[2]
+            pol = json.loads((_rp / "game" / "craft-policy.json").read_text(encoding="ascii"))
+            (repo / "game" / "craft-policy.json").write_text(json.dumps(pol), encoding="ascii")
+            (repo / "game" / "craft-demand.json").write_text(json.dumps({"enabled": True}), encoding="ascii")
+            ship = {"name": "trader-9", "division": "Trade", "base": "lockbox_hub", "credits": 50000}
+            self.assertTrue(craft_net.has_craft_job("trader-9", ship, data_dir=data, repo_root=repo))
+            # Verify all idle/stale timers <= 2m in live policies
+            self.assertLessEqual(int(json.loads((_rp / "game" / "bursar-policy.json").read_text())["sell"]["stale_step_minutes"]), 2)
+            self.assertLessEqual(int(json.loads((_rp / "game" / "craft-policy.json").read_text())["idle_watch_minutes"]), 2)
+            self.assertLessEqual(int(json.loads((_rp / "game" / "haul-policy.json").read_text())["rest_seconds_when_empty"]), 120)
+            self.assertLessEqual(int(json.loads((_rp / "game" / "hunt-policy.json").read_text())["rest_seconds_when_empty"]), 120)
+
+
 if __name__ == "__main__":
     unittest.main()
