@@ -80,5 +80,51 @@ class MarketGuardTests(unittest.TestCase):
         self.assertIsNone(job_scam)
 
 
+
+    def test_sell_side_anti_lowball_blocks_fake_decoy_ask_and_penny_dump(self):
+        # Reverse scam: quantum_silk fair value = 2,100 cr; scammer parks 100 cr decoy ask (qty 1) + 80 cr bid!
+        floor = mg.safe_sell_floor("quantum_silk", local_bid=80, local_ask=100, fair_val=2100.0)
+        self.assertGreaterEqual(floor, 1500)
+        fair_map = {"quantum_silk": {"fair_price": 2100.0, "stations": 4}}
+        # Bursar MUST NOT dump at 80 cr or undercut 100 cr to 99 cr!
+        book = {"quantum_silk": {"best_buy": 80, "best_buy_qty": 500, "best_sell": 100, "best_sell_qty": 1}}
+        pol = json.loads(json.dumps(bursar.DEFAULT_POLICY))
+        pol["sell"]["instant_hit_bid_ratio"] = 0.60
+        acts = bursar.plan_bursar_actions(book, {"quantum_silk": 10}, [], {}, set(), {"quantum_silk": 2100.0}, 50000, pol, fair_price_map=fair_map)
+        self.assertFalse(any(a[0] == "sell_bid" for a in acts), acts)
+        creates = [a for a in acts if a[0] == "sell_create" and a[1] == "quantum_silk"]
+        self.assertEqual(len(creates), 1)
+        self.assertGreaterEqual(creates[0][3], 1500)
+        # Even with 0 ask + 10 cr bid (and even with 600 units!), Bursar NEVER dumps high-value quantum_silk!
+        book2 = {"quantum_silk": {"best_buy": 10, "best_buy_qty": 500, "best_sell": 0, "best_sell_qty": 0}}
+        acts2 = bursar.plan_bursar_actions(book2, {"quantum_silk": 600}, [], {}, set(), {"quantum_silk": 2100.0}, 50000, pol, fair_price_map=fair_map)
+        self.assertFalse(any(a[0] == "sell_bid" for a in acts2), acts2)
+        # Disjoint faction_pull invariant: Bursar does NOT pull quantum_silk from Lockbox if local station only has a lowball 80 cr bid / 100 cr ask!
+        picks = bursar._select_faction_surplus_to_pull(
+            {"quantum_silk": 20},
+            book,
+            set(),
+            free_hold=80,
+            catalog_vals={"quantum_silk": 2100.0},
+        )
+        self.assertEqual(picks, [])
+
+    def test_non_faction_hunter_lockbox_bridge_routes_via_in_faction_hauler(self):
+        import hunt_net
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "empire").mkdir(parents=True)
+            (data / "empire" / "empire.json").write_text(json.dumps({
+                "members": [{"name": "drone-1", "role": "Officer"}]
+            }), encoding="ascii")
+            lbs = {"atria_lockbox", "central_nexus"}
+            # In-faction hunter -> direct --deposit faction
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-1", "central_nexus", lbs, data), ["--deposit", "faction"])
+            # Outside-faction hunter -> bridged via --gift-to hauler (100% in-faction Officers!)
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "central_nexus", lbs, data), ["--gift-to", "hauler"])
+            # Outside-faction hunter at non-lockbox station -> default trader
+            self.assertEqual(hunt_net.hunt_dropoff_args("drone-99", "other_station", lbs, data), ["--gift-to", "trader"])
+
+
 if __name__ == "__main__":
     unittest.main()

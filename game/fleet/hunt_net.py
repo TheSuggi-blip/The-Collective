@@ -218,6 +218,36 @@ def ship_file_name(pilot):
     return (re.sub(r"[^A-Za-z0-9_.-]", "_", str(pilot or ""))[:60] or "pilot") + ".json"
 
 
+def pilot_in_faction(data_dir, pilot):
+    """True iff `pilot` is a live member of [CLTV] in empire/empire.json (can call deposit target='faction')."""
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    if not isinstance(emp, dict):
+        return False
+    p_s = str(pilot or "").strip()
+    for m in (emp.get("members") or []):
+        if isinstance(m, dict):
+            nm = str(m.get("name") or m.get("pilot") or m.get("username") or m.get("member") or "").strip()
+            if nm == p_s:
+                return True
+    return False
+
+
+def hunt_dropoff_args(pilot, dest_base, lockbox_bases, data_dir, gift_to_default="trader"):
+    """Return CLI delivery flags for hunt.py:
+      - In-faction hunter at a Lockbox hub -> ['--deposit', 'faction'] (direct shared Lockbox!).
+      - Outside-faction hunter at a Lockbox hub -> ['--gift-to', 'hauler'] (100% of Haulers are in-faction Officers
+        who immediately liquidate or drain into the Shared Faction Lockbox!).
+      - Otherwise -> ['--gift-to', gift_to_default] when configured.
+    """
+    if dest_base and dest_base in (lockbox_bases or set()):
+        if pilot_in_faction(data_dir, pilot):
+            return ["--deposit", "faction"]
+        return ["--gift-to", "hauler"]
+    if gift_to_default:
+        return ["--gift-to", str(gift_to_default)]
+    return []
+
+
 def load_command_flagships(data_dir):
     fg = read_json(Path(data_dir) / "fleet" / "flagships.json", {})
     if not isinstance(fg, dict):
@@ -2216,11 +2246,7 @@ def main(argv=None):
             if _ptags:
                 cmd += ["--ignore-tags", ",".join(_ptags)]
         _h_dest_base = chosen["sell_at"].split(":")[2] if len(chosen.get("sell_at", "").split(":")) >= 3 else ""
-        if _h_dest_base in (world.get("lockbox_bases") or set()):
-            # Deposit directly into shared Faction Lockbox (NEVER trap mega-loot in one docked Trader's private locker!)
-            cmd += ["--deposit", "faction"]
-        elif policy.get("gift_to"):
-            cmd += ["--gift-to", str(policy["gift_to"])]
+        cmd += hunt_dropoff_args(pilot, _h_dest_base, world.get("lockbox_bases") or set(), DATA, gift_to_default=policy.get("gift_to") or "trader")
 
         import runhost as _rh
         stranger_cd = False

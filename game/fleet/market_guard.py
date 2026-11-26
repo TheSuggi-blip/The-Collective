@@ -270,6 +270,36 @@ def safe_buy_ceiling(iid, local_bid, local_ask, fair_val, max_ratio=0.90, max_fa
     return 0
 
 
+def safe_sell_floor(iid, local_bid, local_ask, fair_val, min_ratio=0.65, fair_floor_ratio=0.72):
+    """Return manipulation-resistant minimum sell price for `iid` (defends against lowball-ask/dump-spoof traps!).
+
+    Reverse scam defense:
+      Suppose quantum_silk has galactic fair_val = 2,100 cr, and a rival bot lists 1 unit at
+      ask = 100 cr alongside a 80 cr bid (or 0 ask + 10 cr bid) hoping our Bursar undercuts to
+      99 cr or instant-dumps into 80 cr!
+      safe_sell_floor anchors the minimum acceptable sell price to >= max(local_ref * min_ratio, fair_val * 0.72),
+      so our Bursars & Haulers NEVER get tricked into selling valuable goods for 10-50% of true value!
+    """
+    lb = float(local_bid or 0.0)
+    la = float(local_ask or 0.0)
+    fv = float(fair_val or 0.0)
+    if lb > 0.0 and la > 0.0:
+        local_ref = min(la, max(lb, la * 0.70))
+    elif lb > 0.0:
+        local_ref = lb
+    elif la > 0.0:
+        local_ref = la
+    elif fv > 0.0:
+        local_ref = fv
+    else:
+        return 0
+    local_floor = max(2, int(round(local_ref * float(min_ratio or 0.65))))
+    if fv >= 10.0:
+        fair_floor = max(2, int(round(fv * float(fair_floor_ratio or 0.72))))
+        return max(local_floor, fair_floor)
+    return local_floor
+
+
 def is_mirage_arbitrage_trap(iid, buy_ask, sell_bid, fair_info):
     """True when an arbitrage opportunity looks like an EVE-style Margin/Mirage Bait Scam.
 

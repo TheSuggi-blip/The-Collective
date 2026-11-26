@@ -830,10 +830,11 @@ def _sync_bursar_receivers(data, claims, now_t=None):
         write_json(rec_p, rec)
 
 
-def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4):
+def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4, catalog_vals=None):
     """Pure planner: select non-reserved marketable faction lockbox items at this hub to pull for immediate Bursar selling/crafting."""
     if not fac_items or free_hold < 1:
         return []
+    import market_guard as _mg_fp
     cands = []
     for iid, q in fac_items.items():
         qty = int(q or 0)
@@ -841,9 +842,15 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             continue
         row = book.get(iid) or {}
         bid = float(row.get("best_buy") or 0)
+        bq = int(row.get("best_buy_qty") or row.get("buy_quantity") or 0)
         ask = float(row.get("best_sell") or 0)
         if bid <= 0 and ask <= 0:
             continue
+        fv = float((catalog_vals or {}).get(iid) or 0.0)
+        if fv >= 25.0:
+            sfloor = _mg_fp.safe_sell_floor(iid, bid, ask, fv)
+            if not ((bid >= sfloor and (bq >= 1 or "best_buy_qty" not in row)) or ask >= sfloor):
+                continue
         uval = bid if bid > 0 else ask * 0.7
         cands.append((uval * min(qty, free_hold), iid, min(qty, free_hold)))
     cands.sort(reverse=True)
@@ -858,7 +865,7 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             break
     return picks
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None):
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None, fair_price_map=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -903,15 +910,27 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 ref_p = gal_bid
             else:
                 continue
-            # Zero-fuel glut clearing: if local excess stock >= 500 units, hit ANY live exchange/NPC bid >= 1 cr immediately!
-            if qty >= 500 and bid_q > 0 and bid >= 1 and (ask <= 0 or bid >= max(1, int(round(ask * hit_ratio)))):
+            import market_guard as _mg_s
+            _frec = (fair_price_map or {}).get(iid)
+            _oracle_fv = float(_frec.get("fair_price") if isinstance(_frec, dict) else (_frec or 0.0))
+            _ask_q = int(row.get("best_sell_qty") or row.get("sell_quantity") or 0)
+            # Detect obvious 1-2 unit decoy lowball ask even if caller omitted fair_price_map
+            _decoy_fv = _oracle_fv if _oracle_fv > 0.0 else (gal_bid if (ask <= 0 or (_ask_q in (1, 2) and ask < gal_bid * 0.35)) else 0.0)
+            floor_p = _mg_s.safe_sell_floor(iid, bid, ask, _decoy_fv, min_ratio=min_ratio, fair_floor_ratio=0.72) if _decoy_fv >= 10.0 else max(2, int(round(ref_p * min_ratio)))
+            # Zero-fuel glut clearing: ONLY dump >= 500 units into 1-cr bids if fair value is ALSO low (< 8 cr)!
+            # NEVER dump 500x silver_ore (101 cr) or quantum_silk (2,100 cr) into a 1-cr trap!
+            _glut_fv = _oracle_fv if _oracle_fv > 0.0 else gal_bid
+            if qty >= 500 and _glut_fv < 8.0 and bid_q > 0 and bid >= 1 and (ask <= 0 or bid >= max(1, int(round(ask * hit_ratio)))):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                 continue
-            if ref_p < 2:
+            if ref_p < 2 and floor_p < 2:
                 continue
-            floor_p = max(2, int(round(ref_p * min_ratio)))
-            hit_live_spread = (ask > 0 and bid >= max(5, int(round(ask * hit_ratio)))) or (ask <= 0 and bid >= 5)
-            if bid_q > 0 and bid >= 5 and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
+            if floor_p < 2:
+                floor_p = max(2, int(round(ref_p * min_ratio)))
+            # Anti-lowball instant-sell guard: NEVER hit a local bid below safe_sell_floor (72% of verified galactic fair value)!
+            _hard_floor = floor_p if _decoy_fv >= 10.0 else 5
+            hit_live_spread = (ask > 0 and bid >= max(5, _hard_floor, int(round(ask * hit_ratio)))) or (ask <= 0 and bid >= max(5, _hard_floor))
+            if bid_q > 0 and bid >= max(5, _hard_floor) and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                 continue
             if used_sell_ords >= max_sell_ords:
@@ -935,10 +954,10 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             else:
                 target_p = max(floor_p, int(ask) - undercut) if ask > 0 else max(floor_p, int(round(ref_p * 1.02)))
             if bid > 0 and target_p <= int(bid):
-                if bid_q > 0 and bid >= 5:
+                if bid_q > 0 and bid >= max(5, _hard_floor):
                     actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                     continue
-                target_p = int(bid) + 1
+                target_p = max(_hard_floor, int(bid) + 1)
             listed = sum(int(o.get("remaining") or 0) for o in mine)
             for o in mine:
                 if int(o.get("price_each") or 0) != target_p and o.get("order_id"):
@@ -1272,7 +1291,7 @@ def main(argv=None):
                         _, sd_b = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
                         sh_b = ((sd_b.get("state") or {}).get("ship") or {}) if isinstance(sd_b, dict) else {}
                         free_h = max(0, int(sh_b.get("cargo_capacity") or 80) - int(sh_b.get("cargo_used") or 0))
-                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8)
+                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8, catalog_vals=catalog_vals)
                         for p_iid, p_q in picks:
                             rw = raw("withdraw", {"item_id": p_iid, "quantity": p_q, "target": "faction"}, group="spacemolt_storage")
                             time.sleep(TICK)
@@ -1283,6 +1302,48 @@ def main(argv=None):
                     except Exception:
                         pass
                 stored = get_stored(base_id)
+                # Officer Lockbox Bridge (disjoint from faction_pull -> zero ping-pong!):
+                # If this Officer Bursar holds valuable goods (>= 25 cr fair) with NO fair local buyer OR fair local ask,
+                # push them into Shared Faction Lockbox so our 95 Haulers carry them to the top galactic buyer!
+                if base_id in _bursar_active_lockboxes(DATA) and _bursar_can_withdraw_faction(DATA, pilot) and stored:
+                    try:
+                        import market_guard as _mg_br
+                        _, _sd_br = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
+                        _sh_br = ((_sd_br.get("state") or {}).get("ship") or {}) if isinstance(_sd_br, dict) else {}
+                        _free_br = max(0, int(_sh_br.get("cargo_capacity") or 0) - int(_sh_br.get("cargo_used") or 0))
+                        _pushed_br = 0
+                        for _bi, _bq in sorted(stored.items()):
+                            if _pushed_br >= 4 or _free_br < 5:
+                                break
+                            _bq = int(_bq or 0)
+                            if _bq <= 0 or _bi in PROTECTED_ITEMS or _bi in reserved:
+                                continue
+                            _fv_br = float((catalog_vals or {}).get(_bi) or 0.0)
+                            if _fv_br < 25.0:
+                                continue
+                            _lrow = (book or {}).get(_bi) or {}
+                            _lbid = float(_lrow.get("best_buy") or 0.0)
+                            _lbq = int(_lrow.get("best_buy_qty") or _lrow.get("buy_quantity") or 0)
+                            _lask = float(_lrow.get("best_sell") or 0.0)
+                            _sfloor = _mg_br.safe_sell_floor(_bi, _lbid, _lask, _fv_br)
+                            # Disjoint with faction_pull: NEITHER a fair local bid NOR a fair local ask exists here!
+                            if (_lbid < _sfloor or _lbq < 1) and _lask < _sfloor:
+                                _mv_q = min(_bq, _free_br)
+                                if _mv_q >= 1:
+                                    _rw_b = raw("withdraw", {"item_id": _bi, "quantity": _mv_q, "target": "self"}, group="spacemolt_storage")
+                                    time.sleep(TICK)
+                                    if "error" not in _rw_b:
+                                        _rd_b = raw("deposit", {"item_id": _bi, "quantity": _mv_q, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        if "error" not in _rd_b:
+                                            stored[_bi] = max(0, _bq - _mv_q)
+                                            _pushed_br += 1
+                                            say("lockbox_push %d %s (bid=%d ask=%d < floor=%d fair=%d) -> faction @ %s" % (_mv_q, _bi, int(_lbid), int(_lask), int(_sfloor), int(_fv_br), base_id))
+                                        else:
+                                            raw("deposit", {"item_id": _bi, "quantity": _mv_q, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                            time.sleep(TICK)
+                    except Exception:
+                        pass
                 orders_resp = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
                 cr = get_credits()
                 eff_pol = policy
@@ -1308,7 +1369,13 @@ def main(argv=None):
                             _same_st_buys.add(_ki)
                 except Exception:
                     pass
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys)
+                _fair_map_live = {}
+                try:
+                    import market_guard as _mg_live
+                    _fair_map_live = _mg_live.load_fair_price_map(DATA)
+                except Exception:
+                    pass
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys, fair_price_map=_fair_map_live)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break

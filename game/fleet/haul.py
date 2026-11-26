@@ -1449,6 +1449,15 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
     bw_min_qty = int(policy.get("buywall_min_qty") or 200)
     cltv_buys = _load_cltv_open_buy_keys(data, now_t=now_t)
+    # Anti-lowball reference: never liquidate high-value items (>= 20 cr fair) into a < 70% scam bid!
+    fair_by_item = {}
+    try:
+        import market_guard as _mg_l
+        _vwm_l = _mg_l.compute_book_vwm_map(books_rows, cltv_buy_keys=cltv_buys, now_t=now_t)
+        for _k, _v in _vwm_l.items():
+            fair_by_item[_k] = float(_v.get("vwm") or 0.0)
+    except Exception:
+        pass
     bids_by_item = {}
     for r in books_rows or []:
         b_id = str(r.get("base") or "")
@@ -1465,6 +1474,9 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         iid = str(r.get("item") or "")
         # Strictly load REAL EXTERNAL top-of-book bid_qty (never 1-cr bid_depth, NEVER CLTV self-wash-trade!)
         if not (iid and bp >= 1.0 and bq >= 1) or (b_id, iid) in cltv_buys:
+            continue
+        _fv_l = float(fair_by_item.get(iid) or 0.0)
+        if _fv_l >= 20.0 and bp < _fv_l * 0.70:
             continue
         if policed and not loc[3]:
             if not (allow_bw and bp >= bw_min_bid and bq >= bw_min_qty):
@@ -1778,21 +1790,67 @@ def main(argv=None):
         # Flush any leftover non-protected cargo from prior runs if docked so hold capacity stays clean
         _cur_cargo = {k: v for k, v in get_cargo().items() if v > 0 and k not in PROTECTED_ITEMS and not str(k).startswith("package:")}
         _cur_base = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+        _emp_lb0 = read_json(Path(DATA) / "empire" / "empire.json", {})
+        _active_lbs0 = {
+            str(f.get("base")) for f in (_emp_lb0.get("facilities") or [])
+            if isinstance(f, dict) and str(f.get("type") or "") == "faction_lockbox" and str(f.get("status") or "active") == "active" and f.get("base")
+        }
         if _cur_cargo and _cur_base and _cur_base in base_map:
             _mb = save_market(_cur_base, base_map[_cur_base][0])
+            _ora_f = (read_json(Path(DATA) / "fleet" / "price_oracle.json", {}) or {}).get("items") or {}
+            import market_guard as _mg_f
             for _iid, _qty in list(_cur_cargo.items()):
                 _row = _mb.get(_iid) or {}
                 _bq = int(_row.get("best_buy_qty") or _row.get("buy_quantity") or 0)
                 _bp = float(_row.get("best_buy") or 0)
-                if _bp >= 10 and _bq > 0:
+                _fv_f = float((_ora_f.get(_iid) or {}).get("twap") or 0.0)
+                _sfloor_f = _mg_f.safe_sell_floor(_iid, _bp, float(_row.get("best_sell") or 0), _fv_f)
+                if _bp >= max(10, _sfloor_f) and _bq > 0:
                     _sq = min(_qty, _bq)
                     raw("sell", {"item_id": _iid, "quantity": _sq}, group="spacemolt")
                     time.sleep(TICK)
                     say("flushed %d leftover %s @ ~%d cr at %s" % (_sq, _iid, int(_bp), _cur_base))
                 _left = get_cargo().get(_iid, 0)
                 if _left > 0:
-                    raw("deposit", {"item_id": _iid, "quantity": _left, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    _dep_t = "faction" if _cur_base in _active_lbs0 else "self"
+                    _rd_f = raw("deposit", {"item_id": _iid, "quantity": _left, "target": _dep_t, "source": "cargo"}, group="spacemolt_storage")
                     time.sleep(TICK)
+                    if _dep_t == "faction" and "error" in _rd_f:
+                        raw("deposit", {"item_id": _iid, "quantity": _left, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+
+        # Lockbox Bridge Sweeper: if this In-Faction Officer Hauler is currently docked at an active Lockbox hub
+        # and holds non-reserved goods in its personal storage (e.g., gifted by non-faction Hunters!), drain them into
+        # Shared Faction Lockbox so ALL 95 Haulers, Officer Crafters, and Officer Bursars immediately share them!
+        if _cur_base and _cur_base in _active_lbs0 and _pilot_can_withdraw_faction(DATA, pilot):
+            try:
+                _sv_r = body(raw("view", {"station_id": _cur_base, "target": "self"}, group="spacemolt_storage"))
+                _sv_rows = _sv_r.get("items") or _sv_r.get("storage") or []
+                _free_h0 = max(0, hold_cap - sum(get_cargo().values()))
+                _dr_n = 0
+                for _it in (_sv_rows if isinstance(_sv_rows, list) else []):
+                    if not isinstance(_it, dict) or _dr_n >= 6 or _free_h0 < 5:
+                        break
+                    _ii, _iq = str(_it.get("item_id") or ""), int(_it.get("quantity") or 0)
+                    if not _ii or _iq <= 0 or _ii in PROTECTED_ITEMS or _ii in ("fuel", "station_core"):
+                        continue
+                    _tq = min(_iq, _free_h0)
+                    if _tq < 1:
+                        break
+                    _rw_h = raw("withdraw", {"item_id": _ii, "quantity": _tq, "target": "self"}, group="spacemolt_storage")
+                    time.sleep(TICK)
+                    if "error" not in _rw_h:
+                        _rd_h = raw("deposit", {"item_id": _ii, "quantity": _tq, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        if "error" not in _rd_h:
+                            _dr_n += 1
+                            say("lockbox_drain %d %s self -> faction @ %s" % (_tq, _ii, _cur_base))
+                        else:
+                            raw("deposit", {"item_id": _ii, "quantity": _tq, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                            time.sleep(TICK)
+                            break
+            except Exception:
+                pass
 
         for lane in lane_order:
             if completed > 0 or stop_requested() or (time.time() - started) > minutes * 60.0:
