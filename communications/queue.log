@@ -480,3 +480,11 @@ Strict GAAP/IFRS 15 Financial Statements v7.3 & 4J Pull-to-Cash AutoNet Upgrade 
 - Financial Statements v7.3: Realized Revenue & Realized Net Operating Profit (CFO / Credits - CapEx) strictly exclude unsold inventory per IFRS 15 / ASC 606; unsold inventory build sits cleanly on Balance Sheet & Working Capital memos with new Cash Conversion Ratio (%) and Days Inventory Outstanding (DIO).
 - 4J Multi-Hub AutoNet & Pull-to-Cash Pipeline: mine-network & hunt-network unlocked to 4J around all 10 active Faction Lockboxes (including 3 zero-rent Outposts) with live-bid scoring, shared faction deposit, and auto personal-locker drain.
 - Role-Guarded Hauler Consolidation & Bursar Lockbox Selling: wallet.py auto-promotes all seated Haulers/Traders to Officer (manage_treasury); haul-network adds consolidate_to_trader & 8-slot liquidation; bursar-network permanently staffs all 4 new Border Lockboxes, auto-syncs receivers.json, pulls faction lockbox surplus at 0 fuel, and boosts docked commercial crafting.
+
+## [ENT-346] | 2026-11-26 00:35 UTC | Unity | general | ref: game/catalog/master-index.md
+The game's catalog moved from 0.734.5 to 0.734.6: the new copy is checked and in force in the data folder (catalog/0.734.6.json).
+Moved to catalog/old/: 0.734.3.json -> old/0.734.3.json.
+No row added, removed or changed in figures: items 879, recipes 893, facilities 2954, hulls 385 (367 in list order only), skills 30, achievements 70, faction achievements 34.
+Only the version moved: no figure a reader uses changed.
+Every change: python3 -B scripts/catalog-refresh.py diff 0.734.5 0.734.6
+The catalog files, the craft book and the database follow within the hour.
