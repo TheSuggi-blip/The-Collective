@@ -233,6 +233,18 @@ def record_reserve(data_dir, rec):
     os.replace(tmp, p)
 
 
+def live_connected_set():
+    """Return set of currently connected usernames from engine GET /accounts."""
+    st, txt = gate_http("GET", "/accounts", timeout=30)
+    if st != 200:
+        return None
+    try:
+        accs = (json.loads(txt) or {}).get("accounts") or []
+    except ValueError:
+        return None
+    return {str(a.get("username") or "") for a in accs if isinstance(a, dict) and a.get("status") == "connected"}
+
+
 def get_faction_id(data_dir):
     emp_p = Path(data_dir) / "empire" / "empire.json"
     fid = ""
@@ -308,16 +320,22 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
                 res["steps"].append("sweep_err:%s" % txt_w2[:80])
     res["credits_swept"] = swept
 
-    # 6. Leave CLTV faction (fallback: leader kicks) -- MUST succeed before disconnecting!
-    st_l, txt_l = raw_call(pilot, "spacemolt_faction", "leave", {})
-    left_ok = (st_l == 200 and '"error"' not in txt_l[:240]) or ("not_in_faction" in txt_l.lower()) or ("not in a faction" in txt_l.lower())
-    if not left_ok:
+    # 6. Leave CLTV faction (pilot's own leave -- scoped pass in wall.py; retry up to 3x)
+    left_ok = False
+    st_l, txt_l = 0, ""
+    for att in range(3):
+        st_l, txt_l = raw_call(pilot, "spacemolt_faction", "leave", {})
+        low = txt_l.lower()
+        if (st_l == 200 and '"error"' not in txt_l[:240]) or ("not_in_faction" in low) or ("not in a faction" in low):
+            left_ok = True
+            break
         if st_l == 403 and "leave-faction" in txt_l:
             return False, "BLOCKED by wall.py (leave-faction): %s" % txt_l[:140], res
-        st_k, txt_k = raw_call(leader, "spacemolt_faction", "kick", {"player_id": pilot})
-        left_ok = (st_k == 200 and '"error"' not in txt_k[:240]) or ("not_in_faction" in txt_k.lower()) or ("not found" in txt_k.lower())
-        if not left_ok:
-            return False, "leave+kick failed: %s | %s" % (txt_l[:80], txt_k[:80]), res
+        if att < 2:
+            time.sleep(2.0)
+    if not left_ok:
+        release_hand_hold(data_dir, pilot)
+        return False, "leave failed (%s): %s" % (st_l, txt_l[:120]), res
     res["steps"].append("left_cltv")
 
     # 7. Archive as Reserve & disconnect WebSocket cleanly (never deleted!)
@@ -347,13 +365,20 @@ def birth_one(row, fid, leader="Prime Directive", promote_role=None):
             return False, "register failed (%s): %s" % (st_r, txt_r[:120])
         time.sleep(1.5)
 
-    # Invite & Join CLTV
-    st_i, txt_i = raw_call(leader, "spacemolt_faction", "invite", {"player_id": pilot})
-    st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid})
-    comb = (txt_i + " " + txt_j).lower()
-    joined = (st_j == 200 and '"error"' not in txt_j[:240]) or ("already" in comb and "member" in comb) or ("already in" in comb)
+    # Invite & Join CLTV (retry up to 3x in case newly registered socket finishes handshake)
+    joined = False
+    txt_i = txt_j = ""
+    for att in range(3):
+        st_i, txt_i = raw_call(leader, "spacemolt_faction", "invite", {"player_id": pilot})
+        st_j, txt_j = raw_call(pilot, "spacemolt_faction", "join", {"faction_id": fid})
+        comb = (txt_i + " " + txt_j).lower()
+        if (st_j == 200 and '"error"' not in txt_j[:240]) or ("already" in comb and "member" in comb) or ("already in" in comb):
+            joined = True
+            break
+        if att < 2:
+            time.sleep(2.5)
     if not joined:
-        return False, "join CLTV failed: inv=%s join=%s" % (txt_i[:70], txt_j[:70])
+        return False, "join CLTV failed: inv=%s join=%s" % (txt_i[:80], txt_j[:80])
 
     # Optional Officer / Builder promotion
     if promote_role:
@@ -402,9 +427,12 @@ def main(argv=None):
         ap.error("Specify --wave <1..6> or --plan-all")
 
     w = args.wave
-    inc = [r for r in manifest if r["wave"] == w and r["status"] == "planned"]
-    ret = plan_wave_retirements(w, live, officers)
-    ship_by_name = {s["name"]: s for s in live}
+    conn_set = live_connected_set() if not args.dry_run else None
+    live_eff = [s for s in live if (conn_set is None or s["name"] in conn_set)]
+    inc_all = [r for r in manifest if r["wave"] == w and r["status"] == "planned"]
+    inc = [r for r in inc_all if (conn_set is None or r["pilot"] not in conn_set)]
+    ret = plan_wave_retirements(w, live_eff, officers)
+    ship_by_name = {s["name"]: s for s in live_eff}
     if args.limit > 0:
         ret = ret[:args.limit]
         inc = inc[:args.limit]
@@ -422,9 +450,13 @@ def main(argv=None):
     # Phase A: Stop all retiring pilots first
     if not args.skip_retire and ret:
         print("[%s] Stopping %d retiring pilots via stop_pilot..." % (utc_now(), len(ret)), flush=True)
+        runs = stop_pilot.active_runs(str(data_dir))
         for p in ret:
             write_hand_hold(data_dir, p)
-        stop_pilot.stop_pilots(ret, str(data_dir)) if hasattr(stop_pilot, "stop_pilots") else None
+            try:
+                stop_pilot.request_stop(p, str(data_dir), runs=runs)
+            except Exception:
+                pass
         time.sleep(3.0)
         ok_r = 0
         tot_swept = 0
