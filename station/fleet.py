@@ -464,7 +464,7 @@ def onetime_by_division(now):
 
 
 METERS = {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [0, 0, 0, 0], "div": {}}
-PREV = {}                    # pilot name -> (fuel, hull, credits, cargo used, hull class) at the pass before
+PREV = {}                    # pilot name -> (fuel, hull, credits, cargo used, hull class, credits_spent) at the pass before
 MAX_CLEAN_FUEL_PRICE = 50    # cr/unit ceiling: filters non-cargo spends (hull commissions, escrow, modules)
 MAX_CLEAN_HULL_PRICE = 50    # cr/HP ceiling: filters listed-hull buys & ship switches (ENT-186)
 
@@ -472,16 +472,17 @@ MAX_CLEAN_HULL_PRICE = 50    # cr/HP ceiling: filters listed-hull buys & ship sw
 def meter(row, prev, meters):
     """Count what one ship burned and bought between two passes.
 
-    Fuel that rose while docked was bought; hull that rose while docked was repaired. When the hold did
-    not change and the wallet did not rise in the same pass, the credits that left are the price: a clean
-    reading (bounded by MAX_CLEAN_FUEL_PRICE / MAX_CLEAN_HULL_PRICE so a hull purchase, module fit, or
-    buy-order escrow in the same pass never books as fuel/repair or poisons `clean`). A hull class switch
-    is skipped. `clean` holds fuel units, their credits, hull points, their credits of the clean readings.
+    Fuel that rose while docked was bought (or refilled free from a Faction Fuel Bunker / fuel cell);
+    hull that rose while docked was repaired. When prev carries the 6th element (game `credits_spent`),
+    a zero `credits_spent` delta guarantees zero cash cost (never imputes fake market fuel cost onto
+    free bunker refills), and fallback estimates are strictly capped by actual `credits_spent` delta.
     """
     if len(prev) >= 5 and prev[4] and row.get("class") and row.get("class") != prev[4]:
         return
     fuel, hull = row["fuel"] - prev[0], row["hull"] - prev[1]
     paid, same_hold = prev[2] - row["credits"], row["cargo_used"] == prev[3]
+    has_spent = (len(prev) >= 6 and prev[5] is not None and row.get("spent") is not None)
+    spent_delta = max(0, int(round(num(row.get("spent")) - num(prev[5])))) if has_spent else None
     if fuel < 0:
         meters["burned"] += -fuel
     if not row["docked"] or (fuel <= 0 and hull <= 0):
@@ -490,21 +491,34 @@ def meter(row, prev, meters):
     clean = meters["clean"]
     price_fuel = clean[1] / clean[0] if clean[0] else None
     price_hull = clean[3] / clean[2] if clean[2] else None
-    plausible = paid >= 0 and same_hold and paid <= fuel * MAX_CLEAN_FUEL_PRICE + hull * MAX_CLEAN_HULL_PRICE
-    if plausible and not (fuel and hull):
-        fuel_cr, hull_cr = (paid, 0) if fuel else (0, paid)
-        if fuel:
-            clean[0] += fuel
-            clean[1] += paid
-        else:
-            clean[2] += hull
-            clean[3] += paid
-    elif plausible:                               # both in one pass: the fuel at its average price, the rest is the repair
-        fuel_cr = min(paid, round(fuel * price_fuel)) if price_fuel is not None else round(paid * fuel / (fuel + hull))
-        hull_cr = paid - fuel_cr
-    else:                                         # a sale, purchase, commission, or escrow in the same pass hides the price
-        fuel_cr = round(fuel * price_fuel) if price_fuel is not None else 0
-        hull_cr = round(hull * price_hull) if price_hull is not None else 0
+    if has_spent and spent_delta == 0:
+        # Free refuel (Faction Fuel Bunker / fuel cell) or free repair: 0 cash spent in-game.
+        fuel_cr, hull_cr = 0, 0
+    else:
+        plausible = paid >= 0 and same_hold and paid <= fuel * MAX_CLEAN_FUEL_PRICE + hull * MAX_CLEAN_HULL_PRICE
+        if plausible and not (fuel and hull):
+            fuel_cr, hull_cr = (paid, 0) if fuel else (0, paid)
+            if has_spent:
+                fuel_cr = min(spent_delta, fuel_cr)
+                hull_cr = min(max(0, spent_delta - fuel_cr), hull_cr)
+            if fuel and fuel_cr > 0:
+                clean[0] += fuel
+                clean[1] += fuel_cr
+            elif hull and hull_cr > 0:
+                clean[2] += hull
+                clean[3] += hull_cr
+        elif plausible:                           # both in one pass: the fuel at its average price, the rest is the repair
+            cap = min(paid, spent_delta) if has_spent else paid
+            fuel_cr = min(cap, round(fuel * price_fuel)) if price_fuel is not None else round(cap * fuel / (fuel + hull))
+            hull_cr = max(0, cap - fuel_cr)
+        else:                                     # a sale, purchase, commission, or escrow in the same pass hides the price
+            est_f = round(fuel * price_fuel) if price_fuel is not None else 0
+            est_h = round(hull * price_hull) if price_hull is not None else 0
+            if has_spent:
+                fuel_cr = min(spent_delta, est_f)
+                hull_cr = min(max(0, spent_delta - fuel_cr), est_h)
+            else:
+                fuel_cr, hull_cr = est_f, est_h
     division = meters["div"].setdefault(row["division"], [0, 0, 0, 0])
     for index, value in enumerate((fuel, fuel_cr, hull, hull_cr)):
         division[index] += value
@@ -1533,7 +1547,7 @@ def collect_once(last):
             before = PREV.get(row["name"])
             if before:
                 meter(row, before, METERS)
-            PREV[row["name"]] = (row["fuel"], row["hull"], row["credits"], row["cargo_used"], row.get("class") or "")
+            PREV[row["name"]] = (row["fuel"], row["hull"], row["credits"], row["cargo_used"], row.get("class") or "", row.get("spent"))
     seeds, grown = note_seeds(read(DATA / "seed.json", None), rows, now)   # read anew each pass: a backfill may have written it
     if grown:
         write(DATA / "seed.json", seeds)

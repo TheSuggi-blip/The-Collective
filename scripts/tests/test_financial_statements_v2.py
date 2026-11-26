@@ -106,6 +106,89 @@ class FinancialStatementsV2Tests(unittest.TestCase):
         )
 
 
+    def test_in_transit_treasury_sweeps_prevent_liquid_cash_dip(self):
+        import json
+        con = sqlite3.connect(":memory:")
+        con.executescript("CREATE TABLE ships (pilot TEXT, class TEXT, credits REAL); CREATE TABLE faction (treasury REAL);")
+        con.execute("INSERT INTO ships VALUES ('trader-1', 'prospect', 100000)")
+        con.execute("INSERT INTO faction VALUES (5000000)")
+        with tempfile.TemporaryDirectory() as td:
+            tdp = Path(td)
+            (tdp / "empire").mkdir()
+            (tdp / "fleet").mkdir()
+            (tdp / "empire" / "empire.json").write_text(json.dumps({
+                "written_at": "2026-11-26T13:05:45Z",
+                "faction": {"treasury": 5000000},
+            }), encoding="ascii")
+            # Sweep booked at 13:16:29Z (after 13:05:45Z treasury read!)
+            import calendar, time as _t
+            ts_after = calendar.timegm(_t.strptime("2026-11-26T13:16:29", "%Y-%m-%dT%H:%M:%S"))
+            (tdp / "fleet" / "onetime.json").write_text(json.dumps([
+                [ts_after - 1000, "trader-1", "Faction treasury: credits deposited (old)", -50000],
+                [ts_after, "Prime Directive", "Faction treasury: credits deposited (the Collective keeps them)", -185840],
+                [ts_after + 5, "Unity", "Treasury fund: credits withdrawn for top-up", 10000],
+            ]), encoding="ascii")
+            bs = accounting.compute_balance_sheet(con, data_dir=tdp)
+            self.assertEqual(bs["treasury_in_transit"], 175840)
+            self.assertEqual(bs["treasury"], 5175840)
+            self.assertEqual(bs["liquid_cash"], 5275840)
+
+    def test_revenue_breakdown_mission_buy_capex_exclusion_and_fuel_cap(self):
+        import json, time as _t
+        now_t = _t.time()
+        with tempfile.TemporaryDirectory() as td:
+            tdp = Path(td)
+            (tdp / "fleet").mkdir()
+            (tdp / "fleet" / "onetime.json").write_text(json.dumps([
+                [now_t - 600, "trader-20", "mission-diplomatic-pouch-sol: gold_ore bought", -1540],
+                [now_t - 300, "drone-1", "Broadaxe hull bought from listing", -10000],
+            ]), encoding="ascii")
+            fj = {
+                "ships": [],
+                "totals": {
+                    "rates": {
+                        "windows": {
+                            "1h": {
+                                "minutes": 60,
+                                "income_per_hour": 500000,
+                                "costs_per_hour": 200000,
+                                "cph": 300000,
+                                "rewards_per_hour": 50000,
+                                "bought_once_per_hour": 11540,
+                                "treasury_own_per_hour": -5000,
+                                "purse_per_hour": 333460,
+                                "repair_cr_per_hour": 1000,
+                                "unexplained_per_hour": 4000,
+                                "fuel_cr_per_hour": 290000,  # inflated by free bunker refuels!
+                                "divisions": {
+                                    "Trade": {"income_per_hour": 300000, "cph": 280000, "one_time_per_hour": 0, "fuel_cr_per_hour": 20000},
+                                    "Logistics": {"income_per_hour": 195000, "cph": 100000, "one_time_per_hour": 0, "fuel_cr_per_hour": 150000},
+                                    "Military": {"income_per_hour": 5000, "cph": -80000, "one_time_per_hour": 0, "fuel_cr_per_hour": 120000},
+                                },
+                            }
+                        }
+                    }
+                },
+            }
+            pnl = accounting.compute_pnl(None, repo_root=ROOT, data_dir=tdp, fleet_json=fj, hours=1, now=now_t)
+            # 1. Mission ore buy (-1540) moved OUT of CapEx (-10000 only) and INTO Seed Net!
+            self.assertEqual(pnl["capex_gross_h"], -10000)
+            self.assertEqual(pnl["capex_net_h"], -10000)
+            self.assertEqual(pnl["mission_buy_once_h"], -1540)
+            self.assertEqual(pnl["seed_net_h"], 50000 - 1540)
+            # 2. Inflated fuel_cr_per_hour (290k) capped at gross_direct - repair (204k - 1k = 203k),
+            #    so passive_inflows_h stays true unexplained_per_hour (4000) instead of phantom 91k!
+            self.assertEqual(pnl["passive_inflows_h"], 4000)
+            self.assertEqual(pnl["opex_breakdown"]["fuel_h"], 203000)
+            # 3. Revenue breakdown separates Trade, Logistics Freight, Other, and Passive Escrow cleanly
+            rb = pnl["revenue_breakdown"]
+            self.assertEqual(rb["trade_sales_h"], 300000)
+            self.assertEqual(rb["freight_sales_h"], 195000)
+            self.assertEqual(rb["other_sales_h"], 5000)
+            self.assertEqual(rb["passive_escrow_h"], 4000)
+            self.assertEqual(rb["trade_sales_h"] + rb["freight_sales_h"] + rb["other_sales_h"] + rb["passive_escrow_h"], 504000)
+
+
 if __name__ == "__main__":
     unittest.main()
 

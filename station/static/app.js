@@ -264,7 +264,7 @@ const shut = new Set();                        // what Suggi has hidden: the sid
 try { JSON.parse(localStorage.getItem('station.hidden') || '[]').forEach((d) => shut.add(String(d))); } catch (e) { /* no storage */ }
 function saveShut() { try { localStorage.setItem('station.hidden', JSON.stringify([...shut])); } catch (e) { /* no storage */ } }
 let board = null;
-let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout', openStationKey = null;
+let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all', selSub = 'Overview', shipSub = 'Loadout', openStationKey = null, diploThread = null, diploDirFilter = 'all', diploQuery = '', diploNewestFirst = false;
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
@@ -4023,7 +4023,7 @@ function fsTable(headers, rows, numericCols) {
 function renderFinancialStatements(panel, ops, w, t) {
   const headBar = el('div', 'fs-head-bar');
   headBar.append(
-    el('p', 'sub', 'Unaudited Institutional Short-Format Financial Statements (Strict GAAP / IFRS 15 Realized Revenue, IAS 2 Inventory Capitalization, IAS 7 Cash Flows, IFRS 8 Segments & Buffett Owner Earnings) -- unsold inventory is NEVER booked as revenue or profit.'),
+    el('p', 'sub', 'Unaudited Institutional Short-Format Financial Statements (Strict GAAP / IFRS 15 Realized Revenue, IAS 2 Inventory Capitalization, IAS 7 Cash Flows & Buffett Owner Earnings) -- unsold inventory is NEVER booked as revenue or profit.'),
     linkButton('Financial Statements Blueprint ->', () => openDoc('governance/financial-statements.md'), 'doclink')
   );
   panel.append(headBar);
@@ -4040,11 +4040,26 @@ function renderFinancialStatements(panel, ops, w, t) {
   const bs = ops.balance_sheet || null;
   const standingN = (ops.fleet_capacity && ops.fleet_capacity.standing) || (t && t.ships) || 1;
 
+  // Label helper: white text with ONLY the "(Division)" brackets rendered in each Admiral's color code
+  const fsLbl = (text, divs) => {
+    const s = el('span', null);
+    s.append(document.createTextNode(text));
+    const arr = Array.isArray(divs) ? divs : (divs ? [divs] : []);
+    for (const d of arr) {
+      s.append(document.createTextNode(' '));
+      s.append(el('span', 'div-tag ' + String(d).toLowerCase(), '(' + d + ')'));
+    }
+    return s;
+  };
+
   const numOr0 = (obj, k) => (obj && obj[k] !== null && obj[k] !== undefined ? Number(obj[k]) : 0);
   const opexOf = (a) => (a && a.opex_breakdown ? a.opex_breakdown : null);
-  // Strict IFRS 15 / ASC 606: Active cash sales + Passive Exchange Fills / Escrow Unwind separated cleanly from COGS
-  const activeRevOf = (a) => (a ? numOr0(a, 'raw_income_h') : null);
-  const passiveRevOf = (a) => (a ? numOr0(a, 'passive_inflows_h') : null);
+  const revbOf = (a) => (a && a.revenue_breakdown ? a.revenue_breakdown : null);
+  // Strict IFRS 15 / ASC 606: Market Sales (Trade) + Freight/Deliveries (Logistics) + Other Sales + Passive Fills/Escrow (Trade)
+  const tradeSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'trade_sales_h') : numOr0(a, 'raw_income_h')) : null);
+  const freightSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'freight_sales_h') : 0) : null);
+  const otherSalesOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'other_sales_h') : 0) : null);
+  const passiveRevOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'passive_escrow_h') : numOr0(a, 'passive_inflows_h')) : null);
   const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') : null);
   const totalCashInOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') + numOr0(a, 'seed_rewards_h') : null);
   const dirOpExOf = (a) => (a ? -(opexOf(a) ? numOr0(opexOf(a), 'matched_direct_h') : (numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h'))) : null);
@@ -4058,7 +4073,7 @@ function renderFinancialStatements(panel, ops, w, t) {
   const econWealthOf = (a) => (a ? cfoOf(a) + numOr0(a, 'inventory_accrual_h') : null);
   const cashConvPctOf = (a) => {
     if (!a) return null;
-    const sold = Math.max(0, numOr0(a, 'raw_income_h'));
+    const sold = Math.max(0, numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h'));
     const invAdd = Math.max(0, numOr0(a, 'inventory_accrual_h'));
     const totOut = sold + invAdd;
     return totOut >= 100 ? (100 * sold) / totOut : null;
@@ -4125,7 +4140,7 @@ function renderFinancialStatements(panel, ops, w, t) {
   kpi(
     'Realized Core EBIT (Sold Only, Ex-Seeds)',
     curEbit !== null ? signed(Math.round(curEbit)) + ' /h' : '--',
-    cur ? 'Realized sales ' + fmtCompact(Math.round(numOr0(cur, 'raw_income_h'))) + '/h vs OpEx ' + fmtCompact(Math.round(Math.abs(dirOpExOf(cur) || 0))) + '/h' : '',
+    cur ? 'Realized rev. ' + fmtCompact(Math.round(realizedRevOf(cur) || 0)) + '/h vs OpEx ' + fmtCompact(Math.round(Math.abs(dirOpExOf(cur) || 0))) + '/h' : '',
     curEbit !== null ? tone(curEbit) : ''
   );
   kpi(
@@ -4157,23 +4172,25 @@ function renderFinancialStatements(panel, ops, w, t) {
   // 1. CONDENSED CONSOLIDATED STATEMENT OF OPERATIONS (STRICT GAAP / IFRS 15 -- REALIZED ONLY)
   panel.append(el('h3', null, '1. Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15 / GAAP Realized)'));
   const pnlRows = [
-    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- Point of Sale Only)' },
-    row5('Realized Active Exchange Sales & Freight Contracts (Cash)', activeRevOf, 'fs-ind'),
-    row5('Passive Exchange Order Fills & Escrow Unwind (Net Inflow)', passiveRevOf, 'fs-ind'),
+    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- Separated by Stream)' },
+    row5(fsLbl('Realized Active Exchange Sales', ['Trade']), tradeSalesOf, 'fs-ind'),
+    row5(fsLbl('Freight, Hauling & Delivery Contracts', ['Logistics']), freightSalesOf, 'fs-ind'),
+    row5(fsLbl('Other Direct Sales & Field Bounties', ['Military', 'Mining', 'Intel']), otherSalesOf, 'fs-ind'),
+    row5(fsLbl('Passive Exchange Order Fills & Escrow Unwind (Net Inflow)', ['Trade']), passiveRevOf, 'fs-ind'),
     row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
-    row5('Fuel Burn (All Fleet Transit & Operations)', fuelSumOf, 'fs-ind'),
+    row5('Fuel Burn (Paid Station Refuels -- Excludes Free Bunkers)', fuelSumOf, 'fs-ind'),
     row5('Hull & Shield Repairs (Station Docking)', (a) => (a ? -numOr0(opexOf(a) || a, opexOf(a) ? 'repair_h' : 'repair_cr_h') : null), 'fs-ind'),
-    row5('Direct Crafting Inputs & Materials Purchased', (a) => (opexOf(a) ? -numOr0(opexOf(a), 'craft_inputs_h') : null), 'fs-ind'),
-    row5('Other Direct COGS (Market Fees, Trade Purchases & Misc)', (a) => (opexOf(a) ? -numOr0(opexOf(a), 'other_cogs_h') : null), 'fs-ind'),
+    row5(fsLbl('Direct Crafting Inputs & Materials Purchased', ['Logistics']), (a) => (opexOf(a) ? -numOr0(opexOf(a), 'craft_inputs_h') : null), 'fs-ind'),
+    row5(fsLbl('Other Direct COGS (Market Fees, Trade Purchases & Misc)', ['Trade']), (a) => (opexOf(a) ? -numOr0(opexOf(a), 'other_cogs_h') : null), 'fs-ind'),
     row5('Less: Reclassified Mission & CapEx Transit Fuel (Matched Out)', (a) => (opexOf(a) ? numOr0(opexOf(a), 'reclassified_once_h') : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
     row5('Total Matched Direct Operating Costs (COGS & OpEx)', dirOpExOf, 'fs-sub'),
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Corporate Overhead & Realized Operating Income (EBIT)' },
-    row5('Station Facility Rent & Direct Corporate Expenses', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
+    row5(fsLbl('Station Facility Rent & Direct Corporate Expenses', ['Command']), (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
     row5('Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)', realizedEbitOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Other Realized Operating Income' },
-    row5('Realized Seed & Mission Rewards (Net of Direct Fuel)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
+    row5('Realized Seed & Mission Rewards (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
     row5('Realized Net Operating Profit / Cash Owner Earnings (Credits - CapEx)', cfoOf, 'fs-tot'),
     { cls: 'fs-sec', sec: 'Memoranda -- Balance Sheet Working Capital (IAS 2 -- NOT Realized Profit)' },
     row5('Memo: Unsold Inventory Change (Live-Market NRV, Balance Sheet Asset)', invBuildOf, 'fs-memo'),
@@ -4195,19 +4212,23 @@ function renderFinancialStatements(panel, ops, w, t) {
     const modsVal = Number(bs.fleet_modules !== undefined ? bs.fleet_modules : 0);
     const facVal = Number(bs.facility_invested || 0);
     const fixedAssets = Number(bs.hard_assets || (Number(bs.fleet_book || 0) + facVal));
+    const inTransit = Number(bs.treasury_in_transit || 0);
+    const trNote = inTransit !== 0
+      ? ('Central liquidity & CapEx pool (incl. ' + signed(inTransit) + ' cr in-transit sweeps)')
+      : 'Central liquidity & CapEx pool (0% yield)';
 
     const bsRows = [
       { cls: 'fs-sec', sec: 'Assets -- Current Assets (Liquidity & Unsold Working Capital)' },
       { cls: 'fs-ind', cells: ['Cash -- Fleet Ship Wallets', fmt(bs.wallets || 0), pct(bs.wallets), fmt(standingN) + ' standing ships (working float)'] },
-      { cls: 'fs-ind', cells: ['Cash -- Faction Treasury (Excess Cash Reserve)', fmt(bs.treasury || 0), pct(bs.treasury), 'Central liquidity & CapEx pool (0% yield)'] },
-      { cls: 'fs-sub', cells: ['Total Cash & Cash Equivalents', fmt(bs.liquid_cash || 0), pct(bs.liquid_cash), '100% immediately spendable'] },
+      { cls: 'fs-ind', cells: [fsLbl('Cash -- Faction Treasury (Excess Cash Reserve)', ['Command']), fmt(bs.treasury || 0), pct(bs.treasury), trNote] },
+      { cls: 'fs-sub', cells: ['Total Cash & Cash Equivalents', fmt(bs.liquid_cash || 0), pct(bs.liquid_cash), '100% immediately spendable (sweep-continuous)'] },
       { cls: 'fs-ind', cells: ['Inventory -- Station & Faction Vaults (IAS 2 Live-Market NRV)', fmt(vaultHeld), pct(vaultHeld), 'Unsold asset (not profit until sold); bid-depth & glut adjusted'] },
-      { cls: 'fs-ind', cells: ['Inventory -- Active Exchange Sell Escrow', fmt(escrowNrv), pct(escrowNrv), fmt(escrowUnits) + ' units actively listed for sale'] },
+      { cls: 'fs-ind', cells: [fsLbl('Inventory -- Active Exchange Sell Escrow', ['Trade']), fmt(escrowNrv), pct(escrowNrv), fmt(escrowUnits) + ' units actively listed for sale'] },
       { cls: 'fs-sub', cells: ['Total Current Assets', fmt(curAssets), pct(curAssets), 'Spendable cash + unsold working-capital inventory'] },
       { cls: 'fs-sec', sec: 'Assets -- Non-Current Productive Hard Assets (Live-Updated Net PP&E, D&A = 0)' },
       { cls: 'fs-ind', cells: ['Fleet Hulls (Dynamic Live Upgrade Book)', fmt(hullsVal), pct(hullsVal), 'Recomputed every 60s from live ships x hull_materials'] },
       { cls: 'fs-ind', cells: ['Fitted Ship Modules (Dynamic Live Fit Book)', fmt(modsVal), pct(modsVal), 'Recomputed every 60s from live ship_modules x catalog value'] },
-      { cls: 'fs-ind', cells: ['Space Infrastructure & Facilities (Outposts, Lockboxes & Bunkers)', fmt(facVal), pct(facVal), 'Recomputed live from faction_facilities & empire records'] },
+      { cls: 'fs-ind', cells: [fsLbl('Space Infrastructure & Facilities (Outposts, Lockboxes & Bunkers)', ['Command']), fmt(facVal), pct(facVal), 'Recomputed live from faction_facilities & empire records'] },
       { cls: 'fs-sub', cells: ['Total Productive Hard Assets (Net PP&E)', fmt(fixedAssets), pct(fixedAssets), 'Capitalized permanent productive base (zero depreciation)'] },
       { cls: 'fs-tot', cells: ['TOTAL ASSETS', fmt(bs.net_worth || 0), '100.0%', 'Consolidated live balance sheet'] },
       { cls: 'fs-sec', sec: 'Liabilities & Collective Equity' },
@@ -4235,8 +4256,8 @@ function renderFinancialStatements(panel, ops, w, t) {
   const cfRows = [
     { cls: 'fs-sec', sec: 'Cash Flows from Operating Activities (CFO == Realized Credits - CapEx)' },
     row5('Realized Core Cash Operations (Sales less Matched OpEx)', (a) => (a ? numOr0(a, 'recurring_cash_h') : null), 'fs-ind'),
-    row5('Realized Mission & Seed Cash (Net of Direct Fuel)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
-    row5('Station Facility Rent & Direct Corporate Expenses', (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
+    row5('Realized Mission & Seed Cash (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
+    row5(fsLbl('Station Facility Rent & Direct Corporate Expenses', ['Command']), (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
     row5('Net Cash from Operations (CFO / Cash Owner Earnings, Ex-CapEx)', cfoOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Cash Flows from Investing Activities (CFI / One-Time Growth CapEx)' },
     row5('Capital Expenditures -- Hulls, Modules & Hubs (Gross)', (a) => (a ? numOr0(a, 'capex_gross_h') : null), 'fs-ind'),
@@ -4255,8 +4276,8 @@ function renderFinancialStatements(panel, ops, w, t) {
   panel.append(fsTable(['Cash Flow Activity (credits)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], cfRows, [1, 2, 3, 4]));
   panel.append(el('p', 'sub', 'IAS 7 & Suggi Cash Discipline: If CapEx is ~0, Spendable Credits MUST rise (CFO > 0). Positive Unsold Inventory Build paired with flat/negative CFO means gathered goods are piling up in storage instead of converting into cash -- fix the haul/trade liquidation pipeline rather than counting inventory as profit.'));
 
-  // 4A. PROFITABILITY MARGINS & CASH CONVERSION QUALITY -- UNIFIED 5-COLUMN IR TABLE
-  panel.append(el('h3', null, '4A. Realized Profitability Margins & Cash Conversion Quality'));
+  // 4. UNIFIED PROFITABILITY MARGINS, CASH CONVERSION & CAPITAL RETURNS (MERGED 4A + 4B ROE/ROIC)
+  panel.append(el('h3', null, '4. Profitability Margins, Cash Conversion & Capital Returns (ROIC / RONTA / ROE)'));
   const dioCell = (a) => {
     if (!a || vaultNrv <= 0) return '--';
     const dSales = Math.max(0, numOr0(a, 'raw_income_h')) * 24;
@@ -4264,83 +4285,39 @@ function renderFinancialStatements(panel, ops, w, t) {
     const d = vaultNrv / dSales;
     return el('span', d > 7 ? 'fs-neg' : d <= 3 ? 'fs-pos' : null, d.toFixed(1) + ' d');
   };
-  const marginRows = [
+  const opInvCap = bs ? Number(bs.operating_invested_capital || (hardAssets + vaultNrv)) : 0;
+  const totEq = bs ? Number(bs.net_worth || 0) : 0;
+  const fmtRoicCell = (a, earnFn, denom) => {
+    const e = a ? earnFn(a) : null;
+    if (e === null || !denom || denom <= 0) return '--';
+    const mo = (e * 24 * 30 * 100) / denom;
+    return el('span', mo < 0 ? 'fs-neg' : 'fs-pos', (mo >= 0 ? '+' : '') + mo.toFixed(1) + '%/mo');
+  };
+  const capRetNote = (earnFn, denom, suffix) => {
+    if (!denom || denom <= 0) return suffix || '--';
+    const e24 = a24 ? earnFn(a24) : null;
+    const baseStr = 'Base ' + fmtCompact(denom) + ' cr';
+    if (e24 === null) return baseStr;
+    const ann = (e24 * 24 * 365 * 100) / denom;
+    const pb = e24 > 0 ? (denom / (e24 * 24)) : null;
+    return baseStr + ' | 24h Ann. ' + (ann >= 0 ? '+' : '') + ann.toFixed(0) + '%/yr' + (pb !== null ? ' | Payback ' + pb.toFixed(1) + 'd' : '') + (suffix ? ' (' + suffix + ')' : '');
+  };
+  const mergedSec4Rows = [
+    { cls: 'fs-sec', sec: 'Realized Profitability Margins & Cash Conversion Quality' },
     pctRow('Realized Gross Margin', realizedGrossOf, realizedRevOf, 'fs-ind', '(Realized Sales - Direct OpEx) / Realized Sales'),
     pctRow('Realized Core Operating Margin (IFRS 15 EBIT)', realizedEbitOf, realizedRevOf, 'fs-ind', 'Realized Core EBIT / Realized Sales'),
     pctRow('Realized Net Operating / CFO Margin', cfoOf, totalCashInOf, 'fs-sub', 'Realized CFO / Total Cash Inflows (Ex-CapEx)'),
     pctRow('Free Cash Flow Margin (FCF)', fcfOf, totalCashInOf, 'fs-ind', 'FCF / Total Cash Inflows (Post-CapEx)'),
     { cls: 'fs-sub', cells: ['Cash Conversion Ratio (% Output Sold)', fmtPlainPct(cashConvPctOf(a1)), fmtPlainPct(cashConvPctOf(a6)), fmtPlainPct(cashConvPctOf(a24)), 'Realized Sales / (Realized Sales + Unsold Inv. Build)'] },
     { cls: 'fs-memo', cells: ['Days Inventory Outstanding (DIO)', dioCell(a1), dioCell(a6), dioCell(a24), 'Vault Live NRV / Daily Realized Sales Pace (lower = faster cash)'] },
+    { cls: 'fs-sec', sec: 'Capital Returns (Buffett / Munger 30d Pace ROIC, RONTA & ROE)' },
+    { cls: 'fs-sub', cells: ['Realized Hard-Asset ROIC (Buffett RONTA, Ex-Cash & Vault)', fmtRoicCell(a1, cfoOf, hardAssets), fmtRoicCell(a6, cfoOf, hardAssets), fmtRoicCell(a24, cfoOf, hardAssets), capRetNote(cfoOf, hardAssets, '')] },
+    { cls: 'fs-ind', cells: ['Realized Operating Invested Capital ROIC (Hard Assets + Vault)', fmtRoicCell(a1, cfoOf, opInvCap), fmtRoicCell(a6, cfoOf, opInvCap), fmtRoicCell(a24, cfoOf, opInvCap), capRetNote(cfoOf, opInvCap, '')] },
+    { cls: 'fs-ind', cells: ['Realized Equity ROE (Total Collective Equity incl. Idle Cash)', fmtRoicCell(a1, cfoOf, totEq), fmtRoicCell(a6, cfoOf, totEq), fmtRoicCell(a24, cfoOf, totEq), capRetNote(cfoOf, totEq, '')] },
+    { cls: 'fs-memo', cells: ['Memo: Economic Hard-Asset ROIC (Incl. Unsold Inventory Build)', fmtRoicCell(a1, econWealthOf, hardAssets), fmtRoicCell(a6, econWealthOf, hardAssets), fmtRoicCell(a24, econWealthOf, hardAssets), capRetNote(econWealthOf, hardAssets, 'incl. unsold inv.')] },
   ];
-  panel.append(fsTable(['Margin / Cash-Conversion Metric', '1h', '6h', '24h', 'Formula & Audit Meaning'], marginRows, [1, 2, 3]));
-
-  // 4B. BUFFETT / MUNGER CAPITAL RETURNS (REALIZED CASH ROIC / RONTA / ROE) -- ALL NUMERIC COLUMNS
-  panel.append(el('h3', null, '4B. Capital Returns (Buffett / Munger Realized ROIC, RONTA & ROE -- 24h Pace)'));
-  const opInvCap = bs ? Number(bs.operating_invested_capital || (hardAssets + vaultNrv)) : 0;
-  const totEq = bs ? Number(bs.net_worth || 0) : 0;
-  const capRetRow = (label, earnFn, denom, cls) => {
-    const e24 = a24 ? earnFn(a24) : null;
-    const valid = e24 !== null && denom > 0;
-    const mo = valid ? (e24 * 24 * 30 * 100) / denom : null;
-    const ann = valid ? (e24 * 24 * 365 * 100) / denom : null;
-    const pb = valid && e24 > 0 ? denom / (e24 * 24) : null;
-    const fmtR = (v, sfx) => v === null ? '--' : el('span', v < 0 ? 'fs-neg' : 'fs-pos', (v >= 0 ? '+' : '') + v.toFixed(sfx === '%/yr' ? 0 : 1) + sfx);
-    return {
-      cls: cls || 'fs-ind',
-      cells: [
-        label,
-        denom > 0 ? fmtCompact(denom) + ' cr' : '--',
-        fmtR(mo, '%/mo'),
-        fmtR(ann, '%/yr'),
-        pb !== null ? pb.toFixed(1) + ' days' : '--',
-      ],
-    };
-  };
-  const capRows = [
-    capRetRow('Realized Hard-Asset ROIC (Buffett RONTA -- Cash Only, Ex-Cash & Vault)', cfoOf, hardAssets, 'fs-sub'),
-    capRetRow('Realized Operating Invested Capital ROIC (Cash / Hard Assets + Vault)', cfoOf, opInvCap, 'fs-ind'),
-    capRetRow('Realized Equity ROE (Cash / Total Collective Equity incl. Idle Cash)', cfoOf, totEq, 'fs-ind'),
-    capRetRow('Memo: Economic Hard-Asset ROIC (Incl. Unsold Inventory Build)', econWealthOf, hardAssets, 'fs-memo'),
-  ];
-  panel.append(fsTable(['Capital Return Metric', 'Capital Base', '30d Pace', 'Annualized', 'Cash Payback'], capRows, [1, 2, 3, 4]));
+  panel.append(fsTable(['Metric / Capital Return', '1h', '6h', '24h', 'Base, Formula & Audit Meaning'], mergedSec4Rows, [1, 2, 3]));
   panel.append(el('p', 'sub', 'Buffett/Munger capital discipline: Primary ROIC/RONTA/ROE rows use STRICT REALIZED CASH earnings (IFRS 15 / CFO) so unsold vault inventory never disguises cash-return weakness. The bottom memo line shows total economic return including unrealized inventory build for comparison.'));
-
-  // 5. IFRS 8 OPERATING SEGMENT FOOTNOTE & SYNERGY RECONCILIATION (24h WINDOW)
-  const segSrc = a24 || cur;
-  if (segSrc && segSrc.by_division) {
-    panel.append(el('h3', null, '5. Note -- Operating Segment Cash vs Working-Capital Contribution (IFRS 8, ' + segSrc.hours + 'h /h)'));
-    const segOrder = ['Mining', 'Logistics', 'Military', 'Trade', 'Intel', 'Command', 'Faction'];
-    const segRows = [];
-    let sCash = 0, sInv = 0, sTx = 0, sFuel = 0, sAcc = 0;
-    for (const d of segOrder) {
-      const r = segSrc.by_division[d];
-      if (!r) continue;
-      const rc = numOr0(r, 'recurring_cash_h');
-      const iv = numOr0(r, 'inv_accrual_h');
-      const nt = numOr0(r, 'net_transfer_h');
-      const fl = numOr0(r, 'fuel_cr_h');
-      const ac = numOr0(r, 'accrual_op_h');
-      if (d === 'Command' && rc === 0 && iv === 0 && nt === 0 && fl === 0 && ac === 0) continue;
-      sCash += rc; sInv += iv; sTx += nt; sFuel += fl; sAcc += ac;
-      segRows.push({
-        cls: 'fs-ind',
-        cells: [
-          d === 'Faction' ? 'Faction Lockboxes & Vaults' : d,
-          fmtSigned(rc),
-          fmtSigned(iv),
-          fmtSigned(nt),
-          fmtSigned(-fl),
-          fmtSigned(ac),
-        ],
-      });
-    }
-    const trOwn = numOr0(segSrc, 'treasury_own_h');
-    segRows.push({ cls: 'fs-ind', cells: ['Corporate / Treasury Overhead (Facility Rent)', fmtSigned(trOwn), fmtSigned(0), fmtSigned(0), fmtSigned(0), fmtSigned(trOwn)] });
-    segRows.push({ cls: 'fs-memo', cells: ['Intercompany Handover Eliminations (Check == 0)', fmtSigned(0), fmtSigned(0), fmtSigned(-sTx), fmtSigned(0), fmtSigned(-sTx)] });
-    segRows.push({ cls: 'fs-tot', cells: ['Consolidated Realized Core EBIT (Col 1) vs Economic (Col 5)', fmtSigned(sCash + trOwn), fmtSigned(sInv), fmtSigned(0), fmtSigned(-sFuel), fmtSigned(sAcc + trOwn - sTx)] });
-    panel.append(fsTable(['Operating Segment', 'Realized Cash /h', 'Unsold Inv. /h', 'Net Handovers /h', 'Fuel Burn /h', 'Econ. Value-Add /h'], segRows, [1, 2, 3, 4, 5]));
-    panel.append(el('p', 'sub', 'IFRS 8 principle: Column 1 (Realized Cash /h) reconciles strictly to Consolidated Realized Core EBIT (IFRS 15); Column 2 (Unsold Inv. /h) shows working-capital inventory accumulating per division awaiting liquidation by Logistics Haulers and Trade Bursars.'));
-  }
 }
 
 async function renderMetrics(panel, live) {
@@ -5049,7 +5026,7 @@ async function renderEmpire(panel, live) {
   for (const [id, label] of subDefs) {
     const b = el('button', 'subtab' + (empSub === id ? ' on' : ''), label);
     b.type = 'button';
-    b.addEventListener('click', () => { empSub = id; render(); });
+    b.addEventListener('click', () => { empSub = id; if (id === 'Comms') diploThread = null; render(); });
     subBar.append(b);
   }
   panel.append(subBar);
@@ -5644,7 +5621,111 @@ function renderEmpireRivals(panel, dip, ops) {
   tbl.append(tbody);
   panel.append(fitTable(tbl));
 }
-function renderOutreachTables(panel, p) {
+function buildDiploThreads(p, c) {
+  const rows = (p && p.rows) || [];
+  const byKey = new Map();
+  const keyByTag = new Map();
+  const keyByLeader = new Map();
+  const order = [];
+
+  for (const r of rows) {
+    const tagU = String(r.tag || '').trim().toUpperCase();
+    const key = tagU || String(r.faction || r.leader || '').trim().toUpperCase();
+    if (!key) continue;
+    const entry = {
+      key,
+      tag: tagU,
+      faction: r.faction || tagU,
+      bloc: r.bloc || (r.bloc_size === 1 ? 'Single-faction bloc' : ''),
+      leader: r.leader || '',
+      envoy: r.envoy || '',
+      status: r.status || 'uncontacted',
+      unanswered_hails: r.unanswered_hails || 0,
+      max_unanswered: r.max_unanswered || 3,
+      sent_count: r.sent_count || 0,
+      last_reply_at: r.last_reply_at || '',
+      last_sent_at: r.last_sent_at || '',
+      next_hail_at: r.next_hail_at || '',
+      last_stance: r.last_stance || 'none',
+      isRoster: true,
+      messages: [],
+      inCount: 0,
+      outCount: 0,
+      quarantinedCount: 0,
+      latestT: '',
+    };
+    byKey.set(key, entry);
+    order.push(entry);
+    if (tagU) keyByTag.set(tagU, key);
+    if (r.leader) keyByLeader.set(String(r.leader).trim().toLowerCase(), key);
+  }
+
+  const allMsgs = [
+    ...((c && c.sent_out) || []).map((m) => ({ ...m, _dir: 'OUT' })),
+    ...((c && c.direct_in) || []).map((m) => ({ ...m, _dir: 'IN' })),
+  ];
+  for (const m of allMsgs) {
+    const mTag = String(m.tag || '').trim().toUpperCase();
+    const partyName = String(m._dir === 'OUT' ? (m.to || '') : (m.sender || '')).trim();
+    const partyLow = partyName.toLowerCase();
+    let k = (mTag && keyByTag.get(mTag)) || (partyLow && keyByLeader.get(partyLow)) || null;
+    if (!k) {
+      k = mTag ? ('TAG:' + mTag) : ('PILOT:' + (partyName || 'UNKNOWN').toUpperCase());
+      if (!byKey.has(k)) {
+        const extra = {
+          key: k,
+          tag: mTag,
+          faction: mTag ? ('[' + mTag + '] ' + (partyName || mTag)) : (partyName || 'Direct Contact'),
+          bloc: 'Direct / Independent Contact',
+          leader: partyName || 'Unknown',
+          envoy: m.pilot || '',
+          status: 'direct_contact',
+          unanswered_hails: 0,
+          max_unanswered: 3,
+          sent_count: 0,
+          last_reply_at: '',
+          last_sent_at: '',
+          next_hail_at: '',
+          last_stance: m.stance || 'none',
+          isRoster: false,
+          messages: [],
+          inCount: 0,
+          outCount: 0,
+          quarantinedCount: 0,
+          latestT: '',
+        };
+        byKey.set(k, extra);
+        order.push(extra);
+      }
+    }
+    const bucket = byKey.get(k);
+    bucket.messages.push(m);
+    if (m._dir === 'OUT') bucket.outCount += 1;
+    else bucket.inCount += 1;
+    if (m.risk === 'quarantined') bucket.quarantinedCount += 1;
+    if (m.t && String(m.t) > String(bucket.latestT || '')) bucket.latestT = String(m.t);
+  }
+
+  for (const b of order) {
+    b.messages.sort((a, x) => String(a.t || '').localeCompare(String(x.t || '')));
+  }
+  return { byKey, order };
+}
+
+function diploStatusPill(r) {
+  const st = r.status;
+  if (st === 'neutrality_agreed') return el('span', 'pill good', 'NEUTRAL');
+  if (st === 'trade_active') return el('span', 'pill good', 'TRADE');
+  if (st === 'info_sharing_active') return el('span', 'pill good', 'NEUTRAL+INFO');
+  if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
+  if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
+  if (st === 'no_response') return el('span', 'pill', 'NO REPLY');
+  if (st === 'direct_contact') return el('span', 'pill info', 'DIRECT DM');
+  if (st === 'hostile' || st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
+  return el('span', 'pill', 'QUEUED');
+}
+
+function renderOutreachTables(panel, p, c) {
   const rows = (p && p.rows) || [];
   const stg = (p && p.standings) || null;
   const blocCount = (p && p.blocs_total) || new Set(rows.map((r) => r.bloc_id || r.bloc || r.tag)).size;
@@ -5667,72 +5748,200 @@ function renderOutreachTables(panel, p) {
     panel.append(fitTable(table(['Standing', '#', 'Factions', 'Note'], srows, [1])));
   }
 
-  if (rows.length) {
+  const threads = buildDiploThreads(p, c);
+  if (threads.order.length) {
     const contacted = (p && p.contacted_total != null)
       ? p.contacted_total
       : rows.filter((r) => r.status && r.status !== 'uncontacted').length;
-    panel.append(el('h3', null, 'Neutrality outreach roster -- ' + blocCount + ' target blocs (' + contacted + '/' + rows.length + ' contacted, O10)'));
-    const statusPill = (r) => {
-      const st = r.status;
-      if (st === 'neutrality_agreed') return el('span', 'pill good', 'NEUTRAL');
-      if (st === 'trade_active') return el('span', 'pill good', 'TRADE');
-      if (st === 'info_sharing_active') return el('span', 'pill good', 'NEUTRAL+INFO');
-      if (st === 'in_dialogue') return el('span', 'pill warn', 'IN DIALOGUE');
-      if (st === 'hailed') return el('span', 'pill warn', 'HAILED ' + (r.unanswered_hails || 1) + '/' + (r.max_unanswered || 3));
-      if (st === 'no_response') return el('span', 'pill', 'NO REPLY');
-      if (st === 'hostile' || st === 'declined' || st === 'paused') return el('span', 'pill bad', st.toUpperCase());
-      return el('span', 'pill', 'QUEUED');
-    };
+    const extraContacts = threads.order.filter((x) => !x.isRoster).length;
+    const hTitle = 'Neutrality outreach roster & chat threads -- ' + blocCount + ' target blocs (' + contacted + '/' + rows.length + ' contacted, O10' + (extraContacts ? ' + ' + extraContacts + ' direct contacts' : '') + ')';
+    panel.append(el('h3', null, hTitle));
+    panel.append(el('p', 'sub', 'Click any faction row below to open its full chronological chat history (Docs-style thread viewer).'));
+
     const twoLine = (top, sub) => {
       const box = el('div', 'twoline');
       box.append(el('div', null, top));
       if (sub) box.append(el('div', 'rmeta-sub', sub));
       return box;
     };
-    const prows = rows.map((r) => {
+
+    const t = el('table');
+    const thead = el('thead');
+    const hr = el('tr');
+    for (const h of ['Faction / Bloc', 'Leader', 'Status', 'Chat History & Activity']) {
+      hr.append(el('th', null, h));
+    }
+    thead.append(hr);
+    t.append(thead);
+
+    const tbody = el('tbody');
+    for (const r of threads.order) {
+      const tr = el('tr', 'diplo-clickable');
+      tr.title = 'Open diplomatic chat history with ' + (r.tag ? '[' + r.tag + '] ' : '') + r.faction;
+      tr.addEventListener('click', () => {
+        diploThread = r.key;
+        diploDirFilter = 'all';
+        diploQuery = '';
+        empSub = 'Comms';
+        render();
+      });
+
+      const nameTitle = r.isRoster ? ('[' + r.tag + '] ' + r.faction) : r.faction;
+      const td1 = el('td');
+      td1.append(twoLine(nameTitle, r.bloc));
+
+      const td2 = el('td');
+      td2.append(twoLine(r.leader || '--', r.envoy ? ('via ' + r.envoy) : ''));
+
+      const td3 = el('td');
+      td3.append(diploStatusPill(r));
+
+      const td4 = el('td');
       const act = r.last_reply_at
         ? ('reply ' + stampCet(r.last_reply_at))
-        : (r.next_hail_at ? ('next ' + stampCet(r.next_hail_at)) : (r.last_sent_at ? ('sent ' + stampCet(r.last_sent_at)) : 'awaiting Hail 1/3'));
+        : (r.latestT
+          ? ('last ' + stampCet(r.latestT))
+          : (r.next_hail_at ? ('next ' + stampCet(r.next_hail_at)) : (r.last_sent_at ? ('sent ' + stampCet(r.last_sent_at)) : 'awaiting Hail 1/3')));
+      const actLine = el('div', null);
+      actLine.append(document.createTextNode(act));
+      if (r.messages.length > 0) {
+        actLine.append(el('span', 'diplo-open-cue', 'Open (' + r.messages.length + ') ->'));
+      } else {
+        actLine.append(el('span', 'rmeta-sub', '  (0 msgs)'));
+      }
+      const metaRow = el('div', 'diplo-msg-counts');
+      if (r.outCount > 0) metaRow.append(el('span', 'pill warn', r.outCount + ' OUT'));
+      if (r.inCount > 0) metaRow.append(el('span', 'pill good', r.inCount + ' IN'));
+      if (r.quarantinedCount > 0) metaRow.append(el('span', 'pill bad', r.quarantinedCount + ' QUAR'));
       const stance = r.last_stance && r.last_stance !== 'none' ? r.last_stance.replace(/_/g, ' ') : '';
-      const sentInfo = (r.sent_count || 0) > 0 ? (String(r.sent_count) + ' sent' + (stance ? ' | ' + stance : '')) : (stance || '');
-      const blocLbl = r.bloc || (r.bloc_size === 1 ? 'Single-faction bloc' : '');
-      return [
-        twoLine('[' + r.tag + '] ' + r.faction, blocLbl),
-        twoLine(r.leader, r.envoy ? ('via ' + r.envoy) : ''),
-        statusPill(r),
-        twoLine(act, sentInfo),
-      ];
-    });
-    panel.append(fitTable(table(['Faction / Bloc', 'Leader', 'Status', 'Activity'], prows)));
+      if (stance) metaRow.append(el('span', 'rmeta-sub', stance));
+      td4.append(actLine, metaRow);
+
+      tr.append(td1, td2, td3, td4);
+      tbody.append(tr);
+    }
+    t.append(tbody);
+    const wrap = el('div', 'mtable diplo-roster-table');
+    wrap.append(t);
+    panel.append(wrap);
   }
 }
 
-function renderMessageCards(panel, list, emptyMsg, maxItems) {
-  if (!list.length) {
-    panel.append(el('p', 'empty', emptyMsg));
-    return;
+function renderDiploThreadReader(panel, p, c) {
+  const threads = buildDiploThreads(p, c);
+  const active = threads.byKey.get(diploThread);
+  if (!active) {
+    diploThread = null;
+    return false;
   }
-  const wrap = el('div', 'icards');
-  for (const m of list.slice(0, maxItems || 120)) {
-    const isOut = m._dir === 'OUT';
-    const card = el('div', 'ibldg');
-    const head = el('div', 'ibhead');
-    head.append(el('span', isOut ? 'pill warn' : (m.risk === 'quarantined' ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (m.risk === 'quarantined' ? 'QUARANTINED' : 'RECEIVED')));
-    const party = isOut
-      ? (m.sender + (m.to ? ' -> ' + (m.tag ? '[' + m.tag + '] ' : '') + m.to : ''))
-      : ((m.tag ? '[' + m.tag + '] ' : '') + m.sender + (m.pilot ? ' -> ' + m.pilot : ''));
-    head.append(el('b', null, party));
-    const meta = isOut ? (m.diplomat ? m.diplomat : m.channel) : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : m.channel);
-    if (meta) head.append(el('span', 'pill', meta));
-    card.append(head);
-    const body = el('div', 'msg-body', m.text);
-    body.style.whiteSpace = 'pre-wrap';
-    body.style.overflowWrap = 'anywhere';
-    card.append(body);
-    card.append(el('div', 'rmeta-sub', stampCet(m.t)));
-    wrap.append(card);
+
+  // Docs-style top reader navigation bar (.reader-bar + quick-jump .rf pills)
+  const bar = el('div', 'reader-bar');
+  const backBtn = el('button', 'subtab', '<- Outreach Roster');
+  backBtn.type = 'button';
+  backBtn.addEventListener('click', () => { diploThread = null; render(); });
+  bar.append(backBtn, el('span', 'reader-sep'));
+
+  const nav = el('div', 'reader-nav');
+  const activeList = threads.order.filter((x) => x.messages.length > 0 || x.key === active.key);
+  for (const item of activeList) {
+    const isCur = item.key === active.key;
+    const shortLbl = (item.tag ? '[' + item.tag + ']' : item.leader.slice(0, 14)) + ' (' + item.messages.length + ')';
+    const cls = 'rf' + (isCur ? ' on' : (item.quarantinedCount > 0 ? ' haswarn' : ''));
+    const jb = el('button', cls, shortLbl);
+    jb.type = 'button';
+    jb.addEventListener('click', () => {
+      if (!isCur) {
+        diploThread = item.key;
+        diploDirFilter = 'all';
+        diploQuery = '';
+        render();
+      }
+    });
+    nav.append(jb);
   }
-  panel.append(wrap);
+  bar.append(nav);
+  bar.append(el('span', 'rmeta-sub reader-path', (active.bloc || 'Direct') + (active.envoy ? (' | via ' + active.envoy) : '')));
+  panel.append(bar);
+
+  // Header summary card (Docs reader card layout)
+  const card = el('div', 'ibldg doc-reader-card');
+  const head = el('div', 'diplo-thread-head');
+  const titleBox = el('div', null);
+  const fullName = active.isRoster ? ('[' + active.tag + '] ' + active.faction) : active.faction;
+  titleBox.append(el('h3', null, fullName));
+  titleBox.append(el('div', 'rmeta-sub', 'Leader: ' + (active.leader || '--') + ' | ' + active.outCount + ' sent / ' + active.inCount + ' received' + (active.quarantinedCount ? (' | ' + active.quarantinedCount + ' quarantined') : '')));
+  head.append(titleBox, diploStatusPill(active));
+  card.append(head);
+
+  // Direction filter & order controls (Docs log-style pills + search)
+  const ctrl = el('div', 'diplo-thread-controls');
+  for (const [fid, flbl] of [['all', 'All (' + active.messages.length + ')'], ['in', 'Received (' + active.inCount + ')'], ['out', 'Sent (' + active.outCount + ')']]) {
+    const fb = el('button', 'rf' + (diploDirFilter === fid ? ' on' : ''), flbl);
+    fb.type = 'button';
+    fb.addEventListener('click', () => { diploDirFilter = fid; render(); });
+    ctrl.append(fb);
+  }
+  const ordBtn = el('button', 'rf', diploNewestFirst ? 'Order: Newest first' : 'Order: Chronological');
+  ordBtn.type = 'button';
+  ordBtn.addEventListener('click', () => { diploNewestFirst = !diploNewestFirst; render(); });
+  ctrl.append(ordBtn);
+  card.append(ctrl);
+
+  const sRow = el('div', 'rsearch');
+  const inp = el('input');
+  inp.type = 'search';
+  inp.placeholder = 'Filter messages in this thread by keyword, pilot, or stance...';
+  inp.value = diploQuery;
+  const listWrap = el('div', 'diplo-chat-list');
+
+  const drawMessages = () => {
+    listWrap.textContent = '';
+    const q = diploQuery.trim().toLowerCase();
+    let msgs = active.messages.slice();
+    if (diploDirFilter === 'in') msgs = msgs.filter((m) => m._dir === 'IN');
+    else if (diploDirFilter === 'out') msgs = msgs.filter((m) => m._dir === 'OUT');
+    if (q) {
+      msgs = msgs.filter((m) =>
+        String(m.text || '').toLowerCase().includes(q)
+        || String(m.sender || '').toLowerCase().includes(q)
+        || String(m.to || '').toLowerCase().includes(q)
+        || String(m.stance || '').toLowerCase().includes(q)
+      );
+    }
+    if (diploNewestFirst) msgs.reverse();
+    if (!msgs.length) {
+      listWrap.append(el('p', 'empty', active.messages.length ? 'No messages match this filter.' : 'No diplomatic hails logged yet for this faction. Once Unity or Oracle sends Hail 1/3 or receives a reply, the full chat history will appear here.'));
+      return;
+    }
+    for (const m of msgs) {
+      const isOut = m._dir === 'OUT';
+      const isQuar = m.risk === 'quarantined';
+      const msgCard = el('div', 'diplo-chat-msg ' + (isQuar ? 'quarantined' : (isOut ? 'out' : 'in')));
+      const mh = el('div', 'ibhead');
+      mh.append(el('span', isOut ? 'pill warn' : (isQuar ? 'pill bad' : 'pill good'), isOut ? 'SENT' : (isQuar ? 'QUARANTINED' : 'RECEIVED')));
+      const party = isOut
+        ? ((m.sender || 'Envoy') + (m.to ? (' -> ' + (m.tag ? '[' + m.tag + '] ' : '') + m.to) : ''))
+        : ((m.tag ? '[' + m.tag + '] ' : '') + (m.sender || 'Unknown') + (m.pilot ? (' -> ' + m.pilot) : ''));
+      mh.append(el('b', null, party));
+      const meta = isOut ? (m.diplomat || m.channel || '') : ((m.stance && m.stance !== 'none') ? m.stance.replace(/_/g, ' ') : (m.channel || ''));
+      if (meta) mh.append(el('span', 'pill', meta));
+      msgCard.append(mh);
+      msgCard.append(el('div', 'diplo-chat-body', m.text || ''));
+      msgCard.append(el('div', 'rmeta-sub', stampCet(m.t) + (m.system ? (' | ' + m.system) : '')));
+      listWrap.append(msgCard);
+    }
+  };
+
+  inp.addEventListener('input', () => { diploQuery = inp.value; drawMessages(); });
+  const clr = el('button', 'rf', 'Reset');
+  clr.type = 'button';
+  clr.addEventListener('click', () => { diploQuery = ''; inp.value = ''; drawMessages(); });
+  sRow.append(inp, clr);
+  card.append(sRow, listWrap);
+  drawMessages();
+  panel.append(card);
+  return true;
 }
 
 function renderEmpireDiplomacy(panel, dip) {
@@ -5757,17 +5966,7 @@ function renderEmpireDiplomacy(panel, dip) {
   ekpi('Galactic coalitions & wars', fmt(alliances.length) + ' blocs | ' + fmt(wars.length) + ' wars', fmt(rivalries.length) + ' feuds | ' + fmt(battles.length) + ' recent combat logs', wars.length ? 'warn' : '');
   panel.append(kgrid);
 
-  renderOutreachTables(panel, p);
-
-  const sentOut = (c.sent_out || []).map((m) => ({ ...m, _dir: 'OUT' }));
-  const uniqueOut = new Set(sentOut.map((m) => (m.tag || m.to || '').toUpperCase()).filter(Boolean)).size;
-  panel.append(el('h3', null, 'Outgoing diplomatic messages (' + sentOut.length + ' logged across ' + uniqueOut + ' factions)'));
-  renderMessageCards(
-    panel,
-    sentOut,
-    'No outbound diplomatic messages logged yet. As Unity and Oracle hail all ' + (p.targets_total || 0) + ' targets across the top ' + blocCount + ' blocs, every outgoing message appears here automatically.',
-    120
-  );
+  renderOutreachTables(panel, p, c);
 
   if (wire.length) {
     panel.append(el('h3', null, 'Automated Galactic Intel Wire'));
@@ -5782,60 +5981,39 @@ function renderEmpireDiplomacy(panel, dip) {
 
   panel.append(el('h3', null, 'Major galactic alliance blocs & federations (' + alliances.length + ')'));
   if (!alliances.length) {
-    panel.append(el('p', 'empty', 'No multi-faction alliances declared in the public registry.'));
+    panel.append(el('p', 'empty', 'No multi-faction alliances detected yet.'));
   } else {
-    const cards = el('div', 'icards');
-    for (const bloc of alliances.slice(0, 12)) {
-      const pol = polByLead.get('BLOC:' + bloc.lead_tag) || null;
-      const card = el('div', 'icard');
-      if (pol && HEX.test(pol.color || '')) card.style.borderLeft = '3px solid ' + pol.color;
-      const head = el('div', 'ichead');
-      head.append(el('b', null, (bloc.bloc_name || (bloc.lead_name + ' Coalition')) + ' (' + bloc.factions.length + ' factions)'), ' ', actStatePill(bloc.activity_state));
+    const arows = alliances.map((a) => {
+      const mstr = (a.members || []).map((m) => '[' + m.tag + '] ' + m.name + (m.wealth ? ' (' + fmtCompact(m.wealth) + ')' : '')).join(', ');
+      const pol = polByLead.get(a.lead_tag);
+      const cell = el('div', 'twoline');
+      const top = el('div', null);
       if (pol) {
-        const isLocked = lockPolity && lockPolity.id === pol.id;
-        const lBtn = el('button', 'maploc' + (isLocked ? ' on' : ''), isLocked ? 'Locked on map' : 'Focus bloc');
-        lBtn.type = 'button';
-        lBtn.addEventListener('click', () => { focusPolityOnMap(pol, true); render(); });
-        head.append(lBtn);
-      } else if ((bloc.base_systems && bloc.base_systems.length) || (bloc.sight_systems && bloc.sight_systems.length)) {
-        const lBtn = el('button', 'maploc', 'Locate');
-        lBtn.type = 'button';
-        lBtn.addEventListener('click', () => {
-          focusRivalOnMap(bloc.lead_tag + '+', bloc.lead_name + ' Coalition', bloc.base_systems, bloc.sight_systems);
-        });
-        head.append(lBtn);
+        const sw = el('span', 'pol-sw');
+        sw.style.background = pol.stroke;
+        top.append(sw);
       }
-      head.append(el('span', 'pill warn', fmt(bloc.total_members) + 'm | ' + bloc.total_bases + 'b | ' + fmt(bloc.active_1h || 0) + ' live'));
-      card.append(head);
-      const subBits = [
-        'Wealth: ' + fmtCompact(bloc.total_wealth) + ' cr',
-        bloc.est_income_h ? ('Est ' + (bloc.est_income_h > 0 ? '+' : '') + fmtCompact(bloc.est_income_h) + '/h' + (bloc.est_income_src ? ' (' + bloc.est_income_src + ')' : '')) : null,
-        bloc.nearest_jumps != null ? ('Nearest base: ' + bloc.nearest_jumps + 'j') : null,
-        bloc.total_facility_inv > 0 ? ('Facilities: ' + fmtCompact(bloc.total_facility_inv)) : null,
-        bloc.max_tier > 0 ? ('Tech: Max T' + bloc.max_tier + ' / avg ' + (bloc.avg_tier || 0).toFixed(1)) : null,
-      ].filter(Boolean);
-      card.append(el('div', 'icsub', subBits.join('  |  ')));
-      const tagsWrap = el('div', 'bloc-members');
-      for (const m of bloc.factions) {
-        tagsWrap.append(el('span', 'pill', '[' + m.tag + '] ' + m.name + ' (' + fmt(m.members) + 'm' + (m.bases ? ', ' + m.bases + 'b' : '') + (m.active_1h ? ', ' + m.active_1h + ' live' : '') + ')'));
-      }
-      card.append(tagsWrap);
-      cards.append(card);
-    }
-    panel.append(cards);
+      top.append(el('b', null, a.name));
+      cell.append(top);
+      cell.append(el('div', 'rmeta-sub', (a.members || []).length + ' factions | ' + fmt(a.total_members || 0) + ' ships | ' + fmt(a.total_bases || 0) + ' bases'));
+      return [cell, fmtCompact(a.total_wealth || 0), mstr];
+    });
+    panel.append(fitTable(table(['Bloc', 'Combined Wealth', 'Allied Factions'], arows, [1])));
   }
 
-  panel.append(el('h3', null, 'Declared faction wars & hostile markings'));
-  if (!wars.length && !rivalries.length) {
-    panel.append(el('p', 'empty', 'Zero formal faction-vs-faction wars or enemy markings active in the current feed.'));
-  } else {
-    const wrows = [];
-    for (const w of wars) {
-      wrows.push([el('span', 'pill bad', 'ACTIVE WAR'), '[' + w.a_tag + '] ' + w.a_name + ' (' + w.a_members + ')', '[' + w.b_tag + '] ' + w.b_name + ' (' + w.b_members + ')']);
-    }
-    for (const rv of rivalries) {
-      wrows.push([el('span', 'pill warn', 'ENEMY MARK'), '[' + rv.from_tag + '] ' + rv.from_name, '[' + rv.to_tag + '] ' + rv.to_name + ' (' + rv.to_members + ')']);
-    }
+  if (rivalries.length) {
+    panel.append(el('h3', null, 'Known galactic rivalries & border tensions (' + rivalries.length + ')'));
+    panel.append(fitTable(table(['Faction A', 'Faction B', 'Tension / Notes'],
+      rivalries.map((r) => [r.a || '--', r.b || '--', r.note || r.reason || 'Hostile / rival']))));
+  }
+
+  if (wars.length) {
+    panel.append(el('h3', null, 'Active & recent galactic wars (' + wars.length + ')'));
+    const wrows = wars.map((w) => [
+      el('span', 'pill ' + (w.active ? 'bad' : ''), w.active ? 'ACTIVE' : 'ENDED'),
+      w.attacker || w.side_a || '--',
+      w.defender || w.side_b || '--',
+    ]);
     panel.append(fitTable(table(['State', 'Side A', 'Side B'], wrows)));
   }
 
@@ -5861,6 +6039,11 @@ function renderEmpireComms(panel, dip) {
   const queued = (p.counts || {}).uncontacted || 0;
   const blocCount = p.blocs_total || new Set((p.rows || []).map((r) => r.bloc_id || r.bloc || r.tag)).size;
 
+  // If a faction thread is open, render the Docs-style Thread Reader cleanly
+  if (diploThread && renderDiploThreadReader(panel, p, c)) {
+    return;
+  }
+
   const kgrid = el('div', 'kpis');
   const ekpi = (k, v, sub, cls) => { const d = el('div', 'kpi' + (cls ? ' ' + cls : '')); d.append(el('div', 'k', k), el('div', 'v', v)); if (sub) d.append(el('div', 's', sub)); kgrid.append(d); };
   ekpi('Neutrality pacts', agreed + '/' + (p.targets_total || 0), hailed + ' hailed | ' + queued + ' queued across ' + blocCount + ' top blocs (O10)', agreed ? 'main pos' : 'main');
@@ -5869,19 +6052,8 @@ function renderEmpireComms(panel, dip) {
   ekpi('Comms firewall', 'CaMeL + Nonce', 'OpSec outbound scrubber + ' + fmt(s.quarantined || 0) + ' quarantined inbound', (s.quarantined || 0) ? 'warn' : 'pos');
   panel.append(kgrid);
 
-  renderOutreachTables(panel, p);
-
-  panel.append(el('h3', null, 'Direct diplomatic hails -- received from & sent to players (' + ((c.sent_out || []).length + (c.direct_in || []).length) + ')'));
-  const merged = [
-    ...(c.sent_out || []).map((m) => ({ ...m, _dir: 'OUT' })),
-    ...(c.direct_in || []).map((m) => ({ ...m, _dir: 'IN' })),
-  ].sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
-  renderMessageCards(
-    panel,
-    merged,
-    'Zero human private hails received and zero outbound scout hails sent yet (' + fmt(s.total_logged || 0) + ' total radio frames audited by inbox service). Unity and Oracle scout hails and replies will appear here automatically.',
-    120
-  );
+  // Integrated clickable Outreach Roster + Direct Contacts (replaces bloated Direct Diplomatic Hails wall!)
+  renderOutreachTables(panel, p, c);
 
   panel.append(el('h3', null, 'Intercepted nearby pilot radio (' + (c.local_radio || []).length + ' newest)'));
   if (!(c.local_radio || []).length) {

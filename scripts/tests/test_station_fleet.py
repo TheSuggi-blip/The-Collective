@@ -688,5 +688,22 @@ class FleetCollectorTests(unittest.TestCase):
         self.assertEqual(r_fill["divisions"]["Trade"]["costs_per_hour"], 20000)
         self.assertEqual(r_fill["treasury_moved_per_hour"], 0)
 
+    def test_meter_books_zero_fuel_cost_on_free_bunker_refuel(self):
+        meters = {"fuel_units": 0, "fuel_cr": 0, "hull_points": 0, "repair_cr": 0, "burned": 0, "clean": [100, 1000, 0, 0], "div": {}}
+        # Hauler refuels +80 fuel at our own Faction Fuel Bunker while cargo changes (same_hold=False),
+        # with credits_spent unchanged (spent_delta=0): MUST book 0 fuel_cr (never impute 80 * 10 = 800)!
+        prev = (20, 100, 50000, 50, "Leverage", 12000)
+        row = {"name": "hauler-1", "division": "Logistics", "docked": "outpost-felis", "fuel": 100, "hull": 100,
+               "credits": 50000, "cargo_used": 0, "class": "Leverage", "spent": 12000}
+        self.fleet.meter(row, prev, meters)
+        self.assertEqual(meters["fuel_units"], 80)
+        self.assertEqual(meters["fuel_cr"], 0)
+        # Paid refuel in mixed pass (same_hold=False, spent_delta=300): capped cleanly at spent_delta=300!
+        row2 = {"name": "hauler-1", "division": "Logistics", "docked": "public-hub", "fuel": 100, "hull": 100,
+                "credits": 55000, "cargo_used": 0, "class": "Leverage", "spent": 12300}
+        self.fleet.meter(row2, prev, meters)
+        self.assertEqual(meters["fuel_cr"], 300)
+
+
 if __name__ == "__main__":
     unittest.main()

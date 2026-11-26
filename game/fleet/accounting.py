@@ -32,6 +32,7 @@ Usage:
 """
 
 import argparse
+import calendar
 import json
 import os
 import sqlite3
@@ -520,11 +521,55 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
         if fl_ships:
             wallets = int(round(sum(_num(s.get("credits")) for s in fl_ships)))
 
+    treasury_read_ts = 0.0
+    treasury_in_transit = 0
+    if isinstance(fleet_json, dict):
+        _fw1 = (((fleet_json.get("totals") or {}).get("rates") or {}).get("windows") or {}).get("1h") or {}
+        _ftr = _fw1.get("treasury") if isinstance(_fw1, dict) else None
+        if isinstance(_ftr, dict) and _ftr.get("end") is not None and _num(_ftr.get("read_to")) > treasury_read_ts:
+            treasury = int(round(_num(_ftr.get("end"))))
+            treasury_read_ts = _num(_ftr.get("read_to"))
+    if data_dir:
+        _emp_p = Path(data_dir) / "empire" / "empire.json"
+        if _emp_p.is_file():
+            try:
+                _emp = json.loads(_emp_p.read_text(encoding="utf-8", errors="replace"))
+                _ef = _emp.get("faction") if isinstance(_emp, dict) else None
+                _wat = str(_emp.get("written_at") or "")[:19]
+                if isinstance(_ef, dict) and _ef.get("treasury") is not None and len(_wat) == 19:
+                    _ets = float(calendar.timegm(time.strptime(_wat, "%Y-%m-%dT%H:%M:%S")))
+                    if _ets >= treasury_read_ts:
+                        treasury = int(round(_num(_ef.get("treasury"))))
+                        treasury_read_ts = _ets
+            except (OSError, ValueError, TypeError):
+                pass
+    # Add in-transit treasury deposits/withdrawals booked in onetime.json AFTER treasury_read_ts
+    # so Combined Liquid Cash never falsely dips ~300k for 15-20m between wallet sweeps and empire.json polls.
+    if data_dir and treasury_read_ts > 0.0:
+        _ot_p = Path(data_dir) / "fleet" / "onetime.json"
+        if _ot_p.is_file():
+            try:
+                _ot_rows = json.loads(_ot_p.read_text(encoding="utf-8", errors="replace"))
+                if isinstance(_ot_rows, list):
+                    _delta_tr = 0.0
+                    for _row in _ot_rows:
+                        if not (isinstance(_row, list) and len(_row) >= 4 and isinstance(_row[0], (int, float))):
+                            continue
+                        if float(_row[0]) <= treasury_read_ts:
+                            continue
+                        _ttl = str(_row[2] or "")
+                        if _ttl.startswith("Faction treasury: credits deposited") or _ttl.startswith("Treasury fund: credits withdrawn"):
+                            _delta_tr += -_num(_row[3])
+                    treasury_in_transit = int(round(_delta_tr))
+                    treasury = max(0, treasury + treasury_in_transit)
+            except (OSError, ValueError):
+                pass
+
     if conn is not None:
         if not wallets and _has_table(conn, "ships"):
             r = conn.execute("SELECT COALESCE(SUM(credits), 0) FROM ships").fetchone()
             wallets = int(round(_num(r[0]))) if r else 0
-        if _has_table(conn, "faction"):
+        if treasury_read_ts <= 0.0 and _has_table(conn, "faction"):
             r = conn.execute("SELECT COALESCE(treasury, 0) FROM faction LIMIT 1").fetchone()
             treasury = int(round(_num(r[0]))) if r else 0
 
@@ -617,6 +662,7 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
         "liquid_cash": liquid_cash,
         "wallets": wallets,
         "treasury": treasury,
+        "treasury_in_transit": treasury_in_transit,
         "vault_worth": vault_eff,
         "vault_nrv": vault_eff,
         "vault_ias2_static": vault_nrv,
@@ -735,6 +781,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     div_raw_once = {}
     div_purse = {}
     div_fuel_h = {}
+    div_income_h = {}
     repair_cr_h = 0.0
     win_minutes = 0.0
     cash_source = "fleet.json"
@@ -804,6 +851,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                 div_raw_cash[d] = cph_d
                 div_raw_once[d] = once_d
                 div_purse[d] = _num(dv.get("total_per_hour"), cph_d + once_d)
+                div_income_h[d] = _num(dv.get("income_per_hour"))
     elif conn is not None and _has_table(conn, "stats_money_hour"):
         if cash_source == "fleet.json":
             cash_source = "stats_money_hour"
@@ -836,9 +884,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                 purse_h = raw_steady_h + (rewards_h - bought_once_h) + treasury_own_h
         for d in DIVISIONS:
             q_d = (
-                "SELECT minutes, net, once, total, fuel FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
+                "SELECT minutes, net, once, total, fuel, income FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
                 if has_fuel_col else
-                "SELECT minutes, net, once, total, 0 FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
+                "SELECT minutes, net, once, total, 0, income FROM stats_money_hour WHERE division = ? AND ships > 0 AND hour >= ?"
             )
             dm = conn.execute(q_d, (d, cut_m)).fetchall()
             dm_m = sum(_num(r[0]) for r in dm)
@@ -847,6 +895,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                 div_raw_once[d] = sum(_num(r[2]) * _num(r[0]) for r in dm) / dm_m
                 div_purse[d] = sum(_num(r[3]) * _num(r[0]) for r in dm) / dm_m
                 div_fuel_h[d] = sum(_num(r[4]) * _num(r[0]) for r in dm) / dm_m
+                div_income_h[d] = sum(_num(r[5]) * _num(r[0]) for r in dm) / dm_m
         # Reconcile fleet sum if Command had 0-ship regroup hours skipped
         if div_raw_cash and abs(sum(div_raw_cash.values()) - raw_steady_h) > 5000.0:
             raw_steady_h = sum(div_raw_cash.values())
@@ -1010,13 +1059,42 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         except OSError:
             pass
 
+    # 4b. Reclassify negative mission-material purchases in onetime.json out of CapEx into Seed Mission Costs
+    # (e.g. `mission-diplomatic-pouch-sol: gold_ore bought` is Seed OpEx, NOT hull/module CapEx).
+    mission_buy_once_cr = 0.0
+    ot_file = data_p / "fleet" / "onetime.json"
+    if bought_once_h > 0.0 and ot_file.is_file():
+        try:
+            ot_all = json.loads(ot_file.read_text(encoding="utf-8", errors="replace"))
+            if isinstance(ot_all, list):
+                cut_ot = now - span_h * 3600.0
+                for row in ot_all:
+                    if not (isinstance(row, list) and len(row) >= 4 and isinstance(row[0], (int, float))):
+                        continue
+                    rts = float(row[0])
+                    if not (cut_ot <= rts <= now + 60.0):
+                        continue
+                    amt = _num(row[3])
+                    if amt >= 0.0:
+                        continue
+                    ttl = str(row[2] or "")
+                    if ttl.startswith(("Faction treasury:", "Treasury fund:", "Wallet top-up", "Exchange buy escrow")):
+                        continue
+                    pref = ttl.split(":", 1)[0].strip()
+                    if pref in mission_once or pref.startswith("mission-"):
+                        mission_buy_once_cr += -amt
+        except (OSError, ValueError):
+            pass
+    mission_buy_once_h = min(bought_once_h, mission_buy_once_cr / span_h) if span_h > 0 else 0.0
+    capex_bought_h = max(0.0, bought_once_h - mission_buy_once_h)
+
     # 5. Reconciled Fleet 3-Statement Figures (all per hour)
     inv_accrual_h = (sum(inv_nrv_div.values()) / inv_span_h) if has_inv_accrual else 0.0
     inv_accrual_cat_h = (sum(inv_cat_div.values()) / inv_span_h) if has_inv_accrual else 0.0
     recurring_cash_h = raw_steady_h - once_direct_h
     accrual_operating_h = recurring_cash_h + inv_accrual_h
-    seed_net_h = rewards_h + once_mission_direct_h
-    capex_net_h = -bought_once_h + capex_fit_direct_h
+    seed_net_h = rewards_h + once_mission_direct_h - mission_buy_once_h
+    capex_net_h = -capex_bought_h + capex_fit_direct_h
     if purse_h is None:
         purse_h = raw_steady_h + rewards_h - bought_once_h + (treasury_own_h or 0.0)
 
@@ -1092,16 +1170,37 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     craft_raw_h = max(0.0, -_num((support_out.get("crafting") or {}).get("credits_per_hour")))
     # GAAP/IFRS sign invariant: fleet.py defines costs_per_hour = earned - wallets - bought_once,
     # which subtracts positive unexplained_per_hour (passive Exchange limit sell-order fills & cancelled
-    # buy-escrow refunds). Never let unmetered wallet inflows turn COGS into a positive expense credit!
-    # Reclassify them cleanly as passive_inflows_h so gross_direct_h & other_cogs_h stay strictly >= 0
-    # while (raw_income_h + passive_inflows_h) - matched_direct_h == recurring_cash_h (exact zero-plug!).
-    passive_inflows_h = max(raw_unexplained_h, max(0.0, (fuel_opex_h + repair_opex_h) - raw_costs_h))
+    # buy-escrow refunds). True paid fuel cash OpEx can NEVER exceed total gross cash outlays
+    # (raw_costs_h + raw_unexplained_h - repair_opex_h): capping historical over-metered free bunker
+    # refills prevents phantom passive_inflows_h plugs while preserving exact zero-plug reconciliation:
+    # (raw_income_h + passive_inflows_h) - matched_direct_h == recurring_cash_h.
+    passive_inflows_h = max(0.0, raw_unexplained_h)
     gross_direct_h = raw_costs_h + passive_inflows_h
+    if repair_opex_h > gross_direct_h:
+        passive_inflows_h += (repair_opex_h - gross_direct_h)
+        gross_direct_h = raw_costs_h + passive_inflows_h
+    fuel_opex_h = min(fuel_opex_h, max(0.0, gross_direct_h - repair_opex_h))
     rem_after_fr = max(0.0, gross_direct_h - fuel_opex_h - repair_opex_h)
     craft_opex_h = min(craft_raw_h, rem_after_fr)
     other_cogs_h = max(0.0, gross_direct_h - fuel_opex_h - repair_opex_h - craft_opex_h)
     reclass_once_h = -once_direct_h
     matched_direct_h = gross_direct_h + once_direct_h
+
+    # Clean IFRS 15 Revenue Breakdown separating Trade Market Sales, Logistics Freight/Deliveries,
+    # Other Direct Sales, and Passive Exchange Order Fills & Escrow Unwind (sums exactly to realized revenue!)
+    trade_sales_h = max(0.0, div_income_h.get("Trade", 0.0))
+    freight_sales_h = max(0.0, div_income_h.get("Logistics", 0.0))
+    if trade_sales_h + freight_sales_h > raw_income_h and (trade_sales_h + freight_sales_h) > 0:
+        _sc = raw_income_h / (trade_sales_h + freight_sales_h)
+        trade_sales_h *= _sc
+        freight_sales_h *= _sc
+    other_sales_h = raw_income_h - trade_sales_h - freight_sales_h
+    revenue_breakdown = {
+        "trade_sales_h": int(round(trade_sales_h)),
+        "freight_sales_h": int(round(freight_sales_h)),
+        "other_sales_h": int(round(raw_income_h)) - int(round(trade_sales_h)) - int(round(freight_sales_h)),
+        "passive_escrow_h": int(round(passive_inflows_h)),
+    }
     opex_breakdown = {
         "fuel_h": int(round(fuel_opex_h)),
         "repair_h": int(round(repair_opex_h)),
@@ -1133,11 +1232,13 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "accrual_operating_h": int(round(accrual_operating_h)),
         "seed_rewards_h": int(round(rewards_h)),
         "seed_net_h": int(round(seed_net_h)),
-        "capex_gross_h": int(round(-bought_once_h)),
+        "capex_gross_h": int(round(-capex_bought_h)),
         "capex_net_h": int(round(capex_net_h)),
+        "mission_buy_once_h": int(round(-mission_buy_once_h)),
         "treasury_own_h": int(round(treasury_own_h)) if treasury_own_h is not None else None,
         "purse_h": int(round(purse_h)),
         "repair_cr_h": int(round(repair_opex_h)),
+        "revenue_breakdown": revenue_breakdown,
         "opex_breakdown": opex_breakdown,
         "by_division": by_division,
         "top_inv_builds": top_builds,

@@ -961,3 +961,26 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .fs-table tr.fs-tot td { font-weight: 700; border-top: 1px solid rgba(164, 139, 224, 0.65); border-bottom: 3px double rgba(164, 139, 224, 0.65); background: rgba(164, 139, 224, 0.11); }
 .fs-table tr.fs-memo td { color: var(--dim); font-style: italic; }
 .fs-table tr.fs-memo td:first-child { padding-left: 18px; }
+
+/* Admiral / Division colored bracket tags for Financial Statements (brackets only in color, label stays white) */
+.div-tag { font-weight: 600; white-space: nowrap; }
+.div-tag.trade { color: #5fbfad; }
+.div-tag.logistics { color: #6fa8dc; }
+.div-tag.military { color: #d9766f; }
+.div-tag.mining { color: #d9a857; }
+.div-tag.intel { color: #b18ae0; }
+.div-tag.command { color: #e3e6ee; }
+
+/* Integrated Clickable Diplomacy Outreach Roster & Docs-style Faction Chat Thread Reader */
+.diplo-roster-table tbody tr.diplo-clickable { cursor: pointer; transition: background 120ms ease; }
+.diplo-roster-table tbody tr.diplo-clickable:hover { background: rgba(164, 139, 224, 0.10); }
+.diplo-open-cue { font: 600 10.5px/1.2 var(--mono); color: var(--accent); margin-left: 6px; white-space: nowrap; }
+.diplo-msg-counts { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 2px; }
+.diplo-thread-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.diplo-thread-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 10px; }
+.diplo-chat-list { display: flex; flex-direction: column; gap: 8px; }
+.diplo-chat-msg { background: rgba(10, 13, 20, 0.72); border: 1px solid var(--line); border-left: 3px solid var(--line2); border-radius: var(--r); padding: 9px 12px; display: flex; flex-direction: column; gap: 5px; }
+.diplo-chat-msg.out { border-left-color: #d9a857; background: rgba(217, 168, 87, 0.05); }
+.diplo-chat-msg.in { border-left-color: #5fbfad; background: rgba(95, 191, 173, 0.06); }
+.diplo-chat-msg.quarantined { border-left-color: var(--bad); background: rgba(235, 95, 95, 0.08); }
+.diplo-chat-body { font-size: 12.2px; color: var(--text); line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
