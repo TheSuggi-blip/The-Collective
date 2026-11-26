@@ -877,7 +877,8 @@ def pick_relocation_hub(pilot_info, world, policy, claims, cooldowns, static_cou
     stations_by_sys = world.get("stations_by_sys") or {}
     pref_bases = (world.get("lockbox_bases") or set()) | (world.get("owned_outpost_bases") or set())
     dists = bfs_distances(adj, p_sys, max_hops=reloc_max_j)
-    best = None
+    p_name = str(pilot_info.get("name") or "")
+    ranked = []
     for h_sys, st_list in stations_by_sys.items():
         if h_sys == p_sys or h_sys not in dists:
             continue
@@ -897,14 +898,18 @@ def pick_relocation_hub(pilot_info, world, policy, claims, cooldowns, static_cou
             continue
         top5 = h_cands[:5]
         hub_score = sum(max(1.0, float(c["score"])) for c in top5) / (1.0 + 0.25 * float(h_hops))
-        rec = {
+        ranked.append({
             "system": st_tup[0], "poi": st_tup[1], "base": st_tup[2],
             "hops": h_hops, "belts": len(h_cands),
             "top_resource": top5[0]["resource"], "score": round(hub_score, 2),
-        }
-        if best is None or rec["score"] > best["score"]:
-            best = rec
-    return best
+        })
+    if not ranked:
+        return None
+    ranked.sort(key=lambda r: (-r["score"], r["hops"], r["system"]))
+    top_sc = ranked[0]["score"]
+    spread = [r for r in ranked[:3] if r["score"] >= top_sc * 0.50]
+    idx = (sum(ord(ch) for ch in p_name) % len(spread)) if (len(spread) > 1 and p_name) else 0
+    return spread[idx]
 
 
 def assign_optimal_mines(pilots_info, world, policy, claims, cooldowns, now_t=None):

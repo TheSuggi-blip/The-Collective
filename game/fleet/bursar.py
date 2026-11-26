@@ -704,6 +704,45 @@ def sync_fleet_sells(data, pilot, base_id, own_orders, ttl_s=21600, now_t=None):
     return my_items
 
 
+def reserve_fleet_buy(data, pilot, base_id, iid, want_qty, max_fleet_need, ttl_s=21600, now_t=None):
+    """Atomically reserve fleet-wide buy quota under bursar_buys.lock to prevent 60-trader buy_create/buy_cancel churn."""
+    want_qty = int(want_qty or 0)
+    max_fleet_need = int(max_fleet_need or 0)
+    if want_qty <= 0 or max_fleet_need <= 0 or not iid:
+        return 0
+    now_t = time.time() if now_t is None else float(now_t)
+    fdir = Path(data) / "fleet"
+    fdir.mkdir(parents=True, exist_ok=True)
+    lock_path = fdir / "bursar_buys.lock"
+    ledger_path = fdir / "bursar_buys.json"
+    with open(lock_path, "a+", encoding="utf-8") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        try:
+            doc = read_json(ledger_path, {})
+            pilots = doc.get("pilots") if isinstance(doc, dict) and isinstance(doc.get("pilots"), dict) else {}
+            live = {k: v for k, v in pilots.items() if isinstance(v, dict) and (now_t - float(v.get("at") or 0)) <= ttl_s}
+            others_q = 0
+            for op, rec in live.items():
+                if op == str(pilot):
+                    continue
+                others_q += int((rec.get("items") or {}).get(str(iid)) or 0)
+            my_rec = live.get(str(pilot)) or {"base": str(base_id), "at": int(now_t), "items": {}, "orders": {}}
+            my_items = dict(my_rec.get("items") or {})
+            my_cur = int(my_items.get(str(iid)) or 0)
+            rem_room = max(0, max_fleet_need - others_q - my_cur)
+            grant = min(want_qty, rem_room)
+            if grant > 0:
+                my_items[str(iid)] = my_cur + grant
+                my_rec["base"] = str(base_id)
+                my_rec["at"] = int(now_t)
+                my_rec["items"] = my_items
+                live[str(pilot)] = my_rec
+                write_json(ledger_path, {"updated_at": int(now_t), "pilots": live})
+            return grant
+        finally:
+            fcntl.flock(lf, fcntl.LOCK_UN)
+
+
 def _is_excess_buy(listed_here, tot_need, other_q, max_units):
     """True when open buy units at one station exceed this pilot's fleet-wide share."""
     listed_here = int(listed_here or 0)
@@ -963,7 +1002,7 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             price = min(target, ceiling)
             if ask > 1 and price >= int(ask):
                 price = int(ask) - 1
-            if price < 1:
+            if price < 1 or (price < 5 and ask <= 0):
                 continue
             listed = sum(int(o.get("remaining") or 0) for o in mine)
             for o in mine:
@@ -1295,11 +1334,17 @@ def main(argv=None):
                         acted += 1
                     elif kind_a == "buy_create":
                         _, iid, qty, np = act
-                        d = raw("create_buy_order", {"item_id": iid, "quantity": qty, "price_each": np}, group="spacemolt_market")
+                        _need_cap = int((open_needs or {}).get(iid) or 0)
+                        if _need_cap <= 0 and iid in ((eff_pol.get("buy") or {}).get("extra_items") or []):
+                            _need_cap = int((eff_pol.get("buy") or {}).get("max_units_per_order") or 200)
+                        _grant = reserve_fleet_buy(DATA, pilot, base_id, iid, qty, max(_need_cap, int(qty))) if _need_cap > 0 else int(qty)
+                        if _grant <= 0:
+                            continue
+                        d = raw("create_buy_order", {"item_id": iid, "quantity": _grant, "price_each": np}, group="spacemolt_market")
                         time.sleep(TICK)
-                        if "error" not in d and int(qty) > 0 and int(np) > 0:
-                            _book_escrow(DATA, pilot, "locked", -int(qty) * int(np))
-                        say("buy_create %d %s @ %d cr%s" % (qty, iid, np, " ERR" if "error" in d else ""))
+                        if "error" not in d and int(_grant) > 0 and int(np) > 0:
+                            _book_escrow(DATA, pilot, "locked", -int(_grant) * int(np))
+                        say("buy_create %d %s @ %d cr%s" % (_grant, iid, np, " ERR" if "error" in d else ""))
                         acted += 1
                 if any(a[0] in ("buy_create", "buy_cancel", "buy_modify", "sell_create", "sell_modify", "sell_bid") for a in acts):
                     try:

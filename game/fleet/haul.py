@@ -1215,17 +1215,19 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
     if not bursar_hubs:
         return None
 
-    val_by_item = {}
+    # Require a LIVE LOCAL REAL BID at the EXACT destination Bursar hub (never bury liquid goods in a 0-bid trader locker!)
+    local_bids = {}
     for r in books_rows or []:
+        b_s = str(r.get("base") or "")
         iid = str(r.get("item") or "")
-        if not iid:
+        if not b_s or not iid:
             continue
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
-        # Strictly value consolidation by REAL cash bids (bid>=5, bid_qty>=5) so Haulers never shuffle unbid junk!
-        v = bp if (bp >= 5.0 and bq >= 5) else 0.0
-        if v > val_by_item.get(iid, 0):
-            val_by_item[iid] = v
+        if bp >= 5.0 and bq >= 5:
+            prev = local_bids.get((b_s, iid))
+            if prev is None or bp > prev[0]:
+                local_bids[(b_s, iid)] = (bp, bq)
 
     stor = read_json(Path(data) / "stock" / "storage.json", {})
     owned_hubs = load_cltv_owned_hubs(data)
@@ -1250,47 +1252,49 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
         p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
         if p_hops is None or p_hops > max_pick:
             continue
-        nearest_dst = None
+        reach_dsts = []
         for db, dloc, bp in bursar_hubs:
             if db == b_id:
                 continue
             dh = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
             if dh is not None and dh <= max_del:
-                if nearest_dst is None or dh < nearest_dst[0]:
-                    nearest_dst = (dh, db, dloc, bp)
-        if not nearest_dst:
+                reach_dsts.append((dh, db, dloc, bp))
+        if not reach_dsts:
             continue
-        d_hops, db, dloc, b_pilot = nearest_dst
         for iid, qty in items.items():
             q = int(qty or 0)
             if b_id in owned_hubs:
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
             if q < min_u or iid in reserved:
                 continue
-            uval = float(val_by_item.get(iid) or 0.0)
-            if uval < 5.0:
-                continue
-            take_q = min(q, int(hold_cap))
-            est_val = take_q * uval
-            if est_val < min_val:
-                continue
-            max_slots = min(6, max(1, q // max(1, int(hold_cap))))
-            jkey = None
-            for si in range(max_slots):
-                ck = ("cons:%s:%s:%s:%s" % (src_t, b_id, db, iid)) if si == 0 else ("cons:%s:%s:%s:%s#%d" % (src_t, b_id, db, iid, si))
-                if ck not in claimed_keys:
-                    jkey = ck
-                    break
-            if not jkey:
-                continue
-            tot_h = max(1, p_hops + d_hops)
-            sc = est_val / float(tot_h)
-            if best is None or sc > best[0]:
-                best = (sc, {
-                    "job_key": jkey, "item": iid, "qty": take_q, "source_target": src_t,
-                    "origin": oloc, "dest": dloc, "bursar_pilot": b_pilot,
-                    "est_val": int(round(est_val)), "pickup_hops": p_hops, "delivery_hops": d_hops,
-                })
+            for d_hops, db, dloc, b_pilot in reach_dsts:
+                lb = local_bids.get((db, iid))
+                if not lb:
+                    continue
+                uval, lb_q = lb
+                take_q = min(q, int(hold_cap), int(lb_q))
+                if take_q < 1:
+                    continue
+                est_val = take_q * uval
+                if est_val < min_val:
+                    continue
+                max_slots = min(6, max(1, min(q, int(lb_q)) // max(1, int(hold_cap))))
+                jkey = None
+                for si in range(max_slots):
+                    ck = ("cons:%s:%s:%s:%s" % (src_t, b_id, db, iid)) if si == 0 else ("cons:%s:%s:%s:%s#%d" % (src_t, b_id, db, iid, si))
+                    if ck not in claimed_keys:
+                        jkey = ck
+                        break
+                if not jkey:
+                    continue
+                tot_h = max(1, p_hops + d_hops)
+                sc = est_val / float(tot_h)
+                if best is None or sc > best[0]:
+                    best = (sc, {
+                        "job_key": jkey, "item": iid, "qty": take_q, "source_target": src_t,
+                        "origin": oloc, "dest": dloc, "bursar_pilot": b_pilot,
+                        "est_val": int(round(est_val)), "pickup_hops": p_hops, "delivery_hops": d_hops,
+                    })
     return best[1] if best else None
 
 def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys):

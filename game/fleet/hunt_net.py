@@ -1071,6 +1071,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         loot_est = float(species_loot.get(sp) or 0.0) * kills_avail
         fuel_est = 90.0 * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
         score = ((loot_est * fit_mult) - fuel_est) / (1.0 + 0.7 * hops + 0.8 * st_hops)
+        if score <= 0.0:
+            continue
         out.append({
             "key": place_key, "system": sys_id, "poi": poi_id, "species": sp,
             "count": h["count"], "kills": kills_avail, "prey_hull": int(prey_hull),
@@ -2213,11 +2215,12 @@ def main(argv=None):
             _ptags = [str(t).strip().upper() for t in (policy.get("partner_factions") or []) if str(t).strip()]
             if _ptags:
                 cmd += ["--ignore-tags", ",".join(_ptags)]
-        if policy.get("gift_to"):
-            cmd += ["--gift-to", str(policy["gift_to"])]
         _h_dest_base = chosen["sell_at"].split(":")[2] if len(chosen.get("sell_at", "").split(":")) >= 3 else ""
         if _h_dest_base in (world.get("lockbox_bases") or set()):
+            # Deposit directly into shared Faction Lockbox (NEVER trap mega-loot in one docked Trader's private locker!)
             cmd += ["--deposit", "faction"]
+        elif policy.get("gift_to"):
+            cmd += ["--gift-to", str(policy["gift_to"])]
 
         import runhost as _rh
         stranger_cd = False

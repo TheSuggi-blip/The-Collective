@@ -2,7 +2,7 @@
   "policed_only": true,
   "exclude_strongholds": true,
   "max_jumps_pickup": 16,
-  "max_jumps_delivery": 22,
+  "max_jumps_delivery": 32,
   "min_cr_per_jump": 180,
   "min_total_profit": 1500,
   "max_collateral": 25000,
@@ -16,9 +16,9 @@
     "hub_upkeep",
     "internal_supply",
     "liquidate_surplus",
-    "consolidate_to_trader",
     "public_freight",
     "arbitrage",
+    "consolidate_to_trader",
     "backhaul_mission"
   ],
   "home_bases": [
@@ -74,7 +74,7 @@
   },
   "consolidate_min_units": 10,
   "consolidate_min_value_cr": 800,
-  "liquidate_max_slots": 24,
+  "liquidate_max_slots": 40,
   "rest_seconds_when_empty": 90,
   "idle_poll_interval_s": 30
 }

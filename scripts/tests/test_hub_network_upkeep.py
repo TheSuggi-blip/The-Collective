@@ -503,7 +503,7 @@ class MultiHubUpkeepTests(unittest.TestCase):
             self.assertEqual(mine_net.score_belt_candidates(ship_far, world, pol, {}, {}), [])
             reloc = mine_net.pick_relocation_hub(ship_far, world, pol, {}, {})
             self.assertIsNotNone(reloc)
-            self.assertEqual(reloc["system"], "felis")
+            self.assertIn(reloc["system"], ("felis", "oakridge"))
 
     def test_hunt_net_keep_herd_1_verified_drops_and_adaptive_relocation(self):
         with tempfile.TemporaryDirectory() as td:
@@ -534,6 +534,44 @@ class MultiHubUpkeepTests(unittest.TestCase):
             reloc = hunt_net.pick_relocation_hub(ship_far, spow, world, pol, {}, {})
             self.assertIsNotNone(reloc)
             self.assertEqual(reloc["system"], "felis")
+
+
+
+    def test_stage1_haul_consolidate_local_bid_and_bursar_atomic_reserve(self):
+        import bursar
+        with tempfile.TemporaryDirectory() as td:
+            data = Path(td) / "data"
+            (data / "stock").mkdir(parents=True)
+            (data / "empire").mkdir(parents=True)
+            (data / "fleet").mkdir(parents=True)
+            now_t = time.time()
+            (data / "empire" / "empire.json").write_text(json.dumps({"members": [{"name": "hauler-1", "role": "officer"}]}), encoding="ascii")
+            (data / "fleet" / "bursar_claims.json").write_text(json.dumps({
+                "dead_hub": {"pilot": "trader-1", "claimed_at": now_t},
+                "buyer_hub": {"pilot": "trader-2", "claimed_at": now_t},
+            }), encoding="ascii")
+            (data / "stock" / "storage.json").write_text(json.dumps({
+                "pilots": {}, "faction": {"outpost_1": {"plasma_gas": 400}},
+            }), encoding="ascii")
+            base_map = {
+                "outpost_1": ("s_out", "p_out", "outpost_1", False),
+                "dead_hub": ("s_dead", "p_dead", "dead_hub", True),
+                "buyer_hub": ("s_buy", "p_buy", "buyer_hub", True),
+            }
+            lanes = {"s_out": ["s_dead", "s_buy"], "s_dead": ["s_out"], "s_buy": ["s_out"]}
+            # plasma_gas only has a buyer at buyer_hub (NOT dead_hub!) -> MUST never consolidate to dead_hub!
+            books = [{"base": "buyer_hub", "item": "plasma_gas", "bid": 25.0, "bid_qty": 500, "t": now_t}]
+            pol = {"max_jumps_pickup": 10, "max_jumps_delivery": 10, "consolidate_min_units": 10, "consolidate_min_value_cr": 500}
+            job = haul._pick_consolidate_to_trader(str(data), "hauler-1", books, base_map, lanes, "s_out", 200, pol, set(), now_t=now_t)
+            self.assertIsNotNone(job)
+            self.assertEqual(job["dest"][2], "buyer_hub")
+            # Atomic reserve_fleet_buy stops 60-trader oversubscription!
+            g1 = bursar.reserve_fleet_buy(str(data), "trader-1", "dead_hub", "silica_lens", 36, 54, now_t=now_t)
+            g2 = bursar.reserve_fleet_buy(str(data), "trader-2", "buyer_hub", "silica_lens", 36, 54, now_t=now_t)
+            g3 = bursar.reserve_fleet_buy(str(data), "trader-3", "other_hub", "silica_lens", 36, 54, now_t=now_t)
+            self.assertEqual(g1, 36)
+            self.assertEqual(g2, 18)
+            self.assertEqual(g3, 0)
 
 
 if __name__ == "__main__":
