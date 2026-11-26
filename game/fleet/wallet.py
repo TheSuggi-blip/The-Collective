@@ -151,7 +151,7 @@ MAX_AUTO_OFFICERS = 180         # global cap on total auto-promoted Officers + l
 TREASURY_TOPUP = True          # on since 2026-11-23 after its dry run on live data (Unity's turn of 02:30 CET)
 TREASURY_UNDER = LOW           # a stranded pilot under rule F7's line is topped up ... (5,000 until 2026-11-23 08:50 CET: the
 TREASURY_LINE = 11000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
-TREASURY_DAY = 400000          # at most this much from the treasury for top-ups in 24 hours
+TREASURY_DAY = 1500000         # at most this much from the treasury for top-ups in 24 hours (500-ship fleet w/ 50 active scouts)
 TREASURY_EVERY = 3600          # a pilot is topped up from the treasury at most once per hour (prevents 5 cr scout stalls!)
 TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
 TOPUP_WHY = "top-up from the treasury: no donor in the division (rule F7)"
@@ -999,7 +999,8 @@ def serve_funds(data, leader, now, dry):
         ok, text = withdraw(actor, total)
         time.sleep(FUND_READ)
         after = treasury_read(actor)
-        if not (after is not None and before - after >= total * 0.9):
+        _api_ok = bool(ok is True and '"result"' in str(text) and '"error"' not in str(text).lower())
+        if not (after is not None and (before - after >= total * 0.9 or _api_ok)):
             for r in take:
                 r.update(state="open" if ok is False else "unsure", note="withdraw: %s; the treasury %s -> %s" % (text, before, after))
             write_funds(data, rows)
@@ -1060,7 +1061,7 @@ def treasury_topups(data, stranded, now, dry):
     busy = {
         r["pilot"] for r in tops
         if r.get("state") in ("open", "withdrawn")
-        or (r.get("state") == "unsure" and (now - float(r.get("at") or 0)) < 1800)
+        or (r.get("state") == "unsure" and (now - float(r.get("at") or 0)) < 600)
     }
     late = {r["pilot"] for r in tops if r.get("state") == "given" and now - (r.get("given_at") or 0) < TREASURY_EVERY}
     if not TREASURY_TOPUP:
@@ -1127,7 +1128,8 @@ def serve_topups(data, leader, now, dry):
             ok, text = withdraw(actor, total)
             time.sleep(FUND_READ)
             after = treasury_read(actor)
-            if not (after is not None and before - after >= total * 0.9):
+            _api_ok = bool(ok is True and '"result"' in str(text) and '"error"' not in str(text).lower())
+            if not (after is not None and (before - after >= total * 0.9 or _api_ok)):
                 for r in take:
                     r.update(state="open" if ok is False else "unsure", note="withdraw: %s; the treasury %s -> %s" % (text, before, after))
                 write_funds(data, rows)

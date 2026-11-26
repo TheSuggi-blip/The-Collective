@@ -397,7 +397,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 local_q = min(deficit, int(cur_inv.get("fuel_cell") or 0), int(hold_cap))
                 p_hops_loc = _bfs_hops(lanes, cur_sys, dloc[0]) if cur_sys and lanes else 0
                 if p_hops_loc is not None and p_hops_loc <= eff_max_pick and local_q >= 10:
-                    sc_loc = urgency * 240.0 + local_q * 2.0 - p_hops_loc * 1.5
+                    sc_loc = (urgency * 240.0 + local_q * 2.0) / max(1.0, 1.0 + 0.5 * float(p_hops_loc))
                     cand_loc = (sc_loc, {
                         "job_key": jkey, "mode": "internal", "source_target": "faction",
                         "item": iid, "qty": local_q, "origin": dloc, "dest": dloc,
@@ -488,6 +488,11 @@ def _load_stronghold_bases_uncached(data):
             ).fetchall():
                 out.add(str(base_id))
                 out.add(str(sys_id))
+        if "public_battles" in tbls:
+            pb_cut = time.time() - 7200.0
+            for (pb_sys,) in con.execute("SELECT DISTINCT system FROM public_battles WHERE category = 'pirate' AND t >= ?", (pb_cut,)).fetchall():
+                if pb_sys:
+                    out.add(str(pb_sys).strip())
     except sqlite3.Error:
         pass
     finally:

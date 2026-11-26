@@ -2186,18 +2186,18 @@ def _build_ops():
                     "daily": daily_rows,
                 }
 
-            # Live haul_jobs claims for real-time Outpost Bunker & Upkeep hauler tracking
+            # Live haul_claims.json for real-time Outpost Bunker & Upkeep hauler tracking (TTL=2400s matches haul.py)
             _hj_claims = {}
             try:
-                _hjp = FLEET / "haul_jobs.json"
+                _hjp = FLEET / "haul_claims.json"
                 if _hjp.is_file():
                     _hjd = json.loads(_hjp.read_text(encoding="utf-8", errors="replace"))
                     _now_hj = time.time()
-                    for _hpil, _hrec in (_hjd.items() if isinstance(_hjd, dict) else ()):
-                        if isinstance(_hrec, dict) and float(_hrec.get("expires_at") or _hrec.get("exp") or (_now_hj + 1)) >= _now_hj - 60:
-                            _hkey = str(_hrec.get("job_key") or _hrec.get("key") or "")
-                            if _hkey:
-                                _hj_claims.setdefault(_hkey, []).append(text(_hpil, 32))
+                    for _hkey, _hrec in (_hjd.items() if isinstance(_hjd, dict) else ()):
+                        if isinstance(_hrec, dict) and (_now_hj - float(_hrec.get("at") or 0)) < 2400.0:
+                            _hpil = text(_hrec.get("pilot") or "", 32)
+                            if _hkey and _hpil:
+                                _hj_claims.setdefault(str(_hkey), []).append(_hpil)
             except Exception:
                 pass
             _bunker_live_by_name = {}
