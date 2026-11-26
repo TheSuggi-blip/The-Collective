@@ -18,11 +18,11 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | Group | What it holds | Routes | Home space | Beyond the border | Best measured |
 |---|---|---|---|---|---|
 | [Once per Pilot](index-once-per-pilot.md) | Missions and rewards the game pays once per pilot: a new pilot's first work, and seed money. | 98 | 23 | 75 | finish-five-capitals-sol: 12,230 cr a run |
-| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 4 | 3 | 1 | sell-lead-docked-central-nexus: 25,710 cr per ship-hour |
-| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 128 | 54 | 74 | not measured yet |
+| [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 3 | 3 | 0 | sell-lead-docked-central-nexus: 25,710 cr per ship-hour |
+| [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 130 | 54 | 76 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
 | [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 670 | 127 | 533 | mission-old-charts-sol: 10,560 cr per ship-hour |
-| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 2 | 1 | 1 | carry-levity-arneb-to-krynn: -390 cr per ship-hour |
+| [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 1 | 1 | 0 | sell-null-matter-at-nexus: -1,400 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 82 | 24 | 58 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
 | All | | 1024 | 249 | 765 | |
 
