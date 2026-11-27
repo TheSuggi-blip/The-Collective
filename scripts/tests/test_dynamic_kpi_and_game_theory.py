@@ -110,10 +110,17 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
         self.assertEqual((mh1, mst1[2]), (1, "base_npc_safe"))
 
     def test_ridgecrest_no_refuel_dock_pauses_luxury_and_surges_fuel(self):
+        import sqlite3
         with tempfile.TemporaryDirectory() as td:
             d = Path(td)
             (d / "empire").mkdir(parents=True)
             (d / "stock").mkdir(parents=True)
+            (d / "store").mkdir(parents=True)
+            con = sqlite3.connect(str(d / "store" / "read.db"))
+            con.execute("CREATE TABLE bases (base TEXT, name TEXT, system TEXT, poi TEXT, kind TEXT)")
+            con.execute("INSERT INTO bases VALUES ('st_rc', 'Ridgecrest', 'ridgecrest', 'poi_rc', 'station')")
+            con.commit()
+            con.close()
             # Owned station WITHOUT refueling_dock
             (d / "empire" / "empire.json").write_text(json.dumps({
                 "bases": [{"base": "st_rc", "name": "Ridgecrest", "system": "ridgecrest", "poi": "poi_rc", "kind": "station"}],
@@ -134,15 +141,27 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
                 "st_npc": ("sol", "poi_sol", "st_npc", "solarian"),
             }
             lanes = {"ridgecrest": {"sol"}, "sol": {"ridgecrest"}}
-            # Only luxury food is on the market (no fuel_cell): should return None (luxury paused!)
+            # 1) Without refueling_dock: luxury food is PAUSED (None) while fuel_cell surges immediately!
             lux_books = [{"base": "st_npc", "item": "rimeblue_board", "ask": 200, "ask_qty": 50, "t": 1e12}]
             job_lux = haul._pick_hub_upkeep(str(d), "Hauler1", lux_books, base_map, lanes, "sol", 100, 30000, policy, set(), now_t=1e12)
             self.assertIsNone(job_lux)
-            # Once fuel_cell is available, picks fuel_cell immediately!
             fuel_books = lux_books + [{"base": "st_npc", "item": "fuel_cell", "ask": 95, "ask_qty": 500, "t": 1e12}]
             job_fuel = haul._pick_hub_upkeep(str(d), "Hauler1", fuel_books, base_map, lanes, "sol", 100, 30000, policy, set(), now_t=1e12)
             self.assertIsNotNone(job_fuel)
             self.assertEqual(job_fuel["item"], "fuel_cell")
+            # 2) Once refueling_dock is active: luxury hospitality resumes cleanly!
+            (d / "empire" / "empire.json").write_text(json.dumps({
+                "bases": [{"base": "st_rc", "name": "Ridgecrest", "system": "ridgecrest", "poi": "poi_rc", "kind": "station"}],
+                "facilities": [
+                    {"base": "st_rc", "type": "grand_hotel_resort", "status": "active"},
+                    {"base": "st_rc", "type": "refueling_dock", "status": "active"},
+                ],
+                "faction_storage": [{"base": "st_rc", "item": "steel_plate", "units": 900}, {"base": "st_rc", "item": "fuel_cell", "units": 2400}],
+                "members": [{"username": "Hauler1", "role": "officer"}],
+            }), encoding="ascii")
+            job_lux_after = haul._pick_hub_upkeep(str(d), "Hauler1", lux_books, base_map, lanes, "sol", 100, 30000, policy, set(), now_t=1e12)
+            self.assertIsNotNone(job_lux_after)
+            self.assertEqual(job_lux_after["item"], "rimeblue_board")
 
 
 if __name__ == "__main__":
