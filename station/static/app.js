@@ -4830,7 +4830,6 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5(fsLbl('NPC Building & Office Rent Upkeep (19 Leased Facilities, Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
     row5(fsLbl('Owned Station Facility Maintenance Labor Upkeep (Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
     row5('Total Cash Building & Station Upkeep Costs', (a) => (a && a.station_ops ? (Number(a.station_ops.npc_rent_h || 0) + Number(a.station_ops.station_labor_opex_h || 0)) : null), 'fs-sub'),
-    row5('Memo: Owned Station Consumables & Hospitality Upkeep (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
     row5(fsLbl('Other Treasury Operating Net (Tax / Unrecorded Deposits, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
     row5('Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)', realizedEbitOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Other Realized Operating Income' },
