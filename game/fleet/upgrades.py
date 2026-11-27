@@ -932,8 +932,8 @@ def reconcile_built_hangars(data_dir, pmap, rows, now):
         changed = True
     return changed
 
-def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, budget_s=210.0,
-                   gate_mod=None, wallet_mod=None, division_mod=None, max_workers=6):
+def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=40, budget_s=240.0,
+                   gate_mod=None, wallet_mod=None, division_mod=None, max_workers=12):
     """Advance queued hull upgrades safely (runs every 5 min inside wallet.py sweep). Bounded, non-blocking."""
     now = float(time.time() if now is None else now)
     if (Path(data_dir) / "fleet" / "STOP").exists():
@@ -1111,6 +1111,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                     save_queue(data_dir, [r], merge=True)
 
     ordered = sorted(active, key=_dock_prio)
+    switch_batch = []
     funded_batch = []
     for r in ordered:
         if time.time() - t0 > budget_s:
@@ -1186,40 +1187,59 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=15, b
                 r["note"] = "ready at %s; waiting for pilot free (stop sent)" % base_id
                 continue
             actions += 1
-            try:
-                if str(ship.get("docked") or "") != base_id:
-                    ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(180, max(30, budget_s - (time.time() - t0))), data_dir=data_dir, ship=ship)
-                    if not ok_d:
-                        if "already executing" in msg_d.lower():
-                            _request_pilot_stop(data_dir, pilot)
-                        r["note"] = "ready; dock deferred: %s" % msg_d[:60]
-                        continue
-                ok_sw, sw_ans = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": stored[0]["ship_id"]})
-                if ok_sw:
-                    _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
-                    r.pop("ready_to_switch", None)
-                    r["state"], r["updated_at"], r["note"] = "done", int(now), "switched into %s @ %s" % (hull, base_id)
-                    if r.get("from_hangar_scan"):
-                        rkey = str(r.get("reconcile_key") or ("%s:%s:%s" % (pilot, hull, base_id)))
-                        rec_p = Path(data_dir) / "fleet" / "hangar_reconciled.json"
+            switch_batch.append((r, pilot, hull, sys_id, poi_id, base_id, ship, stored[0]["ship_id"]))
+
+    if changed and not dry:
+        with _save_lock:
+            save_queue(data_dir, rows, merge=True)
+
+    def _process_switch_item(item):
+        r, pilot, hull, sys_id, poi_id, base_id, ship, ship_id = item
+        try:
+            if str(ship.get("docked") or "") != base_id:
+                rem = min(210, max(45, budget_s - (time.time() - t0)))
+                ok_d, msg_d = _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=rem, data_dir=data_dir, ship=ship)
+                if not ok_d:
+                    if "already executing" in msg_d.lower():
+                        _request_pilot_stop(data_dir, pilot)
+                    r["note"], r["updated_at"] = "ready; dock deferred: %s" % msg_d[:60], int(time.time())
+                    with _save_lock:
+                        save_queue(data_dir, [r], merge=True)
+                    return
+            ok_sw, sw_ans = _gate_raw(gate_mod, pilot, "switch_ship", {"ship_id": ship_id})
+            if ok_sw:
+                _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id)
+                r.pop("ready_to_switch", None)
+                r["state"], r["updated_at"], r["note"] = "done", int(time.time()), "switched into %s @ %s" % (hull, base_id)
+                if r.get("from_hangar_scan"):
+                    rkey = str(r.get("reconcile_key") or ("%s:%s:%s" % (pilot, hull, base_id)))
+                    rec_p = Path(data_dir) / "fleet" / "hangar_reconciled.json"
+                    with _save_lock:
                         try:
                             prev_rk = json.loads(rec_p.read_text(encoding="utf-8")) if rec_p.is_file() else []
                             rk_list = sorted(set((prev_rk if isinstance(prev_rk, list) else []) + [rkey]))
                             rec_p.write_text(json.dumps(rk_list, indent=2) + "\n", encoding="utf-8")
                         except Exception:
                             pass
-                    print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id), flush=True)
-                else:
-                    r["note"] = "switch failed: %s" % json.dumps(sw_ans)[:80]
-            finally:
-                _release_upgrade(data_dir, pilot, division_mod)
-                if changed and not dry:
-                    save_queue(data_dir, rows, merge=True)
-                    changed = False
+                print("UPGRADE switched %s: %s -> %s @ %s" % (r["id"], pilot, hull, base_id), flush=True)
+            else:
+                r["note"], r["updated_at"] = "switch failed: %s" % json.dumps(sw_ans)[:80], int(time.time())
+            with _save_lock:
+                save_queue(data_dir, [r], merge=True)
+        finally:
+            _release_upgrade(data_dir, pilot, division_mod)
 
-    if changed and not dry:
-        with _save_lock:
-            save_queue(data_dir, rows, merge=True)
+    if switch_batch and not dry:
+        n_sw = max(1, min(int(max_workers or 12), len(switch_batch)))
+        if n_sw == 1:
+            _process_switch_item(switch_batch[0])
+        else:
+            _sw_pool = _cf.ThreadPoolExecutor(max_workers=n_sw)
+            _sw_futs = [_sw_pool.submit(_process_switch_item, it) for it in switch_batch]
+            _sw_rem = max(45.0, budget_s - (time.time() - t0) + 15.0)
+            _cf.wait(_sw_futs, timeout=_sw_rem)
+            _sw_pool.shutdown(wait=False, cancel_futures=True)
+
     if funded_batch and not dry:
         n_w = max(1, min(int(max_workers or 6), len(funded_batch)))
         if n_w == 1:

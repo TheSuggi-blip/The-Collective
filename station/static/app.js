@@ -1887,11 +1887,50 @@ function renderMembers() {                       // the top bar: Credits (Wallet
     b.addEventListener('click', () => { rosterDiv = rosterDiv === jd.key ? 'all' : jd.key; renderRoster(); renderMembers(); });
     grid.append(b);
   }
+  const pf = (F && F.pirates) ? F.pirates : null;
+  if (pf) {
+    const pShips = Array.isArray(pf.ships) ? pf.ships : [];
+    const pActive = Number(pf.active_total || pShips.length || 0);
+    const pPlanned = Number(pf.planned_total || 107);
+    const pWorking = pShips.filter((r) => isWorking(r) || r.status === 'connected').length;
+    const pb = el('button', 'member pirate-member' + (rosterDiv === 'Pirates' ? ' on' : ''));
+    pb.type = 'button';
+    const pmed = el('span', 'face-medallion');
+    pmed.append(shipSvg('Pirates', PIRATES, 15));
+    const pwho = el('div', 'who');
+    pwho.append(el('div', 'n', 'Pirates'));
+    const pcnt = el('div', 'c', String(pActive));
+    pb.append(pmed, pwho, pcnt);
+    pb.style.setProperty('--c', PIRATES);
+    pb.title = 'Pirates (Isolated Account #2): ' + pActive + ' live / ' + pPlanned + ' planned (' + pWorking + ' active) | Click to focus in Fleet Roster';
+    pb.addEventListener('click', () => {
+      rosterDiv = rosterDiv === 'Pirates' ? 'all' : 'Pirates';
+      if (rosterDiv === 'Pirates') collapsed.delete('Pirates');
+      renderRoster(); renderMembers();
+    });
+    grid.append(pb);
+  }
   box.append(grid);
   const t = F.totals || {}, all = el('div', 'member total');
   all.append(el('div', 'c', fmt(t.ships)), el('div', 'd', t.ships ? (t.working || 0) + ' act' : 'no data'));
-  all.title = 'Total Fleet: ' + fmt(t.ships) + ' ships (' + fmt(t.working) + ' active, ' + fmt(t.parked) + ' docked, ' + fmt(t.adrift) + ' adrift)';
+  all.title = 'Total Collective Fleet: ' + fmt(t.ships) + ' ships (' + fmt(t.working) + ' active, ' + fmt(t.parked) + ' docked, ' + fmt(t.adrift) + ' adrift)';
   box.append(all);
+  if (pf) {
+    const pShips = Array.isArray(pf.ships) ? pf.ships : [];
+    const pActive = Number(pf.active_total || pShips.length || 0);
+    const pPlanned = Number(pf.planned_total || 107);
+    const pWorking = pShips.filter((r) => isWorking(r) || r.status === 'connected').length;
+    const pall = el('button', 'member total pirate-total' + (rosterDiv === 'Pirates' ? ' on' : ''));
+    pall.type = 'button';
+    pall.append(el('div', 'c', fmt(pActive)), el('div', 'd', pWorking + ' act'));
+    pall.title = 'Pirate Proxy Fleet (Account #2): ' + fmt(pActive) + ' live of ' + fmt(pPlanned) + ' planned (' + fmt(pWorking) + ' active) | Click to focus Pirates';
+    pall.addEventListener('click', () => {
+      rosterDiv = rosterDiv === 'Pirates' ? 'all' : 'Pirates';
+      if (rosterDiv === 'Pirates') collapsed.delete('Pirates');
+      renderRoster(); renderMembers();
+    });
+    box.append(pall);
+  }
 }
 
 function waveCause(w) {                          // what two readings show about a wave, never more
