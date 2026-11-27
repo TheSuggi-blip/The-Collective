@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 6.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 155 | Public event stream |
+| Pilots carrying the tag on the public event stream | 160 | Public event stream |
 
 ## Bases
 
@@ -41,8 +41,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | STLR-006-RIM | Nexus Prime (`nexus_prime`) | 0 | billhook |
-| STLR-024-CRI | Nexus Prime (`nexus_prime`) | 0 | shard |
 | STLR-041-NEB | Node Beta (`node_beta`) | 0 | prospect |
+| STLR-051-VOI | The Experiment (`the_experiment`) | 0 | threshold |
 | STLR-089-VOI | Node Beta (`node_beta`) | 0 | threshold |
 | STLR-142-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
 | STLR-163-NEB | GSC-0027 (`gsc_0027`) | 0 | prospect |
