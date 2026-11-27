@@ -397,6 +397,14 @@ def refuel_at(stop):
         raw('refuel')
         after = fuel()
     say(f'fuel stop at {sid} ({base}): fuel {before} -> {after}')
+    try:
+        mkt_p = DATA / 'market' / f'{base}.json'
+        if (not mkt_p.is_file()) or ((time.time() - mkt_p.stat().st_mtime) > 600.0):
+            ni, nm = save_station(base, sid)
+            far = save_remote_books(base)
+            say(f'fuel stop intel at {base}: book {ni} items, {nm} missions, {far} remote books saved (0 extra fuel)')
+    except Exception:
+        pass
     return after
 
 

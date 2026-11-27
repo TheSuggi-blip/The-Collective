@@ -150,7 +150,84 @@ def sell_at_station(call, say, quoted, station, wanted, notes, target="self"):
             time.sleep(11)
     if stashed:
         say("stored at %s: %s" % (station[2], stashed))
+    refresh_station_book_if_stale(raw, station, DATA, max_age_s=900.0)
     return sold
+
+
+def update_scouting_poi(data_dir, sys_id, poi_id, poi_doc):
+    """Merge live get_poi deposit readout into scouting/<sys>.json preserving original read_at and survey keys."""
+    if not sys_id or not poi_id or not isinstance(poi_doc, dict):
+        return False
+    res_rows = poi_doc.get("resources") or (poi_doc.get("poi") or {}).get("resources")
+    if not isinstance(res_rows, list):
+        return False
+    sdir = os.path.join(str(data_dir), "scouting")
+    os.makedirs(sdir, exist_ok=True)
+    path = os.path.join(sdir, "%s.json" % sys_id)
+    lock_p = os.path.join(sdir, ".%s.lock" % sys_id)
+    try:
+        with open(lock_p, "a+", encoding="utf-8") as lf:
+            fcntl.flock(lf, fcntl.LOCK_EX)
+            try:
+                doc = {}
+                if os.path.isfile(path):
+                    try:
+                        with open(path, encoding="utf-8") as fh:
+                            loaded = json.load(fh)
+                        if isinstance(loaded, dict):
+                            doc = loaded
+                    except (OSError, ValueError):
+                        doc = {}
+                pois = doc.get("pois") if isinstance(doc.get("pois"), dict) else {}
+                pois[str(poi_id)] = poi_doc
+                doc["pois"] = pois
+                if "system" not in doc:
+                    doc["system"] = {"id": str(sys_id)}
+                tmp = "%s.%d.tmp" % (path, os.getpid())
+                with open(tmp, "w", encoding="utf-8") as fh:
+                    json.dump(doc, fh, separators=(",", ":"))
+                os.replace(tmp, path)
+                return True
+            finally:
+                fcntl.flock(lf, fcntl.LOCK_UN)
+    except OSError:
+        return False
+
+
+def refresh_station_book_if_stale(raw_fn, station, data_dir, max_age_s=900.0):
+    """Zero-tick view_market refresh when a miner is already docked at `station` and local book is stale."""
+    if not station or len(station) < 3:
+        return 0
+    sys_id, _poi_id, base_id = station[0], station[1], station[2]
+    if not base_id:
+        return 0
+    mdir = os.path.join(str(data_dir), "market")
+    mpath = os.path.join(mdir, "%s.json" % base_id)
+    try:
+        if os.path.isfile(mpath) and (time.time() - os.path.getmtime(mpath)) < float(max_age_s):
+            return 0
+        ans = content(raw_fn("view_market", {}, "spacemolt_market"))
+        items = ans.get("items") if isinstance(ans, dict) else None
+        if not isinstance(items, list) or not items:
+            return 0
+        rows = [
+            {k: i.get(k) for k in ("item_id", "item_name", "category", "best_buy", "best_buy_qty", "buy_quantity", "best_sell", "best_sell_qty", "sell_quantity")}
+            for i in items if isinstance(i, dict)
+        ]
+        os.makedirs(mdir, exist_ok=True)
+        tmp = "%s.%d.tmp" % (mpath, os.getpid())
+        with open(tmp, "w", encoding="utf-8") as fh:
+            json.dump({
+                "base": base_id,
+                "system": sys_id,
+                "read_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "source": "view_market, miner docked",
+                "items": rows,
+            }, fh, separators=(",", ":"))
+        os.replace(tmp, mpath)
+        return len(rows)
+    except Exception:
+        return 0
 
 
 def ammo_ids():
@@ -391,6 +468,7 @@ def main():
                         st_p, ans_p = call("POST", "/accounts/%s/raw" % quoted, {"toolGroup": "spacemolt", "action": "get_poi", "params": {}})
                         if st_p in (200, 201) and isinstance(ans_p, dict) and "error" not in ans_p:
                             sc_p = content(ans_p)
+                            update_scouting_poi(DATA, belt[0], belt[1], sc_p)
                             res_rows = sc_p.get("resources") or (sc_p.get("poi") or {}).get("resources") or []
                             hit = check_floor_breached(res_rows, min_left_pct=min_left_pct, floor_resource=floor_resource, min_left_units=min_left_units)
                             if hit:

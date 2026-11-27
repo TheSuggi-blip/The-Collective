@@ -33,6 +33,7 @@ import subprocess
 import sys
 import time
 from collections import deque
+import calendar
 from pathlib import Path
 
 FLEET = Path(__file__).resolve().parent
@@ -56,14 +57,29 @@ def _has_survey_scanner(ship_doc):
     return False
 
 
+def _parse_iso_ts(val):
+    s = str(val or "").strip()
+    if len(s) >= 19 and s[4] == "-" and s[10] in ("T", " "):
+        try:
+            return float(calendar.timegm(time.strptime(s[:19], "%Y-%m-%d" + s[10] + "%H:%M:%S")))
+        except ValueError:
+            return 0.0
+    return 0.0
+
+
 DEFAULT_POLICY = {
     "enabled": True,
     "allow_strongholds": False,
     "target_fresh_hours": 4.0,
     "min_rescan_minutes": 45.0,
     "claim_ttl_s": 1800,
-    "chain_legs": 3,
-    "chain_jumps": 4,
+    "chain_legs": 8,
+    "chain_jumps": 3,
+    "hop_decay": 0.30,
+    "peer_avoid_hops": 2,
+    "peer_repulsion_mult": 0.45,
+    "scan_enroute": True,
+    "max_enroute_waypoints": 4,
     "quadrant_balance_bonus": 2500.0,
     "never_scanned_bonus": 100000.0,
     "rival_hub_systems": [
@@ -127,6 +143,7 @@ def _load_census_world(data_dir, policy, now_t=None):
         herd_sys = set()
         rival_station_sys = set()
         battle_sys = set()
+        pirate_raided_sys = set()
         if db_p.is_file():
             con = _wc.ro_db(db_p, timeout=3.0)
             try:
@@ -175,9 +192,12 @@ def _load_census_world(data_dir, policy, now_t=None):
                             rival_station_sys.add(str(s))
                 if "public_battles" in tbls:
                     b_cut = now_t - 14400.0
-                    for (s,) in con.execute("SELECT DISTINCT system FROM public_battles WHERE system IS NOT NULL AND t >= ?", (b_cut,)).fetchall():
+                    p_cut = now_t - 7200.0
+                    for s, cat, bt in con.execute("SELECT system, COALESCE(category,''), COALESCE(t,0) FROM public_battles WHERE system IS NOT NULL AND t >= ?", (b_cut,)).fetchall():
                         if s:
                             battle_sys.add(str(s))
+                            if str(cat).lower() == "pirate" and float(bt or 0) >= p_cut:
+                                pirate_raided_sys.add(str(s))
             finally:
                 con.close()
         return {
@@ -188,6 +208,7 @@ def _load_census_world(data_dir, policy, now_t=None):
             "herd_sys": herd_sys,
             "rival_station_sys": rival_station_sys,
             "battle_sys": battle_sys,
+            "pirate_raided_sys": pirate_raided_sys,
         }
 
     base = _wc.cached(ck, 25.0, _build)
@@ -202,21 +223,36 @@ def _load_census_world(data_dir, policy, now_t=None):
                     sid = ent.name[:-5]
                     st = ent.stat()
                     mt = float(st.st_mtime)
-                    if mt > last_t.get(sid, 0.0):
-                        last_t[sid] = mt
                     ck_s = (ent.path, mt, st.st_size)
-                    has_sv = _SURVEY_FLAG_CACHE.get(ck_s)
-                    if has_sv is None:
+                    cached_meta = _SURVEY_FLAG_CACHE.get(ck_s)
+                    if cached_meta is None:
+                        has_sv = False
+                        scan_t = mt
                         try:
                             txt = Path(ent.path).read_text(encoding="utf-8", errors="ignore")
                             has_sv = ('"survey":' in txt or '"survey" :' in txt)
+                            idx = txt.find('"read_at"')
+                            if idx != -1:
+                                sub = txt[idx:idx + 48]
+                                q1 = sub.find(":", 9)
+                                if q1 != -1:
+                                    q2 = sub.find('"', q1)
+                                    q3 = sub.find('"', q2 + 1) if q2 != -1 else -1
+                                    if q2 != -1 and q3 != -1:
+                                        pt = _parse_iso_ts(sub[q2 + 1:q3])
+                                        if pt > 0.0:
+                                            scan_t = pt
                         except OSError:
-                            has_sv = False
+                            pass
                         if len(_SURVEY_FLAG_CACHE) > 2000:
                             _SURVEY_FLAG_CACHE.clear()
-                        _SURVEY_FLAG_CACHE[ck_s] = has_sv
+                        cached_meta = (has_sv, scan_t)
+                        _SURVEY_FLAG_CACHE[ck_s] = cached_meta
+                    has_sv, scan_t = cached_meta
+                    if scan_t > last_t.get(sid, 0.0):
+                        last_t[sid] = scan_t
                     if has_sv:
-                        survey_t[sid] = mt
+                        survey_t[sid] = scan_t
         except OSError:
             pass
     out = dict(base)
@@ -239,6 +275,85 @@ def _bfs_hops(adj, start, avoid=None):
                 dist[v] = d + 1
                 q.append(v)
     return dist
+
+
+def _peer_near_systems(adj, peer_roots, max_hops, avoid=None):
+    """Return set of systems within `max_hops` of any active peer scout target (Voronoi spatial spread)."""
+    if not peer_roots or max_hops <= 0:
+        return set()
+    avoid = avoid or set()
+    dist = {}
+    q = deque()
+    for r in peer_roots:
+        if r and r in adj and r not in avoid and r not in dist:
+            dist[r] = 0
+            q.append(r)
+    while q:
+        u = q.popleft()
+        d = dist[u]
+        if d >= max_hops:
+            continue
+        for v in adj.get(u, ()):
+            if v not in dist and v not in avoid:
+                dist[v] = d + 1
+                q.append(v)
+    return set(dist.keys())
+
+
+def plan_enroute_path(adj, cur_sys, target_sys, waypoint_scores, avoid=None, max_waypoints=4):
+    """Return ordered list of up to `max_waypoints` eligible intermediate systems along a shortest path cur->target."""
+    if not cur_sys or not target_sys or cur_sys == target_sys or cur_sys not in adj or max_waypoints <= 0:
+        return []
+    avoid = avoid or set()
+    dist = {cur_sys: 0}
+    parents = {}
+    q = deque([cur_sys])
+    while q:
+        u = q.popleft()
+        d = dist[u]
+        if target_sys in dist and d >= dist[target_sys]:
+            continue
+        for v in adj.get(u, ()):
+            if v in avoid:
+                continue
+            if v not in dist:
+                dist[v] = d + 1
+                parents[v] = [u]
+                q.append(v)
+            elif dist[v] == d + 1:
+                parents[v].append(u)
+    if target_sys not in dist or dist[target_sys] <= 1:
+        return []
+    order = sorted((d, s) for s, d in dist.items() if d <= dist[target_sys])
+    best_dp = {cur_sys: (0, 0.0, None)}
+    for d, node in order:
+        if node == cur_sys:
+            continue
+        best_p = None
+        w_val = float(waypoint_scores.get(node, 0.0)) if node != target_sys else 0.0
+        w_cnt = 1 if (node != target_sys and w_val > 0.0) else 0
+        for p in parents.get(node, ()):
+            if p not in best_dp:
+                continue
+            pc, ps, _ = best_dp[p]
+            cand = (pc + w_cnt, ps + w_val, p)
+            if best_p is None or (cand[0], cand[1]) > (best_p[0], best_p[1]):
+                best_p = cand
+        if best_p is not None:
+            best_dp[node] = best_p
+    if target_sys not in best_dp:
+        return []
+    path = []
+    cur = target_sys
+    while cur is not None and cur != cur_sys:
+        path.append(cur)
+        cur = best_dp[cur][2]
+    path.reverse()
+    intermediates = [s for s in path[:-1] if waypoint_scores.get(s, 0.0) > 0.0]
+    if len(intermediates) <= max_waypoints:
+        return intermediates
+    ranked = sorted(range(len(intermediates)), key=lambda i: (-waypoint_scores[intermediates[i]], i))[:max_waypoints]
+    return [intermediates[i] for i in sorted(ranked)]
 
 
 def _load_pilot_ship(data_dir, pilot):
@@ -345,14 +460,20 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                 if (now_t - at_t) < ttl_s and rec.get("pilot") != pilot:
                     cleaned[str(sid)] = rec
 
+            hop_decay = float(policy.get("hop_decay") or 0.30)
+            peer_hops = int(policy.get("peer_avoid_hops") if policy.get("peer_avoid_hops") is not None else 2)
+            peer_mult = float(policy.get("peer_repulsion_mult") or 0.45)
+            pirate_raided = world.get("pirate_raided_sys") or set()
+            peer_roots = set(cleaned.keys()) | busy_orders
+            peer_near = _peer_near_systems(adj, peer_roots, peer_hops, avoid=avoid) if (peer_roots and peer_hops > 0) else set()
+
             best = None
+            waypoint_scores = {}
             for sid, meta in systems.items():
                 if sid in avoid or sid in done or sid in cleaned or sid in busy_orders:
                     continue
                 hops = dists.get(sid) if cur_sys else 0
                 if cur_sys and hops is None:
-                    continue
-                if max_hops is not None and hops is not None and hops > max_hops:
                     continue
                 lt = last_t.get(sid, 0.0)
                 age_s = (now_t - lt) if lt > 0.0 else 1e9
@@ -369,14 +490,10 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                     if age_h >= target_fresh_h:
                         base_score += 2000.0
 
-                # Quadrant equalization: reward lagging quadrants (e.g. WN) proportionally
                 q_gap = max(0.0, (q_ratio.get(meta["quad"], 1.0) - min_q_ratio))
                 if q_gap < 0.05:
                     base_score += quad_bonus * max(0.0, 1.0 - q_ratio.get(meta["quad"], 1.0))
 
-                # Wing specialization:
-                #   7A Covert Recon -> rival hubs, active battlefronts, and lawless frontier/rim
-                #   7B Deep-Core Surveyors -> unsurveyed systems (hidden Deep-Core uranium/silver POIs!) & resource belts/herds
                 if is_recon:
                     if sid in rival_hubs:
                         base_score += 2400.0
@@ -390,8 +507,17 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                     if sid in resource_sys or lt <= 0.0:
                         base_score += 1800.0
 
+                if sid not in pirate_raided:
+                    waypoint_scores[sid] = base_score
+
+                if max_hops is not None and hops is not None and hops > max_hops:
+                    continue
+
+                if lt > 0.0 and sid in peer_near:
+                    base_score *= peer_mult
+
                 eff_hops = max(0, int(hops or 0))
-                score = base_score / (1.0 + 0.14 * eff_hops)
+                score = base_score / (1.0 + hop_decay * eff_hops)
                 cand = (score, -eff_hops, sid, meta["quad"], lt)
                 if best is None or cand > best:
                     best = cand
@@ -432,6 +558,10 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                     best = fallback
                     chosen_sid = best[2]
 
+            enroute = []
+            if bool(policy.get("scan_enroute", True)) and cur_sys and chosen_sid and cur_sys != chosen_sid:
+                max_wp = max(0, int(policy.get("max_enroute_waypoints") or 4))
+                enroute = plan_enroute_path(adj, cur_sys, chosen_sid, waypoint_scores, avoid=avoid, max_waypoints=max_wp)
             if not dry:
                 cleaned[chosen_sid] = {"pilot": pilot, "at": int(now_t), "wing": wing, "quad": best[3]}
                 write_json(claims_path, {"updated_at": int(now_t), "claims": cleaned})
@@ -443,6 +573,7 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                 "age_hours": None if best[4] <= 0.0 else round((now_t - best[4]) / 3600.0, 2),
                 "score": round(best[0], 1),
                 "wing": wing,
+                "enroute": enroute,
             }
         finally:
             fcntl.flock(lfh, fcntl.LOCK_UN)
@@ -471,6 +602,32 @@ def release_claim(data_dir, pilot, system_id=None):
             fcntl.flock(lfh, fcntl.LOCK_UN)
 
 
+def claim_waypoint(data_dir, pilot, system_id, wing, quad, policy, now_t=None):
+    """Atomically claim an intermediate en-route waypoint if still unclaimed."""
+    now_t = time.time() if now_t is None else float(now_t)
+    ttl_s = float(policy.get("claim_ttl_s") or 1800.0)
+    if system_id in _busy_order_systems(data_dir):
+        return False
+    fdir = Path(data_dir) / "fleet"
+    fdir.mkdir(parents=True, exist_ok=True)
+    claims_path = fdir / "census_claims.json"
+    lock_path = fdir / "census_claims.lock"
+    with open(lock_path, "w", encoding="ascii") as lfh:
+        fcntl.flock(lfh, fcntl.LOCK_EX)
+        try:
+            raw = read_json(claims_path, {})
+            claims = raw.get("claims") if isinstance(raw, dict) and isinstance(raw.get("claims"), dict) else {}
+            cleaned = {str(s): r for s, r in claims.items() if isinstance(r, dict) and (now_t - float(r.get("at") or 0.0)) < ttl_s}
+            cur_rec = cleaned.get(system_id)
+            if cur_rec and cur_rec.get("pilot") != pilot:
+                return False
+            cleaned[system_id] = {"pilot": pilot, "at": int(now_t), "wing": wing, "quad": quad, "enroute": True}
+            write_json(claims_path, {"updated_at": int(now_t), "claims": cleaned})
+            return True
+        finally:
+            fcntl.flock(lfh, fcntl.LOCK_UN)
+
+
 def has_census_work(data_dir, pilot, policy_path=None):
     pol = load_policy(policy_path)
     if not pol.get("enabled", True):
@@ -485,40 +642,64 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
         print("census_net: disabled in policy", flush=True)
         return 0
     deadline = time.time() + max(5, int(minutes or 35)) * 60.0
-    max_legs = max(1, int(pol.get("chain_legs") or 3))
-    chain_j = max(1, int(pol.get("chain_jumps") or 4))
+    max_legs = max(1, int(pol.get("chain_legs") or 8))
+    chain_j = max(1, int(pol.get("chain_jumps") or 3))
     done = set()
     cur_sys = None
     legs = 0
     try:
-        while legs < max_legs and (legs == 0 or (deadline - time.time()) > 420.0):
+        while legs < max_legs and (legs == 0 or (deadline - time.time()) > 300.0):
             hop_lim = None if legs == 0 else chain_j
             pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=hop_lim, dry=dry_run)
             if not pick and legs > 0:
-                # Relax hop limit if no immediate neighbor is stale
-                pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=chain_j * 2, dry=dry_run)
+                pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=chain_j * 3, dry=dry_run)
             if not pick:
                 if legs == 0:
                     print("RESULT %s: census_net: all reachable systems fresh (0 due)" % pilot, flush=True)
                 break
             target_sys = pick["system"]
+            enroute_wps = list(pick.get("enroute") or [])
+            wp_str = (" via [%s]" % " -> ".join(enroute_wps)) if enroute_wps else ""
             print(
-                "CENSUS_NET leg %d/%d | %s (%s) -> %s [quad=%s, hops=%d, age=%s]"
-                % (legs + 1, max_legs, pilot, pick["wing"] or "Intel", target_sys, pick["quad"],
+                "CENSUS_NET leg %d/%d | %s (%s) -> %s%s [quad=%s, hops=%d, age=%s]"
+                % (legs + 1, max_legs, pilot, pick["wing"] or "Intel", target_sys, wp_str, pick["quad"],
                    pick["hops"], "NEVER" if pick["never_scanned"] else ("%.1fh" % pick["age_hours"])),
                 flush=True,
             )
             if dry_run:
+                for wp in enroute_wps:
+                    done.add(wp)
+                    legs += 1
                 done.add(target_sys)
                 cur_sys = target_sys
                 legs += 1
                 continue
-            cmd = [
-                sys.executable, "-I", "-B", str(FLEET / "census.py"),
-                pilot, target_sys, "--stay", "--route", str(route_id),
-            ]
+
             env = dict(os.environ)
             env["COLLECTIVE_DATA"] = str(data)
+            failed = False
+            for wp in enroute_wps:
+                if legs >= max_legs or (deadline - time.time()) <= 240.0:
+                    break
+                if wp in done:
+                    continue
+                if not claim_waypoint(data, pilot, wp, pick["wing"] or "", pick["quad"], pol):
+                    continue
+                print("CENSUS_NET enroute | %s -> %s (on shortest path to %s)" % (pilot, wp, target_sys), flush=True)
+                cmd_wp = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, wp, "--stay", "--route", str(route_id)]
+                res_wp = subprocess.run(cmd_wp, env=env, check=False)
+                release_claim(data, pilot, wp)
+                done.add(wp)
+                cur_sys = str(_load_pilot_ship(data, pilot).get("system") or wp)
+                legs += 1
+                if res_wp.returncode != 0:
+                    failed = True
+                    break
+            if failed:
+                release_claim(data, pilot, target_sys)
+                break
+
+            cmd = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, target_sys, "--stay", "--route", str(route_id)]
             res = subprocess.run(cmd, env=env, check=False)
             release_claim(data, pilot, target_sys)
             done.add(target_sys)

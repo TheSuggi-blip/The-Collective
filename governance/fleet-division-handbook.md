@@ -159,7 +159,7 @@ reads) under `dispatch.py` priority assignment:
   Covert Recon + `25` `7B` Outer Rim Deep-Core Surveyors) auto-discover 100% of
   non-stronghold systems from `read.db:systems`, equalize all 4 quadrants
   (`EN/ES/WN/WS`, `quadrant_balance_bonus: 2500`, `target_fresh_hours: 4.0`)
-  using atomic 3-leg chains (`census_claims.json`), and split `7A` (frontier
+  using Voronoi peer-repulsion (`peer_avoid_hops: 2`), stale-maximizing shortest-path en-route scanning (`scan_enroute: true`, `max_enroute_waypoints: 4`, 0 extra jump fuel), and 8-leg continuous chains (`census_claims.json`), splitting `7A` (frontier
   and 8 rival megahubs: `arneb`, `dheneb`, `lhs_1140`, `zosma`, `cloverfield`,
   19 top rival hubs + live `public_battles` warzones) vs `7B` (unsurveyed systems for hidden Deep-Core `survey_system` sweeps + belts and herds).
 

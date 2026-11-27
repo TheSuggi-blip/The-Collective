@@ -95,6 +95,38 @@ class CensusNetTests(unittest.TestCase):
             pol["enabled"] = False
             self.assertIsNone(cn.pick_and_claim_target(data, "Scout Alpha", pol, now_t=now_t, dry=True))
 
+    def test_enroute_shortest_path_picks_stale_waypoints_with_zero_detour(self):
+        # Graph: A -> B1 -> C1 -> D (all fresh) AND A -> B2 (stale) -> C2 (stale) -> D (same 3-hop shortest distance!)
+        adj = {
+            "A": ["B1", "B2"], "B1": ["A", "C1"], "C1": ["B1", "D"],
+            "B2": ["A", "C2"], "C2": ["B2", "D"], "D": ["C1", "C2"],
+        }
+        wps = cn.plan_enroute_path(adj, "A", "D", {"B2": 3000.0, "C2": 4000.0}, max_waypoints=4)
+        self.assertEqual(wps, ["B2", "C2"])
+        # Respects max_waypoints cap while preserving travel order
+        wps_cap = cn.plan_enroute_path(adj, "A", "D", {"B2": 3000.0, "C2": 4000.0}, max_waypoints=1)
+        self.assertEqual(wps_cap, ["C2"])
+
+    def test_read_at_preserved_so_miner_poi_writes_do_not_mask_stale_system(self):
+        now_t = time.time()
+        with tempfile.TemporaryDirectory() as td:
+            data = _make_world(td, now_t)
+            import mine
+            # Write stale_wn scouting file with old read_at (6h ago) + existing survey key
+            old_iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now_t - 6 * 3600))
+            sp = data / "scouting" / "stale_wn.json"
+            sp.write_text(json.dumps({"system": {"id": "stale_wn"}, "read_at": old_iso, "survey": {"ok": True}, "pois": {}}), encoding="ascii")
+            # Miner updates one POI right now (file mtime becomes now_t, but read_at stays 6h old!)
+            ok = mine.update_scouting_poi(data, "stale_wn", "b2", {"resources": [{"resource_id": "silver_ore", "remaining": 42}]})
+            self.assertTrue(ok)
+            updated = json.loads(sp.read_text(encoding="ascii"))
+            self.assertEqual(updated["read_at"], old_iso)
+            self.assertIn("survey", updated)
+            self.assertEqual(updated["pois"]["b2"]["resources"][0]["remaining"], 42)
+            # census_net still sees stale_wn as 6h stale (NOT 0s fresh!)
+            w = cn._load_census_world(data, dict(cn.DEFAULT_POLICY), now_t=now_t)
+            self.assertLess(w["last_t"]["stale_wn"], now_t - 5 * 3600)
+
 
 if __name__ == "__main__":
     unittest.main()
