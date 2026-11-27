@@ -9,13 +9,13 @@ faction: Bedrock Materials
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Bedrock Materials [ROCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 7.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 7.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 9 | Public event stream |
+| Pilots carrying the tag on the public event stream | 8 | Public event stream |
 
 ## Bases
 
@@ -43,7 +43,6 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Durgan Forgebeard | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Mirna Tallowkeg | Nexus Prime (`nexus_prime`) | 0 | prospect |
 | Ragna Cartwright | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| Space Hulk | Pherkad (`pherkad`) | 0 | shard |
 | Torvald Pickhammer | Nexus Prime (`nexus_prime`) | 0 | theoria |
 
 ## Standing History
