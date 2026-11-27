@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | HLLW, OLSV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 114 | Public event stream |
+| Pilots carrying the tag on the public event stream | 123 | Public event stream |
 
 ## Bases
 
@@ -42,8 +42,13 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 706a154ccad49b2a57f5f914 | Node Alpha (`node_alpha`) | 0 | runner |
-| f4fb0d5cfa446f5ef0f33b3f | Synchrony (`synchrony`) | 0 | runner |
+| 3c0f0d6a314aab433731b717 | Node Alpha (`node_alpha`) | 0 | workhorse |
+| 5766f7c87c7f84b6893abd7e | Node Beta (`node_beta`) | 0 | gas_tanker |
+| 841d796c5af478d71c4485d6 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| ac55ba07be5a48456875b4ff | Pherkad (`pherkad`) | 0 | workhorse |
+| cdecb819d281b0409de31dce | Node Alpha (`node_alpha`) | 0 | runner |
+| eabefb578c1ac30a8ecf90a7 | Synchrony (`synchrony`) | 0 | runner |
+| fe44618c957a1a1b98a4bc3a | Node Beta (`node_beta`) | 0 | gas_tanker |
 
 ## Standing History
 
