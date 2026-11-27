@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | HLLW, OLSV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 111 | Public event stream |
+| Pilots carrying the tag on the public event stream | 112 | Public event stream |
 
 ## Bases
 
@@ -42,14 +42,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 13170464db5eef0043ae9f5e | Synchrony (`synchrony`) | 0 | workhorse |
-| 323b4ce2bdad4743015d68fa | Acubens (`acubens`) | 0 | workhorse |
-| 41f0a85ee5fe4d71232d03a8 | Synchrony (`synchrony`) | 0 | workhorse |
-| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
-| 6ce9fcc5d675364f5a7de638 | Synchrony (`synchrony`) | 0 | workhorse |
-| a278e28e139d2e06c6c4d62a | Hamal (`hamal`) | 0 | workhorse |
-| dffe230ab864d7efef98b1fc | Synchrony (`synchrony`) | 0 | workhorse |
-| hiver | Synchrony (`synchrony`) | 0 | workhorse |
+| 2d6ffeda232aa324424edb53 | Node Alpha (`node_alpha`) | 0 | runner |
+| c413294b4b6a11879da15614 | Nexus Prime (`nexus_prime`) | 0 | futures |
+| regohunt01 | Synchrony (`synchrony`) | 0 | theoria |
 
 ## Standing History
 
