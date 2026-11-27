@@ -14,5 +14,14 @@
  "requires": {
   "empty_hold": true
  },
- "lift_to": 1
+ "lift_to": 1,
+ "measured": {
+  "date": "2026-11-27",
+  "runs": 6,
+  "minutes": 21,
+  "credits_per_run": -100,
+  "cph_per_ship": -260,
+  "hours": 12,
+  "last_run": "2026-11-27T18:10:57Z"
+ }
 }
