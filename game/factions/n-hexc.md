@@ -50,9 +50,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Hi-xi III | The Experiment (`the_experiment`) | 0 | lithosphere |
-| Liora Vessand | Node Beta (`node_beta`) | 0 | liquidity_event |
-| Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
+| Mead-brewer | Acubens (`acubens`) | 5 | axiomata |
+| SolarMerchant | Pherkad (`pherkad`) | 0 | syndicate |
+| Zhou | The Experiment (`the_experiment`) | 0 | pithead |
 
 ## Standing History
 
