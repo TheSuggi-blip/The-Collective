@@ -498,8 +498,8 @@ def _compute_bunker_and_supply_sla(conn, data_dir):
                 pct = round(min(100.0, 100.0 * u / float(tgt)), 1)
                 bunkers.append({"base": str(bid), "name": str(bname or bsys), "system": str(bsys), "fuel": u, "target": tgt, "pct": pct})
         if "need_status" in tbls:
-            for prio, cov in conn.execute("SELECT priority, covered FROM need_status WHERE COALESCE(stands, 1) = 1").fetchall():
-                if str(prio or "").upper() in ("P1", "P2") and cov is not None:
+            for prio, cov in conn.execute("SELECT priority, covered FROM need_status WHERE COALESCE(stands, 0) = 0").fetchall():
+                if str(prio or "").strip().upper() in ("1", "2", "P1", "P2") and cov is not None:
                     supply_covs.append(min(100.0, max(0.0, float(cov))))
 
     bunker_avg = round(sum(b["pct"] for b in bunkers) / len(bunkers), 1) if bunkers else 100.0
@@ -543,15 +543,23 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
     span_h = max(0.25, float((acc_win or {}).get("span_hours") or hours))
     prices = _load_fair_unit_prices(conn, data_dir)
 
+    upg_held = set()
+    uq_raw = _read_json(Path(data_dir) / "fleet" / "upgrade_queue.json", {})
+    uq_rows = uq_raw.get("queue") if isinstance(uq_raw, dict) else (uq_raw if isinstance(uq_raw, list) else [])
+    for qr in (uq_rows or []):
+        if isinstance(qr, dict) and str(qr.get("state") or "") in ("queued", "funding", "funded", "building"):
+            if qr.get("pilot"):
+                upg_held.add(str(qr["pilot"]))
+
     wing_live = {
-        w[0]: {"total": 0, "working": 0, "goal": 0, "park": 0, "idle": 0, "bursar_docked": 0}
+        w[0]: {"total": 0, "working": 0, "goal": 0, "upgrading": 0, "park": 0, "idle": 0, "bursar_docked": 0}
         for w in WING_SPECS
     }
-    fleet_working = fleet_idle = fleet_park = 0
+    fleet_working = fleet_upgrading = fleet_idle = fleet_park = 0
     for s in ships_list:
         p = str(s.get("name") or "")
         wid = pilot_wing.get(p) or wing_id_of(s.get("wing"), s.get("division"))
-        st = wing_live.setdefault(wid, {"total": 0, "working": 0, "goal": 0, "park": 0, "idle": 0, "bursar_docked": 0})
+        st = wing_live.setdefault(wid, {"total": 0, "working": 0, "goal": 0, "upgrading": 0, "park": 0, "idle": 0, "bursar_docked": 0})
         st["total"] += 1
         ord_s = str(s.get("order") or "").strip()
         act_k = str((s.get("activity") or {}).get("kind") or "")
@@ -567,6 +575,9 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         elif act_k and act_k != "idle":
             st["goal"] += 1
             fleet_working += 1
+        elif p in upg_held:
+            st["upgrading"] += 1
+            fleet_upgrading += 1
         else:
             st["idle"] += 1
             fleet_idle += 1
@@ -621,7 +632,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                     res_id = str(rj.get("resource") or "")
                     notes_j = " ".join(str(x) for x in (rj.get("notes") or [])).lower()
                     host_stop = ("host is ending" in notes_j) or ("stop file" in notes_j)
-                    if not host_stop:
+                    no_belt_tick = (ore_u == 0 and m_f < 1.0 and "no belt" in notes_j)
+                    if (not host_stop) and (not no_belt_tick):
                         wr["mine_runs"] += 1
                     if ore_u > 0:
                         wr["ok_runs"] += 1
@@ -731,7 +743,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
 
     tot_ships = max(1, len(ships_list))
     fleet_idle_pct = round(100.0 * fleet_idle / tot_ships, 1)
-    fleet_working_pct = round(100.0 * fleet_working / tot_ships, 1)
+    fleet_working_pct = round(100.0 * (fleet_working + fleet_upgrading) / tot_ships, 1)
 
     wings_out = []
     upol = _read_json(Path(repo_root) / "game" / "upgrade-policy.json", {})
@@ -766,8 +778,16 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         scores = [(s_idle, 0.25)]
 
         if wid in ("1A-1C", "2A-2B"):
-            div_combat_cash = float(rb.get("defense_h" if wid == "1A-1C" else "hunters_h") or 0.0)
-            loot_h = round(max(wr["loot_val"] / span_h, wr["rev_cash"] / span_h, div_combat_cash), 0)
+            mil_acc = by_div_acc.get("Military") or {}
+            mil_gross_i2 = max(0.0, float(mil_acc.get("accrual_op_h") or 0.0) + float(mil_acc.get("fuel_cr_h") or 0.0))
+            w_def = max(1.0, w_runs["1A-1C"]["loot_val"] + w_runs["1A-1C"]["kills"] * 120.0)
+            w_hnt = max(1.0, w_runs["2A-2B"]["loot_val"] + w_runs["2A-2B"]["kills"] * 120.0)
+            share_m = (w_def if wid == "1A-1C" else w_hnt) / (w_def + w_hnt)
+            if mil_gross_i2 > 0:
+                loot_h = round(mil_gross_i2 * share_m, 0)
+            else:
+                div_combat_cash = float(rb.get("defense_h" if wid == "1A-1C" else "hunters_h") or 0.0)
+                loot_h = round(max(wr["rev_cash"] / span_h, div_combat_cash), 0)
             rof = round(loot_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             kills_h = round(wr["kills"] / span_h, 1)
@@ -780,13 +800,20 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Loot / h", "v": "+%s cr/h" % format(int(loot_h), ","), "sub": "%.1f kills/h" % kills_h, "score": round(s_out)},
                 {"k": "Loot / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
                 {"k": "Ships Lost / h", "v": "%.2f/h" % loss_h, "sub": "%d in %dh" % (wr["losses"], int(round(hours))), "score": round(s_loss)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid in ("3A", "3B", "3C", "3D", "3E"):
             ms = mining_seg.get(wid) or {}
             units_h = round(max(wr["ore_units"] / span_h, float(ms.get("units_h") or 0.0)), 0)
-            val_h = round(max(wr["ore_val"] / span_h, float(ms.get("tx_nrv_h") or 0.0)), 0)
+            if ms and float(ms.get("tx_nrv_h") or 0.0) > 0:
+                val_h = round(float(ms.get("tx_nrv_h") or 0.0), 0)
+            else:
+                mine_acc = by_div_acc.get("Mining") or {}
+                mine_cap = max(0.0, float(mine_acc.get("tx_out_h") or 0.0) + max(0.0, float(mine_acc.get("inv_accrual_h") or 0.0)))
+                raw_sum = sum(w_runs[x]["ore_val"] / span_h for x in ("3A", "3B", "3C", "3D", "3E")) or 1.0
+                scale = min(1.0, mine_cap / raw_sum) if mine_cap > 0 else 1.0
+                val_h = round((wr["ore_val"] / span_h) * scale, 0)
             rof = round(val_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             yield_eff = round(100.0 * wr["mine_ok"] / max(1, wr["mine_runs"]), 1) if wr["mine_runs"] > 0 else 100.0
@@ -798,7 +825,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Value / h", "v": "+%s cr/h" % format(int(val_h), ","), "sub": "%s units/h" % format(int(units_h), ","), "score": round(s_val)},
                 {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
                 {"k": "Mine Yield Rate", "v": "%.0f%%" % yield_eff, "sub": "%d/%d mine runs yielded" % (wr["mine_ok"], wr["mine_runs"]), "score": round(s_eff)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid in ("4A", "4B"):
@@ -815,7 +842,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h" % runs_h, "score": round(s_rev)},
                 {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
                 {"k": "Hull Readiness", "v": "%.0f%%" % h_gap_pct, "sub": "of max possible tier", "score": round(h_gap_pct)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "4C":
@@ -831,7 +858,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
                 {"k": "Stations Covered", "v": "%d / %d" % (bursar_occ, st_target), "sub": "%.0f%% exchange spread" % st_pct, "score": round(s_st)},
                 {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "zero flight fuel", "score": round(s_sl)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "5A":
@@ -846,7 +873,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %.0f craft XP/h" % (crafts_h, wr["craft_xp"] / span_h), "score": round(s_cr)},
                 {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "refinery + exchange", "score": round(s_cr)},
                 {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "5B":
@@ -862,7 +889,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %.0f craft XP/h" % (crafts_h, wr["craft_xp"] / span_h), "score": round(s_cr)},
                 {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
                 {"k": "Workshop Runs / h", "v": "%.1f/h" % (wr["ok_runs"] / span_h), "sub": "%d runs in %dh" % (wr["runs"], int(round(hours))), "score": round(s_cr)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "6A":
@@ -878,7 +905,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Supply Chains SLA", "v": "%.1f%%" % sla, "sub": "%d P1/P2 projects" % infra["p1_p2_needs_count"], "score": round(s_sla)},
                 {"k": "Freight Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "+%s cr/h vs %s fuel" % (format(int(rev_h), ","), format(int(fuel_h), ",")), "score": round(s_rof)},
                 {"k": "Supply Runs / h", "v": "%.1f/h" % runs_h, "sub": "%d/%d productive" % (wr["ok_runs"], wr["runs"]), "score": round(s_sla)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "6B":
@@ -891,7 +918,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Status", "v": "STAGED" if staged else "ACTIVE", "sub": "Haul fallback until pax_net" if staged else "charter live", "score": 100 if staged else round(s_rof)},
                 {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h" % (wr["ok_runs"] / span_h), "score": round(s_rof)},
                 {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "6C":
@@ -904,7 +931,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Outpost Bunkers", "v": "%.1f%%" % b_pct, "sub": "%d active bunkers (50k tgt)" % b_cnt, "score": round(s_bnk)},
                 {"k": "Tender Runs / h", "v": "%.1f/h" % runs_h, "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_bnk)},
                 {"k": "Combat Salvage", "v": "ACTIVE" if salvage_enabled else "STAGED", "sub": "policed/lawless wrecks", "score": 90},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "7A":
@@ -917,10 +944,10 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             s_ef = _score_band(sc_per_1k, good=8.0, warn=4.0, higher_better=True) if sc_per_1k is not None else 80.0
             scores.extend([(s_fr, 0.35), (s_sc, 0.20), (s_ef, 0.20)])
             kpis = [
-                {"k": "Frontier Freshness", "v": "%.1fm med" % r_med, "sub": "avg %.0fm (%d frontier/rival)" % (r_avg, freshness["rival_frontier_count"]), "score": round(s_fr)},
+                {"k": "Rival Hub Freshness", "v": "%.1fm med" % r_med, "sub": "avg %.0fm (%d rival hubs)" % (r_avg, freshness["rival_frontier_count"]), "score": round(s_fr)},
                 {"k": "Systems Scanned / h", "v": "%.1f/h" % scans_h, "sub": "%d scans in %dh" % (wr["scans"], int(round(hours))), "score": round(s_sc)},
                 {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_ef)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         elif wid == "7B":
@@ -936,11 +963,11 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Galaxy Freshness", "v": "%.1fm med" % g_med, "sub": "avg %.0fm | %.0f%% <20m" % (g_avg, freshness["fresh_20m_pct"]), "score": round(s_fr)},
                 {"k": "Surveys & Scans / h", "v": "%.1f/h" % scans_h, "sub": "%d scans in %dh" % (wr["scans"], int(round(hours))), "score": round(s_sc)},
                 {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_ef)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": "%d/%d working" % (wl["working"] + wl["goal"], wl["total"]), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
             ]
 
         w_tot = sum(wt for _sc, wt in scores) or 1.0
-        health_pct = round(sum((sc or 0.0) * wt for sc, wt in scores) / w_tot, 1)
+        health_pct = round(sum((sc or 0.0) * wt for sc, wt in scores) / w_tot, 1) if not staged else round(s_idle, 1)
         status = _status_from_score(health_pct, staged=staged)
 
         wings_out.append({
@@ -999,6 +1026,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         "core_ebit_per_fuel": ebit_per_fuel,
         "total_ships": len(ships_list),
         "working_ships": fleet_working,
+        "upgrading_ships": fleet_upgrading,
         "idle_ships": fleet_idle,
         "park_ships": fleet_park,
         "idle_pct": fleet_idle_pct,

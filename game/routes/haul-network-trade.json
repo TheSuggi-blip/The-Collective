@@ -5,7 +5,7 @@
  "note": "2026-11-26 (Trinity): Wing-locked mobile trade route (requires.wing_prefix ['4A.', '4B.']) governed by game/haul-policy-trade.json. Prevents 4A/4B mobile traders from parking at Bursar desks while maximizing profit & Piloting XP.",
  "policy": "game/haul-policy-trade.json",
  "minutes": 45,
- "max_ships": 20,
+ "max_ships": 30,
  "open_to": [
   "trader"
  ],
@@ -13,7 +13,8 @@
  "requires": {
   "wing_prefix": [
    "4A.",
-   "4B."
+   "4B.",
+   "5B."
   ]
  },
  "measured": {

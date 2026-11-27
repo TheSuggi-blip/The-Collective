@@ -1686,6 +1686,7 @@ def main(argv=None):
                                         time.sleep(TICK)
                                         if "error" not in _rc:
                                             say("bursar_craft %dx %s (%s, est +%d cr)" % (_craft_qty, _out_id, _rec_id, int(_job.get("est_profit") or 0)))
+                                            notes.append("crafted %dx %s (bursar)" % (_craft_qty, _out_id))
                                             acted += 1
                                             # 4. IMMEDIATE cash conversion: hit local live bid right now, else post undercut sell_order!
                                             _loc_bid = int(_job.get("local_bid") or 0)

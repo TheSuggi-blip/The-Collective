@@ -394,7 +394,8 @@ def stalled_reason(rid, route, pilot_name, rows, now):
         return None
     last = mine[-1]
     ended = run_end(last)
-    if ended is None or now - ended >= STALL_REST:
+    _eff_stall_rest = 90 if route.get("kind") in ("bursar", "haul", "craft_net", "mine_net", "hunt_net") else STALL_REST
+    if ended is None or now - ended >= _eff_stall_rest:
         return None
     notes = [str(n) for n in (last.get("notes") or [])]
     if any("run ended (stop_on_failed_buy)" in n for n in notes) and any(c in n for n in notes for c in FAILED_BUY_CAUSES):

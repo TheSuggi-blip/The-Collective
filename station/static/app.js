@@ -5168,7 +5168,7 @@ async function renderMetrics(panel, live) {
       flGrid,
       'Fleet Utilization & Idle (-> 0%)',
       fl.working_pct.toFixed(1) + '% working (' + fmt(fl.working_ships) + '/' + fmt(fl.total_ships) + ')',
-      fl.idle_pct.toFixed(1) + '% true idle (' + fmt(fl.idle_ships) + ') | ' + fmt(fl.host_threads || 0) + ' live threads | ' + fmt(fl.park_ships || 0) + ' parked',
+      fl.idle_pct.toFixed(1) + '% true idle (' + fmt(fl.idle_ships) + ') | ' + fmt(fl.upgrading_ships || 0) + ' upgrading | ' + fmt(fl.host_threads || 0) + ' live threads',
       fl.idle_pct <= 5.0 ? 'pos' : (fl.idle_pct <= 12.0 ? 'warn' : 'neg'),
       fl.working_pct
     );
