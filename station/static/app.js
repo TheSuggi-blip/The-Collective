@@ -333,7 +333,7 @@ try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ 
 let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
-let selShip = null, shipCard = null, shipMark = '', docView = null, infraBuildingId = null;
+let selShip = null, shipCard = null, shipMark = '', docView = null, infraBuildingId = null, infraHubSys = null;
 const groupsBy = new Map();
 const battleSystems = new Set();                    // system id -> the larger groups of one foreign faction seen there
 let groupHits = [], infraHits = [];            // foreign tags and our own building/site pills as drawn
@@ -1708,34 +1708,42 @@ function renderPop() {
   }
   const all = fleetGroups(shipsBy.get(pop.system) || []);
   const groups = pop.kind === 'All' ? all : all.filter((g) => g.kind === pop.kind);
-  if (!s || !groups.length) { closePop(); return; }                // the ships have left
+  const pHerePop = (pop.kind === 'All' || pop.kind === 'Pirates') ? (pirateShipsBy.get(pop.system) || []) : [];
+  if (!s || (!groups.length && !pHerePop.length)) { closePop(); return; }
   const ships = groups.flatMap((g) => g.ships), body = box.querySelector('.popbody'), keep = body ? body.scrollTop : 0;
+  const allUnits = ships.concat(pHerePop);
   const head = el('div', 'pophead'), title = el('div', 'poptitle'), close = el('button', 'popclose', '\u00d7');
-  const one = groups.length === 1 ? groups[0] : null;
-  head.append(shipSvg(one ? one.shape : all[0].shape, one ? one.colour : '#e3e6ee', 26));
-  title.append(el('b', null, one ? (one.kind === 'Command' ? 'Command group' : one.kind) : 'Our ships'),
+  const one = (groups.length === 1 && !pHerePop.length) ? groups[0] : null;
+  head.append(shipSvg(one ? one.shape : (all.length ? all[0].shape : 'Pirates'), one ? one.colour : (all.length ? '#e3e6ee' : PIRATES), 26));
+  const hdrTitle = one
+    ? (one.kind === 'Command' ? 'Command group' : one.kind)
+    : (ships.length && pHerePop.length ? 'Our ships + Pirates' : (pHerePop.length ? 'Pirate Units' : 'Our ships'));
+  title.append(el('b', null, hdrTitle),
     el('span', null, 'at ' + s.name + (one && one.ships[0].admiral ? ' | Adm. ' + one.ships[0].admiral : '')));
   close.type = 'button'; close.title = 'Close (Esc)'; close.addEventListener('click', closePop);
   head.append(title, close);
-  const low = (a, b) => ships.reduce((m, r) => Math.min(m, r[b] > 0 ? Math.round(100 * r[a] / r[b]) : 100), 100);
+  const low = (a, b) => allUnits.reduce((m, r) => Math.min(m, r[b] > 0 ? Math.round(100 * r[a] / r[b]) : 100), 100);
   const stats = el('div', 'popstats'), n = {};
-  for (const [label, value, bad] of [['Ships', ships.length], ['Credits', fmt(ships.reduce((a, r) => a + r.credits, 0))],
+  const shipCountTxt = ships.length && pHerePop.length ? (ships.length + ' + ' + pHerePop.length + ' Pir') : String(allUnits.length);
+  for (const [label, value, bad] of [['Ships', shipCountTxt], ['Credits', fmt(ships.reduce((a, r) => a + (r.credits || 0), 0))],
     ['Lowest hull', low('hull', 'max_hull') + '%', low('hull', 'max_hull') < 50], ['Lowest fuel', low('fuel', 'max_fuel') + '%', low('fuel', 'max_fuel') < 25]]) {
     const cell = el('div', bad ? 'bad' : null);
     cell.append(el('div', 'k', label), el('div', 'v', String(value)));
     stats.append(cell);
   }
-  ships.forEach((r) => { const w = shipState(r)[1]; n[w] = (n[w] || 0) + 1; });
+  allUnits.forEach((r) => { const w = r.is_pirate ? (r.order || 'pirate ops') : shipState(r)[1]; n[w] = (n[w] || 0) + 1; });
   const doing = el('div', 'popdoing', Object.entries(n).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([w, c]) => c + ' ' + w).join(', '));
   const list = el('div', 'popbody');
   const row = (r) => {
-    const b = el('button', 'poprow'), who = el('div', 'who'), nm = el('div', 'nm', r.name), bars = el('div', 'bars');
+    const b = el('button', 'poprow' + (r.is_pirate ? ' pirate-poprow' : '')), who = el('div', 'who'), nm = el('div', 'nm', r.name), bars = el('div', 'bars');
     b.type = 'button';
     if (r.flagship) { const f = el('span', 'flag', '\u2605' + (r.flagship_of ? ' ' + r.flagship_of : '')); nm.append(f); }
-    who.append(nm, el('div', 'at', shipState(r)[1]));
+    if (r.is_pirate && r.class) nm.append(el('span', 't2badge pirate-cls', r.class));
+    const subTxt = r.is_pirate ? ((r.order || shipState(r)[1]) + ' | Lv ' + (r.piloting || 0)) : shipState(r)[1];
+    who.append(nm, el('div', 'at', subTxt));
     bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
-    b.append(who, bars, el('div', 'cr', fmt(r.credits)));
-    b.title = 'Open ' + r.name;
+    b.append(who, bars, el('div', 'cr', fmt(r.credits || 0)));
+    b.title = (r.is_pirate ? 'Open Pirate ship ' : 'Open ') + r.name;
     b.addEventListener('click', () => { closePop(); selectShip(r.name, false); });
     return b;
   };
@@ -1750,6 +1758,12 @@ function renderPop() {
       list.append(sec);
       rows.forEach((r) => list.append(row(r)));
     }
+  }
+  if (pHerePop.length) {
+    const psec = el('div', 'popsec pirate-popsec');
+    psec.append(shipSvg('Pirates', PIRATES, 13), 'Pirates (Account #2) ', el('b', null, String(pHerePop.length)));
+    list.append(psec);
+    pHerePop.forEach((r) => list.append(row(r)));
   }
   const foot = el('div', 'popfoot'), go = el('button', 'poplink', 'Open ' + s.name);
   go.type = 'button'; go.addEventListener('click', () => { closePop(); select(s.id, false); });
@@ -3228,20 +3242,38 @@ async function renderInventory(panel, live) {
   if (invMode === 'supply') {
     const needs = (ops && ops.needs) || [];
     const reqs = (ops && ops.requests) || [];
-    const opSup = (ops && ops.outpost_supply) || [];
+    const opSupRaw = (ops && ops.outpost_supply) || [];
+    const rSup = ops && ops.resort_supply;
+    const opSup = [...opSupRaw].sort((a, b) => {
+      const ra = a.kind === 'station' ? 0 : 1, rb = b.kind === 'station' ? 0 : 1;
+      return ra - rb || String(a.name || '').localeCompare(String(b.name || ''));
+    });
+    let resortMerged = false;
+    const fmtBaseLabel = (ob) => {
+      const kindTag = ob.kind === 'station' ? 'Station' : 'Outpost';
+      const cleanName = String(ob.name || '').replace(/^Collective\s+/i, 'CLTV ').replace(/\s*\((Station|Outpost)\)\s*$/i, '');
+      return cleanName + ' (' + kindTag + ')';
+    };
     if (opSup.length) {
-      panel.append(el('h3', null, 'Outpost Fuel Bunkers & Dynamic Surge Supply (' + opSup.length + ')'));
+      panel.append(el('h3', null, 'Owned Base Supply Lines & Fuel Bunkers (' + opSup.length + ')'));
       const ocards = el('div', 'icards');
       for (const ob of opSup) {
+        const isStation = ob.kind === 'station';
+        const isRidge = isStation && String(ob.system || '').toLowerCase() === 'ridgecrest' && rSup && rSup.items && rSup.items.length;
+        if (isRidge) resortMerged = true;
         const oc = el('div', 'icard ' + (ob.bunker_pct >= 80 ? 'ownbase' : 'sitecard'));
         const oh = el('div', 'ichead');
         const tierCls = ob.surge_tier === 'FULL' ? 'good' : (ob.surge_tier === 'TOP-OFF' || ob.surge_tier === 'STEADY' ? 'info' : (ob.surge_tier === 'LOW' ? 'warn' : 'bad'));
         oh.append(
-          el('b', null, ob.name + ' (' + ob.system + ')'),
+          el('b', null, fmtBaseLabel(ob)),
+          el('span', 'pill', ob.system),
           el('span', 'pill ' + tierCls, ob.surge_tier + ' (' + ob.active_haulers + '/' + ob.target_haulers + ' haulers)'),
         );
         if (ob.repair_ready !== undefined) {
           oh.append(el('span', 'pill ' + (ob.repair_ready ? 'good' : 'warn'), ob.repair_ready ? 'REPAIR READY' : ('REPAIR SHORT (' + ob.repair_gap + ')')));
+        }
+        if (isRidge) {
+          oh.append(el('span', 'pill ' + (rSup.ready ? 'good' : 'info'), rSup.ready ? 'RESORT STOCKED' : ('RESORT ' + rSup.ok_count + '/' + rSup.total_count + ' | ' + (rSup.appeal_target || 47) + ' APPEAL')));
         }
         if (ob.raided) oh.append(el('span', 'pill bad', 'PIRATE RAID SHIELD'));
         oc.append(oh);
@@ -3255,10 +3287,42 @@ async function renderInventory(panel, live) {
           ? 'Active haulers: ' + ob.hauler_names.join(', ')
           : (ob.raided ? 'Haulers paused (2h pirate raid shield active)' : (ob.target_haulers > 0 ? 'Awaiting nearby haulers (surge target: ' + ob.target_haulers + ')' : 'Bunker full (>=96%)'));
         oc.append(el('div', 'rmeta-sub', hsub));
-        if (ob.upkeep && ob.upkeep.length) {
-          const urow = el('div', 'ibsub');
-          urow.textContent = 'Upkeep buffers: ' + ob.upkeep.map((u) => u.item.replace(/_/g, ' ') + ' ' + fmt(u.have) + '/' + fmt(u.target)).join(' | ');
-          oc.append(urow);
+
+        // Merge upkeep targets + any additional resort items (deduplicated) with progress bars!
+        const itemMap = new Map();
+        for (const u of (ob.upkeep || [])) {
+          itemMap.set(u.item, { item: u.item, have: Number(u.have || 0), target: Number(u.target || 0), pct: Number(u.pct || 0) });
+        }
+        if (isRidge) {
+          for (const it of (rSup.items || [])) {
+            const k = it.item;
+            if (!itemMap.has(k)) {
+              itemMap.set(k, { item: k, have: Number(it.have || 0), target: Number(it.keep || 0), pct: Number(it.pct || 0) });
+            } else {
+              const prev = itemMap.get(k);
+              if (Number(it.have || 0) > prev.have) {
+                prev.have = Number(it.have || 0);
+                prev.pct = prev.target > 0 ? Math.min(100, (100 * prev.have) / prev.target) : 100;
+              }
+            }
+          }
+        }
+        const needItems = [...itemMap.values()];
+        if (needItems.length) {
+          const grid = el('div', 'sup-bars');
+          for (const it of needItems) {
+            const cls = it.pct >= 99.5 ? 'good' : (it.pct >= 50 ? 'warn' : 'bad');
+            const ibar = el('div', 'progcell');
+            ibar.append(
+              el('span', 'mono', it.item.replace(/_/g, ' ') + ': ' + fmt(it.have) + ' / ' + fmt(it.target) + ' (' + Math.round(it.pct) + '%)'),
+              pbar(it.pct, 100, cls),
+            );
+            grid.append(ibar);
+          }
+          oc.append(grid);
+        }
+        if (isRidge) {
+          oc.append(el('div', 'rmeta-sub', '12 Phase-1 Resort venues (47 appeal, ~29k cr/cycle upkeep) | Automated via Bursar buy-walls + 5A/5B kitchen craft_net + Logistics haul-network'));
         }
         ocards.append(oc);
       }
@@ -3275,6 +3339,7 @@ async function renderInventory(panel, live) {
         el('span', 'pill ' + (cDepot.ready ? 'good' : 'warn'), cDepot.ready ? 'DEPOT STOCKED' : ('RESTOCKING (' + fmt(cDepot.active_haulers || 0) + ' haulers)')),
       );
       dc.append(dh);
+      const dgrid = el('div', 'sup-bars');
       for (const it of cDepot.items) {
         const ibar = el('div', 'progcell');
         const cls = it.state === 'OK' ? 'good' : (it.state === 'LOW' ? 'warn' : 'bad');
@@ -3282,8 +3347,9 @@ async function renderInventory(panel, live) {
           el('span', 'mono', it.item.replace(/_/g, ' ') + ': ' + fmt(it.have) + ' / ' + fmt(it.target) + ' (' + it.pct.toFixed(0) + '%)'),
           pbar(it.pct, 100, cls),
         );
-        dc.append(ibar);
+        dgrid.append(ibar);
       }
+      dc.append(dgrid);
       const dsub = cDepot.hauler_names && cDepot.hauler_names.length
         ? 'Active depot haulers: ' + cDepot.hauler_names.join(', ') + ' | Auto-flush + Node Beta craft + haul backstop active'
         : 'Auto-flush (Traders & Haulers) + Node Beta crafting (fuel cells, plates, boards) + haul backstop active';
@@ -3291,18 +3357,19 @@ async function renderInventory(panel, live) {
       dcards.append(dc);
       panel.append(dcards);
     }
-    const rSup = ops && ops.resort_supply;
-    if (rSup && rSup.items && rSup.items.length) {
-      panel.append(el('h3', null, 'Station #1 Resort & Hospitality Supply Chain (Ridgecrest -- 47 Appeal Target)'));
+    if (!resortMerged && rSup && rSup.items && rSup.items.length) {
+      panel.append(el('h3', null, 'CLTV Resort Ridgecrest (Station) -- Pre-Founding Supply Chain'));
       const rcards = el('div', 'icards');
       const rc = el('div', 'icard ' + (rSup.ready ? 'ownbase' : 'sitecard'));
       const rh = el('div', 'ichead');
       const rBadge = rSup.founded ? (rSup.ready ? 'RESORT STOCKED' : ('STOCKING ' + rSup.ok_count + '/' + rSup.total_count)) : 'FOUNDING IN FLIGHT';
       rh.append(
-        el('b', null, rSup.name + ' (' + rSup.system + ')'),
+        el('b', null, 'CLTV Resort Ridgecrest (Station)'),
+        el('span', 'pill', rSup.system),
         el('span', 'pill ' + (rSup.ready ? 'good' : (rSup.founded ? 'info' : 'warn')), rBadge),
       );
       rc.append(rh);
+      const rgrid = el('div', 'sup-bars');
       for (const it of rSup.items) {
         const ibar = el('div', 'progcell');
         const cls = it.state === 'OK' ? 'good' : (it.state === 'LOW' ? 'warn' : 'bad');
@@ -3310,8 +3377,9 @@ async function renderInventory(panel, live) {
           el('span', 'mono', it.item.replace(/_/g, ' ') + ': ' + fmt(it.have) + ' / ' + fmt(it.keep) + ' (' + it.pct.toFixed(0) + '%)'),
           pbar(it.pct, 100, cls),
         );
-        rc.append(ibar);
+        rgrid.append(ibar);
       }
+      rc.append(rgrid);
       rc.append(el('div', 'rmeta-sub', '12 Phase-1 venues (47 appeal, ~29k cr/cycle upkeep) | Automated via Bursar buy-walls + 5A/5B kitchen craft_net + Logistics haul-network'));
       rcards.append(rc);
       panel.append(rcards);
@@ -4735,20 +4803,20 @@ function renderFinancialStatements(panel, ops, w, t) {
   // 1. CONDENSED CONSOLIDATED STATEMENT OF OPERATIONS (STRICT GAAP / IFRS 15 -- REALIZED ONLY)
   panel.append(el('h3', null, '1. Condensed Consolidated Statement of Operations (Income Statement -- Strict IFRS 15 / GAAP Realized)'));
   const pnlRows = [
-    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- By Wing & Division)' },
+    { cls: 'fs-sec', sec: 'Realized Operating Revenue (IFRS 15 / ASC 606 -- Ordered by Division & Source)' },
     row5(fsLbl('Bursars & Station Refining -- Active Exchange & Craft (4C/5A/5B, 65)', ['Trade']), bursarActiveOf, 'fs-ind'),
     row5(fsLbl('Bursars -- Passive Limit-Order Fills & Escrow Unwind (Net Inflow)', ['Trade']), passiveRevOf, 'fs-ind'),
     row5(fsLbl('Mobile Trade -- Express & Bulk Arbitrage (4A/4B, 20)', ['Trade']), mobileTradeOf, 'fs-ind'),
     row5(fsLbl('Core Logistics -- Supply, Fuel & Salvage Contracts (6A/6C, 62)', ['Logistics']), logCoreOf, 'fs-ind'),
     row5(fsLbl('Passenger & Resort Liners (6B, 28)', ['Logistics']), paxLinersOf, 'fs-ind'),
-    row5(fsLbl('Owned Stations & Resorts -- Tourism, Market & Refuel Fees', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0), 'fs-ind'),
     row5(fsLbl('Military & Hunters -- Bounties & Frontier Loot (1A-1C, 2A/2B, 150)', ['Military']), militaryRevOf, 'fs-ind'),
-    ...([a1, a6, a24].some((x) => x && revbOf(x) && Number(revbOf(x).other_unexplained_h || 0) !== 0)
-      ? [row5('Other Unattributed Wallet Adjustments (Non-Trade Reconciling)', (a) => (a && revbOf(a) ? Number(revbOf(a).other_unexplained_h || 0) : 0), 'fs-ind')]
-      : []),
     ...([a1, a6, a24].some((x) => (miningRevOf(x) || 0) + (intelRevOf(x) || 0) !== 0)
       ? [row5(fsLbl('Other Direct Sales (Mining / Intel residual)', ['Mining', 'Intel']), (a) => (a ? (miningRevOf(a) || 0) + (intelRevOf(a) || 0) : null), 'fs-ind')]
       : []),
+    ...([a1, a6, a24].some((x) => x && revbOf(x) && Number(revbOf(x).other_unexplained_h || 0) !== 0)
+      ? [row5('Other Unattributed Wallet Adjustments (Non-Trade Reconciling)', (a) => (a && revbOf(a) ? Number(revbOf(a).other_unexplained_h || 0) : 0), 'fs-ind')]
+      : []),
+    row5(fsLbl('Owned Stations & Resorts -- Tourism, Market & Refuel Fees', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0), 'fs-ind'),
     row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
     row5('Fuel Burn (Paid Station Refuels -- Excludes Free Bunkers)', fuelSumOf, 'fs-ind'),
@@ -4758,11 +4826,12 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Less: Reclassified Mission & CapEx Transit Fuel (Credited Out of Core OpEx)', (a) => (opexOf(a) ? numOr0(opexOf(a), 'reclassified_once_h') : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
     row5('Total Matched Direct Operating Costs (COGS & OpEx)', dirOpExOf, 'fs-sub'),
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
-    { cls: 'fs-sec', sec: 'Building Upkeep, Station Operations Overhead & Realized EBIT' },
-    row5(fsLbl('Leased NPC Facility Rent (19 Offices/Desks, Cash Treasury)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
-    row5(fsLbl('Owned Station Facility Maintenance Labor (Cash Treasury)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
-    row5(fsLbl('Other Treasury Operating Net (Tax / Unattributed, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
-    row5('Memo: Owned Station Consumable Upkeep Burn (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
+    { cls: 'fs-sec', sec: 'Building & Station Upkeep Costs (Rent, Maintenance & Overhead)' },
+    row5(fsLbl('NPC Building & Office Rent Upkeep (19 Leased Facilities, Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
+    row5(fsLbl('Owned Station Facility Maintenance Labor Upkeep (Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
+    row5('Total Cash Building & Station Upkeep Costs', (a) => (a && a.station_ops ? (Number(a.station_ops.npc_rent_h || 0) + Number(a.station_ops.station_labor_opex_h || 0)) : null), 'fs-sub'),
+    row5('Memo: Owned Station Consumables & Hospitality Upkeep (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
+    row5(fsLbl('Other Treasury Operating Net (Tax / Unrecorded Deposits, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
     row5('Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)', realizedEbitOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Other Realized Operating Income' },
     row5('Realized Seed & Mission Rewards (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
@@ -5740,14 +5809,14 @@ async function renderEmpire(panel, live) {
     panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'], hullRows, [4])));
   }
 
-  // Dedicated single-building detail view when a building row is clicked
+  // 2-level clickable drill-down: System Building Hubs -> Hub Page -> Individual Facility Page
   if (infraBuildingId) {
     const b = bldgs.find((x) => (x.id || (x.system + ':' + x.name)) === infraBuildingId);
     if (b) {
       const sObj = sys.get(b.system) || { name: b.system, empire: '' };
       const ok = stands(b);
       const topBar = el('div', 'reader-bar');
-      const backBtn = el('button', 'subtab', '<- All Buildings');
+      const backBtn = el('button', 'subtab', infraHubSys ? ('<- Back to ' + ((sys.get(infraHubSys) || {}).name || infraHubSys)) : '<- All Building Hubs');
       backBtn.type = 'button';
       backBtn.addEventListener('click', () => { infraBuildingId = null; render(); });
       const mapBtn = el('button', 'rf', 'Locate ' + (sObj.name || b.system) + ' on Map');
@@ -5785,7 +5854,7 @@ async function renderEmpire(panel, live) {
       panel.append(kgrid);
 
       const infoCard = el('div', 'icard');
-      infoCard.append(el('h4', null, 'Building Profile & Operations'));
+      infoCard.append(el('h4', null, 'Facility Specification & Operations'));
       const frows = [
         ['Location', sysLink(b.system)],
         ['Host / Placement', b.at === 'our own base' ? 'Sovereign CLTV Base (0 rent, built-in Faction Storage)' : (b.part ? 'Inside ' + b.at : 'Leased at ' + b.at)],
@@ -5808,88 +5877,166 @@ async function renderEmpire(panel, live) {
           b.upkeep.map((u) => [u.item.replace(/_/g, ' '), fmt(u.qty), fmt(u.qty * 86)]), [1, 2])));
         panel.append(ucard);
       }
-
-      if (b.kind === 'station' || b.kind === 'outpost') {
-        const hosted = bldgs.filter((x) => x.part && ((b.base && x.base === b.base) || x.system === b.system) && x !== b);
-        const hcard = el('div', 'icard');
-        hcard.append(el('h4', null, 'Installed Facilities Inside ' + b.name + ' (' + hosted.length + ')'));
-        if (hosted.length) {
-          const hlist = el('div', 'bldg-list');
-          hosted.forEach((ch) => {
-            const cbtn = el('button', 'bldg-row');
-            cbtn.type = 'button';
-            cbtn.append(
-              glyphSvg(ch.kind || 'office', stands(ch) ? BUILT : RAISING, 15),
-              el('span', 'bldg-name', ch.name),
-              el('span', 'pill ' + (stands(ch) ? 'good' : 'warn'), (ch.status || 'active').replace(/_/g, ' ')),
-              el('span', 'bldg-meta', ch.book_value ? fmtCompact(ch.book_value) + ' cr' : '0 rent'),
-              el('span', 'bldg-chev', '>')
-            );
-            cbtn.addEventListener('click', () => { infraBuildingId = ch.id || (ch.system + ':' + ch.name); render(); });
-            hlist.append(cbtn);
-          });
-          hcard.append(hlist);
-        } else {
-          hcard.append(el('p', 'sub', b.kind === 'station'
-            ? 'Built-in free Faction Storage is active. Phase-1 core services and 12 Resort venues are queued in needs.tsv and supply chains are actively stocking materials.'
-            : 'No additional facilities installed inside this base yet.'));
-        }
-        panel.append(hcard);
-
-        if (b.kind === 'station' && b.system === 'ridgecrest' && ops && ops.resort_supply) {
-          const rs = ops.resort_supply;
-          const rcard = el('div', 'icard');
-          rcard.append(el('h4', null, 'Phase-1 Resort & Build Supply Chain (' + (rs.ok_count || 0) + '/' + (rs.total_count || 0) + ' ready | Target ' + (rs.appeal_target || 47) + ' Appeal)'));
-          rcard.append(fitTable(table(['Supply Chain', 'Stocked', 'Target', 'Status'],
-            (rs.items || []).map((it) => [
-              (it.item || it.chain || '').replace(/_/g, ' '),
-              fmt(it.have || 0),
-              fmt(it.keep || 0),
-              el('span', 'pill ' + (it.state === 'OK' ? 'good' : it.state === 'LOW' ? 'warn' : 'bad'), it.state || 'SHORT'),
-            ]), [1, 2])));
-          panel.append(rcard);
-        }
-      }
       return;
     } else {
       infraBuildingId = null;
     }
   }
 
-  if (bldgs.length) {
-    panel.append(el('h3', null, 'Where our buildings stand (' + bldgs.length + ' buildings in ' + bySys.size + ' systems)'));
-    const kindRank = (k) => (k === 'station' ? 0 : k === 'outpost' ? 1 : 2);
-    const orderedBldgs = [...bldgs].sort((a, b) =>
-      kindRank(a.kind) - kindRank(b.kind)
-      || (a.part ? 1 : 0) - (b.part ? 1 : 0)
-      || String(a.system || '').localeCompare(String(b.system || ''))
-      || String(a.name || '').localeCompare(String(b.name || ''))
+  if (infraHubSys && bySys.has(infraHubSys)) {
+    const sid = infraHubSys;
+    const list = bySys.get(sid) || [];
+    const sObj = sys.get(sid) || { name: sid, empire: '' };
+    const ownBase = list.find((x) => x.kind === 'station' || x.kind === 'outpost') || null;
+    const facs = list.filter((x) => x !== ownBase);
+    const hubName = ownBase ? ownBase.name : ((list[0] && list[0].at && list[0].at !== 'our own base') ? list[0].at : (sObj.name || sid));
+    const hubKind = ownBase ? ownBase.kind : 'office';
+    const totBook = list.reduce((a, x) => a + Number(x.book_value || 0), 0);
+    const totRentCyc = list.reduce((a, x) => a + Number(x.rent || 0), 0);
+    const totLaborCyc = list.reduce((a, x) => a + Number(x.labor_cost || 0), 0);
+    const shipsHere = (shipsBy.get(sid) || []).length;
+    const baseIds = new Set(list.map((b) => b.base).filter(Boolean));
+    const stNames = new Set((stationsBy.get(sid) || []).map((t) => t.name));
+    const invRows = inv ? inv.stations.filter((x) => stNames.has(x.name) || baseIds.has(x.base) || x.name === hubName) : [];
+    const worthHere = invRows.reduce((a, x) => a + (x.worth || 0), 0);
+    const unitsHere = invRows.reduce((a, x) => a + (x.units || 0), 0);
+    const fuelRec = list.find((x) => x.fuel !== null && x.fuel !== undefined);
+
+    const topBar = el('div', 'reader-bar');
+    const backBtn = el('button', 'subtab', '<- All Building Hubs');
+    backBtn.type = 'button';
+    backBtn.addEventListener('click', () => { infraHubSys = null; infraBuildingId = null; render(); });
+    const mapBtn = el('button', 'rf', 'Locate ' + (sObj.name || sid) + ' on Map');
+    mapBtn.type = 'button';
+    mapBtn.addEventListener('click', () => { select(sid, true); });
+    topBar.append(backBtn, mapBtn);
+    panel.append(topBar);
+
+    const hero = el('div', 'sel-hero');
+    const hl = el('div');
+    hl.append(el('h2', null, hubName));
+    const hsub = el('div', 'sel-sub');
+    const kindLbl = hubKind === 'station' ? 'SOVEREIGN STATION' : hubKind === 'outpost' ? 'FRONTIER OUTPOST' : ('NPC STATION HUB (' + facs.length + ' FAC)');
+    hsub.append(
+      el('span', 'pill ' + (hubKind === 'station' ? 'good' : hubKind === 'outpost' ? 'info' : ''), kindLbl),
+      el('span', 'pill good', ownBase ? (ownBase.status || 'thriving').replace(/_/g, ' ') : 'active'),
+      el('span', 'pill', sObj.empire ? (sObj.empire + ' space') : 'lawless frontier')
     );
+    hl.append(hsub);
+    hero.append(hl, glyphSvg(hubKind, BUILT, 28));
+    panel.append(hero);
+
+    const kgrid = el('div', 'kpis');
+    const hkpi = (k, v, sTxt, c) => { const bx = el('div', 'kpi' + (c ? ' ' + c : '')); bx.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) bx.append(el('div', 's', sTxt)); kgrid.append(bx); };
+    hkpi('Total Hub Book Value', totBook ? fmtCompact(totBook) + ' cr' : '--', ownBase ? (ownBase.kind === 'station' ? '17.0M station + facilities' : '250k outpost + facilities') : (facs.length + ' leased facilities'), totBook ? 'pos' : '');
+    hkpi('Total Cash Upkeep', (totRentCyc + totLaborCyc) ? (fmt(totRentCyc + totLaborCyc) + ' cr/cyc') : '0 cr/cyc',
+      totRentCyc ? ('~' + fmtCompact(Math.round(totRentCyc * 86)) + '/day NPC rent') : (totLaborCyc ? ('~' + fmtCompact(Math.round(totLaborCyc * 86)) + '/day labor') : 'Zero rent (sovereign base)'),
+      totRentCyc > 0 ? 'warn' : 'pos');
+    hkpi('Fleet in System', fmt(shipsHere) + ' ships', 'System: ' + (sObj.name || sid), shipsHere ? 'pos' : '');
+    hkpi('Vault Stock Stored', worthHere ? fmtCompact(worthHere) + ' cr' : '0 cr', unitsHere ? (fmt(unitsHere) + ' units at hub') : 'No vault stock recorded', worthHere > 0 ? 'pos' : '');
+    panel.append(kgrid);
+
+    if (ownBase) {
+      const pcard = el('div', 'icard');
+      pcard.append(el('h4', null, 'Base Overview'));
+      const prows = [
+        ['System', sysLink(sid)],
+        ['Base ID', ownBase.base || '--'],
+        ['Purpose', ownBase.purpose || '--'],
+      ];
+      if (ownBase.poi) prows.push(['POI ID', ownBase.poi]);
+      if (Array.isArray(ownBase.services) && ownBase.services.length) prows.push(['Active Services', ownBase.services.join(', ')]);
+      pcard.append(facts(prows));
+      if (fuelRec) {
+        pcard.append(el('div', 'ibsub', 'Fuel Bunker Reserve: ' + fmt(fuelRec.fuel) + ' / 50,000 fuel'), pbar(fuelRec.fuel, 50000, fuelRec.fuel >= 25000 ? 'good' : 'warn'));
+      }
+      panel.append(pcard);
+    }
+
+    const fcard = el('div', 'icard');
+    fcard.append(el('h4', null, 'Installed Buildings & Facilities (' + facs.length + ')'));
+    if (facs.length) {
+      const flist = el('div', 'bldg-list');
+      for (const f of facs) {
+        const ok = stands(f);
+        const fbtn = el('button', 'bldg-row');
+        fbtn.type = 'button';
+        fbtn.append(
+          glyphSvg(f.kind || 'office', ok ? BUILT : RAISING, 15),
+          el('span', 'bldg-name', f.name),
+          el('span', 'bldg-sys', f.level ? ('Lv ' + f.level) : (f.type || '')),
+          el('span', 'pill', (f.kind || 'office').toUpperCase()),
+          el('span', 'pill ' + (ok ? 'good' : 'warn'), (f.status || 'active').replace(/_/g, ' ')),
+          el('span', 'bldg-meta', f.rent ? (fmt(f.rent) + ' cr/cyc') : (f.book_value ? fmtCompact(f.book_value) + ' cr | 0 rent' : '0 rent')),
+          el('span', 'bldg-chev', '>')
+        );
+        fbtn.title = 'Inspect ' + f.name;
+        fbtn.addEventListener('click', () => { infraBuildingId = f.id || (f.system + ':' + f.name); render(); });
+        flist.append(fbtn);
+      }
+      fcard.append(flist);
+    } else {
+      fcard.append(el('p', 'sub', hubKind === 'station'
+        ? 'Built-in free Faction Storage is active. Phase-1 core services and 12 Resort venues are queued in needs.tsv and supply chains are actively stocking materials.'
+        : 'No facilities listed in this system yet.'));
+    }
+    panel.append(fcard);
+
+    if (hubKind === 'station' && sid === 'ridgecrest' && ops && ops.resort_supply) {
+      const rs = ops.resort_supply;
+      const rcard = el('div', 'icard');
+      rcard.append(el('h4', null, 'Phase-1 Resort & Build Supply Chain (' + (rs.ok_count || 0) + '/' + (rs.total_count || 0) + ' ready | Target ' + (rs.appeal_target || 47) + ' Appeal)'));
+      rcard.append(fitTable(table(['Supply Chain', 'Stocked', 'Target', 'Status'],
+        (rs.items || []).map((it) => [
+          (it.item || it.chain || '').replace(/_/g, ' '),
+          fmt(it.have || 0),
+          fmt(it.keep || 0),
+          el('span', 'pill ' + (it.state === 'OK' ? 'good' : it.state === 'LOW' ? 'warn' : 'bad'), it.state || 'SHORT'),
+        ]), [1, 2])));
+      panel.append(rcard);
+    }
+    return;
+  }
+
+  if (bySys.size) {
+    panel.append(el('h3', null, 'Where our buildings stand (' + bySys.size + ' system hubs | ' + bldgs.length + ' buildings)'));
+    const orderedHubs = [...bySys.entries()].sort((a, b) => {
+      const rankOf = (arr) => (arr.some((x) => x.kind === 'station') ? 0 : arr.some((x) => x.kind === 'outpost') ? 1 : 2);
+      return rankOf(a[1]) - rankOf(b[1]) || b[1].length - a[1].length || a[0].localeCompare(b[0]);
+    });
     const blist = el('div', 'bldg-list');
-    for (const b of orderedBldgs) {
-      const sObj = sys.get(b.system) || { name: b.system };
-      const ok = stands(b);
-      const row = el('button', 'bldg-row' + (b.kind === 'station' ? ' is-station' : b.kind === 'outpost' ? ' is-outpost' : ''));
+    for (const [sid, list] of orderedHubs) {
+      const sObj = sys.get(sid) || { name: sid };
+      const ownBase = list.find((x) => x.kind === 'station' || x.kind === 'outpost') || null;
+      const facs = list.filter((x) => x !== ownBase);
+      const hubKind = ownBase ? ownBase.kind : 'office';
+      const hubName = ownBase ? ownBase.name : ((list[0] && list[0].at && list[0].at !== 'our own base') ? list[0].at : (sObj.name || sid));
+      const allOk = list.every((x) => stands(x));
+      const totRentCyc = list.reduce((a, x) => a + Number(x.rent || 0), 0);
+      const totBook = list.reduce((a, x) => a + Number(x.book_value || 0), 0);
+      const row = el('button', 'bldg-row' + (hubKind === 'station' ? ' is-station' : hubKind === 'outpost' ? ' is-outpost' : ''));
       row.type = 'button';
-      const kBadge = b.kind === 'station' ? 'STATION' : b.kind === 'outpost' ? 'OUTPOST' : (b.part ? 'BASE FAC' : 'NPC OFFICE');
-      const kCls = b.kind === 'station' ? 'good' : b.kind === 'outpost' ? 'info' : '';
-      const metaTxt = b.kind === 'station'
-        ? (fmtCompact(b.book_value || 17000000) + ' cr | 0 rent')
-        : b.kind === 'outpost'
-          ? ((b.fuel != null ? fmt(b.fuel) + ' fuel | ' : '') + (b.hosted_count || 0) + ' fac | 0 rent')
-          : (b.rent ? (fmt(b.rent) + ' cr/cyc') : '0 rent');
+      const kBadge = hubKind === 'station' ? 'STATION' : hubKind === 'outpost' ? ('OUTPOST (' + facs.length + ' fac)') : ('NPC HUB (' + facs.length + ' fac)');
+      const kCls = hubKind === 'station' ? 'good' : hubKind === 'outpost' ? 'info' : '';
+      const metaTxt = hubKind === 'station'
+        ? (fmtCompact(totBook || 17000000) + ' cr | 0 rent')
+        : hubKind === 'outpost'
+          ? (fmtCompact(totBook) + ' cr | 0 rent')
+          : (totRentCyc ? (fmt(totRentCyc) + ' cr/cyc') : '0 rent');
       row.append(
-        glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15),
-        el('span', 'bldg-name', b.name),
-        el('span', 'bldg-sys', sObj.name || b.system),
+        glyphSvg(hubKind, allOk ? BUILT : RAISING, 15),
+        el('span', 'bldg-name', hubName),
+        el('span', 'bldg-sys', sObj.name || sid),
         el('span', 'pill ' + kCls, kBadge),
-        el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')),
+        el('span', 'pill ' + (allOk ? 'good' : 'warn'), ownBase ? (ownBase.status || 'thriving').replace(/_/g, ' ') : (allOk ? 'active' : 'building')),
         el('span', 'bldg-meta', metaTxt),
         el('span', 'bldg-chev', '>')
       );
-      row.title = 'Click to inspect ' + b.name + ' in ' + (sObj.name || b.system);
+      const facNames = facs.map((x) => x.name).join(', ');
+      row.title = hubName + ' in ' + (sObj.name || sid) + (facNames ? (' | Facilities: ' + facNames) : '') + ' -- Click to open hub page';
       row.addEventListener('click', () => {
-        infraBuildingId = b.id || (b.system + ':' + b.name);
+        infraHubSys = sid;
+        infraBuildingId = null;
         render();
       });
       blist.append(row);
