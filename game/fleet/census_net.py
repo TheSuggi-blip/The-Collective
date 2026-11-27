@@ -70,10 +70,10 @@ def _parse_iso_ts(val):
 DEFAULT_POLICY = {
     "enabled": True,
     "allow_strongholds": False,
-    "target_fresh_hours": 4.0,
-    "min_rescan_minutes": 45.0,
+    "target_fresh_hours": 0.50,
+    "min_rescan_minutes": 10.0,
     "claim_ttl_s": 1800,
-    "chain_legs": 8,
+    "chain_legs": 25,
     "chain_jumps": 3,
     "hop_decay": 0.30,
     "peer_avoid_hops": 2,
@@ -642,13 +642,13 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
         print("census_net: disabled in policy", flush=True)
         return 0
     deadline = time.time() + max(5, int(minutes or 35)) * 60.0
-    max_legs = max(1, int(pol.get("chain_legs") or 8))
+    max_legs = max(1, int(pol.get("chain_legs") or 25))
     chain_j = max(1, int(pol.get("chain_jumps") or 3))
     done = set()
     cur_sys = None
     legs = 0
     try:
-        while legs < max_legs and (legs == 0 or (deadline - time.time()) > 300.0):
+        while legs < max_legs and (legs == 0 or (deadline - time.time()) > 120.0):
             hop_lim = None if legs == 0 else chain_j
             pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=hop_lim, dry=dry_run)
             if not pick and legs > 0:
@@ -679,14 +679,14 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
             env["COLLECTIVE_DATA"] = str(data)
             failed = False
             for wp in enroute_wps:
-                if legs >= max_legs or (deadline - time.time()) <= 240.0:
+                if legs >= max_legs or (deadline - time.time()) <= 90.0:
                     break
                 if wp in done:
                     continue
                 if not claim_waypoint(data, pilot, wp, pick["wing"] or "", pick["quad"], pol):
                     continue
                 print("CENSUS_NET enroute | %s -> %s (on shortest path to %s)" % (pilot, wp, target_sys), flush=True)
-                cmd_wp = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, wp, "--stay", "--route", str(route_id)]
+                cmd_wp = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, wp, "--stay", "--keep-flying", "--route", str(route_id)]
                 res_wp = subprocess.run(cmd_wp, env=env, check=False)
                 release_claim(data, pilot, wp)
                 done.add(wp)
@@ -699,7 +699,7 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
                 release_claim(data, pilot, target_sys)
                 break
 
-            cmd = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, target_sys, "--stay", "--route", str(route_id)]
+            cmd = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, target_sys, "--stay", "--keep-flying", "--route", str(route_id)]
             res = subprocess.run(cmd, env=env, check=False)
             release_claim(data, pilot, target_sys)
             done.add(target_sys)

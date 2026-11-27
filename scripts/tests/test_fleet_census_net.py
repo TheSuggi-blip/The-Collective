@@ -48,7 +48,7 @@ def _make_world(tmp_dir, now_t):
         ],
     )
     con.execute("INSERT INTO places VALUES ('hub_en','p1','station','Hub','station','hub_en_station',0,0,?,'test')", (int(now_t),))
-    con.execute("INSERT INTO fields VALUES ('hub_en','b1','iron_ore',1000,1000,5,?,'test')", (int(now_t - 600),))
+    con.execute("INSERT INTO fields VALUES ('hub_en','b1','iron_ore',1000,1000,5,?,'test')", (int(now_t - 120),))
     con.execute("INSERT INTO fields VALUES ('stale_wn','b2','silver_ore',1000,1000,5,?,'test')", (int(now_t - 36000),))
     con.commit()
     con.close()

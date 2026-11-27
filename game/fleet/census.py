@@ -445,6 +445,62 @@ def refuel_hops(lanes, here, target, onward, stations, tank, max_fuel, ship, fp,
         filled.add(cur)
 
 
+def station_dock_needed(data, base_id, ship_doc, cur_fuel, now_t=None, bursar_claims=None):
+    """Return True only if the scout actually needs fuel OR the station's market/mission cache is stale."""
+    now_t = time.time() if now_t is None else float(now_t)
+    max_f = (ship_doc or {}).get('max_fuel') if isinstance(ship_doc, dict) else None
+    if cur_fuel is None or not isinstance(max_f, (int, float)) or max_f <= 0 or float(cur_fuel) < 0.55 * float(max_f):
+        return True
+    mkt_p = Path(data) / 'market' / f'{base_id}.json'
+    mis_p = Path(data) / 'missions' / f'{base_id}.json'
+    mkt_age = (now_t - mkt_p.stat().st_mtime) if mkt_p.is_file() else 1e9
+    mis_age = (now_t - mis_p.stat().st_mtime) if mis_p.is_file() else 1e9
+    if bursar_claims is None:
+        try:
+            bc_p = Path(data) / 'fleet' / 'bursar_claims.json'
+            bursar_claims = json.loads(bc_p.read_text(encoding='utf-8')) if bc_p.is_file() else {}
+        except (OSError, ValueError):
+            bursar_claims = {}
+    has_bursar = isinstance(bursar_claims, dict) and str(base_id) in bursar_claims
+    if has_bursar and mkt_age < 300.0 and mis_age < 3600.0:
+        return False
+    if mkt_age < 1200.0 and mis_age < 3600.0:
+        return False
+    return True
+
+
+def fuel_stations_fast(data):
+    """Fast fuel_stations using read.db (2ms) with full fallback to fuel_stations(data)."""
+    db = Path(data) / 'store' / 'read.db'
+    if db.is_file():
+        con = None
+        try:
+            import sqlite3
+            con = sqlite3.connect('file:%s?mode=ro&immutable=1' % db, uri=True, timeout=2.0)
+            out = {}
+            rows = con.execute("""
+                SELECT p.system, p.poi, p.base, COALESCE(st.services, '')
+                FROM places p
+                LEFT JOIN stations st ON st.system = p.system AND st.name = p.name
+                WHERE p.kind = 'station' AND p.base IS NOT NULL AND p.base != ''
+            """).fetchall()
+            for sid, poi, base, svcs in rows:
+                s_l = str(svcs or '').lower()
+                if ('refuel' in s_l) or ('_' in str(base)):
+                    out.setdefault(str(sid), (str(poi), str(base)))
+            if out:
+                return out
+        except Exception:
+            pass
+        finally:
+            if con is not None:
+                try:
+                    con.close()
+                except Exception:
+                    pass
+    return fuel_stations(data)
+
+
 def end_stop(stay, last_station, short, stop):
     """Where a census ends: ('stay', None) docked where it last read (--stay); ('fuel', stop) with --stay and
     docked nowhere, at the nearest station with fuel (2026-11-23: a scout refused by a foreign station, `Access
@@ -593,16 +649,21 @@ def read_system(sid):
         if p_cnt > 0:
             say(f'pirates spotted at {sid}:{p["id"]} ({p_cnt}) -- bailing out of system immediately (scout safety)')
             break
+    _keep_fly_mode = '--keep-flying' in sys.argv
     for p in pois:
         if p.get('type') == 'station' and p.get('base_id'):
-            if goal('prepare-at-station', {'systemId': sid, 'poiId': p['id'], 'baseId': p['base_id'], 'refuel': True}):
+            _bid = str(p['base_id'])
+            if _keep_fly_mode and not station_dock_needed(DATA, _bid, SHIP_DOC, fuel()):
+                say(f'skipping redundant dock at {_bid}: fuel healthy and market/missions fresh')
+                continue
+            if goal('prepare-at-station', {'systemId': sid, 'poiId': p['id'], 'baseId': _bid, 'refuel': True}):
                 scouting['pois'][p['id']] = raw('get_poi')
-                n_items, n_missions = save_station(p['base_id'], sid)
-                station = p['base_id']
-                say(f'docked at {p["base_id"]}: order book {n_items} items, board {n_missions} missions saved')
-                far = save_remote_books(p['base_id'])
+                n_items, n_missions = save_station(_bid, sid)
+                station = _bid
+                say(f'docked at {_bid}: order book {n_items} items, board {n_missions} missions saved')
+                far = save_remote_books(_bid)
                 if far:
-                    say(f'from {p["base_id"]}: {far} books of other stations read from afar (view_market base_id)')
+                    say(f'from {_bid}: {far} books of other stations read from afar (view_market base_id)')
     write_json(DATA / 'scouting' / f'{sid}.json', scouting)
     write_json(DATA / 'wildlife' / f'{sid}.json', wildlife)
     with open(DATA / 'wildlife' / 'history.jsonl', 'a', encoding='utf-8') as fh:      # herds and deposits over time: what regrows, and how fast
@@ -655,7 +716,7 @@ done, target, legs = set(), system_id, 0
 leg_started, leg_before = STARTED, WALLET_BEFORE
 LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
 FARS = strongholds()
-STATIONS = {s: v for s, v in fuel_stations(DATA).items() if s not in FARS}
+STATIONS = {s: v for s, v in fuel_stations_fast(DATA).items() if s not in FARS}
 import fuelplan as _fp
 SHIP_DOC = None
 try:                                                           # home: the pilot's own capital, not ours for all
@@ -720,8 +781,18 @@ while True:
     write_row(target, leg_started, leg_before, leg_after, n_places, n_creatures, [f'chain {legs + 1} of {CHAIN}: next {nxt}'])
     leg_started, leg_before, target, legs = time.time(), leg_after, nxt, legs + 1
 STAY = '--stay' in sys.argv
-END, STOP = end_stop(STAY, last_station, not last_station and _fp.fuel_short(fuel(), HOME_JUMPS.get(target), ship=SHIP_DOC),
-                     None if last_station else nearest_fuel(LANES, target, STATIONS))
+KEEP_FLYING = '--keep-flying' in sys.argv
+_end_tank = fuel()
+_end_near = None if last_station else nearest_fuel(LANES, target, STATIONS)
+_end_maxf = (SHIP_DOC or {}).get('max_fuel') if isinstance((SHIP_DOC or {}).get('max_fuel'), (int, float)) else None
+if STAY and KEEP_FLYING and not last_station:
+    _onward_need = (_end_near[0] if _end_near else (HOME_JUMPS.get(target) or 6)) + 4
+    _low_tank = (_end_tank is None) or _fp.fuel_short(_end_tank, _onward_need, ship=SHIP_DOC) or (
+        _end_maxf is not None and _end_maxf > 0 and float(_end_tank) < 0.35 * float(_end_maxf)
+    )
+    END, STOP = (('fuel', _end_near) if (_low_tank and _end_near) else ('stay', None))
+else:
+    END, STOP = end_stop(STAY, last_station, not last_station and _fp.fuel_short(_end_tank, HOME_JUMPS.get(target), ship=SHIP_DOC), _end_near)
 if END in ('fuel', 'fuel-home'):                  # docked nowhere: the nearest station with fuel, and with --stay
     refuel_at(STOP)                               # end docked there, never sent home across the galaxy (2026-11-23)
     last_station = STOP[3] if END == 'fuel' else None

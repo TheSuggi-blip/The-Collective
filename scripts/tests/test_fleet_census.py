@@ -308,5 +308,20 @@ class RefuelHopTests(unittest.TestCase):
         self.assertTrue(hops and len(hops) <= 6 and hops[-1][1] != "t0")
 
 
+
+
+class TestSmartStationDockSkip(unittest.TestCase):
+    def test_skips_dock_when_fuel_healthy_and_book_fresh(self):
+        (sdn,) = load("station_dock_needed")
+        now_t = time.time()
+        with tempfile.TemporaryDirectory() as td:
+            (Path(td) / "market").mkdir(parents=True)
+            (Path(td) / "missions").mkdir(parents=True)
+            (Path(td) / "market" / "b1.json").write_text("{}", encoding="ascii")
+            (Path(td) / "missions" / "b1.json").write_text("{}", encoding="ascii")
+            self.assertFalse(sdn(td, "b1", {"max_fuel": 100}, 80, now_t=now_t, bursar_claims={}))
+            self.assertTrue(sdn(td, "b1", {"max_fuel": 100}, 40, now_t=now_t, bursar_claims={}))
+            self.assertTrue(sdn(td, "b_missing", {"max_fuel": 100}, 90, now_t=now_t, bursar_claims={}))
+
 if __name__ == "__main__":
     unittest.main()
