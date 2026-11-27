@@ -1243,3 +1243,37 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .poprow.pirate-poprow:hover { background: rgba(239, 68, 68, 0.16); }
 .sup-bars { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 12px; margin-top: 8px; }
 .sup-bars .progcell { margin: 0; }
+
+/* === Redesigned Overview & Operations Wing KPI Scorecards (2026-11-27) === */
+.ov-top { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ov-fleet { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1180px) {
+  .ov-top { grid-template-columns: 1fr; }
+  .ov-fleet { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.wg-bar-trk { height: 4px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; margin: 5px 0 3px; overflow: hidden; }
+.wg-bar-fil { height: 100%; border-radius: 3px; transition: width 0.25s ease; }
+.wg-bar-fil.good { background: var(--good); }
+.wg-bar-fil.warn { background: var(--warn); }
+.wg-bar-fil.bad { background: var(--bad); }
+.wg-bar { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 8px; }
+.wg-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+@media (max-width: 960px) { .wg-grid { grid-template-columns: 1fr; } }
+.wg-card { background: rgba(16, 22, 34, 0.85); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 7px; padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+.wg-card.alarm { border-color: rgba(224, 108, 102, 0.45); }
+.wg-card.staged { opacity: 0.84; border-style: dashed; }
+.wg-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.wg-titlebox { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.wg-name { font-size: 12.5px; letter-spacing: 0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wg-rc { font-size: 10.5px; color: var(--dim); }
+.wg-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.wg-cell { background: rgba(10, 15, 24, 0.65); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; padding: 5px 7px; min-width: 0; }
+.wg-k { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.03em; }
+.wg-v { font-family: var(--mono); font-size: 12.5px; font-weight: 600; margin-top: 1px; }
+.wg-v.pos { color: var(--good); }
+.wg-v.warn { color: var(--warn); }
+.wg-v.neg { color: var(--bad); }
+.wg-s { font-size: 10px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wg-details { margin-top: 10px; border: 1px solid var(--line); border-radius: 7px; padding: 6px 10px; background: rgba(14, 20, 32, 0.6); }
+.wg-details summary { cursor: pointer; font-size: 12px; color: var(--dim); font-weight: 600; user-select: none; }
+.wg-details[open] summary { color: var(--text); margin-bottom: 8px; }

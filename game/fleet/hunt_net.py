@@ -1290,8 +1290,17 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         fit_mult *= _h_zone_m
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - keep_h))
         loot_est = float(species_loot.get(sp) or 0.0) * kills_avail
-        fuel_est = 90.0 * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
-        score = ((loot_est * fit_mult) - fuel_est) / (1.0 + 0.7 * hops + 0.8 * st_hops)
+        _h_kpi_m = 1.0
+        try:
+            import kpi_engine as _ke_h
+            _hsig = _ke_h.read_kpi_signals(DATA)
+            _hwid = _ke_h.wing_id_of(str(ship_doc.get("wing") or ""), "Military")
+            if _hwid in (_hsig.get("tighten_fuel_wings") or []):
+                _h_kpi_m = 1.30
+        except Exception:
+            pass
+        fuel_est = 90.0 * _h_kpi_m * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
+        score = ((loot_est * fit_mult) - fuel_est) / (1.0 + 0.7 * _h_kpi_m * hops + 0.8 * _h_kpi_m * st_hops)
         if score <= 0.0:
             continue
         out.append({

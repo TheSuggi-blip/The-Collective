@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 86.
+folder; never edited by hand. Scripts listed: 87.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -67,6 +67,7 @@ folder; never edited by hand. Scripts listed: 86.
 | `hunt.py` | Hunt grazers at one place, loot the carcasses and sell what the kills bring. | Runner (`hunt` routes) |
 | `hunt_net.py` | Policy-driven dynamic smart Military network (`hunt-network`). | By hand |
 | `inbox.py` | Read what other pilots write to our ships and say near them, keep every message once, and file the ones that are for us. | Service |
+| `kpi_engine.py` | Goodhart-proof 17-wing KPI scorecard, dynamic max-possible upgrade gap engine, and closed-loop signal publisher. | By hand |
 | `ledger.py` | Keep the fleet's books: what we own and where it lies, and how every order book moved. | Service |
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `manifest_wings.py` | Shared cached resolver for game/fleet-500-manifest.tsv wings & Task Forces. | By hand |
@@ -703,6 +704,17 @@ inbox.py contacts --commit [--dry-run]
                                   those files, a log this script left uncommitted among them; --dry-run: what it would do
 --data <dir>                      the unit's data folder (default /srv/collective/data)
 --root <dir>                      the repository (default: the one this script lies in)
+```
+
+### `kpi_engine.py`
+
+Goodhart-proof 17-wing KPI scorecard, dynamic max-possible upgrade gap engine, and
+closed-loop signal publisher.
+
+Run by hand.
+
+```
+imported by scorecard.py, station/server.py, upgrades.py, mine_net.py, hunt_net.py, and haul.py.
 ```
 
 ### `ledger.py`

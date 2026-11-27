@@ -5029,9 +5029,11 @@ function renderFinancialStatements(panel, ops, w, t) {
   panel.append(el('p', 'sub', 'IFRS 8 / ASC 280 & IFRS 10.B86 compliance: Upstream divisions (Miners 3A-3E and Military) earn full intersegment transfer credit when depositing extracted ore or loot into Faction Lockboxes or Bursars, valued at live IAS 2 NRV. Because Bursars recognize external cash revenue when selling those same goods on the Exchange (Section 1), 100% of internal transfers are eliminated here (= 0 net consolidated revenue impact) to prevent double-counting. Bracketed [u/h] shows live 24h mined extraction rate per sub-wing.'));
 }
 
+let wingPillar = 'All';
+
 async function renderMetrics(panel, live) {
   const t = F.totals || {}, r = t.rates, w = r && r.windows ? r.windows[metricWin] : null, [, graphHours, behind, routeHours] = WINDOWS[metricWin];
-  panel.append(el('h2', null, 'Fleet economy'));
+  panel.append(el('h2', null, 'Fleet economy & operations'));
   const mSubBar = el('div', 'subtabs');
   for (const [id, lbl] of [['Overview', 'Overview & Operations'], ['Financials', 'Financial Statements (IR)']]) {
     const sb = el('button', 'subtab' + (metricSub === id ? ' on' : ''), lbl);
@@ -5054,606 +5056,220 @@ async function renderMetrics(panel, live) {
     renderFinancialStatements(panel, ops, w, t);
     return;
   }
-  const acc = ops && ops.accounting && (ops.accounting[metricWin] || ops.accounting['24h'] || null);
-  const span = w ? (w.minutes >= 120 ? Math.round(w.minutes / 60) + ' hours' : w.minutes + ' minutes') : '';
-  const whole = (y) => (y.total_per_hour !== undefined ? y.total_per_hour : (y.cph || 0) + (y.one_time_per_hour || 0));
-  panel.append(el('h3', null, 'By division (GAAP/IFRS accrual & cash, ' + (acc ? acc.hours + 'h' : span || metricWin) + ')'));
-  const div = t.divisions || {}, dw = (w || {}).divisions || {}, dAcc = (acc && acc.by_division) || {};
-  const order = (S ? S.roster : []).filter((a) => a.division !== 'Command' || div.Command).map((a) => [a.division, a.name]);
-  if (div.Unassigned || dw.Unassigned) order.push(['Unassigned', '']);
-  const divRows = order.map(([d, adm]) => {
-    const x = div[d] || {}, y = dw[d] || {}, da = dAcc[d] || null;
-    const RC_SHORT = { Command: 'Invest', Mining: 'Prod', Trade: 'Profit', Logistics: 'Service', Military: 'Combat', Intel: 'Cost' };
-    const name = el('span', null, d + (RC_SHORT[d] ? ' (' + RC_SHORT[d] + ')' : ''));
-    name.style.color = DIV[d] || DIV.Unassigned;
-    const tipBits = [(adm ? 'Admiral ' + adm : d) + (RC_SHORT[d] ? ' -- ' + RC_SHORT[d] + ' Center (CapEx excluded from operating accrual)' : '')];
-    if (w) tipBits.push('Raw cash ' + signed(y.cph || 0) + '/h (inc ' + fmt(y.income_per_hour || 0) + ', cost ' + fmt(y.costs_per_hour || 0) + ') | Seed & CapEx ' + signed(y.one_time_per_hour || 0) + '/h');
-    if (da) tipBits.push('Once-route fuel/salvage carved out: ' + signed(da.once_direct_h || 0) + '/h | Handovers Out +' + fmt(da.tx_out_h || 0) + '/h, In -' + fmt(da.tx_in_h || 0) + '/h');
-    name.title = tipBits.join('\n');
-    const recCell = da ? tint(da.recurring_cash_h || 0) : (w ? tint(y.cph || 0) : '--');
-    const invCell = da && acc && acc.has_inventory_accrual ? tint(da.inv_accrual_h || 0) : '--';
-    const txNet = da ? (da.net_transfer_h !== undefined ? da.net_transfer_h : ((da.tx_out_h || 0) - (da.tx_in_h || 0))) : 0;
-    const txCell = da ? (txNet ? tint(txNet) : el('span', 'dim', '0')) : '--';
-    const accCell = da ? tint(da.accrual_op_h || 0) : (w ? tint(y.cph || 0) : '--');
-    const purseCell = w ? tint(whole(y)) : '--';
-    return [name, fmt(x.working) + '/' + fmt(x.ships), recCell, invCell, txCell, accCell, purseCell];
-  });
-  if (dAcc.Faction && (dAcc.Faction.inv_accrual_h || dAcc.Faction.accrual_op_h)) {
-    const fn = el('span', null, 'Faction Vault');
-    fn.style.color = DIV.Unassigned;
-    fn.title = 'Crafted reserves & ore stored directly in faction storage (IAS 2 NRV change)';
-    divRows.push([fn, '--', el('span', 'dim', '0'), tint(dAcc.Faction.inv_accrual_h || 0), el('span', 'dim', '0'), tint(dAcc.Faction.accrual_op_h || 0), el('span', 'dim', '0')]);
-  }
-  if (w && w.treasury_own_per_hour !== undefined) {
-    divRows.push([el('span', 'dim', 'Treasury (own)'), '--', '--', '--', '--', '--', tint(w.treasury_own_per_hour)]);
-  }
-  divRows.push([
-    el('b', null, 'Fleet Total'),
-    fmt(t.working) + '/' + fmt(t.ships),
-    acc ? tint(acc.recurring_cash_h) : (w ? tint(w.cph || 0) : '--'),
-    acc && acc.has_inventory_accrual ? tint(acc.inventory_accrual_h) : '--',
-    el('span', 'dim', '0'),
-    acc ? tint(acc.accrual_operating_h) : (w ? tint(w.cph || 0) : '--'),
-    w ? tint(purseNet(w)) : '--',
-  ]);
-  panel.append(fitTable(table(
-    ['Division', 'Work', 'Recur Cash/h', 'Inv Build/h', 'Transfers/h', 'Accrual Op/h', 'Purse Net/h'],
-    divRows, [1, 2, 3, 4, 5, 6]
-  )));
-  const scMap = (acc && acc.support_chains) || {};
-  const chainBits = [
-    ['Trade sales', scMap.trade_sales],
-    ['Mining', scMap.mining],
-    ['Military hunts', scMap.military_hunts],
-    ['Logistics/handovers', scMap.handovers_logistics],
-    ['Crafting', scMap.crafting],
-    ['Intel census', scMap.intel_census],
-    ['Jump loops', scMap.jump_loops],
-  ].filter(([, v]) => v && v.runs).map(([k, v]) => k + ' ' + signed(v.credits_per_hour) + '/h (' + v.ship_hours + 'sh)');
-  panel.append(el('p', 'sub',
-    'All figures per hour. Recur Cash/h excludes once-mission fuel; Inv Build/h is IAS 2 NRV vault delta; Transfers/h credits givers and debits receivers at IAS 2 NRV (eliminating to 0 at Fleet Total); '
-    + 'Accrual Op/h = Recur Cash + Inv Build + Transfers; Purse Net/h = wallets + Seed + CapEx + Treasury Own. Hover any division name for full breakdown.'
-    + (chainBits.length ? ' Activity cashflow: ' + chainBits.join(' | ') + '.' : '')));
-  panel.append(el('p', 'sub', w
-    ? 'GAAP / IFRS Cash-to-Accrual Ledger over the last ' + span + ': separates Recurring Cash (excl. once-mission fuel), IAS 2 Inventory/WIP Accrual, Non-Recurring Seed Missions, and Investing CapEx.'
-      + (w.seed && w.seed.pilots ? ' ' + fmt(w.seed.pilots) + ' newborn wallets excluded.' : '')
-      + (w.presence && (w.presence.left || w.presence.back) ? ' Disconnected/rejoining ship wallets excluded.' : '')
-      + (w.transfers_moved_per_hour ? ' Internal ship gifts & treasury transfers eliminated.' : '')
-    : 'No figures for this stretch yet: the collector needs five minutes of samples.'));
-  const grid = el('div', 'kpis');
-  const kpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); grid.append(b); return b; };
-  const tone = (n) => (n < 0 ? ' neg' : n > 0 ? ' pos' : '');
-  const net = w ? purseNet(w) : 0, own = w && w.treasury_own_per_hour !== undefined;
-  const recCash = acc ? acc.recurring_cash_h : (w ? w.cph : 0);
-  const invAcc = acc && acc.has_inventory_accrual ? acc.inventory_accrual_h : null;
-  const accOp = acc ? acc.accrual_operating_h : recCash;
-  const topB = acc && (acc.top_inv_builds || []).length
-    ? (acc.top_inv_builds || []).slice(0, 3).map((x) => x.item + ' +' + fmtCompact(x.value)).join(', ')
-    : '';
-  kpi('Purse cash flow / h', w ? signed(net) : '--',
-    acc ? 'Recurring ' + signed(acc.recurring_cash_h) + ' + Seed ' + signed(acc.seed_net_h) + ' + CapEx ' + signed(acc.capex_net_h) + (own ? ' + Treas ' + signed(w.treasury_own_per_hour) : '')
-      : (own ? 'everything: recurring, seed, CapEx & treasury own' : 'wallets net change / h'),
-    'main' + (w ? tone(net) : ''));
-  kpi('Recurring cash / h', w ? signed(recCash) : '--',
-    acc ? 'matched: raw ' + signed(acc.raw_steady_h) + ' excl ' + signed(acc.once_direct_h) + ' once-route fuel/salvage' : 'income minus running costs',
-    'main' + (w ? (recCash > 0 ? ' pos' : ' warn') : ''));
-  kpi('Accrual operating / h', acc ? signed(accOp) : '--',
-    acc && acc.has_inventory_accrual
-      ? 'Recurring cash + IAS 2 NRV inv ' + signed(invAcc) + '/h' + (topB ? ' (' + topB + ')' : '')
-      : 'awaiting stock_hour inventory snapshots',
-    'main' + (acc ? tone(accOp) : ''));
-  kpi('Seed missions / h', acc ? signed(acc.seed_net_h) : (w ? signed(w.one_time_per_hour) : '--'),
-    acc ? 'non-recurring: rewards +' + fmtCompact(acc.seed_rewards_h) + ' matched w/ fuel ' + signed(acc.once_mission_direct_h) : 'one-time rewards less one-time buys',
-    acc ? tone(acc.seed_net_h).trim() : (w ? tone(w.one_time_per_hour).trim() : ''));
-  kpi('Investing CapEx / h', acc ? signed(acc.capex_net_h) : '--',
-    acc ? 'hulls, modules & outpost kits bought once (gross ' + signed(acc.capex_gross_h) + ', fit salvage ' + signed(acc.capex_fit_direct_h) + ')' : 'capital equipment purchases',
-    '');
-  kpi('Treasury, own / h', own ? signed(w.treasury_own_per_hour) : '--',
-    own ? 'NPC rent & treasury-paid builds, excl. pilot deposits' : 'not read at both ends of this stretch yet',
-    own ? tone(w.treasury_own_per_hour).trim() : '');
-  kpi('Recurring income / h', w ? fmt(w.income_per_hour) : '--',
-    w && w.income_per_hour < 0 ? 'below zero: ledger anomaly' : 'trade sales, contracts & repeatable rewards',
-    w && w.income_per_hour > 0 ? 'pos' : w && w.income_per_hour < 0 ? 'warn' : '');
-  const metered = w && w.fuel_cr_per_hour !== undefined;
-  const costSub = w && w.costs_per_hour < 0
-    ? 'below zero: uncounted inflow; read longer window'
-    : (metered ? 'fuel ' + fmtCompact(w.fuel_cr_per_hour) + '/h (' + fmt(w.fuel_units_per_hour) + 'u) + repairs ' + fmt(w.repair_cr_per_hour) + '/h' + (acc && acc.once_mission_direct_h ? ' (incl ' + fmtCompact(Math.abs(acc.once_mission_direct_h)) + '/h once-fuel)' : '') : 'fuel, repairs, buys');
-  const costCard = kpi('Running costs / h', w ? fmt(w.costs_per_hour) : '--', costSub,
-    w && w.costs_per_hour > 0 ? 'neg' : w && w.costs_per_hour < 0 ? 'warn' : '');
-  if (w && w.spent_per_hour !== undefined) {
-    costCard.title = 'Derived steady OpEx = (earned - wallet delta - one-time buys)/h. Raw game spent/h: ' + fmt(w.spent_per_hour) + ' cr/h'
-      + (metered ? ' (fuel ' + fmt(w.fuel_cr_per_hour) + ' cr/h, repairs ' + fmt(w.repair_cr_per_hour) + ' cr/h)' : '')
-      + (w.unexplained_per_hour ? ' | uncounted wallet inflow/outflow: ' + signed(w.unexplained_per_hour) + ' cr/h' : '');
-  }
-  kpi('Ships working', t.ships ? fmt(t.working) + ' of ' + fmt(t.ships) : '--',
-    fmt(t.parked) + ' parked at a station' + (t.adrift ? ', ' + fmt(t.adrift) + ' in space without work' : ''));
-  const purse = (S.holdings && S.holdings.treasury) || 0;
-  const crCard = el('div', 'kpi main');
-  crCard.append(
-    el('div', 'k', 'Liquid purse'),
-    el('div', 'v', fmt((t.credits || 0) + purse)),
-    el('div', 'kpi-subnum', 'Treasury ' + fmt(purse) + ' cr'),
-    el('div', 's', 'ship wallets ' + fmt(t.credits) + ' cr')
+
+  const fk = (ops && (ops.fleet_kpis || (ops.scorecard && ops.scorecard.fleet_kpis))) || null;
+  const fWin = fk && fk.windows ? (fk.windows[metricWin] || fk.windows['6h'] || fk.windows['24h'] || null) : null;
+  const fl = fWin && fWin.fleet ? fWin.fleet : null;
+  const upg = fk && fk.upgrades ? fk.upgrades : null;
+  const fac = (ops && ops.readiness && ops.readiness.faction) || {};
+  const standingShips = fac.standing_ships || (ops && ops.fleet_capacity && ops.fleet_capacity.standing) || t.ships || 500;
+
+  const mkCard = (grid, title, val, sub, cls, pctBar) => {
+    const c = el('div', 'kpi' + (cls ? ' ' + cls : ''));
+    c.append(el('div', 'k', title), el('div', 'v', val));
+    if (pctBar !== undefined && pctBar !== null) {
+      const trk = el('div', 'wg-bar-trk');
+      const fil = el('div', 'wg-bar-fil' + (pctBar >= 80 ? ' good' : pctBar >= 45 ? ' warn' : ' bad'));
+      fil.style.width = Math.max(0, Math.min(100, pctBar)) + '%';
+      trk.append(fil);
+      c.append(trk);
+    }
+    if (sub) c.append(el('div', 's', sub));
+    grid.append(c);
+  };
+
+  // === SECTION 1: FACTION SEATING & DYNAMIC MAX-POSSIBLE UPGRADE GAPS (T1 -> T5) ===
+  const topHead = el('div', 'ichead');
+  topHead.append(
+    el('h3', null, 'Fleet seating & dynamic upgrade gaps (missing from max possible)'),
+    linkButton('Financial Statements (IR) ->', () => { metricSub = 'Financials'; render(); }, 'doclink')
   );
-  grid.append(crCard);
-  panel.append(grid);
-  if (w && w.wallets) {
-    const made = w.wallets.end - w.wallets.start - (w.wallets.left_out || 0), check = el('p', 'sub', 'Cash reconciliation: ' + fmt(w.wallets.start) + ' cr in ship wallets ' + span + ' ago, ');
-    check.append(tint(made), ' net in this stretch' + (w.wallets.left_out ? ', ' + signed(w.wallets.left_out) + ' with ships that joined or left' : '') + ', ' + fmt(w.wallets.end) + ' cr now.');
-    if (w.unexplained_per_hour !== undefined) {
-      const off = Object.entries(w.divisions || {}).filter(([, y]) => Math.abs(y.unexplained_per_hour || 0) >= 500).map(([d]) => d);
-      check.append(Math.abs(w.unexplained_per_hour) < 500 && !off.length
-        ? ' Game counters agree with wallets.'
-        : ' Game counters differ by ' + fmt(Math.abs(w.unexplained_per_hour)) + ' cr/h' + (off.length ? ' (' + off.join(', ') + ')' : '') + ' (read longer window to even out).');
-    }
-    if (w.treasury) {
-      const x = w.treasury;
-      check.append(' Treasury: ' + fmt(x.start) + ' -> ' + fmt(x.end) + ' cr (' + fmt(x.deposited) + ' cr pilot deposits, ', tint(x.own), ' own rent/builds).');
-    }
-    panel.append(check);
-  }
-  const b = F.birth;
-  if (b && b.planned && !b.finished_at) {
-    panel.append(el('h3', null, 'Birth in progress'));
-    panel.append(facts([['Registered', b.registered + ' of ' + b.planned + (b.failed ? ', ' + b.failed + ' refused' : '')],
-      ['Starter missions done', b.starter_done], ['Standing orders given', b.ordered], ['Stopped', b.stopped || 'no']]));
-  }
-  if (ops) {
-    const sc = ops.scorecard || null;
-    if (sc && sc.enterprise) {
-      const se = sc.enterprise;
-      const vMap = {
-        COMPOUNDING: ['good', 'COMPOUNDING'],
-        GROWING_WITH_DRAG: ['warn', 'GROWING WITH DRAG'],
-        SLOWING: ['bad', 'SLOWING'],
-        STAGNATING: ['bad', 'STAGNATING'],
-      };
-      const [vCls, vLbl] = vMap[se.verdict] || ['warn', se.verdict || 'UNKNOWN'];
-      const scHead = el('div', 'sc-head');
-      const wScore = se.weighted_score !== undefined ? Number(se.weighted_score) : null;
-      const wCls = wScore === null ? '' : (wScore >= 80 ? 'good' : wScore >= 60 ? 'warn' : 'bad');
-      const pMap = {
-        WAR_ALERT: ['bad', 'WAR ALERT (40% War Wt)'],
-        CASHFLOW_RECOVERY: ['warn', 'CASHFLOW RECOVERY'],
-        PEACETIME_GROWTH: ['good', 'PEACETIME GROWTH'],
-      };
-      const [pCls, pLbl] = pMap[se.posture] || ['warn', se.posture || 'AUTO'];
-      scHead.append(
-        el('h3', null, 'Enterprise momentum & weighted triage'),
-        el('span', 'pill ' + pCls, pLbl),
-        el('span', 'pill ' + vCls, vLbl),
-        wScore !== null ? el('span', 'pill ' + wCls, 'Score ' + wScore.toFixed(1) + '/100') : null
-      );
-      panel.append(scHead);
+  panel.append(topHead);
 
-      const sgrid = el('div', 'kpis');
-      const skpi = (k, v, sub, cls) => {
-        const d = el('div', 'kpi' + (cls ? ' ' + cls : ''));
-        d.append(el('div', 'k', k), el('div', 'v', v));
-        if (sub) d.append(el('div', 's', sub));
-        sgrid.append(d);
-      };
-      const rec24 = se.recurring_cash_24h !== undefined ? se.recurring_cash_24h : se.steady_24h;
-      const acc24 = se.accrual_operating_24h !== undefined ? se.accrual_operating_24h : rec24;
-      const cfSignCls = rec24 > 0 ? 'pos' : (acc24 > 0 || se.cashflow_trend_24h === 'IMPROVING' ? 'warn' : 'neg');
-      skpi(
-        'Recurring cash (' + se.cashflow_sign + ')',
-        signed(Math.round(rec24 || 0)) + ' cr/h',
-        (se.has_inventory_accrual ? 'IAS 2 accrual ' + signed(Math.round(acc24)) + '/h | ' : '')
-        + 'raw ' + signed(Math.round(se.steady_24h || 0)) + '/h | 6h ' + signed(Math.round(se.recurring_cash_6h !== undefined ? se.recurring_cash_6h : (se.steady_6h || 0))) + '/h',
-        cfSignCls
-      );
-      const effCls = (se.productive_pct || 0) >= 80 ? 'pos' : (se.productive_pct || 0) >= 60 ? 'warn' : 'neg';
-      skpi(
-        'Fleet efficiency & idle',
-        (se.productive_pct || 0).toFixed(1) + '% productive',
-        'working ' + fmt(se.working_ships) + '/' + fmt(se.total_ships) + ' (' + (se.effective_employment_pct || 0).toFixed(1) + '% eff) | jumps ' + (se.jump_loop_pct || 0).toFixed(1) + '%',
-        effCls
-      );
-      const upgCls = (se.hull_eligible_pct || 0) >= 80 && (se.slot_fit_pct || 0) >= 80 ? 'pos' : 'neg';
-      skpi(
-        'Upgrades (<80% target)',
-        (se.hull_eligible_pct || 0).toFixed(0) + '% P10+ hulls | ' + (se.slot_fit_pct || 0).toFixed(0) + '% slots',
-        se.upgraded_eligible + '/' + se.eligible_p10 + ' P10+ on T2+' + (se.p10_delta_6h ? ' (+' + se.p10_delta_6h + ' P10+ in ' + (se.dt_h || 6).toFixed(0) + 'h)' : '') + ' | ' + fmt(se.off_role_ships) + ' off-role',
-        upgCls
-      );
-      const pDeltaTxt = se.purse_delta_6h !== null && se.purse_delta_6h !== undefined
-        ? '6h purse ' + signed(se.purse_delta_6h) + ' cr | '
-        : '';
-      skpi(
-        'Milestone & roadmap velocity',
-        (se.roadmap_avg_pct || 0).toFixed(1) + '% (' + (se.milestones_done || 0) + '/' + (se.milestones_total || 0) + ' rungs)',
-        pDeltaTxt + (se.latest_milestone ? 'latest: ' + se.latest_milestone.slice(0, 44) : 'open requests: ' + fmt(se.open_requests)),
-        (se.roadmap_avg_pct || 0) >= 60 ? 'pos' : 'warn'
-      );
-      panel.append(sgrid);
+  const topGrid = el('div', 'kpis ov-top');
+  const seatedN = fac.members || 0;
+  const capN = fac.limit || 0;
+  const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, capN - seatedN);
+  const unseatedN = Math.max(0, standingShips - seatedN);
+  const pctSeated = standingShips ? (100 * seatedN) / standingShips : 0;
+  const moreCap = Math.max(0, standingShips - capN);
+  mkCard(
+    topGrid,
+    'Faction seating',
+    capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (' + pctSeated.toFixed(1) + '%, cap ' + fmt(capN) + ')' : '--',
+    capN ? (fmt(unseatedN) + ' unseated | ' + fmt(openSeats) + ' open in cap | +' + fmt(moreCap) + ' cap for 100%') : 'waiting for sync',
+    unseatedN === 0 ? 'pos' : 'warn',
+    pctSeated
+  );
 
-      if ((se.drags || []).length) {
-        panel.append(el('p', 'sub sc-drag', 'Active drags: ' + se.drags.join(' | ')));
-      }
-
-      panel.append(el('h3', null, 'Division KPI scorecards & weighted health (<80% targets)'));
-      const divList = ['Command', 'Mining', 'Trade', 'Logistics', 'Military', 'Intel'];
-      const sevCls = (s) => (s === 'OK' ? 'good' : s === 'WARN' ? 'warn' : 'bad');
-      const tierCls = (t) => (t === 'P0' ? 'bad' : t === 'P1' ? 'warn' : '');
-      const trendPill = (tr) => {
-        const cls = tr === 'IMPROVING' ? 'good' : tr === 'WORSENING' ? 'bad' : '';
-        const lbl = tr === 'IMPROVING' ? '24h UP' : tr === 'WORSENING' ? '24h DOWN' : '24h FLAT';
-        return el('span', 'pill' + (cls ? ' ' + cls : ''), lbl);
-      };
-      const meterRow = (label, pct, sub, st) => {
-        const wrap = el('div', 'sc-mrow');
-        const top = el('div', 'sc-mtop');
-        top.append(el('span', 'sc-mlbl', label), el('span', 'sc-mval', sub));
-        const bar = el('div', 'pr-bar');
-        const fill = el('div', 'pr-bar-fill ' + (st === 'OK' ? 'good' : st === 'WARN' ? 'low' : 'bad'));
-        fill.style.width = Math.min(100, Math.max(0, pct || 0)).toFixed(1) + '%';
-        bar.append(fill);
-        wrap.append(top, bar);
-        return wrap;
-      };
-      const dgrid = el('div', 'sc-div-grid');
-      for (const dn of divList) {
-        if (!sc.divisions || !sc.divisions[dn]) continue;
-        const d = sc.divisions[dn];
-        const col = DIV[dn] || DIV.Unassigned;
-        const card = el('div', 'sc-div-card' + (d.status === 'OK' ? ' ok' : d.status === 'ALARM' ? ' alarm' : ' warn'));
-        card.style.borderLeftColor = col;
-
-        const dSc = d.health_score !== undefined ? Number(d.health_score) : 0;
-        const dScCls = dSc >= 80 ? 'good' : dSc >= 60 ? 'warn' : 'bad';
-        const rcInfo = d.responsibility_center || {};
-        const head = el('div', 'sc-dhead');
-        const titleWrap = el('div', 'sc-dtitle');
-        const nm = el('b', null, dn);
-        nm.style.color = col;
-        titleWrap.append(nm, el('span', 'sc-dadm', d.admiral));
-        if (rcInfo.short) {
-          const rcPill = el('span', 'pill', rcInfo.short);
-          rcPill.title = (rcInfo.type || rcInfo.short) + ': ' + (rcInfo.focus || '') + ' (CapEx excluded from operating score)';
-          titleWrap.append(rcPill);
-        }
-        const badges = el('div', 'sc-dbadges');
-        badges.append(
-          el('span', 'pill ' + dScCls, 'Score ' + dSc.toFixed(0)),
-          el('span', 'pill ' + sevCls(d.status), d.status),
-          trendPill(d.trend_24h)
-        );
-        head.append(titleWrap, badges);
-        card.append(head);
-
-        const cfRow = el('div', 'sc-dmeta');
-        const da24 = d.accounting_24h || null;
-        const accVal = da24 ? Math.round(da24.accrual_op_h || 0) : Math.round(d.cashflow_24h || 0);
-        const recVal = da24 ? Math.round(da24.recurring_cash_h || 0) : Math.round(d.cashflow_24h || 0);
-        const txOut = da24 ? Math.round(da24.tx_out_h || 0) : 0;
-        const txIn = da24 ? Math.round(da24.tx_in_h || 0) : 0;
-        const invVal = da24 ? Math.round(da24.inv_accrual_h || 0) : 0;
-        const pbTxt = 'Playbook ' + Math.round((d.playbook && d.playbook.max_chapter_pct) || 0) + '%';
-        if (dn === 'Logistics' || dn === 'Intel') {
-          const lbl = dn === 'Intel' ? 'Recon cost ' : 'Service cost ';
-          cfRow.append(
-            el('span', 'dim', lbl + signed(recVal) + '/h (SLA-scored)'),
-            el('span', 'sc-dmeta-sub', (dn === 'Logistics' && txIn ? 'Handled +' + fmtCompact(txIn) + '/h | ' : '') + pbTxt)
-          );
-        } else if (dn === 'Mining' || dn === 'Military') {
-          const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < -25000 ? 'neg' : 'dim', 'Value-add ' + signed(accVal) + '/h');
-          cfRow.append(
-            cfSpan,
-            el('span', 'sc-dmeta-sub', 'Handovers +' + fmtCompact(txOut) + '/h' + (invVal ? ' | Vault ' + signed(invVal) + '/h' : '') + ' | ' + pbTxt)
-          );
-        } else if (dn === 'Trade') {
-          const cfSpan = el('span', recVal > 0 ? 'pos' : 'neg', 'Recur ' + signed(recVal) + '/h');
-          cfRow.append(
-            cfSpan,
-            el('span', 'sc-dmeta-sub', 'Accrual ' + signed(accVal) + '/h (after -' + fmtCompact(txIn) + '/h in) | ' + pbTxt)
-          );
-        } else {
-          const cfSpan = el('span', accVal > 0 ? 'pos' : accVal < 0 ? 'neg' : '', 'Accrual ' + signed(accVal) + '/h (24h)');
-          cfRow.append(
-            cfSpan,
-            el('span', 'sc-dmeta-sub', 'Recur ' + signed(recVal) + '/h | ' + pbTxt)
-          );
-        }
-        card.append(cfRow);
-
-        const empIdle = d.employment.idle !== undefined ? d.employment.idle : Math.max(0, (d.employment.total || 0) - (d.employment.effective_working || 0));
-        const empSub = (empIdle === 0 ? '0 idle' : fmt(empIdle) + ' idle') + ' (' + d.employment.pct.toFixed(0) + '% work)';
-        const missElig = d.hulls.missing_eligible !== undefined ? d.hulls.missing_eligible : Math.max(0, (d.hulls.eligible_p10 || 0) - (d.hulls.upgraded_eligible || 0));
-        const hullSub = d.hulls.mode === 'eligible_t2'
-          ? (missElig === 0 ? '0 missing (100%)' : fmt(missElig) + ' P10+ missing T2+ (' + d.hulls.pct.toFixed(0) + '%)')
-          : 'P' + d.hulls.max_piloting + ' -> T2 (' + d.hulls.pct.toFixed(0) + '%*)';
-        const emptySl = d.modules.empty_slots !== undefined ? d.modules.empty_slots : Math.max(0, (d.modules.max_slots || 0) - (d.modules.fitted_slots || 0));
-        const modSub = fmt(emptySl) + ' empty (' + d.modules.slot_pct.toFixed(0) + '% fit' + (d.modules.off_role_ships ? ', ' + d.modules.off_role_ships + ' off-role' : '') + ')';
-        const meters = el('div', 'sc-meters');
-        meters.append(
-          meterRow('Idle gap', d.employment.pct, empSub, d.employment.status),
-          meterRow('Hull gap', d.hulls.pct, hullSub, d.hulls.status),
-          meterRow('Slot gap', d.modules.slot_pct, modSub, d.modules.status)
-        );
-        if (d.role_kpi) {
-          meters.append(meterRow(d.role_kpi.name || 'Role KPI', Number(d.role_kpi.pct || 0), d.role_kpi.value || '--', d.role_kpi.status || 'OK'));
-        }
-        card.append(meters);
-        if (d.saturation && (d.saturation.active_depleting > 0 || (dn === 'Trade' && d.saturation.total_policed_hubs > 0))) {
-          const sat = d.saturation;
-          const sRow = el('div', 'sc-drkpi');
-          if (dn === 'Trade') {
-            const ht = sat.total_policed_hubs || sat.distinct_pois || 0;
-            const sTxt = ' ' + fmt(sat.covered_hubs || 0) + '/' + fmt(ht) + ' policed hubs (' + fmt(sat.uncovered_hubs || 0) + ' uncovered), max ' + fmt(sat.max_per_poi || 0) + '/hub' + (sat.top_poi ? ' (' + sat.top_poi + ')' : '');
-            sRow.append(
-              el('span', 'sc-drkpi-k', 'Hub coverage: '),
-              el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
-              el('span', 'sc-drkpi-v', sTxt)
-            );
-            if (sat.top_unserved && sat.top_unserved.length) {
-              sRow.title = 'Top unserved policed market hubs (live read.db:books): ' + sat.top_unserved.join(', ') + ' | Total book hubs: ' + fmt(sat.total_book_hubs || 0) + ' | Public stations: ' + fmt(sat.total_public_stations || 0);
-            }
-          } else {
-            sRow.append(
-              el('span', 'sc-drkpi-k', 'Field spread: '),
-              el('span', 'pill ' + sevCls(sat.status), sat.status === 'OK' ? 'SPREAD OK' : 'CONGESTED'),
-              el('span', 'sc-drkpi-v', ' ' + fmt(sat.distinct_pois) + ' POIs, max ' + fmt(sat.max_per_poi) + '/POI (' + (sat.top_poi || '').split(':').pop() + ')')
-            );
-          }
-          card.append(sRow);
-        }
-        if (d.smart_engine && d.smart_engine.summary) {
-          const seInfo = d.smart_engine;
-          const aRow = el('div', 'sc-drkpi');
-          aRow.append(
-            el('span', 'sc-drkpi-k', 'AutoNet: '),
-            el('span', 'pill ' + sevCls(seInfo.status || 'OK'), seInfo.status || 'OK'),
-            el('span', 'sc-drkpi-v', ' ' + seInfo.summary)
-          );
-          aRow.title = 'Autonomous division network (' + (seInfo.engine || dn) + '). Smart anti-flood notice fires only when disabled, missing, or below target.';
-          card.append(aRow);
-        }
-        if (d.playbooks && d.playbooks.length) {
-          const pwrap = el('div', 'sc-dpbs');
-          pwrap.append(el('span', 'sc-drkpi-k', 'Playbook KPIs: '));
-          for (const pb of d.playbooks) {
-            const pcls = pb.status_code === 'ACTIVE' ? 'good' : pb.status_code === 'GAP' ? 'bad' : 'warn';
-            const btn = el('button', 'pill sc-pb-btn ' + pcls, (pb.short_name || pb.name) + ' ' + pb.matched_count + '/' + pb.total_count);
-            btn.type = 'button';
-            btn.title = pb.name + ' (' + pb.readiness_pct + '% KPIs matched | Empires: ' + (pb.empires || []).join(', ') + ')\nNext blocker: ' + (pb.blocker || '--') + '\nClick to inspect Strategy Playbook Matrix.';
-            btn.addEventListener('click', () => { sedFocusTag = ''; tab = 'Empire'; empSub = 'Sedcards'; render(); });
-            pwrap.append(btn);
-          }
-          card.append(pwrap);
-        }
-
-        const qList = ((d.triage && d.triage.length) ? d.triage : (d.triggers || [])).slice(0, 2);
-        const qBox = el('div', 'sc-dqueue');
-        if (qList.length) {
-          for (const it of qList) {
-            const qr = el('div', 'sc-dqrow');
-            qr.append(
-              el('span', 'pill ' + tierCls(it.tier || 'P2'), (it.tier || 'P2') + ' ' + Math.round(it.score || 0)),
-              el('span', 'sc-dqsrc', it.source || 'KPI'),
-              el('span', 'sc-dqtxt', it.metric + ': ' + it.actual)
-            );
-            qBox.append(qr);
-          }
-        } else {
-          qBox.append(el('div', 'sc-dqok', 'All >=80% targets met'));
-        }
-        card.append(qBox);
-        dgrid.append(card);
-      }
-      panel.append(dgrid);
-      panel.append(el('p', 'sub', '* = 0 P10+ pilots yet (tracks avg Piloting toward T2). Responsibility-Center scoring: CapEx excluded from operating accrual; handovers credited at IAS 2 NRV; Service/Cost centers (Logistics, Intel) are SLA-scored, not cash-penalized; Playbooks auto-demote to optional P3 MENU when busy (>=85% working).'));
-
-      // Sleek MAUT+WSJF weighted enterprise triage queue (KPI + REQ + NEED + ROADMAP)
-      const activeT = ((se.triage && se.triage.length) ? se.triage : (se.triggers || [])).slice(0, 8);
-      if (activeT.length) {
-        panel.append(el('h3', null, 'Weighted triage queue (strict order: P0 > P1 > P2 > P3; score = MAUT x WSJF)'));
-        const tbox = el('div', 'sc-trig-list');
-        for (const tr of activeT) {
-          const tTier = tr.tier || 'P2';
-          const row = el('div', 'sc-trig tier-' + tTier.toLowerCase());
-          const left = el('div', 'sc-trig-head');
-          left.append(
-            el('span', 'pill ' + tierCls(tTier), tTier + ' ' + Math.round(tr.score || 0)),
-            el('span', 'pill ' + sevCls(tr.severity || 'WARN'), tr.source || tr.severity),
-            el('b', null, tr.metric),
-            el('span', 'sc-trig-val', tr.actual)
-          );
-          row.append(left, el('div', 'sc-act', tr.action));
-          tbox.append(row);
-        }
-        panel.append(tbox);
-      }
-    }
-    const frHead = el('div', 'ichead');
-    frHead.append(
-      el('h3', null, 'Fleet readiness & bottlenecks'),
-      linkButton('Open Financial Statements (IR) ->', () => { metricSub = 'Financials'; render(); }, 'doclink')
+  if (upg && upg.hulls) {
+    const h = upg.hulls;
+    const byT = Object.entries(h.missing_by_tier || {}).map(([k, v]) => k + ': ' + fmt(v)).join(', ');
+    const hCls = h.missing_steps === 0 ? 'pos' : (h.pct_done >= 60 ? 'warn' : 'neg');
+    mkCard(
+      topGrid,
+      'Hull upgrades missing (dynamic T1-T5)',
+      h.missing_steps > 0 ? fmt(h.missing_steps) + ' missing (' + h.pct_done + '% done)' : '0 missing (100% done)',
+      fmt(h.ships_missing) + '/' + fmt(h.active_ships) + ' ships below max tier | ' + (byT || 'all unlocked tiers filled')
+        + (h.staged_ships ? ' | ' + fmt(h.staged_ships) + ' staged (6B)' : ''),
+      hCls,
+      h.pct_done
     );
-    panel.append(frHead);
-    const rgrid = el('div', 'kpis');
-    const rkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); rgrid.append(b); };
-    const fac = (ops.readiness || {}).faction || {};
-    const standingShips = fac.standing_ships || (ops.fleet_capacity && ops.fleet_capacity.standing) || t.ships || 500;
-    const seatedN = fac.members || 0;
-    const capN = fac.limit || 0;
-    const openSeats = fac.open_seats !== undefined ? fac.open_seats : Math.max(0, capN - seatedN);
-    const moreCapNeeded = Math.max(0, standingShips - capN);
-    const pctSeatedM = standingShips ? ((100 * seatedN) / standingShips).toFixed(1) : '0.0';
-    const nextSeatBldg = !capN ? 'not read' : capN < 100 ? 'next: Recruitment Desk (100)' : capN < 200 ? 'next: Recruitment Center (200)' : capN < 400 ? 'next: Guild Hall (400)' : 'next: cap upgrade';
-    const unseatedN = Math.max(0, standingShips - seatedN);
-    rkpi('Faction seating', capN ? fmt(seatedN) + ' / ' + fmt(standingShips) + ' (' + pctSeatedM + '%, cap ' + fmt(capN) + ')' : '--',
-      capN ? (fmt(unseatedN) + ' unseated (' + fmt(openSeats) + ' open in cap ' + fmt(capN) + '; +' + fmt(moreCapNeeded) + ' cap for 100%) | ' + nextSeatBldg) : 'not read',
-      unseatedN === 0 ? 'pos' : (openSeats > 0 ? 'warn' : 'warn'));
-    const tf = ops.tech_frontier || {};
-    const hs = (ops.readiness || {}).hull_summary || null;
-    const hulls = (ops.readiness || {}).hulls || [];
-    const byTier = new Map();
-    hulls.forEach((h) => byTier.set(h.tier, (byTier.get(h.tier) || 0) + h.count));
-    const tierTxt = [...byTier.entries()].sort((x, y) => y[0] - x[0]).map(([tr, n]) => fmt(n) + ' T' + tr).join(', ') || '--';
-    const ftTier = tf.target_tier || 2;
-    const readyMissingT = Math.max(0, (tf.ready_pilots || 0) - (tf.at_or_above || 0));
-    rkpi('Hull upgrades missing (-> 0)', hs ? (hs.t0_remaining > 0 ? fmt(hs.t0_remaining) + ' T0 missing (' + hs.upgraded_pct + '% T1+)' : '0 missing (100% T1+)') : tierTxt,
-      fmt(readyMissingT) + ' P10+ missing T' + ftTier + '+ (' + fmt(tf.at_or_above || 0) + '/' + fmt(tf.ready_pilots || 0) + ' done) | '
-      + (hs ? fmt(hs.upgraded) + '/' + fmt(hs.total) + ' upgraded (' + tierTxt + ')' : tierTxt)
-      + ' | P avg ' + (tf.avg_piloting || '--') + '/max ' + (tf.max_piloting || '--'),
-      (hs && hs.t0_remaining > 0) || readyMissingT > 0 ? 'warn' : 'pos');
-    const mods = (ops.readiness || {}).modules || [];
-    const fs = (ops.readiness || {}).fit_summary || null;
-    const topMods = mods.slice(0, 3).map((m) => m.name + ': ' + m.count).join(', ');
-    rkpi('Module fits missing (-> 0)', fs ? (fs.ships_unfitted > 0 ? fmt(fs.ships_unfitted) + ' ships missing T2+ (' + fs.adv_ship_pct + '% fit)' : '0 missing (100% T2+)') : (mods.length ? fmt(mods.reduce((a, m) => a + m.count, 0)) + ' fitted' : '0'),
-      fs
-        ? fmt(fs.empty_slots) + ' empty slots | ' + fmt(fs.adv_unfitted_slots) + ' non-T2+ slots (' + fmt(fs.adv_mods) + '/' + fmt(fs.total_slots) + ' = ' + fs.adv_slot_pct + '%)' + (topMods ? ' | ' + topMods : '')
-        : (topMods || 'no T2+ modules fitted yet'),
-      fs && (fs.ships_unfitted > 0 || fs.empty_slots > 0) ? 'warn' : (mods.length ? 'pos' : 'warn'));
-    const entSat = sc && sc.enterprise && sc.enterprise.saturation ? sc.enterprise.saturation : null;
-    if (entSat && (entSat.Mining || entSat.Military || entSat.Trade)) {
-      const sm = entSat.Mining || {}, sml = entSat.Military || {}, st = entSat.Trade || {};
-      const sts = [sm.status, sml.status, st.status];
-      const satWorst = sts.includes('ALARM') ? 'neg' : (sts.includes('WARN') ? 'warn' : 'pos');
-      const tHub = st.total_policed_hubs ? (fmt(st.covered_hubs || 0) + '/' + fmt(st.total_policed_hubs) + ' hubs, max ' + fmt(st.max_per_poi || 0)) : ('max ' + fmt(st.max_per_poi || 0) + '/hub');
-      rkpi('Field & hub spread (saturation)',
-        'Mine ' + fmt(sm.max_per_poi || 0) + '/belt | Trade ' + tHub + ' | Mil ' + fmt(sml.max_per_poi || 0) + '/POI',
-        'Mining: ' + fmt(sm.distinct_pois || 0) + ' belts (' + fmt(sm.active_depleting || 0) + ' miners' + (sm.top_poi ? ', top ' + sm.top_poi.split(':').pop() : '') + ') | '
-        + 'Trade: ' + fmt(st.uncovered_hubs || 0) + ' policed hubs uncovered (' + fmt(st.total_book_hubs || 0) + ' total books / ' + fmt(st.total_public_stations || 0) + ' public stations) | '
-        + 'Military: ' + fmt(sml.distinct_pois || 0) + ' POIs',
-        satWorst);
-    }
-    const eff = ops.efficiency || null;
-    if (eff) {
-      const jl = eff.jump_loops || { hours: 0, credits: 0 }, cn = eff.census || { hours: 0, credits: 0 };
-      rkpi('24h flight efficiency', (eff.productive_pct || 0) + '% productive',
-        'jump loops: ' + jl.hours + 'h (' + fmtCompact(jl.credits) + ' cr) | census: ' + cn.hours + 'h (' + fmtCompact(cn.credits) + ' cr)',
-        (eff.productive_pct || 0) < 65 ? 'warn' : 'pos');
-    }
-    const fc = ops.fleet_capacity || null;
-    if (fc) {
-      const empLine = (fc.by_empire || []).map((x) => x.empire + ' ' + fmt(x.count)).join(' | ');
-      rkpi('Standing fleet', fmt(fc.standing) + ' ships',
-        (fc.away ? fmt(fc.online) + ' online, ' + fmt(fc.away) + ' rejoining | ' : fmt(fc.online) + ' online | ') + (empLine || 'multi-empire fleet') + ' | ' + fmt(ops.contracts_count || 0) + ' contracts',
-        fc.away ? 'warn' : 'pos');
-    }
-    panel.append(rgrid);
-
-    // Productivity & Progress Over Time (24h deltas + 7-day trend table)
-    const pr = ops.productivity || null;
-    if (pr) {
-      const pHead = el('div', 'ichead');
-      pHead.append(
-        el('h3', null, 'Productivity & progress over time'),
-        linkButton('Open full roadmap ->', () => { tab = 'Docs'; docSub = 'Progression'; docView = null; render(); }, 'doclink')
-      );
-      panel.append(pHead);
-      const pgrid = el('div', 'kpis');
-      const pkpi = (k, v, sub, cls) => { const b = el('div', 'kpi' + (cls ? ' ' + cls : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sub) b.append(el('div', 's', sub)); pgrid.append(b); };
-      const incD = pr.income_delta_pct !== null && pr.income_delta_pct !== undefined
-        ? (pr.income_delta >= 0 ? '+' : '') + pr.income_delta_pct + '% vs prior 24h (' + signed(pr.income_delta) + ' cr/h)'
-        : 'prior 24h: ' + fmt(pr.income_prev_24h || 0) + ' cr/h';
-      pkpi('Steady income trend', fmt(pr.income_24h || 0) + ' cr/h', incD, (pr.income_delta || 0) >= 0 ? 'pos' : 'warn');
-      const pD = pr.purse_delta !== null && pr.purse_delta !== undefined
-        ? signed(pr.purse_delta) + ' cr' + (pr.purse_delta_pct !== null ? ' (' + (pr.purse_delta >= 0 ? '+' : '') + pr.purse_delta_pct + '%)' : '')
-        : '--';
-      pkpi('24h purse growth', pD, 'all-in cashflow: ' + signed(pr.total_net_24h || 0) + ' cr/h (vs ' + signed(pr.total_net_prev_24h || 0) + ' prior)', (pr.purse_delta || 0) >= 0 ? 'pos' : 'neg');
-      pkpi('Roadmap progress', pr.roadmap_avg_pct !== null && pr.roadmap_avg_pct !== undefined ? pr.roadmap_avg_pct.toFixed(1) + '%' : '--',
-        pr.latest_milestone ? 'latest unlock: ' + pr.latest_milestone : '12-rung strategic ladder (Days -> Months)', 'pos');
-      panel.append(pgrid);
-      if ((pr.daily || []).length) {
-        panel.append(fitTable(table(['Day (UTC)', 'Ships', 'Recur Inc/h', 'Costs/h', 'Cash Steady/h', 'Seed & CapEx/h', 'Peak Purse'],
-          pr.daily.map((d) => [
-            d.day, fmt(d.ships), shade(d.income_h, 'pos'), shade(d.costs_h, 'neg'),
-            tint(d.steady_net_h), tint(d.paid_once_h), fmtCompact(d.peak_purse) + ' cr',
-          ]), [1, 2, 3, 4, 5, 6])));
-      }
-    }
-
-    const mad = (ops.alerts && ops.alerts.mad) || [], raids = (ops.alerts && ops.alerts.battles) || [];
-    panel.append(el('h3', null, 'Alerts & anomalies'));
-    if (mad.length || raids.length) {
-      if (mad.length) {
-        panel.append(fitTable(table(['Figure', 'Verdict', 'Detail'],
-          mad.map((m) => [m.figure, el('span', 'pill ' + (m.verdict.includes('LOW') || m.verdict.includes('HIGH') ? 'bad' : 'warn'), m.verdict), m.detail]))));
-      }
-      if (raids.length) {
-        panel.append(fitTable(table(['Side', 'System', 'Kind', 'Status', 'Lost', 'Factions'],
-          raids.map((b) => [
-            el('span', 'pill' + (b.is_cltv ? ' bad' : ''), b.is_cltv ? 'CLTV' : 'OTHER'),
-            sys.has(b.system) ? sysLink(b.system) : b.system_name,
-            b.category,
-            b.status,
-            b.lost && b.lost.length ? fmt(b.destroyed) + ' (' + b.lost.join(', ') + ')' : fmt(b.destroyed),
-            (b.tags || []).join(', ') || '--',
-          ]), [4])));
-      }
-    } else {
-      panel.append(el('p', 'empty', 'No statistical anomalies (MAD) or active non-pirate battles.'));
-    }
-
-    if (F.ships.length) {
-      const strip = el('div', 'compbar');
-      strip.append(divMeter(F.ships));
-      panel.append(strip);
-    }
-
-    const sup = ops.supply || [];
-    if (sup.length) {
-      panel.append(el('h3', null, 'Supply chains'));
-      panel.append(fitTable(table(['Chain', 'Item', 'Place', 'Have / Keep', 'Hours', 'State'],
-        sup.map((x) => {
-          const stCls = x.state === 'OK' ? 'good' : x.state === 'LOW' ? 'warn' : 'bad';
-          const cell = el('div', 'progcell');
-          cell.append(el('span', null, fmt(x.have) + ' / ' + fmt(x.keep)));
-          if (x.keep > 0) cell.append(pbar(x.have, x.keep, stCls));
-          return [x.chain, x.item, x.place, cell, x.hours === null ? '--' : x.hours + 'h', el('span', 'pill ' + stCls, x.state === 'LOW' ? 'LOW (<2x keep)' : x.state)];
-        }), [4])));
-    }
-
-    const needs = ops.needs || [];
-    if (needs.length) {
-      panel.append(el('h3', null, 'Open priority needs'));
-      panel.append(fitTable(table(['P', 'Need', 'Owner', 'Covered', 'Missing / Fee'],
-        needs.map((n) => {
-          const stCls = n.colour === 'green' ? 'good' : n.colour === 'red' ? 'bad' : 'warn';
-          const gap = n.stocked ? 'standing reserve stocked' : ([n.short, n.fee ? fmt(n.fee) + ' cr fee' : ''].filter(Boolean).join(' | ') || 'ready to build');
-          const cov = el('div', 'progcell');
-          cov.append(el('span', 'pill ' + stCls, n.stocked ? 'STOCKED' : n.pct + '%'), pbar(n.pct, 100, stCls));
-          return [n.priority, n.id, n.owner, cov, gap];
-        }))));
-    }
-
-    const reqs = ops.requests || [];
-    if (reqs.length) {
-      panel.append(el('h3', null, 'Active division requests (' + reqs.length + ' open / accepted)'));
-      panel.append(fitTable(table(['State', 'Entry', 'Route', 'Updated', 'Summary'],
-        reqs.slice(0, 12).map((r) => [
-          el('span', 'pill ' + (r.state === 'OPEN' ? 'warn' : 'info'), r.state),
-          linkButton(r.ent, () => openDoc('communications/requests.log'), 'doclink'),
-          r.by + ' -> ' + r.to,
-          stampCet(r.when),
-          r.need + (r.answer ? ' [' + r.answer + ']' : ''),
-        ]))));
-    }
-  }
-  const waves = (F.waves || []).slice().reverse();     // many ships off the game at once: written down by the collector, newest first
-  panel.append(el('h3', null, 'Ships off the game'));
-  if (waves.length) {
-    panel.append(fitTable(table(['When', 'Ships off', 'Minutes', 'What the readings show'],
-      waves.map((x) => [stampOf(x.since * 1000), fmt(x.peak) + ' of ' + fmt(x.ships), x.minutes, waveCause(x)]), [1, 2])));
-    panel.append(el('p', 'sub', 'A wave is many ships losing the line to the game at once. They reconnect by themselves; a run cut in those minutes is flown again.'));
   } else {
-    panel.append(el('p', 'empty', 'No wave on record yet. When many ships lose the line to the game at once (the game restarts for an update, or our ship engine restarts), '
-      + 'it is written down here with its time, its length and what the readings show.'));
+    const hs = (ops && ops.readiness && ops.readiness.hull_summary) || null;
+    mkCard(topGrid, 'Hull upgrades missing', hs ? fmt(hs.t0_remaining) + ' T0 missing (' + hs.upgraded_pct + '%)' : '--', 'warming up', 'warn');
   }
+
+  if (upg && upg.modules) {
+    const m = upg.modules;
+    const mCls = m.missing_slots === 0 && m.tier_pct_done >= 80 ? 'pos' : (m.slot_pct_done >= 55 ? 'warn' : 'neg');
+    mkCard(
+      topGrid,
+      'Module fits missing (dynamic T1-T5)',
+      m.missing_slots > 0 ? fmt(m.missing_slots) + ' slots missing (' + m.slot_pct_done + '% slots | ' + m.tier_pct_done + '% tier-max)' : '0 empty slots (' + m.tier_pct_done + '% tier-max)',
+      fmt(m.ships_missing_tier) + '/' + fmt(m.active_ships) + ' mobile ships below tier-max | ' + fmt(m.off_role_ships) + ' off-role | '
+        + fmt(m.bursar_exempt_ships) + ' zero-mod Bursars exempt',
+      mCls,
+      m.slot_pct_done
+    );
+  } else {
+    const fs = (ops && ops.readiness && ops.readiness.fit_summary) || null;
+    mkCard(topGrid, 'Module fits missing', fs ? fmt(fs.empty_slots) + ' empty slots' : '--', 'warming up', 'warn');
+  }
+  panel.append(topGrid);
+
+  // === SECTION 2: WHOLE-FLEET CORE KPIS (RECONCILED 1:1 WITH FINANCIAL STATEMENTS) ===
+  const winLbl = fl ? (fl.hours + 'h') : metricWin;
+  panel.append(el('h3', null, 'Whole-fleet performance (' + winLbl + ' window)'));
+  const flGrid = el('div', 'kpis ov-fleet');
+  if (fl) {
+    const ebitPos = (fl.core_ebit_h || 0) >= 0;
+    const ebitFuelTxt = fl.core_ebit_per_fuel !== null && fl.core_ebit_per_fuel !== undefined
+      ? (fl.core_ebit_per_fuel >= 0 ? '+' : '') + fl.core_ebit_per_fuel.toFixed(2) + ' cr / paid fuel cr'
+      : '--';
+    mkCard(
+      flGrid,
+      'Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)',
+      signed(Math.round(fl.core_ebit_h || 0)) + ' cr/h',
+      ebitFuelTxt + ' | excludes seed missions & CapEx',
+      ebitPos ? 'pos' : 'neg'
+    );
+
+    const rofTxt = fl.rev_per_fuel !== null && fl.rev_per_fuel !== undefined ? fl.rev_per_fuel.toFixed(2) + 'x rev / fuel' : '--';
+    mkCard(
+      flGrid,
+      'Realized Revenue & Return on Fuel',
+      '+' + fmt(Math.round(fl.realized_rev_h || 0)) + ' cr/h',
+      rofTxt + ' | paid fuel ' + fmt(Math.round(fl.paid_fuel_h || 0)) + ' cr/h',
+      (fl.rev_per_fuel || 0) >= 2.0 ? 'pos' : ((fl.rev_per_fuel || 0) >= 1.2 ? 'warn' : 'neg')
+    );
+
+    mkCard(
+      flGrid,
+      'Fleet Utilization & Idle (-> 0%)',
+      fl.working_pct.toFixed(1) + '% working (' + fmt(fl.working_ships) + '/' + fmt(fl.total_ships) + ')',
+      fl.idle_pct.toFixed(1) + '% true idle (' + fmt(fl.idle_ships) + ') | ' + fmt(fl.host_threads || 0) + ' live threads | ' + fmt(fl.park_ships || 0) + ' parked',
+      fl.idle_pct <= 5.0 ? 'pos' : (fl.idle_pct <= 12.0 ? 'warn' : 'neg'),
+      fl.working_pct
+    );
+
+    mkCard(
+      flGrid,
+      'Galaxy Freshness & Supply SLA',
+      fl.galaxy_median_min.toFixed(1) + 'm median (' + fl.fresh_20m_pct.toFixed(0) + '% <20m)',
+      'avg ' + Math.round(fl.galaxy_avg_min) + 'm | Bunkers ' + fl.bunker_avg_pct.toFixed(0) + '% | P1/P2 SLA ' + fl.supply_sla_pct.toFixed(0) + '% | '
+        + fmt(fl.bursar_stations_occupied || 0) + '/' + fmt(fl.bursar_stations_target || 55) + ' Bursar hubs',
+      fl.galaxy_median_min <= 20.0 && fl.bunker_avg_pct >= 85.0 ? 'pos' : 'warn'
+    );
+  } else {
+    mkCard(flGrid, 'Fleet KPIs', 'warming up...', 'recomputing snapshot', 'warn');
+  }
+  panel.append(flGrid);
+
+  // === SECTION 3: 17 SPECIALIZED WING & DIVISION KPI SCORECARDS (ZERO ADMIRALS) ===
+  if (fWin && Array.isArray(fWin.wings) && fWin.wings.length) {
+    const wHead = el('div', 'ichead');
+    wHead.append(el('h3', null, 'Division & wing KPI scorecards (' + winLbl + ', ' + fWin.wings.length + ' specialized units = ' + fmt(standingShips) + ' ships)'));
+    panel.append(wHead);
+
+    const pillars = ['All', 'Combat', 'Mining', 'Trade', 'Manufacturing', 'Logistics', 'Intel'];
+    const pBar = el('div', 'wg-bar');
+    for (const pil of pillars) {
+      const cnt = pil === 'All' ? fWin.wings.length : fWin.wings.filter((x) => x.pillar === pil).length;
+      const pb = el('button', 'rf' + (wingPillar === pil ? ' on' : ''), pil + ' (' + cnt + ')');
+      pb.type = 'button';
+      pb.addEventListener('click', () => { wingPillar = pil; render(); });
+      pBar.append(pb);
+    }
+    panel.append(pBar);
+
+    const shown = wingPillar === 'All' ? fWin.wings : fWin.wings.filter((x) => x.pillar === wingPillar);
+    const wGrid = el('div', 'wg-grid');
+    const stCls = (st) => (st === 'OK' ? 'good' : (st === 'STAGED' ? 'info' : (st === 'WARN' ? 'warn' : 'bad')));
+    const scCls = (sc) => (sc >= 80 ? 'pos' : (sc >= 60 ? 'warn' : 'neg'));
+
+    for (const wg of shown) {
+      const card = el('div', 'wg-card ' + (wg.status || 'OK').toLowerCase());
+      card.style.borderLeftColor = DIV[wg.division] || DIV.Unassigned;
+
+      const hd = el('div', 'wg-head');
+      const titleBox = el('div', 'wg-titlebox');
+      const nm = el('b', 'wg-name', wg.id + '  ' + wg.name);
+      nm.style.color = DIV[wg.division] || DIV.Unassigned;
+      titleBox.append(nm, el('span', 'wg-rc', wg.responsibility_center + ' | ' + fmt(wg.working) + '/' + fmt(wg.ships) + ' working'));
+      const badge = el('span', 'pill ' + stCls(wg.status), wg.staged ? 'STAGED' : (wg.status + ' ' + Math.round(wg.health_pct || 0) + '%'));
+      hd.append(titleBox, badge);
+      card.append(hd);
+
+      const kgrid = el('div', 'wg-kpis');
+      for (const kp of (wg.kpis || [])) {
+        const cell = el('div', 'wg-cell');
+        const valEl = el('div', 'wg-v ' + (wg.staged && kp.k === 'Status' ? '' : scCls(kp.score !== undefined ? kp.score : 80)), kp.v);
+        cell.append(el('div', 'wg-k', kp.k), valEl, el('div', 'wg-s', kp.sub || ''));
+        kgrid.append(cell);
+      }
+      card.append(kgrid);
+      wGrid.append(card);
+    }
+    panel.append(wGrid);
+  }
+
+  // === SECTION 4: COMPACT DIVISION ROLLUP TABLE (ZERO ADMIRALS) ===
+  if (fWin && Array.isArray(fWin.divisions) && fWin.divisions.length) {
+    panel.append(el('h3', null, 'Division rollup (' + winLbl + ')'));
+    const dRows = fWin.divisions.map((d) => {
+      const dn = el('span', null, d.division);
+      dn.style.color = DIV[d.division] || DIV.Unassigned;
+      const idlEl = el('span', d.idle_pct <= 5 ? 'pos' : (d.idle_pct <= 12 ? 'warn' : 'neg'), d.idle_pct.toFixed(1) + '%');
+      const roiEl = d.fuel_roi !== null && d.fuel_roi !== undefined
+        ? el('span', d.fuel_roi >= 1.5 ? 'pos' : (d.fuel_roi >= 0.8 ? 'warn' : 'neg'), d.fuel_roi.toFixed(2) + 'x')
+        : el('span', 'dim', '--');
+      const hPill = el('span', 'pill ' + (d.status === 'OK' ? 'good' : (d.status === 'WARN' ? 'warn' : 'bad')), d.health_pct.toFixed(0) + '%');
+      return [
+        dn,
+        fmt(d.working) + '/' + fmt(d.ships),
+        idlEl,
+        fmt(Math.round(d.fuel_h || 0)),
+        tint(Math.round(d.recurring_cash_h || 0)),
+        tint(Math.round(d.accrual_op_h || 0)),
+        roiEl,
+        hPill,
+      ];
+    });
+    panel.append(fitTable(table(
+      ['Division', 'Working', 'Idle %', 'Fuel / h', 'Rec. Cash / h', 'Accrual Op / h', 'Fuel ROI', 'Health'],
+      dRows,
+      [1, 2, 3, 4, 5, 6]
+    )));
+  }
+
+  // === SECTION 5: COLLAPSIBLE LIVE GRAPHS & TOP ROUTES (ZERO BLOAT ON PRIMARY VIEW) ===
+  const det = el('details', 'wg-details');
+  det.append(el('summary', null, 'Live trends & active routes (' + routeHours + 'h routes, ' + graphHours + 'h charts)'));
   const routesBox = el('div'), graphs = el('div');
-  panel.append(el('h3', null, 'Where the money comes from, last ' + routeHours + ' hours'), routesBox, el('h3', null, 'Last ' + graphHours + ' hours'), graphs);
-  const accFoot = el('p', 'sub', 'Accounting basis (GAAP / IFRS): Recurring Cash excludes fuel/salvage on one-time routes (IFRS 18 matching principle), matching them to Seed Missions and Investing CapEx so Recurring + Seed + CapEx + Treasury Own = Purse Cash Flow. '
-    + 'Vault inventory is carried at IAS 2 Lower of Base Cost or Best Bid (side-by-side with Catalog/Leaderboard and depth-capped liquidation), and cross-division handovers are transfer-priced at IAS 2 NRV (eliminating to 0 at Fleet Total). Full specification: ');
-  accFoot.append(
-    linkButton('financial-statements.md', () => openDoc('governance/financial-statements.md'), 'doclink'),
-    ' & ',
-    linkButton('accounting-and-hud-blueprint.md', () => openDoc('governance/accounting-and-hud-blueprint.md'), 'doclink'),
-    '.'
-  );
-  panel.append(accFoot);
+  det.append(el('h4', null, 'Active repeating routes (' + routeHours + 'h)'), routesBox, el('h4', null, 'Fleet trend charts (' + graphHours + 'h)'), graphs);
+  panel.append(det);
+
   if (Date.now() - HIST.at > 30000 || HIST.key !== metricWin) {
     try { HIST = Object.assign(await get('/api/history?q=' + graphHours), { at: Date.now(), key: metricWin }); } catch (e) { HIST = { rows: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
@@ -5662,33 +5278,24 @@ async function renderMetrics(panel, live) {
     try { INCOME = Object.assign(await get('/api/income?q=' + routeHours), { at: Date.now(), key: metricWin }); } catch (e) { INCOME = { routes: [], at: Date.now(), key: metricWin }; }
     if (!live()) return;
   }
-  const steady = keepOrder(INCOME.routes.filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits));
+  const steady = keepOrder((INCOME.routes || []).filter((x) => !x.once && (x.runs || x.flying)).sort((a, b2) => b2.credits - a.credits));
   if (steady.length) {
-    routesBox.append(fitTable(table(['Repeating route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.map((x) => {
+    routesBox.append(fitTable(table(['Repeating route', 'Ships now', 'Runs', 'Ship-hours', 'Credits', 'Per ship-hour'], steady.slice(0, 30).map((x) => {
       const name = el('span', null, x.route);
       name.title = x.title || '';
       return [name, x.flying || '', x.runs, x.ship_hours, tint(x.credits), x.per_ship_hour === null ? 'no reading' : tint(x.per_ship_hour)];
     }), [1, 2, 3, 4, 5])));
-  } else routesBox.append(el('p', 'empty', 'No run of a repeating route in this stretch.'));
-  const onceList = INCOME.routes.filter((x) => x.once && (x.runs || x.flying)).sort((a, b2) => ((b2.matched_net !== undefined ? b2.matched_net : (b2.credits + b2.one_time)) - (a.matched_net !== undefined ? a.matched_net : (a.credits + a.one_time))));
-  if (onceList.length) {
-    routesBox.append(el('h4', null, 'One-time missions & fits (matched net = rewards/CapEx + fuel/inputs, ' + onceList.length + ' active)'));
-    routesBox.append(fitTable(table(['One-time route', 'Ships now', 'Runs', 'Ship-hours', 'Fuel / inputs', 'One-time', 'Matched net', 'Matched / sh'], onceList.slice(0, 25).map((x) => {
-      const name = el('span', null, x.route);
-      name.title = x.title || '';
-      const mnet = x.matched_net !== undefined ? x.matched_net : (x.credits + x.one_time);
-      const mph = x.matched_per_ship_hour !== undefined ? x.matched_per_ship_hour : null;
-      return [name, x.flying || '', x.runs, x.ship_hours, tint(x.credits), tint(x.one_time), tint(mnet), mph === null ? 'no reading' : tint(mph)];
-    }), [1, 2, 3, 4, 5, 6, 7])));
+  } else {
+    routesBox.append(el('p', 'empty', 'No repeating route run in this window.'));
   }
   const rows = HIST.rows || [];
   graphs.append(
-    chart('Net per hour, over the ' + behind + ' minutes before:', [{ pts: trailing(rows, behind, 1), colour: '#dcae58', name: 'everything' }, { pts: trailing(rows, behind, 5), colour: '#a48be0', name: 'steady' }]),
-    chart('Per hour:', [{ pts: trailing(rows, behind, 3), colour: '#58c08c', name: 'income' }, { pts: trailing(rows, behind, 4), colour: '#e06c66', name: 'costs' }]),
-    chart('Ships working', [{ pts: rows.map((p) => [p[0], p[6]]), colour: '#6fa8dc' }]),
-    chart('Credits, all wallets', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }]));
+    chart('Net per hour (' + behind + 'm trailing):', [{ pts: trailing(rows, behind, 1), colour: '#dcae58', name: 'all' }, { pts: trailing(rows, behind, 5), colour: '#a48be0', name: 'steady' }]),
+    chart('Income vs Costs / h:', [{ pts: trailing(rows, behind, 3), colour: '#58c08c', name: 'income' }, { pts: trailing(rows, behind, 4), colour: '#e06c66', name: 'costs' }]),
+    chart('Ships working:', [{ pts: rows.map((p) => [p[0], p[6]]), colour: '#6fa8dc' }]),
+    chart('Liquid credits (all wallets):', [{ pts: rows.map((p) => [p[0], p[1]]), colour: '#dcae58' }])
+  );
 }
-
 function fmtCompact(n) {
   const v = Number(n || 0);
   if (Math.abs(v) >= 1e9) return (v / 1e9).toFixed(2) + 'B';

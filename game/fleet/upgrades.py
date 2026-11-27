@@ -1640,7 +1640,19 @@ def auto_enqueue_upgrades(data_dir=DATA_DEFAULT, repo_root=REPO_DEFAULT, now=Non
               if upg_need <= 0:
                   continue
               t0_frac = float(t0_need) / float(max(1, len(cohort_ships)))
-              ranked_cohorts.append((t0_frac, upg_need, -idx, coh, cohort_ships))
+              _kpi_boost = 0.0
+              try:
+                  import kpi_engine as _ke_u
+                  _ksig = _ke_u.read_kpi_signals(data_dir)
+                  _pw = _ksig.get("priority_upgrade_wings") or []
+                  _cw = _ke_u.wing_id_of(str(coh.get("wing_prefix") or ""), div_name)
+                  if _cw in _pw[:5]:
+                      _kpi_boost = 0.25 - 0.03 * _pw.index(_cw)
+                  elif _cw in (_ksig.get("tighten_fuel_wings") or []):
+                      _kpi_boost = 0.20
+              except Exception:
+                  pass
+              ranked_cohorts.append((t0_frac + _kpi_boost, upg_need, -idx, coh, cohort_ships))
           ranked_cohorts.sort(reverse=True)
 
           for _t0_frac, _upg_need, _neg_i, coh, cohort_ships in ranked_cohorts:

@@ -2763,7 +2763,18 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "warn_count": sum(1 for t in ent_triggers if t["severity"] == "WARN"),
         },
         "divisions": divisions_out,
+        "fleet_kpis": _compute_fleet_kpis_safe(repo_root, data_dir, now),
     }
+
+
+
+
+def _compute_fleet_kpis_safe(repo_root, data_dir, now):
+    try:
+        import kpi_engine as _ke
+        return _ke.compute_fleet_kpis(repo_root=repo_root, data_dir=data_dir, now=now, write_signals=True)
+    except Exception:
+        return None
 
 
 def render_briefing(sc, who="all"):

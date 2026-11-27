@@ -1008,7 +1008,16 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             _scarce_safe_ex = bool(_live_b >= _safe_ex_bid or _rem_pct_chk < 3.0 or is_deficit)
             _zone_m = 1.0 if _scarce_safe_ex else _safe_p
         _sys_crowd = 1.0 + 0.35 * float(sys_claimed.get(sys_id, 0))
-        score = ((_net_cr * _wm * _zone_m) / (_rt_fuel * _sys_crowd)) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
+        _kpi_fuel_m = 1.0
+        try:
+            import kpi_engine as _ke_m
+            _msig = _ke_m.read_kpi_signals(DATA)
+            _mwid = _ke_m.wing_id_of(str(ship_doc.get("wing") or ""), "Mining")
+            if _mwid in (_msig.get("tighten_fuel_wings") or []):
+                _kpi_fuel_m = 1.30
+        except Exception:
+            pass
+        score = ((_net_cr * _wm * _zone_m) / (_rt_fuel * _kpi_fuel_m * _sys_crowd)) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
         if score <= 0.0 and tier != "deficit" and policy.get("block_negative_score", True):
             continue
         cand = {

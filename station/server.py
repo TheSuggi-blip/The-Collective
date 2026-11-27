@@ -2906,6 +2906,13 @@ def _build_ops():
         out["rivals"] = _rv.compute_sedcards(str(REPO), str(FLEET.parent), top_n=12, now=now)
         import scorecard as _sc
         out["scorecard"] = _sc.compute_scorecard(str(REPO), str(FLEET.parent), now=now, rivals_doc=out["rivals"])
+        try:
+            import kpi_engine as _ke
+            out["fleet_kpis"] = _ke.compute_fleet_kpis(
+                str(REPO), str(FLEET.parent), accounting_by_win=out.get("accounting"), now=now, write_signals=True
+            )
+        except Exception:
+            out["fleet_kpis"] = (out["scorecard"] or {}).get("fleet_kpis")
     except Exception:
         out["scorecard"] = None
     OPS["at"], OPS["value"] = now, out

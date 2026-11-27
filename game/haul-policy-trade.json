@@ -73,9 +73,9 @@
   "consolidate_min_units": 10,
   "consolidate_min_value_cr": 300,
   "liquidate_max_slots": 40,
-  "rest_seconds_when_empty": 5,
+  "rest_seconds_when_empty": 120,
   "idle_poll_interval_s": 5,
-  "idle_watch_minutes": 0.1,
+  "idle_watch_minutes": 2.0,
   "hub_bunker_reorder_pct": 0.96,
   "central_depot_base": "node_beta_industrial_station",
   "central_depot_targets": {
