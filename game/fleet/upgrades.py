@@ -679,7 +679,7 @@ def _escape_battle(gate_mod, pilot, wait_ticks=2):
     return False
 
 
-def _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
+def _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65, _allow_escape=True):
     try:
         status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
                                     {"type": "prepare-at-station", "options": {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True}},
@@ -690,7 +690,12 @@ def _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
         d = json.loads(out)
     except (ValueError, TypeError):
         return False, str(out)[:160]
-    return status == 200 and bool(d.get("success")), str(d.get("message") or d.get("error") or "")[:160]
+    ok = status == 200 and bool(d.get("success"))
+    msg = str(d.get("message") or d.get("error") or "")[:160]
+    if (not ok) and _allow_escape and ("in_battle" in msg.lower() or "while in combat" in msg.lower()):
+        if _escape_battle(gate_mod, pilot, wait_ticks=4):
+            return _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=max(25, int(timeout)), _allow_escape=False)
+    return ok, msg
 
 
 def _read_live_fuel_loc(gate_mod, pilot, ship=None):
@@ -959,6 +964,22 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=500, 
         return 0
     rows = load_queue(data_dir)
     pmap = _pilot_division_map(data_dir)
+    # Clean up any orphaned 'hand upgrade' order locks for pilots no longer held in upgrade_queue
+    try:
+        _held_now = hold_pilots(data_dir)
+        _odir = Path(data_dir) / "fleet" / "orders"
+        if _odir.is_dir():
+            for _of in _odir.glob("*.json"):
+                if _of.stem in _held_now:
+                    continue
+                try:
+                    _od = json.loads(_of.read_text(encoding="utf-8"))
+                    if isinstance(_od, dict) and _od.get("what") == UPGRADE_HOLD:
+                        _of.unlink()
+                except (OSError, ValueError):
+                    pass
+    except Exception:
+        pass
     changed, actions, t0 = False, 0, time.time()
     if reconcile_built_hangars(data_dir, pmap, rows, now):
         changed = True

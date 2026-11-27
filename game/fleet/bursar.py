@@ -1351,6 +1351,28 @@ def main(argv=None):
         notes.append("station %s" % base_id)
 
         ok, msg = run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
+        if (not ok) and "insufficient fuel" in str(msg or "").lower():
+            try:
+                _lanes_b, _ = fuelplan.chart(REPO / "game")
+                _fars_b = fuelplan.strongholds(REPO / "game")
+                _st_b = {s: v for s, v in fuelplan.fuel_stations(DATA).items() if s not in _fars_b}
+                _cur_sys_b = str(ship_doc.get("system") or "")
+                _skip_b = set()
+                for _hi in range(2):
+                    _near_b = fuelplan.nearest_fuel(_lanes_b, _cur_sys_b, _st_b, skip=_skip_b) if _cur_sys_b else None
+                    if not _near_b:
+                        break
+                    _skip_b.add(_near_b[3])
+                    say("refuel staging hop -> %s (%s)" % (_near_b[1], _near_b[3]))
+                    _ok_h, _msg_h = run_goal("prepare-at-station", {"systemId": _near_b[1], "poiId": _near_b[2], "baseId": _near_b[3], "refuel": True})
+                    if not _ok_h:
+                        break
+                    _cur_sys_b = _near_b[1]
+                    ok, msg = run_goal("prepare-at-station", {"systemId": sys_id, "poiId": poi_id, "baseId": base_id, "refuel": True})
+                    if ok or ("insufficient fuel" not in str(msg or "").lower()):
+                        break
+            except Exception as _fe:
+                say("refuel staging err: %s" % str(_fe)[:80])
         if not ok:
             say("could not reach %s: %s" % (base_id, msg))
             notes.append("unreachable: %s" % msg[:60])

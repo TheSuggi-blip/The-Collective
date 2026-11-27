@@ -704,10 +704,26 @@ def write_funds(data, rows):
 
 
 def funded(data, now):
-    """{pilot: credits} the sweep and the top-ups leave with a pilot: each fund given within its hours."""
+    """{pilot: credits} the sweep and the top-ups leave with a pilot: each fund given within its hours.
+    Auto-releases upgrade funds once the hull is already commissioned/done/failed so surplus cash sweeps back to Treasury."""
     out = {}
+    _upg_seen = None
+    _upg_active = None
     for r in funds(data):
         if r.get("kind") != "topup" and r.get("state") == "given" and now - (r.get("given_at") or 0) < float(r.get("hours") or FUND_HOURS) * 3600:
+            why_s = str(r.get("why") or "").lower()
+            if why_s.startswith("upgrade ") or str(r.get("by") or "") == "AutoUpgrade":
+                if _upg_seen is None:
+                    try:
+                        import upgrades as _upg_f
+                        _qrows = _upg_f.load_queue(data)
+                        _upg_seen = {str(x.get("pilot")) for x in _qrows if isinstance(x, dict) and x.get("pilot")}
+                        _upg_active = _upg_f.protected_pilots(data)
+                    except Exception:
+                        _upg_seen, _upg_active = set(), set()
+                _pn = str(r.get("pilot") or "")
+                if _pn in _upg_seen and _pn not in _upg_active:
+                    continue
             out[r["pilot"]] = out.get(r["pilot"], 0) + int(r.get("credits") or 0)
     return out
 

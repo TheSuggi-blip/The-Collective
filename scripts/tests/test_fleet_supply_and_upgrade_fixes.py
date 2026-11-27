@@ -96,5 +96,34 @@ class TestSupplyAndUpgradeFixes(unittest.TestCase):
         self.assertEqual(job["mode"], "industrial")
 
 
+    def test_wallet_funded_releases_completed_upgrades(self):
+        import wallet
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "fleet").mkdir(parents=True)
+            now = 1_800_000_000.0
+            (d / "fleet" / "funds.json").write_text(json.dumps([
+                {"pilot": "P_Done", "credits": 30000, "state": "given", "given_at": now - 600, "hours": 48, "why": "upgrade precept", "by": "AutoUpgrade"},
+                {"pilot": "P_Active", "credits": 30000, "state": "given", "given_at": now - 600, "hours": 48, "why": "upgrade precept", "by": "AutoUpgrade"},
+                {"pilot": "P_Manual", "credits": 50000, "state": "given", "given_at": now - 600, "hours": 48, "why": "manual buy", "by": "Trinity"},
+            ]), encoding="ascii")
+            (d / "fleet" / "upgrade_queue.json").write_text(json.dumps([
+                {"id": "u-1", "pilot": "P_Done", "state": "done", "hull": "precept"},
+                {"id": "u-2", "pilot": "P_Active", "state": "funded", "hull": "precept"},
+            ]), encoding="ascii")
+            res = wallet.funded(d, now)
+            self.assertNotIn("P_Done", res)
+            self.assertIn("P_Active", res)
+            self.assertIn("P_Manual", res)
+
+    def test_tug_stranded_catches_heavy_ship_at_30_fuel_unable_to_reach_fuel(self):
+        import tug
+        # 5 jumps away at ~8 fuel/jump -> 30 fuel is genuinely stranded!
+        lanes = {f"s{i}": [x for x in (f"s{i-1}" if i > 0 else None, f"s{i+1}" if i < 11 else None) if x] for i in range(12)}
+        stations = {"s11": ("p11", "b11")}
+        ship = {"name": "IFV Alembic", "fuel": 22, "max_fuel": 110, "system": "s0", "status": "connected", "docked": ""}
+        reason = tug.stranded(ship, "", lanes, stations)
+        self.assertIsNotNone(reason)
+
 if __name__ == "__main__":
     unittest.main()

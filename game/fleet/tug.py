@@ -54,8 +54,7 @@ def stranded(ship, order, lanes, stations, below=BELOW, mark=""):
     else:
         per_jump = max(fuelplan.PER_JUMP, round(float(max_fuel) / 55.0, 1)) if isinstance(max_fuel, (int, float)) and max_fuel > 0 else fuelplan.PER_JUMP
         dock_way = max(DOCK_WAY, int(round(per_jump)))
-    eff_below = min(30, max(below, int(round(per_jump * 3 + dock_way))))
-    if not isinstance(fuel, (int, float)) or fuel >= eff_below:
+    if not isinstance(fuel, (int, float)):
         return None
     if ship.get("docked") or ship.get("docked_at") or ship.get("in_transit") or ship.get("jumping"):
         return None
@@ -88,10 +87,12 @@ def refused_no_fuel(answer):
     return "no_fuel_source" in str(answer or "")
 
 
-def dry_hold(row, ship):
+def dry_hold(row, ship, now=None):
     """True while a ship recorded dry at a station without fuel stays in that system with its tank below the line
-    it was towed under: calling the tug again would only dock it at the same dry station for another fee."""
+    it was towed under (expires after 4h so newly fueled hubs and recovered stations unstick automatically)."""
     if not isinstance(row, dict):
+        return False
+    if now is not None and (float(now) - float(row.get("at") or 0)) > 4 * 3600:
         return False
     fuel = ship.get("fuel")
     return (ship.get("system") == row.get("system") and isinstance(fuel, (int, float))
