@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 129.
+Routes: 130.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -49,6 +49,7 @@ Routes: 129.
 | [sell-hydrogen-at-node-beta](sell-hydrogen-at-node-beta.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at node_beta_industrial_station, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at node_beta_industrial_station, while node_beta_industrial_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-node-gamma](sell-hydrogen-at-node-gamma.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at node_gamma_relay_station, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at node_gamma_relay_station, while node_gamma_relay_station bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
 | [sell-hydrogen-at-synchrony](sell-hydrogen-at-synchrony.json) | circuit | home space | Stored hydrogen_gas sold where it lies, at synchrony_hub, at 30 cr or more | up to 1 ships, with 1 hydrogen_gas stored at synchrony_hub, while synchrony_hub bids 30 cr for hydrogen_gas | TBD | TBD | TBD | TBD | -- |
+| [sell-lead-docked-central-nexus](sell-lead-docked-central-nexus.json) | circuit | home space | Stored lead_ore sold where it lies, at central_nexus, at 110 cr or more | up to 3 ships, with 3 lead_ore stored at central_nexus, while central_nexus bids 110 cr for lead_ore | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Central Nexus, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Node Beta, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-experiment](sell-loot-at-experiment.json) | circuit | home space | Hunt loot stored by Trade's receiver at The Experiment sold where it lies | up to 1 ships, with 5 crystal_melt stored at the_experiment_research_station, while the_experiment_research_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
