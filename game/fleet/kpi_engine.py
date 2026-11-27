@@ -633,13 +633,14 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                     notes_j = " ".join(str(x) for x in (rj.get("notes") or [])).lower()
                     host_stop = ("host is ending" in notes_j) or ("stop file" in notes_j)
                     no_belt_tick = (ore_u == 0 and m_f < 1.0 and "no belt" in notes_j)
-                    if (not host_stop) and (not no_belt_tick):
-                        wr["mine_runs"] += 1
                     if ore_u > 0:
+                        wr["mine_runs"] += 1
                         wr["ok_runs"] += 1
                         wr["mine_ok"] += 1
                         wr["ore_units"] += ore_u
                         wr["ore_val"] += float(ore_u) * float(prices.get(res_id, 5.0))
+                    elif (not host_stop) and (not no_belt_tick):
+                        wr["mine_runs"] += 1
                 elif k == "hunt":
                     kl = int(rj.get("kills") or 0)
                     wr["kills"] += kl

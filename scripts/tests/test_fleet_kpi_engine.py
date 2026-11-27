@@ -124,5 +124,32 @@ class TestWingMappingAndSignals(unittest.TestCase):
             self.assertIn("3A", sig["priority_upgrade_wings"])
 
 
+    def test_mine_yield_rate_bounded_on_host_stop(self):
+        # Yielding runs interrupted by host restart count in both numerator and denominator (0-100%)
+        now = time.time()
+        con = sqlite3.connect(":memory:")
+        con.execute("CREATE TABLE items (id TEXT, base_value REAL)")
+        con.execute("CREATE TABLE runs (pilot TEXT, kind TEXT, minutes REAL, credits REAL, one_time REAL, t REAL, row TEXT)")
+        con.execute("INSERT INTO items VALUES ('iron_ore', 20.0)")
+        r1 = json.dumps({"ore": 250, "resource": "iron_ore", "notes": ["host is ending"]})
+        r2 = json.dumps({"ore": 0, "resource": "iron_ore", "notes": ["no belt found"]})
+        con.execute("INSERT INTO runs VALUES ('3A.OrePrecision-01', 'mine', 5.0, 0, 0, ?, ?)", (now - 120, r1))
+        con.execute("INSERT INTO runs VALUES ('3A.OrePrecision-01', 'mine', 0.2, 0, 0, ?, ?)", (now - 60, r2))
+        ships = [{"name": "3A.OrePrecision-01", "wing": "3A. Ore -- Precision", "division": "Mining", "order": "mine-network"}]
+        with tempfile.TemporaryDirectory() as td:
+            res = kpi_engine._compute_window_wing_kpis(
+                con, ships, {"3A.OrePrecision-01": "3A"}, {"3A.OrePrecision-01": "Mining"},
+                {"span_hours": 1.0}, 1, now, Path(td), REPO,
+                {"median_min": 15.0, "avg_min": 18.0, "fresh_20m_pct": 60.0,
+                 "rival_frontier_median_min": 12.0, "rival_frontier_avg_min": 13.0, "rival_frontier_count": 19},
+                {"bunkers": [], "bunker_avg_pct": 100.0, "supply_sla_pct": 100.0, "p1_p2_needs_count": 0},
+                {"hulls": {"by_wing": {}}, "modules": {"by_wing": {}}}, 0, 1,
+            )
+        con.close()
+        w3a = [w for w in res["wings"] if w["id"] == "3A"][0]
+        yr = [k for k in w3a["kpis"] if k["k"] == "Mine Yield Rate"][0]
+        self.assertEqual(yr["v"], "100%")
+        self.assertEqual(yr["sub"], "1/1 mine runs yielded")
+
 if __name__ == "__main__":
     unittest.main()
