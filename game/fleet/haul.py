@@ -380,18 +380,33 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             have_here = int(cur_inv.get(iid) or 0)
             if have_here >= int(round(tgt * reorder_pct)):
                 continue
-            jkey = "upkeep:%s:%s" % (hub_id, iid)
-            if jkey in claimed_keys:
-                continue
             deficit = max(1, tgt - have_here)
-            # Outpost wreck-repair readiness guard: full self-repair bill is 180 steel_plate + 45 circuit_board.
-            # If an Outpost dips below a full repair bill, elevate priority right behind CRITICAL fuel!
+            # Outpost wreck-repair readiness guard (UNCHANGED): full self-repair bill is 180 steel_plate + 45 circuit_board.
             _below_repair_bill = (
                 hub_kind == "outpost"
                 and ((iid == "steel_plate" and have_here < 180) or (iid == "circuit_board" and have_here < 45))
             )
+            # Sovereign Station fast-track build/activation surge (sits behind Outpost CRITICAL/LOW <50% fuel 10.0/6.0,
+            # strictly ahead of routine surplus hauls & TOP-OFF 1.2, with up to 3 parallel hauler slots per core item!).
+            _station_core = (
+                hub_kind == "station"
+                and iid in ("steel_plate", "circuit_board", "fuel_cell", "flex_polymer")
+            )
+            _max_upk_slots = 3 if (_station_core and have_here < int(round(tgt * 0.50))) else 1
+            jkey = ""
+            for _usi in range(_max_upk_slots):
+                _cjk = ("upkeep:%s:%s" % (hub_id, iid)) if _usi == 0 else ("upkeep:%s:%s:s%d" % (hub_id, iid, _usi))
+                if _cjk not in claimed_keys:
+                    jkey = _cjk
+                    break
+            if not jkey:
+                continue
             if _below_repair_bill:
                 urgency = 1.15
+            elif _station_core:
+                urgency = 4.5 * (1.0 - 0.5 * (float(have_here) / float(tgt)))
+            elif hub_kind == "station":
+                urgency = 1.6 * (1.0 - (float(have_here) / float(tgt)))
             else:
                 urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
             demands.append((iid, deficit, urgency, jkey, False, max_pick))

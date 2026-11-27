@@ -4754,9 +4754,9 @@ function renderFinancialStatements(panel, ops, w, t) {
   const curFcf = fcfOf(cur);
   const hardAssets = bs ? Number(bs.hard_assets || (Number(bs.fleet_book || 0) + Number(bs.facility_invested || 0))) : 0;
   const vaultNrv = bs ? Number(bs.vault_live_market || bs.vault_worth || 0) : 0;
-  const dayCfo24 = a24 && cfoOf(a24) !== null ? cfoOf(a24) * 24 : null;
-  const realRoicMo = hardAssets > 0 && dayCfo24 !== null ? ((dayCfo24 * 30 * 100) / hardAssets) : null;
-  const realPaybackDays = hardAssets > 0 && dayCfo24 !== null && dayCfo24 > 0 ? (hardAssets / dayCfo24) : null;
+  const dayEbit24 = a24 && realizedEbitOf(a24) !== null ? realizedEbitOf(a24) * 24 : null;
+  const realRoicMo = hardAssets > 0 && dayEbit24 !== null ? ((dayEbit24 * 30 * 100) / hardAssets) : null;
+  const realPaybackDays = hardAssets > 0 && dayEbit24 !== null && dayEbit24 > 0 ? (hardAssets / dayEbit24) : null;
   const curConv = cashConvPctOf(cur);
   const sales24Day = a24 ? Math.max(0, numOr0(a24, 'raw_income_h')) * 24 : 0;
   const dioDays = sales24Day >= 1000 && vaultNrv > 0 ? (vaultNrv / sales24Day) : null;
@@ -4780,9 +4780,9 @@ function renderFinancialStatements(panel, ops, w, t) {
     curFcf !== null ? tone(curFcf) : ''
   );
   kpi(
-    'Realized Hard-Asset ROIC (Buffett RONTA, 30d)',
+    'Core Hard-Asset ROIC (Buffett RONTA, Ex-Seeds, 30d)',
     realRoicMo !== null ? (realRoicMo >= 0 ? '+' : '') + realRoicMo.toFixed(1) + '% /mo' : '--',
-    realPaybackDays !== null ? 'Cash payback ' + realPaybackDays.toFixed(1) + 'd on ' + fmtCompact(hardAssets) + ' PP&E' : 'Pure cash yield on ' + fmtCompact(hardAssets) + ' PP&E',
+    realPaybackDays !== null ? 'Core EBIT payback ' + realPaybackDays.toFixed(1) + 'd on ' + fmtCompact(hardAssets) + ' PP&E' : 'Recurring Core EBIT (ex-seeds) on ' + fmtCompact(hardAssets) + ' PP&E',
     realRoicMo !== null ? tone(realRoicMo) : ''
   );
   kpi(
@@ -4837,6 +4837,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Realized Seed & Mission Rewards (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
     row5('Realized Net Operating Profit / Cash Owner Earnings (Credits - CapEx)', cfoOf, 'fs-tot'),
     { cls: 'fs-sec', sec: 'Memoranda -- Balance Sheet Working Capital (IAS 2 -- NOT Realized Profit)' },
+    row5('Memo: Owned Station Consumables & Hospitality Upkeep (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
     row5('Memo: Unsold Inventory Change (Live-Market NRV, Balance Sheet Asset)', invBuildOf, 'fs-memo'),
     row5('Memo: Total Economic Wealth Creation (Realized Profit + Unsold Inv.)', econWealthOf, 'fs-memo'),
   ];
@@ -4966,14 +4967,15 @@ function renderFinancialStatements(panel, ops, w, t) {
     pctRow('Free Cash Flow Margin (FCF)', fcfOf, totalCashInOf, 'fs-ind', 'FCF / Total Cash Inflows (Post-CapEx)'),
     { cls: 'fs-sub', cells: ['Cash Conversion Ratio (% Output Sold)', fmtPlainPct(cashConvPctOf(a1)), fmtPlainPct(cashConvPctOf(a6)), fmtPlainPct(cashConvPctOf(a24)), 'Realized Sales / (Realized Sales + Unsold Inv. Build)'] },
     { cls: 'fs-memo', cells: ['Days Inventory Outstanding (DIO)', dioCell(a1), dioCell(a6), dioCell(a24), 'Vault Live NRV / Daily Realized Sales Pace (lower = faster cash)'] },
-    { cls: 'fs-sec', sec: 'Capital Returns (Buffett / Munger 30d Pace ROIC, RONTA & ROE)' },
-    { cls: 'fs-sub', cells: ['Realized Hard-Asset ROIC (Buffett RONTA, Ex-Cash & Vault)', fmtRoicCell(a1, cfoOf, hardAssets), fmtRoicCell(a6, cfoOf, hardAssets), fmtRoicCell(a24, cfoOf, hardAssets), capRetNote(cfoOf, hardAssets, '')] },
-    { cls: 'fs-ind', cells: ['Realized Operating Invested Capital ROIC (Hard Assets + Vault)', fmtRoicCell(a1, cfoOf, opInvCap), fmtRoicCell(a6, cfoOf, opInvCap), fmtRoicCell(a24, cfoOf, opInvCap), capRetNote(cfoOf, opInvCap, '')] },
-    { cls: 'fs-ind', cells: ['Realized Equity ROE (Total Collective Equity incl. Idle Cash)', fmtRoicCell(a1, cfoOf, totEq), fmtRoicCell(a6, cfoOf, totEq), fmtRoicCell(a24, cfoOf, totEq), capRetNote(cfoOf, totEq, '')] },
-    { cls: 'fs-memo', cells: ['Memo: Economic Hard-Asset ROIC (Incl. Unsold Inventory Build)', fmtRoicCell(a1, econWealthOf, hardAssets), fmtRoicCell(a6, econWealthOf, hardAssets), fmtRoicCell(a24, econWealthOf, hardAssets), capRetNote(econWealthOf, hardAssets, 'incl. unsold inv.')] },
+    { cls: 'fs-sec', sec: 'Capital Returns (Buffett / Munger Recurring 30d Pace ROIC, RONTA & ROE -- Ex-One-Time Seeds)' },
+    { cls: 'fs-sub', cells: ['Realized Core Hard-Asset ROIC (Buffett RONTA, Ex-Seeds & Vault)', fmtRoicCell(a1, realizedEbitOf, hardAssets), fmtRoicCell(a6, realizedEbitOf, hardAssets), fmtRoicCell(a24, realizedEbitOf, hardAssets), capRetNote(realizedEbitOf, hardAssets, 'recurring Core EBIT')] },
+    { cls: 'fs-ind', cells: ['Realized Core Operating Invested Capital ROIC (Hard Assets + Vault, Ex-Seeds)', fmtRoicCell(a1, realizedEbitOf, opInvCap), fmtRoicCell(a6, realizedEbitOf, opInvCap), fmtRoicCell(a24, realizedEbitOf, opInvCap), capRetNote(realizedEbitOf, opInvCap, 'recurring Core EBIT')] },
+    { cls: 'fs-ind', cells: ['Realized Core Equity ROE (Total Collective Equity, Ex-Seeds)', fmtRoicCell(a1, realizedEbitOf, totEq), fmtRoicCell(a6, realizedEbitOf, totEq), fmtRoicCell(a24, realizedEbitOf, totEq), capRetNote(realizedEbitOf, totEq, 'recurring Core EBIT')] },
+    { cls: 'fs-memo', cells: ['Memo: Economic Core Hard-Asset ROIC (Core EBIT + Unsold Inventory Build)', fmtRoicCell(a1, (a) => (a && realizedEbitOf(a) !== null ? realizedEbitOf(a) + (invBuildOf(a) || 0) : null), hardAssets), fmtRoicCell(a6, (a) => (a && realizedEbitOf(a) !== null ? realizedEbitOf(a) + (invBuildOf(a) || 0) : null), hardAssets), fmtRoicCell(a24, (a) => (a && realizedEbitOf(a) !== null ? realizedEbitOf(a) + (invBuildOf(a) || 0) : null), hardAssets), capRetNote((a) => (a && realizedEbitOf(a) !== null ? realizedEbitOf(a) + (invBuildOf(a) || 0) : null), hardAssets, 'Core EBIT + unsold inv.')] },
+    { cls: 'fs-memo', cells: ['Memo: Non-Recurring Total Cash Pace incl. One-Time Starter Seeds (CFO / PP&E)', fmtRoicCell(a1, cfoOf, hardAssets), fmtRoicCell(a6, cfoOf, hardAssets), fmtRoicCell(a24, cfoOf, hardAssets), 'Includes non-recurring starter mission seeds (DO NOT extrapolate as steady ROIC)'] },
   ];
   panel.append(fsTable(['Metric / Capital Return', '1h', '6h', '24h', 'Base, Formula & Audit Meaning'], mergedSec4Rows, [1, 2, 3]));
-  panel.append(el('p', 'sub', 'Buffett/Munger capital discipline: Primary ROIC/RONTA/ROE rows use STRICT REALIZED CASH earnings (IFRS 15 / CFO) so unsold vault inventory never disguises cash-return weakness. The bottom memo line shows total economic return including unrealized inventory build for comparison.'));
+  panel.append(el('p', 'sub', 'Buffett/Munger & IFRS 18 capital discipline: Primary ROIC/RONTA/ROE rows use STRICT RECURRING REALIZED CORE EBIT (Ex-One-Time Seeds & Ex-Unsold Inventory) so temporary starter-mission windfalls never create phantom +5,000%/mo yields. Memo lines show economic return (with unsold inventory) and non-recurring seed-inclusive cash pace separately.'));
 
   // 5. OPERATING SEGMENT FOOTNOTE & INTERNAL PRODUCTION TRANSFERS (IFRS 8 / ASC 280 + IFRS 10.B86 ELIMINATION)
   panel.append(el('h3', null, '5. Operating Segment Footnote & Internal Production Transfers (IFRS 8 / ASC 280)'));

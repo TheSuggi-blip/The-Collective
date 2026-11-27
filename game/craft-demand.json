@@ -38,6 +38,18 @@
     "titanium_alloy": {
       "cap": 1000,
       "division": "Logistics"
+    },
+    "flex_polymer": {
+      "cap": 2000,
+      "division": "Logistics"
+    },
+    "reinforced_glass": {
+      "cap": 400,
+      "division": "Logistics"
+    },
+    "power_cell": {
+      "cap": 600,
+      "division": "Logistics"
     }
   },
   "commercial_targets": {

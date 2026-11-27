@@ -44,7 +44,12 @@
       "void_espresso",
       "lumen_honey_cake",
       "ion_sparkling_water",
-      "biogas_fizz"
+      "biogas_fizz",
+      "caustic_sac",
+      "cobalt_ink",
+      "irradiated_marrow",
+      "armor_plate",
+      "repair_kit"
     ],
     "exclude_buy_items": [
       "iron_ore",

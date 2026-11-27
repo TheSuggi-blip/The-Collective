@@ -422,6 +422,11 @@ def retire_one(pilot, ship_doc, wave, data_dir, leader="Prime Directive"):
             }, timeout=45)
             if st_w == 200 and '"error"' not in txt_w[:240]:
                 swept = amt_try
+                try:
+                    import gate as _mg_gate
+                    _mg_gate.book_onetime(pilot, "Faction treasury: credits deposited", -int(swept), data=DATA)
+                except Exception:
+                    pass
                 break
             m_have = re.search(r"only have\s+([0-9,]+)\s+credits", txt_w, re.I)
             if m_have:
