@@ -1398,10 +1398,38 @@ LOW_HOLD = 600               # seconds a pass that lists fewer pilots than the o
 LOW = {}                     # "since": when the first such pass was seen
 
 
+_PIRATES_CACHE = {"mtime": -1.0, "names": frozenset()}
+
+
+def pirate_pilots():
+    """Pilot names belonging to the isolated Corsair Pirate roster (data/pirates/roster.tsv), cached by mtime.
+    Defense-in-depth guard: never mix Pirate pilots into CLTV fleet.json, totals, history, or rejoin."""
+    path = DATA.parent / "pirates" / "roster.tsv"
+    try:
+        mt = path.stat().st_mtime
+    except OSError:
+        return frozenset()
+    if mt != _PIRATES_CACHE["mtime"]:
+        names = set()
+        try:
+            for ln in path.read_text(encoding="utf-8", errors="replace").splitlines():
+                if not ln or ln.startswith("#"):
+                    continue
+                parts = ln.split("	")
+                if parts and parts[0] and parts[0] != "pilot":
+                    names.add(parts[0].strip())
+        except OSError:
+            pass
+        _PIRATES_CACHE["mtime"] = mt
+        _PIRATES_CACHE["names"] = frozenset(names)
+    return _PIRATES_CACHE["names"]
+
+
 def of_fleet(rows):
-    """The rows of the fleet. A pilot of the account that stands in no division (no role word, no flagship entry) is
-    not of the fleet: it gets no row, no file and no place in a figure."""
-    return [r for r in rows if r.get("division") != "Unassigned"]
+    """The rows of the fleet. A pilot of the account that stands in no division (no role word, no flagship entry) or
+    belongs to the isolated Pirate roster is not of the CLTV fleet: it gets no row, no file and no place in a figure."""
+    excluded = pirate_pilots()
+    return [r for r in rows if r.get("division") != "Unassigned" and r.get("name") not in excluded]
 
 
 def held(count, known, now, low=LOW):
@@ -1426,9 +1454,10 @@ AWAY = {}                    # "at": the last look, "every": seconds to the next
 
 def signed_out(listed):
     """The pilots of the fleet the engine lists `disconnected` (GET /accounts), by name. One it shows `reconnecting` is
-    being signed in by the engine itself; a pilot of the account that stands in no division was signed out by us."""
+    being signed in by the engine itself; a pilot of the account that stands in no division or on the Pirate roster is excluded."""
+    excluded = pirate_pilots()
     return sorted(a["username"] for a in listed if isinstance(a, dict) and isinstance(a.get("username"), str) and a.get("status") == "disconnected"
-                  and division_of(a["username"])[0] != "Unassigned")
+                  and division_of(a["username"])[0] != "Unassigned" and a["username"] not in excluded)
 
 
 def left_out():

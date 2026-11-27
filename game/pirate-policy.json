@@ -2,10 +2,10 @@
   "enabled": false,
   "raiding_enabled": false,
   "dry_run": true,
-  "version": 1,
-  "note": "Autonomous Corsair Proxy AutoNet (pirate_net.py) for far-future Duskmere/TOI-700 military faction. DISABLED by default; zero live CLTV ships match wing_prefix.",
+  "version": 2,
+  "note": "Autonomous Corsair Proxy AutoNet (pirate_net.py) for isolated 107-ship Duskmere/TOI-700 Corsair faction (4 combat empires, 0 Nebula, organic_pirate names). DISABLED on CLTV engine; runs on dedicated Account #2 engine.",
   "wing_prefix": "CORSAIR-",
-  "naming_default_style": "barcode",
+  "naming_default_style": "organic_pirate",
   "barcode_length": 20,
   "rest_seconds_when_empty": 30,
   "fortress": {
@@ -50,7 +50,7 @@
     "leveling_until_piloting": 20,
     "leveling_until_tier": 3,
     "staging_armada_min_ships": 12,
-    "target_armada_size": 30
+    "target_armada_size": 29
   },
   "combat_doctrine": {
     "tackle_first": true,
@@ -128,6 +128,32 @@
       "annihilation",
       "plausible_deniability",
       "overlord"
+    ]
+  },
+  "target_fleet_size": 107,
+  "account_isolation": {
+    "mode": "separate_clerk_account",
+    "separate_engine_required": true,
+    "never_join_cltv_engine": true,
+    "data_dir": "/srv/collective/data/pirates"
+  },
+  "empire_composition": {
+    "crimson": 43,
+    "voidborn": 25,
+    "outerrim": 21,
+    "solarian": 18,
+    "nebula": 0,
+    "founder_empire": "outerrim",
+    "founder_tax_rate_pct": 1.5
+  },
+  "growth_cadence": {
+    "ships_per_wave": 4,
+    "wave_interval_days": "2-3",
+    "wave_1_roles": [
+      "command (outerrim founder)",
+      "gunship (crimson)",
+      "interdictor (solarian)",
+      "carrier (voidborn)"
     ]
   }
 }

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Unit tests for disabled-by-default pirate_net.py (Duskmere/TOI-700 Corsair AutoNet)."""
+"""Unit tests for disabled-by-default pirate_net.py (107-ship 4-empire Corsair AutoNet) and HUD/collector isolation."""
+from collections import Counter
 import json
 import sqlite3
 import sys
@@ -10,10 +11,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "game" / "fleet"))
+sys.path.insert(0, str(ROOT / "station"))
 
 import pirate_net  # noqa: E402
 import routes  # noqa: E402
 import workclass  # noqa: E402
+import fleet as station_fleet  # noqa: E402
 
 
 class PirateNetTests(unittest.TestCase):
@@ -21,31 +24,49 @@ class PirateNetTests(unittest.TestCase):
         pol = pirate_net.read_policy(ROOT / "game" / "pirate-policy.json")
         self.assertFalse(pirate_net.is_enabled(pol))
         self.assertFalse(pol.get("raiding_enabled"))
+        self.assertEqual(pol.get("target_fleet_size"), 107)
+        self.assertEqual(pol.get("naming_default_style"), "organic_pirate")
+        self.assertEqual((pol.get("account_isolation") or {}).get("mode"), "separate_clerk_account")
         route = json.loads((ROOT / "game" / "routes" / "pirate-network.json").read_text(encoding="utf-8"))
         self.assertEqual(route["kind"], "pirate_net")
         self.assertEqual(route.get("status"), "off")
         self.assertEqual(workclass.work_class(route), "hunt")
         self.assertTrue(routes.standing(route))
-        self.assertEqual(pirate_net.main(["IlIIllIlIIIllIlIIllI", "--policy", str(ROOT / "game" / "pirate-policy.json")]), 0)
+        self.assertEqual(pirate_net.main(["salty_hammer", "--policy", str(ROOT / "game" / "pirate-policy.json")]), 0)
 
-    def test_barcode_and_organic_roster_generators(self):
-        bc = pirate_net.generate_corsair_roster(count=120, style="barcode", seed=2026)
-        self.assertEqual(len(bc), 120)
-        names = [r["pilot"] for r in bc]
-        self.assertEqual(len(set(names)), 120)
-        for nm in names:
-            self.assertEqual(len(nm), 20)
-            self.assertTrue(set(nm) <= {"I", "l"})
-        # Verify 28-day birth staggering
-        days = {r["birth_day_offset"] for r in bc}
-        self.assertGreaterEqual(len(days), 20)
-
-        org = pirate_net.generate_corsair_roster(count=120, style="organic_pirate", seed=2026)
-        self.assertEqual(len({r["pilot"] for r in org}), 120)
+    def test_107_ship_four_empire_roster_and_styles(self):
+        org = pirate_net.generate_corsair_roster(count=107, style="organic_pirate", seed=2026)
+        self.assertEqual(len(org), 107)
+        self.assertEqual(len({r["pilot"] for r in org}), 107)
+        # Slot 0 MUST be Outer Rim Founder (1.5% corporate tax domicile)
+        self.assertEqual(org[0]["role"], "command")
+        self.assertEqual(org[0]["empire"], "outerrim")
+        self.assertEqual(org[0]["birth_day_offset"], 0)
+        # Exact optimal 4-empire split, ZERO Nebula!
+        by_emp = Counter(r["empire"] for r in org)
+        self.assertEqual(dict(by_emp), {"crimson": 43, "voidborn": 25, "outerrim": 21, "solarian": 18})
+        self.assertNotIn("nebula", by_emp)
+        by_wing = Counter(r["wing"] for r in org)
+        self.assertEqual(dict(by_wing), {
+            "CORSAIR-Alpha": 29,
+            "CORSAIR-Beta": 28,
+            "CORSAIR-Gamma": 26,
+            "CORSAIR-Plunder": 13,
+            "CORSAIR-Vault": 11,
+        })
         for r in org:
             self.assertFalse(r["pilot"].startswith(("GSV ", "ROU ", "EUV ", "MCV ", "IFV ", "LSV ", "VSV ")))
+            self.assertEqual(r["style"], "organic")
 
-    def test_three_phase_lifecycle(self):
+        # Barcode mode still works on demand
+        bc = pirate_net.generate_corsair_roster(count=107, style="barcode", seed=2026)
+        self.assertEqual(len(bc), 107)
+        self.assertEqual(len({r["pilot"] for r in bc}), 107)
+        for r in bc:
+            self.assertEqual(len(r["pilot"]), 20)
+            self.assertTrue(set(r["pilot"]) <= {"I", "l"})
+
+    def test_phase_transitions(self):
         pol = dict(pirate_net.read_policy(ROOT / "game" / "pirate-policy.json"), enabled=True, raiding_enabled=True)
         self.assertEqual(pirate_net.pilot_phase({"piloting": 5, "tier": 1}, pol), "leveling")
         self.assertEqual(pirate_net.pilot_phase({"piloting": 22, "tier": 2}, pol), "leveling")
@@ -75,9 +96,6 @@ class PirateNetTests(unittest.TestCase):
                     ('duskmere', 'fresh_sys');
             """)
             now = time.time()
-            # prey_sys seen 1h ago (past jitter) -> valid target!
-            # fresh_sys seen 10s ago (inside jitter window) -> skipped to prevent scout correlation!
-            # CLTV pilot in prey_sys -> ignored!
             con.executemany("INSERT INTO met VALUES (?, ?, ?, ?, ?)", [
                 ("Rival Miner 1", "HEXC", "lithosphere", "prey_sys", now - 3600),
                 ("EUV Alabaster", "CLTV", "archimedes", "prey_sys", now - 3600),
@@ -98,6 +116,33 @@ class PirateNetTests(unittest.TestCase):
             alerts = pirate_net.check_gate_sentinel(data, pol, now=now)
             self.assertEqual(len(alerts), 1)
             self.assertEqual(alerts[0]["tag"], "ENDL")
+
+    def test_station_fleet_collector_excludes_pirate_roster(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            (root / "fleet").mkdir()
+            (root / "pirates").mkdir()
+            (root / "pirates" / "roster.tsv").write_text(
+                "pilot\twing\tdivision\trole\tempire\tbirth_day_offset\tstatus\n"
+                "ROU FakeCorsair\tCORSAIR-Alpha\tArmada Alpha (29)\tgunship\tcrimson\t0\tplanned\n"
+                "salty_hammer\tCORSAIR-Alpha\tArmada Alpha (29)\tcommand\touterrim\t0\tplanned\n",
+                encoding="utf-8",
+            )
+            old_data = station_fleet.DATA
+            old_cache = dict(station_fleet._PIRATES_CACHE)
+            try:
+                station_fleet.DATA = root / "fleet"
+                station_fleet._PIRATES_CACHE["mtime"] = -1.0
+                rows = [
+                    {"name": "ROU Legit", "division": "Military"},
+                    {"name": "ROU FakeCorsair", "division": "Military"},
+                    {"name": "salty_hammer", "division": "Command"},
+                ]
+                kept = station_fleet.of_fleet(rows)
+                self.assertEqual([r["name"] for r in kept], ["ROU Legit"])
+            finally:
+                station_fleet.DATA = old_data
+                station_fleet._PIRATES_CACHE.update(old_cache)
 
 
 if __name__ == "__main__":

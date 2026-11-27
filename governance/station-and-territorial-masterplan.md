@@ -1,6 +1,6 @@
 ---
 name: station-and-territorial-masterplan
-id: 20261127T001500Z
+id: 20261127T000813Z
 tier: strategy
 author: Trinity
 links: [governance/empire.md, governance/fleet-500-redesign-blueprint.md, game/map/sites.tsv]

@@ -99,7 +99,7 @@ const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b)
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
 const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b',
-  'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c' };
+  'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c', Pirates: '#ef4444' };
 const JOB_DIVS = [
   { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard', subs: ['Task Force Prime (10)', 'Task Force Alpha (8)', 'Task Force Beta (8)', 'Grand Battle Line', 'Outpost Sentinels & Support'] },
   { key: 'Hunters', short: 'Hnt', top: 'Hunters', shape: 'Military', subs: ['Heavy Pirate Hunters', 'Fast Wildlife & Raiders'] },
@@ -154,6 +154,7 @@ const SHAPES = {
     [[-6.5, -1], [-2.4, -1], [-2.4, 3], [-6.5, 3]], [[6.5, -1], [2.4, -1], [2.4, 3], [6.5, 3]], [[-6.5, 4.5], [-2.4, 4.5], [-2.4, 8.5], [-6.5, 8.5]], [[6.5, 4.5], [2.4, 4.5], [2.4, 8.5], [6.5, 8.5]]],
   Military: [[[0, -10], [3, 0], [9.5, 7.5], [3, 5.2], [0, 9], [-3, 5.2], [-9.5, 7.5], [-3, 0]]],
   Intel: [[[0, -10], [2, 2.5], [4.6, 8.5], [0, 6.2], [-4.6, 8.5], [-2, 2.5]], { ring: [0, -1.5, 7.6] }],
+  Pirates: [[[0, -10], [4.5, -2.5], [9.2, -5.5], [6.2, 4.5], [2.5, 2.5], [0, 9.5], [-2.5, 2.5], [-6.2, 4.5], [-9.2, -5.5], [-4.5, -2.5]]],
   Unassigned: [[[0, -8], [6, 7], [-6, 7]]],
 };
 const KINDS = ['Military', 'Mining', 'Trade', 'Logistics', 'Intel', 'Command', 'Unassigned'];
@@ -304,6 +305,7 @@ try {
   else JSON.parse(savedFolds).forEach((d) => collapsed.add(String(d)));
   const savedSubs = localStorage.getItem('station.openSubs.v2');
   if (savedSubs !== null) JSON.parse(savedSubs).forEach((k) => openSubs.add(String(k)));
+  if (!localStorage.getItem('station.pirates.init')) { collapsed.add('Pirates'); localStorage.setItem('station.pirates.init', '1'); }
 } catch (e) { /* no storage */ }
 function saveFolds() {
   try {
@@ -319,10 +321,14 @@ let rosterMode = 'all', rosterQuery = '', rosterSort = 'name', rosterDiv = 'all'
 const sys = new Map();
 const stationsBy = new Map();
 const shipsBy = new Map();                     // system id -> our ships there
-const layers = { Regions: true, 'Our space': true, 'Blocs & Empires': false, 'Fleet zones': false, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
+const layers = { Regions: true, 'Our space': true, 'Blocs & Empires': false, 'Fleet zones': false, Lanes: true, Traffic: true, Stations: true, 'Our bases': true, 'Pirate ops': true, Strongholds: true, Intel: true, Factions: true, Fleet: true, Names: true };
 const layerBoxes = {};
 const sitesBy = new Map();                     // system id -> a site named for a base of ours (game/map/sites.tsv)
 const holdBy = new Map();                      // system id -> the buildings of ours there (what the faction owns, read from the game)
+const pirateSitesBy = new Map();               // system id -> planned Pirate fortress/citadel/watch site (data/pirates/sites.tsv)
+const pirateHoldBy = new Map();                // system id -> built Pirate stations/outposts/facilities
+const pirateShipsBy = new Map();               // system id -> live Pirate ships (Account #2 engine)
+const pirateTerrIds = new Set();               // system ids inside Pirate sovereign space
 try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ }   // the last-hour space of round 3, no longer drawn
 let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
@@ -425,6 +431,8 @@ function frame(now) {
 // ---------------------------------------------------------------- the marks of the map
 
 const OURS = '#86d65b';                              // our colour (Suggi, 2026-11-17: green): our space, our buildings, our sites
+const PIRATES = '#ef4444';                           // Pirate Proxy colour (Suggi, 2026-11-27: crimson red): Pirate space, bases, ships
+const PIRATE_SUBS = ['Armada Alpha (29)', 'Armada Beta (28)', 'Armada Gamma -- Wolfpack (26)', 'Plunder & Tow Wing (13)', 'Fortress Vault Support (11)'];
 const BUILT = OURS, RAISING = '#dcae58';             // a building of ours the game lists as active; one it does not (being built, or down)
 // One drawing per mark in a box of 12 by 12: the map paints it on the canvas, the legend shows the same path as an SVG.
 const GLYPHS = {
@@ -597,7 +605,7 @@ function paintTerritory(k) {
   const focusId = polityFocusId();
   const key = [
     view.x.toFixed(1), view.y.toFixed(1), k.toFixed(5), canvas.width, canvas.height,
-    layers.Regions, layers['Our space'], layers['Blocs & Empires'], layers['Fleet zones'],
+    layers.Regions, layers['Our space'], layers['Pirate ops'], layers['Blocs & Empires'], layers['Fleet zones'],
     focusId, realmVer,
   ].join('|');
   if (key !== realmKey) {
@@ -828,6 +836,17 @@ function paintTerritory(k) {
         }
       }
     }
+
+    // 4. Isolated Pirate Proxy Territory ("Pirate ops" -- TOI-700 fortress pocket + live Pirate bases/ships, crimson double rail)
+    if (layers['Pirate ops']) {
+      const pSet = new Set(pirateTerrIds);
+      for (const id of pirateHoldBy.keys()) pSet.add(id);
+      for (const id of pirateShipsBy.keys()) pSet.add(id);
+      const pSys = [...pSet].map((id) => sys.get(id)).filter(Boolean);
+      if (pSys.length) {
+        areaStyled(pSys, PIRATES, 0.085, 0.68, R * 0.96, 1.55, 'double', '');
+      }
+    }
     rctx.globalAlpha = 1;
   }
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(realm, 0, 0); ctx.restore();
@@ -942,7 +961,7 @@ function paint(t) {
     ctx.fillStyle = 'rgba(186,198,232,' + a.toFixed(2) + ')';
     ctx.fillRect((((u * W + px) % W) + W) % W, (((v * H + py) % H) + H) % H, size, size);
   }
-  if (layers.Regions || layers['Our space'] || layers['Blocs & Empires'] || layers['Fleet zones']) paintTerritory(k);
+  if (layers.Regions || layers['Our space'] || layers['Pirate ops'] || layers['Blocs & Empires'] || layers['Fleet zones']) paintTerritory(k);
   if (layers.Regions && k < 0.22) {                                 // quiet matte NPC empire backdrop names
     const size = Math.max(10, Math.min(17, 195 * k)), fade = Math.min(1, (0.22 - k) / 0.08), gap = size * 0.42, reach = regionRadius(k) + size * 0.9;
     const dots = S.systems.map(toScreen);
@@ -1069,6 +1088,22 @@ function paint(t) {
     badgeHits.push({ x: x - R - 1, y: y - R - 1, w: 2 * R + 2, h: 2 * R + 2, system: id, kind: 'All', count: n,
       parts: groups.map((g) => g.ships.length + ' ' + (g.kind === 'Command' ? 'command group' : g.kind)).join(', ') });
   }
+  if (layers['Pirate ops'] && pirateShipsBy.size) {
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '700 9.5px system-ui, sans-serif';
+    for (const [id, plist] of pirateShipsBy) {
+      const s = sys.get(id);
+      if (!s) continue;
+      let [px, py] = toScreen(s);
+      if (px < -60 || py < -60 || px > W + 60 || py > H + 60) continue;
+      if (tokens.has(id)) px += tokens.get(id).R + 9;
+      const n = plist.length, core = n > 99 ? 8.8 : n > 9 ? 6.8 : 5.0, R = core + 5.2;
+      ctx.fillStyle = 'rgba(28,8,12,0.96)'; ctx.beginPath(); ctx.arc(px, py, R, 0, 6.2832); ctx.fill();
+      ctx.strokeStyle = PIRATES; ctx.lineWidth = 2.0; ctx.beginPath(); ctx.arc(px, py, R - 1, 0, 6.2832); ctx.stroke();
+      ctx.fillStyle = rgba(PIRATES, 0.34); ctx.beginPath(); ctx.arc(px, py, R - 2.6, 0, 6.2832); ctx.fill();
+      ctx.fillStyle = '#fecaca'; ctx.fillText(String(n), px, py + 0.5);
+      badgeHits.push({ x: px - R, y: py - R, w: 2 * R, h: 2 * R, system: id, kind: 'Pirates', ships: plist, parts: n + ' Pirate ship' + (n === 1 ? '' : 's') });
+    }
+  }
   ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   const labels = [], size = (id, home) => (tokens.has(id) ? tokens.get(id).R : home ? r + 2 : r);   // how far a system's own mark reaches
   const near = k >= 0.09;                                          // from far away the map keeps to regions, ships, our own marks and what is dangerous
@@ -1077,7 +1112,8 @@ function paint(t) {
     const [x, y] = toScreen(s);
     if (x < -40 || y < -40 || x > W + 40 || y > H + 40) continue;
     const q = size(s.id, s.home), ours = tokens.has(s.id), d = q * 0.71 + 3.4;   // d: a mark on the system's diagonal, just outside it
-    const bases = layers.Stations ? (stationsBy.get(s.id) || []).filter((b) => !(b.tag && b.tag === S.our_tag)) : [];
+    const pTag = (S.pirates && S.pirates.tag) ? S.pirates.tag : '';
+    const bases = layers.Stations ? (stationsBy.get(s.id) || []).filter((b) => !(b.tag && (b.tag === S.our_tag || (layers['Pirate ops'] && pTag && b.tag === pTag)))) : [];
     const theirs = bases.some((b) => b.tag);                       // a station of others: gold when a player faction owns it; the empires' own only from near
     if (bases.length && (theirs || near)) glyph(ctx, 'pip', x + d, y + d, near ? 7.5 : 6.5, theirs ? '#e8c35a' : '#aeb5cc');
     if (layers.Strongholds && s.stronghold) glyph(ctx, 'cross', x - d, y - d, 8.5, '#e06c66');
@@ -1149,6 +1185,67 @@ function paint(t) {
         infraHits.push({ x: px, y: py, w: pw, h: ph, system: s.id, own, site, siteInfo });
       }
     }
+    const pOwn = layers['Pirate ops'] ? (pirateHoldBy.get(s.id) || []) : [];
+    const pSite = layers['Pirate ops'] ? pirateSitesBy.get(s.id) : null;
+    const pPlanned = pSite && pSite.status !== 'dropped' && pSite.status !== 'built' && !pOwn.some((b) => b.kind === 'outpost' || b.kind === 'station');
+    if (pOwn.length || pPlanned) {                                  // Pirates: RED mirror of CLTV green beacon halos & pills
+      const pKinds = new Map(), pRow = [];
+      const pBased = pOwn.some((b) => b.kind === 'outpost' || b.kind === 'station');
+      const pCitadel = pPlanned && (pSite.kind === 'citadel' || pSite.status === 'chosen');
+      const pWatch = pPlanned && pSite.kind === 'watch';
+      const pHaloR = (ours ? q + 4.8 : q + 5.5);
+      ctx.save();
+      if (pBased) {
+        ctx.strokeStyle = rgba(PIRATES, 0.94); ctx.lineWidth = 2.1;
+        ctx.beginPath(); ctx.arc(x, y, pHaloR, 0, 6.2832); ctx.stroke();
+        ctx.strokeStyle = rgba(PIRATES, 0.30); ctx.lineWidth = 4.5;
+        ctx.beginPath(); ctx.arc(x, y, pHaloR + 2.2, 0, 6.2832); ctx.stroke();
+      } else if (pOwn.length) {
+        ctx.strokeStyle = rgba(PIRATES, 0.82); ctx.lineWidth = 1.6;
+        ctx.beginPath(); ctx.arc(x, y, pHaloR, 0, 6.2832); ctx.stroke();
+      } else if (pCitadel) {
+        ctx.setLineDash([3.5, 3]); ctx.strokeStyle = PIRATES; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.arc(x, y, pHaloR, 0, 6.2832); ctx.stroke();
+      } else if (pPlanned && !pWatch) {
+        ctx.setLineDash([2.5, 3.5]); ctx.strokeStyle = rgba(PIRATES, 0.72); ctx.lineWidth = 1.3;
+        ctx.beginPath(); ctx.arc(x, y, pHaloR, 0, 6.2832); ctx.stroke();
+      }
+      ctx.restore();
+      for (const b of pOwn) { if (pBased && b.part) continue; if (!pKinds.has(b.kind)) pKinds.set(b.kind, true); if (!stands(b)) pKinds.set(b.kind, false); }
+      for (const [kind, done] of pKinds) pRow.push([kind, done ? PIRATES : RAISING, false]);
+      if (pPlanned) pRow.push(['flag', pCitadel ? PIRATES : (pWatch ? '#f87171' : rgba(PIRATES, 0.85)), !pCitadel]);
+      const pShowTag = s.id === selected || s.id === hover || ((pBased || pOwn.length || pCitadel) ? k >= 0.04 : k >= 0.075);
+      let pTagWord = '';
+      if (pShowTag) {
+        if (pBased) pTagWord = pOwn.some((b) => b.kind === 'station') ? 'PIRATE STATION' : 'PIRATE OUTPOST';
+        else if (pOwn.length) pTagWord = 'PIRATE BASE';
+        else if (pCitadel) pTagWord = 'CITADEL';
+        else if (pWatch) pTagWord = 'CHOKE';
+        else if (pPlanned) pTagWord = 'FORTRESS';
+      }
+      if (pRow.length && (pBased || pOwn.length || pCitadel || k >= 0.04 || s.id === selected || s.id === hover)) {
+        ctx.save();
+        ctx.font = '600 9.5px ui-monospace, SFMono-Regular, Consolas, monospace';
+        const iconSpan = pRow.length * 13 + 2;
+        const textW = pTagWord ? ctx.measureText(pTagWord).width + 6 : 0;
+        const pw = iconSpan + textW + 6, ph = 16;
+        const px = x - pw / 2, py = (own.length || planned) ? (y + q + 7) : (y - q - ph - 7);
+        pill(px, py, pw, ph);
+        ctx.fillStyle = 'rgba(34, 10, 14, 0.93)'; ctx.fill();
+        ctx.strokeStyle = pBased || pCitadel ? rgba(PIRATES, 0.92) : rgba(PIRATES, 0.62);
+        ctx.lineWidth = pBased || pCitadel ? 1.35 : 1; ctx.stroke();
+        pRow.forEach(([gname, colour, hollow], i) => glyph(ctx, gname, px + 9.5 + i * 13, py + ph / 2, 11, colour, hollow));
+        if (pTagWord) {
+          ctx.textBaseline = 'middle';
+          ctx.fillStyle = pBased || pCitadel ? '#fecaca' : '#fca5a5';
+          ctx.fillText(pTagWord, px + iconSpan + 4, py + ph / 2 + 0.5);
+        }
+        ctx.restore();
+        const tipBadge = pBased ? 'Pirate base' : pCitadel ? 'Pirate citadel' : pWatch ? 'Pirate choke' : 'Pirate fortress';
+        const tipText = pOwn.length ? pOwn.map((b) => b.name + ' (' + b.kind + ')').join(', ') : (pSite && pSite.note) || 'Planned Corsair fortress site';
+        infraHits.push({ x: px, y: py, w: pw, h: ph, system: s.id, isPirate: true, badge: tipBadge, label: pTagWord || tipBadge, tip: tipText });
+      }
+    }
     if (s.id === selected) {
       const beat = (Math.sin(t * 2.6) + 1) / 2, ring = ours ? q + 4.5 : q + 8.5;
       ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8;
@@ -1188,7 +1285,7 @@ function paint(t) {
     }
     if (layers.Names) {                                             // names are drawn after the systems: the important ones first, none over another
       const picked = s.id === selected || s.id === hover;
-      const rank = picked ? 2000 : s.home ? 1500 : own.length || planned ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
+      const rank = picked ? 2000 : s.home ? 1500 : (own.length || planned || pOwn.length || pPlanned) ? 800 : ours && k > 0.085 ? 500 + shipsBy.get(s.id).length : k > 0.16 ? 100 : 0;
       if (rank) labels.push({ name: s.name, x, y, q, bold: Boolean(s.home || ours), rank });
     }
   }
@@ -1991,7 +2088,8 @@ function ensureDivStrip(divisions) {
   strip.replaceChildren();
   const shortMap = Object.fromEntries(JOB_DIVS.map((j) => [j.key, j.short]));
   shortMap.Unassigned = 'Un';
-  const items = [['all', 'All', 'var(--accent)']].concat(divisions.map(([d]) => [d, shortMap[d] || d.slice(0, 3), DIV[d] || DIV.Unassigned]));
+  shortMap.Pirates = 'Pir';
+  const items = [['all', 'All', 'var(--accent)']].concat(divisions.map(([d]) => [d, shortMap[d] || d.slice(0, 3), DIV[d] || DIV.Unassigned])).concat([['Pirates', 'Pir', PIRATES]]);
   for (const [key, lbl, col] of items) {
     const b = el('button', 'divchip' + (rosterDiv === key ? ' on' : ''), lbl);
     b.type = 'button';
@@ -2147,6 +2245,136 @@ function renderRoster() {
     }
     box.append(block);
   }
+  // Dedicated isolated 'Pirates' fleet tab directly below Intel (never mixed into CLTV 500-ship totals!)
+  const pf = (F && F.pirates) ? F.pirates : null;
+  if (pf && (rosterDiv === 'all' || rosterDiv === 'Pirates')) {
+    const pRoster = Array.isArray(pf.roster) ? pf.roster : [];
+    const pActive = Number(pf.active_total || 0);
+    const pPlanned = Number(pf.planned_total || pRoster.length || 107);
+    const qLower = (rosterQuery || '').trim().toLowerCase();
+    const matchPirate = (r) => {
+      if (rosterMode === 'active' && r.roster_status !== 'active') return false;
+      if (rosterMode === 'idle' && r.roster_status !== 'active') return false;
+      if (rosterMode === 'alert' && r.roster_status !== 'active') return false;
+      if (!qLower) return true;
+      return String(r.name || '').toLowerCase().includes(qLower)
+        || String(r.role || '').toLowerCase().includes(qLower)
+        || String(r.empire || '').toLowerCase().includes(qLower)
+        || String(r.pirate_division || '').toLowerCase().includes(qLower)
+        || String(r.system || '').toLowerCase().includes(qLower);
+    };
+    const pFiltered = (rosterMode !== 'all' || qLower) ? pRoster.filter(matchPirate) : pRoster;
+    if (!(rosterMode !== 'all' || qLower) || pFiltered.length > 0 || rosterDiv === 'Pirates') {
+      const pForceOpen = Boolean(qLower) || rosterDiv === 'Pirates';
+      const pFolded = !pForceOpen && collapsed.has('Pirates');
+      const block = el('div', 'div pirate-div');
+      const card = el('div', 'divcard');
+      const head = el('div', 'divhead');
+      head.style.borderLeftColor = PIRATES;
+      const togglePirateFold = () => {
+        if (rosterDiv === 'Pirates') { rosterDiv = 'all'; collapsed.add('Pirates'); }
+        else if (pFolded) collapsed.delete('Pirates');
+        else collapsed.add('Pirates');
+        saveFolds();
+        renderRoster();
+      };
+      const pname = el('button', 'name', 'Pirates');
+      pname.type = 'button';
+      const pfold = el('span', 'fold', pFolded ? '+' : '-');
+      pname.prepend(pfold);
+      pfold.after(shipSvg('Pirates', PIRATES, 13));
+      pname.style.color = PIRATES;
+      pname.title = (pFolded ? 'Unfold ' : 'Fold ') + 'Pirates (' + pActive + ' live / ' + pPlanned + ' planned; isolated Account #2)';
+      pname.setAttribute('aria-expanded', pFolded ? 'false' : 'true');
+      pname.addEventListener('click', togglePirateFold);
+      head.append(pname);
+      const pmeta = el('span', 'divmeta');
+      pmeta.style.cursor = 'pointer';
+      pmeta.addEventListener('click', togglePirateFold);
+      if (pf.tag) pmeta.append(el('span', 'divcph', '[' + pf.tag + ']'));
+      const ppill = el('span', 'divpill pirate', pActive + '/' + pPlanned);
+      ppill.title = pActive + ' live of ' + pPlanned + ' planned Pirate ships (separate Account #2)';
+      pmeta.append(ppill);
+      head.append(pmeta);
+      card.append(head);
+      block.append(card);
+
+      if (!pFolded) {
+        const tree = el('div', 'subtree');
+        tree.style.setProperty('--c', PIRATES);
+        const banner = el('div', 'pbanner', pActive > 0
+          ? (pActive + '/' + pPlanned + ' live on Account #2 | TOI-700 fortress pocket (RED)')
+          : ('Account #2 standby: 0/' + pPlanned + ' birthed (43 Crimson, 25 Voidborn, 21 Outer Rim, 18 Solarian)'));
+        tree.append(banner);
+        const byPSub = new Map();
+        const subNames = (Array.isArray(pf.divisions) && pf.divisions.length) ? pf.divisions : PIRATE_SUBS;
+        subNames.forEach((s) => byPSub.set(s, []));
+        pFiltered.forEach((r) => {
+          const g = r.pirate_division || 'Armada Alpha (29)';
+          if (!byPSub.has(g)) byPSub.set(g, []);
+          byPSub.get(g).push(r);
+        });
+        const autoExpand = Boolean(qLower);
+        for (const [subName, subList] of byPSub.entries()) {
+          if (autoExpand && !subList.length) continue;
+          const subKey = 'Pirates::' + subName;
+          const subOpen = autoExpand || openSubs.has(subKey);
+          const subActive = subList.filter((r) => r.roster_status === 'active').length;
+          const node = el('div', 'subnode');
+          const sh = el('button', 'subhead' + (!subActive ? ' pstandby' : ''));
+          sh.type = 'button';
+          sh.style.setProperty('--c', PIRATES);
+          sh.setAttribute('aria-expanded', subOpen ? 'true' : 'false');
+          const sleft = el('span', 'sleft');
+          sleft.append(el('span', 'sfold', subOpen ? '-' : '+'), el('span', 'slbl', subName));
+          const spill = el('span', subActive > 0 ? 'spill good' : 'spill', subActive + '/' + subList.length);
+          sh.append(sleft, spill);
+          sh.title = subName + ' (' + subActive + ' live / ' + subList.length + ' planned) -- click to ' + (subOpen ? 'collapse' : 'expand');
+          sh.addEventListener('click', () => {
+            if (openSubs.has(subKey)) openSubs.delete(subKey);
+            else openSubs.add(subKey);
+            saveFolds();
+            renderRoster();
+          });
+          node.append(sh);
+          if (subOpen) {
+            const slist = el('div', 'sublist');
+            if (!subList.length) {
+              slist.append(el('div', 'noships', 'No matching ships'));
+            } else {
+              subList.forEach((r) => {
+                if (r.roster_status === 'active') {
+                  const row = el('button', 'prow live');
+                  row.type = 'button';
+                  const left = el('span', 'pname');
+                  left.append(el('i', 'pdot live'), el('span', null, r.name));
+                  const right = el('span', 'pmeta', (r.system || 'space') + ' | ' + (r.role || 'corsair'));
+                  row.append(left, right);
+                  row.title = r.name + ' (' + (r.empire || '') + ' ' + (r.role || '') + ') at ' + (r.system || 'unknown') + ' | ' + fmt(r.credits || 0) + ' cr';
+                  row.addEventListener('click', () => { if (r.system) select(r.system, true); });
+                  slist.append(row);
+                } else {
+                  const row = el('div', 'prow planned');
+                  const left = el('span', 'pname');
+                  left.append(el('i', 'pdot'), el('span', null, r.name));
+                  const empShort = (r.empire || '').slice(0, 3).toUpperCase();
+                  const right = el('span', 'pmeta');
+                  right.append(el('span', 'prole', r.role || ''), el('span', 'pemp', empShort), el('span', 'pday', 'D+' + (r.birth_day_offset || 0)));
+                  row.append(left, right);
+                  row.title = 'Planned slot: ' + r.name + ' | ' + (r.role || '') + ' | ' + (r.empire || '') + ' | Wave day +' + (r.birth_day_offset || 0);
+                  slist.append(row);
+                }
+              });
+            }
+            node.append(slist);
+          }
+          tree.append(node);
+        }
+        block.append(tree);
+      }
+      box.append(block);
+    }
+  }
   const meta = $('roster-meta');
   if (meta) {
     if (filtering) {
@@ -2160,7 +2388,7 @@ function renderRoster() {
   }
   if (filtering && !shownTotal) box.append(el('p', 'empty', 'No ships match this filter.'));
   box.scrollTop = keep;
-  const all = $('fold-all'), names = divisions.map((d) => d[0]), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
+  const all = $('fold-all'), names = divisions.map((d) => d[0]).concat(pf ? ['Pirates'] : []), everyFolded = names.length > 0 && names.every((d) => collapsed.has(d));
   all.textContent = everyFolded ? 'Unfold all' : 'Fold all';
   all.onclick = () => { rosterDiv = 'all'; names.forEach((d) => (everyFolded ? collapsed.delete(d) : collapsed.add(d))); if (!everyFolded) openSubs.clear(); saveFolds(); renderRoster(); renderMembers(); };
   const fresh = $('fleet-fresh'), ok = fleetLive();
@@ -6837,6 +7065,11 @@ function renderLegend() {
   row(glyphSvg('storage', RAISING, 13), 'amber: building / damaged');
   row(glyphSvg('flag', '#e8c35a', 13), 'next chosen build site');
   row(glyphSvg('flag', rgba(OURS, 0.7), 13, true), 'candidate site');
+  head('Pirates (Red)');
+  row(swatch('rgba(239,68,68,0.85)', 'rgba(239,68,68,0.16)'), 'Pirate fortress space (TOI-700 pocket & live ops)', true);
+  row(glyphSvg('station', PIRATES, 13), 'Pirate station / outpost');
+  row(glyphSvg('flag', PIRATES, 13), 'Pirate citadel (TOI-700)');
+  row(glyphSvg('flag', rgba(PIRATES, 0.8), 13, true), 'Pirate fortress / choke');
   head('Others');
   row(glyphSvg('pip', '#aeb5cc', 12), 'station');
   row(glyphSvg('pip', '#e8c35a', 12), 'a player faction\'s base');
@@ -6862,6 +7095,11 @@ async function loadState() {
   (S.sites || []).forEach((t) => sitesBy.set(t.system, t));
   holdBy.clear();
   ((S.holdings || {}).buildings || []).forEach((b) => { if (!holdBy.has(b.system)) holdBy.set(b.system, []); holdBy.get(b.system).push(b); });
+  pirateSitesBy.clear(); pirateHoldBy.clear(); pirateTerrIds.clear();
+  const ps = S.pirates || {};
+  (ps.sites || []).forEach((t) => { if (t && t.system) pirateSitesBy.set(t.system, t); });
+  ((ps.holdings || {}).buildings || []).forEach((b) => { if (!pirateHoldBy.has(b.system)) pirateHoldBy.set(b.system, []); pirateHoldBy.get(b.system).push(b); });
+  (ps.territory_systems || []).forEach((id) => { if (id) pirateTerrIds.add(id); });
   const spaces = new Map();
   for (const s of S.systems) { if (s.empire) { if (!spaces.has(s.empire)) spaces.set(s.empire, []); spaces.get(s.empire).push(s); } }
   realmNames = [...spaces].map(([name, list]) => ({ word: (name === 'outerrim' ? 'outer rim' : name).toUpperCase(), colour: color(list[0]), home: name === homeEmpire,
@@ -6879,6 +7117,8 @@ async function loadFleet() {
   try { F = await get('/api/fleet'); fetchedAt = Date.now(); } catch (e) { F = Object.assign({}, F, { age: -1 }); }
   shipsBy.clear();
   F.ships.forEach((r) => { if (r.system) { if (!shipsBy.has(r.system)) shipsBy.set(r.system, []); shipsBy.get(r.system).push(r); } });
+  pirateShipsBy.clear();
+  ((F.pirates && F.pirates.ships) || []).forEach((r) => { if (r && r.system) { if (!pirateShipsBy.has(r.system)) pirateShipsBy.set(r.system, []); pirateShipsBy.get(r.system).push(r); } });
   realmVer++; renderMembers(); renderRoster(); renderNotice(); tickAges(); renderPop(); draw();
   if (tab === 'Metrics' && Date.now() - metricsAt >= 30000) render();   // not at every poll: the page under the reader stays still
   if (selShip) {
@@ -7001,7 +7241,7 @@ function init() {
       scheduleTip(key, mx, my, (tip) => {
         tip.replaceChildren();
         const hd = el('div', 'tip-head');
-        hd.append(el('span', 'tip-title', placeName(inf)), el('span', 'pill good', inf.kind === 'site' ? 'Expansion site' : 'CLTV holding'));
+        hd.append(el('span', 'tip-title', placeName(inf)), el('span', inf.isPirate ? 'pill bad' : 'pill good', inf.isPirate ? (inf.badge || 'Pirate ops') : (inf.kind === 'site' ? 'Expansion site' : 'CLTV holding')));
         tip.append(hd, el('div', 'tip-own', inf.tip || inf.label || 'Sovereign infrastructure'), el('div', 'tip-foot', 'Click to open Selection'));
       });
     } else if (grp) {

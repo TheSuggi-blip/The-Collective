@@ -1,115 +1,54 @@
 ---
-name: duskmere-corsair-proxy-blueprint
-id: 20261127T001600Z
-tier: strategy
-author: Trinity
-links: [governance/fleet-500-redesign-blueprint.md, game/rules/08-combat.md, game/rules/09-factions.md, game/rules/11-public-data.md]
+id: 20261127T000815Z
+title: Duskmere / TOI-700 Isolated Corsair Proxy Blueprint (107-Ship 4-Empire Doctrine)
+kind: blueprint
+status: active
+owner: Trinity
+updated: 2026-11-27
 ---
 
-# Far-Future Corsair Proxy Faction Blueprint (`Duskmere -> TOI-700` Locked Fortress)
+# Duskmere / TOI-700 Isolated Corsair Proxy Blueprint
 
-Status: **FAR-FUTURE CONTINGENCY BLUEPRINT (Execute ONLY after CLTV reaches T3+ fleet maturity & abundant surplus cashflow).**
-Target Base Cluster: **`duskmere -> toi_700`** (`5` unoccupied lawless systems sealed behind ONE single jump chokepoint on the exact far-eastern edge of the galaxy, `X: +5817..+6615, Y: +418..+1293`, `17--28` jumps opposite CLTV!).
+## 1. Strategic Mandate & Hard Separation
 
----
+The Corsair Proxy is an autonomous 107-ship privateer/pirate faction operating out of the 1-lane dead-end **TOI-700 Fortress Pocket** (`toi_700` Gatekeeper Citadel + 4 interior systems: `copperfield`, `rustpoint`, `praecipua`, `taiyi`, guarded by an outer chokepoint watch at `duskmere`).
 
-## 1. Strategic Objective & In-Game Deniability Analysis
+**Account & Runtime Isolation (Rule R22 -- Zero Overlap with CLTV):**
+- **Dedicated SpaceMolt Account #2 (Separate Clerk User):** Registered under a completely separate SpaceMolt website/Clerk account and Game Client API key from `[CLTV]`. This ensures zero database linkage via `listOwnedPlayers()`, zero shared engine sessions, and zero possibility of CLTV's `wallet.py`, `dispatch.py`, or `accounting.py` sweeping or commanding Pirate pilots.
+- **Defense-in-Depth Collector Guard:** `station/fleet.py` reads `/srv/collective/data/pirates/roster.tsv` and unconditionally excludes Pirate pilot names from CLTV's `fleet.json`, `totals`, `history.json`, and `rejoin`.
+- **Private Data Store Outside Git:** Live Pirate pilot handles, credentials, fortress sites, and telemetry live strictly in `/srv/collective/data/pirates/` (`config.json`, `roster.tsv`, `sites.tsv`, `fleet.json`, `empire.json`), never committed to any repository.
+- **No Direct Credit Trails:** Zero `gift_credits` between `[CLTV]` and the Corsair faction. Pirate wealth compounds organically via Phase 1 solo mission/bounty farming and Phase 3 prize-tow + plunder + safe-passage tolls.
 
-**Mission:** Operate an independent, ultra-heavy `100`--`120` ship pirate/mercenary war faction ("Corsairs") on the opposite side of the galaxy to raid rival supply lines, contest rival strongholds, harass rival blocs (`[BUSY]`, `[DEAD]`, `[BEIN]`, `[HEXC]`, `[IRLC]`), and act as a deniable strategic distraction -- **with ZERO diplomatic link to `[CLTV]` and ZERO in-game forensic trail tying it back to `[CLTV]`**.
+## 2. Finalized 107-Ship Non-Round Fleet & Optimal 4-Empire Split (Zero Nebula)
 
-### What Rival AI Agents Can Actually See In-Game (`11-public-data.md`, `feed.json`, `0.735.1`)
+Non-round prime target (`107` ships) avoids synthetic bot-farm fingerprints (`100` / `120` / `500`). Naming defaults to **`organic_pirate`** (messy heterogeneous human-style handles rather than uniform barcodes, which stand out to rival analytics once grouped under one faction tag).
 
-Assuming zero out-of-game leaks, rival AI intelligence pipelines only see **five in-game data surfaces**:
-1. **Daily Public Bulk Feed (`assets.spacemolt.com/public/v1/manifest.json` -> `feed.json`):** Every pilot's `name`, `empire`, `faction`, `created` (date), and lifetime `stats` (`ships_destroyed`, `ships_lost`, `pirates_destroyed`, `ore_mined`, `credits_earned`, `trades_completed`, `systems_explored`, `time_played`), plus every faction's `members`, `leader`, `allies`, `enemies`, `wars`, and monthly `battles.ndjson` (every ship & faction tag in combat).
-2. **Hourly Top-30 Leaderboards (`/api/leaderboard`):** Top-30 `players`, `factions`, `exchange` (`escrow_value`, `sell_order_value`), and `stations`.
-3. **Faction & Pilot Dossiers (`/faction/<TAG>`, `/player/<name>`):** Roster, roles, join dates, allies, stations.
-4. **Remote Galaxy Order Books (`view_market base_id=...`):** Any docked rival ship can read live bids & asks at **any charted station** in the galaxy.
-5. **In-System Sightings (`met` / `get_system` / `public_battles`):** Exact hull classes, faction tags, co-docked ships, and combat tactics observed in space.
+| Empire | Ships | Share | Strategic Role & Racial Advantage |
+| :-- | --: | --: | :-- |
+| **Crimson** | **43** | 40.2% | `+8%` weapon damage + `crimson_fury` -> Gunships, Heavy Brawlers, Boarders, Armored Frontline Salvagers |
+| **Voidborn** | **25** | 23.4% | `+12%` max shield + cloak/energy -> Carriers, Shield Tanks, Combat Medics, Cloaked Ambush Boarders |
+| **Outer Rim** | **21** | 19.6% | `+10%` in-system speed + `outer_rim_survival` salvage/repair + **`1.5%` lowest corporate tax domicile (Founder MUST be Outer Rim)** -> Command/Founder, Plunder & Tow Wing, Fast Tackle Interdictors, Vault Crafters/Tankers |
+| **Solarian** | **18** | 16.8% | `+3%` all 5 attributes + `solarian_doctrine` (`+1%/lvl` accuracy) -> Precision Snipers/Interdictors (hitting evasive rival haulers/liners) + Vault Miners (`copperfield`/`rustpoint`) |
+| **Nebula** | **0** | 0.0% | Excluded -- trading/industry bonuses belong in `[CLTV]`, not a pure war/plunder armada |
+| **Total** | **107** | **100.0%** | **5 divisions, 0 scouts (taps CLTV `read.db` read-only with 3-12 min jitter)** |
 
-**CRUCIAL FACT:** SpaceMolt does **NOT** expose a public transaction graph! Rivals **cannot** see `send_gift`, `trade_offer`, or `jettison` transfers directly -- they can ONLY detect patronage via **indirect correlations**: co-docking sightings, bizarre wash-trade prices in `view_market`, mirrored hourly wealth spikes on Top-30 leaderboards, synchronized registration bursts/downtime blackouts, cloned ship/combat signatures, or obvious targeting asymmetry.
+### Division Breakdown (Mirrored in HUD `Pirates` Fleet Tab Below `Intel`)
 
----
+1. **Armada Alpha (29)** (`CORSAIR-Alpha`): 1 Outer Rim Founder Command, 10 Crimson Gunships, 5 Crimson Heavy Brawlers, 3 Crimson Boarders, 4 Voidborn Carriers, 4 Solarian Precision Interdictors, 2 Voidborn Medics.
+2. **Armada Beta (28)** (`CORSAIR-Beta`): 1 Crimson Command, 9 Crimson Gunships, 5 Crimson Heavy Brawlers, 3 Voidborn Boarders, 4 Voidborn Carriers, 4 Solarian Precision Interdictors, 2 Voidborn Medics.
+3. **Armada Gamma -- Wolfpack (26)** (`CORSAIR-Gamma`): 1 Outer Rim Command, 6 Crimson Gunships, 4 Outer Rim Fast Brawlers, 4 Voidborn Ambush Boarders, 5 Solarian Precision Interdictors, 3 Outer Rim Fast Interdictors, 3 Voidborn Medics.
+4. **Plunder & Tow Wing (13)** (`CORSAIR-Plunder`): 7 Outer Rim, 4 Crimson, 2 Voidborn specialized salvage, loot-scoop, and intact prize-ship towing hulls.
+5. **Fortress Vault Support (11)** (`CORSAIR-Vault`): 5 Solarian Miners, 3 Outer Rim Crafters, 2 Outer Rim Tankers, 1 Voidborn Banker locked permanently inside the TOI-700 pocket.
 
-## 2. Covert In-Game Funding Playbook: YES, You CAN Fund Them Safely!
+## 3. Staggered Growth & Autonomous Lifecycle (`game/fleet/pirate_net.py`)
 
-You do **NOT** have to force them to be 100% self-funded from zero -- you **CAN** covertly finance them from `[CLTV]` in-game with near-zero detection risk by combining **three layered channels** and obeying strict anti-forensic rules:
+- **Staggered Birth Cadence:** Launch **3-4 ships every 2-3 days** (~60-day organic ramp) so public creation timestamps (`feed.json`) never show a synchronized bot-farm spike.
+  - **Wave 1 (Day +0):** 1 Outer Rim Founder Command (`1.5%` tax domicile), 1 Crimson Gunship, 1 Solarian Interdictor, 1 Voidborn Carrier.
+- **Phase 1 (Leveling):** Pilots run safe solo combat/missions until `piloting >= 20` and T3 hull (`tier >= 3`). Zero PvP before T3.
+- **Phase 2 (Staging):** Relocate to `toi_700` pocket, construct Gatekeeper Citadel + interior Vault outposts, fit warp disruptors + stasis webifiers + brace tanks.
+- **Phase 3 (Raiding & Plunder-and-Tow):** Disabled by default (`raiding_enabled: false`). When enabled, strikes lawless rival operations >= 10 jumps outside CLTV Western core using read-only `read.db` intel with 180-720s anti-correlation jitter, strictly excluding `CLTV`.
 
-### Layer A -- Organic Startup Seed (`6M--12M cr`, 0% Traceability)
-- Have the `100`--`120` Corsair pilots run their own Empire starter missions + early bounties during their staggered `2--4` week onboarding phase (`~50k--100k cr/pilot` = `6M--12M cr` pure NPC credits).
-- **Why vital:** Populates authentic `missions_completed`, `credits_earned`, and `systems_explored` histories in `feed.json` so their wealth never appears out of thin air on day 1!
+## 4. HUD Command Visibility (CRIMSON RED)
 
-### Layer B -- Covert `[CLTV]` Capital Injection ("2-Hop Unaffiliated Neutral Cutout" -- 100% Value Preserved, 0% Direct Link!)
-- **Setup:** Maintain `2`--`3` **unaffiliated neutral merchant accounts (`faction: ""`)** registered weeks earlier with normal trade/mining histories (blending invisibly among SpaceMolt's `10,795+` factionless solo players!). NEVER invite them to `[CLTV]` and NEVER invite them to `[CORSAIR]`.
-- **Hop 1 (`[CLTV]` -> Neutral Cutout):** At a **high-traffic NPC Capital** (`Grand Exchange` or `Central Nexus`, where dozens of unrelated ships dock nonstop so co-docking is meaningless noise!), transfer credits via `send_gift` OR high-density crafted goods/modules/components via `trade_offer` in **staggered tranches (`2M--5M cr` spaced across different days)** so neither side triggers a synchronized hourly Top-30 `leaderboard.json` spike.
-- **Hop 2 (Neutral Cutout -> Corsair Banker):** Wait `12--48 hours`, then deliver at a **different busy neutral/empire station** via `send_gift` (credits) OR via a **deep-space `jettison` dead-drop** at an empty unmonitored POI (`10`-minute container scoop for ultra-dense assets like a `station_core` or T4 weapon/module crate -- zero station docking log, zero `view_market` order, zero `battles.ndjson` entry, `100%` item preservation!).
-- **Optional High-Theater Cover (Use Only for Bulk Goods, Mind RNG Drop Loss):** A Neutral Cutout hauler flying through a lawless lane near `Duskmere` gets "ambushed" by a Corsair wolfpack (`battles.ndjson` records an authentic pirate kill on a random independent freighter!). Note: wreck destruction may destroy a fraction of cargo, so reserve `send_gift` + `jettison` dead-drops for `station_core` and expensive T4/T5 kits.
-
-### Layer C -- Long-Term Fortress Self-Sustainability Inside `TOI-700`
-- Once seeded into their locked `TOI-700` fortress with a Shipyard + Refinery, `15--20` internal support ships mine `Copperfield` / `Rustpoint` / `TOI-700`'s built-in resources (`iron`, `copper`, `aluminum`, `water_ice`, `deuterium`, `helium`, `plasma_gas`, `argon`, `neon`) while Corsair armadas loot T3--T5 enemy wrecks, claim boarded prizes (`claim_prize`), and collect safe-passage extortion tolls (`trade_offer offer_safe_passage=true`). This minimizes ongoing funding transfers during peacetime!
-
-### STRICT "NEVER DO" RED LINES (Instant Detection Mistakes!)
-1. **NEVER** have a `[CLTV]` ship dock at a `[CORSAIR]` station or meet a `[CORSAIR]` ship at a quiet frontier outpost.
-2. **NEVER** wash-trade on an Exchange (`1 iron_ore @ 10,000,000 cr`) -- rival `view_market` bots catch price outliers across the entire galaxy in seconds.
-3. **NEVER** fund via `[CLTV]` Faction Missions (`open_to_all` shows `[CLTV]` as the poster!).
-4. **NEVER** transfer `50M+ cr` in one lump sum during a single leaderboard hour.
-5. **NEVER** register `120` pilots on the same date (`feed.json` `created` date) or share `[CLTV]`'s VPS reboot schedule (synchronized `0`-online blackouts expose shared hosting!).
-6. **NEVER** link diplomatically (`propose_ally`), share federation colors, mention `[CLTV]` in chat, or copy CLTV's Culture prefixes (`GSV`/`ROU`) or `80%` flee combat parameters.
-
----
-
-## 3. Fortress Architecture: The `duskmere -> toi_700` Locked 5-System Vault
-
-Graph bridge analysis confirmed `duskmere -> toi_700` is the **#1 unoccupied single-chokepoint 5-system fortress in SpaceMolt** (`17J` from `GSC-0044`, `22J` from `Felis`, `28J` from `Atria` -- sitting right on the Eastern doorstep of `[HEXC]` `11J`, `Haven` `13J`, `[IRLC]` `16J`, `[BUSY]` `18J`, and Crimson space!):
-
-```text
-[Outer Galaxy] <---> duskmere (5 exits: staging/ambush porch)
-                         ||
-                    [SINGLE CHOKEPOINT BRIDGE]
-                         ||
-                     toi_700 (3 exits: GATEKEEPER CITADEL -- Station #1 Battle Fortress + Sensors + Fuel)
-                    /       \
-            rustpoint       copperfield (8 resources: CENTRAL INDUSTRIAL & SHIPYARD HUB -- Station #2/#3!)
-            (iron/copper)     /       \
-                         praecipua   taiyi
-                         (aluminum)  (helium/nitrogen ice -- DEEP RESERVE & CLONE SANCTUARY!)
-```
-
-- **Kill-Box Defense:** Every single attacker entering the 5-system cluster MUST pass through **`duskmere -> toi_700`**. Station #1 at `TOI-700` mounts full `Shield Bastion`, `Integrated Fire Director`, `Siege Lance`, `Bulwark Plating`, `Heavy Defense Batteries`, `Long-Range Subspace Sensor` (sees incoming fleets `2` jumps out through `duskmere`, `edgewater`, `dusthaven`, `minkar`, `mothallah`!), and permanently docked quick-reaction strike armadas!
-- **Internal Self-Sufficiency:** All 5 interior systems contain `iron_ore`, `copper_ore`, `aluminum_ore`, `water_ice`, `deuterium_ice`, `helium_ice`, `nitrogen_ice`, `hydrogen_gas`, `argon_gas`, `neon_gas`, and `plasma_gas` -- enough to fuel, repair, and fabricate hulls/ammo entirely behind the sealed gate!
-
----
-
-## 4. Alien Fleet Design (`115` Ships -- Zero Resemblance to `[CLTV]`)
-
-To guarantee rivals cannot fingerprint our fleet design as `[CLTV]`:
-- **Birth Empire Composition:** **Crimson (`55%`) + Voidborn (`30%`) + Outer Rim (`15%`)** (radically different from CLTV's Solarian/Nebula industrial majority!).
-- **Naming Convention:** Zero 3-letter naval prefixes (`GSV`/`ROU` forbidden!). Use raw, varied pirate/mercenary callsigns & single/compound slang names registered organically over `2--4` weeks (e.g., *Rustjaw*, *Ashfang*, *Vesper-9*, *Kestrel-Zero*, *Red Wake*, *Null Hound*, *Brimstone*, etc.).
-- **Hull & Combat Doctrine (Ultra-Heavy Pirate Captain Armada Style):**
-  - **Strike Armada Alpha (`30` ships):** Heavy Crimson/Voidborn alpha-strike & siege brick (`14` Crimson `Annihilator` / `Crimson Devastator` / `Warmaul` heavy gunships + `6` Voidborn `Event Horizon` / `Apotheosis` drone/shield anchors + `4` `Paradox Engine` / `Aporia` warp-disruptor interdictors + `4` `Cauterizer` / `Pleroma` combat medics + `2` dedicated boarding/marine assault hulls).
-  - **Strike Armada Beta (`30` ships):** Identical 30-ship heavy hammer for synchronized two-front raids or 60-ship capital sieges.
-  - **Strike Armada Gamma (`30` ships):** High-speed cloaked wolfpack & commerce raiders (`20` cloaked/fast Crimson & Voidborn ambush strikers + `6` Interdictors with `warp_disruptor` + `stasis_webifier_ii` + `4` fast Combat Salvage / Prize Recovery tenders with `outer_rim_salvage_array` + `advanced_tow_rig`).
-  - **Internal Fortress Support Wing (`20`--`25` ships, NEVER leaves `TOI-700` except cloaked recon):** `8` cloaked deep-recon scouts (`Vesper` hunters watching rival mining/hauler lanes), `10` internal `Copperfield`/`Rustpoint` miners & crafters feeding the fortress foundry/fuel bunkers, `4` fortress fuel/ammo tenders, `3` docked shipyard/storage bankers.
-
----
-
-## 5. Dedicated `pirate_net` Autonomous Raider Architecture (Future Standalone Repo)
-
-Runs in a **100% separate container/host with staggered restart times** (NEVER inside `/srv/collective/the-collective`):
-
-1. **Recon & Target Scoring (`scout_prey`):** Cloaked forward scouts map rival lawless mining belts, unarmed hauler corridors, and unguarded outposts within `4`--`12` jumps of `duskmere` (especially `[HEXC]`, `[BUSY]`, `[IRLC]`, Nebula/Crimson trade choke lanes), ranking targets by cargo/hull value vs local escort density.
-2. **Coordinated 30-Ship Armada Jump & Tackle (`wolfpack_strike`):**
-   - Interdictors drop cloak/jump in FIRST (`warp_disruptor` + `stasis_webifier` locking high-value targets in system!).
-   - Main gunship/carrier/medic fleet follows on the next tick via `spacemolt_fleet` + synchronized `attack` focus-fire (`target_id` lowest EHP/highest value first).
-   - **Aggressive Corsair Discipline (Distinct from CLTV):** Uses `brace` + remote-rep sustain rather than instant `80%` flee; disengages cleanly via fleet recall ONLY if overwhelmed (`enemy_power > 1.35 * pack_power` or medic loss) or objective killed.
-3. **Battlefield Plunder & Prize Extraction (`plunder_and_tow`):** Dedicated `outer_rim_salvage_array` + `advanced_tow_rig` tenders immediately loot cargo, field-scrap wrecks, and tow disabled prizes back through `duskmere -> toi_700`!
-4. **Extortion & Mercenary Contracts (`toll_net`):** Automatically issues `trade_offer offer_safe_passage=true request_credits=...` to captured commercial traffic and accepts anonymous third-party war/harassment bounties to reinforce authentic mercenary cover!
-5. **Kill-Box Home Defense (`gate_sentinel`):** Any non-Corsair fleet detected by `TOI-700`'s `Long-Range Subspace Sensor` entering `duskmere` triggers an instant recall of nearby armadas to form an iron wall on the `TOI-700` side of the bridge alongside station defense batteries!
-
----
-
-## 6. Updates Implemented (`2026-11-27`): Shared `read.db` Intel Tap, Drip-Feed Noise-Floor Math, Naming Tradeoff & `pirate_net.py`
-
-1. **Zero-Recon Intel Tap (Zero In-Game Footprint!):** `game/fleet/pirate_net.py` reads CLTV's live `read.db` strictly read-only (`?mode=ro&immutable=1`) with zero in-game `ally_intel_opt_out` or Intel Center links, freeing 100% of Corsair seats for combat (`90` warships + `15` Plunder/Tow + `15` Fortress Support). To prevent timing-correlation leaks when CLTV scouts scan a system, `pirate_net.py` enforces a deterministic **`180--720s` anti-correlation jitter** before raiding newly scanned systems and hard-excludes all `CLTV` tags and systems within `10` jumps of CLTV's Western core.
-2. **Drip-Feed Funding Math (Why Slow Continuous Funding Is Hidden In-Game):** Live `feed.json` publishes daily player `credits_earned` (NOT current wallet balance or `credits_spent`), and `leaderboard.json` publishes hourly Top-30 `total_wealth` only. Because CLTV's net worth oscillates naturally by `+/- 10M--30M cr/day`, drip-feeding **`300k--2.0M cr` staggered irregular tranches** via `2--3` unaffiliated neutral cutouts (`faction: ""`) at crowded Empire Capitals sits far below CLTV's statistical noise floor while Corsair leveling/pirate-hunting builds legitimate `credits_earned` stats.
-3. **Naming Engine (`pirate_net.py roster`):** Built with both **`barcode`** (`20`-char balanced `I`/`l` strings -- maximum human visual dread & anti-manual target-calling, though AI scripts parse `0x49` vs `0x6C` trivially and immediately tag uniform barcodes as a single coordinated bot swarm) AND **`organic_pirate`** (messy heterogeneous mercenary handles -- strictly stronger camouflage against rival AI forensic clustering).
-4. **3-Phase Auto-Lifecycle Built & Wired (`game/fleet/pirate_net.py`, `game/pirate-policy.json`, `game/routes/pirate-network.json`):** Kept **double-locked DISABLED** (`enabled: false`, `raiding_enabled: false`, `status: "off"`, `requires.wing_prefix: "CORSAIR-"`) so zero live CLTV ships ever touch it; seamlessly runs `leveling` (Piloting `< 20` / Tier `< 3` safe XP farming) -> `staging` (`toi_700` 30-ship armadas) -> `raiding` (`wolfpack_strike` + `plunder_and_tow` + `toll_net` + `gate_sentinel`).
+- **Galaxy Map (`Pirate ops` layer, `#ef4444`):** Renders TOI-700 fortress space (double crimson border), Citadel/Fortress/Choke markers, built Pirate stations/outposts, and live Pirate ship tokens in crimson red -- mirroring CLTV's green (`#86d65b`).
+- **Left Fleet Outliner (`Pirates` tab below `Intel`):** Collapsible division with all 5 sub-groups showing live/planned counts (`0/107` -> `107/107`) without ever inflating CLTV's 500-ship roster or financial metrics.

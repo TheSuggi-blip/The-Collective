@@ -499,10 +499,11 @@ def api_fleet():
         age = int(time.time() - path.stat().st_mtime)
     except (OSError, ValueError):
         return {"ships": [], "totals": {}, "engine": {"ok": False, "error": "no fleet data yet"}, "updated_at": "", "age": -1,
-                "birth": None}
+                "birth": None, "pirates": load_pirates_fleet()}
     return {"ships": d.get("ships") or [], "totals": d.get("totals") or {}, "engine": d.get("engine") or {},
             "updated_at": text(d.get("updated_at"), 30), "age": age, "birth": birth_summary(),
-            "wave": wave_row(d.get("wave")), "waves": [w for w in (wave_row(x) for x in (d.get("waves") or [])[-5:]) if w]}
+            "wave": wave_row(d.get("wave")), "waves": [w for w in (wave_row(x) for x in (d.get("waves") or [])[-5:]) if w],
+            "pirates": load_pirates_fleet()}
 
 
 def wave_row(wave):
@@ -1279,6 +1280,249 @@ def api_chat_history(agent):
 
 # ---------------------------------------------------------------- API
 
+
+PIRATES_STATE = {"at": 0.0, "value": {}}
+PIRATES_FLEET = {"at": 0.0, "value": {}}
+PIRATE_DIV_ORDER = (
+    ("CORSAIR-Alpha", "Armada Alpha (29)"),
+    ("CORSAIR-Beta", "Armada Beta (28)"),
+    ("CORSAIR-Gamma", "Armada Gamma -- Wolfpack (26)"),
+    ("CORSAIR-Plunder", "Plunder & Tow Wing (13)"),
+    ("CORSAIR-Vault", "Fortress Vault Support (11)"),
+)
+PIRATE_DIV_MAP = dict(PIRATE_DIV_ORDER)
+
+
+def load_pirates_state():
+    """Isolated Corsair Pirate territory, planned fortress sites, and built holdings (data/pirates/*).
+    Strictly separate from CLTV holdings/sites so Pirate ops render in RED without touching CLTV metrics."""
+    now = time.time()
+    if now - PIRATES_STATE["at"] < 30 and PIRATES_STATE["value"]:
+        return PIRATES_STATE["value"]
+    pdir = FLEET.parent / "pirates"
+    cfg = {}
+    try:
+        cfg = read_json(pdir / "config.json")
+        if not isinstance(cfg, dict):
+            cfg = {}
+    except (OSError, ValueError):
+        cfg = {}
+    tag = text(cfg.get("tag"), 16)
+    name = text(cfg.get("name"), 80) or "Corsair Proxy"
+    account_mode = text(cfg.get("account_mode"), 40) or "separate_clerk_account"
+    target_ships = int(num(cfg.get("target_ships")) or 107)
+
+    sites = []
+    sites_path = pdir / "sites.tsv"
+    if sites_path.is_file():
+        try:
+            for ln in sites_path.read_text(encoding="utf-8", errors="replace").splitlines()[:200]:
+                if not ln or ln.startswith("#"):
+                    continue
+                parts = ln.split("	")
+                if len(parts) >= 3 and parts[0] and parts[0] != "system":
+                    sites.append({
+                        "system": text(parts[0], 80),
+                        "kind": text(parts[1], 24),
+                        "status": text(parts[2], 24),
+                        "note": text(parts[3], 180) if len(parts) > 3 else "",
+                    })
+        except OSError:
+            pass
+
+    buildings = []
+    seen_b = set()
+    # 1) Read optional private pirate empire.json (from Account #2 engine once live)
+    emp_path = pdir / "empire.json"
+    if emp_path.is_file():
+        try:
+            ed = read_json(emp_path)
+            if isinstance(ed, dict):
+                for b in (ed.get("bases") or []):
+                    if not isinstance(b, dict):
+                        continue
+                    sy = text(b.get("system") or b.get("system_id"), 80)
+                    nm = text(b.get("name"), 80)
+                    kd = holding_kind(b.get("kind") or b.get("type") or "station")
+                    if sy:
+                        key = (sy, kd, nm)
+                        if key not in seen_b:
+                            seen_b.add(key)
+                            buildings.append({
+                                "system": sy, "kind": kd, "name": nm,
+                                "status": text(b.get("status") or b.get("condition") or "operational", 24),
+                                "level": int(num(b.get("level")) or 1), "part": False,
+                            })
+                for f in (ed.get("facilities") or []):
+                    if not isinstance(f, dict):
+                        continue
+                    sy = text(f.get("system") or f.get("system_id"), 80)
+                    nm = text(f.get("name") or f.get("type"), 80)
+                    kd = holding_kind(f.get("kind") or f.get("type") or "office")
+                    if sy:
+                        key = (sy, kd, nm)
+                        if key not in seen_b:
+                            seen_b.add(key)
+                            buildings.append({
+                                "system": sy, "kind": kd, "name": nm,
+                                "status": text(f.get("status") or "active", 24),
+                                "level": int(num(f.get("level")) or 1), "part": bool(f.get("part")),
+                            })
+        except (OSError, ValueError):
+            pass
+
+    # 2) Also match any public stations owned by pirate tag once founded
+    if tag:
+        with LOCK:
+            pub_stations = list(VALUE.get("stations") or [])
+        for st in pub_stations:
+            if not isinstance(st, dict):
+                continue
+            if str(st.get("tag") or "").upper() == tag.upper():
+                sy = text(st.get("system"), 80)
+                nm = text(st.get("name"), 80)
+                kd = holding_kind(st.get("type") or "station")
+                if sy:
+                    key = (sy, kd, nm)
+                    if key not in seen_b:
+                        seen_b.add(key)
+                        buildings.append({
+                            "system": sy, "kind": kd, "name": nm,
+                            "status": "wrecked" if st.get("wrecked") else text(st.get("condition") or "operational", 24),
+                            "level": 1, "part": False,
+                        })
+
+    terr = []
+    watch = []
+    for s in sites:
+        if s["kind"] == "watch":
+            if s["system"] not in watch:
+                watch.append(s["system"])
+        elif s["system"] not in terr:
+            terr.append(s["system"])
+    for b in buildings:
+        if b["system"] not in terr:
+            terr.append(b["system"])
+
+    val = {
+        "tag": tag,
+        "name": name,
+        "account_mode": account_mode,
+        "target_ships": target_ships,
+        "sites": sites,
+        "holdings": {"buildings": buildings},
+        "territory_systems": terr,
+        "watch_systems": watch,
+    }
+    PIRATES_STATE["at"], PIRATES_STATE["value"] = now, val
+    return val
+
+
+def load_pirates_fleet():
+    """Isolated Corsair Pirate fleet roster + live ships (data/pirates/roster.tsv + data/pirates/fleet.json).
+    Returns planned slots merged with live Account #2 telemetry without ever altering CLTV F.ships or totals."""
+    now = time.time()
+    if now - PIRATES_FLEET["at"] < 10 and PIRATES_FLEET["value"]:
+        return PIRATES_FLEET["value"]
+    pdir = FLEET.parent / "pirates"
+    cfg = {}
+    try:
+        cfg = read_json(pdir / "config.json")
+        if not isinstance(cfg, dict):
+            cfg = {}
+    except (OSError, ValueError):
+        cfg = {}
+
+    live_data = {}
+    try:
+        live_data = read_json(pdir / "fleet.json")
+        if not isinstance(live_data, dict):
+            live_data = {}
+    except (OSError, ValueError):
+        live_data = {}
+
+    live_ships = [s for s in (live_data.get("ships") or []) if isinstance(s, dict) and s.get("name")]
+    live_by = {str(s["name"]): s for s in live_ships}
+
+    roster = []
+    seen = set()
+    rpath = pdir / "roster.tsv"
+    if rpath.is_file():
+        try:
+            for ln in rpath.read_text(encoding="utf-8", errors="replace").splitlines()[:500]:
+                if not ln or ln.startswith("#"):
+                    continue
+                parts = ln.split("	")
+                if len(parts) < 5 or parts[0] == "pilot":
+                    continue
+                pilot = text(parts[0], 48)
+                wing = text(parts[1], 32)
+                div_lbl = text(parts[2], 48) or PIRATE_DIV_MAP.get(wing, wing)
+                role = text(parts[3], 32)
+                empire = text(parts[4], 24)
+                day_off = int(num(int(parts[5]))) if len(parts) > 5 and parts[5].isdigit() else 0
+                status = text(parts[6], 20) if len(parts) > 6 else "planned"
+                seen.add(pilot)
+                lv = live_by.get(pilot)
+                if lv:
+                    row = dict(lv)
+                    row.setdefault("wing", wing)
+                    row["pirate_division"] = div_lbl
+                    row.setdefault("role", role)
+                    row.setdefault("empire", empire)
+                    row["birth_day_offset"] = day_off
+                    row["roster_status"] = "active"
+                    row["is_pirate"] = True
+                    roster.append(row)
+                else:
+                    roster.append({
+                        "name": pilot,
+                        "wing": wing,
+                        "pirate_division": div_lbl,
+                        "role": role,
+                        "empire": empire,
+                        "birth_day_offset": day_off,
+                        "roster_status": status or "planned",
+                        "status": "planned",
+                        "system": "",
+                        "class": "",
+                        "credits": 0,
+                        "hull": 0,
+                        "max_hull": 0,
+                        "fuel": 0,
+                        "max_fuel": 0,
+                        "piloting": 0,
+                        "is_pirate": True,
+                    })
+        except OSError:
+            pass
+
+    for lv in live_ships:
+        nm = str(lv.get("name") or "")
+        if nm and nm not in seen:
+            row = dict(lv)
+            wing = text(row.get("wing"), 32) or "CORSAIR-Alpha"
+            row["pirate_division"] = text(row.get("pirate_division"), 48) or PIRATE_DIV_MAP.get(wing, "Armada Alpha (29)")
+            row["roster_status"] = "active"
+            row["is_pirate"] = True
+            roster.append(row)
+
+    val = {
+        "tag": text(cfg.get("tag"), 16),
+        "name": text(cfg.get("name"), 80) or "Corsair Proxy",
+        "account_mode": text(cfg.get("account_mode"), 40) or "separate_clerk_account",
+        "updated_at": text(live_data.get("updated_at"), 30),
+        "engine": live_data.get("engine") if isinstance(live_data.get("engine"), dict) else {},
+        "planned_total": len(roster) or int(num(cfg.get("target_ships")) or 107),
+        "active_total": len(live_ships),
+        "divisions": [lbl for _, lbl in PIRATE_DIV_ORDER],
+        "ships": live_ships,
+        "roster": roster,
+    }
+    PIRATES_FLEET["at"], PIRATES_FLEET["value"] = now, val
+    return val
+
+
 def api_state():
     with LOCK:
         m = VALUE.get("map") or {"systems": [], "empires": {}}
@@ -1291,6 +1535,7 @@ def api_state():
     out["our_tag"] = OUR_TAG
     out["holdings"] = load_holdings()
     out["sites"] = sites_with_bases(load_sites(), out["holdings"])
+    out["pirates"] = load_pirates_state()
     out["token"] = TOKEN
     now = time.time()
     out["sources"] = {n: {"age": int(now - s["ok_at"]) if s["ok_at"] else -1, "error": s["error"]} for n, s in STATUS.items()}

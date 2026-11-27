@@ -34,7 +34,7 @@ RULES:
 
 Usage:
   python3 -I -B game/fleet/pirate_net.py <pilot> [--minutes 45] [--policy game/pirate-policy.json] [--route pirate-network] [--dry-run]
-  python3 -I -B game/fleet/pirate_net.py roster [--count 120] [--style barcode|organic_pirate|mixed] [--seed 2026] [--out <tsv_path>]
+  python3 -I -B game/fleet/pirate_net.py roster [--count 107] [--style organic_pirate|barcode|mixed] [--seed 2026] [--out <tsv_path>]
 """
 
 import fcntl
@@ -57,39 +57,55 @@ DATA = Path(os.environ.get("FLEET_DATA_ROOT") or "/srv/collective/data")
 DEFAULT_POLICY = REPO / "game" / "pirate-policy.json"
 CLAIMS_FILE = "pirate_claims.json"
 
-# 120-ship Corsair Armada composition (90 ultra-heavy warships + 15 plunder/tow + 15 fortress support)
+# 107-ship Corsair Armada composition (prime non-round organic count; ZERO Nebula!)
+# Optimal 4-empire combat split:
+#   Crimson  43 (40.2%): +8% weapon dmg + crimson_fury -> Gunships, Heavy Brawlers, Boarders, Armored Salvagers
+#   Voidborn 25 (23.4%): +12% max shield + cloak/energy -> Carriers, Shield Tanks, Medics, Cloaked Boarders
+#   OuterRim 21 (19.6%): +10% in-system speed + salvage/repair + 1.5% lowest tax domicile (Founder MUST be OuterRim!)
+#   Solarian 18 (16.8%): +3% all attributes + solarian_doctrine (+1%/lvl accuracy) -> Precision Snipers/Interdictors + Vault Miners
 ARMADA_TEMPLATE = (
-    # 3x 30-ship Strike Armadas (Alpha, Beta, Gamma)
-    ("CORSAIR-Alpha", "gunship", "crimson", 12),
+    # CORSAIR-Alpha (29 ships -- Heavy Strike & Siege Armada; slot #0 is Outer Rim Founder for 1.5% tax domicile!)
+    ("CORSAIR-Alpha", "command", "outerrim", 1),
+    ("CORSAIR-Alpha", "gunship", "crimson", 10),
     ("CORSAIR-Alpha", "heavy_brawler", "crimson", 5),
     ("CORSAIR-Alpha", "boarder", "crimson", 3),
     ("CORSAIR-Alpha", "carrier", "voidborn", 4),
-    ("CORSAIR-Alpha", "interdictor", "voidborn", 3),
-    ("CORSAIR-Alpha", "medic", "crimson", 2),
-    ("CORSAIR-Alpha", "command", "outerrim", 1),
-    ("CORSAIR-Beta", "gunship", "crimson", 12),
+    ("CORSAIR-Alpha", "interdictor", "solarian", 4),
+    ("CORSAIR-Alpha", "medic", "voidborn", 2),
+    # CORSAIR-Beta (28 ships -- Heavy Strike & Escort Armada)
+    ("CORSAIR-Beta", "command", "crimson", 1),
+    ("CORSAIR-Beta", "gunship", "crimson", 9),
     ("CORSAIR-Beta", "heavy_brawler", "crimson", 5),
     ("CORSAIR-Beta", "boarder", "voidborn", 3),
     ("CORSAIR-Beta", "carrier", "voidborn", 4),
-    ("CORSAIR-Beta", "interdictor", "crimson", 3),
+    ("CORSAIR-Beta", "interdictor", "solarian", 4),
     ("CORSAIR-Beta", "medic", "voidborn", 2),
-    ("CORSAIR-Beta", "command", "crimson", 1),
-    ("CORSAIR-Gamma", "gunship", "crimson", 10),
-    ("CORSAIR-Gamma", "heavy_brawler", "outerrim", 6),
-    ("CORSAIR-Gamma", "boarder", "crimson", 4),
-    ("CORSAIR-Gamma", "interdictor", "voidborn", 6),
-    ("CORSAIR-Gamma", "medic", "voidborn", 3),
+    # CORSAIR-Gamma (26 ships -- Fast Wolfpack & Interdiction Armada)
     ("CORSAIR-Gamma", "command", "outerrim", 1),
-    # Dedicated Battlefield Plunder, Salvage & Prize-Tow Wing (15 ships)
-    ("CORSAIR-Plunder", "plunder_tow", "outerrim", 9),
+    ("CORSAIR-Gamma", "gunship", "crimson", 6),
+    ("CORSAIR-Gamma", "heavy_brawler", "outerrim", 4),
+    ("CORSAIR-Gamma", "boarder", "voidborn", 4),
+    ("CORSAIR-Gamma", "interdictor", "solarian", 5),
+    ("CORSAIR-Gamma", "interdictor", "outerrim", 3),
+    ("CORSAIR-Gamma", "medic", "voidborn", 3),
+    # CORSAIR-Plunder (13 ships -- Dedicated Battlefield Plunder, Salvage & Prize-Tow Wing)
+    ("CORSAIR-Plunder", "plunder_tow", "outerrim", 7),
     ("CORSAIR-Plunder", "plunder_tow", "crimson", 4),
     ("CORSAIR-Plunder", "plunder_tow", "voidborn", 2),
-    # Fortress-Locked Internal Fuel/Mining/Foundry/Banker Support (15 ships -- zero scouts needed!)
-    ("CORSAIR-Vault", "fortress_miner", "crimson", 6),
-    ("CORSAIR-Vault", "fortress_crafter", "outerrim", 4),
-    ("CORSAIR-Vault", "fortress_tanker", "outerrim", 3),
-    ("CORSAIR-Vault", "fortress_banker", "voidborn", 2),
+    # CORSAIR-Vault (11 ships -- Fortress-Locked Internal Mining/Foundry/Tanker/Banker Support; zero scouts needed!)
+    ("CORSAIR-Vault", "fortress_miner", "solarian", 5),
+    ("CORSAIR-Vault", "fortress_crafter", "outerrim", 3),
+    ("CORSAIR-Vault", "fortress_tanker", "outerrim", 2),
+    ("CORSAIR-Vault", "fortress_banker", "voidborn", 1),
 )
+
+PIRATE_DIVISION_LABELS = {
+    "CORSAIR-Alpha": "Armada Alpha (29)",
+    "CORSAIR-Beta": "Armada Beta (28)",
+    "CORSAIR-Gamma": "Armada Gamma -- Wolfpack (26)",
+    "CORSAIR-Plunder": "Plunder & Tow Wing (13)",
+    "CORSAIR-Vault": "Fortress Vault Support (11)",
+}
 
 _ORG_FIRST = (
     "rust", "ash", "iron", "void", "grim", "red", "cold", "salty", "n0x", "v0id",
@@ -127,7 +143,7 @@ def read_policy(policy_path=None):
         "raiding_enabled": False,
         "dry_run": True,
         "wing_prefix": "CORSAIR-",
-        "naming_default_style": "barcode",
+        "naming_default_style": "organic_pirate",
         "barcode_length": 20,
         "rest_seconds_when_empty": 30,
         "fortress": {
@@ -203,11 +219,11 @@ def generate_organic_name(rng, idx):
     return "%s %s" % (a.capitalize(), b.capitalize())
 
 
-def generate_corsair_roster(count=120, style="barcode", seed=2026, barcode_length=20, existing_names=None):
-    """Generate a complete 100-120 ship Corsair manifest with staggered 28-day birth offsets."""
+def generate_corsair_roster(count=107, style="organic_pirate", seed=2026, barcode_length=20, existing_names=None):
+    """Generate a complete 107-ship Corsair manifest with staggered 60-day birth offsets (3-4 ships every 2-3 days)."""
     rng = random.Random(int(seed))
     used = set(existing_names or ())
-    style = str(style or "barcode").strip().lower()
+    style = str(style or "organic_pirate").strip().lower()
     slots = []
     for wing, role, emp, n in ARMADA_TEMPLATE:
         for _ in range(n):
@@ -216,7 +232,7 @@ def generate_corsair_roster(count=120, style="barcode", seed=2026, barcode_lengt
         slots = slots[:count]
     else:
         while len(slots) < count:
-            slots.append(("CORSAIR-Gamma", "gunship", rng.choice(("crimson", "voidborn", "outerrim"))))
+            slots.append(("CORSAIR-Gamma", "gunship", rng.choice(("crimson", "voidborn", "outerrim", "solarian"))))
 
     # Stagger birth days across 28 days so feed.json `created` dates never spike on one day!
     roster = []
@@ -229,7 +245,7 @@ def generate_corsair_roster(count=120, style="barcode", seed=2026, barcode_lengt
             if nm not in used and not nm.startswith(("GSV ", "ROU ", "EUV ", "MCV ", "IFV ", "LSV ", "VSV ")):
                 used.add(nm)
                 break
-        birth_day = int((i * 28) // max(1, len(slots)))
+        birth_day = int((i // 4) * 2 + (1 if (i // 4) % 3 == 2 else 0))
         roster.append({
             "pilot": nm,
             "wing": wing,

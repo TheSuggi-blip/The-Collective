@@ -845,7 +845,7 @@ Run by hand.
 
 ```
 game/fleet/pirate_net.py <pilot> [--minutes 45] [--policy game/pirate-policy.json] [--route pirate-network] [--dry-run]
-game/fleet/pirate_net.py roster [--count 120] [--style barcode|organic_pirate|mixed] [--seed 2026] [--out <tsv_path>]
+game/fleet/pirate_net.py roster [--count 107] [--style organic_pirate|barcode|mixed] [--seed 2026] [--out <tsv_path>]
 ```
 
 ### `plan.py`
