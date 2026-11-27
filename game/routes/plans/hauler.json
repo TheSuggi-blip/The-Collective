@@ -71,6 +71,10 @@
   "craft-network",
   "haul-network-builder",
   "haul-network",
+  "supply-bunker-gsc-0044-own-cells",
+  "supply-bunker-gsc-0044",
+  "supply-bunker-atria-own-cells",
+  "supply-bunker-atria",
   "park"
  ],
  "planned": [
@@ -156,6 +160,10 @@
   "craft-network": 90,
   "haul-network-builder": 90,
   "haul-network": 90,
+  "supply-bunker-gsc-0044-own-cells": 90,
+  "supply-bunker-gsc-0044": 90,
+  "supply-bunker-atria-own-cells": 90,
+  "supply-bunker-atria": 90,
   "park": 90
  },
  "of": 90,
