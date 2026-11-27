@@ -393,10 +393,10 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                 t_where = " AND t >= ?" if "t" in bcols else ""
                 params = (min_bid, now_t - 6.0 * 3600.0) if "t" in bcols else (min_bid,)
                 b_col = "base" if "base" in bcols else ("station" if "station" in bcols else "''")
-                cltv_buys, fair_map = set(), {}
+                cltv_qty, fair_map = {}, {}
                 try:
                     import market_guard as _mg_m
-                    cltv_buys, _ = _mg_m.load_cltv_buy_orders(data_dir, now_t=now_t)
+                    cltv_qty = _mg_m.load_cltv_buy_qty(data_dir, now_t=now_t)
                     fair_map = _mg_m.read_price_oracle(data_dir, now_t=now_t)
                 except Exception:
                     _mg_m = None
@@ -406,9 +406,9 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     q_i = int(bq or 0)
                     p_f = float(bid or 0.0)
+                    if cltv_qty and b_s:
+                        q_i = max(0, q_i - int(cltv_qty.get((b_s, i_s), 0)))
                     if not i_s or q_i <= 0 or p_f <= 0.0:
-                        continue
-                    if cltv_buys and b_s and (b_s, i_s) in cltv_buys:
                         continue
                     if _mg_m is not None and fair_map:
                         p_f = _mg_m.guarded_bid_price(i_s, p_f, fair_map, max_mult=1.50)
@@ -543,8 +543,9 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                         ).fetchall():
                             if ob:
                                 _owned_rows.append((str(osys), str(opoi or ob), str(ob), str(okind or "outpost").lower()))
-                                if str(okind or "").lower() == "outpost" and str(ob) in lockbox_bases:
+                                if str(okind or "").lower() in ("outpost", "station"):
                                     owned_outpost_bases.add(str(ob))
+                                    lockbox_bases.add(str(ob))
                     if policy.get("auto_use_owned_outposts", True):
                         for osys, opoi, ob, _ok in _owned_rows:
                             if ob in lockbox_bases and osys and opoi:
@@ -811,12 +812,16 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
 
     dists = bfs_distances(adj, p_sys, max_hops=scarce_max_j) if p_sys else {}
     claimed_counts = dict(static_counts or {})
+    sys_claimed = {}
     for cp, rec in (claims or {}).items():
         if cp == p_name:
             continue
         bk = rec.get("belt")
         if bk:
             claimed_counts[bk] = claimed_counts.get(bk, 0) + 1
+            sy_k = str(bk).split(":")[0]
+            if sy_k:
+                sys_claimed[sy_k] = sys_claimed.get(sy_k, 0) + 1
 
     by_poi = {}
     _deferred_escorts = []
@@ -966,9 +971,14 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             if _st_base in (world.get("owned_outpost_bases") or set()) or _st_base in (world.get("lockbox_bases") or set()):
                 _hub_mult = 1.25 if st_hops == 0 else (1.18 if st_hops <= 2 else (1.10 if st_hops <= 4 else (1.04 if st_hops <= hub_rad else 1.0)))
                 _net_cr *= _hub_mult
-        # Divide directly by round-trip fuel burn so shorter station-adjacent, higher-value fields strictly dominate on Rev/Fuel!
+        # Skip massive hard-glut junk (e.g. >200k held copper/iron <10 cr) when adaptive relocation is enabled
+        # so miners relocate to rich hubs instead of clumping on worthless ore!
+        if tier == "xp_fallback" and _hard_glut and policy.get("skip_hard_glut_when_relocating", False) and policy.get("allow_adaptive_relocate", True):
+            continue
+        # Divide directly by round-trip fuel burn + same-system crowding factor so miners spread cleanly across systems!
         _wm = _wing_mine_multiplier(_p_wing, res, tools)
-        score = ((_net_cr * _wm) / _rt_fuel) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
+        _sys_crowd = 1.0 + 0.35 * float(sys_claimed.get(sys_id, 0))
+        score = ((_net_cr * _wm) / (_rt_fuel * _sys_crowd)) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
         if score <= 0.0 and tier != "deficit" and policy.get("block_negative_score", True):
             continue
         cand = {
@@ -1038,17 +1048,20 @@ def pick_relocation_hub(pilot_info, world, policy, claims, cooldowns, static_cou
         if not h_cands:
             continue
         top5 = h_cands[:5]
-        hub_score = sum(max(1.0, float(c["score"])) for c in top5) / (1.0 + 0.25 * float(h_hops))
+        non_fb = [c for c in top5 if c.get("tier") != "xp_fallback"]
+        eval_set = non_fb or top5
+        tier_boost = 3.0 if non_fb else 0.25
+        hub_score = (tier_boost * sum(max(1.0, float(c["score"])) for c in eval_set)) / (1.0 + 0.18 * float(h_hops))
         ranked.append({
             "system": st_tup[0], "poi": st_tup[1], "base": st_tup[2],
             "hops": h_hops, "belts": len(h_cands),
-            "top_resource": top5[0]["resource"], "score": round(hub_score, 2),
+            "top_resource": eval_set[0]["resource"], "score": round(hub_score, 2),
         })
     if not ranked:
         return None
     ranked.sort(key=lambda r: (-r["score"], r["hops"], r["system"]))
     top_sc = ranked[0]["score"]
-    spread = [r for r in ranked[:3] if r["score"] >= top_sc * 0.50]
+    spread = [r for r in ranked[:5] if r["score"] >= top_sc * 0.45]
     idx = (sum(ord(ch) for ch in p_name) % len(spread)) if (len(spread) > 1 and p_name) else 0
     return spread[idx]
 

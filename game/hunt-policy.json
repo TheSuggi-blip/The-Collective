@@ -61,7 +61,7 @@
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 8,
+    "max_jumps": 10,
     "priority_species": [
       "cloudwhale",
       "crusher_mantis",
@@ -91,7 +91,7 @@
     "command_flagship_min_power": 150.0,
     "max_forming_packs": 14,
     "require_command_leader": false,
-    "max_station_jumps": 8,
+    "max_station_jumps": 10,
     "min_loot_val": 750.0,
     "standing_outpost_squads": true,
     "min_loot_per_ship": 250.0
@@ -109,7 +109,7 @@
     "lawless_alone_mode": "pirates",
     "max_station_jumps": 6,
     "min_loot_val": 150.0,
-    "tier_s_max_jumps": 8,
+    "tier_s_max_jumps": 10,
     "tier_s_min_loot_val": 550.0
   },
   "fallback": {

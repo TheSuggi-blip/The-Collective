@@ -3,7 +3,7 @@
   "_doc": "Policy for dynamic mine-network (game/fleet/mine_net.py). Auto-rotates miners across unsaturated belts (>=15% floor), matching fitted tools, prioritizing reserve/needs.tsv shortages, skipping full reserves, and stamping instant cooldowns on floor breach.",
   "enabled": true,
   "min_left_pct": 5.0,
-  "max_per_belt": 5,
+  "max_per_belt": 2,
   "units_per_ship_run": 250,
   "cooldown_minutes": 30,
   "claim_ttl_s": 4200,
@@ -18,7 +18,7 @@
   "exclude_pois": [],
   "exclude_resources": [],
   "pirate_avoid_hours": 6.0,
-  "max_jumps": 8,
+  "max_jumps": 6,
   "max_station_jumps": 6,
   "prioritize_needs": true,
   "skip_full_reserves": true,
@@ -29,6 +29,7 @@
   "priority_resources": [],
   "rest_seconds_when_empty": 30,
   "deposit_stations": [
+    "ridgecrest:068cc1214a24e930555b87f1f117c351:a2cee88abdcb31db229c04315f0ef6e1",
     "nexus_prime:the_core:central_nexus",
     "node_beta:node_beta_industrial_station:node_beta_industrial_station",
     "the_experiment:the_experiment_research_station:the_experiment_research_station",
@@ -76,5 +77,6 @@
   "scarce_max_jumps": 10,
   "scarce_max_station_jumps": 10,
   "pirate_battle_avoid_hours": 2.0,
-  "_trinity_500_note": "2026-11-26: Enabled 5-wing specialization (3A Precision, 3B Bulk, 3C Deep-Core/Rad, 3D Gas, 3E Ice), allow_xp_fallback=true for fast P10, 5-empire deposit hubs, and automatic Target-system-not-found cooldown."
+  "_trinity_500_note": "2026-11-26: Enabled 5-wing specialization (3A Precision, 3B Bulk, 3C Deep-Core/Rad, 3D Gas, 3E Ice), allow_xp_fallback=true for fast P10, 5-empire deposit hubs, and automatic Target-system-not-found cooldown.",
+  "skip_hard_glut_when_relocating": true
 }

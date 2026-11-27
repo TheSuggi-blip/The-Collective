@@ -62,6 +62,76 @@ def load_cltv_buy_orders(data_dir, now_t=None, ttl_s=21600):
     return by_bi, by_bp
 
 
+def load_cltv_buy_qty(data_dir, now_t=None, ttl_s=21600):
+    """Return {(base, item): total_cltv_buy_qty} so callers subtract only CLTV's own volume
+    instead of discarding giant external buy-walls (e.g. 468k silver_ore @ 101 cr) at shared hubs."""
+    now_t = time.time() if now_t is None else float(now_t)
+    by_qty = {}
+    doc = _read_json(Path(data_dir) / "fleet" / "bursar_buys.json", {})
+    entries = doc.get("entries") if isinstance(doc, dict) and isinstance(doc.get("entries"), dict) else {}
+    for _pilot, bases in entries.items():
+        if not isinstance(bases, dict):
+            continue
+        for b_id, rec in bases.items():
+            if not isinstance(rec, dict) or (now_t - float(rec.get("at") or 0)) > ttl_s:
+                continue
+            for iid, q in (rec.get("items") or {}).items():
+                qi = int(q or 0)
+                if iid and qi > 0:
+                    k = (str(b_id), str(iid))
+                    by_qty[k] = by_qty.get(k, 0) + qi
+    return by_qty
+
+
+def cash_weighted_median(pairs, cap_cash_per_station=500000.0):
+    """Compute Cash-Weighted Median from [(price, qty), ...] with per-station cash cap.
+
+    Immune to BOTH directions of market manipulation:
+      - Pump spoofs (e.g. 701 cr x 6 = 4,206 cr vs 10 cr x 8,172 = 81,720 cr): thin top spike
+        winsorized when <= 5% of total cash (or qty <= 5) and > 2.5x next price.
+      - 2-cr trash scavenger walls (e.g. 2 cr x 50,000 = 100k cr vs 45 cr x 2,025 = 91k cr):
+        weighting by cash + dropping <=3 cr scavenger walls when real >=10 cr demand exists
+        prevents bottom-feeders from collapsing scarce ore fair prices to 2 cr.
+    """
+    clean = [(float(p), int(q)) for p, q in (pairs or ()) if float(p or 0) > 0 and int(q or 0) > 0]
+    if not clean:
+        return 0.0
+    clean.sort(key=lambda x: x[0])
+    # Drop <=3 cr trash-scavenger bids whenever meaningful >=10 cr external demand exists
+    real_hi = [(p, q) for p, q in clean if p >= 10.0]
+    if real_hi:
+        real_cash = sum(p * q for p, q in real_hi)
+        real_qty = sum(q for _, q in real_hi)
+        if (len(real_hi) >= 2 and real_qty >= 20) or (real_cash >= 15000.0 and real_qty >= 20):
+            clean = [pq for pq in clean if pq[0] > 3.0] or clean
+    # Winsorize thin extreme top outlier on cash share or thin unit count
+    while len(clean) >= 3:
+        tot_c = sum(min(p * q, cap_cash_per_station) for p, q in clean)
+        top_p, top_q = clean[-1]
+        top_c = min(top_p * top_q, cap_cash_per_station)
+        if tot_c > 0 and (top_q <= 6 or top_c <= tot_c * 0.08) and top_p > clean[-2][0] * 2.5:
+            clean = clean[:-1]
+        else:
+            break
+    if len(clean) == 2:
+        # Guard 2-station book against 1 tiny extreme spoof (e.g. 701 x 6 vs 10 x 8172)
+        p0, q0 = clean[0]
+        p1, q1 = clean[1]
+        c0 = min(p0 * q0, cap_cash_per_station)
+        c1 = min(p1 * q1, cap_cash_per_station)
+        if (q1 <= 6 or c1 < (c0 + c1) * 0.08) and p1 > p0 * 2.5:
+            clean = [clean[0]]
+    weights = [(p, min(p * q, cap_cash_per_station)) for p, q in clean]
+    tot_w = sum(w for _, w in weights)
+    half = tot_w / 2.0
+    acc = 0.0
+    for p, w in weights:
+        acc += w
+        if acc >= half:
+            return float(p)
+    return float(weights[-1][0])
+
+
 def volume_weighted_median(pairs):
     """Compute exact Volume-Weighted Median from [(price, qty), ...] with price > 0, qty > 0.
 
@@ -87,26 +157,33 @@ def volume_weighted_median(pairs):
     return float(clean[-1][0])
 
 
-def compute_book_vwm_map(books_rows, cltv_buy_keys=None, min_bid=2.0, min_qty=5, max_age_s=21600.0, now_t=None):
+def compute_book_vwm_map(books_rows, cltv_buy_keys=None, min_bid=2.0, min_qty=5, max_age_s=21600.0, now_t=None, cltv_buy_qty=None):
     """Build {item: {vwm, stations, total_qty, min_bid, max_bid, median_station_bid}} from book rows.
 
-    Excludes CLTV's own open buy orders so our own bots never poison our price discovery!
+    Excludes CLTV's own open buy orders (by net quantity when cltv_buy_qty is provided, or full station
+    exclusion for legacy set callers) so our own bots never poison price discovery while preserving
+    external mega buy-walls at shared stations.
     """
     now_t = time.time() if now_t is None else float(now_t)
-    cltv_set = set(cltv_buy_keys or ())
+    cltv_qmap = dict(cltv_buy_qty) if isinstance(cltv_buy_qty, dict) else (dict(cltv_buy_keys) if isinstance(cltv_buy_keys, dict) else None)
+    cltv_set = set(cltv_buy_keys or ()) if cltv_qmap is None else set()
     grouped = {}
     for r in books_rows or []:
         if not isinstance(r, dict):
             continue
         b_id = str(r.get("base") or "")
         iid = str(r.get("item") or "")
-        if not iid or (b_id and (b_id, iid) in cltv_set):
+        if not iid:
             continue
         t = float(r.get("t") or 0)
         if t > 0 and (now_t - t) > max_age_s:
             continue
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
+        if cltv_qmap is not None and b_id:
+            bq = max(0, bq - int(cltv_qmap.get((b_id, iid), 0)))
+        elif b_id and (b_id, iid) in cltv_set:
+            continue
         if bp < min_bid or bq < min_qty:
             continue
         grouped.setdefault(iid, []).append((b_id, bp, bq))
@@ -120,17 +197,10 @@ def compute_book_vwm_map(books_rows, cltv_buy_keys=None, min_bid=2.0, min_qty=5,
             if prev is None or bp > prev[0]:
                 by_st[b_id] = (bp, bq)
         pairs = list(by_st.values())
-        vwm = volume_weighted_median(pairs)
+        vwm = cash_weighted_median(pairs)
         prices = sorted(p for p, _ in pairs)
         st_med = prices[len(prices) // 2]
-        # Blend VWM and unweighted station median conservatively (guards against a single 1-cr giant trash-wall pulling VWM to 2 cr
-        # when 5 stations bid 50 cr, AND guards against 1 spoofed 795 cr station pulling station median up!)
-        if len(prices) >= 3:
-            # Trimmed station median / VWM: anchor to the lower of (st_med, max(vwm, prices[0])) when vwap is sane,
-            # or VWM when VWM >= 2 cr!
-            fair_vwm = vwm if vwm >= 5.0 else min(st_med, max(vwm, st_med * 0.5))
-        else:
-            fair_vwm = vwm
+        fair_vwm = vwm
         out[iid] = {
             "vwm": round(float(fair_vwm), 2),
             "raw_vwm": round(float(vwm), 2),
@@ -175,13 +245,17 @@ def update_price_oracle(data_dir, vwm_map, now_t=None, luld_pct_per_h=0.25, min_
                     if prev and float(prev.get("twap") or 0) > 0:
                         prev_p = float(prev["twap"])
                         dt_h = min(6.0, max(0.05, (now_t - float(prev.get("t") or now_t)) / 3600.0))
-                        # Require multi-station quorum OR deep liquidity (>=100 units) to move TWAP sharply upward
-                        eff_luld = luld_pct_per_h if (st_n >= 2 or tot_q >= 100) else (luld_pct_per_h * 0.4)
-                        hi = prev_p * ((1.0 + eff_luld) ** dt_h)
-                        lo = prev_p * (max(0.2, 1.0 - eff_luld) ** dt_h)
-                        clamped = max(lo, min(hi, obs_p))
-                        alpha = min(0.60, max(0.10, 0.45 * dt_h))
-                        new_twap = (1.0 - alpha) * prev_p + alpha * clamped
+                        # Escape hatch when recovering from a previously 2-cr trash-poisoned TWAP on confirmed multi-station/deep demand
+                        if (prev_p <= 4.0 and obs_p >= 12.0 and (st_n >= 2 or tot_q >= 200)) or (obs_p >= prev_p * 2.0 and st_n >= 4 and tot_q >= 500):
+                            new_twap = obs_p
+                        else:
+                            # Require multi-station quorum OR deep liquidity (>=100 units) to move TWAP sharply upward
+                            eff_luld = luld_pct_per_h if (st_n >= 2 or tot_q >= 100) else (luld_pct_per_h * 0.4)
+                            hi = prev_p * ((1.0 + eff_luld) ** dt_h)
+                            lo = prev_p * (max(0.2, 1.0 - eff_luld) ** dt_h)
+                            clamped = max(lo, min(hi, obs_p))
+                            alpha = min(0.60, max(0.10, 0.45 * dt_h))
+                            new_twap = (1.0 - alpha) * prev_p + alpha * clamped
                     else:
                         new_twap = obs_p
                     rec = {
@@ -214,7 +288,7 @@ def load_fair_price_map(data_dir, db_path=None, now_t=None):
     """Convenience loader: read fresh (<6h) external books from read.db, update LULD oracle, return {item: rec}."""
     now_t = time.time() if now_t is None else float(now_t)
     db = Path(db_path) if db_path else (Path(data_dir) / "store" / "read.db")
-    cltv_buys, _ = load_cltv_buy_orders(data_dir, now_t=now_t)
+    cltv_qty = load_cltv_buy_qty(data_dir, now_t=now_t)
     rows = []
     if db.is_file():
         con = None
@@ -239,7 +313,7 @@ def load_fair_price_map(data_dir, db_path=None, now_t=None):
         finally:
             if con is not None:
                 con.close()
-    vwm_map = compute_book_vwm_map(rows, cltv_buy_keys=cltv_buys, now_t=now_t)
+    vwm_map = compute_book_vwm_map(rows, cltv_buy_qty=cltv_qty, now_t=now_t)
     return update_price_oracle(data_dir, vwm_map, now_t=now_t)
 
 

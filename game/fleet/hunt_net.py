@@ -815,10 +815,10 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                 _bcols = {r[1] for r in _ch.execute("PRAGMA table_info(books)").fetchall()}
                 _bc = "base" if "base" in _bcols else ("station" if "station" in _bcols else "''")
                 _hcut = time.time() - 6.0 * 3600.0
-                _h_cltv, _h_fair, _mg_h = set(), {}, None
+                _h_cltv_q, _h_fair, _mg_h = {}, {}, None
                 try:
                     import market_guard as _mg_h
-                    _h_cltv, _ = _mg_h.load_cltv_buy_orders(data_dir, now_t=now_t)
+                    _h_cltv_q = _mg_h.load_cltv_buy_qty(data_dir, now_t=now_t)
                     _h_fair = _mg_h.read_price_oracle(data_dir, now_t=now_t)
                 except Exception:
                     _mg_h = None
@@ -827,9 +827,9 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
                 for _hb, _hi, _hp, _hq in _ch.execute(_q, (_hcut,)):
                     _bs, _is = str(_hb or ""), str(_hi or "")
                     _qi, _pf = int(_hq or 0), float(_hp or 0.0)
+                    if _h_cltv_q and _bs:
+                        _qi = max(0, _qi - int(_h_cltv_q.get((_bs, _is), 0)))
                     if not _is or _qi <= 0 or _pf <= 0.0:
-                        continue
-                    if _h_cltv and _bs and (_bs, _is) in _h_cltv:
                         continue
                     if _mg_h is not None and _h_fair:
                         _pf = _mg_h.guarded_bid_price(_is, _pf, _h_fair, max_mult=1.50)
@@ -1492,7 +1492,7 @@ def pick_relocation_hub(pilot_info, ship_power, world, policy, claims, cooldowns
         return None
     ranked_hubs.sort(key=lambda r: (-r["score"], r["hops"], r["system"]))
     top_sc = ranked_hubs[0]["score"]
-    spread = [r for r in ranked_hubs[:3] if r["score"] >= top_sc * 0.50]
+    spread = [r for r in ranked_hubs[:5] if r["score"] >= top_sc * 0.45]
     idx = (sum(ord(ch) for ch in p_name) % len(spread)) if (len(spread) > 1 and p_name) else 0
     return spread[idx]
 

@@ -468,5 +468,31 @@ class MarketGuardTests(unittest.TestCase):
             self.assertEqual(zp_cands[0]["desired_size"], 3)
 
 
+
+    def test_trash_scavenger_wall_cannot_poison_scarce_ore_or_hide_busy_buywall(self):
+        now_t = time.time()
+        books = [
+            # Real multi-station radium_ore bids (45 cr) vs 2-cr 50,000-unit trash wall
+            {"base": "confederacy_central_command", "item": "radium_ore", "bid": 45, "bid_qty": 932, "t": now_t},
+            {"base": "nova_terra_central", "item": "radium_ore", "bid": 45, "bid_qty": 1093, "t": now_t},
+            {"base": "deep_range_outpost", "item": "radium_ore", "bid": 2, "bid_qty": 50000, "t": now_t},
+            # Real BUSY silver_ore mega buy-wall at arneb shared with a 200-unit CLTV Bursar order
+            {"base": "arneb_base", "item": "silver_ore", "bid": 101, "bid_qty": 468753, "t": now_t},
+            {"base": "node_alpha", "item": "silver_ore", "bid": 126, "bid_qty": 87, "t": now_t},
+            {"base": "deep_range_outpost", "item": "silver_ore", "bid": 2, "bid_qty": 50000, "t": now_t},
+            # Single-station 701 cr silicon_ore pump spoof must STILL be blocked!
+            {"base": "node_alpha", "item": "silicon_ore", "bid": 701, "bid_qty": 6, "t": now_t},
+            {"base": "grand_exchange", "item": "silicon_ore", "bid": 10, "bid_qty": 8172, "t": now_t},
+        ]
+        vwm = mg.compute_book_vwm_map(
+            books,
+            cltv_buy_qty={("arneb_base", "silver_ore"): 200},
+            now_t=now_t,
+        )
+        self.assertGreaterEqual(vwm["radium_ore"]["vwm"], 45.0)
+        self.assertGreaterEqual(vwm["silver_ore"]["vwm"], 101.0)
+        self.assertLessEqual(vwm["silicon_ore"]["vwm"], 10.5)
+
+
 if __name__ == "__main__":
     unittest.main()
