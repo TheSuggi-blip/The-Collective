@@ -156,7 +156,7 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
                     {"base": "st_rc", "type": "grand_hotel_resort", "status": "active"},
                     {"base": "st_rc", "type": "refueling_dock", "status": "active"},
                 ],
-                "faction_storage": [{"base": "st_rc", "item": "steel_plate", "units": 900}, {"base": "st_rc", "item": "fuel_cell", "units": 2400}],
+                "faction_storage": [{"base": "st_rc", "item": "steel_plate", "units": 900}, {"base": "st_rc", "item": "fuel_cell", "units": 2400}, {"base": "st_rc", "item": "fuel", "units": 5000}],
                 "members": [{"username": "Hauler1", "role": "officer"}],
             }), encoding="ascii")
             job_lux_after = haul._pick_hub_upkeep(str(d), "Hauler1", lux_books, base_map, lanes, "sol", 100, 30000, policy, set(), now_t=1e12)
