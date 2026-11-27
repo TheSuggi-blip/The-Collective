@@ -2577,7 +2577,11 @@ def _build_ops():
                 # Live faction storage override for Ridgecrest station chains once founded
                 _rc_base_id = ""
                 _rc_base_name = "Collective Resort Ridgecrest"
-                for _eb in (emp_j.get("bases") or []) if isinstance(emp_j, dict) else []:
+                try:
+                    _rc_emp = read_json(FLEET.parent / "empire" / "empire.json")
+                except (OSError, ValueError):
+                    _rc_emp = {}
+                for _eb in (_rc_emp.get("bases") or []) if isinstance(_rc_emp, dict) else []:
                     if isinstance(_eb, dict) and str(_eb.get("system") or "").lower() == "ridgecrest":
                         _rc_base_id = str(_eb.get("base") or _eb.get("id") or "")
                         _rc_base_name = text(_eb.get("name"), 64) or _rc_base_name
