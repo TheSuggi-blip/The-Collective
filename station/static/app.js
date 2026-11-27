@@ -3203,6 +3203,42 @@ async function renderInventory(panel, live) {
       dcards.append(dc);
       panel.append(dcards);
     }
+    const rSup = ops && ops.resort_supply;
+    if (rSup && rSup.items && rSup.items.length) {
+      panel.append(el('h3', null, 'Station #1 Resort & Hospitality Supply Chain (Ridgecrest -- 47 Appeal Target)'));
+      const rcards = el('div', 'icards');
+      const rc = el('div', 'icard ' + (rSup.ready ? 'ownbase' : 'sitecard'));
+      const rh = el('div', 'ichead');
+      const rBadge = rSup.founded ? (rSup.ready ? 'RESORT STOCKED' : ('STOCKING ' + rSup.ok_count + '/' + rSup.total_count)) : 'FOUNDING IN FLIGHT';
+      rh.append(
+        el('b', null, rSup.name + ' (' + rSup.system + ')'),
+        el('span', 'pill ' + (rSup.ready ? 'good' : (rSup.founded ? 'info' : 'warn')), rBadge),
+      );
+      rc.append(rh);
+      for (const it of rSup.items) {
+        const ibar = el('div', 'progcell');
+        const cls = it.state === 'OK' ? 'good' : (it.state === 'LOW' ? 'warn' : 'bad');
+        ibar.append(
+          el('span', 'mono', it.item.replace(/_/g, ' ') + ': ' + fmt(it.have) + ' / ' + fmt(it.keep) + ' (' + it.pct.toFixed(0) + '%)'),
+          pbar(it.pct, 100, cls),
+        );
+        rc.append(ibar);
+      }
+      rc.append(el('div', 'rmeta-sub', '12 Phase-1 venues (47 appeal, ~29k cr/cycle upkeep) | Automated via Bursar buy-walls + 5A/5B kitchen craft_net + Logistics haul-network'));
+      rcards.append(rc);
+      panel.append(rcards);
+    }
+    if (supList.length) {
+      panel.append(el('h3', null, 'All Tracked Supply Chains (' + supOk + '/' + supList.length + ' OK)'));
+      panel.append(fitTable(table(['Chain', 'Item', 'Place', 'Have / Keep', 'Ships', 'State'],
+        supList.map((x) => {
+          const stCls = x.state === 'OK' ? 'good' : x.state === 'LOW' ? 'warn' : 'bad';
+          const cell = el('div', 'progcell');
+          cell.append(el('span', null, fmt(x.have) + ' / ' + fmt(x.keep)));
+          if (x.keep > 0) cell.append(pbar(x.have, x.keep, stCls));
+          return [x.chain, x.item, x.place, cell, fmt(x.ships || 0), el('span', 'pill ' + stCls, x.state)];
+        }), [4])));
+    }
     panel.append(el('h3', null, 'Open priority build & upgrade needs (' + needs.length + ')'));
     if (!needs.length) {
       panel.append(el('p', 'empty', 'All priority build bills of materials are complete!'));

@@ -2552,7 +2552,7 @@ def _build_ops():
             if "supply_status" in tables:
                 rows = conn.execute(
                     "SELECT chain, item, place, stock, keep, status, hours_left, ships FROM supply_status "
-                    "ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 WHEN 'low' THEN 2 WHEN 'ok' THEN 3 ELSE 4 END, chain LIMIT 25"
+                    "ORDER BY CASE status WHEN 'short' THEN 0 WHEN 'not read' THEN 1 WHEN 'low' THEN 2 WHEN 'ok' THEN 3 ELSE 4 END, chain LIMIT 80"
                 ).fetchall()
                 _sup_out = []
                 for r in rows:
@@ -2574,7 +2574,41 @@ def _build_ops():
                         "have": _have, "keep": _keep, "state": _st_s, "ships": _ships,
                         "hours": round(float(r["hours_left"]), 1) if isinstance(r["hours_left"], (int, float)) else None,
                     })
+                # Live faction storage override for Ridgecrest station chains once founded
+                _rc_base_id = ""
+                _rc_base_name = "Collective Resort Ridgecrest"
+                for _eb in (emp_j.get("bases") or []) if isinstance(emp_j, dict) else []:
+                    if isinstance(_eb, dict) and str(_eb.get("system") or "").lower() == "ridgecrest":
+                        _rc_base_id = str(_eb.get("base") or _eb.get("id") or "")
+                        _rc_base_name = text(_eb.get("name"), 64) or _rc_base_name
+                        break
+                _rc_items = []
+                for _sr in _sup_out:
+                    if str(_sr.get("chain") or "").startswith("ridgecrest-"):
+                        if _rc_base_id and _rc_base_id in _fs_by_base:
+                            _hv = int((_fs_by_base.get(_rc_base_id) or {}).get(_sr["item"]) or 0)
+                            _sr["have"] = _hv
+                            _kp = int(_sr["keep"] or 0)
+                            _sr["state"] = "OK" if (_kp <= 0 or _hv >= _kp) else ("LOW" if _hv > 0 and _hv >= int(_kp * 0.5) else "SHORT")
+                        _kp2 = int(_sr["keep"] or 0)
+                        _pct2 = round(min(100.0, 100.0 * _sr["have"] / _kp2), 1) if _kp2 > 0 else 100.0
+                        _rc_items.append({
+                            "chain": _sr["chain"], "item": _sr["item"], "have": _sr["have"],
+                            "keep": _kp2, "pct": _pct2, "state": _sr["state"], "ships": _sr["ships"],
+                        })
                 out["supply"] = _sup_out
+                out["resort_supply"] = {
+                    "name": _rc_base_name,
+                    "system": "ridgecrest",
+                    "base_id": _rc_base_id,
+                    "founded": bool(_rc_base_id),
+                    "appeal_target": 47,
+                    "venues_target": 12,
+                    "ready": bool(_rc_items) and all(x["state"] == "OK" for x in _rc_items),
+                    "ok_count": sum(1 for x in _rc_items if x["state"] == "OK"),
+                    "total_count": len(_rc_items),
+                    "items": _rc_items,
+                }
             if "need_status" in tables:
                 rows = conn.execute(
                     "SELECT id, priority, kind, ref, division, project, place, units, stands, covered, colour, short_items, fee "

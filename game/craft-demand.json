@@ -80,6 +80,66 @@
     "laser_focus_array": {
       "cap": 400,
       "division": "Trade"
+    },
+    "purified_water": {
+      "cap": 400,
+      "division": "Trade"
+    },
+    "solarian_biotic": {
+      "cap": 250,
+      "division": "Trade"
+    },
+    "crimson_bloodwine": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "station_seltzer": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "gloomshine": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "protein_rations": {
+      "cap": 200,
+      "division": "Trade"
+    },
+    "algae_wafer": {
+      "cap": 150,
+      "division": "Trade"
+    },
+    "crimson_iron_rations": {
+      "cap": 150,
+      "division": "Trade"
+    },
+    "space_pizza": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "grazer_milkshake": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "smoked_xeno_delicacy": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "glintfin_sashimi": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "nebula_stellar_vintage": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "void_espresso": {
+      "cap": 100,
+      "division": "Trade"
+    },
+    "lumen_honey_cake": {
+      "cap": 100,
+      "division": "Trade"
     }
   },
   "raw_input_caps": {

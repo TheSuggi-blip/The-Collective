@@ -26,3 +26,19 @@ depot-fuel-cell	fuel_cell	Node Beta Industrial Station	2000	0	haul-network	Logis
 depot-steel-plate	steel_plate	Node Beta Industrial Station	2000	0	haul-network	Logistics	Node Beta Central Supply Depot steel_plate reserve: auto-flushed and restocked by haul.py hub_upkeep to keep all 3 Outposts >=180 steel_plate REPAIR READY.
 depot-circuit-board	circuit_board	Node Beta Industrial Station	400	0	haul-network	Logistics	Node Beta Central Supply Depot circuit_board reserve: auto-flushed and restocked by haul.py hub_upkeep to keep all 3 Outposts >=45 circuit_board REPAIR READY.
 depot-hull-patch	hull_patch	Node Beta Industrial Station	150	0	haul-network	Logistics	Node Beta Central Supply Depot hull_patch reserve: auto-flushed and restocked by haul.py hub_upkeep to supply Outpost upkeep buffers.
+ridgecrest-fuel-cell	fuel_cell	ridgecrest	2000	0	haul-network	Logistics	Collective Resort Ridgecrest refueling dock & station operations reserve.
+ridgecrest-steel-plate	steel_plate	ridgecrest	2000	0	haul-network	Logistics	Collective Resort Ridgecrest core construction & upkeep steel plate buffer.
+ridgecrest-flex-polymer	flex_polymer	ridgecrest	1225	0	haul-network	Logistics	Collective Resort Ridgecrest Phase-1 12-venue hospitality & refuel dock build stock.
+ridgecrest-circuit-board	circuit_board	ridgecrest	600	0	haul-network	Logistics	Collective Resort Ridgecrest Phase-1 resort & transit terminal electronics buffer.
+ridgecrest-water	purified_water	ridgecrest	140	7	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 7/cycle across Dockside Diner, Rec Lounge, Orbital Spa.
+ridgecrest-biotic	solarian_biotic	ridgecrest	100	5	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 5/cycle across Orbital Spa & Grand Hotel.
+ridgecrest-bloodwine	crimson_bloodwine	ridgecrest	80	4	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 4/cycle across Zero-G Bar & Grand Hotel.
+ridgecrest-seltzer	station_seltzer	ridgecrest	60	3	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 3/cycle across Diner, Rec Lounge, Slice Deck.
+ridgecrest-gloomshine	gloomshine	ridgecrest	60	3	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 3/cycle across Frontier Cantina & Grazer Grill.
+ridgecrest-protein-rations	protein_rations	ridgecrest	60	3	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 3/cycle across Cantina & Grazer Grill.
+ridgecrest-algae-wafer	algae_wafer	ridgecrest	40	2	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 2/cycle for Dockside Diner.
+ridgecrest-iron-rations	crimson_iron_rations	ridgecrest	40	2	haul-network	Logistics	Ridgecrest 47-appeal resort staple: 2/cycle across Dockside Diner & Rec Lounge.
+ridgecrest-gourmet-rations	solarian_gourmet_rations	ridgecrest	40	2	haul-network	Trade	Ridgecrest 47-appeal resort staple: 2/cycle for Stellar Bistro.
+ridgecrest-space-pizza	space_pizza	ridgecrest	25	1	haul-network	Trade	Ridgecrest 47-appeal resort gourmet item: 1/cycle for Slice Deck.
+ridgecrest-stellar-vintage	nebula_stellar_vintage	ridgecrest	25	1	haul-network	Trade	Ridgecrest 47-appeal resort L4 luxury drink: 1/cycle for Grand Hotel & Resort.
+ridgecrest-void-espresso	void_espresso	ridgecrest	25	1	haul-network	Trade	Ridgecrest 47-appeal resort L4 luxury drink: 1/cycle for Grand Hotel & Resort.

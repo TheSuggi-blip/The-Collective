@@ -50,13 +50,37 @@
       "hull_patch": 35
     },
     "station": {
-      "fuel_cell": 1000,
-      "steel_plate": 400,
-      "circuit_board": 100,
-      "flex_polymer": 150,
+      "fuel_cell": 2000,
+      "steel_plate": 800,
+      "circuit_board": 250,
+      "flex_polymer": 300,
       "copper_wiring": 150,
       "hull_patch": 40,
-      "repair_kit": 50
+      "repair_kit": 50,
+      "purified_water": 140,
+      "solarian_biotic": 100,
+      "crimson_bloodwine": 80,
+      "station_seltzer": 60,
+      "gloomshine": 60,
+      "protein_rations": 60,
+      "algae_wafer": 40,
+      "crimson_iron_rations": 40,
+      "solarian_gourmet_rations": 40,
+      "space_pizza": 25,
+      "grazer_milkshake": 25,
+      "ranchers_breakfast": 25,
+      "nitro_cold_brew": 25,
+      "smoked_xeno_delicacy": 25,
+      "glintfin_sashimi": 25,
+      "nebula_stellar_vintage": 25,
+      "void_espresso": 25,
+      "lumen_honey_cake": 25,
+      "ion_sparkling_water": 25,
+      "biogas_fizz": 25,
+      "station_lager": 25,
+      "frontier_hash": 25,
+      "sustagel_bowl": 25,
+      "vat_protein_loaf": 25
     }
   },
   "hub_upkeep_max_unit_price": {
@@ -118,5 +142,6 @@
       "public_freight",
       "backhaul_mission"
     ]
-  }
+  },
+  "resort_station_system": "ridgecrest"
 }
