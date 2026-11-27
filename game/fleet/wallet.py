@@ -2044,6 +2044,12 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
                 fid, bname, builder, str(msg)[:160]), flush=True)
             _low = str(msg).lower()
             if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid", "not_faction_type", "must ")):
+                done_cache[ckey] = int(now)
+                try:
+                    done_cache_p.parent.mkdir(parents=True, exist_ok=True)
+                    done_cache_p.write_text(json.dumps(done_cache, indent=1, sort_keys=True) + "\n", encoding="ascii")
+                except OSError:
+                    pass
                 continue
             failed = 1
             if "rate" in str(msg).lower() or "tick" in str(msg).lower():

@@ -867,7 +867,8 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             and not is_deficit
             and _held_chk < max(1500, int(_real_mkt_q * 0.85) + min(_craft_need, 3000))
         )
-        is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft)
+        _hv_mkt_ok = bool(mkt and float(mkt[0] or 0) >= float(policy.get("high_value_market_min_bid") or 25.0) and int(mkt[1] or 0) > 0)
+        is_full = bool(skip_full and res in full_items and not is_deficit and not is_craft and not _hv_mkt_ok)
         if skip_full and market is not None and not (is_deficit or is_craft or is_full):
             # No bid at market_min_bid or more, or the fleet holds what those real bids take: skip!
             is_full = not mkt or mkt[1] <= 0
