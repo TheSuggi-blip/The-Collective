@@ -26,7 +26,7 @@ class PirateNetTests(unittest.TestCase):
         self.assertFalse(pol.get("raiding_enabled"))
         self.assertEqual(pol.get("target_fleet_size"), 107)
         self.assertEqual(pol.get("naming_default_style"), "organic_pirate")
-        self.assertEqual((pol.get("account_isolation") or {}).get("mode"), "separate_clerk_account")
+        self.assertIn((pol.get("account_isolation") or {}).get("mode"), ("separate_clerk_account", "separate_clerk_account_in_collective_runner"))
         route = json.loads((ROOT / "game" / "routes" / "pirate-network.json").read_text(encoding="utf-8"))
         self.assertEqual(route["kind"], "pirate_net")
         self.assertEqual(route.get("status"), "off")

@@ -11,7 +11,7 @@ system	poi	status	proposed_by	note
 gsc_0044	-	built	Zero, Apollo	Outpost #1 (BUILT): center-west bridge between Voidborn, Solarian, and Ridgecrest (4J); iron/copper/sol_alloy_ore
 atria	-	built	Unity	Outpost #2 (BUILT): far-west industrial anchor; 10 resources (gold, aluminum, argon, deuterium)
 felis	-	built	Suggi	Outpost #3 (BUILT): south-west anchor; 7 resources (energy_crystal, null_matter, deuterium)
-ridgecrest	-	chosen	Suggi	Station #1 [FIRST -- RESORT & TRAVEL HUB]: 1J off Solarian, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044, 6-7J clear of rival resorts
+ridgecrest	068cc1214a24e930555b87f1f117c351	built	Suggi	Station #1 BUILT (2026-11-27): Collective Resort Ridgecrest (a2cee88abdcb31db229c04315f0ef6e1, public_access=true) -- 1J off Solarian, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044
 acrux	-	chosen	Suggi	Station #2 [GRAND TRADE EXCHANGE & RECRUITMENT]: 1J off Solarian & 1J from GSC-0044, deg 5, 42 systems within 4J
 lanternwick	-	chosen	Suggi	Station #3 [HEAVY INDUSTRIAL & STATION-CORE FOUNDRY]: 1J off Solarian, 2J from GSC-0044, 9 gas/industrial resources
 yildun	-	chosen	Suggi	Station #4 [NAVAL SHIPYARD & FLEET DRYDOCK]: deep-west choke sanctuary between Atria and Outer Rim (zero rival clutter)

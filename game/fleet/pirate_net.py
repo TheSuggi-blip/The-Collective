@@ -220,7 +220,7 @@ def generate_organic_name(rng, idx):
 
 
 def generate_corsair_roster(count=107, style="organic_pirate", seed=2026, barcode_length=20, existing_names=None):
-    """Generate a complete 107-ship Corsair manifest with staggered 60-day birth offsets (3-4 ships every 2-3 days)."""
+    """Generate a complete 107-ship Corsair manifest across 7 irregular waves (11,14,17,16,18,15,16 over 17 days)."""
     rng = random.Random(int(seed))
     used = set(existing_names or ())
     style = str(style or "organic_pirate").strip().lower()
@@ -245,7 +245,14 @@ def generate_corsair_roster(count=107, style="organic_pirate", seed=2026, barcod
             if nm not in used and not nm.startswith(("GSV ", "ROU ", "EUV ", "MCV ", "IFV ", "LSV ", "VSV ")):
                 used.add(nm)
                 break
-        birth_day = int((i // 4) * 2 + (1 if (i // 4) % 3 == 2 else 0))
+        _w_days = (0, 3, 5, 8, 11, 14, 17)
+        _w_sizes = (11, 14, 17, 16, 18, 15, 16)
+        _acc, birth_day = 0, 17
+        for _wd, _ws in zip(_w_days, _w_sizes):
+            if i < _acc + _ws:
+                birth_day = _wd
+                break
+            _acc += _ws
         roster.append({
             "pilot": nm,
             "wing": wing,

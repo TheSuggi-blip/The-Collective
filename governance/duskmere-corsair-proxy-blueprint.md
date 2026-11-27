@@ -52,3 +52,17 @@ Non-round prime target (`107` ships) avoids synthetic bot-farm fingerprints (`10
 
 - **Galaxy Map (`Pirate ops` layer, `#ef4444`):** Renders TOI-700 fortress space (double crimson border), Citadel/Fortress/Choke markers, built Pirate stations/outposts, and live Pirate ship tokens in crimson red -- mirroring CLTV's green (`#86d65b`).
 - **Left Fleet Outliner (`Pirates` tab below `Intel`):** Collapsible division with all 5 sub-groups showing live/planned counts (`0/107` -> `107/107`) without ever inflating CLTV's 500-ship roster or financial metrics.
+
+
+## 9. Collective Runner Deployment & Accelerated 7-Wave Birthplan (2026-11-27)
+
+- **Runtime Location:** Runs strictly inside The Collective's sealed gVisor runner container (`the-collective-runner-1`) under `/srv/collective/pirates/` (supervised by `/srv/collective/services/pirate-runner/run`) using SpaceMolt Account #2 credentials (`PIRATE_SPACEMOLT_CLERK_API_KEY` + `PIRATE_SPACEMOLT_REGISTRATION_CODE`, separate SpaceMolt account from `[CLTV]`).
+- **Direct Shared Intel Tap:** Reads `/srv/collective/data/store/read.db` strictly read-only (`?mode=ro` via `intel_tap.py`) to route Phase-1 leveling ships to undepleted empire ore belts and Phase-3+ raids to verified lawless rival targets while strictly excluding `[CLTV]` systems and tags.
+- **Accelerated 7-Wave Birthplan (107 ships in 17 days, irregular non-round wave sizes):**
+  - Wave 1 (Day 0): `11` ships (1 Outer Rim command Founder, 4 Crimson gunships, 1 Crimson heavy_brawler, 2 Voidborn carriers, 2 Solarian interdictors, 1 Voidborn medic)
+  - Wave 2 (Day 3): `14` ships (cumulative `25`)
+  - Wave 3 (Day 5): `17` ships (cumulative `42`)
+  - Wave 4 (Day 8): `16` ships (cumulative `58`)
+  - Wave 5 (Day 11): `18` ships (cumulative `76`)
+  - Wave 6 (Day 14): `15` ships (cumulative `91`)
+  - Wave 7 (Day 17): `16` ships (cumulative `107`)

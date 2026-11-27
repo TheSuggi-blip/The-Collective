@@ -132,10 +132,13 @@
   },
   "target_fleet_size": 107,
   "account_isolation": {
-    "mode": "separate_clerk_account",
+    "mode": "separate_clerk_account_in_collective_runner",
     "separate_engine_required": true,
     "never_join_cltv_engine": true,
-    "data_dir": "/srv/collective/data/pirates"
+    "runner_dir": "/srv/collective/pirates",
+    "service_dir": "/srv/collective/services/pirate-runner",
+    "data_dir": "/srv/collective/data/pirates",
+    "shared_read_db": "/srv/collective/data/store/read.db"
   },
   "empire_composition": {
     "crimson": 43,
@@ -147,13 +150,35 @@
     "founder_tax_rate_pct": 1.5
   },
   "growth_cadence": {
-    "ships_per_wave": 4,
+    "total_waves": 7,
+    "wave_sizes": [
+      11,
+      14,
+      17,
+      16,
+      18,
+      15,
+      16
+    ],
+    "wave_day_offsets": [
+      0,
+      3,
+      5,
+      8,
+      11,
+      14,
+      17
+    ],
     "wave_interval_days": "2-3",
+    "auto_birth_enabled": true,
+    "wave_1_count": 11,
     "wave_1_roles": [
-      "command (outerrim founder)",
-      "gunship (crimson)",
-      "interdictor (solarian)",
-      "carrier (voidborn)"
+      "1 command (outerrim founder)",
+      "4 gunships (crimson)",
+      "1 heavy_brawler (crimson)",
+      "2 carriers (voidborn)",
+      "2 interdictors (solarian)",
+      "1 medic (voidborn)"
     ]
   }
 }
