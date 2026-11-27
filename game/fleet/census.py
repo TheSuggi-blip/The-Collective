@@ -490,8 +490,12 @@ def fuel_stations_fast(data):
                 s_l = str(svcs or '').lower()
                 if ('refuel' in s_l) or ('_' in str(base)):
                     out.setdefault(str(sid), (str(poi), str(base)))
-            for _osid, _opair in _fp.owned_fuel_depots(data).items():
-                out[_osid] = _opair
+            try:
+                import fuelplan as _fp_dep
+                for _osid, _opair in _fp_dep.owned_fuel_depots(data).items():
+                    out[_osid] = _opair
+            except Exception:
+                pass
             if out:
                 return out
         except Exception:
@@ -721,7 +725,11 @@ leg_started, leg_before = STARTED, WALLET_BEFORE
 LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
 FARS = strongholds()
 STATIONS = {s: v for s, v in fuel_stations_fast(DATA).items() if s not in FARS}
-OWNED_FUEL_BASES = {b for _p, b in _fp.owned_fuel_depots(DATA).values()}
+try:
+    import fuelplan as _fp_owned
+    OWNED_FUEL_BASES = {b for _p, b in _fp_owned.owned_fuel_depots(DATA).values()}
+except Exception:
+    OWNED_FUEL_BASES = set()
 import fuelplan as _fp
 SHIP_DOC = None
 try:                                                           # home: the pilot's own capital, not ours for all
