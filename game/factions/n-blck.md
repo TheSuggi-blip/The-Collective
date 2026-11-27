@@ -15,7 +15,7 @@ updated: 2026-11-27
 # The Black Flag [BLCK]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 7.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 12.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 14 | Public event stream |
+| Pilots carrying the tag on the public event stream | 8 | Public event stream |
 
 ## Bases
 
@@ -38,17 +38,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Dakkamek Wazgrub | Synchrony (`synchrony`) | 0 | theoria |
-| Gargrim Slagheap | Synchrony (`synchrony`) | 0 | prospect |
-| Gorbash Gritfang | Synchrony (`synchrony`) | 0 | theoria |
 | Grimzag Bludnob | Node Alpha (`node_alpha`) | 0 | shard |
 | Mogrot Ironguts | Synchrony (`synchrony`) | 0 | cobble |
 | Nazdrek Skullgnaw | Synchrony (`synchrony`) | 0 | prospect |
 | Rustjaw Mekkrak | Synchrony (`synchrony`) | 0 | cobble |
-| Skarfang Gutrippa | Synchrony (`synchrony`) | 0 | shard |
 | Stompgit Blitzgob | Synchrony (`synchrony`) | 0 | prospect |
 | Wartok Scrapjaw | Node Alpha (`node_alpha`) | 0 | threshold |
-| Zagstruk Rotfist | Synchrony (`synchrony`) | 0 | theoria |
 | Zogwort Snagrot | Synchrony (`synchrony`) | 0 | cobble |
 
 ## Standing History
