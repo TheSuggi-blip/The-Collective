@@ -1425,7 +1425,7 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
     if pilot not in ships(data):
         print("REFUSED: %s holds no wallet reading in the fleet file" % pilot)
         return 1
-    admiral = bool(who and who != "Unity" and who in division.MEMBERS)
+    admiral = bool(who and not division.is_commander(who) and who in division.MEMBERS)
     if admiral:
         owner = division.owner(pilot, data)
         if owner != who:
@@ -1545,7 +1545,7 @@ def validate_errand(action, params):
 def add_errand(data, action, params, why, station="", now=None, who="Unity"):
     """Queue a docked leader-only faction errand (Unity-only, rule F11). Returns 0 on success, 1 on refusal."""
     now = time.time() if now is None else now
-    if who != "Unity":
+    if not division.is_commander(who):
         print("REFUSED: leader faction errands are the Fleet Admiral's (rule F11; caller=%s)" % who)
         return 1
     why_s = str(why or "").strip()
@@ -1579,7 +1579,7 @@ def add_errand(data, action, params, why, station="", now=None, who="Unity"):
 def cancel_errand(data, eid, now=None, who="Unity"):
     """Cancel an open leader errand by id (Unity-only). Returns 0 if cancelled, 1 otherwise."""
     now = time.time() if now is None else now
-    if who != "Unity":
+    if not division.is_commander(who):
         print("REFUSED: cancelling leader errands is the Fleet Admiral's (rule F11)")
         return 1
     rows = errands(data)
@@ -2431,7 +2431,7 @@ def main(argv=None):
                 print("  %s | %s%s" % (r.get("pilot"), r.get("state"), (" | " + str(r["note"])) if r.get("note") else ""))
             return 0
         kind, who = division.member()
-        if "--dry-run" not in args and who != "Unity":
+        if "--dry-run" not in args and not division.is_commander(who):
             sys.exit("REFUSED: seating ships in the faction is the Fleet Admiral's (rule F11)")
         rest = [a for a in args if a != "seat"]
         if "--pick" in rest:
@@ -2502,7 +2502,7 @@ def main(argv=None):
         daemon = "--daemon" in args
         every = int(args[args.index("--every") + 1]) if "--every" in args and args.index("--every") + 1 < len(args) else 60
         kind, who = division.member()
-        if not dry and not (who == "Unity" or kind == "service"):
+        if not dry and not (division.is_commander(who) or kind == "service"):
             sys.exit("REFUSED: a real serve pass is the Fleet Admiral's or the five-minute job's; use --dry-run")
         if daemon:
             return serve_daemon(data, every=every, dry=dry)
@@ -2514,7 +2514,7 @@ def main(argv=None):
             sys.exit("REFUSED: the sweep is off (wallet.py SWEEP_ENABLED = False) until the Fleet Admiral has read its dry run and "
                      "switched it on; `wallet.py sweep --dry-run` says what it would do")
         kind, who = division.member()
-        if not dry and not (who == "Unity" or kind == "service"):
+        if not dry and not (division.is_commander(who) or kind == "service"):
             sys.exit("REFUSED: a real sweep is the Fleet Admiral's or the five-minute job's; use --dry-run")
         return sweep(data, now, dry, cash_only=cash_only)
     rows = wallets(data)
@@ -2531,7 +2531,7 @@ def main(argv=None):
             print("HALT: %s holds %s cr, under the floor of %s (division of %s): `wallet.py topup` gives it credits" % (name, format(credits, ","), format(FLOOR, ","), owner))
         return 1 if bad else 0
     kind, who = division.member()
-    if "--dry-run" not in args and not (who == "Unity" or kind == "service"):
+    if "--dry-run" not in args and not (division.is_commander(who) or kind == "service"):
         sys.exit("REFUSED: a real top-up is the Fleet Admiral's or the five-minute job's; use --dry-run")
     flying, unsettled = settle_gifts(data, "topup", now, "--dry-run" in args)    # Q75: a top-up a cut pass left `sent`, settled first
     given = dict(recent(data, now), **{name: at for name, at in flying.items() if name})

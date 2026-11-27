@@ -115,6 +115,8 @@ def fleet_plan(a):
         return [("game/fleet/hive.py", ["forecast"] + ([a["member"]] if a.get("member") else []) + flag(a, "hours"))]
     if view == "watchdog":
         return [("game/fleet/watchdog.py", ["show"] + flag(a, "hours"))]
+    if view == "wings":
+        return [("game/fleet/kpi_engine.py", ["--summary"] + flag(a, "hours"))]
     if view in STATS_VIEWS:                         # the fleet's statistics, computed by the store (stats.py)
         return [("game/fleet/hive.py", ["stats", view] + flag(a, "member") + flag(a, "hours"))]
     raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, watchdog, " + ", ".join(STATS_VIEWS))
@@ -175,6 +177,8 @@ def catalog_plan(a):
         return [("game/fleet/craftbook.py", ["recipes"] + flag(a, "category") + flag(a, "makes") + flag(a, "uses") + (["--hand"] if a.get("by_hand") else []))]
     if ask == "releases":
         return [("game/fleet/craftbook.py", ["releases"] + flag(a, "top"))]
+    if ask == "profit":
+        return [("game/fleet/craft_net.py", ["--scan"] + flag(a, "top"))]
     raise ValueError("ask is one of: item, needs, build, can, recipes, releases")
 
 
@@ -312,7 +316,7 @@ TOOLS = {
                 "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets. view=contracts: bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. view=progression: live 3-horizon strategic progression rungs, milestones & ledgers. view=scorecard: MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. view=rivals: rival faction sedcards & live Outsupply/Outsource/Undercut board. view=shipping: live spacemolt_shipping freight contracts. view=upgrade_plan: empire-specialized T1/T2 parallel batch upgrade sheet.",
         "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, kpi, contribution, "
                                 "classes, time, supply, xp, upgrades or alerts",
-                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "rivals", "contracts", "progression", "scorecard", "shipping", "upgrade_plan", "forecast") + STATS_VIEWS),
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "rivals", "contracts", "progression", "scorecard", "shipping", "upgrade_plan", "forecast", "wings") + STATS_VIEWS),
                  "member": arg(S, "for levels, board, standing, forecast, contribution, classes, time, xp and upgrades: a member's name, or all", MEMBERS),
                  "hours": arg(I, "for history, board, standing, tasks and forecast: the window in hours")},
         "plan": fleet_plan},
@@ -428,7 +432,7 @@ TOOLS = {
                 "everything a number of units takes down to what is mined or bought, beside what we store. ask=build: what a facility or a hull costs and takes. "
                 "ask=can: what a member's stored goods can be made into by hand today and what that sells for. ask=recipes: the recipes of a category, or that make or "
                 "use an item. ask=releases: newest SpaceMolt patch notes and active catalog version. The same tables as files: game/catalog/master-index.md.",
-        "args": {"ask": arg(S, "item (default), needs, build, can, recipes or releases", ("item", "needs", "build", "can", "recipes", "releases")),
+        "args": {"ask": arg(S, "item (default), needs, build, can, recipes or releases", ("item", "needs", "build", "can", "recipes", "releases", "profit")),
                  "name": arg(S, "for item: text or an item id; for needs: an item id; for build: a facility id or a hull id"), "quantity": arg(I, "for needs: units, default 1"),
                  "member": arg(S, "for can: a member's name or all", MEMBERS), "top": arg(I, "for can: how many rows"), "category": arg(S, "for recipes: a category name as the catalog writes it (renamed in the game's 0.729.0: Smelting, Machining ...; ask=recipes alone lists them)"),
                  "makes": arg(S, "for recipes: an item id it makes"), "uses": arg(S, "for recipes: an item id it uses"), "by_hand": arg(B, "for recipes: only those crafted by hand")},

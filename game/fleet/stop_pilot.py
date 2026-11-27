@@ -118,7 +118,7 @@ def allowed(pilot, data, kind, who):
     """(True, '') when caller may stop `pilot`, else (False, reason)."""
     if not valid_pilot(pilot):
         return False, "invalid pilot name %r" % (pilot,)
-    if kind == "member" and who != "Unity":
+    if kind == "member" and not division.is_commander(who):
         owner = division.owner(pilot, data)
         if owner != who:
             return False, "%s belongs to %s, not %s (orders F1)" % (pilot, owner, who)
@@ -181,7 +181,7 @@ def main(argv=None):
 
     if show_list:
         mine = [(p, info) for p, info in sorted(runs.items()) if allowed(p, data, kind, who)[0]]
-        scope = who if (kind == "member" and who != "Unity") else "all divisions"
+        scope = who if (kind == "member" and not division.is_commander(who)) else "all divisions"
         print("ACTIVE RUNS (%s): %d running" % (scope, len(mine)))
         for p, info in mine:
             print("  %-18s | %-10s | %s" % (p, info["mode"], info["what"] or info["script"] or "?"))
@@ -190,7 +190,7 @@ def main(argv=None):
     if route_id:
         targets = [p for p, info in sorted(runs.items()) if matches_route(info["what"], route_id) and allowed(p, data, kind, who)[0]]
         if not targets:
-            scope = who if (kind == "member" and who != "Unity") else "the fleet"
+            scope = who if (kind == "member" and not division.is_commander(who)) else "the fleet"
             print("NONE: no active runs in %s on route %s" % (scope, route_id))
             return 0
         count = 0

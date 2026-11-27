@@ -532,7 +532,7 @@ def write(root, data, plan_steps, record, who, now):
     for key in plan_steps["renew"]:
         record[key]["until"] = stamp(now + DUTY_HOURS * 3600)
     for name, step in sorted(plan_steps["divisions"].items()):
-        if who != "Unity" and planfile.DIVISIONS.get(name) != who:
+        if not division.is_commander(who) and planfile.DIVISIONS.get(name) != who:
             lines.append("REFUSED %s: the %s plan is kept by %s (orders F1); nothing changed there" % (name, name, planfile.DIVISIONS.get(name)))
             good = False
             continue
@@ -592,7 +592,7 @@ def duty(res, root, data, writing, now=None):
     if kind != "member":
         print("REFUSED: this shell is no member of The Collective: it changes no plan")
         return 1
-    if who == "Unity":
+    if division.is_commander(who):
         try:
             import needs as needbook
             _rc, nlines = needbook.reconcile(Path(root).resolve().parent, data, who, False, now=now)
@@ -600,7 +600,7 @@ def duty(res, root, data, writing, now=None):
                 print("  NEEDS auto-closed: " + nl)
         except Exception:
             pass
-    if who == "Unity":
+    if division.is_commander(who):
         try:
             import routes_hygiene
             routes_hygiene.run_hygiene(root, write=True, commit=True, now=now)

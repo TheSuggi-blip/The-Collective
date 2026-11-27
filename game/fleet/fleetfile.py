@@ -240,7 +240,7 @@ def main(argv=None):
         if kind != "member":
             print("REFUSED: this shell is no member of The Collective: it writes no FLEET.md (printing with --print is free)")
             return 2
-        if me != "Unity" and targets != [me]:
+        if not division.is_commander(me) and targets != [me]:
             print("REFUSED: %s writes its own FLEET.md only; the Fleet Admiral may write any (asked: %s)" % (me, words[0]))
             return 2
     lock = None

@@ -927,7 +927,7 @@ COMMIT_TRIES, COMMIT_WAIT = 4, 4.0                 # a route file another member
 
 
 def may_change(who, role):
-    return who == "Unity" or division.ROLES.get(role) == who
+    return division.is_commander(who) or division.ROLES.get(role) == who
 
 
 def why_lines(seen, name):
@@ -1118,7 +1118,7 @@ def main():
         rid, ships = rest[0], int(rest[1])
         if rid not in seen["routes"]:
             sys.exit("no route file game/routes/%s.json" % rid)
-        if who != "Unity" and not any(rid in ids and division.ROLES.get(role) == who for role, ids in seen["roles"].items()):
+        if not division.is_commander(who) and not any(rid in ids and division.ROLES.get(role) == who for role, ids in seen["roles"].items()):
             sys.exit("REFUSED: %s stands in no plan of yours: put it into your plan first (`fill.py add %s`)" % (rid, rid))
         deep = carries(seen, seen["routes"][rid])
         most = max(1, (deep["ships"] or 0) + deep["extra"]) if deep else None

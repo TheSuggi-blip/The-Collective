@@ -1190,3 +1190,56 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
         publish_kpi_signals(data_p, out, now=now_t)
     return out
 
+
+def print_summary(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, win="6h"):
+    fk = compute_fleet_kpis(Path(repo_root), Path(data_dir), write_signals=False)
+    win = win if win in ("1h", "6h", "24h") else "6h"
+    w = (fk.get("windows") or {}).get(win) or {}
+    fl = w.get("fleet") or {}
+    upg = fk.get("upgrades") or {}
+    hulls = upg.get("hulls") or {}
+    mods = upg.get("modules") or {}
+    fr = fk.get("freshness") or {}
+    inf = fk.get("infra") or {}
+    print("FLEET KPI SUMMARY (%s) | ships=%s active=%s upg=%s idle=%s (%.1f%%) park=%s threads=%s" % (
+        win, fl.get("total_ships"), fl.get("working_ships"), fl.get("upgrading_ships"),
+        fl.get("idle_ships"), float(fl.get("idle_pct") or 0.0), fl.get("park_ships"), fl.get("host_threads")))
+    print("  FINANCE (%s): Realized Rev=%s cr/h | Paid Fuel=%s cr/h | ROF=%sx | Core EBIT=%s cr/h" % (
+        win, format(int(round(fl.get("realized_rev_h") or 0)), ","),
+        format(int(round(fl.get("paid_fuel_h") or 0)), ","),
+        fl.get("rev_per_fuel"), format(int(round(fl.get("core_ebit_h") or 0)), ",")))
+    print("  READINESS: Hulls %s/%s (%.1f%%, missing %s) | Mod Slots %s/%s (%.1f%%, tier %.1f%%)" % (
+        hulls.get("filled_steps"), hulls.get("possible_steps"), float(hulls.get("pct_done") or 0.0), hulls.get("missing_steps"),
+        mods.get("filled_slots"), mods.get("possible_slots"), float(mods.get("slot_pct_done") or 0.0), float(mods.get("tier_pct_done") or 0.0)))
+    print("  INTEL & INFRA: Galaxy %s/%s (<60m %.1f%%, med %.1fm, rival med %.1fm) | Bunkers %.1f%% | Supply SLA %.1f%% | Bursars %s/%s" % (
+        fr.get("systems_scanned"), fr.get("systems_total"), float(fr.get("fresh_60m_pct") or 0.0),
+        float(fr.get("median_min") or 0.0), float(fr.get("rival_frontier_median_min") or 0.0),
+        float(inf.get("bunker_avg_pct") or 0.0), float(inf.get("supply_sla_pct") or 0.0),
+        fl.get("bursar_stations_occupied"), fl.get("bursar_stations_target")))
+    print("  WINGS (%s):" % win)
+    for wg in (w.get("wings") or []):
+        ms = ", ".join("%s=%s" % (m.get("label"), m.get("display")) for m in (wg.get("metrics") or [])[:4])
+        print("    %-28s n=%2s work=%2s upg=%2s idle=%2s [%6s] | %s" % (
+            str(wg.get("wing") or wg.get("id"))[:28], wg.get("ships"), wg.get("working"),
+            wg.get("upgrading_ships"), wg.get("true_idle"), wg.get("status"), ms))
+
+
+if __name__ == "__main__":
+    import sys as _sys
+    _here = str(Path(__file__).resolve().parent)
+    if _here not in _sys.path:
+        _sys.path.insert(0, _here)
+    _args = _sys.argv[1:]
+    _win = "6h"
+    if "--window" in _args and _args.index("--window") + 1 < len(_args):
+        _win = _args[_args.index("--window") + 1]
+    elif "--hours" in _args and _args.index("--hours") + 1 < len(_args):
+        _h = str(_args[_args.index("--hours") + 1])
+        _win = _h + "h" if not _h.endswith("h") else _h
+    _data = DATA_DEFAULT
+    if "--data" in _args and _args.index("--data") + 1 < len(_args):
+        _data = Path(_args[_args.index("--data") + 1])
+    _root = REPO_DEFAULT
+    if "--root" in _args and _args.index("--root") + 1 < len(_args):
+        _root = Path(_args[_args.index("--root") + 1])
+    print_summary(_root, _data, win=_win)

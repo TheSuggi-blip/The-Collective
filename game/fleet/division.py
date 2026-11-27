@@ -70,18 +70,23 @@ def pilots_named(text):
     return list(dict.fromkeys(PILOT.findall(str(text))))
 
 
+def is_commander(name):
+    """True for sole operator / Fleet Admiral identities ('Trinity', 'Unity')."""
+    return str(name or "").strip().capitalize() in SOLE_OPERATORS
+
+
 def member(env=None):
     """('member', Name), ('service', name) or (None, '') for the shell this script runs in."""
     env = os.environ if env is None else env
     named = str(env.get("HERMES_SESSION_PROFILE") or "").strip().capitalize()
-    if named in MEMBERS:
+    if named in MEMBERS or named in SOLE_OPERATORS:
         return "member", named
     for key in ("HERMES_HOME", "HERMES_SCRATCH_DIR", "TMPDIR"):
         found = PROFILE.search(str(env.get(key) or ""))
-        if found and found.group(1).capitalize() in MEMBERS:
+        if found and (found.group(1).capitalize() in MEMBERS or found.group(1).capitalize() in SOLE_OPERATORS):
             return "member", found.group(1).capitalize()
     name = str(env.get("FLEET_MEMBER") or "").strip()
-    if name and name.capitalize() not in MEMBERS:
+    if name and name.capitalize() not in MEMBERS and name.capitalize() not in SOLE_OPERATORS:
         return "service", name
     return None, ""
 

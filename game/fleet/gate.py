@@ -88,7 +88,7 @@ def forbidden(group, action):
     kind, name = division.member()
     if action in RESERVED_DIPLO and kind != 'service' and os.environ.get('SUGGI_DIPLO_UNLOCK') != '1':
         return 'formal alliances and war declarations are closed under standing Neutrality-max doctrine (orders F4, O10): Suggi\'s explicit unlock is required'
-    if kind == 'service' or name == 'Unity':
+    if kind == 'service' or division.is_commander(name):
         return ''
     if group == 'spacemolt_auth':
         return 'the auth tools are the Fleet Admiral\'s: a new pilot is Suggi\'s word (orders F5)'
@@ -123,7 +123,7 @@ def want(pilot, why=''):
     kind, name = division.member()
     if kind != 'member':
         sys.exit('REFUSED: a want file is a member\'s, for a pilot it commands')
-    if name != 'Unity' and division.owner(pilot) != name:
+    if not division.is_commander(name) and division.owner(pilot) != name:
         sys.exit('REFUSED: %s is commanded by %s, not by %s (orders F1)' % (pilot, division.owner(pilot), name))
     path = division.want_path(pilot)
     if why == '--cancel':
@@ -142,7 +142,7 @@ def want(pilot, why=''):
 def release(pilot):
     kind, name = division.member()
     what = division.order_of(pilot, division.DATA)
-    if what.startswith('hand ') and (what == division.hand_mark() or name == 'Unity'):
+    if what.startswith('hand ') and (what == division.hand_mark() or division.is_commander(name)):
         os.remove(hold_file(pilot))
         # Clear any leftover want token owned by this member so dispatch.py never re-holds the pilot (ENT-192);
         # division.want_path, read from division.DATA as hold_file is (requests ENT-526, ENT-527)
@@ -150,7 +150,7 @@ def release(pilot):
         try:
             if os.path.isfile(wf):
                 wd = json.loads(open(wf, encoding='utf-8').read())
-                if not isinstance(wd, dict) or wd.get('by') == name or name == 'Unity':
+                if not isinstance(wd, dict) or wd.get('by') == name or division.is_commander(name):
                     os.remove(wf)
         except (OSError, ValueError):
             pass
@@ -239,7 +239,7 @@ def book_by_hand(pilot, title, credits):
     kind, name = division.member()
     if kind is None:
         sys.exit('REFUSED: this shell is no member of The Collective: it books nothing')
-    if kind != 'service' and name != 'Unity' and division.owner(pilot, division.DATA) != name:
+    if kind != 'service' and not division.is_commander(name) and division.owner(pilot, division.DATA) != name:
         sys.exit('REFUSED: %s is commanded by %s, not by %s: its money is booked by its own division (orders F1)' % (pilot, division.owner(pilot, division.DATA), name))
     title = ' '.join(str(title).split())
     if not title or len(title) > 120 or not title.isascii() or title.startswith(WALLETS):
@@ -266,7 +266,7 @@ def book_by_hand(pilot, title, credits):
 
 def engine_only():
     kind, name = division.member()
-    if not (kind == 'service' or name == 'Unity'):
+    if not (kind == 'service' or division.is_commander(name)):
         sys.exit('REFUSED: a call that names no pilot (a new pilot, the engine itself) is the Fleet Admiral\'s (orders F5)')
 
 

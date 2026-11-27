@@ -587,7 +587,42 @@ def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=No
     return True
 
 
+
+
+def scan_craft_opportunities(data_dir=DATA, repo_root=REPO, top=20, budget=60000):
+    """Read-only deterministic scanner of live craftable industrial & commercial jobs across all active lockboxes."""
+    pol = read_json(Path(repo_root) / "game" / "craft-policy.json", {})
+    world = load_craft_world(Path(data_dir), Path(repo_root), pol)
+    lbs = sorted(_active_lockboxes(Path(data_dir)))
+    stor_all = read_json(Path(data_dir) / "stock" / "storage.json", {})
+    print("LIVE CRAFT SCAN | lockboxes=%d | budget=%s cr | anti-spoofed market_guard=ON" % (len(lbs), format(int(budget), ",")))
+    rows = []
+    for lb in lbs:
+        fstock = _faction_items_at_base(stor_all, lb)
+        j_ind = pick_craft_job("Logistics", lb, fstock, budget, world, pol, wing="")
+        j_trd = pick_craft_job("Trade", lb, fstock, budget, world, pol, wing="")
+        if j_ind:
+            rows.append(("SUPPLY", lb, j_ind))
+        if j_trd:
+            rows.append(("PROFIT", lb, j_trd))
+    rows.sort(key=lambda x: (0 if x[0] == "SUPPLY" else 1, -float(x[2].get("score") or 0.0)))
+    for kind, lb, j in rows[:max(1, int(top))]:
+        qty = int(j.get("runs") or 1) * max(1, int(j.get("per_run") or 1))
+        print("  [%-6s] %-32s %-28s -> %4dx %-24s est_profit=%7.0f cr margin=%4.0f%% buys=%d" % (
+            kind, lb[:32], str(j.get("recipe"))[:28], qty, str(j.get("makes"))[:24],
+            float(j.get("est_profit") or 0.0), 100.0 * float(j.get("margin_pct") or 0.0), len(j.get("buys") or ())))
+    if not rows:
+        print("  (no executable zero-cooldown craft jobs right now)")
+    return 0
+
+
 def main(argv=None):
+    _cli_args = list(sys.argv[1:])
+    if "--scan" in _cli_args:
+        _top = int(_cli_args[_cli_args.index("--top") + 1]) if "--top" in _cli_args and _cli_args.index("--top") + 1 < len(_cli_args) else 20
+        _dd = Path(_cli_args[_cli_args.index("--data") + 1]) if "--data" in _cli_args and _cli_args.index("--data") + 1 < len(_cli_args) else DATA
+        _rr = Path(_cli_args[_cli_args.index("--root") + 1]) if "--root" in _cli_args and _cli_args.index("--root") + 1 < len(_cli_args) else REPO
+        return scan_craft_opportunities(data_dir=_dd, repo_root=_rr, top=_top)
     args = sys.argv[1:] if argv is None else list(argv)
     if not args or args[0].startswith("--"):
         sys.exit("usage: craft_net.py <pilot> [--policy game/craft-policy.json] [--route craft-network]")

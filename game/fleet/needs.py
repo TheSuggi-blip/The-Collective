@@ -823,7 +823,7 @@ def own_of(who):
 
 
 def may(who, name):
-    return who == "Unity" or own_of(who) == name
+    return division.is_commander(who) or own_of(who) == name
 
 
 def new_id(rows, ref):
@@ -869,7 +869,7 @@ def changer(who, rid, opts, status_to=None):
             name = division_word(opts["division"])
             if name in (None, "all"):
                 raise Refused("`%s` is no division: %s" % (opts["division"], ", ".join(ORDER)))
-            if name != row["division"] and who != "Unity":
+            if name != row["division"] and not division.is_commander(who):
                 raise Refused("only the Fleet Admiral moves a need to another division")
             if name != row["division"] and row["status"] == "open" and sum(1 for r in rows if r["division"] == name and r["status"] == "open") >= MAX_OPEN:
                 raise Refused("%s holds %d open needs already (MAX_OPEN)" % (name, MAX_OPEN))
