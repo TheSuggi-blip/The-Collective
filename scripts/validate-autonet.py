@@ -137,6 +137,13 @@ def check_repo(repo_root=None):
         except Exception as e:
             errors.append(f"INVALID /srv/collective/data/fleet/hosting.json: {e}")
 
+    # Rule R6: hosted runner scripts MUST pass sys.argv[1:] to argparse (never bare .parse_args() which reads host argv)
+    for _rname in ("route_run.py", "hunt.py", "census.py", "mine.py", "guard.py", "bursar.py", "haul.py",
+                   "mine_net.py", "hunt_net.py", "fit_net.py", "craft_net.py", "salvage_net.py", "pirate_net.py", "census_net.py"):
+        _rp = root / "game" / "fleet" / _rname
+        if _rp.is_file() and ".parse_args()" in _rp.read_text(encoding="utf-8"):
+            errors.append(f"game/fleet/{_rname}: bare .parse_args() reads runhost process argv instead of thread Facade sys.argv[1:]")
+
     return errors
 
 

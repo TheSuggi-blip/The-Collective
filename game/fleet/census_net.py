@@ -767,7 +767,7 @@ def main():
     ap.add_argument("--route", default="census-network")
     ap.add_argument("--data", default=str(DATA_DEFAULT))
     ap.add_argument("--dry-run", action="store_true")
-    a = ap.parse_args()
+    a = ap.parse_args(sys.argv[1:])
     return run_pilot(a.pilot, minutes=a.minutes, policy_path=a.policy, route_id=a.route, data_dir=a.data, dry_run=a.dry_run)
 
 
