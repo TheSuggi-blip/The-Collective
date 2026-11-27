@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 128.
+Routes: 129.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -52,6 +52,7 @@ Routes: 128.
 | [sell-liquid-hydrogen-central](sell-liquid-hydrogen-central.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Central Nexus, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at central_nexus, while central_nexus bids 100 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-liquid-hydrogen-node-beta](sell-liquid-hydrogen-node-beta.json) | circuit | home space | Stored liquid hydrogen sold where it lies, at Node Beta, into the station's bid | up to 1 ships, with 5 liquid_hydrogen stored at node_beta_industrial_station, while node_beta_industrial_station bids 95 cr for liquid_hydrogen | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-experiment](sell-loot-at-experiment.json) | circuit | home space | Hunt loot stored by Trade's receiver at The Experiment sold where it lies | up to 1 ships, with 5 crystal_melt stored at the_experiment_research_station, while the_experiment_research_station bids 1000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
+| [sell-loot-at-nexus](sell-loot-at-nexus.json) | circuit | home space | Hunt loot stored by Trade's receivers at Central Nexus sold where it lies | up to 1 ships, with 2 crystal_melt stored at central_nexus, while central_nexus bids 2000 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-node-beta](sell-loot-at-node-beta.json) | circuit | home space | Hunt loot stored by Trade's receiver at Node Beta sold where it lies | up to 1 ships, with 5 noble_condensate stored at node_beta_industrial_station, while node_beta_industrial_station bids 680 cr for noble_condensate | TBD | TBD | TBD | TBD | -- |
 | [sell-loot-at-synchrony](sell-loot-at-synchrony.json) | circuit | home space | Hunt loot stored by Trade's receiver at Synchrony Hub sold where it lies | up to 1 ships, with 2 crystal_melt stored at synchrony_hub, while synchrony_hub bids 1400 cr for crystal_melt | TBD | TBD | TBD | TBD | -- |
 | [sell-palladium-at-node-gamma](sell-palladium-at-node-gamma.json) | circuit | home space | Stored palladium_ore sold where it lies, at node_gamma_relay_station, at 300 cr or more | up to 1 ships, with 1 palladium_ore stored at node_gamma_relay_station, while node_gamma_relay_station bids 270 cr for palladium_ore | TBD | TBD | TBD | TBD | -- |
