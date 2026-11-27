@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-27T00:25:34Z.
+Facts as of 2026-11-27T01:36:33Z.
 
 ## 1. The Faction
 
@@ -31,7 +31,7 @@ Facts as of 2026-11-27T00:25:34Z.
 | Leader | the Fleet Admiral's flagship |
 | Members | 275 of a limit of 275 |
 | Ships of the fleet in it | 275 of 500 |
-| Stations of our own | 0 of 5 a faction may hold |
+| Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
 | Offices at stations | 19, rent 1,580 cr per cycle (135,880 cr a day) |
 | Shared ships in garages | 0 |
@@ -50,6 +50,7 @@ of its own limit.
 | CLTV Outpost Atria | outpost | `atria` | thriving | -- |
 | CLTV Outpost Felis | outpost | `felis` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
+| Collective Resort Ridgecrest | station | `ridgecrest` | thriving | -- |
 
 Systems we hold something in:
 
@@ -58,6 +59,7 @@ Systems we hold something in:
 | `atria` | outpost | CLTV Outpost Atria |
 | `felis` | outpost | CLTV Outpost Felis |
 | `gsc_0044` | outpost | CLTV Outpost GSC-0044 |
+| `ridgecrest` | station | Collective Resort Ridgecrest |
 | `nexus_prime` | office | at central_nexus |
 | `node_beta` | office | at node_beta_industrial_station |
 | `procyon` | office | at procyon_colonial_station |
@@ -105,7 +107,7 @@ list of stations. Where a base is built is Suggi's decision.
 | `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | Outpost #1 (BUILT): center-west bridge between Voidborn, Solarian, and Ridgecrest (4J); iron/copper/sol_alloy_ore |
 | `atria` | Atria | lawless | 7 | CLTV Outpost Atria (outpost, CLTV) | built | Unity | Outpost #2 (BUILT): far-west industrial anchor; 10 resources (gold, aluminum, argon, deuterium) |
 | `felis` | Felis | lawless | 7 | CLTV Outpost Felis (outpost, CLTV) | built | Suggi | Outpost #3 (BUILT): south-west anchor; 7 resources (energy_crystal, null_matter, deuterium) |
-| `ridgecrest` | Ridgecrest | lawless | 10 | none | chosen | Suggi | Station #1 [FIRST -- RESORT & TRAVEL HUB]: 1J off Solarian, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044, 6-7J clear of rival resorts |
+| `ridgecrest` | Ridgecrest | lawless | 10 | Collective Resort Ridgecrest (station, CLTV) | built | Suggi | Station #1 BUILT (2026-11-27): Collective Resort Ridgecrest (a2cee88abdcb31db229c04315f0ef6e1, public_access=true) -- 1J off Solarian, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044 |
 | `acrux` | Acrux | lawless | 7 | none | chosen | Suggi | Station #2 [GRAND TRADE EXCHANGE & RECRUITMENT]: 1J off Solarian & 1J from GSC-0044, deg 5, 42 systems within 4J |
 | `lanternwick` | Lanternwick | lawless | 8 | none | chosen | Suggi | Station #3 [HEAVY INDUSTRIAL & STATION-CORE FOUNDRY]: 1J off Solarian, 2J from GSC-0044, 9 gas/industrial resources |
 | `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | Station #4 [NAVAL SHIPYARD & FLEET DRYDOCK]: deep-west choke sanctuary between Atria and Outer Rim (zero rival clutter) |
