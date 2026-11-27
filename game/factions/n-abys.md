@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Coldvein | The Experiment (`the_experiment`) | 0 | shard |
+| Coldshade | Pherkad (`pherkad`) | 0 | threshold |
 
 ## Standing History
 

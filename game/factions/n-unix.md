@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Unix [UNIX]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 3.
 
 ## Identity
 
@@ -38,6 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| Halvin | Nexus Prime (`nexus_prime`) | 0 | fold_hauler |
+| Pike | The Experiment (`the_experiment`) | 0 | qualia |
 | Thompson | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History

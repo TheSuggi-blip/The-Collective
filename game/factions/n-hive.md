@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 14.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | HLLW, OLSV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 112 | Public event stream |
+| Pilots carrying the tag on the public event stream | 114 | Public event stream |
 
 ## Bases
 
@@ -42,9 +42,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 2d6ffeda232aa324424edb53 | Node Alpha (`node_alpha`) | 0 | runner |
-| c413294b4b6a11879da15614 | Nexus Prime (`nexus_prime`) | 0 | futures |
-| regohunt01 | Synchrony (`synchrony`) | 0 | theoria |
+| 0637bfdf8ba6a997093332c9 | Pherkad (`pherkad`) | 0 | futures |
+| 188cd6f1e31ebd97644f56e2 | Acubens (`acubens`) | 0 | workhorse |
+| 26f81fc41d338a40fdce8d5e | Node Beta (`node_beta`) | 0 | runner |
+| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
+| 492927e413c5b9ce2fe52212 | Synchrony (`synchrony`) | 0 | runner |
+| 6a73495396afc7768a08118f | Hamal (`hamal`) | 0 | workhorse |
+| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
+| 75bbbd91a1584939b84b0a01 | Synchrony (`synchrony`) | 0 | runner |
+| a2018b529e00cded2f4e12a2 | Acubens (`acubens`) | 0 | workhorse |
+| b14ccc7a855a258164b5f3c1 | The Experiment (`the_experiment`) | 0 | runner |
+| c413294b4b6a11879da15614 | The Experiment (`the_experiment`) | 0 | futures |
+| cbfe6d803a8bd87c4c248852 | Synchrony (`synchrony`) | 0 | runner |
+| fdd4d2a524b48e0478b85d38 | Hamal (`hamal`) | 0 | workhorse |
+| regohunt01 | Node Beta (`node_beta`) | 0 | theoria |
 
 ## Standing History
 
