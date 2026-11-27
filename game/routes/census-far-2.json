@@ -34,14 +34,5 @@
   "empty_hold": true,
   "wing_prefix": "7A."
  },
- "measured": {
-  "date": "2026-11-26",
-  "runs": 64,
-  "minutes": 8,
-  "credits_per_run": -90,
-  "cph_per_ship": -630,
-  "hours": 12,
-  "last_run": "2026-11-26T14:09:35Z"
- },
  "all_systems": true
 }

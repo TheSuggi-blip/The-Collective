@@ -28,14 +28,5 @@
   "mimosa",
   "tidewater",
   "ross_154"
- ],
- "measured": {
-  "date": "2026-11-26",
-  "runs": 82,
-  "minutes": 10,
-  "credits_per_run": -140,
-  "cph_per_ship": -760,
-  "hours": 12,
-  "last_run": "2026-11-26T16:53:46Z"
- }
+ ]
 }
