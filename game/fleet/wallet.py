@@ -355,7 +355,7 @@ def book(data, gifts, now):
                 rows += [[int(now), donor, TITLE, -credits], [int(now), pilot, TITLE, credits]]
             tmp = "%s.%d.%d.tmp" % (once, os.getpid(), threading.get_ident())
             with open(tmp, "w", encoding="utf-8") as handle:
-                json.dump(rows[-8000:], handle, separators=(",", ":"))
+                json.dump(rows[-200000:], handle, separators=(",", ":"))
             os.replace(tmp, once)
 
 
@@ -679,7 +679,7 @@ def book_deposit(data, pilot, credits, now):
             rows.append([int(now), pilot, DEPOSIT_TITLE, -int(credits)])
             tmp = "%s.%d.%d.tmp" % (once, os.getpid(), threading.get_ident())
             with open(tmp, "w", encoding="utf-8") as handle:
-                json.dump(rows[-8000:], handle, separators=(",", ":"))
+                json.dump(rows[-200000:], handle, separators=(",", ":"))
             os.replace(tmp, once)
 
 

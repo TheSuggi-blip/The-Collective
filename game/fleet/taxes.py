@@ -209,7 +209,7 @@ def book(data, found, dry_run=False):
             have = {(row[1], row[0]) for row in rows if isinstance(row, list) and len(row) == 4 and row[2] == TITLE}
             rows += [[at, pilot, TITLE, -amount] for pilot, at, amount in added if (pilot, at) not in have]
             rows.sort(key=lambda row: row[0] if isinstance(row, list) and row and isinstance(row[0], (int, float)) else 0)
-            write(once, rows[-8000:])
+            write(once, rows[-200000:])
     return added
 
 
