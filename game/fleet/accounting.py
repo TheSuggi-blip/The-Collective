@@ -1454,12 +1454,15 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         pass
 
     _tr_ops_val = treasury_ops_h if treasury_ops_h is not None else 0.0
-    _tr_expected_opex = npc_rent_h + own_station_labor_h
+    _tr_ops_i = int(round(_tr_ops_val))
+    _npc_rent_i = int(round(npc_rent_h))
+    _st_lab_i = int(round(own_station_labor_h))
+    _tr_exp_i = _npc_rent_i + _st_lab_i
     if station_count_live > 0 and (own_station_fac_count > 0 or station_tourism_rev_total > 0):
-        station_revenue_h = max(0.0, _tr_ops_val - _tr_expected_opex)
+        station_revenue_h = float(max(0, _tr_ops_i - _tr_exp_i))
     else:
         station_revenue_h = 0.0
-    treasury_other_h = _tr_ops_val - station_revenue_h - _tr_expected_opex
+    treasury_other_h = float(_tr_ops_i - int(round(station_revenue_h)) - _tr_exp_i)
 
     passive_inflows_h = max(0.0, raw_unexplained_h)
     gross_direct_h = raw_costs_h + passive_inflows_h

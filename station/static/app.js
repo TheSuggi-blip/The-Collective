@@ -4690,8 +4690,9 @@ function renderFinancialStatements(panel, ops, w, t) {
   const miningRevOf = (a) => revField(a, 'mining_h', () => 0);
   const intelRevOf = (a) => revField(a, 'intel_h', () => 0);
   const passiveRevOf = (a) => (a ? (revbOf(a) ? numOr0(revbOf(a), 'passive_escrow_h') : numOr0(a, 'passive_inflows_h')) : null);
-  const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') : null);
-  const totalCashInOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') + numOr0(a, 'seed_rewards_h') : null);
+  const stationRevOf = (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0);
+  const realizedRevOf = (a) => (a ? numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h') + stationRevOf(a) : null);
+  const totalCashInOf = (a) => (a ? realizedRevOf(a) + numOr0(a, 'seed_rewards_h') : null);
   const dirOpExOf = (a) => (a ? -(opexOf(a) ? numOr0(opexOf(a), 'matched_direct_h') : (numOr0(a, 'raw_costs_h') + numOr0(a, 'once_direct_h'))) : null);
   const realizedGrossOf = (a) => (a ? realizedRevOf(a) + dirOpExOf(a) : null);
   const realizedEbitOf = (a) => (a ? numOr0(a, 'recurring_cash_h') + numOr0(a, 'treasury_own_h') : null);
@@ -4703,7 +4704,7 @@ function renderFinancialStatements(panel, ops, w, t) {
   const econWealthOf = (a) => (a ? cfoOf(a) + numOr0(a, 'inventory_accrual_h') : null);
   const cashConvPctOf = (a) => {
     if (!a) return null;
-    const sold = Math.max(0, numOr0(a, 'raw_income_h') + numOr0(a, 'passive_inflows_h'));
+    const sold = Math.max(0, realizedRevOf(a) || 0);
     const invAdd = Math.max(0, numOr0(a, 'inventory_accrual_h'));
     const totOut = sold + invAdd;
     return totOut >= 100 ? (100 * sold) / totOut : null;
@@ -4827,7 +4828,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Total Matched Direct Operating Costs (COGS & OpEx)', dirOpExOf, 'fs-sub'),
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Building & Station Upkeep Costs (Rent, Maintenance & Overhead)' },
-    row5(fsLbl('NPC Building & Office Rent Upkeep (19 Leased Facilities, Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
+    row5(fsLbl('NPC Building & Office Rent Upkeep (' + ((a24 && a24.station_ops && a24.station_ops.npc_leased_count) || (a6 && a6.station_ops && a6.station_ops.npc_leased_count) || 0) + ' Leased Facilities, Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
     row5(fsLbl('Owned Station Facility Maintenance Labor Upkeep (Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
     row5('Total Cash Building & Station Upkeep Costs', (a) => (a && a.station_ops ? (Number(a.station_ops.npc_rent_h || 0) + Number(a.station_ops.station_labor_opex_h || 0)) : null), 'fs-sub'),
     row5(fsLbl('Other Treasury Operating Net (Tax / Unrecorded Deposits, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
@@ -4835,6 +4836,19 @@ function renderFinancialStatements(panel, ops, w, t) {
     { cls: 'fs-sec', sec: 'Other Realized Operating Income' },
     row5('Realized Seed & Mission Rewards (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
     row5('Realized Net Operating Profit / Cash Owner Earnings (Credits - CapEx)', cfoOf, 'fs-tot'),
+    { cls: 'fs-sec', sec: 'Unit-Economics & Fuel Efficiency Ratios (Primary Optimization KPIs)' },
+    (() => {
+      const fmtRof = (a) => {
+        if (!a) return '--';
+        const rev = realizedRevOf(a);
+        const fuel = Math.abs(Number(fuelSumOf(a) || 0));
+        if (rev === null || fuel < 100) return '--';
+        const r = rev / fuel;
+        return el('span', r >= 2.0 ? 'fs-pos' : r < 1.5 ? 'fs-neg' : null, r.toFixed(2) + 'x');
+      };
+      return { cls: 'fs-memo', cells: ['Revenue per Paid Fuel Credit (ROF = Realized Rev. / Fuel Burn)', fmtRof(a1), fmtRof(a6), fmtRof(a24), 'Target >= 2.50x'] };
+    })(),
+    pctRow('Core Operating Margin (IFRS 15 EBIT / Realized Revenue)', realizedEbitOf, realizedRevOf, 'fs-memo', 'Ex-Seeds'),
     { cls: 'fs-sec', sec: 'Memoranda -- Balance Sheet Working Capital (IAS 2 -- NOT Realized Profit)' },
     row5('Memo: Owned Station Consumables & Hospitality Upkeep (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
     row5('Memo: Unsold Inventory Change (Live-Market NRV, Balance Sheet Asset)', invBuildOf, 'fs-memo'),
