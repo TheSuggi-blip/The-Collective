@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Driftline Survey & Salvage [DRFT]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -38,10 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Colleen Brown | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| Quentin Mattice | Node Alpha (`node_alpha`) | 0 | junk_convoy |
-| Rebecca Malone | Node Beta (`node_beta`) | 0 | odyssey |
-| Ronald Mulholland | Node Alpha (`node_alpha`) | 0 | come_along |
+| Henry Murillo | Node Alpha (`node_alpha`) | 0 | shell_company |
+| Richard Clark | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History
 
