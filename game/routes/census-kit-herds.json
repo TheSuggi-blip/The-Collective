@@ -25,12 +25,12 @@
   "zubenelhakrabi"
  ],
  "measured": {
-  "date": "2026-11-24",
-  "runs": 34,
-  "minutes": 24,
-  "credits_per_run": -310,
-  "cph_per_ship": -700,
+  "date": "2026-11-27",
+  "runs": 8,
+  "minutes": 23,
+  "credits_per_run": -460,
+  "cph_per_ship": -1130,
   "hours": 12,
-  "last_run": "2026-11-24T05:09:25Z"
+  "last_run": "2026-11-27T06:10:27Z"
  }
 }
