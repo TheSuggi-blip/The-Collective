@@ -130,7 +130,7 @@ SPAWN_MOST = 30              # runners running as processes of their own at once
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead
 CENSUS_FRESH = 90 * 60       # a census older than this says nothing about a herd
 FLOOR_HOLD = 24 * 3600      # a census that read a field below its floor closes the route this long, or until a newer one reads it back (requests ENT-465)
-KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py", "fit_net": "fit_net.py", "craft_net": "craft_net.py", "salvage_net": "salvage_net.py", "pirate_net": "pirate_net.py"}
+KINDS = {"circuit": "route_run.py", "hunt": "hunt.py", "census": "census.py", "mine": "mine.py", "guard": "guard.py", "bursar": "bursar.py", "haul": "haul.py", "mine_net": "mine_net.py", "hunt_net": "hunt_net.py", "fit_net": "fit_net.py", "craft_net": "craft_net.py", "salvage_net": "salvage_net.py", "pirate_net": "pirate_net.py", "census_net": "census_net.py"}
 MINE_POI_CAP = 3             # hard cap: max concurrent miners on any single belt/POI (spread miners across belts like hunters)
 BURSAR_STATION_CAP = 1       # hard cap: max concurrent static Bursar desks at any single station (spread across 61+ books)
 
@@ -403,7 +403,7 @@ def stalled_reason(rid, route, pilot_name, rows, now):
     tail = mine[-STALL_RUNS:]
     if len(tail) < STALL_RUNS:
         return None
-    if route.get("kind") != "census" and all(
+    if route.get("kind") not in ("census", "census_net") and all(
         float(r.get("minutes") or 0) < STALL_MINUTES
         and (r.get("delta") or 0) <= 0
         and not r.get("sold")
@@ -745,7 +745,7 @@ def newborn_reason(pilot, rid, route):
             return "a %s empire mission: the pilot was born %s (rule F35)" % (emp_p.capitalize(), empire)
     if empire == "voidborn":
         return None
-    if route.get("far_ok") or route.get("kind") == "census" or not pilot.get("system"):
+    if route.get("far_ok") or route.get("kind") in ("census", "census_net") or not pilot.get("system"):
         return None
     # Standing non-once class work integrates into main Collective corridors automatically once earlier home rows fill
     if not (route.get("once") or is_once_mission(rid, route)):
@@ -1131,6 +1131,21 @@ def why_not(pilot, rid, route, state):
                 return "no eligible salvage target or tool", None
         except Exception:
             return "salvage_net check unavailable", None
+    if route["kind"] == "census_net":
+        try:
+            import census_net as _cn_net
+            _repo_r = Path(state.get("root") or Path(__file__).resolve().parent.parent).parent
+            _data_d = state.get("data") or Path("/srv/collective/data")
+            _pol_p = Path(str(route.get("policy") or "game/census-policy.json"))
+            if not _pol_p.is_absolute():
+                _pol_p = _repo_r / _pol_p
+            _cpol = _cn_net.load_policy(_pol_p)
+            if not _cpol.get("enabled", True):
+                return "census_net disabled in policy", None
+            if not _cn_net.has_census_work(_data_d, pilot.get("name", ""), policy_path=_pol_p):
+                return "all reachable systems fresh", None
+        except Exception:
+            return "census_net check unavailable", None
     if route["kind"] == "pirate_net":
         try:
             import pirate_net as _pn
@@ -1436,7 +1451,7 @@ def command(route, pilot, argument, root):
     if route["kind"] in ("fit_net", "craft_net"):
         return (base + ["--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
-    if route["kind"] in ("haul", "mine_net", "hunt_net", "salvage_net", "pirate_net"):
+    if route["kind"] in ("haul", "mine_net", "hunt_net", "salvage_net", "pirate_net", "census_net"):
         return (base + ["--minutes", str(route.get("minutes", 45)), "--route", route["id"]]
                 + (["--policy", str(route["policy"])] if route.get("policy") else []))
     if route["kind"] == "guard":                  # the place why_not found: the guard's own, else the guarded route's; an escort follows a pilot
@@ -1540,7 +1555,7 @@ def pirate_reason(system, state):
 def judged(route):
     """True for a route whose runs must pay: not the census, not park, not a fitting/unfitting (a tool is fitted or stripped once), not
     standing work (it trains or gathers: its fuel is its price, routes.py `standing`)."""
-    if route.get("park") or route.get("kind") in ("census", "fit_net") or routefiles.standing(route):
+    if route.get("park") or route.get("kind") in ("census", "census_net", "fit_net") or routefiles.standing(route):
         return False
     return not any(isinstance(stop, dict) and (stop.get("fit") or stop.get("unfit")) for stop in route.get("stops") or [])
 

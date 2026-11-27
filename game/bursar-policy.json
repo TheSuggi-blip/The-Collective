@@ -96,11 +96,11 @@
   "priority_max_per_station": 2,
   "craft": {
     "enabled": true,
-    "max_runs_per_poll": 40,
-    "max_buy_spend_cr": 120000,
+    "max_runs_per_poll": 80,
+    "max_buy_spend_cr": 180000,
     "min_margin_pct": 0.15,
     "min_profit_cr": 50,
-    "cycles_per_poll": 6,
-    "fuel_trickle_target": 1000
+    "cycles_per_poll": 10,
+    "fuel_trickle_target": 3000
   }
 }

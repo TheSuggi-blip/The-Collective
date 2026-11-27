@@ -141,11 +141,11 @@ def _load_system_meta(data_dir):
     conn = None
     try:
         conn = sqlite3.connect("file:%s?mode=ro&immutable=1" % db_path, uri=True, timeout=2.0)
-        for row in conn.execute("SELECT id, COALESCE(police_level, 0) FROM systems"):
+        for row in conn.execute("SELECT id, COALESCE(empire, ''), COALESCE(stronghold, 0) FROM systems"):
             sid = str(row[0] or "")
             if sid:
-                policed[sid] = int(row[1] or 0) > 0
-        for row in conn.execute("SELECT a, b FROM jumps"):
+                policed[sid] = bool(str(row[1] or "")) and not int(row[2] or 0)
+        for row in conn.execute("SELECT a, b FROM lanes"):
             a, b = str(row[0] or ""), str(row[1] or "")
             if a and b:
                 adj.setdefault(a, []).append(b)

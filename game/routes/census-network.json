@@ -1,0 +1,11 @@
+{
+ "id": "census-network",
+ "kind": "census_net",
+ "title": "Dynamic whole-map Intelligence AutoNet: 100% non-stronghold coverage, 4-quadrant equalization, 7A Recon & 7B Surveyor specialization",
+ "note": "Policy-driven dynamic whole-map Intelligence AutoNet governed by game/census-policy.json (Oracle/Unity). Covers all non-stronghold systems dynamically from read.db:systems (auto-discovers new systems added in game patches), prioritizes never-scanned outer-rim systems and lagging quadrants, specializes 7A Covert Recon (frontier and rival hubs) vs 7B Deep-Core Surveyors (belts and wildlife herds), and deconflicts targets atomically via data/fleet/census_claims.json.",
+ "policy": "game/census-policy.json",
+ "minutes": 35,
+ "max_ships": 45,
+ "standing": true,
+ "far_ok": true
+}

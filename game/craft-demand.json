@@ -50,14 +50,74 @@
     "power_cell": {
       "cap": 600,
       "division": "Logistics"
+    },
+    "solarian_gourmet_rations": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "purified_water": {
+      "cap": 160,
+      "division": "Logistics"
+    },
+    "station_seltzer": {
+      "cap": 100,
+      "division": "Logistics"
+    },
+    "protein_rations": {
+      "cap": 100,
+      "division": "Logistics"
+    },
+    "algae_wafer": {
+      "cap": 100,
+      "division": "Logistics"
+    },
+    "crimson_iron_rations": {
+      "cap": 100,
+      "division": "Logistics"
+    },
+    "space_pizza": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "grazer_milkshake": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "smoked_xeno_delicacy": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "glintfin_sashimi": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "nebula_stellar_vintage": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "void_espresso": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "lumen_honey_cake": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "solarian_biotic": {
+      "cap": 100,
+      "division": "Logistics"
+    },
+    "crimson_bloodwine": {
+      "cap": 80,
+      "division": "Logistics"
+    },
+    "gloomshine": {
+      "cap": 80,
+      "division": "Logistics"
     }
   },
   "commercial_targets": {
     "liquid_methane": {
-      "cap": 2000,
-      "division": "Trade"
-    },
-    "silver_bar": {
       "cap": 2000,
       "division": "Trade"
     },

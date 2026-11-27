@@ -19,6 +19,7 @@ REQUIRED_POLICIES = (
     "game/bursar-policy.json",
     "game/craft-policy.json",
     "game/fit-policy.json",
+    "game/census-policy.json",
 )
 
 REQUIRED_HAUL_LANES = ("active_freight", "internal_supply", "public_freight", "arbitrage")
@@ -29,7 +30,7 @@ REQUIRED_PLAN_ROUTES = {
     "game/routes/plans/sentinel.json": ("hunt-network", "fit-network"),
     "game/routes/plans/hauler.json": ("haul-network", "fit-network"),
     "game/routes/plans/trader.json": ("bursar-network", "haul-network-trade", "fit-network"),
-    "game/routes/plans/scout.json": ("fit-network",),
+    "game/routes/plans/scout.json": ("fit-network", "census-network"),
 }
 
 

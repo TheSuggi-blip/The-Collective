@@ -1871,7 +1871,7 @@ STATION_PUBLIC_SERVICES = {
 }
 
 
-def serve_station_builds(data, now, dry=False, max_builds=8):
+def serve_station_builds(data, now, dry=False, max_builds=12):
     """Autonomously construct open P1 sovereign station facilities from needs once 100% of materials
     sit in that station's faction_storage and Treasury stays >= upgrade-policy treasury_floor_cr."""
     import sqlite3
@@ -1925,11 +1925,16 @@ def serve_station_builds(data, now, dry=False, max_builds=8):
         if not open_needs:
             return 0
 
-        # Facility build fees & required materials
-        fac_fee = {
-            str(fid): int(fee or 0)
-            for fid, fee in con.execute("SELECT id, COALESCE(build_cost, 0) FROM facilities").fetchall()
-        }
+        # Facility build fees, categories & required materials
+        fac_fee = {}
+        fac_cat = {}
+        for fid, fee, cat in con.execute(
+            "SELECT id, COALESCE(build_cost, 0), COALESCE(category, '') FROM facilities"
+        ).fetchall():
+            sf = str(fid or "")
+            if sf:
+                fac_fee[sf] = int(fee or 0)
+                fac_cat[sf] = str(cat or "").lower()
         fac_mats = {}
         for fid, item, qty in con.execute("SELECT facility, item, units FROM facility_materials").fetchall():
             fac_mats.setdefault(str(fid), []).append((str(item), int(qty or 0)))
@@ -1953,12 +1958,21 @@ def serve_station_builds(data, now, dry=False, max_builds=8):
             seen_pairs.add(pair)
             ordered.append(pair)
 
+    done_cache_p = Path(data) / "fleet" / "station_builds_done.json"
+    done_cache = dispatch.read_json(done_cache_p, {})
+    if not isinstance(done_cache, dict):
+        done_cache = {}
+    done_cache = {k: v for k, v in done_cache.items() if isinstance(v, (int, float)) and (now - float(v)) < 900.0}
+
     done_n = 0
     failed = 0
     avail_tr = treasury
     for base_id, fid in ordered:
         if done_n >= max_builds:
             break
+        ckey = "%s:%s" % (base_id, fid)
+        if ckey in done_cache:
+            continue
         fee = int(fac_fee.get(fid, 0))
         if fee <= 0 or (avail_tr - fee) < floor_cr:
             continue
@@ -1987,10 +2001,18 @@ def serve_station_builds(data, now, dry=False, max_builds=8):
             done_n += 1
             continue
 
-        ok, msg = errand_raw(builder, "spacemolt_facility", "faction_build", {"facility_type": fid})
+        fcat = fac_cat.get(fid, "")
+        build_action = "faction_build" if fcat == "faction" else "build"
+        ok, msg = errand_raw(builder, "spacemolt_facility", build_action, {"facility_type": fid})
         if ok:
-            print("STATION_BUILD OK: %s @ %s via %s (fee=%s cr) | %s" % (
-                fid, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)
+            print("STATION_BUILD OK: %s (%s) @ %s via %s (fee=%s cr) | %s" % (
+                fid, build_action, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)
+            done_cache[ckey] = int(now)
+            try:
+                done_cache_p.parent.mkdir(parents=True, exist_ok=True)
+                done_cache_p.write_text(json.dumps(done_cache, indent=1, sort_keys=True) + "\n", encoding="ascii")
+            except OSError:
+                pass
             try:
                 import gate
                 gate.book_onetime("__TREASURY__", "Treasury CapEx: %s @ %s" % (fid, bname), -int(fee), data=data)
@@ -2013,7 +2035,7 @@ def serve_station_builds(data, now, dry=False, max_builds=8):
             print("STATION_BUILD FAIL: %s @ %s via %s | %s" % (
                 fid, bname, builder, str(msg)[:160]), flush=True)
             _low = str(msg).lower()
-            if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid")):
+            if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid", "not_faction_type")):
                 continue
             failed = 1
             if "rate" in str(msg).lower() or "tick" in str(msg).lower():

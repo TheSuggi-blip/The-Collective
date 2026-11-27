@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 672.
+Routes: 673.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -143,7 +143,7 @@ Routes: 672.
 | [mine-stellar-siphon](mine-stellar-siphon.json) | mine | home space | Stellar Siphon: hydrogen_gas, argon_gas, neon_gas; stored at Synchrony Hub | up to 1 ships, needs gas_harvester_i, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-the-experiment-haze](mine-the-experiment-haze.json) | mine | home space | The Experiment Haze: hydrogen_gas, neon_gas; stored at Node Beta Industrial Station | up to 1 ships, needs gas_harvester_i, while node_beta_industrial_station bids 26 cr for hydrogen_gas, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-the-experiment-haze-synchrony](mine-the-experiment-haze-synchrony.json) | mine | home space | The Experiment Haze: hydrogen_gas; stored at Synchrony Hub | up to 1 ships, needs gas_harvester_i, while synchrony_hub bids 28 cr for hydrogen_gas, standing work | TBD | TBD | TBD | TBD | -- |
-| [bursar-network](bursar-network.json) | bursar | -- | Dynamic Station Bursar network: 1 trader per policed Exchange station (live book refresh, bottleneck buy_order, surplus sell_order) | up to 65 ships, standing work | 707 | 30 | -1,020 | -2,080 | 2026-11-27 |
+| [bursar-network](bursar-network.json) | bursar | -- | Dynamic Station Bursar network: 1 trader per policed Exchange station (live book refresh, bottleneck buy_order, surplus sell_order) | up to 55 ships, standing work | 707 | 30 | -1,020 | -2,080 | 2026-11-27 |
 | [bursar-network-freighter](bursar-network-freighter.json) | bursar | -- | Station Bursar for a freighter trader (cargo over 150) while no mobile trade, craft or delivery work is open: 30-minute docked runs, then free again | standing work | TBD | TBD | TBD | TBD | -- |
 | [census-deep-core](census-deep-core.json) | census | beyond the border, 25 jumps | 7B Deep-Core Surveyors: survey & refresh resource-rich deep-core, rad, gas, ice, and crystal belts for 130 Miners + max Piloting/Scanning XP | up to 25 ships, empty hold, standing work | 227 | 19 | -430 | -1,370 | 2026-11-27 |
 | [census-east](census-east.json) | census | beyond the border, 14 jumps | Read the east road beyond GSC-0044 and Intercrus for its sites: Nembus, Cervantes, Oakridge, Miaplacidus, Aldhibah, Tidewater, Ross 154 and the systems between, every three hours | up to 3 ships, empty hold | TBD | TBD | TBD | TBD | -- |
@@ -167,6 +167,7 @@ Routes: 672.
 | [census-watch-gsc-0044](census-watch-gsc-0044.json) | census | beyond the border, 7 jumps | Watch the first outpost site: GSC-0044 and its six neighbours read every hour (who is there, pirates, fields) | up to 3 ships, empty hold | 16 | 3 | -110 | -1,200 | 2026-11-27 |
 | [census-worked](census-worked.json) | census | beyond the border, 10 jumps | Read the places our routes use beyond home twice in a turn: deposits, creatures, order books, mission boards | up to 6 ships, empty hold | 14 | 7 | -250 | -1,260 | 2026-11-27 |
 | [census-worked-far](census-worked-far.json) | census | beyond the border, 29 jumps | Read the places beyond our roads where the other divisions fly now, every three hours: deposits, creatures, pirates, order books, mission boards | up to 10 ships, empty hold | 2 | 2 | 0 | 0 | 2026-11-27 |
+| [census-network](census-network.json) | census_net | -- | Dynamic whole-map Intelligence AutoNet: 100% non-stronghold coverage, 4-quadrant equalization, 7A Recon & 7B Surveyor specialization | up to 45 ships, standing work | TBD | TBD | TBD | TBD | -- |
 | [bursar-desk-alpha](bursar-desk-alpha.json) | circuit | beyond the border, 11 jumps | Station Bursar desk at Alpha Centauri Colonial Station: oxygen made into liquid oxygen by hand, the pilot's own surplus liquid oxygen and liquid nitrogen listed under the station's asks, a 15-minute docked watch | up to 1 ships, standing work | 23 | 15 | 530 | 2,010 | 2026-11-27 |
 | [bursar-desk-grand](bursar-desk-grand.json) | circuit | beyond the border, 21 jumps | Station Bursar desk at the Grand Exchange (Haven): the pilot's own surplus mining enhancers and survey probes listed under the station's asks, a 30-minute docked watch | up to 1 ships, standing work | 16 | 30 | 0 | 0 | 2026-11-27 |
 | [bursar-desk-krynn](bursar-desk-krynn.json) | circuit | beyond the border, 20 jumps | Station Bursar desk at the Crimson War Citadel (Krynn): neon made into ionized neon by hand, the pilot's own surplus liquid nitrogen, ionized neon and liquid oxygen listed under the station's asks, a 15-minute docked watch | up to 1 ships, standing work | 19 | 15 | 0 | 0 | 2026-11-27 |

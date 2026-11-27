@@ -5,11 +5,11 @@
   "demand_file": "game/craft-demand.json",
   "cycle_minutes": 30,
   "idle_watch_minutes": 1,
-  "max_runs_per_cycle": 10,
+  "max_runs_per_cycle": 40,
   "max_fee_per_run_cr": 1500,
   "min_wallet_keep_cr": 15000,
   "allow_buy_inputs_docked": true,
-  "max_buy_spend_per_cycle_cr": 25000,
+  "max_buy_spend_per_cycle_cr": 60000,
   "trade": {
     "enabled": true,
     "min_margin_pct": 0.15,

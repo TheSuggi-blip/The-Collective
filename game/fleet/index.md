@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 84.
+folder; never edited by hand. Scripts listed: 85.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -32,6 +32,7 @@ folder; never edited by hand. Scripts listed: 84.
 | `board.py` | The board of a division: what each of its ships does now, its plan, what is planned, and what its runs earned. | By hand |
 | `bursar.py` | Dynamic multi-station Station Bursar runner for Trade division. | By hand |
 | `census.py` | Read one system whole with one pilot: every place's deposits and creatures, and the station's order book and mission board. | Runner (`census` routes) |
+| `census_net.py` | Dynamic whole-map Intelligence AutoNet for 7A Covert Recon & 7B Deep-Core Surveyors. | By hand |
 | `claimwatch.py` | Find a pilot the engine holds claimed and free it by an engine restart, without a hand. | By hand |
 | `collective_mcp.py` | The collective MCP server: the fleet's knowledge and the door to its ships, as tools for every member. | By hand |
 | `comms_guard.py` | CaMeL + Microsoft Spotlighting security firewall for untrusted external player messages and outbound OpSec. | By hand |
@@ -172,6 +173,16 @@ A runner: the dispatcher starts it for a route of the kind `census`; by hand onl
 
 ```
 census.py <pilot> <system_id> [--stay] [--route ID]
+```
+
+### `census_net.py`
+
+Dynamic whole-map Intelligence AutoNet for 7A Covert Recon & 7B Deep-Core Surveyors.
+
+Run by hand.
+
+```
+game/fleet/census_net.py <pilot> [--minutes 35] [--policy game/census-policy.json] [--route census-network] [--dry-run]
 ```
 
 ### `claimwatch.py`
