@@ -76,7 +76,7 @@ def read_policy(policy_path=None):
     pol = {
         "enabled": False,
         "wing_prefix": "6C. Combat Salvage",
-        "rest_seconds_when_empty": 30,
+        "rest_seconds_when_empty": 5,
         "max_ships_per_system": 2,
         "claim_ttl_seconds": 1800,
         "battle_fresh_seconds": 3600,

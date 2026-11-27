@@ -124,7 +124,7 @@ DEFAULT_POLICY = {
         "enabled": True,
         "max_jumps": 6,
     },
-    "rest_seconds_when_empty": 60,
+    "rest_seconds_when_empty": 5,
 }
 
 # Known baseline creature hull & loot values (overridden live from data/wildlife & read.db)
@@ -2106,7 +2106,7 @@ def main(argv=None):
     try:
         if not policy.get("enabled", True):
             print("RESULT %s: hunt_net %s | disabled in policy" % (pilot, route_id), flush=True)
-            time.sleep(60)
+            time.sleep(5)
             return 0
 
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
@@ -2120,7 +2120,7 @@ def main(argv=None):
             f9 = None
         if f9 is None:
             print("RESULT %s: hunt_net %s | no F9 gauge read (gauges.py): no hunt" % (pilot, route_id), flush=True)
-            time.sleep(60)
+            time.sleep(5)
             return 0
         world = load_combat_world(DATA, REPO, policy)
         claims, cooldowns = load_hunt_claims(DATA, policy)
@@ -2413,7 +2413,7 @@ def main(argv=None):
                     ), flush=True)
                     _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
                     return 0
-            nap = min(60, int(policy.get("rest_seconds_when_empty") or 60))
+            nap = min(60, int(policy.get("rest_seconds_when_empty") or 5))
             print("%s %s hunt_net: Command Support Flagship awaiting pack/escort/war wing; resting %ds" % (utc_now(), pilot, nap), flush=True)
             end_nap = time.time() + nap
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
@@ -2438,7 +2438,7 @@ def main(argv=None):
                     ), flush=True)
                     _goal(pilot, "prepare-at-station", {"systemId": reloc["system"], "poiId": reloc["poi"], "baseId": reloc["base"], "refuel": True}, timeout_s=420)
                     return 0
-            nap = min(60, int(policy.get("rest_seconds_when_empty") or 60))
+            nap = min(60, int(policy.get("rest_seconds_when_empty") or 5))
             print("%s %s hunt_net: no eligible herd/pack/escort matched power=%.0f; resting %ds" % (utc_now(), pilot, spow["power"], nap), flush=True)
             end_nap = time.time() + nap
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:

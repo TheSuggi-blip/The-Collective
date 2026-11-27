@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 85.
+folder; never edited by hand. Scripts listed: 86.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -71,6 +71,7 @@ folder; never edited by hand. Scripts listed: 85.
 | `loot_own.py` | Loot every carcass and wreck at the pilot's place that the pilot itself killed. | By hand |
 | `manifest_wings.py` | Shared cached resolver for game/fleet-500-manifest.tsv wings & Task Forces. | By hand |
 | `market_guard.py` | Open-Market Anti-Manipulation & Manipulation-Resistant Fair-Price Engine (`market_guard.py`). | By hand |
+| `matrix_match.py` | Global optimal ship-to-task matching and live mission-board gating for The Collective. | By hand |
 | `migrate_wave.py` | Safe section-by-section fleet migration and Reserve archiver for the 500-ship redesign. | By hand |
 | `mine.py` | One pilot mines at one field for a set time, through the engine's mining loop. | Runner (`mine` routes) |
 | `mine_net.py` | Policy-driven dynamic smart Mining network (`mine-network`). | By hand |
@@ -749,6 +750,16 @@ Run by hand.
 
 ```
 Imported by game/fleet/bursar.py and game/fleet/haul.py (stdlib only, ASCII only).
+```
+
+### `matrix_match.py`
+
+Global optimal ship-to-task matching and live mission-board gating for The Collective.
+
+Run by hand.
+
+```
+imported by dispatch.py (`assign_batch_pilots`, `mission_offered_on_board`, `min_cost_assignment`).
 ```
 
 ### `migrate_wave.py`

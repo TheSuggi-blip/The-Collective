@@ -2603,13 +2603,13 @@ def main(argv=None):
 
         if completed == 0:
             watch_s = float(policy.get("rest_seconds_when_empty") or (float(policy.get("idle_watch_minutes") or 15) * 60.0))
-            poll_s = min(180.0, max(30.0, float(policy.get("idle_poll_interval_s") or 180.0)))
+            poll_s = min(180.0, max(5.0, float(policy.get("idle_poll_interval_s") or 15.0)))
             say("no eligible haul/freight/arb/supply job matched policy right now; docked watch %ds (poll %ds)" % (int(watch_s), int(poll_s)))
             notes.append("docked watch %dm" % max(1, int(round(watch_s / 60.0))))
             end_nap = time.time() + watch_s
             next_poll = time.time() + poll_s
             while time.time() < end_nap and not stop_requested():
-                time.sleep(min(20.0, max(1.0, end_nap - time.time())))
+                time.sleep(min(5.0, max(1.0, end_nap - time.time())))
                 try:
                     os.utime(order_path)
                 except OSError:

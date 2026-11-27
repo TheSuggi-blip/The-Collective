@@ -145,7 +145,7 @@ def read_policy(policy_path=None):
         "wing_prefix": "CORSAIR-",
         "naming_default_style": "organic_pirate",
         "barcode_length": 20,
-        "rest_seconds_when_empty": 30,
+        "rest_seconds_when_empty": 5,
         "fortress": {
             "chokepoint_outside": "duskmere",
             "gatekeeper_citadel": "toi_700",

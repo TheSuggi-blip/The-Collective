@@ -4,7 +4,7 @@
   "version": 1,
   "note": "Autonomous Combat Salvage AutoNet for 6C Combat Salvage Tenders. Kept DISABLED until enabled by Suggi.",
   "wing_prefix": "6C. Combat Salvage",
-  "rest_seconds_when_empty": 30,
+  "rest_seconds_when_empty": 5,
   "max_ships_per_system": 2,
   "claim_ttl_seconds": 1800,
   "battle_fresh_seconds": 3600,

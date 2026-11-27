@@ -79,6 +79,76 @@ def is_foreign_player_station(base):
     return False
 
 
+
+
+def owned_fuel_depots(data, min_fuel=200):
+    """Return {system_id: (poi_id, base_id)} for active [CLTV] outposts/stations with stocked fuel bunkers.
+
+    Reads read.db (2ms immutable RO) first, falling back to data/empire/empire.json so unit tests
+    and offline runs work identically. Automatically discovers future Outposts #4-#8 and Stations #2-#5
+    the moment their faction_fuel_bunker is active and holds >= `min_fuel` units.
+    """
+    out = {}
+    if not data:
+        return out
+    dpath = Path(data)
+    db = dpath / 'store' / 'read.db'
+    if db.is_file():
+        con = None
+        try:
+            import sqlite3
+            con = sqlite3.connect('file:%s?mode=ro&immutable=1' % db, uri=True, timeout=2.0)
+            rows = con.execute("""
+                SELECT DISTINCT b.system, b.poi, b.base
+                FROM bases b
+                JOIN faction_facilities ff ON ff.base = b.base
+                JOIN faction_storage fs ON fs.base = b.base
+                WHERE LOWER(COALESCE(ff.type, '')) LIKE '%fuel_bunker%'
+                  AND LOWER(COALESCE(ff.status, 'active')) = 'active'
+                  AND fs.item = 'fuel'
+                  AND COALESCE(fs.units, 0) >= ?
+                  AND b.system IS NOT NULL AND b.system != ''
+                  AND b.poi IS NOT NULL AND b.poi != ''
+                  AND b.base IS NOT NULL AND b.base != ''
+            """, (int(min_fuel),)).fetchall()
+            for sid, poi, base in rows:
+                out.setdefault(str(sid), (str(poi), str(base)))
+            if out:
+                return out
+        except Exception:
+            pass
+        finally:
+            if con is not None:
+                try:
+                    con.close()
+                except Exception:
+                    pass
+    ep = dpath / 'empire' / 'empire.json'
+    if ep.is_file():
+        try:
+            emp = json.loads(ep.read_text(encoding='utf-8'))
+            bunkers = set()
+            for fac in emp.get('facilities') or []:
+                if isinstance(fac, dict) and 'fuel_bunker' in str(fac.get('type') or '').lower():
+                    if str(fac.get('status') or 'active').lower() == 'active' and fac.get('base'):
+                        bunkers.add(str(fac['base']))
+            fuel_by_base = {}
+            for row in emp.get('faction_storage') or []:
+                if isinstance(row, dict) and str(row.get('item') or '') == 'fuel' and row.get('base'):
+                    fuel_by_base[str(row['base'])] = int(row.get('units') or row.get('quantity') or 0)
+            for b in emp.get('bases') or []:
+                if not isinstance(b, dict):
+                    continue
+                bid = str(b.get('base') or b.get('id') or '')
+                sid = str(b.get('system') or '')
+                poi = str(b.get('poi') or '')
+                if bid and sid and poi and bid in bunkers and fuel_by_base.get(bid, 0) >= int(min_fuel):
+                    out.setdefault(sid, (poi, bid))
+        except (OSError, ValueError, AttributeError):
+            pass
+    return out
+
+
 def fuel_stations(data):
     out = {}
     try:
@@ -100,6 +170,8 @@ def fuel_stations(data):
                 if is_foreign_player_station(base):
                     continue
                 out.setdefault(f.stem, (poi.get('id') or pid, base['id']))
+    for sid, pair in owned_fuel_depots(data).items():
+        out[sid] = pair
     return out
 
 
@@ -131,16 +203,26 @@ def ship_dock_reserve(ship):
     return max(6.0, ship_jump_cost(ship))
 
 
-def nearest_fuel(lanes, src, stations, skip=()):
+def nearest_fuel(lanes, src, stations, skip=(), prefer_bases=None):
     """(jumps, system, poi, base) of the station with fuel nearest src, the fewest jumps first, then by name; a
-    station whose base is in `skip` (one that answered with no fuel) is passed over. None when none is reachable."""
+    station whose base is in `skip` (one that answered with no fuel) is passed over. When `prefer_bases` is
+    provided (owned zero-rent CLTV fuel depots), an owned depot within +1 jump of the nearest NPC station
+    wins over paying NPC fuel markups (never adding a jump over a 0-jump local station). None when unreachable."""
     dist = jumps(lanes, src, 99)
+    pref = set(prefer_bases) if prefer_bases else set()
     best = None
+    best_key = None
     for system, (poi, base) in stations.items():
         if base in skip:
             continue
-        if system in dist and (best is None or (dist[system], system) < best[:2]):
-            best = (dist[system], system, poi, base)
+        if system in dist:
+            d = dist[system]
+            is_pref = bool(pref and (base in pref or system in pref))
+            eff_d = (d - 1) if (is_pref and d >= 2) else d
+            key = (eff_d, 0 if is_pref else 1, d, system)
+            if best_key is None or key < best_key:
+                best_key = key
+                best = (d, system, poi, base)
     return best
 
 
@@ -181,7 +263,7 @@ def shortest_path(lanes, src, dst, avoid=()):
     return None
 
 
-def plan_refuel_hop(lanes, src, dst, stations, fuel, max_fuel=95, ship=None, skip=(), avoid=()):
+def plan_refuel_hop(lanes, src, dst, stations, fuel, max_fuel=95, ship=None, skip=(), avoid=(), prefer_bases=None):
     """Choose an intermediate public refuel station (jumps, sys, poi, base) when `fuel` cannot safely
     reach `dst` in one direct leg. Returns None if direct flight is safe OR if no station is reachable."""
     if not src or not dst or src == dst or fuel is None:
@@ -208,11 +290,13 @@ def plan_refuel_hop(lanes, src, dst, stations, fuel, max_fuel=95, ship=None, ski
             continue
         d_s, d_d = dist_src[s], dist_dst[s]
         if d_s <= max_reach and d_d < total:
-            cand = (d_d, d_s, s, poi, base)
-            if best is None or cand[:3] < best[:3]:
+            _is_p = bool(prefer_bases and (base in prefer_bases or s in prefer_bases))
+            _eff_dd = max(0, d_d - 1) if _is_p else d_d
+            cand = (_eff_dd, 0 if _is_p else 1, d_d, d_s, s, poi, base)
+            if best is None or cand[:5] < best[:5]:
                 best = cand
     if best is not None:
-        return (best[1], best[2], best[3], best[4])
+        return (best[3], best[4], best[5], best[6])
     # 2. Otherwise top up at nearest reachable fuel station if tank is not already near full
     mf = float(max_fuel or 95)
     if float(fuel) < 0.85 * mf:

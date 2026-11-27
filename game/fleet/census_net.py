@@ -86,7 +86,7 @@ DEFAULT_POLICY = {
         "arneb", "dheneb", "lhs_1140", "zosma", "cloverfield", "beid", "antares", "segin",
     ],
     "exclude_systems": [],
-    "rest_seconds_when_empty": 45,
+    "rest_seconds_when_empty": 5,
 }
 
 
@@ -523,6 +523,30 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                     best = cand
 
             if best is None:
+                relax_min = policy.get("auto_relax_min_rescan_minutes")
+                if relax_min is not None:
+                    relax_s = max(0.0, float(relax_min) * 60.0)
+                    for sid, meta in systems.items():
+                        if sid in avoid or sid in done or sid in cleaned or sid in busy_orders:
+                            continue
+                        hops = dists.get(sid) if cur_sys else 0
+                        if cur_sys and hops is None:
+                            continue
+                        if max_hops is not None and hops is not None and hops > max_hops:
+                            continue
+                        lt = last_t.get(sid, 0.0)
+                        age_s = (now_t - lt) if lt > 0.0 else 1e9
+                        if lt > 0.0 and age_s < relax_s:
+                            continue
+                        b_sc = never_bonus if lt <= 0.0 else (((age_s / 3600.0) ** 1.35) * 100.0)
+                        if lt > 0.0 and sid in peer_near:
+                            b_sc *= peer_mult
+                        eff_h = max(0, int(hops or 0))
+                        sc = b_sc / (1.0 + hop_decay * eff_h)
+                        c_r = (sc, -eff_h, sid, meta["quad"], lt)
+                        if best is None or c_r > best:
+                            best = c_r
+            if best is None:
                 if not dry:
                     write_json(claims_path, {"updated_at": int(now_t), "claims": cleaned})
                 return None
@@ -675,8 +699,15 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
                 legs += 1
                 continue
 
-            env = dict(os.environ)
-            env["COLLECTIVE_DATA"] = str(data)
+            import runhost as _rh
+            env_extra = {
+                "COLLECTIVE_DATA": str(data),
+                "FLEET_MEMBER": os.environ.get("FLEET_MEMBER") or "dispatch",
+                "FLEET_HOLD": os.environ.get("FLEET_HOLD") or ("census_net " + str(route_id)),
+            }
+            order_path = data / "fleet" / "orders" / (pilot + ".json")
+            if not order_path.exists():
+                write_json(order_path, {"pilot": pilot, "what": "census_net " + str(route_id), "since": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "pid": os.getpid()})
             failed = False
             for wp in enroute_wps:
                 if legs >= max_legs or (deadline - time.time()) <= 90.0:
@@ -686,31 +717,46 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
                 if not claim_waypoint(data, pilot, wp, pick["wing"] or "", pick["quad"], pol):
                     continue
                 print("CENSUS_NET enroute | %s -> %s (on shortest path to %s)" % (pilot, wp, target_sys), flush=True)
-                cmd_wp = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, wp, "--stay", "--keep-flying", "--route", str(route_id)]
-                res_wp = subprocess.run(cmd_wp, env=env, check=False)
+                rc_wp = _rh.run_in_thread(
+                    FLEET / "census.py",
+                    [pilot, wp, "--stay", "--keep-flying", "--route", str(route_id), "--no-order"],
+                    pilot, "census_net " + str(route_id),
+                    env_extra=env_extra, caller_stdout=sys.stdout, caller_sleep=time.sleep,
+                ) or 0
                 release_claim(data, pilot, wp)
                 done.add(wp)
                 cur_sys = str(_load_pilot_ship(data, pilot).get("system") or wp)
                 legs += 1
-                if res_wp.returncode != 0:
+                if rc_wp != 0:
                     failed = True
                     break
             if failed:
                 release_claim(data, pilot, target_sys)
                 break
 
-            cmd = [sys.executable, "-I", "-B", str(FLEET / "census.py"), pilot, target_sys, "--stay", "--keep-flying", "--route", str(route_id)]
-            res = subprocess.run(cmd, env=env, check=False)
+            rc_main = _rh.run_in_thread(
+                FLEET / "census.py",
+                [pilot, target_sys, "--stay", "--keep-flying", "--route", str(route_id), "--no-order"],
+                pilot, "census_net " + str(route_id),
+                env_extra=env_extra, caller_stdout=sys.stdout, caller_sleep=time.sleep,
+            ) or 0
             release_claim(data, pilot, target_sys)
             done.add(target_sys)
             cur_sys = str(_load_pilot_ship(data, pilot).get("system") or target_sys)
             legs += 1
-            if res.returncode != 0:
+            if rc_main != 0:
                 break
         return 0
     finally:
         if not dry_run:
             release_claim(data, pilot)
+            try:
+                _op = data / "fleet" / "orders" / (pilot + ".json")
+                _cur = read_json(_op, {})
+                if isinstance(_cur, dict) and _cur.get("what") == "census_net " + str(route_id):
+                    _op.unlink()
+            except OSError:
+                pass
 
 
 def main():

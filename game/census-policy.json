@@ -32,7 +32,7 @@
     "lilii_borea"
   ],
   "exclude_systems": [],
-  "rest_seconds_when_empty": 45,
+  "rest_seconds_when_empty": 5,
   "unsurveyed_7b_bonus": 6500.0,
   "unsurveyed_7b_min_rescan_minutes": 5.0,
   "battlefront_7a_bonus": 1600.0,
@@ -41,5 +41,6 @@
   "peer_repulsion_mult": 0.45,
   "scan_enroute": true,
   "max_enroute_waypoints": 8,
-  "keep_flying_min_fuel_pct": 0.35
+  "keep_flying_min_fuel_pct": 0.35,
+  "auto_relax_min_rescan_minutes": 2.0
 }

@@ -83,10 +83,12 @@ def now():
     return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
 
 
+NO_ORDER = '--no-order' in sys.argv
 ORDER = DATA / 'fleet' / 'orders' / f'{pilot}.json'
-ORDER.parent.mkdir(parents=True, exist_ok=True)
-ORDER.write_text(json.dumps({'pilot': pilot, 'what': 'census ' + system_id, 'since': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}), encoding='utf-8')
-atexit.register(lambda: ORDER.exists() and ORDER.unlink())
+if not NO_ORDER:
+    ORDER.parent.mkdir(parents=True, exist_ok=True)
+    ORDER.write_text(json.dumps({'pilot': pilot, 'what': 'census ' + system_id, 'since': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}), encoding='utf-8')
+    atexit.register(lambda: ORDER.exists() and ORDER.unlink())
 STARTED = time.time()
 
 
@@ -488,6 +490,8 @@ def fuel_stations_fast(data):
                 s_l = str(svcs or '').lower()
                 if ('refuel' in s_l) or ('_' in str(base)):
                     out.setdefault(str(sid), (str(poi), str(base)))
+            for _osid, _opair in _fp.owned_fuel_depots(data).items():
+                out[_osid] = _opair
             if out:
                 return out
         except Exception:
@@ -717,6 +721,7 @@ leg_started, leg_before = STARTED, WALLET_BEFORE
 LANES, HOME_JUMPS = chart()                    # the chain and the fuel check both fly by the chart
 FARS = strongholds()
 STATIONS = {s: v for s, v in fuel_stations_fast(DATA).items() if s not in FARS}
+OWNED_FUEL_BASES = {b for _p, b in _fp.owned_fuel_depots(DATA).values()}
 import fuelplan as _fp
 SHIP_DOC = None
 try:                                                           # home: the pilot's own capital, not ours for all
@@ -756,7 +761,7 @@ if _fp.fuel_short(TANK, WAY, ship=SHIP_DOC):                     # never fly out
         print(f'RESULT {pilot}: {system_id}: not flown, fuel {TANK} short of the way there and on to fuel', flush=True)
         sys.exit(0)
 while True:
-    if target != system_id:
+    if target != system_id and not NO_ORDER:
         ORDER.write_text(json.dumps({'pilot': pilot, 'what': 'census ' + target, 'since': now()}), encoding='utf-8')
     ok, n_places, n_creatures, station = read_system(target)
     done.add(target)

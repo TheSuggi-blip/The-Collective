@@ -645,7 +645,7 @@ def main(argv=None):
         base_id = str(ship_doc.get("base") or ship_doc.get("docked") or "")
         if not base_id:
             notes.append("not docked")
-            time.sleep(30)
+            time.sleep(5)
             return 0
         stored = get_live_stored(base_id)
         if stored is None:
@@ -674,7 +674,7 @@ def main(argv=None):
             notes.append("docked watch %dm (no recipe)" % max(1, int(round(watch_s / 60.0))))
             end_nap = time.time() + watch_s
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists():
-                time.sleep(min(20.0, max(1.0, end_nap - time.time())))
+                time.sleep(min(5.0, max(1.0, end_nap - time.time())))
                 try:
                     os.utime(order_path)
                 except OSError:

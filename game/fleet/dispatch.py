@@ -119,9 +119,10 @@ import workclass                                  # noqa: E402  r22: the sale ru
 import reserves                                   # noqa: E402  requires.reserve: a faction reserve under a floor (requests ENT-266)
 import runhost                                    # noqa: E402  the program that flies hosted runs as threads
 import routes as routefiles                       # noqa: E402  what standing work is
-import taxes                                      # noqa: E402  the weekly tax a run in flight carried is no loss of its route
+import taxes                                      # noqa: E402
+import matrix_match                               # noqa: E402  exact Hungarian batch matching & live mission-board check  the weekly tax a run in flight carried is no loss of its route
 
-EVERY = 30                   # seconds between two passes
+EVERY = 5                    # max seconds between passes (wakes <=1s on dispatch_wake)
 SPAWN_MOST = 30              # runners running as processes of their own at once, at most (about 60 MB each of the
                              # runner container's 6 GB): while the run host takes no runs (a drain on a changed
                              # script) every run was a process, 235 in one ten-minute drain on 2026-11-23, and the
@@ -1321,6 +1322,7 @@ def why_not(pilot, rid, route, state):
     lacking = bid_missing(state["data"], route, state["now"]) or stored_missing(state["data"], route, pilot, state["rows"])
     lacking = lacking or ask_missing(state["data"], route, state["now"])    # requests ENT-297: the buy end, read like requires.bid
     lacking = lacking or posted_missing(state["data"], route, state["now"])  # requests ENT-498: a board's posting, read like requires.ask
+    lacking = lacking or matrix_match.mission_offered_on_board(state["data"], route, state["now"])
     lacking = lacking or __import__("heldgate").closed(pilot, rid, route, state)     # Q75 (1), ENT-111: open while the division holds less
     if lacking:
         return lacking, None
@@ -2199,6 +2201,8 @@ def one_pass(root, data, dry_run, children):
         status, _answer = gate.call("delete", "/accounts/%s/loop" % gate.q(name), timeout=60)
         ORPHANS.pop(name, None)
         lines.append("%s ran an engine loop no runner owns for %d minutes: loop stopped (HTTP %s)" % (name, ORPHAN_MINUTES, status))
+    forced_free = []
+    regular_free = []
     for ship in fleet.get("ships") or []:
         name = ship.get("name") or ""
         if ship.get("status") != "connected" or name in state["orders"] or (ship.get("activity") or {}).get("kind") != "idle":
@@ -2250,11 +2254,33 @@ def one_pass(root, data, dry_run, children):
                 lines.append("%s held docked for open leader errand (%s %s)" % (name, e_obj.get("id"), e_obj.get("action")))
             continue
         if f_act == "park" and f_obj is not None:
-            route, argument = f_obj, None
+            forced_free.append((ship, pilot, f_obj, None))
         elif e_act == "park" and e_obj is not None:
-            route, argument = e_obj, None
+            forced_free.append((ship, pilot, e_obj, None))
         else:
-            route, argument = pick(pilot, plan, routes, state)
+            regular_free.append((ship, pilot))
+
+    pre_assigned, ordered_regular = matrix_match.assign_batch_pilots(
+        regular_free, plan, routes, state, why_not, route_hops, pick, role_of_fn=role_of
+    )
+    dispatch_queue = [(s, p, rt, arg, True) for s, p, rt, arg in forced_free] + [
+        (s, p, None, None, False) for s, p in ordered_regular
+    ]
+    for ship, pilot, forced_rt, forced_arg, is_forced in dispatch_queue:
+        name = pilot["name"]
+        if is_forced:
+            route, argument = forced_rt, forced_arg
+        else:
+            matched = pre_assigned.get(name)
+            if matched is not None:
+                m_rt, m_arg = matched
+                m_why, m_live_arg = why_not(pilot, m_rt["id"], m_rt, state)
+                if m_why is None:
+                    route, argument = m_rt, (m_live_arg if m_live_arg is not None else m_arg)
+                else:
+                    route, argument = pick(pilot, plan, routes, state)
+            else:
+                route, argument = pick(pilot, plan, routes, state)
         if route is None:
             continue
         if not dry_run and not (hosted is not None and route["kind"] in kinds and hosted < cap) and alone >= SPAWN_MOST:

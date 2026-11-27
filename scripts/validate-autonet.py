@@ -122,6 +122,21 @@ def check_repo(repo_root=None):
             elif int(ships.get(r, 1)) <= 0:
                 errors.append(f"{rel}: AutoNet route '{r}' ship cap cannot be 0")
 
+
+    # Verify matrix_match module exists and hosting.json (when live) hosts every AutoNet *_net kind
+    mm_path = root / "game" / "fleet" / "matrix_match.py"
+    if not mm_path.is_file():
+        errors.append("MISSING game/fleet/matrix_match.py (global optimal batch matching & mission-board gate)")
+    live_hosting = Path("/srv/collective/data/fleet/hosting.json")
+    if root == REPO and live_hosting.is_file():
+        try:
+            hk = set((json.loads(live_hosting.read_text(encoding="utf-8")) or {}).get("kinds") or [])
+            for req_k in ("mine_net", "hunt_net", "fit_net", "craft_net", "salvage_net", "pirate_net", "census_net", "haul", "bursar"):
+                if req_k not in hk:
+                    errors.append(f"hosting.json missing required hosted kind '{req_k}' (causes SPAWN_MOST idle starvation)")
+        except Exception as e:
+            errors.append(f"INVALID /srv/collective/data/fleet/hosting.json: {e}")
+
     return errors
 
 

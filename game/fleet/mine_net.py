@@ -66,7 +66,7 @@ DEFAULT_POLICY = {
     "needs_max_priority": 2,
     "gift_surplus_to_trader": False,
     "priority_resources": [],
-    "rest_seconds_when_empty": 60,
+    "rest_seconds_when_empty": 5,
 }
 
 ICE_SUFFIXES = ("_ice",)
@@ -1201,7 +1201,7 @@ def main(argv=None):
     try:
         if not policy.get("enabled", True):
             print("RESULT %s: mine_net %s | disabled in policy" % (pilot, route_id), flush=True)
-            time.sleep(60)
+            time.sleep(5)
             return 0
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
         ship_doc["name"] = pilot
@@ -1235,9 +1235,9 @@ def main(argv=None):
                         return 0
                     except Exception as _re:
                         print("%s %s mine_net: relocate err: %s" % (utc_now(), pilot, str(_re)[:80]), flush=True)
-            print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, min(60, int(policy.get("rest_seconds_when_empty") or 60))), flush=True)
+            print("%s %s mine_net: no unsaturated belt matched policy/tools; resting %ds" % (utc_now(), pilot, min(60, int(policy.get("rest_seconds_when_empty") or 5))), flush=True)
             started = time.time()
-            end_nap = started + min(60.0, float(policy.get("rest_seconds_when_empty") or 60))
+            end_nap = started + min(60.0, float(policy.get("rest_seconds_when_empty") or 5))
             while time.time() < end_nap and not (DATA / "fleet" / "STOP").exists() and not stop_flag:
                 time.sleep(min(20.0, max(1.0, end_nap - time.time())))
             record_no_belt(DATA, pilot, route_id, started)

@@ -528,8 +528,16 @@ class Host:
     def step(self, now=None):
         """One look. False when the host has drained and must end, so that the shelf starts it fresh."""
         now = time.time() if now is None else now
-        for name in [n for n, run in self.runs.items() if not run[0].is_alive()]:
+        finished = [n for n, run in self.runs.items() if not run[0].is_alive()]
+        for name in finished:
             del self.runs[name]
+        if finished:
+            try:
+                wake = Path(self.data) / "fleet" / "dispatch_wake"
+                wake.parent.mkdir(parents=True, exist_ok=True)
+                wake.write_text(str(now), encoding="ascii")
+            except OSError:
+                pass
         for path in sorted((self.folder / "stop").iterdir()):
             jname = job_file(path.name)
             run = self.runs.get(jname)
