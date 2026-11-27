@@ -323,10 +323,25 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
     bunker_fuel_by_base = {}
     has_bunker_bases = set()
     if isinstance(emp_data, dict):
+        bunker_cap_by_base = {}
+        _FUEL_FAC_CAPS = {
+            "faction_fuel_bunker": 50000,
+            "faction_large_fuel_bunker": 150000,
+            "faction_capital_fuel_bunker": 500000,
+            "refueling_dock": 5000,
+            "fuel_depot": 5000,
+            "fuel_tank_expansion": 50000,
+            "fuel_bunker": 50000,
+            "large_fuel_bunker": 150000,
+            "capital_fuel_bunker": 500000,
+        }
         for fac in (emp_data.get("facilities") or []):
-            if isinstance(fac, dict) and str(fac.get("type") or "") == "faction_fuel_bunker" and str(fac.get("status") or "active") == "active":
-                if fac.get("base"):
-                    has_bunker_bases.add(str(fac["base"]))
+            if isinstance(fac, dict) and str(fac.get("status") or "active") == "active":
+                _ft = str(fac.get("type") or "").lower()
+                if _ft in _FUEL_FAC_CAPS and fac.get("base"):
+                    _fb = str(fac["base"])
+                    has_bunker_bases.add(_fb)
+                    bunker_cap_by_base[_fb] = bunker_cap_by_base.get(_fb, 0) + _FUEL_FAC_CAPS[_ft]
         for row in (emp_data.get("faction_storage") or []):
             if isinstance(row, dict) and str(row.get("item") or row.get("item_id") or "") == "fuel":
                 b_k = str(row.get("base") or row.get("base_id") or "")
@@ -356,8 +371,9 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             pass
         # Build prioritized demand list: (item_id, deficit_units, urgency, job_key, bunker_fill_bool, eff_max_pick)
         demands = []
-        btgt = int(bunker_tgts.get(hub_kind) or 0)
-        b_reorder = float(policy.get("hub_bunker_reorder_pct") or 0.96)
+        _cap_here = int(bunker_cap_by_base.get(hub_id) or 0)
+        btgt = min(int(bunker_tgts.get(hub_kind) or 0), _cap_here) if _cap_here > 0 else int(bunker_tgts.get(hub_kind) or 0)
+        b_reorder = float(policy.get("hub_bunker_reorder_pct") or 0.98)
         if btgt > 0 and hub_id in has_bunker_bases:
             have_f = int(bunker_fuel_by_base.get(hub_id, cur_inv.get("fuel") or 0))
             fill_r = float(have_f) / float(btgt)
@@ -372,7 +388,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 elif fill_r < 0.80:
                     _max_slots, urg_b, _b_pick = 2, 3.0, min(max_pick, 10)
                 else:
-                    _max_slots, urg_b, _b_pick = 1, 1.2, min(max_pick, 8)
+                    _max_slots, urg_b, _b_pick = 1, 1.5, min(max_pick, 14)
                 _free_jk = ""
                 for _si in range(_max_slots):
                     _cand_jk = ("upkeep_bunker:%s" % hub_id) if _si == 0 else ("upkeep_bunker:%s:s%d" % (hub_id, _si))
@@ -1841,7 +1857,7 @@ def main(argv=None):
     policy = load_policy(policy_path)
 
     p_enc = urllib.parse.quote(pilot, safe="")
-    order_path = DATA / "fleet" / "orders" / ship_file_name(pilot)
+    order_path = DATA / "fleet" / "orders" / (pilot + ".json")
     stop_files = (DATA / "fleet" / "host" / "stop" / pilot, DATA / "fleet" / "host" / "stop" / ship_file_name(pilot))
     started = time.time()
     notes = []
@@ -2191,9 +2207,15 @@ def main(argv=None):
                         else:
                             r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
                             time.sleep(TICK)
-                            say("hub_upkeep DELIVERED %d %s -> %s%s" % (have, iid, dloc[2], " ERR" if "error" in r_dep else ""))
-                            notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
-                            completed += 1
+                            if "error" in r_dep:
+                                _dep_err = str(r_dep.get("error") or "")[:90]
+                                say("hub_upkeep DEPOSIT_ERR %d %s -> %s: %s" % (have, iid, dloc[2], _dep_err))
+                                notes.append("hub_upkeep dep_err %s: %s" % (iid, _dep_err[:50]))
+                                release_job(DATA, pilot)
+                            else:
+                                say("hub_upkeep DELIVERED %d %s -> %s" % (have, iid, dloc[2]))
+                                notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
+                                completed += 1
                     else:
                         release_job(DATA, pilot)
 

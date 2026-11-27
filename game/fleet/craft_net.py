@@ -173,6 +173,19 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
     else:
         need_craft_caps = {}
 
+    # Adaptive MRP pull: include all owned station & outpost hub_upkeep_targets from haul-policy.json
+    # so 5B workshops automatically craft missing fuel_cell, flex_polymer, purified_water, and resort consumables!
+    try:
+        _hp_c = read_json(Path(repo_root) / "game" / "haul-policy.json", {})
+        _ht_all = (_hp_c.get("hub_upkeep_targets") or {}) if isinstance(_hp_c, dict) else {}
+        for _hk in ("station", "outpost"):
+            for _hi, _hq in (_ht_all.get(_hk) or {}).items():
+                _htgt = int(_hq or 0)
+                if _htgt > 0 and stock_by_item.get(str(_hi), 0) < _htgt:
+                    need_crafts.add(str(_hi))
+                    need_craft_caps[str(_hi)] = max(need_craft_caps.get(str(_hi), 0), _htgt)
+    except Exception:
+        pass
     dem_rel = str(policy.get("demand_file") or "game/craft-demand.json")
     dem_p = Path(dem_rel) if Path(dem_rel).is_absolute() else (Path(repo_root) / dem_rel)
     demand = read_json(dem_p, {})
@@ -252,14 +265,23 @@ def expand_demand_raw_inputs(world):
     return wanted_raw
 
 
-def pick_craft_job(division, base_id, stored_items, credits, world, policy):
-    """Select the highest-priority executable workshop craft job at `base_id` for `division` (strict P5)."""
+def pick_craft_job(division, base_id, stored_items, credits, world, policy, skip_recipes=None, wing=""):
+    """Select the highest-priority executable workshop craft job at `base_id` for `division` / `wing`.
+    Mobile Field Workshops (5B.) prioritize open industrial/station/outpost supply deficits first
+    (depositing into faction storage), then fall back to high-margin commercial crafting."""
     if not policy or not policy.get("enabled", True) or not base_id:
         return None
+    _skip = set(skip_recipes or ())
+    _is_workshop = str(wing or "").startswith("5B.")
     is_trade = (str(division) == "Trade")
     is_log = (str(division) == "Logistics")
-    if not (is_trade or is_log):
+    if not (is_trade or is_log or _is_workshop):
         return None
+    if _is_workshop and (policy.get("logistics") or {}).get("enabled", True):
+        # 5B Mobile Field Workshops: try adaptive industrial/station-supply crafting FIRST!
+        ind_job = pick_craft_job("Logistics", base_id, stored_items, credits, world, policy, skip_recipes=_skip, wing="")
+        if ind_job is not None:
+            return ind_job
     sub = (policy.get("trade") if is_trade else policy.get("logistics")) or {}
     if not sub.get("enabled", True):
         return None
@@ -307,6 +329,8 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy):
 
     best = None
     for rec in (world.get("recipes") or {}).values():
+        if rec.get("id") in _skip:
+            continue
         if rec.get("facility_only") or not rec.get("inputs") or not rec.get("outputs"):
             continue
         out_item, out_qty = rec["outputs"][0]
@@ -668,7 +692,29 @@ def main(argv=None):
                 if int(_fq or 0) > 0:
                     stored[_fi] = int(stored.get(_fi) or 0) + int(_fq)
         world = load_craft_world(DATA, REPO, policy)
-        job = pick_craft_job(div, base_id, stored, before, world, policy)
+        _wing_s = str(ship_doc.get("wing") or "")
+        _skip_r = set()
+        _cd_doc = read_json(DATA / "fleet" / "craft_cooldown.json", {})
+        if isinstance(_cd_doc, dict):
+            _now_c = time.time()
+            _pfx = "%s:" % pilot
+            for _ck, _cu in _cd_doc.items():
+                if str(_ck).startswith(_pfx) and float(_cu or 0) > _now_c:
+                    _skip_r.add(str(_ck)[len(_pfx):])
+        job = None
+        for _try_i in range(5):
+            cand = pick_craft_job(div, base_id, stored, before, world, policy, skip_recipes=_skip_r, wing=_wing_s)
+            if not cand:
+                break
+            _test_c = {"recipe_id": cand["recipe"], "quantity": int(cand["runs"] * cand["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+            _q_chk = raw("craft", dict(_test_c, dry_run=True), group="spacemolt")
+            _q_err = str(_q_chk.get("error") or (_body(_q_chk).get("error") if isinstance(_body(_q_chk), dict) else "") or "")
+            if _q_err and ("cannot_craft" in _q_err.lower() or "skill" in _q_err.lower() or "facility" in _q_err.lower()):
+                _skip_r.add(cand["recipe"])
+                _stamp_craft_cooldown("%s:%s" % (pilot, cand["recipe"]), 3600, data_dir=DATA)
+                continue
+            job = cand
+            break
         if not job:
             watch_s = min(120.0, float(policy.get("idle_watch_minutes") or 2) * 60.0)
             notes.append("docked watch %dm (no recipe)" % max(1, int(round(watch_s / 60.0))))

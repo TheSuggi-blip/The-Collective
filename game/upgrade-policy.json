@@ -869,7 +869,7 @@
           "assign_priority": 14,
           "ladder": [
             {
-              "hull": "runner",
+              "hull": "prayer",
               "tier": 1,
               "min_piloting": 0,
               "max_price": 52000

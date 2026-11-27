@@ -665,6 +665,20 @@ def _gate_raw(gate_mod, pilot, action, params=None, group="spacemolt_ship"):
     return status == 200 and '"error"' not in str(out)[:240], data
 
 
+def _escape_battle(gate_mod, pilot, wait_ticks=2):
+    """Break non-combatant / upgrade-held ships out of infinite in_battle stalemates (e.g. GSV Asclepius)."""
+    _gate_raw(gate_mod, pilot, "stance", {"stance": "flee"}, group="spacemolt_battle")
+    _gate_raw(gate_mod, pilot, "retreat", {}, group="spacemolt_battle")
+    for _ in range(max(1, int(wait_ticks))):
+        time.sleep(11.0)
+        ok_b, b_ans = _gate_raw(gate_mod, pilot, "status", {}, group="spacemolt_battle")
+        txt = json.dumps(b_ans).lower() if isinstance(b_ans, dict) else str(b_ans).lower()
+        if (not ok_b) or ("not in" in txt) or ("no active battle" in txt) or ("no battle" in txt):
+            return True
+        _gate_raw(gate_mod, pilot, "retreat", {}, group="spacemolt_battle")
+    return False
+
+
 def _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65):
     try:
         status, out = gate_mod.call("post", "/accounts/%s/goal" % gate_mod.q(pilot),
@@ -768,6 +782,11 @@ def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65, data_dir=No
         ok_d, msg_d = _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(120.0, rem))
         if ok_d:
             return True, msg_d
+        if "in_battle" in msg_d.lower() or "while in combat" in msg_d.lower():
+            if _escape_battle(gate_mod, pilot, wait_ticks=2):
+                ok_d, msg_d = _gate_dock_once(gate_mod, pilot, sys_id, poi_id, base_id, timeout=min(90.0, max(25.0, t_end - time.time())))
+                if ok_d:
+                    return True, msg_d
         if "insufficient fuel" in msg_d.lower() and cur_sys and lanes and stations:
             # Engine refused direct jump -> plan conservative hop using 60% of current fuel estimate
             eff_fuel = float(cur_fuel) * 0.6 if isinstance(cur_fuel, (int, float)) else 25.0
@@ -1077,7 +1096,26 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=500, 
                         return
 
             if not price:
-                r["note"], r["updated_at"] = "quote unreadable", int(now)
+                _q_err = ""
+                if isinstance(q_ans, dict):
+                    _q_err = str(q_ans.get("error") or q_ans.get("message") or q_ans.get("raw") or "")
+                else:
+                    _q_err = str(q_ans or "")
+                _ql = _q_err.lower()
+                _q_fails = int(r.get("quote_fails") or 0) + 1
+                r["quote_fails"] = _q_fails
+                _perm = any(tok in _ql for tok in (
+                    "achievement_required", "prestige hull", "not_available",
+                    "invalid_ship_class", "insufficient_skill", "unknown ship",
+                    "cannot commission", "locked",
+                ))
+                if _perm or _q_fails >= 3:
+                    r["state"] = "failed"
+                    r["note"] = ("quote failed: %s" % (_q_err or "quote unreadable"))[:120]
+                    r["updated_at"] = int(now)
+                else:
+                    r["note"] = ("quote retry %d/3: %s" % (_q_fails, _q_err or "quote unreadable"))[:120]
+                    r["updated_at"] = int(now)
                 row_changed = True
                 return
             if price > int(r["max_price"]):

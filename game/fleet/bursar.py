@@ -305,6 +305,22 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             if float(_buntil or 0) > now_t:
                 exclude.add(str(_bk))
     priority = set(str(x) for x in (policy.get("priority_stations") or []))
+    _owned_station_bases = set()
+    _officers_set = set()
+    try:
+        _emp_b = read_json(Path(data) / "empire" / "empire.json", {})
+        if isinstance(_emp_b, dict):
+            for _m in (_emp_b.get("members") or []):
+                if isinstance(_m, dict) and str(_m.get("role") or _m.get("rank") or "").lower() in ("leader", "officer"):
+                    _mn = str(_m.get("username") or _m.get("name") or _m.get("pilot") or "")
+                    if _mn:
+                        _officers_set.add(_mn)
+            for _ob in (_emp_b.get("bases") or []):
+                if isinstance(_ob, dict) and str(_ob.get("kind") or "").lower() == "station" and _ob.get("base"):
+                    _owned_station_bases.add(str(_ob["base"]))
+    except Exception:
+        pass
+    _is_officer = str(pilot) in _officers_set
 
     # Preload read-only world inputs OUTSIDE bursar_claims.lock (3000x faster, eliminates lock pileups!)
     orders = _fresh_orders(data, now_t)
@@ -349,6 +365,8 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                         continue
                     if str(orders.get(h_s) or "").startswith("bursar ") or (now_t - at_f) < 90:
                         kept_h[h_s] = int(at_f)
+                if kept_h and _is_officer and str(b_id) in _owned_station_bases and not any(h in _officers_set for h in kept_h):
+                    kept_h = {}
                 if kept_h:
                     prim = min(kept_h.items(), key=lambda kv: (kv[1], kv[0]))[0]
                     crec = dict(rec)
@@ -402,7 +420,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             # Hybrid Lockbox Staffing: [CLTV] Officer Traders get dedicated priority claim on our safe Lockbox hubs
             # so every safe Lockbox station has a permanent 24/7 Officer Bursar (<= 2m local sale or lockbox_push!).
             is_officer = _bursar_can_withdraw_faction(data, pilot)
-            active_lbs = _bursar_active_lockboxes(data) if is_officer else set()
+            active_lbs = (_bursar_active_lockboxes(data) | _owned_station_bases) if is_officer else set()
 
             def _has_other_officer(bid):
                 rec_c = cleaned.get(bid)
@@ -1178,7 +1196,7 @@ def main(argv=None):
 
     policy = load_policy(policy_path)
     p_enc = urllib.parse.quote(pilot, safe="")
-    order_path = DATA / "fleet" / "orders" / ship_file_name(pilot)
+    order_path = DATA / "fleet" / "orders" / (pilot + ".json")
     stop_files = (DATA / "fleet" / "host" / "stop" / pilot, DATA / "fleet" / "host" / "stop" / ship_file_name(pilot))
     started = time.time()
     notes = []

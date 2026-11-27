@@ -1832,8 +1832,8 @@ def _acquire_serve_lock(data):
 
 
 STATION_BUILD_PRIORITY = (
-    "market_terminal",
     "refueling_dock",
+    "market_terminal",
     "notice_board",
     "faction_desk",
     "market_runner",
@@ -2090,11 +2090,24 @@ def serve(data, now, dry):
             _last_t = float(_tug_stamp.stat().st_mtime) if _tug_stamp.exists() else 0.0
             if dry or (now - _last_t) >= 300.0:
                 import tug as _tug
-                _tug.run_pass(data, now=now, dry=dry, limit=4)
+                _tug.run_pass(data, now=now, dry=dry, limit=8)
                 if not dry:
                     _tug_stamp.write_text(str(int(now)), encoding="ascii")
         except Exception as error:
             print("tug: pass warning: %s: %s" % (type(error).__name__, str(error)[:160]))
+        # Automatic cash-sweep backstop inside wallet service: keeps Treasury cleanly above
+        # upgrade/station floor even when 180+ pilot wallets accumulate surplus credits.
+        try:
+            _sw_stamp = Path(data) / "fleet" / "sweep_serve_last_run"
+            _last_sw = float(_sw_stamp.stat().st_mtime) if _sw_stamp.exists() else 0.0
+            _emp_sw = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+            _tr_now = int(((_emp_sw.get("faction") or {}).get("treasury")) or 0)
+            _sw_interval = 120.0 if _tr_now < 3500000 else 300.0
+            if (not dry) and (now - _last_sw) >= _sw_interval and (Path(data) / "fleet" / "sweep.jsonl").exists():
+                sweep(data, time.time(), dry=False, cash_only=True)
+                _sw_stamp.write_text(str(int(time.time())), encoding="ascii")
+        except Exception as error:
+            print("wallet: auto-sweep warning: %s: %s" % (type(error).__name__, str(error)[:160]))
         return failed
     finally:
         if lock_fh is not None:

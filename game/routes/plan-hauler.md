@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apollo. Routes: 74. Ships: 90.
+Kept by Apollo. Routes: 73. Ships: 90.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -86,14 +86,13 @@ Kept by Apollo. Routes: 74. Ships: 90.
 | 64 | [join-sol-records](join-sol-records.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 61 ships, empty hold, under corporation_management 7, standing work | all 90 |
 | 65 | [join-rim-debris](join-rim-debris.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | once per pilot, up to 30 ships, empty hold, under corporation_management 7, standing work | all 90 |
 | 66 | [join-krynn-bloodforge](join-krynn-bloodforge.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 60 ships, empty hold, under corporation_management 7, standing work | all 90 |
-| 67 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 45 ships, standing work | all 90 |
-| 68 | [haul-network-builder](haul-network-builder.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 1 ships, from corporation_management 7, standing work | all 90 |
-| 69 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 100 ships, under corporation_management 7, standing work | all 90 |
-| 70 | [supply-bunker-gsc-0044-own-cells](supply-bunker-gsc-0044-own-cells.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | all 90 |
-| 71 | [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, from 12,000 cr, standing work | all 90 |
-| 72 | [supply-bunker-atria-own-cells](supply-bunker-atria-own-cells.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | all 90 |
-| 73 | [supply-bunker-atria](supply-bunker-atria.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, from 12,000 cr, while node_alpha_processing_station asks 101 cr or less for fuel_cell, standing work | all 90 |
-| 74 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 90 |
+| 67 | [haul-network-builder](haul-network-builder.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 1 ships, from corporation_management 7, standing work | all 90 |
+| 68 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 100 ships, under corporation_management 7, standing work | all 90 |
+| 69 | [supply-bunker-gsc-0044-own-cells](supply-bunker-gsc-0044-own-cells.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | all 90 |
+| 70 | [supply-bunker-gsc-0044](supply-bunker-gsc-0044.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 1 ships, empty hold, from 12,000 cr, standing work | all 90 |
+| 71 | [supply-bunker-atria-own-cells](supply-bunker-atria-own-cells.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, from 5,000 cr, with 29 fuel_cell stored at node_beta_industrial_station, standing work | all 90 |
+| 72 | [supply-bunker-atria](supply-bunker-atria.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, from 12,000 cr, while node_alpha_processing_station asks 101 cr or less for fuel_cell, standing work | all 90 |
+| 73 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 90 |
 
 Planned:
 

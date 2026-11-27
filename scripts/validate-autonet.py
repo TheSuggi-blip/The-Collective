@@ -144,6 +144,11 @@ def check_repo(repo_root=None):
         if _rp.is_file() and ".parse_args()" in _rp.read_text(encoding="utf-8"):
             errors.append(f"game/fleet/{_rname}: bare .parse_args() reads runhost process argv instead of thread Facade sys.argv[1:]")
 
+    # Rule R6: EVERY runner MUST write orders/<pilot>.json (never ship_file_name(pilot) which creates 2x underscored ghost locks)
+    for _pyf in sorted((root / "game" / "fleet").glob("*.py")):
+        if '"orders" / ship_file_name(' in _pyf.read_text(encoding="utf-8", errors="replace"):
+            errors.append(f"game/fleet/{_pyf.name}: uses ship_file_name() for fleet/orders/ (must use pilot + '.json')")
+
     return errors
 
 

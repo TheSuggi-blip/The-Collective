@@ -4,7 +4,7 @@
  "title": "Dynamic zero-fuel docked manufacturing (Trade commercial profit crafting + Logistics industrial crafting)",
  "note": "Policy-driven autonomous docked manufacturing runner governed by game/craft-policy.json and game/craft-demand.json. Strict P5 class separation: Trade crafts profitable commercial goods and lists/sells via Exchange/Bursars; Logistics crafts industrial building materials and stores into faction/reserve storage (never sells).",
  "policy": "game/craft-policy.json",
- "max_ships": 45,
+ "max_ships": 12,
  "standing": true,
  "measured": {
   "date": "2026-11-27",
@@ -16,13 +16,8 @@
   "last_run": "2026-11-27T15:56:17Z"
  },
  "requires": {
-  "exclude_wing_prefix": [
-   "4A.",
-   "4B.",
-   "4C.",
-   "5A.",
-   "6B.",
-   "6C."
+  "wing_prefix": [
+   "5B."
   ]
  }
 }

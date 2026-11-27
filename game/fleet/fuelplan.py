@@ -103,7 +103,7 @@ def owned_fuel_depots(data, min_fuel=200):
                 FROM bases b
                 JOIN faction_facilities ff ON ff.base = b.base
                 JOIN faction_storage fs ON fs.base = b.base
-                WHERE LOWER(COALESCE(ff.type, '')) LIKE '%fuel_bunker%'
+                WHERE (LOWER(COALESCE(ff.type, '')) LIKE '%fuel_bunker%' OR LOWER(COALESCE(ff.type, '')) IN ('refueling_dock', 'fuel_depot', 'fuel_tank_expansion'))
                   AND LOWER(COALESCE(ff.status, 'active')) = 'active'
                   AND fs.item = 'fuel'
                   AND COALESCE(fs.units, 0) >= ?
