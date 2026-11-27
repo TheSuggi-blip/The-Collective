@@ -14,7 +14,7 @@ updated: 2026-11-27
 
 # Our Lord And Savior [OLSV]
 
-A player faction with 2 base(s) in 2 system(s); the nearest to Nexus Prime is 12 jump(s) away, in Merak (`merak`).
+A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 12 jump(s) away, in Merak (`merak`).
 Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
@@ -26,13 +26,14 @@ Pilots of it in our space in the last 24 hours: 1.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 546 | Public event stream |
+| Pilots carrying the tag on the public event stream | 532 | Public event stream |
 
 ## Bases
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
 | OLSV Merak Bastion | outpost | Merak (`merak`) | lawless | 12 | thriving, wrecked |
+| OLSV Tidewater Citadel | station | Tidewater (`tidewater`) | lawless | 14 | thriving |
 | OLSV Mirfak Sanctum | outpost | Mirfak (`mirfak`) | lawless | 17 | thriving |
 
 ## Pilots in Our Space

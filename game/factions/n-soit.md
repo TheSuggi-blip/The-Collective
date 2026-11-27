@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Soit [SOIT]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 24 jump(s) away, in Longshore (`longshore`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 21.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | OKLM, SGC. | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 12 | Public event stream |
+| Pilots carrying the tag on the public event stream | 66 | Public event stream |
 
 ## Bases
 
@@ -43,11 +43,24 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Aqua Nan | Node Beta (`node_beta`) | 0 | bonanza |
 | Artemis Fowl | Node Beta (`node_beta`) | 0 | bonanza |
 | Cadavre Exquis | Node Beta (`node_beta`) | 0 | bonanza |
-| Colos Copik | Node Beta (`node_beta`) | 0 | bonanza |
 | Coma Idyllique | Node Beta (`node_beta`) | 0 | bonanza |
 | Jesus Crie | Node Beta (`node_beta`) | 0 | bonanza |
 | Kira Solenne | Node Beta (`node_beta`) | 0 | bonanza |
+| Pyre Unden | Node Alpha (`node_alpha`) | 0 | theoria |
+| Rhen Drakon | Node Alpha (`node_alpha`) | 0 | theoria |
+| Rynn Calder | Node Alpha (`node_alpha`) | 0 | theoria |
+| Ryxa Solenn | Node Alpha (`node_alpha`) | 0 | theoria |
+| Sable Qui | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Sael Dorith | Nexus Prime (`nexus_prime`) | 0 | theoria |
+| Sela Vrenn | Node Alpha (`node_alpha`) | 0 | theoria |
 | Selection Naturelle | Node Beta (`node_beta`) | 0 | bonanza |
+| Sera Nullen | Node Alpha (`node_alpha`) | 0 | theoria |
+| Skor Halven | Node Alpha (`node_alpha`) | 0 | theoria |
+| Sora Drenn | Synchrony (`synchrony`) | 0 | theoria |
+| Taryn Voss | Pherkad (`pherkad`) | 0 | theoria |
+| Tessa Draul | Pherkad (`pherkad`) | 0 | theoria |
+| Thora Vell | Pherkad (`pherkad`) | 0 | theoria |
+| Wren Calyx | Node Beta (`node_beta`) | 0 | archimedes |
 
 ## Standing History
 
