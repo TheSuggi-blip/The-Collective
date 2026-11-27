@@ -385,12 +385,16 @@ def seated_members(data):
 
 
 def storage_bases(data):
-    """Set of station/base IDs with an active faction storage facility (lockbox, warehouse, depot, stronghold)."""
+    """Set of station/base IDs with an active faction storage facility or owned sovereign station."""
     emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
     facs = (emp.get("facilities") or []) if isinstance(emp, dict) else []
-    return {str(f.get("base")) for f in facs if isinstance(f, dict)
-            and str(f.get("type") or "").lower() in STORAGE_FACILITY_TYPES
-            and str(f.get("status") or "").lower() == "active" and f.get("base")}
+    out = {str(f.get("base")) for f in facs if isinstance(f, dict)
+           and str(f.get("type") or "").lower() in STORAGE_FACILITY_TYPES
+           and str(f.get("status") or "").lower() == "active" and f.get("base")}
+    for b in ((emp.get("bases") or []) if isinstance(emp, dict) else []):
+        if isinstance(b, dict) and str(b.get("kind") or "").lower() == "station" and (b.get("base") or b.get("id")):
+            out.add(str(b.get("base") or b.get("id")))
+    return out
 
 
 def builders(data):
@@ -2055,6 +2059,17 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
                 print("STATION_ACCESS %s: %s=public @ %s | %s" % (
                     "OK" if ok_s else "WARN", pub_svc, bname, str(msg_s)[:120]), flush=True)
                 time.sleep(11.0)
+            if fid == "refueling_dock":
+                try:
+                    _td_p = Path(data) / "fleet" / "tug_dry.json"
+                    _td = dispatch.read_json(_td_p, {})
+                    if isinstance(_td, dict) and _td:
+                        _sys_set = {str(b.get("system") or "") for b in (emp.get("bases") or []) if isinstance(b, dict) and str(b.get("base") or b.get("id") or "") == base_id}
+                        _td2 = {k: v for k, v in _td.items() if not (isinstance(v, dict) and str(v.get("system") or "") in _sys_set)}
+                        if len(_td2) != len(_td):
+                            _td_p.write_text(json.dumps(_td2, indent=2, sort_keys=True) + "\n", encoding="ascii")
+                except Exception:
+                    pass
         else:
             print("STATION_BUILD FAIL: %s @ %s via %s | %s" % (
                 fid, bname, builder, str(msg)[:160]), flush=True)

@@ -667,6 +667,56 @@ def main(argv=None):
         ship_doc = read_json(DATA / "fleet" / "ships" / ship_file_name(pilot), {})
         div = str(ship_doc.get("division") or "")
         base_id = str(ship_doc.get("base") or ship_doc.get("docked") or "")
+        _wing_pre = str(ship_doc.get("wing") or "")
+        if not base_id and _wing_pre.startswith("5B."):
+            # Mobile Field Workshop: if undocked, find nearest station with a live craft job (preferring current system, <= 5 hops)
+            try:
+                _w_pre = load_craft_world(DATA, REPO, policy)
+                import fuelplan as _fp_c
+                _lanes_c, _ = _fp_c.chart(REPO / "game")
+                _cur_sys_c = str(ship_doc.get("system") or "")
+                _can_fac_c = _pilot_can_withdraw_faction(DATA, pilot)
+                _lbs_c = _active_lockboxes(DATA) if _can_fac_c else set()
+                _stor_c = read_json(DATA / "stock" / "storage.json", {})
+                _p_stor_c = ((_stor_c.get("pilots") or {}).get(pilot) or {})
+                _p_st_map = _p_stor_c.get("stations") if isinstance(_p_stor_c.get("stations"), dict) else _p_stor_c
+                _st_coords = {}
+                _db_c = DATA / "store" / "read.db"
+                if _db_c.exists():
+                    _con_c = sqlite3.connect("file:%s?mode=ro&immutable=1" % _db_c, uri=True)
+                    try:
+                        for _b_c, _s_c, _p_c in _con_c.execute("SELECT base, system, poi FROM bases WHERE base IS NOT NULL AND system IS NOT NULL AND poi IS NOT NULL").fetchall():
+                            _st_coords[str(_b_c)] = (str(_s_c), str(_p_c))
+                        for _b_c, _s_c, _p_c in _con_c.execute("SELECT base, system, poi FROM places WHERE base IS NOT NULL AND system IS NOT NULL AND poi IS NOT NULL").fetchall():
+                            _st_coords.setdefault(str(_b_c), (str(_s_c), str(_p_c)))
+                    finally:
+                        _con_c.close()
+                _cands_c = list(_lbs_c) + [b for b in (_w_pre.get("books_by_base") or {}).keys() if b not in _lbs_c]
+                _best_hub = None
+                for _cb in _cands_c:
+                    if _cb not in _st_coords:
+                        continue
+                    _csys, _cpoi = _st_coords[_cb]
+                    _hops_c = _fp_c.hops(_lanes_c, _cur_sys_c, _csys) if (_cur_sys_c and _csys != _cur_sys_c and hasattr(_fp_c, "hops")) else (0 if _csys == _cur_sys_c else 3)
+                    if _hops_c is None or _hops_c > 5:
+                        continue
+                    _cst = dict((_p_st_map.get(_cb) or {}) if isinstance(_p_st_map, dict) else {})
+                    if _cb in _lbs_c:
+                        for _fi, _fq in _faction_items_at_base(_stor_c, _cb).items():
+                            if int(_fq or 0) > 0:
+                                _cst[_fi] = int(_cst.get(_fi) or 0) + int(_fq)
+                    _cjob = pick_craft_job(div, _cb, _cst, before, _w_pre, policy, wing=_wing_pre)
+                    if _cjob:
+                        _sc_h = float(_cjob.get("score") or 0.0) / (1.0 + 0.5 * float(_hops_c))
+                        if _best_hub is None or _sc_h > _best_hub[0]:
+                            _best_hub = (_sc_h, _csys, _cpoi, _cb)
+                if _best_hub is not None:
+                    _, _tsys, _tpoi, _tbase = _best_hub
+                    ok_g, _ = goal("prepare-at-station", {"systemId": _tsys, "poiId": _tpoi, "baseId": _tbase, "refuel": True}, timeout=240)
+                    if ok_g:
+                        base_id = _tbase
+            except Exception:
+                pass
         if not base_id:
             notes.append("not docked")
             time.sleep(5)

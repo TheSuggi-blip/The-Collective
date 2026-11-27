@@ -127,3 +127,30 @@ class TestSupplyAndUpgradeFixes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FinalPolishRegressionTests(unittest.TestCase):
+    def test_tug_dry_hold_expires_after_4h(self):
+        import tug
+        row = {"system": "starfall", "fuel": 0, "at": 1000.0}
+        ship = {"system": "starfall", "fuel": 0}
+        self.assertTrue(tug.dry_hold(row, ship, now=1000.0 + 3600.0))
+        self.assertFalse(tug.dry_hold(row, ship, now=1000.0 + 5 * 3600.0))
+
+    def test_wallet_storage_bases_includes_owned_sovereign_station(self):
+        import tempfile, wallet
+        with tempfile.TemporaryDirectory() as td:
+            emp_dir = Path(td) / "empire"
+            emp_dir.mkdir(parents=True, exist_ok=True)
+            (emp_dir / "empire.json").write_text(json.dumps({
+                "facilities": [{"base": "node_beta_industrial_station", "type": "faction_lockbox", "status": "active"}],
+                "bases": [{"base": "ridgecrest_station_1", "kind": "station", "system": "ridgecrest"}],
+            }), encoding="utf-8")
+            lbs = wallet.storage_bases(Path(td))
+            self.assertIn("node_beta_industrial_station", lbs)
+            self.assertIn("ridgecrest_station_1", lbs)
+
+    def test_upgrades_ready_to_switch_bypasses_poll_interval(self):
+        usrc = Path("game/fleet/upgrades.py").read_text(encoding="utf-8")
+        self.assertIn('if (not r.get("ready_to_switch")) and (now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S):', usrc)
+

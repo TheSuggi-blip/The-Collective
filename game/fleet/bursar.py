@@ -1608,9 +1608,11 @@ def main(argv=None):
                             _have_fc = lambda k: int(_st_fc.get(k, 0)) + int(_f_map.get(k, 0))
                             _fc_plan = None
                             if _have_fc("crystallized_biogas") >= 2:
-                                _fc_plan = ("biogas_fuel_synthesis", min(8, _have_fc("crystallized_biogas")), [("crystallized_biogas", 1)], "fuel_cell", 2)
+                                _fc_plan = ("biogas_fuel_synthesis", min(20, _have_fc("crystallized_biogas")), [("crystallized_biogas", 1)], "fuel_cell", 2)
+                            elif _have_fc("plasma_gas") >= 6 and _have_fc("hydrogen_gas") >= 6:
+                                _fc_plan = ("crack_plasma_fuel_cells", min(20, _have_fc("plasma_gas") // 3, _have_fc("hydrogen_gas") // 3), [("plasma_gas", 3), ("hydrogen_gas", 3)], "fuel_cell", 2)
                             elif _have_fc("liquid_hydrogen") >= 6 and _have_fc("steel_plate") >= 3:
-                                _fc_plan = ("craft_fuel_cell", min(15, _have_fc("liquid_hydrogen") // 2, _have_fc("steel_plate")), [("liquid_hydrogen", 2), ("steel_plate", 1)], "fuel_cell", 1)
+                                _fc_plan = ("craft_fuel_cell", min(20, _have_fc("liquid_hydrogen") // 2, _have_fc("steel_plate")), [("liquid_hydrogen", 2), ("steel_plate", 1)], "fuel_cell", 1)
                             elif _have_fc("hydrogen_gas") >= 24 and _have_fc("steel_plate") >= 3 and _have_fc("liquid_hydrogen") < 30:
                                 _fc_plan = ("compress_hydrogen_gas", min(10, _have_fc("hydrogen_gas") // 8), [("hydrogen_gas", 8)], "liquid_hydrogen", 3)
                             # Node Beta Central Depot repair-part auto-crafting (circuit_board < 400 or steel_plate < 2000)
@@ -1641,6 +1643,54 @@ def main(argv=None):
                                             time.sleep(TICK)
                                             raw("deposit", {"item_id": _fr_out, "quantity": _fr_runs * _fr_per, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
                                             time.sleep(TICK)
+                    except Exception:
+                        pass
+
+                # Adaptive zero-fuel Logistics/Supply crafting at Lockbox hubs (open needs + station/outpost deficits -> faction storage!)
+                if (policy.get("craft") or {}).get("enabled", False) and (until - time.time()) > 60 and not stop_requested() and base_id in _bursar_active_lockboxes(DATA) and _bursar_can_withdraw_faction(DATA, pilot):
+                    try:
+                        import craft_net as _cn_l
+                        _lpol = dict(_cn_l.read_json(REPO / "game" / "craft-policy.json", {}) or {})
+                        _lpol["max_runs_per_cycle"] = min(20, int((policy.get("craft") or {}).get("max_runs_per_poll") or 20))
+                        _lw = _cn_l.load_craft_world(DATA, REPO, _lpol)
+                        _st_l = get_stored(base_id)
+                        _fd_l = body(raw("view", {"station_id": base_id, "target": "faction"}, group="spacemolt_storage"))
+                        _fm_l = {str(_fr["item_id"]): int(_fr.get("quantity") or 0) for _fr in (_fd_l.get("items") or _fd_l.get("storage") or []) if isinstance(_fr, dict) and _fr.get("item_id")}
+                        _comb_l = dict(_st_l)
+                        for _fi, _fq in _fm_l.items():
+                            if _fq > 0:
+                                _comb_l[_fi] = _comb_l.get(_fi, 0) + _fq
+                        _ljob = _cn_l.pick_craft_job("Logistics", base_id, _comb_l, get_credits(), _lw, _lpol)
+                        if _ljob and not _ljob.get("buys"):
+                            _lr_id = str(_ljob["recipe"])
+                            _lo_id = str(_ljob["makes"])
+                            _lq = max(1, int(_ljob["runs"]) * max(1, int(_ljob.get("per_run") or 1)))
+                            _ldry = raw("craft", {"recipe_id": _lr_id, "quantity": _lq, "deliver_to": "storage", "dry_run": True}, group="spacemolt")
+                            _lerr = str(_ldry.get("error") or "") if isinstance(_ldry, dict) else ""
+                            if not any(w in _lerr.lower() for w in ("skill", "facility", "unlock", "unknown recipe", "not found", "cannot_craft")):
+                                _lrec = (_lw.get("recipes") or {}).get(_lr_id) or {}
+                                _lpulled = True
+                                for _in_i, _in_u in (_lrec.get("inputs") or ()):
+                                    _need_u = int(_in_u) * int(_ljob["runs"])
+                                    _short_u = max(0, _need_u - int(_st_l.get(_in_i) or 0))
+                                    if _short_u > 0:
+                                        _wd = raw("withdraw", {"item_id": _in_i, "quantity": _short_u, "target": "faction"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        if isinstance(_wd, dict) and _wd.get("error"):
+                                            _lpulled = False
+                                            break
+                                        raw("deposit", {"item_id": _in_i, "quantity": _short_u, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                if _lpulled:
+                                    _lrc = raw("craft", {"recipe_id": _lr_id, "quantity": _lq, "deliver_to": "storage"}, group="spacemolt")
+                                    time.sleep(TICK)
+                                    if isinstance(_lrc, dict) and not _lrc.get("error"):
+                                        raw("withdraw", {"item_id": _lo_id, "quantity": _lq, "target": "self"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        raw("deposit", {"item_id": _lo_id, "quantity": _lq, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        say("bursar_supply_craft +%dx %s (%s) -> faction @ %s" % (_lq, _lo_id, _lr_id, base_id))
+                                        notes.append("crafted %dx %s" % (_lq, _lo_id))
                     except Exception:
                         pass
 

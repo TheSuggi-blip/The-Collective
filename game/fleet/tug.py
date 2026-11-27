@@ -217,7 +217,7 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
             continue
         if pilot in state or limit <= 0:
             continue
-        if pilot in dry_rows and not dry_hold(dry_rows[pilot], ship):
+        if pilot in dry_rows and not dry_hold(dry_rows[pilot], ship, now=now):
             dry_rows.pop(pilot, None)                               # fuelled or moved since: the tug may serve it again
         why = stranded(ship, division.order_of(pilot, data, now), lanes, stations, below, mark)
         if not why:

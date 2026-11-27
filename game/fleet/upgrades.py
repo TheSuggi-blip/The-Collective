@@ -1214,7 +1214,7 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=500, 
             continue
 
         elif state == "building":
-            if now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S:
+            if (not r.get("ready_to_switch")) and (now - float(r.get("last_poll") or 0) < UPGRADE_POLL_S):
                 continue
             if dry:
                 print("would poll building upgrade %s: %s (%s @ %s)" % (r["id"], pilot, hull, base_id))
