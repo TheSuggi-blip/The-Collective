@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 45.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 45.
 | Allies | BEIN, DEAD, MOON | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 605 | Public event stream |
+| Pilots carrying the tag on the public event stream | 603 | Public event stream |
 
 ## Bases
 
@@ -47,38 +47,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 083 | Hamal (`hamal`) | 0 | dialectic |
-| Combat Drone 211 | Node Gamma (`node_gamma`) | 0 | dialectic |
-| Mining Drone 099 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 153 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 156 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 159 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 189 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 199 | Node Gamma (`node_gamma`) | 0 | floor_price |
-| Mining Drone 204 | Synchrony (`synchrony`) | 0 | threshold |
-| Mining Drone 209 | Synchrony (`synchrony`) | 0 | threshold |
-| Mining Drone 211 | The Experiment (`the_experiment`) | 0 | prospect |
-| Mining Drone 221 | Node Gamma (`node_gamma`) | 0 | prospect |
-| Mining Drone 223 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 225 | Synchrony (`synchrony`) | 0 | theoria |
-| Mining Drone 228 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 233 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 234 | The Experiment (`the_experiment`) | 0 | threshold |
-| Mining Drone 235 | Synchrony (`synchrony`) | 0 | theoria |
-| Mining Drone 236 | Synchrony (`synchrony`) | 0 | prospect |
-| Mining Drone 238 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 243 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 244 | Synchrony (`synchrony`) | 0 | threshold |
-| Mining Drone 245 | Synchrony (`synchrony`) | 0 | theoria |
-| Mining Drone 248 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 255 | Synchrony (`synchrony`) | 0 | theoria |
-| Mining Drone 258 | Node Gamma (`node_gamma`) | 0 | shard |
-| Mining Drone 259 | Node Beta (`node_beta`) | 0 | threshold |
-| Mining Drone 263 | Node Gamma (`node_gamma`) | 0 | shard |
-| Mining Drone 265 | Synchrony (`synchrony`) | 0 | theoria |
-| Mining Drone 268 | Node Gamma (`node_gamma`) | 0 | shard |
-
-And 15 more.
+| Combat Drone 015 | Node Beta (`node_beta`) | 0 | opus_magna |
+| Combat Drone 167 | Synchrony (`synchrony`) | 0 | dialectic |
+| Combat Drone 186 | Pherkad (`pherkad`) | 0 | dialectic |
+| Mining Drone 118 | Synchrony (`synchrony`) | 0 | floor_price |
 
 ## Standing History
 
