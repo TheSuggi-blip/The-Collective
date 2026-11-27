@@ -1497,14 +1497,22 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
                     our_craft = float(r_cltv[3] or 0.0)
             if "faction_facilities" in tbls:
                 rc_types = [r[0] for r in conn.execute("SELECT type FROM faction_facilities WHERE COALESCE(status,'active')='active'").fetchall()]
-                cat_files = sorted((Path(data_dir) / "catalog").glob("*.json"))
-                if cat_files:
-                    cat = _read_json(cat_files[-1], {})
+                cat_files = sorted((Path(data_dir) / "catalog").glob("0.*.json")) or sorted((Path(data_dir) / "catalog").glob("*.json"))
+                for cf in reversed(cat_files):
+                    cat = _read_json(cf, {})
                     rfacs = cat.get("facilities") or {}
-                    fmap = {x.get("id"): x for x in rfacs if isinstance(x, dict)} if isinstance(rfacs, list) else rfacs
-                    for ft in rc_types:
-                        fi = fmap.get(ft) or {}
-                        our_appeal += int(fi.get("dining_points") or 0) + int(fi.get("leisure_points") or 0) + int(fi.get("lodging_points") or 0)
+                    if rfacs:
+                        fmap = {x.get("id"): x for x in rfacs if isinstance(x, dict)} if isinstance(rfacs, list) else rfacs
+                        for ft in rc_types:
+                            fi = fmap.get(ft) or {}
+                            our_appeal += int(fi.get("dining_points") or 0) + int(fi.get("leisure_points") or 0) + int(fi.get("lodging_points") or 0)
+                        break
+            if "stats_pilot_last" in tbls:
+                for sk, sv in conn.execute("SELECT key, SUM(COALESCE(value, 0)) FROM stats_pilot_last WHERE key IN ('ore_mined', 'items_crafted') GROUP BY key").fetchall():
+                    if sk == "ore_mined":
+                        our_ore = max(our_ore, float(sv or 0.0))
+                    elif sk == "items_crafted":
+                        our_craft = max(our_craft, float(sv or 0.0))
         except Exception:
             pass
 

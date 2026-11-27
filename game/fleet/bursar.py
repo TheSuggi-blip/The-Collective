@@ -1016,11 +1016,18 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             import market_guard as _mg_s
             _frec = (fair_price_map or {}).get(iid)
             _oracle_fv = float(_frec.get("fair_price") if isinstance(_frec, dict) else (_frec or 0.0))
+            _oracle_twap = float((_frec.get("twap") or 0.0) if isinstance(_frec, dict) else 0.0)
             _ask_q = int(row.get("best_sell_qty") or row.get("sell_quantity") or 0)
-            # Institutional TCA anti-dump anchor: if lowball junk bids drag oracle VWM far below real galactic
-            # buyers (`gal_bid`, e.g. crystal_melt 54 cr junk vs 2,009 cr real bids), anchor floor to BOTH!
-            _base_fv = _oracle_fv if _oracle_fv > 0.0 else (gal_bid if (ask <= 0 or (_ask_q in (1, 2) and ask < gal_bid * 0.35)) else 0.0)
-            _gal_anchor = (gal_bid * 0.65) if gal_bid >= 25.0 else 0.0
+            _is_decoy_ask = (ask > 0 and _ask_q in (1, 2) and gal_bid > 0 and ask < gal_bid * 0.35)
+            _tight_local_book = (ask > 0 and not _is_decoy_ask and bid >= ask * hit_ratio)
+            _twap_proves_higher = (_oracle_twap >= max(25.0, bid * 2.5))
+            # Institutional TCA anti-dump anchor: when no real tight local ask exists (ask<=0, 1-2u decoy, wide
+            # scavenger spread) OR verified oracle TWAP proves >=2.5x value (e.g. crystal_melt 54 vs 2009/4102),
+            # anchor floor to BOTH oracle fair value and 65% of gal_bid. When a real tight two-sided local book
+            # clears smoothly (e.g. bid=110/ask=145), respect local reality instead of listing above local ask!
+            _use_gal_anchor = (not _tight_local_book) or _twap_proves_higher
+            _base_fv = _oracle_fv if _oracle_fv > 0.0 else (gal_bid if (ask <= 0 or _is_decoy_ask) else 0.0)
+            _gal_anchor = (gal_bid * 0.65) if (_use_gal_anchor and gal_bid >= 25.0) else 0.0
             _decoy_fv = max(_base_fv, _gal_anchor)
             floor_p = _mg_s.safe_sell_floor(iid, bid, ask, _decoy_fv, min_ratio=min_ratio, fair_floor_ratio=0.72) if _decoy_fv >= 10.0 else max(2, int(round(ref_p * min_ratio)))
             # Zero-fuel glut clearing: ONLY dump >= 500 units into 1-cr bids if fair AND galactic value are ALSO low (< 8 cr)!
@@ -1032,8 +1039,8 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 continue
             if floor_p < 2:
                 floor_p = max(2, int(round(ref_p * min_ratio)))
-            # Anti-lowball instant-sell guard: NEVER hit a local bid below safe_sell_floor OR <45% of galactic top bid!
-            _gal_hard = int(round(gal_bid * 0.45)) if gal_bid >= 25.0 else 5
+            # Anti-lowball instant-sell guard: block scavenger dumps below safe_sell_floor or <45% of gal_bid!
+            _gal_hard = int(round(gal_bid * 0.45)) if (_use_gal_anchor and gal_bid >= 25.0) else 5
             _hard_floor = max(floor_p if _decoy_fv >= 10.0 else 5, _gal_hard)
             hit_live_spread = (ask > 0 and bid >= max(5, _hard_floor, int(round(ask * hit_ratio)))) or (ask <= 0 and bid >= max(5, _hard_floor))
             if bid_q > 0 and bid >= max(5, _hard_floor) and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):

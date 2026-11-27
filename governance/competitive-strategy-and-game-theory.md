@@ -3,9 +3,8 @@
 > **Scope:** Galactic competitive strategy, microeconomic market dominance,
 > game-theoretic combat and extraction rules, vertical integration, and
 > open-ended ratcheting KPI governance for The Collective (`[CLTV]`).
-> **Indexed:** Mirrored automatically into `read.db:docs` (`kind = blueprint`)
-> and `collective-index` hybrid RAG so both live fleet diagnostics and Trinity
-> share one verified source of truth.
+> **Indexed:** Mirrored identically in `/srv/collective/the-collective/governance/competitive-strategy-and-game-theory.md`,
+> indexed automatically into `read.db:docs` (`kind = blueprint`) and `collective-index` hybrid RAG.
 
 ---
 
@@ -172,3 +171,55 @@ The Collective solves both structurally in `kpi_engine.py`:
    -> `OUTPERFORM (100-119)` -> `APEX (120+)`. Safety and hygiene metrics
    (`Idle Rate -> 0%`, `Ships Lost -> 0`, `Outpost Bunkers`, `Supply SLA`,
    `Mine Yield`) remain bounded `[0, 100]` as non-negotiable defensive brakes.
+
+---
+
+## 6. Transaction Cost Analysis (TCA), Procurement PPV & Eternal Standing Goals
+
+### 6.1 Institutional Execution-Quality KPIs (Closing Trade COGS & Slippage Leaks)
+Fuel is no longer the largest operating expense on a mature fleet -- **Trade
+Execution Slippage, Lowball Dumps, and Uncontrolled Procurement COGS** dominate
+the cost structure when left unmeasured. Drawing from quantitative algorithmic
+trading (Perold Implementation Shortfall, VWAP Slippage, Realized Spread) and
+industrial supply-chain governance (Market-Indexed Purchase Price Variance &
+Value-Add Conversion Ratios), `[CLTV]` enforces four open-ended execution
+controls:
+
+1. **Bursar Anti-Lowball-Dump Floor (`bursar.py`):** Never market-sell into a
+   local bid below `max(72% of fair_price, 45% of galactic top bid)`. Even if
+   lowball junk bids drag an item's median down (e.g. `54 cr` on `2,009 cr`
+   `crystal_melt`), Bursars anchor against the galactic top bid and post
+   limit sell orders (`sell_create`) instead of giving away `97%` of value.
+2. **Arbitrage Slippage & Thin-Book Ticket Discipline (`haul.py`):** Tighten
+   arbitrage book freshness to `15m`, cap capture at `50%` of live external
+   bid depth (`min_arb_bid_qty >= 15`), and cap single-ticket exposure on thin
+   books (`bid_qty < 40`) at `12,000 cr` -- eliminating `-30k cr` failed
+   arbitrage fallbacks (`arb listed`) on illiquid high-ticket modules.
+3. **Division-Level Execution KPIs (`kpi_engine.py`):**
+   - **`4A`/`4B` Mobile Trade:** `Exec Fill Quality (TCA)` = realized trade
+     cash / (realized trade cash + stranded `arb listed` slippage).
+   - **`4C` Pure Bursar Desks:** `Cash Capture (TCA)` = zero-fuel sales /
+     (sales + buy/fee outflow), open-ended above `65%`.
+   - **`5A`/`5B` Refiners & Workshops:** `Value / Spend (TCA)` = crafted fair
+     value + sales per credit of input & fuel outflow (open-ended).
+   - **`6A` Supply Haulers:** `Procurement Edge (PPV)` = `(Fair Value - Paid)
+     / Fair Value` vs live `fair_prices`, catching overpriced buys instantly.
+4. **Owned Station Anti-Ping-Pong Invariant:** `consolidate_to_trader` never
+   pulls sovereign station upkeep items out of an owned station.
+
+### 6.2 Measurable Eternal Standing-Goal Frontiers (`13` Hard Late-Game KPIs)
+Prose goals do not compound unless tracked live against moving galactic rivals.
+The Collective measures 13 concrete, hard-to-achieve late-game Standing Goals:
+- **Galactic Supremacy Ratios:** Wealth `>= 2.0x` #1 rival bloc, Military Fleet
+  Value `>= 2.0x` #1 rival, Tourism Hub Appeal/Revenue `>= +15%` above #1 rival
+  resort, Manufacturing Output `>= 2.0x` #1 rival, Resource Extraction `>= 2.0x`
+  #1 rival.
+- **Fleet & Territory Frontiers:** `1,000` Grand Fleet Seats (`500` Phase-1),
+  Dynamic Hull Modernization (`T1 -> T5` scaling with Piloting), Dynamic Module
+  Fitting (`T1 -> T5`), `5` Regional Sovereign Stations + `8` Corridor Outposts,
+  and Galactic Omniscience (`<= 10m` galaxy / `<= 5m` rival hub freshness).
+- **Open-Ended Compounding Economics:** Dynamic tier-scaled **Core Operating
+  Profit (IFRS 15 EBIT, Ex-Seeds)**, **Core Operating Margin (`30%+` Target /
+  `50%+` Elite)**, and **Trade & Procurement Execution Edge (TCA)** -- all
+  unbounded above par with persistent HWM ratcheting.
+
