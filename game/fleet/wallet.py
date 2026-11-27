@@ -2043,7 +2043,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
             print("STATION_BUILD FAIL: %s @ %s via %s | %s" % (
                 fid, bname, builder, str(msg)[:160]), flush=True)
             _low = str(msg).lower()
-            if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid", "not_faction_type")):
+            if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid", "not_faction_type", "must ")):
                 continue
             failed = 1
             if "rate" in str(msg).lower() or "tick" in str(msg).lower():
