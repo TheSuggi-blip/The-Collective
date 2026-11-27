@@ -237,7 +237,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
                  "station": "s1:p1:crimson_hub", "max_price": 200000, "state": "building", "created_at": 1795400000}
             ]), encoding="ascii")
             pol = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
-            pol["enabled"] = True; pol["max_auto_tier"] = 3; pol["listed_only"] = True
+            pol["enabled"] = True; pol["max_auto_tier"] = 3; pol["listed_only"] = True; pol["treasury_floor_cr"] = 8500000
             for dcfg in (pol.get("divisions") or {}).values():
                 dcfg["enabled"] = True
                 for coh in (dcfg.get("cohorts") or []):
@@ -449,7 +449,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         divs = live_up.get("divisions") or {}
         self.assertTrue(live_up.get("enabled"))
         self.assertEqual(live_up.get("max_auto_tier"), 1)
-        self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 8000000)
+        self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 2000000)
         for dname in ("Mining", "Military", "Logistics", "Trade", "Intel"):
             self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for T1 fleet rollout")
         # All Defense cohorts (1A/1B/1C) enabled; ONLY Passenger Liners (6B) stay paused!

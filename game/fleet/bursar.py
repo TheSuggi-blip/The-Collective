@@ -442,7 +442,8 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 if cur_base and b_id == cur_base:
                     score += 100000.0 if used == 0 else 15000.0
                 if b_id in priority:
-                    score += 5000.0
+                    # Unstaffed priority vault hubs (Node Beta, Procyon, Ridgecrest, capitals) strictly beat random empty neutral hubs!
+                    score += 170000.0 if used == 0 else 5000.0
                 if st["empire"]:
                     score += 10000.0
                 if stay_emp and p_emp and st["empire"] == p_emp:
@@ -820,11 +821,37 @@ def _bursar_can_withdraw_faction(data, pilot):
 def _bursar_active_lockboxes(data):
     emp = read_json(Path(data) / "empire" / "empire.json", {})
     out = set()
+    owned_outposts = set()
     if isinstance(emp, dict):
+        for b in (emp.get("bases") or []):
+            if isinstance(b, dict) and str(b.get("kind") or "").lower() == "outpost":
+                bid = str(b.get("base") or b.get("id") or "")
+                if bid:
+                    owned_outposts.add(bid)
         for f in (emp.get("facilities") or []):
-            if isinstance(f, dict) and str(f.get("type") or "") == "faction_lockbox" and str(f.get("status") or "active") == "active":
-                if f.get("base"):
-                    out.add(str(f["base"]))
+            if not isinstance(f, dict) or str(f.get("status") or "active") != "active":
+                continue
+            ft = str(f.get("type") or "")
+            if ft in ("faction_lockbox", "faction_storage_bay", "faction_warehouse", "company_store", "market_terminal"):
+                bid = str(f.get("base") or "")
+                if bid and bid not in owned_outposts:
+                    out.add(bid)
+    # Also include any non-outpost base holding significant faction_storage (>=10k units or active depot stock)
+    db_p = Path(data) / "store" / "read.db"
+    if db_p.exists():
+        try:
+            con = _wc.ro_db(db_p, timeout=2.0)
+            try:
+                for (bid,) in con.execute(
+                    "SELECT base FROM faction_storage WHERE units > 0 GROUP BY base HAVING SUM(units) >= 5000"
+                ).fetchall():
+                    bs = str(bid or "")
+                    if bs and bs not in owned_outposts:
+                        out.add(bs)
+            finally:
+                con.close()
+        except Exception:
+            pass
     return out
 
 

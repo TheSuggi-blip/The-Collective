@@ -404,7 +404,8 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             if _below_repair_bill:
                 urgency = 1.15
             elif _station_core:
-                urgency = 4.5 * (1.0 - 0.5 * (float(have_here) / float(tgt)))
+                _base_u = 5.2 if iid == "fuel_cell" else 4.5
+                urgency = _base_u * (1.0 - 0.5 * (float(have_here) / float(tgt)))
             elif hub_kind == "station":
                 urgency = 1.6 * (1.0 - (float(have_here) / float(tgt)))
             else:
@@ -1443,18 +1444,31 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
                 q -= int((policy.get("central_depot_targets") or {}).get(iid) or 0)
             if q < min_u or iid in reserved:
                 continue
+            is_owned_outpost = (b_id in owned_hubs and str(owned_hubs[b_id].get("kind") or "") == "outpost")
+            fair_u = 0.0
+            if is_owned_outpost:
+                _oracle_items = (read_json(Path(data) / "fleet" / "price_oracle.json", {}) or {}).get("items") or {}
+                fair_u = float((_oracle_items.get(iid) or {}).get("fair_price") or 0.0)
             for d_hops, db, dloc, b_pilot in reach_dsts:
                 lb = local_bids.get((db, iid))
-                if not lb:
+                if lb:
+                    uval, lb_q = lb
+                    take_q = min(q, int(hold_cap), int(lb_q))
+                    max_slots = min(6, max(1, min(q, int(lb_q)) // max(1, int(hold_cap))))
+                    val_weight = 1.0
+                elif is_owned_outpost and fair_u >= 8.0 and d_hops <= 12:
+                    # Outposts have no Market Terminal: move high-value non-reserved ore/gas to nearest Bursar hub for sell-order listing!
+                    uval = fair_u
+                    take_q = min(q, int(hold_cap))
+                    max_slots = min(4, max(1, q // max(1, int(hold_cap))))
+                    val_weight = 0.70
+                else:
                     continue
-                uval, lb_q = lb
-                take_q = min(q, int(hold_cap), int(lb_q))
                 if take_q < 1:
                     continue
-                est_val = take_q * uval
+                est_val = take_q * uval * val_weight
                 if est_val < min_val:
                     continue
-                max_slots = min(6, max(1, min(q, int(lb_q)) // max(1, int(hold_cap))))
                 jkey = None
                 for si in range(max_slots):
                     ck = ("cons:%s:%s:%s:%s" % (src_t, b_id, db, iid)) if si == 0 else ("cons:%s:%s:%s:%s#%d" % (src_t, b_id, db, iid, si))

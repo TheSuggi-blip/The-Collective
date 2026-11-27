@@ -135,7 +135,7 @@ FUND_READ = 12                 # seconds between a withdrawal's call and the tre
 FUND_TITLE = "Treasury fund: credits withdrawn from the faction treasury for a buy"   # never begins with routes.TREASURY
 ADMIRAL_MAX_SINGLE = None      # rule F12 (Suggi, 2026-11-24): per-pilot cap removed (None = unlimited above FUND_FLOOR)
 ADMIRAL_DAY_CAP = None         # rule F12 (Suggi, 2026-11-24): rolling 24h cap removed (None = unlimited above FUND_FLOOR)
-FUND_BATCH = 25                # max open funds withdrawn in a single batched pass
+FUND_BATCH = 500               # max open funds withdrawn in a single batched pass (cash-floor gated)
 FUND_BUDGET = 120              # seconds of a pass fund gifts may take; any remaining withdrawn rows go next pass
 P2P_FUND_ENABLED = True        # wire credits directly from rich flying ships to upgrading pilots when no Officer is docked
 P2P_FUND_MAX = 400000          # max single-pilot amount filled via mid-flight P2P (larger buys use docked lockbox withdrawal)
@@ -1830,6 +1830,198 @@ def _acquire_serve_lock(data):
     return fh
 
 
+
+STATION_BUILD_PRIORITY = (
+    "faction_fuel_bunker",
+    "market_terminal",
+    "notice_board",
+    "faction_desk",
+    "market_runner",
+    "company_store",
+    "faction_quarters",
+    "faction_ship_garage",
+    "transit_lounge",
+    "refueling_dock",
+    "bunker_fed_reactor",
+    "dockside_diner",
+    "frontier_cantina",
+    "rec_lounge",
+    "slice_deck",
+    "sunrise_griddle",
+    "the_tide_line",
+    "grazer_grill",
+    "stellar_bistro",
+    "the_far_table",
+    "zero_g_lounge_bar",
+    "orbital_spa_resort_deck",
+    "grand_hotel_resort",
+    "faction_workshop",
+    "trade_exchange",
+    "point_defense_battery",
+    "station_defense_turret",
+    "automated_repair_dock",
+    "shield_projector",
+)
+
+STATION_PUBLIC_SERVICES = {
+    "market_terminal": "market",
+    "trade_exchange": "market",
+    "refueling_dock": "refuel",
+    "automated_repair_dock": "repair",
+}
+
+
+def serve_station_builds(data, now, dry=False, max_builds=8):
+    """Autonomously construct open P1 sovereign station facilities from needs once 100% of materials
+    sit in that station's faction_storage and Treasury stays >= upgrade-policy treasury_floor_cr."""
+    import sqlite3
+    db_p = Path(data) / "store" / "read.db"
+    if not db_p.exists():
+        return 0
+    emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
+    fac_info = emp.get("faction") if isinstance(emp.get("faction"), dict) else {}
+    treasury = int(fac_info.get("treasury") or 0)
+    up_pol = dispatch.read_json(Path(__file__).resolve().parents[2] / "game" / "upgrade-policy.json", {}) or {}
+    floor_cr = int(up_pol.get("treasury_floor_cr") or 2000000)
+    if treasury <= floor_cr:
+        return 0
+
+    officers = set()
+    for m in (emp.get("members") or []):
+        if isinstance(m, dict) and str(m.get("role") or m.get("rank") or "").lower() in ("leader", "officer"):
+            nm = str(m.get("username") or m.get("name") or m.get("pilot") or "")
+            if nm:
+                officers.add(nm)
+    if not officers:
+        return 0
+
+    fleet = ships(data)
+    con = sqlite3.connect("file:%s?mode=ro&immutable=1" % db_p, uri=True, timeout=5)
+    try:
+        st_bases = {
+            str(b): str(nm or b)
+            for b, nm in con.execute("SELECT base, name FROM bases WHERE kind='station'").fetchall()
+            if b
+        }
+        if not st_bases:
+            return 0
+        # Already built facility types per sovereign station
+        built = {}
+        for b, ft in con.execute("SELECT base, type FROM faction_facilities WHERE base IS NOT NULL").fetchall():
+            built.setdefault(str(b), set()).add(str(ft or ""))
+        for f in (emp.get("facilities") or []):
+            if isinstance(f, dict) and f.get("base") and f.get("type"):
+                built.setdefault(str(f["base"]), set()).add(str(f["type"]))
+
+        # Open P1 facility needs at owned sovereign stations
+        open_needs = []
+        for place, ref in con.execute(
+            "SELECT place, ref FROM needs WHERE status='open' AND kind='facility' AND priority <= 1"
+        ).fetchall():
+            bp = str(place or "")
+            fid = str(ref or "")
+            if bp in st_bases and fid and fid not in built.get(bp, set()):
+                open_needs.append((bp, fid))
+        if not open_needs:
+            return 0
+
+        # Facility build fees & required materials
+        fac_fee = {
+            str(fid): int(fee or 0)
+            for fid, fee in con.execute("SELECT id, COALESCE(build_cost, 0) FROM facilities").fetchall()
+        }
+        fac_mats = {}
+        for fid, item, qty in con.execute("SELECT facility, item, units FROM facility_materials").fetchall():
+            fac_mats.setdefault(str(fid), []).append((str(item), int(qty or 0)))
+
+        # Local faction_storage per station
+        stock_by_base = {}
+        for b, it, u in con.execute("SELECT base, item, units FROM faction_storage WHERE units > 0").fetchall():
+            if str(b) in st_bases:
+                stock_by_base.setdefault(str(b), {})[str(it)] = int(u or 0)
+    finally:
+        con.close()
+
+    prio_idx = {fid: i for i, fid in enumerate(STATION_BUILD_PRIORITY)}
+    open_needs.sort(key=lambda x: (prio_idx.get(x[1], 999), fac_fee.get(x[1], 99999999), x[1]))
+
+    # Deduplicate (base, fid) preserving priority order
+    seen_pairs = set()
+    ordered = []
+    for pair in open_needs:
+        if pair not in seen_pairs:
+            seen_pairs.add(pair)
+            ordered.append(pair)
+
+    done_n = 0
+    failed = 0
+    avail_tr = treasury
+    for base_id, fid in ordered:
+        if done_n >= max_builds:
+            break
+        fee = int(fac_fee.get(fid, 0))
+        if fee <= 0 or (avail_tr - fee) < floor_cr:
+            continue
+        mats = fac_mats.get(fid) or []
+        st_stock = stock_by_base.get(base_id) or {}
+        if any(st_stock.get(it, 0) < req for it, req in mats):
+            continue
+        # Find an Officer docked at this station (prefer idle -> bursar -> any docked officer)
+        docked_offs = []
+        for pname, sinfo in fleet.items():
+            if pname in officers and str(sinfo.get("docked") or "") == base_id:
+                ord_s = str(sinfo.get("order") or "")
+                rank_p = 0 if not ord_s else (1 if "bursar" in ord_s else 2)
+                docked_offs.append((rank_p, pname))
+        docked_offs.sort()
+        if not docked_offs:
+            continue
+        builder = docked_offs[0][1]
+        bname = st_bases.get(base_id, base_id)
+        if dry:
+            print("would station_build: %s @ %s via %s (fee=%s cr, avail_tr=%s)" % (
+                fid, bname, builder, format(fee, ","), format(avail_tr, ",")))
+            avail_tr -= fee
+            for it, req in mats:
+                st_stock[it] = max(0, st_stock.get(it, 0) - req)
+            done_n += 1
+            continue
+
+        ok, msg = errand_raw(builder, "spacemolt_facility", "faction_build", {"facility_type": fid})
+        if ok:
+            print("STATION_BUILD OK: %s @ %s via %s (fee=%s cr) | %s" % (
+                fid, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)
+            try:
+                import gate
+                gate.book_onetime("__TREASURY__", "Treasury CapEx: %s @ %s" % (fid, bname), -int(fee), data=data)
+            except Exception as exc:
+                print("STATION_BUILD onetime warn: %s" % str(exc)[:120], flush=True)
+            avail_tr -= fee
+            for it, req in mats:
+                st_stock[it] = max(0, st_stock.get(it, 0) - req)
+            done_n += 1
+            time.sleep(11.0)
+            # Open public access automatically for revenue/service docks!
+            pub_svc = STATION_PUBLIC_SERVICES.get(fid)
+            if pub_svc:
+                ok_s, msg_s = errand_raw(builder, "spacemolt_facility", "set_service_access",
+                                         {"service": pub_svc, "access": "public"})
+                print("STATION_ACCESS %s: %s=public @ %s | %s" % (
+                    "OK" if ok_s else "WARN", pub_svc, bname, str(msg_s)[:120]), flush=True)
+                time.sleep(11.0)
+        else:
+            print("STATION_BUILD FAIL: %s @ %s via %s | %s" % (
+                fid, bname, builder, str(msg)[:160]), flush=True)
+            if "already" in str(msg).lower() or "limit" in str(msg).lower() or "cap" in str(msg).lower():
+                continue
+            failed = 1
+            if "rate" in str(msg).lower() or "tick" in str(msg).lower():
+                time.sleep(11.0)
+            else:
+                break
+    return failed
+
+
 def serve(data, now, dry):
     """Run all non-sweep service queues in isolation (funds/P2P, top-ups, seat & officer auto-queues, seats,
     errands, upgrades) so slow admin steps never starve cash sweeping or deposits."""
@@ -1848,6 +2040,7 @@ def serve(data, now, dry):
         failed = served("officer queue", auto_queue_officers, data, now, dry, result=False) or failed
         failed = served("seat", serve_seats, data, leader, now, dry, result=False) or failed
         failed = served("errand", serve_errands, data, leader, now, dry) or failed
+        failed = served("station build", serve_station_builds, data, now, dry) or failed
         try:
             import upgrades as _upg
             _upg.auto_enqueue_upgrades(data, now=now, dry=dry)
@@ -1926,6 +2119,7 @@ def sweep(data, now, dry, cash_only=False):
         failed = served("officer queue", auto_queue_officers, data, now, dry, result=False) or failed
         failed = served("seat", serve_seats, data, leader, now, dry, result=False) or failed
         failed = served("errand", serve_errands, data, leader, now, dry) or failed
+        failed = served("station build", serve_station_builds, data, now, dry) or failed
         try:
             import upgrades as _upg
             _upg.auto_enqueue_upgrades(data, now=now, dry=dry)
