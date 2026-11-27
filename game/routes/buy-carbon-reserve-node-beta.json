@@ -70,5 +70,14 @@
  ],
  "open_to": [
   "hauler"
- ]
+ ],
+ "measured": {
+  "date": "2026-11-27",
+  "runs": 101,
+  "minutes": 2,
+  "credits_per_run": -1070,
+  "cph_per_ship": -41460,
+  "hours": 12,
+  "last_run": "2026-11-27T21:36:59Z"
+ }
 }
