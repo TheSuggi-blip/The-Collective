@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-26T20:48:14Z.
+Facts as of 2026-11-27T00:25:34Z.
 
 ## 1. The Faction
 
@@ -102,11 +102,20 @@ list of stations. Where a base is built is Suggi's decision.
 
 | System | Name | Space | Jumps from home | Stations there | Status | Proposed by | Note |
 |---|---|---|---|---|---|---|---|
-| `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | east road inner outpost (built 2026-11-17, rule F33): 3 systems beyond border, 6 jumps from home; two belts of iron and copper near 100,000 each, sol alloy ore, grazer herds |
-| `atria` | Atria | lawless | 7 | CLTV Outpost Atria (outpost, CLTV) | built | Unity | north road inner outpost (Suggi, 2026-11-17 22:30 UTC, orders P3): 5 systems beyond border, 7 jumps from home on Marfik > Atria > Regor, 5 jumps short of Yildun; iron, copper, gold, argon, ices, grazers |
-| `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | north road choke-point station (Suggi, 2026-11-17 22:30 UTC, orders P3; needs core-foundry & station-core): far end of the north choke point, 5 jumps beyond Atria, 11 from home |
-| `oakridge` | Oakridge | lawless | 11 | none | candidate | Unity | east road station site (Suggi, 2026-11-17 23:45 UTC, orders ENT-054 & P3): built when the agents decide to raise an east station; 8 beyond border, 5 beyond GSC-0044, 3 from Solarian space |
-| `felis` | Felis | lawless | 7 | CLTV Outpost Felis (outpost, CLTV) | built | Suggi | south road inner outpost (Suggi, 2026-11-17 23:40 UTC, orders ENT-053 & P3): 4 beyond border, 7 from home between Tanglewood and Biham; built after Atria and Oakridge |
+| `gsc_0044` | GSC-0044 | lawless | 6 | CLTV Outpost GSC-0044 (outpost, CLTV) | built | Zero, Apollo | Outpost #1 (BUILT): center-west bridge between Voidborn, Solarian, and Ridgecrest (4J); iron/copper/sol_alloy_ore |
+| `atria` | Atria | lawless | 7 | CLTV Outpost Atria (outpost, CLTV) | built | Unity | Outpost #2 (BUILT): far-west industrial anchor; 10 resources (gold, aluminum, argon, deuterium) |
+| `felis` | Felis | lawless | 7 | CLTV Outpost Felis (outpost, CLTV) | built | Suggi | Outpost #3 (BUILT): south-west anchor; 7 resources (energy_crystal, null_matter, deuterium) |
+| `ridgecrest` | Ridgecrest | lawless | 10 | none | chosen | Suggi | Station #1 [FIRST -- RESORT & TRAVEL HUB]: 1J off Solarian, deg 6, #1 galactic centrality (11.2J avg to 5 empires), 4J from GSC-0044, 6-7J clear of rival resorts |
+| `acrux` | Acrux | lawless | 7 | none | chosen | Suggi | Station #2 [GRAND TRADE EXCHANGE & RECRUITMENT]: 1J off Solarian & 1J from GSC-0044, deg 5, 42 systems within 4J |
+| `lanternwick` | Lanternwick | lawless | 8 | none | chosen | Suggi | Station #3 [HEAVY INDUSTRIAL & STATION-CORE FOUNDRY]: 1J off Solarian, 2J from GSC-0044, 9 gas/industrial resources |
+| `yildun` | Yildun | lawless | 11 | none | chosen | Suggi | Station #4 [NAVAL SHIPYARD & FLEET DRYDOCK]: deep-west choke sanctuary between Atria and Outer Rim (zero rival clutter) |
+| `tarazed` | Tarazed | lawless | 15 | none | chosen | Suggi | Station #5 [LAST -- BATTLE STATION & JUMP-GATE BASTION]: below & west of Outer Rim, deg 5, 30 systems within 3J, deuterium/tritium/helium_ice |
+| `okab` | Okab | lawless | 4 | none | candidate | Trinity | Outpost #4 [SOUTH-WEST BRIDGE]: 3J west of Felis, 5J clear of ALL rivals, deg 5, 7 resources (energy_crystal, nebula_gas) |
+| `gsc_0049` | GSC-0049 | lawless | 5 | none | candidate | Trinity | Outpost #5 [WEST RARE METALS]: 2J from Atria, 7 resources including platinum_ore and iridium_ore, 3J clear of rivals |
+| `avior` | Avior | lawless | 12 | none | candidate | Trinity | Outpost #6 [MID-WEST INDUSTRIAL STEP]: 6J north of Atria toward Outer Rim, 11 resources (nebula_gas, xenon_gas), 3J clear of rivals |
+| `dabih` | Dabih | lawless | 15 | none | candidate | Trinity | Outpost #7 [FAR WEST RIM]: 11 resources (deuterium_ice, nebula_gas) anchoring the far-western rim west of Outer Rim |
+| `ancha` | Ancha | lawless | 19 | none | candidate | Trinity | Outpost #8 [NORTH-WEST ARC CAP]: deg 6 super-junction below/west of Outer Rim, 9 resources (helium_ice, nebula_gas, xenon_gas), 3J clear of rivals |
+| `oakridge` | Oakridge | lawless | 11 | none | dropped | Suggi | replaced by ridgecrest as Station #1 Resort & Travel Hub (Suggi, 2026-11-27): Ridgecrest has deg 6 vs Oakridge deg 3 and #1 galactic centrality (11.2J avg) |
 | `achernar` | Achernar | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
 | `alnair` | Alnair | lawless | 5 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
 | `wolf_1061` | Wolf 1061 | lawless | 4 | none | dropped | Oracle | overtaken when gsc_0044, atria and felis were chosen as the three inner road outposts under rule F33 |
