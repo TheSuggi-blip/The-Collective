@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Apollo. Routes: 68. Ships: 90.
+Kept by Apollo. Routes: 69. Ships: 90.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -77,17 +77,18 @@ Kept by Apollo. Routes: 68. Ships: 90.
 | 55 | [finish-wayfinder-full](finish-wayfinder-full.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | once per pilot, up to 3 ships, under corporation_management 7, standing work | all 90 |
 | 56 | [mission-five-capitals-diplomatic-circuit-confederacy](mission-five-capitals-diplomatic-circuit-confederacy.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 4 ships | all 90 |
 | 57 | [fit-network](fit-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 40 ships, standing work | all 90 |
-| 58 | [buy-steel-reserve-central-nexus](buy-steel-reserve-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while central_nexus asks 19 cr or less for steel_plate, under corporation_management 7, standing work | all 90 |
-| 59 | [builder-home-node-beta](builder-home-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 1 ships, standing work | all 90 |
-| 60 | [buy-carbon-reserve-node-beta](buy-carbon-reserve-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, while node_beta_industrial_station asks 4 cr or less for carbon_ore, standing work | all 90 |
-| 61 | [join-sol-sirius](join-sol-sirius.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 45 ships, empty hold, under corporation_management 7, standing work | all 90 |
-| 62 | [join-sol-records](join-sol-records.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 61 ships, empty hold, under corporation_management 7, standing work | all 90 |
-| 63 | [join-rim-debris](join-rim-debris.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | once per pilot, up to 30 ships, empty hold, under corporation_management 7, standing work | all 90 |
-| 64 | [join-krynn-bloodforge](join-krynn-bloodforge.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 60 ships, empty hold, under corporation_management 7, standing work | all 90 |
-| 65 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 45 ships, standing work | all 90 |
-| 66 | [haul-network-builder](haul-network-builder.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 1 ships, from corporation_management 7, standing work | all 90 |
-| 67 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 100 ships, under corporation_management 7, standing work | all 90 |
-| 68 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 90 |
+| 58 | [mission-the-expeditionary-mandate-first](mission-the-expeditionary-mandate-first.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 18 jumps | once per pilot, up to 3 ships | all 90 |
+| 59 | [buy-steel-reserve-central-nexus](buy-steel-reserve-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while central_nexus asks 19 cr or less for steel_plate, under corporation_management 7, standing work | all 90 |
+| 60 | [builder-home-node-beta](builder-home-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | once per pilot, up to 1 ships, standing work | all 90 |
+| 61 | [buy-carbon-reserve-node-beta](buy-carbon-reserve-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, while node_beta_industrial_station asks 4 cr or less for carbon_ore, standing work | all 90 |
+| 62 | [join-sol-sirius](join-sol-sirius.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 45 ships, empty hold, under corporation_management 7, standing work | all 90 |
+| 63 | [join-sol-records](join-sol-records.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | once per pilot, up to 61 ships, empty hold, under corporation_management 7, standing work | all 90 |
+| 64 | [join-rim-debris](join-rim-debris.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | once per pilot, up to 30 ships, empty hold, under corporation_management 7, standing work | all 90 |
+| 65 | [join-krynn-bloodforge](join-krynn-bloodforge.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | once per pilot, up to 60 ships, empty hold, under corporation_management 7, standing work | all 90 |
+| 66 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 45 ships, standing work | all 90 |
+| 67 | [haul-network-builder](haul-network-builder.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 1 ships, from corporation_management 7, standing work | all 90 |
+| 68 | [haul-network](haul-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 100 ships, under corporation_management 7, standing work | all 90 |
+| 69 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 90 |
 
 Planned:
 
