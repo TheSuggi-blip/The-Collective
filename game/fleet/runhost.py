@@ -677,6 +677,20 @@ class Host:
                     rm.unlink()
             except OSError:
                 pass
+            try:
+                op = Path(self.data) / "fleet" / "orders" / (str(job.get("pilot") or "") + ".json")
+                if op.exists():
+                    cur_o = read_json(op, {})
+                    if isinstance(cur_o, dict) and cur_o.get("what") == job.get("what"):
+                        op.unlink()
+            except OSError:
+                pass
+            try:
+                wake = Path(self.data) / "fleet" / "dispatch_wake"
+                wake.parent.mkdir(parents=True, exist_ok=True)
+                wake.write_text(str(time.time()), encoding="ascii")
+            except OSError:
+                pass
 
 
 def _run_worker(args, say):
