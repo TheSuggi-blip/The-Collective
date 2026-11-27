@@ -32,8 +32,8 @@
   "escort_rally_timeout_s": 240,
   "never_trust_lawless_player_solo": true,
   "enabled": true,
-  "arb_bid_depth_cap": 0.65,
-  "min_arb_bid_qty": 10,
+  "arb_bid_depth_cap": 0.5,
+  "min_arb_bid_qty": 15,
   "liquidate_min_revenue_cr": 300,
   "allow_faction_surplus_liquidation": true,
   "allow_calm_buywall_dest": true,
@@ -239,5 +239,7 @@
       "backhaul_mission"
     ]
   },
-  "resort_station_system": "ridgecrest"
+  "resort_station_system": "ridgecrest",
+  "max_arb_book_age_minutes": 15,
+  "arb_thin_max_spend_cr": 12000
 }

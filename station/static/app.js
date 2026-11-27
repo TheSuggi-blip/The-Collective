@@ -3263,7 +3263,7 @@ async function renderInventory(panel, live) {
         if (isRidge) resortMerged = true;
         const oc = el('div', 'icard ' + (ob.bunker_pct >= 80 ? 'ownbase' : 'sitecard'));
         const oh = el('div', 'ichead');
-        const tierCls = ob.surge_tier === 'FULL' ? 'good' : (ob.surge_tier === 'TOP-OFF' || ob.surge_tier === 'STEADY' ? 'info' : (ob.surge_tier === 'LOW' ? 'warn' : 'bad'));
+        const tierCls = (ob.surge_tier === 'FULL' || ob.surge_tier === 'READY TO BUILD') ? 'good' : (ob.surge_tier === 'TOP-OFF' || ob.surge_tier === 'STEADY' || ob.surge_tier === 'BUILDING REFUEL DOCK' ? 'info' : (ob.surge_tier === 'LOW' ? 'warn' : 'bad'));
         oh.append(
           el('b', null, fmtBaseLabel(ob)),
           el('span', 'pill', ob.system),
@@ -3279,7 +3279,7 @@ async function renderInventory(panel, live) {
         oc.append(oh);
         const fbar = el('div', 'progcell');
         fbar.append(
-          el('span', 'mono', 'Fuel Bunker: ' + fmt(ob.bunker_fuel) + ' / ' + fmt(ob.bunker_target) + ' (' + ob.bunker_pct.toFixed(1) + '%)'),
+          el('span', 'mono', (ob.bunker_mode === 'build_refuel_dock' ? 'Refueling Dock Build (fuel_cell): ' : 'Fuel Bunker: ') + fmt(ob.bunker_fuel) + ' / ' + fmt(ob.bunker_target) + ' (' + ob.bunker_pct.toFixed(1) + '%)'),
           pbar(ob.bunker_pct, 100, ob.bunker_pct >= 80 ? 'good' : (ob.bunker_pct >= 25 ? 'warn' : 'bad')),
         );
         oc.append(fbar);
@@ -5143,16 +5143,18 @@ async function renderMetrics(panel, live) {
   panel.append(el('h3', null, 'Whole-fleet performance (' + winLbl + ' window)'));
   const flGrid = el('div', 'kpis ov-fleet');
   if (fl) {
-    const ebitPos = (fl.core_ebit_h || 0) >= 0;
-    const ebitFuelTxt = fl.core_ebit_per_fuel !== null && fl.core_ebit_per_fuel !== undefined
-      ? (fl.core_ebit_per_fuel >= 0 ? '+' : '') + fl.core_ebit_per_fuel.toFixed(2) + ' cr / paid fuel cr'
-      : '--';
+    const ebitSc = Number(fl.core_ebit_score || 0);
+    const ebitSt = fl.core_ebit_status || ((fl.core_ebit_h || 0) >= 0 ? 'SOLID' : 'ALARM');
+    const ebitCls = ebitSc >= 120 ? 'apex' : (ebitSc >= 100 ? 'pos' : (ebitSc >= 60 ? 'warn' : ((fl.core_ebit_h || 0) >= 0 ? 'warn' : 'neg')));
+    const ebitParTxt = fl.core_ebit_par_h ? ('par +' + fmt(Math.round(fl.core_ebit_par_h)) + '/h') : 'dynamic frontier';
+    const ebitHwmTxt = fl.core_ebit_breakout ? 'NEW PEAK!' : (fl.core_ebit_hwm_h ? ('best +' + fmt(Math.round(fl.core_ebit_hwm_h))) : 'HWM calibrating');
     mkCard(
       flGrid,
-      'Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)',
-      signed(Math.round(fl.core_ebit_h || 0)) + ' cr/h',
-      ebitFuelTxt + ' | excludes seed missions & CapEx',
-      ebitPos ? 'pos' : 'neg'
+      'Core Operating Profit (Dynamic Open-Ended EBIT)',
+      signed(Math.round(fl.core_ebit_h || 0)) + ' cr/h  [' + ebitSt + ' ' + Math.round(ebitSc) + ']',
+      ebitParTxt + ' | ' + ebitHwmTxt + ' | Other COGS -' + fmt(Math.round(fl.other_cogs_h || 0)) + '/h | TCA fill ' + Number(fl.tca_fill_pct || 100).toFixed(1) + '%',
+      ebitCls,
+      Math.max(0, Math.min(100, ebitSc))
     );
 
     const rofTxt = fl.rev_per_fuel !== null && fl.rev_per_fuel !== undefined ? fl.rev_per_fuel.toFixed(2) + 'x ROF' : '--';
@@ -5190,6 +5192,35 @@ async function renderMetrics(panel, live) {
     mkCard(flGrid, 'Fleet KPIs', 'warming up...', 'recomputing snapshot', 'warn');
   }
   panel.append(flGrid);
+
+  // === SECTION 2B: ETERNAL STANDING-GOAL KPIS (MEASURABLE LATE-GAME & OPEN-ENDED FRONTIERS) ===
+  const sGoals = (fk && Array.isArray(fk.standing_goals)) ? fk.standing_goals : [];
+  if (sGoals.length) {
+    panel.append(el('h3', null, 'Eternal Standing-Goal KPIs (' + sGoals.length + ' measurable dominance & compounding frontiers)'));
+    const sgGrid = el('div', 'sg-grid');
+    const sgPill = (st) => (st === 'APEX' ? 'apex' : (st === 'OUTPERFORM' ? 'good' : (st === 'SOLID' ? 'solid' : (st === 'WARN' ? 'warn' : 'bad'))));
+    for (const g of sGoals) {
+      const c = el('div', 'sg-card ' + String(g.status || 'ALARM').toLowerCase() + (g.breakout ? ' peak' : ''));
+      const hd = el('div', 'sg-head');
+      hd.append(
+        el('span', 'sg-tag', g.sg || g.id),
+        el('b', 'sg-title', g.title),
+        el('span', 'pill ' + sgPill(g.status), g.status + ' ' + Math.round(Number(g.score || 0))),
+      );
+      const vRow = el('div', 'sg-vrow');
+      vRow.append(
+        el('span', 'sg-val ' + (Number(g.score || 0) >= 120 ? 'apex' : (Number(g.score || 0) >= 100 ? 'pos' : (Number(g.score || 0) >= 80 ? 'solid' : (Number(g.score || 0) >= 60 ? 'warn' : 'neg')))), g.value),
+        el('span', 'sg-tgt', 'Target: ' + g.target),
+      );
+      const trk = el('div', 'wg-bar-trk');
+      const fil = el('div', 'wg-bar-fil ' + (Number(g.score || 0) >= 120 ? 'apex' : (Number(g.score || 0) >= 100 ? 'good' : (Number(g.score || 0) >= 60 ? 'warn' : 'bad'))));
+      fil.style.width = Math.max(2, Math.min(100, Number(g.pct || 0))) + '%';
+      trk.append(fil);
+      c.append(hd, vRow, trk, el('div', 'wg-s', g.sub || ''));
+      sgGrid.append(c);
+    }
+    panel.append(sgGrid);
+  }
 
   // === SECTION 3: 17 SPECIALIZED WING & DIVISION KPI SCORECARDS (ZERO ADMIRALS) ===
   if (fWin && Array.isArray(fWin.wings) && fWin.wings.length) {

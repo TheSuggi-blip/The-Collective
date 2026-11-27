@@ -164,5 +164,46 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
             self.assertEqual(job_lux_after["item"], "rimeblue_board")
 
 
+    def test_bursar_tca_blocks_crystal_melt_54cr_dump_against_2009_gal_bid(self):
+        import bursar
+        book = {"crystal_melt": {"best_buy": 54, "best_buy_qty": 960, "best_sell": 0, "best_sell_qty": 0}}
+        stored = {"crystal_melt": 10}
+        # Even when lowball junk bids drag oracle fair_price to 54, gal_bid=2009 MUST block market sell_bid dump!
+        acts = bursar.plan_bursar_actions(
+            book, stored, [], {}, set(), {"crystal_melt": 2009.0}, 40000,
+            {"sell": {"enabled": True, "max_orders_per_station": 8, "min_price_ratio": 0.75, "instant_hit_bid_ratio": 0.85}, "buy": {"enabled": False}},
+            fair_price_map={"crystal_melt": {"fair_price": 54.0}},
+        )
+        kinds = [a[0] for a in acts if a[1] == "crystal_melt"]
+        self.assertNotIn("sell_bid", kinds)
+        self.assertIn("sell_create", kinds)
+
+    def test_haul_thin_book_arb_spend_cap_and_standing_goals_count(self):
+        # Verify thin-book (<40 bid_q) arb exposure is capped at arb_thin_max_spend_cr (12,000 cr)
+        books = [
+            {"base": "b_ask", "item": "lead_shielding", "ask": 2000, "ask_qty": 20, "bid": 0, "bid_qty": 0, "t": 1e12},
+            {"base": "b_bid", "item": "lead_shielding", "ask": 0, "ask_qty": 0, "bid": 3000, "bid_qty": 20, "t": 1e12},
+        ]
+        bmap = {"b_ask": ("s1", "p1", "b_ask", "solarian"), "b_bid": ("s2", "p2", "b_bid", "solarian")}
+        lanes = {"s1": {"s2"}, "s2": {"s1"}}
+        peers = [{"pilot": "P1", "system": "s1", "hold_cap": 100, "avail_cash": 40000}]
+        pol = {
+            "policed_only": True, "max_jumps_pickup": 8, "max_jumps_delivery": 8,
+            "min_cr_per_jump": 80, "min_total_profit": 400, "max_arb_book_age_minutes": 15,
+            "max_buy_spend_cr": 35000, "arb_thin_max_spend_cr": 12000,
+            "min_margin_pct": 0.15, "arb_bid_depth_cap": 0.50, "min_arb_bid_qty": 15,
+        }
+        res = haul.assign_optimal_arbitrage(books, bmap, lanes, peers, pol, set(), now_t=1e12)
+        self.assertIn("P1", res)
+        # unit_cost = 2100 -> 12,000 // 2100 = 5 units (NOT 10+ units / 32k blowup!)
+        self.assertLessEqual(res["P1"]["qty"], 5)
+
+        # Verify all 13 Eternal Standing Goals compute cleanly
+        sgs = kpi_engine.compute_standing_goals(None, {"ships": []}, {}, {}, {}, {}, Path("."), Path("/srv/collective/data"))
+        self.assertEqual(len(sgs), 13)
+        ids = {g["id"] for g in sgs}
+        self.assertTrue({"SG-WEALTH", "SG-MILITARY", "SG-TOURISM", "SG-EBIT", "SG-MARGIN", "SG-TCA", "SG-SEATING", "SG-HULLS", "SG-MODULES"} <= ids)
+
+
 if __name__ == "__main__":
     unittest.main()

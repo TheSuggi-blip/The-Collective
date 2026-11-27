@@ -1017,12 +1017,14 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
             _frec = (fair_price_map or {}).get(iid)
             _oracle_fv = float(_frec.get("fair_price") if isinstance(_frec, dict) else (_frec or 0.0))
             _ask_q = int(row.get("best_sell_qty") or row.get("sell_quantity") or 0)
-            # Detect obvious 1-2 unit decoy lowball ask even if caller omitted fair_price_map
-            _decoy_fv = _oracle_fv if _oracle_fv > 0.0 else (gal_bid if (ask <= 0 or (_ask_q in (1, 2) and ask < gal_bid * 0.35)) else 0.0)
+            # Institutional TCA anti-dump anchor: if lowball junk bids drag oracle VWM far below real galactic
+            # buyers (`gal_bid`, e.g. crystal_melt 54 cr junk vs 2,009 cr real bids), anchor floor to BOTH!
+            _base_fv = _oracle_fv if _oracle_fv > 0.0 else (gal_bid if (ask <= 0 or (_ask_q in (1, 2) and ask < gal_bid * 0.35)) else 0.0)
+            _gal_anchor = (gal_bid * 0.65) if gal_bid >= 25.0 else 0.0
+            _decoy_fv = max(_base_fv, _gal_anchor)
             floor_p = _mg_s.safe_sell_floor(iid, bid, ask, _decoy_fv, min_ratio=min_ratio, fair_floor_ratio=0.72) if _decoy_fv >= 10.0 else max(2, int(round(ref_p * min_ratio)))
-            # Zero-fuel glut clearing: ONLY dump >= 500 units into 1-cr bids if fair value is ALSO low (< 8 cr)!
-            # NEVER dump 500x silver_ore (101 cr) or quantum_silk (2,100 cr) into a 1-cr trap!
-            _glut_fv = _oracle_fv if _oracle_fv > 0.0 else gal_bid
+            # Zero-fuel glut clearing: ONLY dump >= 500 units into 1-cr bids if fair AND galactic value are ALSO low (< 8 cr)!
+            _glut_fv = max(_oracle_fv, gal_bid)
             if qty >= 500 and _glut_fv < 8.0 and bid_q > 0 and bid >= 1 and (ask <= 0 or bid >= max(1, int(round(ask * hit_ratio)))):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))
                 continue
@@ -1030,8 +1032,9 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 continue
             if floor_p < 2:
                 floor_p = max(2, int(round(ref_p * min_ratio)))
-            # Anti-lowball instant-sell guard: NEVER hit a local bid below safe_sell_floor (72% of verified galactic fair value)!
-            _hard_floor = floor_p if _decoy_fv >= 10.0 else 5
+            # Anti-lowball instant-sell guard: NEVER hit a local bid below safe_sell_floor OR <45% of galactic top bid!
+            _gal_hard = int(round(gal_bid * 0.45)) if gal_bid >= 25.0 else 5
+            _hard_floor = max(floor_p if _decoy_fv >= 10.0 else 5, _gal_hard)
             hit_live_spread = (ask > 0 and bid >= max(5, _hard_floor, int(round(ask * hit_ratio)))) or (ask <= 0 and bid >= max(5, _hard_floor))
             if bid_q > 0 and bid >= max(5, _hard_floor) and (bid >= max(floor_p, int(round(ref_p * hit_ratio))) or hit_live_spread):
                 actions.append(("sell_bid", iid, min(qty, bid_q), int(bid)))

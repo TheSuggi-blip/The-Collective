@@ -2504,27 +2504,53 @@ def _build_ops():
                     for _fb, _fi, _fu in conn.execute("SELECT base, item, units FROM faction_storage").fetchall():
                         _fs_by_base.setdefault(str(_fb), {})[str(_fi)] = int(num(_fu))
                 if "bases" in tables:
+                    _FUEL_CAPS = {
+                        "faction_fuel_bunker": 50000, "faction_large_fuel_bunker": 150000, "faction_capital_fuel_bunker": 500000,
+                        "refueling_dock": 5000, "fuel_depot": 5000, "fuel_tank_expansion": 50000,
+                    }
+                    _cap_by_base = {}
+                    if "faction_facilities" in tables:
+                        for _ffr in conn.execute("SELECT base, type FROM faction_facilities WHERE COALESCE(status,'active')='active' AND base IS NOT NULL").fetchall():
+                            _ft = str(_ffr["type"] or "").lower()
+                            if _ft in _FUEL_CAPS:
+                                _fb = str(_ffr["base"])
+                                _cap_by_base[_fb] = _cap_by_base.get(_fb, 0) + _FUEL_CAPS[_ft]
                     for _br in conn.execute("SELECT base, name, system, kind FROM bases ORDER BY name").fetchall():
                         _bid, _bnm, _bsys = str(_br["base"]), text(_br["name"], 48), text(_br["system"], 32)
                         _bkind = "station" if "station" in str(_br["kind"] or "").lower() else "outpost"
                         _inv_b = _fs_by_base.get(_bid) or {}
                         _bfuel = int(_inv_b.get("fuel") or 0)
                         _bunker_live_by_name[_bnm] = (_bid, _bfuel)
-                        _btgt = int(_btgts.get(_bkind) or 50000)
-                        _fr = float(_bfuel) / float(max(1, _btgt))
-                        if _fr < 0.20:
-                            _tier, _tgt_h = "CRITICAL", 5
-                        elif _fr < 0.50:
-                            _tier, _tgt_h = "LOW", 3
-                        elif _fr < 0.80:
-                            _tier, _tgt_h = "STEADY", 2
-                        elif _fr < 0.96:
-                            _tier, _tgt_h = "TOP-OFF", 1
+                        _actual_cap = int(_cap_by_base.get(_bid) or 0)
+                        _bmode = "bunker"
+                        if _bkind == "station" and _actual_cap <= 0:
+                            _bmode = "build_refuel_dock"
+                            _bfuel = int(_inv_b.get("fuel_cell") or 0)
+                            _btgt = 2000
+                            _fr = float(_bfuel) / float(_btgt)
+                            _tier = "READY TO BUILD" if _bfuel >= 2000 else "BUILDING REFUEL DOCK"
+                            _tgt_h = 0 if _bfuel >= 2000 else 6
                         else:
-                            _tier, _tgt_h = "FULL", 0
+                            _btgt = _actual_cap if _actual_cap > 0 else int(_btgts.get(_bkind) or 50000)
+                            _fr = float(_bfuel) / float(max(1, _btgt))
+                            if _fr < 0.20:
+                                _tier, _tgt_h = "CRITICAL", 5
+                            elif _fr < 0.50:
+                                _tier, _tgt_h = "LOW", 3
+                            elif _fr < 0.80:
+                                _tier, _tgt_h = "STEADY", 2
+                            elif _fr < 0.96:
+                                _tier, _tgt_h = "TOP-OFF", 1
+                            else:
+                                _tier, _tgt_h = "FULL", 0
                         _act_h = []
                         for _hk, _hpils in _hj_claims.items():
-                            if _hk == ("upkeep_bunker:" + _bid) or _hk.startswith("upkeep_bunker:" + _bid + ":"):
+                            if (
+                                _hk == ("upkeep_bunker:" + _bid)
+                                or _hk.startswith("upkeep_bunker:" + _bid + ":")
+                                or _hk == ("upkeep:" + _bid + ":fuel_cell")
+                                or _hk.startswith("upkeep:" + _bid + ":fuel_cell:")
+                            ):
                                 _act_h.extend(_hpils)
                         _upk_rows = []
                         for _ui, _ut in ((_utgts.get(_bkind) or {}).items()):
@@ -2546,6 +2572,7 @@ def _build_ops():
                             _rep_parts.append("+%d circuit_board" % (45 - _cb_have))
                         _outpost_supply.append({
                             "base": _bid, "name": _bnm, "system": _bsys, "kind": _bkind,
+                            "bunker_mode": _bmode,
                             "bunker_fuel": _bfuel, "bunker_target": _btgt,
                             "bunker_pct": round(min(100.0, 100.0 * _bfuel / max(1, _btgt)), 1),
                             "surge_tier": _tier, "target_haulers": _tgt_h,

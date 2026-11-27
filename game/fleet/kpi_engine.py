@@ -697,6 +697,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             "ore_units": 0, "ore_val": 0.0, "kills": 0, "loot_val": 0.0,
             "craft_units": 0, "craft_val": 0.0, "craft_xp": 0.0, "scans": 0,
             "rev_cash": 0.0, "neg_cash": 0.0, "losses": 0, "bursar_mins": 0.0,
+            "arb_ok_n": 0, "arb_listed_n": 0, "arb_listed_cr": 0.0, "inv_cost_cr": 0.0,
+            "upkeep_buy_cr": 0.0, "upkeep_fair_cr": 0.0, "craft_spend_cr": 0.0,
         }
         for w in WING_SPECS
     }
@@ -766,6 +768,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                         wr["scans"] += 1
                         wr["ok_runs"] += 1
                 elif k in ("craft_net", "bursar"):
+                    if op_cr < 0:
+                        wr["craft_spend_cr"] += abs(op_cr)
                     for nt in (rj.get("notes") or []):
                         for cm in _CRAFT_RE.finditer(str(nt)):
                             cq = int(cm.group(1))
@@ -775,6 +779,19 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                             wr["ok_runs"] += 1
                 elif k == "haul":
                     notes_s = " ".join(str(x) for x in (rj.get("notes") or []))
+                    _ic = float(rj.get("inventory_cost") or 0.0)
+                    if _ic > 0:
+                        wr["inv_cost_cr"] += _ic
+                    if "arb listed" in notes_s:
+                        wr["arb_listed_n"] += 1
+                        wr["arb_listed_cr"] += abs(op_cr) if op_cr < 0 else _ic
+                    elif "arb " in notes_s and op_cr > 0:
+                        wr["arb_ok_n"] += 1
+                    if "hub_upkeep" in notes_s and op_cr < 0:
+                        wr["upkeep_buy_cr"] += abs(op_cr)
+                        _m_u = re.search(r"hub_upkeep\s+(\d+)\s+([a-z0-9_]+)", notes_s)
+                        if _m_u:
+                            wr["upkeep_fair_cr"] += int(_m_u.group(1)) * float(prices.get(_m_u.group(2), 50.0))
                     if "docked watch" not in notes_s and "no eligible" not in notes_s:
                         wr["ok_runs"] += 1
 
@@ -1005,12 +1022,16 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             _hwm_mark(wid, "rev_h", rev_h)
             if rof is not None:
                 _hwm_mark(wid, "rof", rof)
-            h_gap_pct = (hulls_bw.get(wid) or {}).get("pct_done", 100.0)
-            scores.extend([(s_rof, 0.40), (s_rev, 0.40)])
+            arb_loss_h = wr["arb_listed_cr"] / span_h
+            tca_denom = max(1.0, rev_h + arb_loss_h)
+            fill_qual_pct = round(100.0 * rev_h / tca_denom, 1) if (rev_h + arb_loss_h) > 0 else 100.0
+            net_margin_pct = round(100.0 * (rev_h - (wr["neg_cash"] / span_h)) / max(1.0, rev_h), 1) if rev_h >= 100.0 else 0.0
+            s_tca = _score_band(fill_qual_pct, good=92.0, warn=70.0, higher_better=True)
+            scores.extend([(s_rof, 0.30), (s_rev, 0.30), (s_tca, 0.20)])
             kpis = [
                 {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h | %s" % (runs_h, _fmt_frontier(format(int(par_rev), ","), hwm_rev, br_rev)), "score": round(s_rev), "breakout": br_rev},
                 {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
-                {"k": "Hull Readiness", "v": "%.0f%%" % h_gap_pct, "sub": "of max possible tier", "score": round(h_gap_pct)},
+                {"k": "Exec Fill Quality (TCA)", "v": "%.1f%%" % fill_qual_pct, "sub": "%d listed (-%s/h) | net %.0f%%" % (wr["arb_listed_n"], format(int(arb_loss_h), ","), net_margin_pct), "score": round(s_tca)},
                 {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
@@ -1025,11 +1046,16 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             s_st = _score_band(st_pct, good=88.0, warn=65.0, higher_better=True)
             s_sl, br_sl = _score_open_ended(sales_h, par_sl, warn_ratio=0.45, hwm=hwm_sl)
             _hwm_mark(wid, "sales_h", sales_h)
-            scores.extend([(s_up, 0.25), (s_st, 0.20), (s_sl, 0.35)])
+            buy_drag_h = wr["neg_cash"] / span_h
+            cash_cap_pct = round(100.0 * sales_h / max(1.0, sales_h + buy_drag_h), 1) if (sales_h + buy_drag_h) > 0 else 100.0
+            hwm_cc = _hwm_get(wid, "cash_cap_pct")
+            s_cc, br_cc = _score_open_ended(cash_cap_pct, 65.0, warn_ratio=0.50, hwm=hwm_cc)
+            _hwm_mark(wid, "cash_cap_pct", cash_cap_pct)
+            scores.extend([(s_up, 0.20), (s_st, 0.15), (s_sl, 0.30), (s_cc, 0.15)])
             kpis = [
-                {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
-                {"k": "Stations Covered", "v": "%d / %d" % (bursar_occ, st_target), "sub": "%.0f%% exchange spread" % st_pct, "score": round(s_st)},
                 {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "0 fuel | %s" % _fmt_frontier(format(int(par_sl), ","), hwm_sl, br_sl), "score": round(s_sl), "breakout": br_sl},
+                {"k": "Cash Capture (TCA)", "v": "%.1f%%" % cash_cap_pct, "sub": "buy/fee -%s/h | %s" % (format(int(buy_drag_h), ","), _fmt_frontier("65%", hwm_cc, br_cc)), "score": round(s_cc), "breakout": br_cc},
+                {"k": "Stations Covered", "v": "%d / %d" % (bursar_occ, st_target), "sub": "%d/%d desks live (%.0f%%)" % (wl["bursar_docked"], wl["total"], desk_up), "score": round(min(s_st, s_up))},
                 {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
@@ -1044,10 +1070,15 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             s_up = _score_band(desk_up, good=88.0, warn=65.0, higher_better=True)
             s_cr, br_cr = _score_open_ended(comb_h, par_comb, warn_ratio=0.45, hwm=hwm_comb)
             _hwm_mark(wid, "comb_h", comb_h)
-            scores.extend([(s_up, 0.30), (s_cr, 0.50)])
+            spend_5a_h = max(100.0, (wr["craft_spend_cr"] / span_h) + fuel_h)
+            va_ratio_5a = round(comb_h / spend_5a_h, 2)
+            hwm_va5a = _hwm_get(wid, "va_ratio")
+            s_va5a, br_va5a = _score_open_ended(va_ratio_5a, 2.5, warn_ratio=0.45, hwm=hwm_va5a)
+            _hwm_mark(wid, "va_ratio", va_ratio_5a)
+            scores.extend([(s_up, 0.20), (s_cr, 0.35), (s_va5a, 0.25)])
             kpis = [
                 {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %s" % (crafts_h, _fmt_frontier(format(int(par_comb), ","), hwm_comb, br_cr)), "score": round(s_cr), "breakout": br_cr},
-                {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "refinery + exchange", "score": round(s_cr), "breakout": br_cr},
+                {"k": "Value / Spend (TCA)", "v": "%.2fx" % va_ratio_5a, "sub": "sales +%s | spend -%s/h" % (format(int(sales_h), ","), format(int(spend_5a_h), ",")), "score": round(s_va5a), "breakout": br_va5a},
                 {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
                 {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
@@ -1087,11 +1118,16 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (80.0, False)
             if rof is not None:
                 _hwm_mark(wid, "rof", rof)
-            scores.extend([(s_sla, 0.45), (s_rof, 0.35)])
+            buy_6a_h = wr["upkeep_buy_cr"] / span_h
+            fair_6a_h = wr["upkeep_fair_cr"] / span_h
+            # Procurement PPV: +pct means buying BELOW fair value; negative means overpaying above fair!
+            ppv_pct = round(100.0 * (fair_6a_h - buy_6a_h) / max(1.0, fair_6a_h), 1) if (buy_6a_h >= 100.0 and fair_6a_h >= 100.0) else None
+            s_ppv = _score_open_ended(100.0 + ppv_pct, 100.0, warn_ratio=0.70)[0] if ppv_pct is not None else 90.0
+            scores.extend([(s_sla, 0.40), (s_rof, 0.25), (s_ppv, 0.15)])
             kpis = [
                 {"k": "Supply Chains SLA", "v": "%.1f%%" % sla, "sub": "%d P1/P2 projects" % infra["p1_p2_needs_count"], "score": round(s_sla)},
                 {"k": "Freight Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "+%s cr/h | %s" % (format(int(rev_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
-                {"k": "Supply Runs / h", "v": "%.1f/h" % runs_h, "sub": "%d/%d productive" % (wr["ok_runs"], wr["runs"]), "score": round(s_sla)},
+                {"k": "Procurement Edge (PPV)", "v": ("%+.1f%%" % ppv_pct) if ppv_pct is not None else ("%.1f runs/h" % runs_h), "sub": ("upkeep -%s/h vs fair" % format(int(buy_6a_h), ",")) if ppv_pct is not None else ("%d/%d productive" % (wr["ok_runs"], wr["runs"])), "score": round(s_ppv)},
                 {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
@@ -1234,14 +1270,58 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             "status": _status_from_score(d_health),
         })
 
+    # Dynamic open-ended fleet-wide Core EBIT, Core Margin, and TCA Execution Edge (scales with hull tier T0->T5 + HWM!)
+    h_filled = float(((upgrade_gaps or {}).get("hulls") or {}).get("filled_steps") or 0.0)
+    fleet_avg_tier = h_filled / float(max(1, len(ships_list)))
+    fleet_cap_mult = round(1.0 + 0.55 * fleet_avg_tier, 2)
+    core_ebit_par_h = round(150000.0 * fleet_cap_mult, 0)
+    hwm_fl = (hwm_doc or {}).get("fleet") if isinstance((hwm_doc or {}).get("fleet"), dict) else {}
+    hwm_ebit = hwm_fl.get("core_ebit_h")
+    hwm_margin = hwm_fl.get("core_margin_pct")
+    ebit_sc, ebit_br = _score_open_ended(max(0.0, core_ebit_h), core_ebit_par_h, warn_ratio=0.35, hwm=hwm_ebit)
+    if core_ebit_h < 0:
+        ebit_sc, ebit_br = 0.0, False
+    margin_sc, margin_br = _score_open_ended(max(0.0, core_margin_pct), 30.0, warn_ratio=0.33, hwm=hwm_margin) if core_margin_pct is not None else (None, False)
+    if core_margin_pct is not None and core_margin_pct < 0:
+        margin_sc, margin_br = 0.0, False
+    if hwm_updates is not None:
+        fup = hwm_updates.setdefault("_fleet", {})
+        if core_ebit_h > 0:
+            fup["core_ebit_h"] = _ratchet_hwm_high(hwm_ebit, core_ebit_h)
+        if core_margin_pct is not None and core_margin_pct > 0:
+            fup["core_margin_pct"] = _ratchet_hwm_high(hwm_margin, core_margin_pct)
+
+    tot_arb_listed_cr_h = sum(w_runs[x]["arb_listed_cr"] for x in w_runs) / span_h
+    tot_arb_listed_n = sum(w_runs[x]["arb_listed_n"] for x in w_runs)
+    trade_rev_h = float(rb.get("trade_sales_h") or 0.0) + float(rb.get("passive_escrow_h") or 0.0)
+    other_cogs_h = float(ob.get("other_cogs_h") or 0.0)
+    tca_fill_pct = round(100.0 * trade_rev_h / max(1.0, trade_rev_h + tot_arb_listed_cr_h), 1) if (trade_rev_h + tot_arb_listed_cr_h) > 0 else 100.0
+    tca_cogs_ratio = round(100.0 * realized_rev_h / max(1.0, realized_rev_h + other_cogs_h), 1) if (realized_rev_h + other_cogs_h) > 0 else 100.0
+    tca_score = round(0.55 * _score_band(tca_fill_pct, good=92.0, warn=70.0) + 0.45 * _score_open_ended(tca_cogs_ratio, 68.0, warn_ratio=0.55)[0], 1)
+
     fleet_summary = {
         "hours": hours,
         "span_hours": round(span_h, 2),
         "realized_rev_h": round(realized_rev_h, 0),
         "paid_fuel_h": round(paid_fuel_h, 0),
+        "other_cogs_h": round(other_cogs_h, 0),
         "core_ebit_h": round(core_ebit_h, 0),
+        "core_ebit_par_h": core_ebit_par_h,
+        "core_ebit_hwm_h": hwm_ebit,
+        "core_ebit_score": ebit_sc,
+        "core_ebit_status": _status_from_score(ebit_sc),
+        "core_ebit_breakout": ebit_br,
         "core_margin_pct": core_margin_pct,
         "core_margin_tier": core_margin_tier,
+        "core_margin_hwm_pct": hwm_margin,
+        "core_margin_score": margin_sc,
+        "core_margin_breakout": margin_br,
+        "fleet_cap_mult": fleet_cap_mult,
+        "tca_fill_pct": tca_fill_pct,
+        "tca_arb_listed_n": tot_arb_listed_n,
+        "tca_arb_listed_cr_h": round(tot_arb_listed_cr_h, 0),
+        "tca_cogs_ratio_pct": tca_cogs_ratio,
+        "tca_score": tca_score,
         "rev_per_fuel": rev_per_fuel,
         "core_ebit_per_fuel": ebit_per_fuel,
         "total_ships": len(ships_list),
@@ -1335,6 +1415,231 @@ def read_kpi_signals(data_dir=DATA_DEFAULT, max_age_s=600.0):
     return d
 
 
+def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, infra, repo_root, data_dir):
+    """Compute all 13 measurable Eternal Standing-Goal KPIs (hard late-game rival benchmarks + open-ended fleet economics).
+    Targets are engineered so early/mid-game never falsely caps at 100% green, while late-game dominance pushes >100 APEX.
+    """
+    def _fmt_m(v):
+        v = float(v or 0.0)
+        if abs(v) >= 1e9:
+            return "%.2fB" % (v / 1e9)
+        if abs(v) >= 1e6:
+            return "%.1fM" % (v / 1e6)
+        if abs(v) >= 1e3:
+            return "%.0fk" % (v / 1e3)
+        return "%d" % int(round(v))
+
+    # 1. Rival benchmarks from live rivals.py / read.db:rival_snapshots
+    our_w = our_ship_v = our_ore = our_craft = 0.0
+    top_w_tag, top_w = "BUSY", 0.0
+    top_mil_tag, top_mil = "BUSY", 0.0
+    top_ore_tag, top_ore = "BUSY", 0.0
+    top_cr_tag, top_cr = "BUSY", 0.0
+    top_tour_name, top_tour_rev = "The Obsidian Well", 0.0
+    our_tour_rev = 0.0
+    our_appeal = 0
+    seated_n = 0
+    seat_cap = 0
+    own_stations = 0
+    own_outposts = 0
+
+    try:
+        import rivals as _rv
+        sc = _rv.compute_sedcards(repo_root=str(repo_root), data_dir=str(data_dir)) or {}
+        our_s = sc.get("our") or {}
+        our_w = float(our_s.get("wealth") or 0.0)
+        seated_n = int(our_s.get("seated_members") or our_s.get("members") or 0)
+        for sd in (sc.get("sedcards") or []):
+            if not isinstance(sd, dict) or str(sd.get("tag") or "").upper() == "CLTV":
+                continue
+            tg = str(sd.get("tag") or "?")
+            w_v = float(sd.get("wealth") or 0.0)
+            sh_v = float(sd.get("ship_value") or 0.0)
+            or_v = float(sd.get("ore_mined") or 0.0)
+            cr_v = float(sd.get("items_crafted") or 0.0)
+            if w_v > top_w:
+                top_w, top_w_tag = w_v, tg
+            if sh_v > top_mil:
+                top_mil, top_mil_tag = sh_v, tg
+            if or_v > top_ore:
+                top_ore, top_ore_tag = or_v, tg
+            if cr_v > top_cr:
+                top_cr, top_cr_tag = cr_v, tg
+        ttop = sc.get("tourism_top") or []
+        if ttop and isinstance(ttop[0], dict):
+            top_tour_name = str(ttop[0].get("name") or "Top Rival Resort")
+            top_tour_rev = float(ttop[0].get("revenue") or 0.0)
+    except Exception:
+        pass
+
+    if conn is not None:
+        try:
+            tbls = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            if "faction" in tbls:
+                fr = conn.execute("SELECT member_count, members_limit FROM faction LIMIT 1").fetchone()
+                if fr:
+                    seated_n = int(fr[0] or seated_n)
+                    seat_cap = int(fr[1] or 0)
+            if "bases" in tbls:
+                for (bk,) in conn.execute("SELECT kind FROM bases").fetchall():
+                    if "station" in str(bk or "").lower():
+                        own_stations += 1
+                    else:
+                        own_outposts += 1
+            if "rival_snapshots" in tbls:
+                r_cltv = conn.execute(
+                    "SELECT wealth, ship_value, ore_mined, items_crafted FROM rival_snapshots WHERE tag='CLTV' ORDER BY t DESC LIMIT 1"
+                ).fetchone()
+                if r_cltv:
+                    our_w = max(our_w, float(r_cltv[0] or 0.0))
+                    our_ship_v = float(r_cltv[1] or 0.0)
+                    our_ore = float(r_cltv[2] or 0.0)
+                    our_craft = float(r_cltv[3] or 0.0)
+            if "faction_facilities" in tbls:
+                rc_types = [r[0] for r in conn.execute("SELECT type FROM faction_facilities WHERE COALESCE(status,'active')='active'").fetchall()]
+                cat_files = sorted((Path(data_dir) / "catalog").glob("*.json"))
+                if cat_files:
+                    cat = _read_json(cat_files[-1], {})
+                    rfacs = cat.get("facilities") or {}
+                    fmap = {x.get("id"): x for x in rfacs if isinstance(x, dict)} if isinstance(rfacs, list) else rfacs
+                    for ft in rc_types:
+                        fi = fmap.get(ft) or {}
+                        our_appeal += int(fi.get("dining_points") or 0) + int(fi.get("leisure_points") or 0) + int(fi.get("lodging_points") or 0)
+        except Exception:
+            pass
+
+    w1 = ((windows or {}).get("1h") or {}).get("fleet") or {}
+    w6 = ((windows or {}).get("6h") or {}).get("fleet") or {}
+    fl_ref = w1 if w1.get("realized_rev_h") else w6
+    tot_ships = int(fl_ref.get("total_ships") or len((fleet_doc or {}).get("ships") or []) or 500)
+
+    def _ratio_goal(gid, sg, title, cur_v, rival_v, rival_lbl, factor, unit_fn=_fmt_m):
+        tgt_v = rival_v * factor if rival_v > 0 else 1.0
+        ratio = (cur_v / rival_v) if rival_v > 0 else 0.0
+        pct = round(100.0 * cur_v / tgt_v, 1) if tgt_v > 0 else 0.0
+        sc = round(100.0 + 38.0 * math.log(cur_v / tgt_v), 1) if (cur_v >= tgt_v and tgt_v > 0) else round(min(99.9, pct), 1)
+        return {
+            "id": gid, "sg": sg, "title": title, "group": "supremacy",
+            "value": "%.3fx" % ratio if ratio < 0.1 else "%.2fx" % ratio,
+            "target": "%.2fx %s" % (factor, rival_lbl),
+            "sub": "CLTV %s vs %s %s (need %s)" % (unit_fn(cur_v), rival_lbl, unit_fn(rival_v), unit_fn(tgt_v)),
+            "pct": pct, "score": sc, "status": _status_from_score(sc),
+        }
+
+    # Tourism: compare appeal (target +15% over rival benchmark 50 appeal -> 58+ appeal) & station revenue vs top rival
+    tour_rev_ratio = (our_tour_rev / top_tour_rev) if top_tour_rev > 0 else 0.0
+    tour_appeal_tgt = 58
+    tour_pct = round(100.0 * our_appeal / float(tour_appeal_tgt), 1)
+    tour_sc = round(100.0 + 30.0 * math.log(our_appeal / float(tour_appeal_tgt)), 1) if our_appeal >= tour_appeal_tgt else round(min(99.9, tour_pct * 0.85), 1)
+
+    hulls = (upgrade_gaps or {}).get("hulls") or {}
+    mods = (upgrade_gaps or {}).get("modules") or {}
+    h_pct = float(hulls.get("pct_done") or 0.0)
+    m_slot_pct = float(mods.get("slot_pct_done") or 0.0)
+    m_tier_pct = float(mods.get("tier_pct_done") or 0.0)
+    m_comb = round(0.6 * m_slot_pct + 0.4 * m_tier_pct, 1)
+    seat_pct_1k = round(100.0 * seated_n / 1000.0, 1)
+    emp_pct = round(100.0 * (own_stations + own_outposts) / 13.0, 1)
+    g_med = float((freshness or {}).get("median_min") or 99.0)
+    r_med = float((freshness or {}).get("rival_frontier_median_min") or 99.0)
+    intel_sc, intel_br = _score_open_ended_low(g_med, 10.0, warn=35.0)
+    ebit_sc = float(fl_ref.get("core_ebit_score") or 0.0)
+    ebit_h = float(fl_ref.get("core_ebit_h") or 0.0)
+    ebit_par = float(fl_ref.get("core_ebit_par_h") or 150000.0)
+    margin_pct = fl_ref.get("core_margin_pct")
+    margin_sc = float(fl_ref.get("core_margin_score") or 0.0)
+    tca_sc = float(fl_ref.get("tca_score") or 0.0)
+
+    goals = [
+        _ratio_goal("SG-WEALTH", "SG1", "Galactic Wealth Supremacy", our_w, top_w, "[%s]" % top_w_tag, 2.0),
+        _ratio_goal("SG-MILITARY", "SG1/SG2", "Military Firepower Supremacy", our_ship_v, top_mil, "[%s]" % top_mil_tag, 2.0),
+        {
+            "id": "SG-TOURISM", "sg": "SG3/SG4", "title": "Tourism Hub Crown (+15% Margin)", "group": "supremacy",
+            "value": "%d Appeal" % our_appeal,
+            "target": "+15%% vs %s" % top_tour_name[:16],
+            "sub": "Ridgecrest %d appeal | #1 %s rev %s cr" % (our_appeal, top_tour_name, _fmt_m(top_tour_rev)),
+            "pct": tour_pct, "score": tour_sc, "status": _status_from_score(tour_sc),
+        },
+        _ratio_goal("SG-INDUSTRY", "SG4", "Industrial Manufacturing Crown", our_craft, top_cr, "[%s]" % top_cr_tag, 2.0),
+        _ratio_goal("SG-EXTRACT", "SG4", "Resource Extraction Crown", our_ore, top_ore, "[%s]" % top_ore_tag, 2.0),
+        {
+            "id": "SG-EBIT", "sg": "SG1/SG4", "title": "Core Operating Profit (Dynamic EBIT)", "group": "economics",
+            "value": "%s%s cr/h" % ("+" if ebit_h >= 0 else "", format(int(round(ebit_h)), ",")),
+            "target": "par +%s cr/h (open-ended)" % format(int(round(ebit_par)), ","),
+            "sub": "1h IFRS 15 Ex-Seeds | %.2fx cap | HWM %s" % (
+                float(fl_ref.get("fleet_cap_mult") or 1.0),
+                ("+%s" % format(int(round(fl_ref["core_ebit_hwm_h"])), ",")) if fl_ref.get("core_ebit_hwm_h") else "calibrating",
+            ),
+            "pct": round(max(0.0, 100.0 * ebit_h / max(1.0, ebit_par)), 1),
+            "score": round(ebit_sc, 1), "status": _status_from_score(ebit_sc),
+            "breakout": bool(fl_ref.get("core_ebit_breakout")),
+        },
+        {
+            "id": "SG-MARGIN", "sg": "SG1/SG4", "title": "Core Operating Margin (30%+ / 50%+)", "group": "economics",
+            "value": ("%.1f%%" % float(margin_pct)) if margin_pct is not None else "--",
+            "target": "30%+ target | 50%+ ELITE",
+            "sub": "IFRS 15 EBIT / Realized Rev | ROF %sx | HWM %s" % (
+                fl_ref.get("rev_per_fuel") or "--",
+                ("%.1f%%" % float(fl_ref["core_margin_hwm_pct"])) if fl_ref.get("core_margin_hwm_pct") else "calibrating",
+            ),
+            "pct": round(max(0.0, 100.0 * float(margin_pct or 0.0) / 50.0), 1),
+            "score": round(margin_sc, 1), "status": _status_from_score(margin_sc),
+            "breakout": bool(fl_ref.get("core_margin_breakout")),
+        },
+        {
+            "id": "SG-TCA", "sg": "SG4", "title": "Trade & Procurement Execution (TCA)", "group": "economics",
+            "value": "%.1f%% fill" % float(fl_ref.get("tca_fill_pct") or 100.0),
+            "target": ">=92% fill | low COGS drag",
+            "sub": "Other COGS -%s/h | %d arb listed (-%s/h) | Rev/(Rev+COGS) %.0f%%" % (
+                format(int(round(float(fl_ref.get("other_cogs_h") or 0.0))), ","),
+                int(fl_ref.get("tca_arb_listed_n") or 0),
+                format(int(round(float(fl_ref.get("tca_arb_listed_cr_h") or 0.0))), ","),
+                float(fl_ref.get("tca_cogs_ratio_pct") or 0.0),
+            ),
+            "pct": float(fl_ref.get("tca_fill_pct") or 0.0),
+            "score": round(tca_sc, 1), "status": _status_from_score(tca_sc),
+        },
+        {
+            "id": "SG-SEATING", "sg": "SG2", "title": "Grand Fleet Seating (1,000 Eternal)", "group": "infrastructure",
+            "value": "%d / 1,000" % seated_n,
+            "target": "500 Phase-1 | 1,000 Eternal",
+            "sub": "%d/%d Phase-1 seated (cap %d) | %d unseated" % (seated_n, tot_ships, seat_cap, max(0, tot_ships - seated_n)),
+            "pct": seat_pct_1k, "score": seat_pct_1k, "status": _status_from_score(round(100.0 * seated_n / max(1, tot_ships), 1)),
+        },
+        {
+            "id": "SG-HULLS", "sg": "SG2", "title": "Dynamic Hull Modernization (T1-T5)", "group": "infrastructure",
+            "value": "%.1f%% (%d/%d)" % (h_pct, int(hulls.get("filled_steps") or 0), int(hulls.get("possible_steps") or 0)),
+            "target": "100% of dynamic T1-T5 cap",
+            "sub": "%d steps missing | scales upward as Piloting rises" % int(hulls.get("missing_steps") or 0),
+            "pct": h_pct, "score": h_pct, "status": _status_from_score(h_pct),
+        },
+        {
+            "id": "SG-MODULES", "sg": "SG2", "title": "Dynamic Module Fitting (T1-T5)", "group": "infrastructure",
+            "value": "%.1f%% slots | %.1f%% tier" % (m_slot_pct, m_tier_pct),
+            "target": "100% slots & tier-max",
+            "sub": "%d empty slots | %d ships below blueprint tier-max" % (int(mods.get("missing_slots") or 0), int(mods.get("ships_missing_tier") or 0)),
+            "pct": m_comb, "score": m_comb, "status": _status_from_score(m_comb),
+        },
+        {
+            "id": "SG-EMPIRE", "sg": "SG3", "title": "Sovereign Industrial Empire", "group": "infrastructure",
+            "value": "%d/5 Stn | %d/8 Outp" % (own_stations, own_outposts),
+            "target": "5 regional stations + 8 outposts",
+            "sub": "%d/13 sovereign anchors | bunkers %.1f%% avg" % (own_stations + own_outposts, float((infra or {}).get("bunker_avg_pct") or 0.0)),
+            "pct": emp_pct, "score": emp_pct, "status": _status_from_score(emp_pct),
+        },
+        {
+            "id": "SG-INTEL", "sg": "SG5", "title": "Galactic Omniscience (Freshness)", "group": "infrastructure",
+            "value": "%.1fm med" % g_med,
+            "target": "<=10m galaxy | <=5m rivals",
+            "sub": "rival hubs %.1fm med | %d/%d systems charted" % (r_med, int((freshness or {}).get("systems_scanned") or 0), int((freshness or {}).get("systems_total") or 0)),
+            "pct": round(min(100.0, 100.0 * 10.0 / max(1.0, g_med)), 1),
+            "score": round(intel_sc or 0.0, 1), "status": _status_from_score(intel_sc),
+            "breakout": bool(intel_br),
+        },
+    ]
+    return goals
+
+
 def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting_by_win=None, now=None, write_signals=True):
     """Main entry point: compute full dynamic upgrade gaps, freshness, infra SLA, and 1h/6h/24h wing KPIs."""
     now_t = time.time() if now is None else float(now)
@@ -1400,11 +1705,16 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
             w6_span = float(((windows.get("6h") or {}).get("fleet") or {}).get("span_hours") or 0.0)
             if w6_span >= 1.0:
                 merged_w = dict(hwm_doc.get("wings") or {})
+                merged_f = dict(hwm_doc.get("fleet") or {})
                 for wk, wv in hwm_updates.items():
-                    cur_w = dict(merged_w.get(wk) or {})
-                    cur_w.update(wv)
-                    merged_w[wk] = cur_w
-                _save_hwm(data_p, {"wings": merged_w}, now_t)
+                    if wk == "_fleet":
+                        merged_f.update(wv)
+                    else:
+                        cur_w = dict(merged_w.get(wk) or {})
+                        cur_w.update(wv)
+                        merged_w[wk] = cur_w
+                _save_hwm(data_p, {"wings": merged_w, "fleet": merged_f}, now_t)
+        standing_goals = compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, infra, repo_root, data_p)
     finally:
         if conn is not None:
             try:
@@ -1417,6 +1727,7 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
         "upgrades": upgrade_gaps,
         "freshness": freshness,
         "infra": infra,
+        "standing_goals": standing_goals,
         "windows": windows,
     }
     if write_signals:
@@ -1425,7 +1736,7 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
             snap_p = Path(data_p) / "fleet" / "kpi_snapshot.json"
             snap_p.parent.mkdir(parents=True, exist_ok=True)
             snap_tmp = snap_p.with_name(f"kpi_snapshot.{os.getpid()}.tmp")
-            snap_tmp.write_text(json.dumps({"updated_at": int(now_t), "windows": out.get("windows") or {}}, separators=(",", ":")), encoding="ascii")
+            snap_tmp.write_text(json.dumps({"updated_at": int(now_t), "standing_goals": out.get("standing_goals") or [], "windows": out.get("windows") or {}}, separators=(",", ":")), encoding="ascii")
             os.replace(snap_tmp, snap_p)
         except OSError:
             pass
@@ -1458,6 +1769,13 @@ def print_summary(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, win="6h"):
         float(fr.get("median_min") or 0.0), float(fr.get("rival_frontier_median_min") or 0.0),
         float(inf.get("bunker_avg_pct") or 0.0), float(inf.get("supply_sla_pct") or 0.0),
         fl.get("bursar_stations_occupied"), fl.get("bursar_stations_target")))
+    sgs = fk.get("standing_goals") or []
+    if sgs:
+        print("  ETERNAL STANDING GOALS (%d):" % len(sgs))
+        for g in sgs:
+            print("    %-12s %-34s val=%-18s tgt=%-24s sc=%5.1f [%10s]" % (
+                g.get("id"), str(g.get("title") or "")[:34], str(g.get("value") or "")[:18],
+                str(g.get("target") or "")[:24], float(g.get("score") or 0.0), g.get("status")))
     print("  WINGS (%s):" % win)
     for wg in (w.get("wings") or []):
         ms = ", ".join("%s=%s" % (m.get("k"), m.get("v")) for m in (wg.get("kpis") or [])[:4])

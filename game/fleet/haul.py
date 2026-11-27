@@ -832,8 +832,9 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
     max_del = int(policy.get("max_jumps_delivery") or 25)
     min_cpj = float(policy.get("min_cr_per_jump") or 80)
     min_tot = float(policy.get("min_total_profit") or 600)
-    max_age_s = float(policy.get("max_book_age_minutes") or 30) * 60.0
+    max_age_s = float(policy.get("max_arb_book_age_minutes") or min(15, float(policy.get("max_book_age_minutes") or 30))) * 60.0
     max_spend_cfg = float(policy.get("max_buy_spend_cr") or 35000)
+    thin_max_spend = float(policy.get("arb_thin_max_spend_cr") or 12000.0)
     min_margin = float(policy.get("min_margin_pct") or 0.20)
     bid_cap_ratio = max(0.2, min(1.0, float(policy.get("arb_bid_depth_cap") or 1.0)))
     min_bid_qty = max(1, int(policy.get("min_arb_bid_qty") or 1))
@@ -925,7 +926,8 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
             if p_hops is None or p_hops > max_pick:
                 continue
             eff_bid_q = max(1, int(bid_q * bid_cap_ratio))
-            qty = min(p_cap, int(ask_q), eff_bid_q, int(p_spend // unit_cost))
+            _edge_spend = min(p_spend, thin_max_spend) if int(bid_q) < 40 else p_spend
+            qty = min(p_cap, int(ask_q), eff_bid_q, int(_edge_spend // unit_cost))
             if qty < 1:
                 continue
             tot_hops = max(1, p_hops + d_hops)
@@ -1497,7 +1499,11 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
                 reach_dsts.append((dh, db, dloc, bp))
         if not reach_dsts:
             continue
+        _is_own_st = bool(b_id in owned_hubs and owned_hubs[b_id].get("kind") == "station")
+        _st_upk_items = set(((policy.get("hub_upkeep_targets") or {}).get("station") or {}).keys())
         for iid, qty in items.items():
+            if _is_own_st and iid in _st_upk_items:
+                continue
             q = int(qty or 0)
             if b_id in owned_hubs:
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
