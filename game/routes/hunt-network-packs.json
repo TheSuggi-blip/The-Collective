@@ -9,13 +9,13 @@
  "pirates_ok": false,
  "standing": true,
  "measured": {
-  "date": "2026-11-26",
-  "runs": 124,
-  "minutes": 20,
-  "credits_per_run": 19030,
-  "cph_per_ship": 52450,
+  "date": "2026-11-27",
+  "runs": 186,
+  "minutes": 18,
+  "credits_per_run": 14160,
+  "cph_per_ship": 40590,
   "hours": 12,
-  "last_run": "2026-11-26T19:26:24Z"
+  "last_run": "2026-11-27T00:21:57Z"
  },
  "requires": {
   "wing_prefix": "1A-"

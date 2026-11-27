@@ -21,7 +21,7 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 4 | 3 | 1 | sell-lead-docked-central-nexus: 51,430 cr per ship-hour |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 127 | 53 | 74 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 672 | 127 | 534 | hunt-network-packs: 52,450 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 672 | 127 | 534 | hunt-network-packs: 40,590 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 3 | 2 | 1 | sell-melt-at-dheneb: -1,860 cr per ship-hour |
 | [Off](index-off.md) | Written down, not flown. | 84 | 24 | 58 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
 | All | | 1028 | 249 | 766 | |
