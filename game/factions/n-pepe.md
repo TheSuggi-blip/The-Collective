@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 20.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 52 | Public event stream |
+| Pilots carrying the tag on the public event stream | 51 | Public event stream |
 
 ## Bases
 
@@ -40,8 +40,24 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicAuger | Nexus Prime (`nexus_prime`) | not on record | cobble |
-| MimicBarge | Node Alpha (`node_alpha`) | 0 | bonanza |
+| MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicCobalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicFlake | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlint | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicGrain | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicHew | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicLode | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicSand | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSeam | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicSlag | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicWafer | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

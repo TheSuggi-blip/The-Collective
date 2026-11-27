@@ -9,13 +9,13 @@ faction: Interstellar Continental
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Interstellar Continental [NOIR]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 84 | Public event stream |
+| Pilots carrying the tag on the public event stream | 80 | Public event stream |
 
 ## Bases
 
@@ -38,10 +38,9 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter59 | Synchrony (`synchrony`) | 0 | syndicate |
-| Arbiter73 | Node Alpha (`node_alpha`) | 0 | syndicate |
-| Bickle | Synchrony (`synchrony`) | 0 | macguffin |
-| Cook | Synchrony (`synchrony`) | 0 | futures |
+| Arbiter71 | Nexus Prime (`nexus_prime`) | 0 | syndicate |
+| Bickle | Node Alpha (`node_alpha`) | 0 | macguffin |
+| Cook | Node Gamma (`node_gamma`) | 0 | futures |
 | Speke | Node Alpha (`node_alpha`) | 0 | futures |
 
 ## Standing History

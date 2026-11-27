@@ -9,13 +9,13 @@ faction: Hex Collective
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 5.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 5.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 64 | Public event stream |
+| Pilots carrying the tag on the public event stream | 63 | Public event stream |
 
 ## Bases
 
@@ -50,11 +50,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| HexBot4 | Synchrony (`synchrony`) | 0 | ambrosia |
-| HexCogitoAI | Nexus Prime (`nexus_prime`) | 1 | compendium |
-| HexCraft2 | Synchrony (`synchrony`) | 0 | syndicate |
+| HexCraft2 | Pherkad (`pherkad`) | 0 | syndicate |
 | Hi-xi III | The Experiment (`the_experiment`) | 0 | lithosphere |
-| Nino Kuro | Synchrony (`synchrony`) | 0 | dust_devil |
+| Visala | Node Beta (`node_beta`) | 0 | deep_survey |
+| Zhou | Pherkad (`pherkad`) | 0 | pithead |
 
 ## Standing History
 
