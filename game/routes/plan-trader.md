@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Mercury. Routes: 87. Ships: 96.
+Kept by Mercury. Routes: 88. Ships: 96.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -88,25 +88,26 @@ Kept by Mercury. Routes: 87. Ships: 96.
 | 66 | [mission-first-hunt-iron-reach](mission-first-hunt-iron-reach.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 1 ships | all 96 |
 | 67 | [mission-the-document-the](mission-the-document-the.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships | all 96 |
 | 68 | [mission-the-swing-vote-first](mission-the-swing-vote-first.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 18 jumps | once per pilot, up to 3 ships | all 96 |
-| 69 | [strip-starters-trader-krynn](strip-starters-trader-krynn.json) | [Fitting](index-fitting.md) | beyond the border, 20 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
-| 70 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | [Fitting](index-fitting.md) | beyond the border, 11 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
-| 71 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
-| 72 | [mission-workshop-production-run-grand](mission-workshop-production-run-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 3,200 cr, born nebula, while grand_exchange_station asks 3 cr or less for argon_gas | all 96 |
-| 73 | [haul-network-trade](haul-network-trade.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 30 ships, standing work | all 96 |
-| 74 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 12 ships, standing work | all 96 |
-| 75 | [bursar-network](bursar-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 55 ships, standing work | all 96 |
-| 76 | [bursar-network-freighter](bursar-network-freighter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | standing work | all 96 |
-| 77 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | standing work | all 96 |
-| 78 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | standing work | all 96 |
-| 79 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | standing work | all 96 |
-| 80 | [bursar-desk-grand](bursar-desk-grand.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | standing work | all 96 |
-| 81 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | standing work | all 96 |
-| 82 | [craft-steel-node-beta](craft-steel-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | all 96 |
-| 83 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | all 96 |
-| 84 | [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | all 96 |
-| 85 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 96 |
-| 86 | [train-jumps-trader](train-jumps-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 15 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 96 |
-| 87 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 96 |
+| 69 | [mission-five-capitals-diplomatic-circuit-confederacy](mission-five-capitals-diplomatic-circuit-confederacy.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 4 ships | all 96 |
+| 70 | [strip-starters-trader-krynn](strip-starters-trader-krynn.json) | [Fitting](index-fitting.md) | beyond the border, 20 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
+| 71 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | [Fitting](index-fitting.md) | beyond the border, 11 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
+| 72 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 96 |
+| 73 | [mission-workshop-production-run-grand](mission-workshop-production-run-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 3,200 cr, born nebula, while grand_exchange_station asks 3 cr or less for argon_gas | all 96 |
+| 74 | [haul-network-trade](haul-network-trade.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 30 ships, standing work | all 96 |
+| 75 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 12 ships, standing work | all 96 |
+| 76 | [bursar-network](bursar-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 55 ships, standing work | all 96 |
+| 77 | [bursar-network-freighter](bursar-network-freighter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | standing work | all 96 |
+| 78 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | standing work | all 96 |
+| 79 | [bursar-desk-alpha](bursar-desk-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | standing work | all 96 |
+| 80 | [bursar-desk-experiment](bursar-desk-experiment.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | standing work | all 96 |
+| 81 | [bursar-desk-grand](bursar-desk-grand.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | standing work | all 96 |
+| 82 | [bursar-desk-nova-terra](bursar-desk-nova-terra.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | standing work | all 96 |
+| 83 | [craft-steel-node-beta](craft-steel-node-beta.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 11 ships, with 550 iron_ore stored at node_beta_industrial_station, standing work | all 96 |
+| 84 | [craft-steel-central-nexus](craft-steel-central-nexus.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 2 ships, with 300 iron_ore stored at central_nexus, standing work | all 96 |
+| 85 | [craft-steel-synchrony-hub](craft-steel-synchrony-hub.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, with 300 iron_ore stored at synchrony_hub, standing work | all 96 |
+| 86 | [train-trading-weapon-housing-node-alpha](train-trading-weapon-housing-node-alpha.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, while node_alpha_processing_station bids 221 cr for weapon_housing, while node_alpha_processing_station asks 230 cr or less for weapon_housing, standing work | all 96 |
+| 87 | [train-jumps-trader](train-jumps-trader.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 15 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 96 |
+| 88 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 96 |
 
 Planned:
 
