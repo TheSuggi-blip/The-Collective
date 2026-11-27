@@ -1277,3 +1277,13 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .wg-details { margin-top: 10px; border: 1px solid var(--line); border-radius: 7px; padding: 6px 10px; background: rgba(14, 20, 32, 0.6); }
 .wg-details summary { cursor: pointer; font-size: 12px; color: var(--dim); font-weight: 600; user-select: none; }
 .wg-details[open] summary { color: var(--text); margin-bottom: 8px; }
+
+/* === Open-Ended Dynamic Ratcheting KPIs (APEX 120+, OUTPERFORM 100+, SOLID 80-99, HWM Breakout) === */
+.pill.apex { background: rgba(245, 185, 66, 0.22); color: #fcd34d; border-color: rgba(245, 185, 66, 0.55); box-shadow: 0 0 8px rgba(245, 185, 66, 0.18); }
+.pill.solid { background: rgba(96, 165, 250, 0.16); color: #93c5fd; border-color: rgba(96, 165, 250, 0.38); }
+.wg-bar-fil.apex { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+.wg-v.apex, .kcard .v.apex, .v.apex { color: #fcd34d; }
+.wg-v.solid { color: #93c5fd; }
+.wg-card.apex { border-color: rgba(245, 185, 66, 0.45); background: rgba(24, 24, 32, 0.90); }
+.wg-card.outperform { border-color: rgba(88, 192, 140, 0.38); }
+.wg-cell.peak { border-color: rgba(245, 185, 66, 0.42); background: rgba(34, 28, 16, 0.55); }

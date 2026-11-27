@@ -412,13 +412,26 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 hub_kind == "outpost"
                 and ((iid == "steel_plate" and have_here < 180) or (iid == "circuit_board" and have_here < 45))
             )
-            # Sovereign Station fast-track build/activation surge (sits behind Outpost CRITICAL/LOW <50% fuel 10.0/6.0,
-            # strictly ahead of routine surplus hauls & TOP-OFF 1.2, with up to 3 parallel hauler slots per core item!).
+            # Sovereign Station Refueling Dock Foundation Gate (vertical integration / capital sequencing):
+            # While an owned station lacks an active refueling_dock (`hub_id not in has_bunker_bases`),
+            # PAUSE non-core luxury hospitality consumables and SURGE fuel_cell (2,000 build bill) & steel_plate (800)!
+            _station_needs_refuel = (hub_kind == "station" and hub_id not in has_bunker_bases)
             _station_core = (
                 hub_kind == "station"
                 and iid in ("steel_plate", "circuit_board", "fuel_cell", "flex_polymer")
             )
-            _max_upk_slots = 3 if (_station_core and have_here < int(round(tgt * 0.50))) else 1
+            if _station_needs_refuel and not _station_core:
+                continue
+            _refuel_bill_short = (
+                _station_needs_refuel
+                and ((iid == "fuel_cell" and have_here < 2100) or (iid == "steel_plate" and have_here < 850))
+            )
+            if _refuel_bill_short:
+                _max_upk_slots = 6
+            elif _station_core and have_here < int(round(tgt * 0.50)):
+                _max_upk_slots = 3
+            else:
+                _max_upk_slots = 1
             jkey = ""
             for _usi in range(_max_upk_slots):
                 _cjk = ("upkeep:%s:%s" % (hub_id, iid)) if _usi == 0 else ("upkeep:%s:%s:s%d" % (hub_id, iid, _usi))
@@ -427,7 +440,9 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     break
             if not jkey:
                 continue
-            if _below_repair_bill:
+            if _refuel_bill_short:
+                urgency = 9.0 if iid == "fuel_cell" else 7.5
+            elif _below_repair_bill:
                 urgency = 1.15
             elif _station_core:
                 _base_u = 5.2 if iid == "fuel_cell" else 4.5
@@ -1691,12 +1706,37 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
 
     owned_outposts = load_cltv_outposts(data)
     owned_hubs = load_cltv_owned_hubs(data)
+    calm_lockboxes = set()
+    pirate_sys = set()
+    try:
+        import sqlite3 as _sq_l
+        _db_l = Path(data) / "store" / "read.db"
+        if _db_l.is_file():
+            _con_l = _sq_l.connect("file:%s?mode=ro&immutable=1" % _db_l, uri=True, timeout=2.0)
+            _tbl_l = {r[0] for r in _con_l.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+            if "faction_facilities" in _tbl_l:
+                for (lb_b,) in _con_l.execute(
+                    "SELECT DISTINCT base FROM faction_facilities WHERE type='faction_lockbox' AND COALESCE(status,'active')='active' AND base IS NOT NULL"
+                ).fetchall():
+                    if lb_b:
+                        calm_lockboxes.add(str(lb_b))
+            if "observations" in _tbl_l:
+                for (ps,) in _con_l.execute(
+                    "SELECT DISTINCT subject FROM observations WHERE kind='pirate' AND t >= ?",
+                    (now_t - 4.0 * 3600.0,),
+                ).fetchall():
+                    if ps:
+                        pirate_sys.add(str(ps))
+            _con_l.close()
+    except Exception:
+        pass
     best = None
     for src_target, b_id, items in sources:
         if b_id not in base_map:
             continue
         oloc = base_map[b_id]
-        if policed and not oloc[3] and b_id not in owned_outposts:
+        _calm_lb_ok = (src_target == "faction" and b_id in calm_lockboxes and oloc[0] not in pirate_sys)
+        if policed and not oloc[3] and b_id not in owned_outposts and not _calm_lb_ok:
             continue
         p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
         if p_hops is None or p_hops > max_pick:
@@ -1733,7 +1773,8 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                         break
                 if not jkey:
                     continue
-                score = est_rev / float(tot_hops)
+                _exotic_m = 1.75 if bid_p >= 200.0 else (1.25 if bid_p >= 60.0 else 1.0)
+                score = (est_rev / float(tot_hops)) * _exotic_m
                 if best is None or score > best[0]:
                     best = (score, {
                         "job_key": jkey, "item": iid, "qty": take_q,

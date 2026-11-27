@@ -524,12 +524,26 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
     lockbox_bases = set()
     owned_outpost_bases = set()
     bursar_bases = set()
+    cltv_members = set()
+    no_refuel_bases = set()
     if db_path.exists():
         try:
             import worldcache as _wc_lb
             _lcon = _wc_lb.ro_db(db_path)
             try:
                 _ltbls = {r[0] for r in _lcon.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+                if "faction_members" in _ltbls:
+                    for (mp,) in _lcon.execute("SELECT pilot FROM faction_members WHERE pilot IS NOT NULL").fetchall():
+                        if mp:
+                            cltv_members.add(str(mp))
+                if {"bases", "faction_facilities"} <= _ltbls:
+                    _own_st = {str(b) for (b,) in _lcon.execute("SELECT base FROM bases WHERE kind='station'").fetchall() if b}
+                    _rf_ok = {
+                        str(b) for (b,) in _lcon.execute(
+                            "SELECT DISTINCT base FROM faction_facilities WHERE type IN ('refueling_dock','faction_fuel_bunker','fuel_depot') AND COALESCE(status,'active')='active' AND base IS NOT NULL"
+                        ).fetchall() if b
+                    }
+                    no_refuel_bases = {b for b in _own_st if b not in _rf_ok}
                 if {"faction_facilities", "places"} <= _ltbls:
                     for fsys, fbase, frent in _lcon.execute(
                         "SELECT system, base, COALESCE(rent_per_cycle, 0) FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active'"
@@ -608,6 +622,8 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
         "fields": fields, "pirates": pirates, "item_vals": item_vals,
         "shortages": shortages, "full_items": full_items, "craft_demand": craft_demand, "market": market_world,
         "held": held, "lockbox_bases": lockbox_bases, "owned_outpost_bases": owned_outpost_bases,
+        "cltv_members": cltv_members,
+        "no_refuel_bases": no_refuel_bases,
         "bursar_bases": bursar_bases,
         "data_dir": str(data_dir), "allow_escort_request": True,
         "pirate_threat": _load_pirate_threat_safe(data_dir, float(policy.get("pirate_avoid_hours") or 6.0)),
@@ -618,17 +634,15 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
     return _res_world
 
 
-def nearest_station(adj, stations_by_sys, belt_sys, max_hops=4):
+def nearest_station(adj, stations_by_sys, belt_sys, max_hops=4, exclude_bases=None):
     """Return (hops, (sys_id, poi_id, base_id)) for closest station to belt_sys, or (None, None)."""
     dists = bfs_distances(adj, belt_sys, max_hops=max_hops)
-    best = None
+    excl = exclude_bases or ()
     for sid, hops in sorted(dists.items(), key=lambda kv: (kv[1], kv[0])):
-        sts = stations_by_sys.get(sid)
+        sts = [st for st in (stations_by_sys.get(sid) or ()) if st[2] not in excl]
         if sts:
-            best = (hops, sts[0])
-            break
-    return best if best else (None, None)
-
+            return hops, sts[0]
+    return None, None
 
 def _read_claims_unlocked(path, now_t, ttl_s):
     doc = read_json(path, {})
@@ -860,11 +874,17 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         if resource_tool_kind(res) not in tools:
             continue
         is_policed = bool(smeta.get("empire"))
-        is_deficit = bool(policy.get("prioritize_needs", True) and res in shortages)
         mkt = market.get(res) if market is not None else None
+        _mkt_bid_chk = float(mkt[0] or 0) if mkt else 0.0
+        _prec_wing = (_p_wing.startswith("3A.") or _p_wing.startswith("3C."))
+        _prec_min_def = float(policy.get("precision_deficit_min_bid") or 20.0)
+        is_deficit = bool(
+            policy.get("prioritize_needs", True)
+            and res in shortages
+            and (not _prec_wing or _mkt_bid_chk >= _prec_min_def)
+        )
         eff_min_pct = effective_min_left_pct(res, mkt, is_deficit, policy)
         rem, mx = f["remaining"], f["max_remaining"]
-        _mkt_bid_chk = float(mkt[0] or 0) if mkt else 0.0
         is_mega = bool(_mkt_bid_chk >= mega_min_bid)
         is_scarce = bool(_mkt_bid_chk >= float(policy.get("scarce_min_bid") or policy.get("scarce_min_bid_cr") or 60.0))
         _mega_u_ok = bool(is_mega and mega_min_u > 0 and rem >= mega_min_u)
@@ -910,7 +930,9 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             if not _esc_ok:
                 continue
         _allow_st_j = mega_st_j if is_mega else (scarce_st_j if (is_scarce or is_deficit) else max_st_jumps)
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_allow_st_j)
+        _cm_m = world.get("cltv_members") or set()
+        _excl_m = set(world.get("no_refuel_bases") or set()) | ((world.get("owned_outpost_bases") or set()) if (_cm_m and p_name not in _cm_m) else set())
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_allow_st_j, exclude_bases=_excl_m)
         if not st_tup:
             continue
         # Never drop off at a station inside an actively pirate-raided system!

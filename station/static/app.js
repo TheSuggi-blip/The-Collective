@@ -5155,13 +5155,18 @@ async function renderMetrics(panel, live) {
       ebitPos ? 'pos' : 'neg'
     );
 
-    const rofTxt = fl.rev_per_fuel !== null && fl.rev_per_fuel !== undefined ? fl.rev_per_fuel.toFixed(2) + 'x rev / fuel' : '--';
+    const rofTxt = fl.rev_per_fuel !== null && fl.rev_per_fuel !== undefined ? fl.rev_per_fuel.toFixed(2) + 'x ROF' : '--';
+    const hasMargin = fl.core_margin_pct !== null && fl.core_margin_pct !== undefined;
+    const mVal = hasMargin ? Number(fl.core_margin_pct) : null;
+    const mTag = !hasMargin ? 'WARMUP' : (mVal >= 50 ? 'ELITE 50%+' : (mVal >= 30 ? 'TARGET 30%+' : (mVal >= 0 ? 'BELOW 30%' : 'NEGATIVE')));
+    const mCls = !hasMargin ? 'warn' : (mVal >= 50 ? 'apex' : (mVal >= 30 ? 'pos' : (mVal >= 0 ? 'warn' : 'neg')));
     mkCard(
       flGrid,
-      'Realized Revenue & Return on Fuel',
-      '+' + fmt(Math.round(fl.realized_rev_h || 0)) + ' cr/h',
-      rofTxt + ' | paid fuel ' + fmt(Math.round(fl.paid_fuel_h || 0)) + ' cr/h',
-      (fl.rev_per_fuel || 0) >= 2.0 ? 'pos' : ((fl.rev_per_fuel || 0) >= 1.2 ? 'warn' : 'neg')
+      'Core Operating Margin (IFRS 15 EBIT / Realized Revenue)',
+      hasMargin ? (mVal.toFixed(1) + '%  [' + mTag + ']') : '--',
+      'Rev +' + fmt(Math.round(fl.realized_rev_h || 0)) + ' cr/h | ' + rofTxt + ' | Fuel ' + fmt(Math.round(fl.paid_fuel_h || 0)) + ' cr/h | 30%+ target (50%+ elite)',
+      mCls,
+      hasMargin ? Math.max(0, Math.min(100, (mVal / 50.0) * 100.0)) : null
     );
 
     mkCard(
@@ -5205,27 +5210,35 @@ async function renderMetrics(panel, live) {
 
     const shown = wingPillar === 'All' ? fWin.wings : fWin.wings.filter((x) => x.pillar === wingPillar);
     const wGrid = el('div', 'wg-grid');
-    const stCls = (st) => (st === 'OK' ? 'good' : (st === 'STAGED' ? 'info' : (st === 'WARN' ? 'warn' : 'bad')));
-    const scCls = (sc) => (sc >= 80 ? 'pos' : (sc >= 60 ? 'warn' : 'neg'));
+    const stCls = (st) => (
+      st === 'APEX' ? 'apex'
+      : (st === 'OUTPERFORM' || st === 'OK' ? 'good'
+      : (st === 'SOLID' ? 'solid'
+      : (st === 'STAGED' ? 'info'
+      : (st === 'WARN' ? 'warn' : 'bad'))))
+    );
+    const scCls = (sc) => (sc >= 120 ? 'apex' : (sc >= 100 ? 'pos' : (sc >= 80 ? 'solid' : (sc >= 60 ? 'warn' : 'neg'))));
 
     for (const wg of shown) {
-      const card = el('div', 'wg-card ' + (wg.status || 'OK').toLowerCase());
+      const card = el('div', 'wg-card ' + (wg.status || 'SOLID').toLowerCase() + (wg.breakout ? ' breakout' : ''));
       card.style.borderLeftColor = DIV[wg.division] || DIV.Unassigned;
 
       const hd = el('div', 'wg-head');
       const titleBox = el('div', 'wg-titlebox');
       const nm = el('b', 'wg-name', wg.id + '  ' + wg.name);
       nm.style.color = DIV[wg.division] || DIV.Unassigned;
-      titleBox.append(nm, el('span', 'wg-rc', wg.responsibility_center + ' | ' + fmt(wg.working) + '/' + fmt(wg.ships) + ' working'));
-      const badge = el('span', 'pill ' + stCls(wg.status), wg.staged ? 'STAGED' : (wg.status + ' ' + Math.round(wg.health_pct || 0) + '%'));
+      const capTxt = wg.cap_mult ? (' | ' + Number(wg.cap_mult).toFixed(2) + 'x cap') : '';
+      titleBox.append(nm, el('span', 'wg-rc', wg.responsibility_center + ' | ' + fmt(wg.working) + '/' + fmt(wg.ships) + ' working' + capTxt));
+      const badge = el('span', 'pill ' + stCls(wg.status), wg.staged ? 'STAGED' : (wg.status + ' ' + Math.round(wg.health_pct || 0)));
       hd.append(titleBox, badge);
       card.append(hd);
 
       const kgrid = el('div', 'wg-kpis');
       for (const kp of (wg.kpis || [])) {
-        const cell = el('div', 'wg-cell');
+        const cell = el('div', 'wg-cell' + (kp.breakout ? ' peak' : ''));
         const valEl = el('div', 'wg-v ' + (wg.staged && kp.k === 'Status' ? '' : scCls(kp.score !== undefined ? kp.score : 80)), kp.v);
-        cell.append(el('div', 'wg-k', kp.k), valEl, el('div', 'wg-s', kp.sub || ''));
+        const kLbl = kp.score !== undefined && !wg.staged ? (kp.k + ' [' + Math.round(kp.score) + ']') : kp.k;
+        cell.append(el('div', 'wg-k', kLbl), valEl, el('div', 'wg-s', kp.sub || ''));
         kgrid.append(cell);
       }
       card.append(kgrid);
@@ -5244,7 +5257,7 @@ async function renderMetrics(panel, live) {
       const roiEl = d.fuel_roi !== null && d.fuel_roi !== undefined
         ? el('span', d.fuel_roi >= 1.5 ? 'pos' : (d.fuel_roi >= 0.8 ? 'warn' : 'neg'), d.fuel_roi.toFixed(2) + 'x')
         : el('span', 'dim', '--');
-      const hPill = el('span', 'pill ' + (d.status === 'OK' ? 'good' : (d.status === 'WARN' ? 'warn' : 'bad')), d.health_pct.toFixed(0) + '%');
+      const hPill = el('span', 'pill ' + (d.status === 'APEX' ? 'apex' : (d.status === 'OUTPERFORM' || d.status === 'OK' ? 'good' : (d.status === 'SOLID' ? 'solid' : (d.status === 'WARN' ? 'warn' : 'bad')))), d.status + ' ' + d.health_pct.toFixed(0));
       return [
         dn,
         fmt(d.working) + '/' + fmt(d.ships),

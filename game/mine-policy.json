@@ -89,5 +89,6 @@
   "mid_belt_cap2_below_units": 10000,
   "mega_max_jumps": 10,
   "mega_max_station_jumps": 8,
-  "_trinity_opt_note": "2026-11-27: Soft lawless preference (1.35x lawless / 0.75x safe-zone except >=40 cr or <3% scarce), tiered 6J/8J/10J fuel-optimal range, adaptive 1/2/3 belt caps, 5%/0.2%/15u depletion floors."
+  "_trinity_opt_note": "2026-11-27: Soft lawless preference (1.35x lawless / 0.75x safe-zone except >=40 cr or <3% scarce), tiered 6J/8J/10J fuel-optimal range, adaptive 1/2/3 belt caps, 5%/0.2%/15u depletion floors.",
+  "precision_deficit_min_bid": 20.0
 }

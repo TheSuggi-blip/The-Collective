@@ -12,6 +12,7 @@ Produces:
 """
 from datetime import datetime, timezone
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -128,16 +129,124 @@ def _score_band(val, good, warn, higher_better=True):
     return max(0.0, 70.0 * max(0.0, 1.0 - (v - warn) / (span * 2.0)))
 
 
+HWM_FILE = "kpi_hwm.json"
+HWM_EWMA_ALPHA = 0.30
+HWM_BREAKOUT_MARGIN = 1.02
+
+# Base reference ship counts per wing at T0 par (dynamic tier capacity scales automatically as hulls upgrade T0->T5)
+WING_BASE_SHIPS = {
+    "1A-1C": 48, "2A-2B": 62, "3A": 38, "3B": 22, "3C": 18, "3D": 40, "3E": 30,
+    "4A": 25, "4B": 25, "4C": 38, "5A": 22, "5B": 15, "6A": 30, "6B": 12, "6C": 30,
+    "7A": 20, "7B": 25,
+}
+
+
+def _load_hwm(data_dir):
+    d = _read_json(Path(data_dir) / "fleet" / HWM_FILE, {})
+    return d if isinstance(d, dict) else {}
+
+
+def _save_hwm(data_dir, hwm_doc, now_t):
+    try:
+        out_p = Path(data_dir) / "fleet" / HWM_FILE
+        out_p.parent.mkdir(parents=True, exist_ok=True)
+        payload = dict(hwm_doc)
+        payload["updated_at"] = int(now_t)
+        tmp = out_p.with_name(f"kpi_hwm.{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="ascii")
+        os.replace(tmp, out_p)
+    except OSError:
+        pass
+
+
+def _ratchet_hwm_high(prev, val):
+    if val is None or val <= 0.0:
+        return prev
+    v = float(val)
+    if prev is None or prev <= 0.0:
+        return round(v, 2)
+    if v > float(prev):
+        return round(max(float(prev), float(prev) * (1.0 - HWM_EWMA_ALPHA) + v * HWM_EWMA_ALPHA), 2)
+    return round(float(prev), 2)
+
+
+def _ratchet_hwm_low(prev, val):
+    if val is None or val <= 0.0:
+        return prev
+    v = float(val)
+    if prev is None or prev <= 0.0:
+        return round(v, 2)
+    if v < float(prev):
+        return round(min(float(prev), float(prev) * (1.0 - HWM_EWMA_ALPHA) + v * HWM_EWMA_ALPHA), 2)
+    return round(float(prev), 2)
+
+
+def _score_open_ended(val, dyn_target, warn_ratio=0.45, hwm=None):
+    """Unbounded Super-Efficiency DEA + Ratcheting HWM score for higher-is-better frontier KPIs."""
+    if val is None or dyn_target is None or dyn_target <= 0.0:
+        return (None, False)
+    v = float(val)
+    tgt = float(dyn_target)
+    warn = max(1e-6, tgt * float(warn_ratio))
+    if v <= 0.0:
+        return (0.0, False)
+    if v < warn:
+        base = max(0.0, 60.0 * (v / warn))
+    elif v < tgt:
+        base = 60.0 + 40.0 * ((v - warn) / max(1e-6, tgt - warn))
+    else:
+        base = 100.0 + 38.0 * math.log(max(1.0, v / tgt))
+    breakout = bool(hwm is not None and float(hwm) > 0.0 and v > float(hwm) * HWM_BREAKOUT_MARGIN and v >= tgt * 0.80)
+    if breakout:
+        base += 6.0
+    return (round(base, 1), breakout)
+
+
+def _score_open_ended_low(val, dyn_target, warn, hwm_low=None):
+    """Unbounded Super-Efficiency score for lower-is-better freshness/latency KPIs (minutes)."""
+    if val is None or dyn_target is None or dyn_target <= 0.0:
+        return (None, False)
+    v = max(0.5, float(val))
+    tgt = float(dyn_target)
+    w = max(tgt + 1.0, float(warn))
+    if v <= tgt:
+        base = 100.0 + 30.0 * math.log(max(1.0, tgt / v))
+    elif v <= w:
+        base = 60.0 + 40.0 * ((w - v) / max(1e-6, w - tgt))
+    else:
+        base = max(0.0, 60.0 * max(0.0, 1.0 - (v - w) / max(w, 15.0)))
+    breakout = bool(hwm_low is not None and float(hwm_low) > 0.0 and v < float(hwm_low) / HWM_BREAKOUT_MARGIN and v <= tgt * 1.15)
+    if breakout:
+        base += 5.0
+    return (round(base, 1), breakout)
+
+
 def _status_from_score(score, staged=False):
     if staged:
         return "STAGED"
     if score is None:
-        return "OK"
+        return "SOLID"
+    if score >= 120.0:
+        return "APEX"
+    if score >= 100.0:
+        return "OUTPERFORM"
     if score >= 80.0:
-        return "OK"
+        return "SOLID"
     if score >= 60.0:
         return "WARN"
     return "ALARM"
+
+
+def _core_margin_tier(margin_pct):
+    if margin_pct is None:
+        return "WARMUP"
+    if margin_pct >= 50.0:
+        return "ELITE"
+    if margin_pct >= 30.0:
+        return "TARGET"
+    if margin_pct >= 0.0:
+        return "BELOW"
+    return "NEG"
 
 
 def _compute_scouting_freshness(data_dir, repo_root, now):
@@ -537,7 +646,7 @@ def _load_fair_unit_prices(conn, data_dir):
     return prices
 
 
-def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, hours, now, data_dir, repo_root, freshness, infra, upgrade_gaps, bursar_occ, host_running_count):
+def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, hours, now, data_dir, repo_root, freshness, infra, upgrade_gaps, bursar_occ, host_running_count, hwm_doc=None, hwm_updates=None):
     """Compute complete fleet-wide + 17-wing KPI snapshot for one time window (`1h`, `6h`, or `24h`)."""
     cut = int(now - hours * 3600.0)
     span_h = max(0.25, float((acc_win or {}).get("span_hours") or hours))
@@ -741,6 +850,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
     core_ebit_h = float((acc_win or {}).get("recurring_cash_h") or 0.0) + float((acc_win or {}).get("treasury_own_h") or 0.0)
     rev_per_fuel = round(realized_rev_h / paid_fuel_h, 2) if paid_fuel_h >= 100.0 else None
     ebit_per_fuel = round(core_ebit_h / paid_fuel_h, 2) if paid_fuel_h >= 100.0 else None
+    core_margin_pct = round(100.0 * core_ebit_h / realized_rev_h, 1) if realized_rev_h >= 100.0 else None
+    core_margin_tier = _core_margin_tier(core_margin_pct)
 
     tot_ships = max(1, len(ships_list))
     fleet_idle_pct = round(100.0 * fleet_idle / tot_ships, 1)
@@ -765,6 +876,41 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
     bursar_5a_ships = max(1, wing_live["5A"]["total"])
     bursar_tot_ships = float(bursar_4c_ships + bursar_5a_ships)
 
+    hwm_wings = (hwm_doc or {}).get("wings") if isinstance((hwm_doc or {}).get("wings"), dict) else {}
+    hulls_bw = ((upgrade_gaps or {}).get("hulls") or {}).get("by_wing") or {}
+
+    def _cap_mult(wid_k, ship_n):
+        base_n = float(WING_BASE_SHIPS.get(wid_k, max(1, ship_n)))
+        n_scale = max(0.45, float(max(1, ship_n)) / base_n)
+        hg = hulls_bw.get(wid_k) or {}
+        filled = float(hg.get("filled_steps") or 0.0)
+        avg_tier = filled / float(max(1, ship_n))
+        return round(n_scale * (1.0 + 0.55 * avg_tier), 2)
+
+    def _hwm_get(wid_k, mkey):
+        rec = hwm_wings.get(wid_k)
+        return rec.get(mkey) if isinstance(rec, dict) else None
+
+    def _hwm_mark(wid_k, mkey, val, lower=False):
+        if hwm_updates is None or val is None or val <= 0.0:
+            return
+        wmap = hwm_updates.setdefault(wid_k, {})
+        prev = _hwm_get(wid_k, mkey)
+        wmap[mkey] = _ratchet_hwm_low(prev, val) if lower else _ratchet_hwm_high(prev, val)
+
+    def _fmt_frontier(par_txt, hwm_val, breakout, suffix=""):
+        if breakout:
+            return "par %s | NEW PEAK!" % par_txt
+        if hwm_val is not None and float(hwm_val) > 0:
+            if suffix == "m":
+                return "par %s | best %.1fm" % (par_txt, float(hwm_val))
+            if suffix == "x":
+                return "par %s | best %.2fx" % (par_txt, float(hwm_val))
+            if suffix == "/h":
+                return "par %s | best %.0f/h" % (par_txt, float(hwm_val))
+            return "par %s | best %s" % (par_txt, format(int(round(float(hwm_val))), ","))
+        return "par %s" % par_txt
+
     for wid, wname, dv, pillar, _pre, rc_label in WING_SPECS:
         wl = wing_live[wid]
         wr = w_runs[wid]
@@ -773,10 +919,12 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         work_pct = round(100.0 * (wl["working"] + wl["goal"]) / max(1, wl["total"]), 1)
         s_idle = _score_band(idle_pct, good=3.0, warn=10.0, higher_better=False)
         staged = (wid == "6B" and staged_6b)
+        cm = _cap_mult(wid, wl["total"])
+        idle_sub = ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"]))
 
         kpis = []
         primary_rof = None
-        scores = [(s_idle, 0.25)]
+        scores = [(s_idle, 0.20)]
 
         if wid in ("1A-1C", "2A-2B"):
             mil_acc = by_div_acc.get("Military") or {}
@@ -784,24 +932,29 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             w_def = max(1.0, w_runs["1A-1C"]["loot_val"] + w_runs["1A-1C"]["kills"] * 120.0)
             w_hnt = max(1.0, w_runs["2A-2B"]["loot_val"] + w_runs["2A-2B"]["kills"] * 120.0)
             share_m = (w_def if wid == "1A-1C" else w_hnt) / (w_def + w_hnt)
-            if mil_gross_i2 > 0:
-                loot_h = round(mil_gross_i2 * share_m, 0)
-            else:
-                div_combat_cash = float(rb.get("defense_h" if wid == "1A-1C" else "hunters_h") or 0.0)
-                loot_h = round(max(wr["rev_cash"] / span_h, div_combat_cash), 0)
+            extracted_loot_h = wr["loot_val"] / span_h
+            div_combat_cash = float(rb.get("defense_h" if wid == "1A-1C" else "hunters_h") or 0.0)
+            loot_h = round(max(mil_gross_i2 * share_m, extracted_loot_h, wr["rev_cash"] / span_h, div_combat_cash), 0)
             rof = round(loot_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             kills_h = round(wr["kills"] / span_h, 1)
             loss_h = round(wr["losses"] / span_h, 2)
-            s_rof = _score_band(rof, good=2.0, warn=1.0, higher_better=True) if rof is not None else 75.0
+            par_loot = round((55000.0 if wid == "2A-2B" else 35000.0) * cm, 0)
+            par_rof = 2.5
+            hwm_loot = _hwm_get(wid, "loot_h")
+            hwm_rof = _hwm_get(wid, "rof")
+            s_out, br_out = _score_open_ended(loot_h, par_loot, warn_ratio=0.45, hwm=hwm_loot)
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (75.0, False)
             s_loss = _score_band(loss_h, good=0.0, warn=0.25, higher_better=False)
-            s_out = _score_band(loot_h, good=(40000.0 if wid == "2A-2B" else 25000.0), warn=10000.0, higher_better=True)
-            scores.extend([(s_rof, 0.35), (s_out, 0.20), (s_loss, 0.20)])
+            _hwm_mark(wid, "loot_h", loot_h)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            scores.extend([(s_rof, 0.35), (s_out, 0.30), (s_loss, 0.15)])
             kpis = [
-                {"k": "Loot / h", "v": "+%s cr/h" % format(int(loot_h), ","), "sub": "%.1f kills/h" % kills_h, "score": round(s_out)},
-                {"k": "Loot / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
+                {"k": "Loot / h", "v": "+%s cr/h" % format(int(loot_h), ","), "sub": "%.1f kills/h | %s" % (kills_h, _fmt_frontier(format(int(par_loot), ","), hwm_loot, br_out)), "score": round(s_out), "breakout": br_out},
+                {"k": "Loot / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
                 {"k": "Ships Lost / h", "v": "%.2f/h" % loss_h, "sub": "%d in %dh" % (wr["losses"], int(round(hours))), "score": round(s_loss)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid in ("3A", "3B", "3C", "3D", "3E"):
@@ -818,15 +971,23 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             rof = round(val_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             yield_eff = round(100.0 * wr["mine_ok"] / max(1, wr["mine_runs"]), 1) if wr["mine_runs"] > 0 else 100.0
-            s_rof = _score_band(rof, good=3.0, warn=1.5, higher_better=True) if rof is not None else 80.0
-            s_eff = _score_band(yield_eff, good=80.0, warn=55.0, higher_better=True)
-            s_val = _score_band(val_h, good=25000.0, warn=10000.0, higher_better=True)
-            scores.extend([(s_rof, 0.35), (s_val, 0.20), (s_eff, 0.20)])
+            _mine_base_par = {"3A": 65000.0, "3B": 30000.0, "3C": 45000.0, "3D": 110000.0, "3E": 75000.0}.get(wid, 50000.0)
+            par_val = round(_mine_base_par * cm, 0)
+            par_rof = 3.5
+            hwm_val = _hwm_get(wid, "val_h")
+            hwm_rof = _hwm_get(wid, "rof")
+            s_val, br_val = _score_open_ended(val_h, par_val, warn_ratio=0.45, hwm=hwm_val)
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (80.0, False)
+            s_eff = _score_band(yield_eff, good=82.0, warn=55.0, higher_better=True)
+            _hwm_mark(wid, "val_h", val_h)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            scores.extend([(s_rof, 0.35), (s_val, 0.30), (s_eff, 0.15)])
             kpis = [
-                {"k": "Value / h", "v": "+%s cr/h" % format(int(val_h), ","), "sub": "%s units/h" % format(int(units_h), ","), "score": round(s_val)},
-                {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
+                {"k": "Value / h", "v": "+%s cr/h" % format(int(val_h), ","), "sub": "%s u/h | %s" % (format(int(units_h), ","), _fmt_frontier(format(int(par_val), ","), hwm_val, br_val)), "score": round(s_val), "breakout": br_val},
+                {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
                 {"k": "Mine Yield Rate", "v": "%.0f%%" % yield_eff, "sub": "%d/%d mine runs yielded" % (wr["mine_ok"], wr["mine_runs"]), "score": round(s_eff)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid in ("4A", "4B"):
@@ -835,15 +996,22 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             rof = round(rev_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             runs_h = round(wr["ok_runs"] / span_h, 1)
-            s_rof = _score_band(rof, good=2.5, warn=1.3, higher_better=True) if rof is not None else 80.0
-            s_rev = _score_band(rev_h, good=20000.0, warn=8000.0, higher_better=True)
-            h_gap_pct = (upgrade_gaps["hulls"]["by_wing"].get(wid) or {}).get("pct_done", 100.0)
-            scores.extend([(s_rof, 0.45), (s_rev, 0.30)])
+            par_rev = round(50000.0 * cm, 0)
+            par_rof = 3.0
+            hwm_rev = _hwm_get(wid, "rev_h")
+            hwm_rof = _hwm_get(wid, "rof")
+            s_rev, br_rev = _score_open_ended(rev_h, par_rev, warn_ratio=0.45, hwm=hwm_rev)
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (80.0, False)
+            _hwm_mark(wid, "rev_h", rev_h)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            h_gap_pct = (hulls_bw.get(wid) or {}).get("pct_done", 100.0)
+            scores.extend([(s_rof, 0.40), (s_rev, 0.40)])
             kpis = [
-                {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h" % runs_h, "score": round(s_rev)},
-                {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
+                {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h | %s" % (runs_h, _fmt_frontier(format(int(par_rev), ","), hwm_rev, br_rev)), "score": round(s_rev), "breakout": br_rev},
+                {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
                 {"k": "Hull Readiness", "v": "%.0f%%" % h_gap_pct, "sub": "of max possible tier", "score": round(h_gap_pct)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "4C":
@@ -851,15 +1019,18 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             st_target = 55
             st_pct = round(min(100.0, 100.0 * bursar_occ / float(st_target)), 1)
             sales_h = round(max(wr["rev_cash"] / span_h, bursar_rev_pool * (bursar_4c_ships / bursar_tot_ships)), 0)
-            s_up = _score_band(desk_up, good=88.0, warn=70.0, higher_better=True)
-            s_st = _score_band(st_pct, good=85.0, warn=65.0, higher_better=True)
-            s_sl = _score_band(sales_h, good=30000.0, warn=10000.0, higher_better=True)
-            scores.extend([(s_up, 0.30), (s_st, 0.25), (s_sl, 0.20)])
+            par_sl = round(75000.0 * cm, 0)
+            hwm_sl = _hwm_get(wid, "sales_h")
+            s_up = _score_band(desk_up, good=90.0, warn=70.0, higher_better=True)
+            s_st = _score_band(st_pct, good=88.0, warn=65.0, higher_better=True)
+            s_sl, br_sl = _score_open_ended(sales_h, par_sl, warn_ratio=0.45, hwm=hwm_sl)
+            _hwm_mark(wid, "sales_h", sales_h)
+            scores.extend([(s_up, 0.25), (s_st, 0.20), (s_sl, 0.35)])
             kpis = [
                 {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
                 {"k": "Stations Covered", "v": "%d / %d" % (bursar_occ, st_target), "sub": "%.0f%% exchange spread" % st_pct, "score": round(s_st)},
-                {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "zero flight fuel", "score": round(s_sl)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "0 fuel | %s" % _fmt_frontier(format(int(par_sl), ","), hwm_sl, br_sl), "score": round(s_sl), "breakout": br_sl},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "5A":
@@ -867,14 +1038,18 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             crafts_h = round(wr["craft_units"] / span_h, 1)
             sales_h = round(max(wr["rev_cash"] / span_h, bursar_rev_pool * (bursar_5a_ships / bursar_tot_ships)), 0)
             desk_up = round(100.0 * wl["bursar_docked"] / max(1, wl["total"]), 1)
-            s_up = _score_band(desk_up, good=85.0, warn=65.0, higher_better=True)
-            s_cr = _score_band(craft_val_h + sales_h, good=40000.0, warn=15000.0, higher_better=True)
-            scores.extend([(s_up, 0.35), (s_cr, 0.40)])
+            comb_h = craft_val_h + sales_h
+            par_comb = round(80000.0 * cm, 0)
+            hwm_comb = _hwm_get(wid, "comb_h")
+            s_up = _score_band(desk_up, good=88.0, warn=65.0, higher_better=True)
+            s_cr, br_cr = _score_open_ended(comb_h, par_comb, warn_ratio=0.45, hwm=hwm_comb)
+            _hwm_mark(wid, "comb_h", comb_h)
+            scores.extend([(s_up, 0.30), (s_cr, 0.50)])
             kpis = [
-                {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %.0f craft XP/h" % (crafts_h, wr["craft_xp"] / span_h), "score": round(s_cr)},
-                {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "refinery + exchange", "score": round(s_cr)},
+                {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %s" % (crafts_h, _fmt_frontier(format(int(par_comb), ","), hwm_comb, br_cr)), "score": round(s_cr), "breakout": br_cr},
+                {"k": "Sales / h (0-fuel)", "v": "+%s cr/h" % format(int(sales_h), ","), "sub": "refinery + exchange", "score": round(s_cr), "breakout": br_cr},
                 {"k": "Desk Uptime", "v": "%.0f%%" % desk_up, "sub": "%d/%d docked live" % (wl["bursar_docked"], wl["total"]), "score": round(s_up)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "5B":
@@ -883,14 +1058,21 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             tot_val_h = round(max(craft_val_h, wr["rev_cash"] / span_h), 0)
             rof = round(tot_val_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
-            s_cr = _score_band(tot_val_h, good=15000.0, warn=5000.0, higher_better=True)
-            s_rof = _score_band(rof, good=2.5, warn=1.2, higher_better=True) if rof is not None else 80.0
-            scores.extend([(s_cr, 0.40), (s_rof, 0.35)])
+            par_cr = round(30000.0 * cm, 0)
+            par_rof = 3.0
+            hwm_cr = _hwm_get(wid, "tot_val_h")
+            hwm_rof = _hwm_get(wid, "rof")
+            s_cr, br_cr = _score_open_ended(tot_val_h, par_cr, warn_ratio=0.45, hwm=hwm_cr)
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (80.0, False)
+            _hwm_mark(wid, "tot_val_h", tot_val_h)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            scores.extend([(s_cr, 0.45), (s_rof, 0.35)])
             kpis = [
-                {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %.0f craft XP/h" % (crafts_h, wr["craft_xp"] / span_h), "score": round(s_cr)},
-                {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
+                {"k": "Crafted Value / h", "v": ("+%s cr/h" % format(int(craft_val_h), ",")) if craft_val_h > 0 else ("%.0f XP/h" % (wr["craft_xp"] / span_h)), "sub": "%.0f items/h | %s" % (crafts_h, _fmt_frontier(format(int(par_cr), ","), hwm_cr, br_cr)), "score": round(s_cr), "breakout": br_cr},
+                {"k": "Value / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
                 {"k": "Workshop Runs / h", "v": "%.1f/h" % (wr["ok_runs"] / span_h), "sub": "%d runs in %dh" % (wr["runs"], int(round(hours))), "score": round(s_cr)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "6A":
@@ -899,40 +1081,52 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             rof = round(rev_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
             runs_h = round(wr["ok_runs"] / span_h, 1)
-            s_sla = _score_band(sla, good=85.0, warn=65.0, higher_better=True)
-            s_rof = _score_band(rof, good=1.8, warn=0.9, higher_better=True) if rof is not None else 80.0
-            scores.extend([(s_sla, 0.45), (s_rof, 0.30)])
+            par_rof = 2.2
+            hwm_rof = _hwm_get(wid, "rof")
+            s_sla = _score_band(sla, good=88.0, warn=65.0, higher_better=True)
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (80.0, False)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            scores.extend([(s_sla, 0.45), (s_rof, 0.35)])
             kpis = [
                 {"k": "Supply Chains SLA", "v": "%.1f%%" % sla, "sub": "%d P1/P2 projects" % infra["p1_p2_needs_count"], "score": round(s_sla)},
-                {"k": "Freight Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "+%s cr/h vs %s fuel" % (format(int(rev_h), ","), format(int(fuel_h), ",")), "score": round(s_rof)},
+                {"k": "Freight Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "+%s cr/h | %s" % (format(int(rev_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
                 {"k": "Supply Runs / h", "v": "%.1f/h" % runs_h, "sub": "%d/%d productive" % (wr["ok_runs"], wr["runs"]), "score": round(s_sla)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "6B":
             rev_h = round(max(wr["rev_cash"] / span_h, pax_rev_pool), 0)
             rof = round(rev_h / fuel_h, 2) if fuel_h >= 50.0 else None
             primary_rof = rof
-            s_rof = _score_band(rof, good=1.8, warn=0.9, higher_better=True) if rof is not None else 85.0
-            scores.extend([(s_rof, 0.75)])
+            par_rof = 2.2
+            hwm_rof = _hwm_get(wid, "rof")
+            s_rof, br_rof = _score_open_ended(rof, par_rof, warn_ratio=0.45, hwm=hwm_rof) if rof is not None else (85.0, False)
+            if rof is not None:
+                _hwm_mark(wid, "rof", rof)
+            scores.extend([(s_rof, 0.80)])
             kpis = [
                 {"k": "Status", "v": "STAGED" if staged else "ACTIVE", "sub": "Haul fallback until pax_net" if staged else "charter live", "score": 100 if staged else round(s_rof)},
                 {"k": "Revenue / h", "v": "+%s cr/h" % format(int(rev_h), ","), "sub": "%.1f trips/h" % (wr["ok_runs"] / span_h), "score": round(s_rof)},
-                {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_rof)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Rev / Fuel", "v": ("%.2fx" % rof) if rof is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.1fx" % par_rof, hwm_rof, br_rof, "x")), "score": round(s_rof), "breakout": br_rof},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "6C":
             b_pct = float(infra["bunker_avg_pct"])
             b_cnt = len(infra["bunkers"])
             runs_h = round(wr["ok_runs"] / span_h, 1)
-            s_bnk = _score_band(b_pct, good=90.0, warn=75.0, higher_better=True)
-            scores.extend([(s_bnk, 0.55), (s_idle, 0.20)])
+            par_runs = round(18.0 * cm, 1)
+            hwm_runs = _hwm_get(wid, "runs_h")
+            s_bnk = _score_band(b_pct, good=92.0, warn=75.0, higher_better=True)
+            s_rn, br_rn = _score_open_ended(runs_h, par_runs, warn_ratio=0.45, hwm=hwm_runs)
+            _hwm_mark(wid, "runs_h", runs_h)
+            scores.extend([(s_bnk, 0.50), (s_rn, 0.30)])
             kpis = [
                 {"k": "Outpost Bunkers", "v": "%.1f%%" % b_pct, "sub": "%d active bunkers (50k tgt)" % b_cnt, "score": round(s_bnk)},
-                {"k": "Tender Runs / h", "v": "%.1f/h" % runs_h, "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_bnk)},
+                {"k": "Tender Runs / h", "v": "%.1f/h" % runs_h, "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.0f/h" % par_runs, hwm_runs, br_rn, "/h")), "score": round(s_rn), "breakout": br_rn},
                 {"k": "Combat Salvage", "v": "ACTIVE" if salvage_enabled else "STAGED", "sub": "policed/lawless wrecks", "score": 90},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "7A":
@@ -940,15 +1134,25 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             r_avg = float(freshness["rival_frontier_avg_min"])
             scans_h = round(wr["scans"] / span_h, 1)
             sc_per_1k = round((scans_h * 1000.0) / fuel_h, 1) if fuel_h >= 50.0 else None
-            s_fr = _score_band(r_med, good=20.0, warn=45.0, higher_better=False)
-            s_sc = _score_band(scans_h, good=120.0, warn=60.0, higher_better=True)
-            s_ef = _score_band(sc_per_1k, good=8.0, warn=4.0, higher_better=True) if sc_per_1k is not None else 80.0
-            scores.extend([(s_fr, 0.35), (s_sc, 0.20), (s_ef, 0.20)])
+            par_med = 18.0
+            par_sc = round(180.0 * cm, 0)
+            par_ef = 10.0
+            hwm_med = _hwm_get(wid, "r_med")
+            hwm_sc = _hwm_get(wid, "scans_h")
+            hwm_ef = _hwm_get(wid, "sc_per_1k")
+            s_fr, br_fr = _score_open_ended_low(r_med, par_med, warn=42.0, hwm_low=hwm_med)
+            s_sc, br_sc = _score_open_ended(scans_h, par_sc, warn_ratio=0.45, hwm=hwm_sc)
+            s_ef, br_ef = _score_open_ended(sc_per_1k, par_ef, warn_ratio=0.45, hwm=hwm_ef) if sc_per_1k is not None else (80.0, False)
+            _hwm_mark(wid, "r_med", r_med, lower=True)
+            _hwm_mark(wid, "scans_h", scans_h)
+            if sc_per_1k is not None:
+                _hwm_mark(wid, "sc_per_1k", sc_per_1k)
+            scores.extend([(s_fr, 0.35), (s_sc, 0.25), (s_ef, 0.20)])
             kpis = [
-                {"k": "Rival Hub Freshness", "v": "%.1fm med" % r_med, "sub": "avg %.0fm (%d rival hubs)" % (r_avg, freshness["rival_frontier_count"]), "score": round(s_fr)},
-                {"k": "Systems Scanned / h", "v": "%.1f/h" % scans_h, "sub": "%d scans in %dh" % (wr["scans"], int(round(hours))), "score": round(s_sc)},
-                {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_ef)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Rival Hub Freshness", "v": "%.1fm med" % r_med, "sub": "avg %.0fm | %s" % (r_avg, _fmt_frontier("%.0fm" % par_med, hwm_med, br_fr, "m")), "score": round(s_fr), "breakout": br_fr},
+                {"k": "Systems Scanned / h", "v": "%.1f/h" % scans_h, "sub": "%d scans | %s" % (wr["scans"], _fmt_frontier("%.0f/h" % par_sc, hwm_sc, br_sc, "/h")), "score": round(s_sc), "breakout": br_sc},
+                {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.0f" % par_ef, hwm_ef, br_ef)), "score": round(s_ef), "breakout": br_ef},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         elif wid == "7B":
@@ -956,20 +1160,31 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             g_avg = float(freshness["avg_min"])
             scans_h = round(wr["scans"] / span_h, 1)
             sc_per_1k = round((scans_h * 1000.0) / fuel_h, 1) if fuel_h >= 50.0 else None
-            s_fr = _score_band(g_med, good=20.0, warn=45.0, higher_better=False)
-            s_sc = _score_band(scans_h, good=150.0, warn=75.0, higher_better=True)
-            s_ef = _score_band(sc_per_1k, good=8.0, warn=4.0, higher_better=True) if sc_per_1k is not None else 80.0
-            scores.extend([(s_fr, 0.35), (s_sc, 0.20), (s_ef, 0.20)])
+            par_med = 18.0
+            par_sc = round(220.0 * cm, 0)
+            par_ef = 10.0
+            hwm_med = _hwm_get(wid, "g_med")
+            hwm_sc = _hwm_get(wid, "scans_h")
+            hwm_ef = _hwm_get(wid, "sc_per_1k")
+            s_fr, br_fr = _score_open_ended_low(g_med, par_med, warn=42.0, hwm_low=hwm_med)
+            s_sc, br_sc = _score_open_ended(scans_h, par_sc, warn_ratio=0.45, hwm=hwm_sc)
+            s_ef, br_ef = _score_open_ended(sc_per_1k, par_ef, warn_ratio=0.45, hwm=hwm_ef) if sc_per_1k is not None else (80.0, False)
+            _hwm_mark(wid, "g_med", g_med, lower=True)
+            _hwm_mark(wid, "scans_h", scans_h)
+            if sc_per_1k is not None:
+                _hwm_mark(wid, "sc_per_1k", sc_per_1k)
+            scores.extend([(s_fr, 0.35), (s_sc, 0.25), (s_ef, 0.20)])
             kpis = [
-                {"k": "Galaxy Freshness", "v": "%.1fm med" % g_med, "sub": "avg %.0fm | %.0f%% <20m" % (g_avg, freshness["fresh_20m_pct"]), "score": round(s_fr)},
-                {"k": "Surveys & Scans / h", "v": "%.1f/h" % scans_h, "sub": "%d scans in %dh" % (wr["scans"], int(round(hours))), "score": round(s_sc)},
-                {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s cr/h fuel" % format(int(fuel_h), ","), "score": round(s_ef)},
-                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": ("%d/%d active | %d upgrading" % (wl["working"] + wl["goal"], wl["total"], wl["upgrading"])) if wl["upgrading"] else ("%d/%d working" % (wl["working"] + wl["goal"], wl["total"])), "score": round(s_idle)},
+                {"k": "Galaxy Freshness", "v": "%.1fm med" % g_med, "sub": "%.0f%% <20m | %s" % (freshness["fresh_20m_pct"], _fmt_frontier("%.0fm" % par_med, hwm_med, br_fr, "m")), "score": round(s_fr), "breakout": br_fr},
+                {"k": "Surveys & Scans / h", "v": "%.1f/h" % scans_h, "sub": "%d scans | %s" % (wr["scans"], _fmt_frontier("%.0f/h" % par_sc, hwm_sc, br_sc, "/h")), "score": round(s_sc), "breakout": br_sc},
+                {"k": "Scans / 1k Fuel", "v": ("%.1f" % sc_per_1k) if sc_per_1k is not None else "--", "sub": "%s fuel | %s" % (format(int(fuel_h), ","), _fmt_frontier("%.0f" % par_ef, hwm_ef, br_ef)), "score": round(s_ef), "breakout": br_ef},
+                {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
         w_tot = sum(wt for _sc, wt in scores) or 1.0
         health_pct = round(sum((sc or 0.0) * wt for sc, wt in scores) / w_tot, 1) if not staged else round(s_idle, 1)
         status = _status_from_score(health_pct, staged=staged)
+        has_breakout = any(bool(k.get("breakout")) for k in kpis)
 
         wings_out.append({
             "id": wid,
@@ -984,6 +1199,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
             "working_pct": work_pct,
             "fuel_h": fuel_h,
             "rof": primary_rof,
+            "cap_mult": cm,
+            "breakout": has_breakout,
             "health_pct": health_pct,
             "status": status,
             "staged": staged,
@@ -1023,6 +1240,8 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         "realized_rev_h": round(realized_rev_h, 0),
         "paid_fuel_h": round(paid_fuel_h, 0),
         "core_ebit_h": round(core_ebit_h, 0),
+        "core_margin_pct": core_margin_pct,
+        "core_margin_tier": core_margin_tier,
         "rev_per_fuel": rev_per_fuel,
         "core_ebit_per_fuel": ebit_per_fuel,
         "total_ships": len(ships_list),
@@ -1078,6 +1297,8 @@ def publish_kpi_signals(data_dir, snapshot, now=None):
     payload = {
         "updated_at": int(now_t),
         "core_ebit_h": fl.get("core_ebit_h"),
+        "core_margin_pct": fl.get("core_margin_pct"),
+        "core_margin_tier": fl.get("core_margin_tier"),
         "rev_per_fuel": fl.get("rev_per_fuel"),
         "fleet_idle_pct": fl.get("idle_pct"),
         "galaxy_median_min": fl.get("galaxy_median_min"),
@@ -1166,12 +1387,24 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
                 except Exception:
                     acc_map[lbl] = {}
 
+        hwm_doc = _load_hwm(data_p)
+        hwm_updates = {}
         windows = {}
         for lbl, hrs in (("1h", 1), ("6h", 6), ("24h", 24)):
             windows[lbl] = _compute_window_wing_kpis(
                 conn, ships_list, pilot_wing, pilot_div, acc_map.get(lbl) or {}, hrs, now_t,
                 data_p, repo_root, freshness, infra, upgrade_gaps, bursar_occ, host_running,
+                hwm_doc=hwm_doc, hwm_updates=(hwm_updates if (write_signals and lbl == "6h") else None),
             )
+        if write_signals and hwm_updates:
+            w6_span = float(((windows.get("6h") or {}).get("fleet") or {}).get("span_hours") or 0.0)
+            if w6_span >= 1.0:
+                merged_w = dict(hwm_doc.get("wings") or {})
+                for wk, wv in hwm_updates.items():
+                    cur_w = dict(merged_w.get(wk) or {})
+                    cur_w.update(wv)
+                    merged_w[wk] = cur_w
+                _save_hwm(data_p, {"wings": merged_w}, now_t)
     finally:
         if conn is not None:
             try:
@@ -1212,10 +1445,11 @@ def print_summary(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, win="6h"):
     print("FLEET KPI SUMMARY (%s) | ships=%s active=%s upg=%s idle=%s (%.1f%%) park=%s threads=%s" % (
         win, fl.get("total_ships"), fl.get("working_ships"), fl.get("upgrading_ships"),
         fl.get("idle_ships"), float(fl.get("idle_pct") or 0.0), fl.get("park_ships"), fl.get("host_threads")))
-    print("  FINANCE (%s): Realized Rev=%s cr/h | Paid Fuel=%s cr/h | ROF=%sx | Core EBIT=%s cr/h" % (
-        win, format(int(round(fl.get("realized_rev_h") or 0)), ","),
-        format(int(round(fl.get("paid_fuel_h") or 0)), ","),
-        fl.get("rev_per_fuel"), format(int(round(fl.get("core_ebit_h") or 0)), ",")))
+    _cm_s = ("%.1f%% [%s]" % (float(fl["core_margin_pct"]), fl.get("core_margin_tier") or "")) if fl.get("core_margin_pct") is not None else "--"
+    print("  FINANCE (%s): Core Margin=%s | Core EBIT=%s cr/h | Realized Rev=%s cr/h | Paid Fuel=%s cr/h | ROF=%sx" % (
+        win, _cm_s, format(int(round(fl.get("core_ebit_h") or 0)), ","),
+        format(int(round(fl.get("realized_rev_h") or 0)), ","),
+        format(int(round(fl.get("paid_fuel_h") or 0)), ","), fl.get("rev_per_fuel")))
     print("  READINESS: Hulls %s/%s (%.1f%%, missing %s) | Mod Slots %s/%s (%.1f%%, tier %.1f%%)" % (
         hulls.get("filled_steps"), hulls.get("possible_steps"), float(hulls.get("pct_done") or 0.0), hulls.get("missing_steps"),
         mods.get("filled_slots"), mods.get("possible_slots"), float(mods.get("slot_pct_done") or 0.0), float(mods.get("tier_pct_done") or 0.0)))

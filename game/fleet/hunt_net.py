@@ -601,13 +601,14 @@ def bfs_distances(adj, start_sys, max_hops=18):
     return dist
 
 
-def nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=None):
+def nearest_station(adj, stations_by_sys, sys_id, max_hops=6, preferred_bases=None, exclude_bases=None):
     dists = bfs_distances(adj, sys_id, max_hops=max_hops)
     pref = preferred_bases or ()
+    excl = exclude_bases or ()
     best_any = None
     best_pref = None
     for sid, hops in sorted(dists.items(), key=lambda kv: (kv[1], kv[0])):
-        sts = stations_by_sys.get(sid)
+        sts = [st for st in (stations_by_sys.get(sid) or ()) if st[2] not in excl]
         if not sts:
             continue
         if best_any is None:
@@ -685,6 +686,12 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             # An outpost of ours (table bases, kind outpost) is no dock: it has no storage for the loot and its
             # fuel bunker is a supply chain (requests.log ENT-513).
             outposts = {str(b) for (b,) in _rows("SELECT base FROM bases WHERE kind = 'outpost'") if b}
+            own_stations = {str(b) for (b,) in _rows("SELECT base FROM bases WHERE kind = 'station'") if b}
+            cltv_members = set()
+            if "faction_members" in {r[0] for r in _rows("SELECT name FROM sqlite_master WHERE type='table'")}:
+                for (mp,) in _rows("SELECT pilot FROM faction_members WHERE pilot IS NOT NULL"):
+                    if mp:
+                        cltv_members.add(str(mp))
             # Docks: every place with a base (table places), our own stations and the empires'.
             _bursar_live = set()
             _lockbox_hubs = set()
@@ -697,12 +704,19 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             except Exception:
                 pass
             _hn_tbls = {r[0] for r in _rows("SELECT name FROM sqlite_master WHERE type='table'")}
+            _refuel_ready = set()
             if "faction_facilities" in _hn_tbls:
                 for (lb_base,) in _rows(
                     "SELECT DISTINCT base FROM faction_facilities WHERE type = 'faction_lockbox' AND COALESCE(status, 'active') = 'active' AND base IS NOT NULL"
                 ):
                     if lb_base:
                         _lockbox_hubs.add(str(lb_base))
+                for (rf_base,) in _rows(
+                    "SELECT DISTINCT base FROM faction_facilities WHERE type IN ('refueling_dock', 'faction_fuel_bunker', 'fuel_depot') AND COALESCE(status, 'active') = 'active' AND base IS NOT NULL"
+                ):
+                    if rf_base:
+                        _refuel_ready.add(str(rf_base))
+            no_refuel_bases = {b for b in own_stations if b not in _refuel_ready}
             for sys_id, poi_id, base_id, nm in _rows(
                 "SELECT system, poi, base, name FROM places WHERE base IS NOT NULL AND base != '' ORDER BY system, poi"
             ):
@@ -879,6 +893,9 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
             emp_v *= 1.35
         species_loot_val[sp] = round(emp_v, 1)
     owned_bases = []
+    cltv_members = set()
+    outposts = set()
+    no_refuel_bases = set()
     _db_b = Path(data_dir) / "store" / "read.db"
     if _db_b.is_file():
         try:
@@ -896,7 +913,8 @@ def _load_combat_world_uncached(data_dir, repo_root, policy, now_t):
         "herds": herds, "pirates": pirates, "active_pirate_raids": (active_pirate_raids if "active_pirate_raids" in locals() else set()), "pirate_details": pirate_details,
         "ranch_pois": ranch_pois, "ranch_systems": ranch_systems,
         "species_hull": species_hull, "needs_items": needs_items,
-        "species_loot_val": species_loot_val, "owned_bases": owned_bases,
+        "species_loot_val": species_loot_val, "cltv_members": cltv_members, "outpost_bases": outposts, "no_refuel_bases": no_refuel_bases,
+        "owned_bases": owned_bases,
         "craft_loot_species": craft_loot_species, "bursar_bases": _bursar_live, "lockbox_bases": _lockbox_hubs, "data_dir": str(data_dir),
     }
 
@@ -1257,7 +1275,9 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             continue
         _st_rad = int(scfg.get("max_station_jumps") or 5)
         _eff_st_rad = min(apex_j, _st_rad + 3) if _sp_lv_chk >= apex_min else (min(tier_s_j, _st_rad + 2) if _sp_lv_chk >= tier_s_min else _st_rad)
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_eff_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+        _cm = world.get("cltv_members") or set()
+        _excl_st = set(world.get("no_refuel_bases") or set()) | ((world.get("outpost_bases") or set()) if (_cm and p_name not in _cm) else set())
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_eff_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())), exclude_bases=_excl_st)
         if not st_tup or st_tup[0] in pirates:
             continue
 
@@ -1398,7 +1418,10 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             else:
                 continue
         _pk_st_rad = int(pcfg.get("max_station_jumps") or 10)
-        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_pk_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+        _cm_pk = world.get("cltv_members") or set()
+        _pk_pname = str((pilot_info or {}).get("name") or "")
+        _excl_pk = set(world.get("no_refuel_bases") or set()) | ((world.get("outpost_bases") or set()) if (_cm_pk and _pk_pname and _pk_pname not in _cm_pk) else set())
+        st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_pk_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())), exclude_bases=_excl_pk)
         if not st_tup:
             continue
         raw_lv = float(species_loot.get(sp) or 0.0)
@@ -1448,7 +1471,8 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
             sz = choose_pack_size(_pack_eval_pwr, threat, pir_ratio, sizes=sizes, f9=f9, prey_hull=2 * phull + pshield, role="grazer")
             if sz is None:
                 continue
-            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=int(pcfg.get("max_station_jumps") or 10), preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
+            _excl_p3 = set(world.get("no_refuel_bases") or set())
+            st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=int(pcfg.get("max_station_jumps") or 10), preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())), exclude_bases=_excl_p3)
             if not st_tup:
                 continue
             score = (18000.0 * (phull / 80.0)) / (1.0 + 0.6 * hops + 0.5 * st_hops)

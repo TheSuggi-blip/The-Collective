@@ -462,6 +462,35 @@ def after_fight(fled_for):
     return False, ''
 
 
+def opposing_ship_in_battle(cells, pilot, own_names_set=None):
+    """Game-theory +EV PvE battle check: return True ONLY when a hostile/opposing non-creature ship is in the fight.
+    In SpaceMolt wildlife hunts, non-CLTV players on the SAME battle side (`c[2] == own_side`) fight the creature
+    co-operatively with zero friendly fire -- staying captures free DPS and loot (+EV). Flee ONLY when:
+      1. A hostile NPC (`pirate` / `police`) is present, OR
+      2. A non-creature combatant is on an OPPOSING side (`c[2] != own_side`), OR
+      3. A non-creature combatant is explicitly targeting our pilot (`c[9] == pilot`).
+    """
+    own = next((c for c in cells if len(c) > 9 and c[0] == pilot), None)
+    own_side = str(own[2]).strip() if (own and len(own) > 2) else ''
+    own_set = own_names_set or set()
+    for c in cells:
+        if len(c) <= 9:
+            continue
+        cname, ckind, cside = str(c[0]), str(c[1]).lower(), str(c[2]).strip()
+        ctarget = str(c[9]).strip()
+        if ckind == 'creature' or cname == pilot:
+            continue
+        if ckind in ('pirate', 'police'):
+            return True
+        if own_side and cside and cside != own_side:
+            return True
+        if ctarget == pilot and (not own_set or cname not in own_set):
+            return True
+        if not own_side and ckind != 'player':
+            return True
+    return False
+
+
 def fight():
     """Drive the running battle to its end: close in, fire, flee in time. True when it ended."""
     for tick in range(90):                           # at most 15 minutes for one fight
@@ -487,9 +516,10 @@ def fight():
         if own_hull < 60 or (own_shield < 15 and prey_hull > 40):
             say(f'hull {own_hull}%, shield {own_shield}%, prey {prey_hull}%: fleeing')
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
-        elif (kinds and any(k not in ('creature', 'player') for k in kinds)) or any(c[0] != pilot and (not OWN or c[0] not in OWN) for c in cells if c[1] == 'player'):
-            # a non-CLTV pilot or an NPC ship is in this fight: the posture toward them is HOLD (friendly CLTV fleetmates do not trigger self-flee)
-            say('not a hunt any more (a ship is in the fight): fleeing | ' + ' / '.join(row for row in t.splitlines() if '\t' in row)[:300])
+        elif opposing_ship_in_battle(cells, pilot, OWN):
+            # Hostile NPC (pirate/police) or opposing-side / targeting non-CLTV combatant: flee immediately (+EV survival).
+            # Co-op non-CLTV players on our own PvE side (c[2] == own_side) provide free DPS with zero friendly fire: stay and finish kill!
+            say('not a hunt any more (hostile/opposing ship in fight): fleeing | ' + ' / '.join(row for row in t.splitlines() if '\t' in row)[:300])
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
             FLED[0] = 'ship'
         else:
