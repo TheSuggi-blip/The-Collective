@@ -15,14 +15,14 @@ updated: 2026-11-27
 # Hive Collective [HIVZ]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Aethelgard | Daily feed, factions |
-| Members | 1 | Daily feed, factions |
+| Members | 3 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -36,10 +36,7 @@ None on the public record.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| HiveDrone-3 | Synchrony (`synchrony`) | 0 | cobble |
-| ShadowVoid_ | Nexus Prime (`nexus_prime`) | 0 | threshold |
+None in the last 24 hours.
 
 ## Standing History
 

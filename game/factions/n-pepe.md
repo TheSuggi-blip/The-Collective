@@ -15,18 +15,18 @@ updated: 2026-11-27
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 18.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Mimic | Daily feed, factions |
-| Members | 64 | Daily feed, factions |
+| Members | 74 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 53 | Public event stream |
+| Pilots carrying the tag on the public event stream | 52 | Public event stream |
 
 ## Bases
 
@@ -39,17 +39,23 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicAuger | Nexus Prime (`nexus_prime`) | not on record | cobble |
-| MimicBasalt | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicCobalt | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicFlake | Synchrony (`synchrony`) | 0 | cobble |
-| MimicGrain | Synchrony (`synchrony`) | 0 | cobble |
-| MimicLens | Synchrony (`synchrony`) | 0 | shard |
+| MimicAuger | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicBasalt | Synchrony (`synchrony`) | 0 | cobble |
+| MimicClaw | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicCobalt | Synchrony (`synchrony`) | 0 | cobble |
+| MimicComet | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicFlare | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicFlint | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicForge | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicHew | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicLode | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicSand | Synchrony (`synchrony`) | 0 | cobble |
-| MimicShale | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicSlag | Synchrony (`synchrony`) | 0 | cobble |
-| MimicWafer | Synchrony (`synchrony`) | 0 | cobble |
+| MimicRota | The Experiment (`the_experiment`) | 0 | prospect |
+| MimicSeam | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicSextant | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicShale | Synchrony (`synchrony`) | 0 | cobble |
+| MimicTally | The Experiment (`the_experiment`) | 0 | cobble |
+| Pepemos | The Experiment (`the_experiment`) | 0 | shard |
 
 ## Standing History
 
