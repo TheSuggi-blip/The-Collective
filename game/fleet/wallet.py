@@ -1990,9 +1990,10 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         docked_offs.sort()
         if not docked_offs:
             continue
-        builder = docked_offs[0][1]
         bname = st_bases.get(base_id, base_id)
+        builder = None
         if dry:
+            builder = docked_offs[0][1]
             print("would station_build: %s @ %s via %s (fee=%s cr, avail_tr=%s)" % (
                 fid, bname, builder, format(fee, ","), format(avail_tr, ",")))
             avail_tr -= fee
@@ -2001,12 +2002,19 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
             done_n += 1
             continue
 
-        fcat = fac_cat.get(fid, "")
-        build_action = "faction_build" if fcat == "faction" else "build"
-        ok, msg = errand_raw(builder, "spacemolt_facility", build_action, {"facility_type": fid})
+        # Live-verify officer is STILL docked at our own sovereign station (free read-only station_info query!)
+        for _rk, cand in docked_offs:
+            ok_st, st_msg = errand_raw(cand, "spacemolt_facility", "station_info", {})
+            if ok_st and (not bname or bname.lower() in str(st_msg).lower()):
+                builder = cand
+                break
+        if not builder:
+            continue
+
+        ok, msg = errand_raw(builder, "spacemolt_facility", "faction_build", {"facility_type": fid})
         if ok:
-            print("STATION_BUILD OK: %s (%s) @ %s via %s (fee=%s cr) | %s" % (
-                fid, build_action, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)
+            print("STATION_BUILD OK: %s @ %s via %s (fee=%s cr) | %s" % (
+                fid, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)
             done_cache[ckey] = int(now)
             try:
                 done_cache_p.parent.mkdir(parents=True, exist_ok=True)
