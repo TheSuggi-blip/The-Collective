@@ -174,14 +174,16 @@ def _static_bursar_bases(repo_root, orders):
     return counts
 
 
-def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False):
+def load_exchange_stations(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False, priority_bases=None):
     import worldcache as _wc
+    p_sig = tuple(sorted(str(x) for x in (priority_bases or ())))
     ck = ("bursar_stations", str(data), _wc.db_sig(data), bool(policed_only), bool(exclude_strongholds),
-          bool(exclude_pirates), float(pirate_avoid_hours or 6.0), bool(include_empty_neutral))
-    return _wc.cached(ck, 25.0, lambda: _load_exchange_stations_uncached(data, policed_only, exclude_strongholds, exclude_pirates, pirate_avoid_hours, include_empty_neutral))
+          bool(exclude_pirates), float(pirate_avoid_hours or 6.0), bool(include_empty_neutral), p_sig)
+    return _wc.cached(ck, 25.0, lambda: _load_exchange_stations_uncached(data, policed_only, exclude_strongholds, exclude_pirates, pirate_avoid_hours, include_empty_neutral, priority_bases=p_sig))
 
 
-def _load_exchange_stations_uncached(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False):
+def _load_exchange_stations_uncached(data, policed_only=True, exclude_strongholds=True, exclude_pirates=True, pirate_avoid_hours=6.0, include_empty_neutral=False, priority_bases=None):
+    prio_set = set(str(x) for x in (priority_bases or ()))
     db = Path(data) / "store" / "read.db"
     stations = []
     if db.is_file():
@@ -240,7 +242,7 @@ def _load_exchange_stations_uncached(data, policed_only=True, exclude_stronghold
                         continue
                     if policed_only and not emp:
                         continue
-                    if not emp and not include_empty_neutral and int(r["items_n"] or 0) <= 0:
+                    if not emp and not include_empty_neutral and int(r["items_n"] or 0) <= 0 and b not in prio_set:
                         continue
                     seen.add(b)
                     stations.append({
@@ -317,6 +319,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
             exclude_pirates=bool(policy.get("exclude_pirates", True)),
             pirate_avoid_hours=float(policy.get("pirate_avoid_hours") or 6.0),
             include_empty_neutral=bool(policy.get("include_empty_neutral_stations", False)),
+            priority_bases=priority,
         )
         try:
             lanes = fuelplan.chart(Path(repo_root) / "game")[0]
@@ -450,7 +453,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                     score += 2000.0
                 if st["items_n"] > 0:
                     score += 500.0
-                score += math.log10(1.0 + max(0.0, st["depth"])) * 100.0
+                score += math.log10(1.0 + max(0.0, st["depth"])) * 1500.0
                 score += min(400.0, max(0.0, (now_t - st["book_t"]) / 60.0) * 2.0) if st["book_t"] > 0 else 300.0
                 score -= hops * 40.0
                 if best is None or score > best[0]:

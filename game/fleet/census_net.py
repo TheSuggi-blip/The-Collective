@@ -44,6 +44,18 @@ sys.path.insert(0, str(FLEET))
 import fuelplan as _fp
 import worldcache as _wc
 
+_SURVEY_FLAG_CACHE = {}
+
+
+def _has_survey_scanner(ship_doc):
+    mods = (ship_doc or {}).get("modules") or []
+    for m in mods:
+        tid = str((m.get("type") or m.get("type_id") or m.get("name") or "") if isinstance(m, dict) else m).lower().replace(" ", "_")
+        if "survey_scanner" in tid:
+            return True
+    return False
+
+
 DEFAULT_POLICY = {
     "enabled": True,
     "allow_strongholds": False,
@@ -114,6 +126,7 @@ def _load_census_world(data_dir, policy, now_t=None):
         field_t = {}
         herd_sys = set()
         rival_station_sys = set()
+        battle_sys = set()
         if db_p.is_file():
             con = _wc.ro_db(db_p, timeout=3.0)
             try:
@@ -160,6 +173,11 @@ def _load_census_world(data_dir, policy, now_t=None):
                     for s, tag in con.execute("SELECT system, COALESCE(tag,'') FROM stations WHERE system IS NOT NULL").fetchall():
                         if s and tag and str(tag).upper() != "CLTV":
                             rival_station_sys.add(str(s))
+                if "public_battles" in tbls:
+                    b_cut = now_t - 14400.0
+                    for (s,) in con.execute("SELECT DISTINCT system FROM public_battles WHERE system IS NOT NULL AND t >= ?", (b_cut,)).fetchall():
+                        if s:
+                            battle_sys.add(str(s))
             finally:
                 con.close()
         return {
@@ -169,24 +187,41 @@ def _load_census_world(data_dir, policy, now_t=None):
             "field_t": field_t,
             "herd_sys": herd_sys,
             "rival_station_sys": rival_station_sys,
+            "battle_sys": battle_sys,
         }
 
     base = _wc.cached(ck, 25.0, _build)
-    # Overlay fresh scouting/<sys>.json mtimes outside cache so newly scanned systems reflect immediately!
+    # Overlay fresh scouting/<sys>.json mtimes & survey_system completion outside cache!
     scout_dir = Path(data_dir) / "scouting"
     last_t = dict(base["field_t"])
+    survey_t = {}
     if scout_dir.is_dir():
         try:
             for ent in os.scandir(scout_dir):
                 if ent.name.endswith(".json"):
                     sid = ent.name[:-5]
-                    mt = float(ent.stat().st_mtime)
+                    st = ent.stat()
+                    mt = float(st.st_mtime)
                     if mt > last_t.get(sid, 0.0):
                         last_t[sid] = mt
+                    ck_s = (ent.path, mt, st.st_size)
+                    has_sv = _SURVEY_FLAG_CACHE.get(ck_s)
+                    if has_sv is None:
+                        try:
+                            txt = Path(ent.path).read_text(encoding="utf-8", errors="ignore")
+                            has_sv = ('"survey":' in txt or '"survey" :' in txt)
+                        except OSError:
+                            has_sv = False
+                        if len(_SURVEY_FLAG_CACHE) > 2000:
+                            _SURVEY_FLAG_CACHE.clear()
+                        _SURVEY_FLAG_CACHE[ck_s] = has_sv
+                    if has_sv:
+                        survey_t[sid] = mt
         except OSError:
             pass
     out = dict(base)
     out["last_t"] = last_t
+    out["survey_t"] = survey_t
     return out
 
 
@@ -255,6 +290,7 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
     wing = _pilot_wing(pilot, repo_root=repo_root)
     is_recon = wing.startswith("7A.")
     is_surveyor = wing.startswith("7B.")
+    has_scanner = _has_survey_scanner(ship_doc)
 
     allow_sh = bool(policy.get("allow_strongholds", False))
     exclude = set(str(x) for x in (policy.get("exclude_systems") or []))
@@ -264,7 +300,9 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
     adj = world["adj"]
     refuel_sys = world["refuel_sys"] - avoid
     last_t = world["last_t"]
+    survey_t = world.get("survey_t") or {}
     rival_hubs = set(str(x) for x in (policy.get("rival_hub_systems") or [])) | world["rival_station_sys"]
+    battle_sys = world.get("battle_sys") or set()
     resource_sys = set(world["field_t"].keys()) | world["herd_sys"]
 
     # Compute 6-hour freshness ratio per quadrant so scouts equalize coverage across EN/ES/WN/WS
@@ -318,7 +356,9 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                     continue
                 lt = last_t.get(sid, 0.0)
                 age_s = (now_t - lt) if lt > 0.0 else 1e9
-                if lt > 0.0 and age_s < min_rescan_s:
+                needs_survey = bool(is_surveyor and has_scanner and survey_t.get(sid, 0.0) <= 0.0)
+                eff_min_s = float(policy.get("unsurveyed_7b_min_rescan_minutes") or 15.0) * 60.0 if needs_survey else min_rescan_s
+                if lt > 0.0 and age_s < eff_min_s:
                     continue
 
                 if lt <= 0.0:
@@ -334,13 +374,19 @@ def pick_and_claim_target(data_dir, pilot, policy, cur_sys=None, done=None, max_
                 if q_gap < 0.05:
                     base_score += quad_bonus * max(0.0, 1.0 - q_ratio.get(meta["quad"], 1.0))
 
-                # Wing specialization: 7A Recon -> rival hubs & frontier/rim; 7B Surveyors -> belt/herd systems
+                # Wing specialization:
+                #   7A Covert Recon -> rival hubs, active battlefronts, and lawless frontier/rim
+                #   7B Deep-Core Surveyors -> unsurveyed systems (hidden Deep-Core uranium/silver POIs!) & resource belts/herds
                 if is_recon:
                     if sid in rival_hubs:
-                        base_score += 1800.0
+                        base_score += 2400.0
+                    if sid in battle_sys:
+                        base_score += float(policy.get("battlefront_7a_bonus") or 1600.0)
                     if not meta["empire"]:
                         base_score += 1200.0
                 elif is_surveyor:
+                    if needs_survey:
+                        base_score += float(policy.get("unsurveyed_7b_bonus") or 6500.0)
                     if sid in resource_sys or lt <= 0.0:
                         base_score += 1800.0
 

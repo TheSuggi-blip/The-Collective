@@ -111,6 +111,8 @@ def load_policy(path=None):
 
 def resource_tool_kind(resource_id):
     rid = str(resource_id or "").strip().lower()
+    if rid in RAD_RESOURCES:
+        return "rad"
     if rid.endswith(ICE_SUFFIXES):
         return "ice"
     if rid.endswith(GAS_SUFFIXES):

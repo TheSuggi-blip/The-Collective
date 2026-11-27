@@ -149,7 +149,11 @@
     "hull_reinforcement_ii": 2000,
     "armor_repairer_ii": 11000,
     "tracking_computer_i": 6500,
-    "survey_scanner_i": 6500
+    "survey_scanner_i": 6500,
+    "adaptive_shield_ii": 28000,
+    "heavy_pulse_laser": 30000,
+    "void_torpedo_launcher": 65000,
+    "plasma_cannon_i": 3000
   },
   "specialties": {
     "Mining": {
@@ -262,116 +266,176 @@
       },
       "loadouts": {
         "ore": {
-          "utility": [
-            "mining_laser_v",
-            "mining_laser_iv",
-            "hyper_mining_laser_iii",
-            "deep_core_extractor_iii",
-            "mining_laser_iii",
-            "mining_laser_ii",
-            "cargo_expander_iii",
-            "cargo_expander_ii"
-          ],
+          "min_tier": 0,
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_booster_ii"
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
-          "min_tier": 0
+          "utility": [
+            "mining_laser_v",
+            "mining_laser_iv",
+            "mining_laser_iii",
+            "mining_laser_ii",
+            "electromagnetic_refinery",
+            "fuel_optimizer",
+            "cargo_expander_iii",
+            "cargo_expander_ii"
+          ]
         },
         "ice": {
           "min_tier": 0,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "ice_harvester_iv",
             "ice_harvester_iii",
             "ice_harvester_ii",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "gas": {
           "min_tier": 0,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "gas_harvester_iv",
             "gas_harvester_iii",
             "gas_harvester_ii",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "ore_precision": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "mining_laser_v",
+            "mining_laser_iv",
+            "mining_laser_iii",
             "modulated_mining_laser",
             "mining_laser_ii",
+            "electromagnetic_refinery",
             "fuel_optimizer",
-            "cargo_expander_ii",
-            "electromagnetic_refinery"
+            "cargo_expander_iii",
+            "cargo_expander_ii"
           ]
         },
         "ore_bulk": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "mining_laser_v",
+            "mining_laser_iv",
             "mining_laser_iii",
             "mining_laser_ii",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "deep_core_rad": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "rad_harvester_iv",
+            "rad_harvester_iii",
             "rad_harvester_ii",
             "rad_harvester_i",
-            "mining_laser_ii",
+            "deep_core_extractor_iii",
+            "deep_core_extractor_ii",
+            "deep_core_extractor_mk_i",
+            "radiation_baffles_iii",
+            "radiation_baffles_ii",
+            "radiation_baffles_i",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "mining_laser_ii"
           ]
         },
         "gas_wing": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "gas_harvester_iv",
             "gas_harvester_iii",
             "gas_harvester_ii",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "ice_wing": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i",
-            "shield_booster_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i"
           ],
           "utility": [
+            "ice_harvester_iv",
             "ice_harvester_iii",
             "ice_harvester_ii",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         }
       },
@@ -538,26 +602,34 @@
           "weapon": [
             "plasma_cannon_iv",
             "focused_beam_iii",
-            "plasma_cannon_iii",
-            "ion_blaster_iii",
+            "heavy_pulse_laser",
             "phase_disruptor",
-            "blood_reaver",
+            "railgun_ii",
+            "plasma_cannon_iii",
             "pulse_laser_iii",
-            "pulse_laser_ii"
+            "plasma_cannon_ii",
+            "pulse_laser_ii",
+            "railgun_i"
           ],
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
-            "armor_repairer_iii",
-            "hull_reinforcement_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "regenerative_armor_ii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
             "armor_plate_iii",
-            "shield_booster_ii"
+            "shield_booster_i"
           ],
           "utility": [
             "tracking_computer_iii",
+            "tracking_computer_ii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
           ]
         },
@@ -575,19 +647,27 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "armor_plate_iii"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "ecm_jammer",
+            "stasis_webifier_ii",
+            "warp_disruptor",
             "tracking_computer_iii",
+            "tracking_computer_ii",
             "sensor_dampener",
             "target_painter_ii",
-            "target_painter_i",
-            "warp_disruptor",
+            "fuel_optimizer",
             "expanded_fuel_tank"
           ]
         },
@@ -595,6 +675,7 @@
           "weapon": [
             "flak_cannon_iii",
             "plasma_cannon_iv",
+            "railgun_ii",
             "flak_cannon_ii",
             "flak_cannon_i",
             "pulse_laser_iii",
@@ -603,16 +684,22 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
-            "armor_repairer_iii",
-            "hull_reinforcement_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "warp_disruptor",
+            "stasis_webifier_ii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
           ]
         },
@@ -621,6 +708,7 @@
             "flak_cannon_iii",
             "plasma_cannon_iv",
             "focused_beam_iii",
+            "railgun_ii",
             "pulse_laser_iii",
             "flak_cannon_ii",
             "pulse_laser_ii"
@@ -628,17 +716,26 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "armor_plate_iii"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "tracking_computer_iii",
+            "tracking_computer_ii",
             "ship_scanner_iii",
             "warp_disruptor",
-            "expanded_fuel_tank",
-            "ship_scanner_ii"
+            "stasis_webifier_ii",
+            "fuel_optimizer",
+            "expanded_fuel_tank"
           ]
         },
         "royal_guard_utility": {
@@ -653,25 +750,33 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "armor_plate_iii"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "remote_armor_repairer_iii",
+            "remote_armor_repairer_ii",
             "field_hospital",
             "shipboard_sickbay",
             "advanced_drone_bay",
             "combat_drone_bay",
-            "remote_armor_repairer_ii",
             "target_painter_ii",
             "sensor_dampener",
+            "fuel_optimizer",
             "expanded_fuel_tank"
           ]
         },
         "command_ewar_tac": {
+          "min_tier": 1,
           "weapon": [
             "emp_pulse_iii",
             "neural_disruptor",
@@ -685,27 +790,34 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "tracking_computer_iii",
+            "tracking_computer_ii",
             "ecm_jammer",
+            "stasis_webifier_ii",
+            "warp_disruptor",
             "target_painter_ii",
-            "target_painter_i",
             "sensor_dampener",
             "ship_scanner_iii",
             "ship_scanner_ii",
-            "afterburner_iii",
-            "cloaking_device_i",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_logi_rep": {
+          "min_tier": 1,
           "weapon": [
             "flak_cannon_iii",
             "plasma_cannon_iv",
@@ -717,11 +829,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "remote_armor_repairer_iii",
@@ -730,12 +848,12 @@
             "repair_arm",
             "refueling_pump",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_medical": {
+          "min_tier": 1,
           "weapon": [
             "em_disruptor_i",
             "pulse_laser_iii",
@@ -744,11 +862,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "fleet_hospital",
@@ -757,12 +881,12 @@
             "shipboard_sickbay",
             "remote_armor_repairer_ii",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_carrier_screen": {
+          "min_tier": 1,
           "weapon": [
             "flak_cannon_iii",
             "plasma_cannon_iv",
@@ -774,10 +898,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "advanced_drone_bay",
@@ -787,12 +918,12 @@
             "target_painter_ii",
             "crew_armory",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_stealth_ewar": {
+          "min_tier": 1,
           "weapon": [
             "emp_pulse_iii",
             "neural_disruptor",
@@ -806,11 +937,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "armor_plate_iii"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "phase_cloaking_device",
@@ -821,125 +958,250 @@
             "target_painter_ii",
             "ship_scanner_iii",
             "warp_disruptor",
-            "plasma_afterburner",
-            "afterburner_iii",
+            "stasis_webifier_ii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "hunter_heavy": {
           "min_tier": 1,
           "weapon": [
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "heavy_pulse_laser",
+            "phase_disruptor",
             "railgun_ii",
-            "plasma_cannon_ii",
-            "pulse_laser_ii"
-          ],
-          "defense": [
-            "shield_booster_i",
-            "shield_booster_ii",
-            "damage_control_system"
-          ],
-          "utility": [
-            "fuel_optimizer",
-            "tracking_computer_i"
-          ]
-        },
-        "hunter_fast": {
-          "min_tier": 1,
-          "weapon": [
+            "plasma_cannon_iii",
+            "pulse_laser_iii",
             "plasma_cannon_ii",
             "pulse_laser_ii",
             "railgun_i"
           ],
           "defense": [
-            "shield_booster_i",
-            "hull_reinforcement_ii"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
-            "fuel_optimizer"
+            "tracking_computer_iii",
+            "tracking_computer_ii",
+            "tracking_computer_i",
+            "fuel_optimizer",
+            "expanded_fuel_tank"
+          ]
+        },
+        "hunter_fast": {
+          "min_tier": 1,
+          "weapon": [
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "heavy_pulse_laser",
+            "phase_disruptor",
+            "railgun_ii",
+            "plasma_cannon_iii",
+            "pulse_laser_iii",
+            "plasma_cannon_ii",
+            "pulse_laser_ii",
+            "railgun_i"
+          ],
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
+          ],
+          "utility": [
+            "fuel_optimizer",
+            "tracking_computer_iii",
+            "tracking_computer_ii",
+            "tracking_computer_i",
+            "expanded_fuel_tank"
           ]
         },
         "defense_hold": {
           "min_tier": 2,
           "weapon": [
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "heavy_pulse_laser",
+            "phase_disruptor",
             "railgun_ii",
+            "plasma_cannon_iii",
+            "pulse_laser_iii",
             "plasma_cannon_ii",
-            "pulse_laser_ii"
+            "pulse_laser_ii",
+            "railgun_i"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "damage_control_system"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
-            "fuel_optimizer",
-            "tracking_computer_i"
+            "tracking_computer_iii",
+            "tracking_computer_ii",
+            "tracking_computer_i",
+            "fuel_optimizer"
           ]
         },
         "defense_dps": {
           "min_tier": 1,
           "weapon": [
-            "plasma_cannon_ii",
+            "plasma_cannon_iv",
+            "focused_beam_iii",
+            "heavy_pulse_laser",
+            "phase_disruptor",
+            "railgun_ii",
+            "plasma_cannon_iii",
+            "pulse_laser_iii",
             "plasma_cannon_ii",
             "pulse_laser_ii",
-            "railgun_ii"
+            "railgun_i"
           ],
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
             "hull_reinforcement_ii",
-            "shield_booster_i",
-            "damage_control_system"
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
+            "tracking_computer_iii",
+            "tracking_computer_ii",
             "fuel_optimizer"
           ]
         },
         "defense_carrier": {
           "min_tier": 1,
           "weapon": [
-            "pulse_laser_ii",
+            "flak_cannon_iii",
+            "plasma_cannon_iv",
+            "flak_cannon_ii",
+            "pulse_laser_iii",
             "pulse_laser_ii",
             "plasma_cannon_ii"
           ],
           "defense": [
-            "shield_booster_i",
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "damage_control_system"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
+            "advanced_drone_bay",
             "combat_drone_bay",
+            "combat_drone_bay",
+            "stasis_webifier_ii",
+            "warp_disruptor",
             "fuel_optimizer"
           ]
         },
         "defense_interdictor": {
           "min_tier": 1,
           "weapon": [
+            "em_disruptor_i",
+            "neural_disruptor",
+            "flak_cannon_ii",
+            "pulse_laser_iii",
             "pulse_laser_ii",
             "plasma_cannon_ii"
           ],
           "defense": [
-            "shield_booster_i",
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "damage_control_system"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "warp_disruptor",
             "stasis_webifier_ii",
+            "ecm_jammer",
             "fuel_optimizer"
           ]
         },
         "defense_medic": {
           "min_tier": 1,
           "weapon": [
+            "em_disruptor_i",
+            "pulse_laser_iii",
             "pulse_laser_ii",
             "plasma_cannon_ii"
           ],
           "defense": [
-            "shield_booster_i",
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "damage_control_system"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
+            "remote_armor_repairer_iii",
+            "remote_armor_repairer_ii",
             "remote_armor_repairer_i",
-            "remote_armor_repairer_i",
+            "repair_arm",
             "fuel_optimizer"
           ]
         }
@@ -1175,15 +1437,20 @@
         "freight": {
           "min_tier": 0,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii",
-            "shield_booster_i"
+            "shield_booster_i",
+            "damage_control_system"
           ],
           "utility": [
+            "fuel_optimizer",
             "cargo_expander_iii",
             "cargo_expander_iii",
-            "cargo_expander_ii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "passenger": {
@@ -1204,40 +1471,59 @@
         "salvage_tender": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
             "shield_booster_i",
-            "shield_booster_ii"
+            "damage_control_system"
           ],
           "utility": [
+            "outer_rim_salvage_array",
             "salvage_module",
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_iii"
           ]
         },
         "fuel_tanker": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
             "shield_booster_i",
-            "shield_booster_ii"
+            "damage_control_system"
           ],
           "utility": [
             "refueling_pump",
+            "fuel_optimizer",
             "expanded_fuel_tank",
-            "fuel_optimizer"
+            "cargo_expander_iii"
           ]
         },
         "freight_wing": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
+            "shield_booster_iii",
             "shield_booster_ii",
-            "shield_booster_i"
+            "shield_booster_i",
+            "damage_control_system"
           ],
           "utility": [
+            "fuel_optimizer",
             "cargo_expander_iii",
             "cargo_expander_iii",
-            "cargo_expander_ii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         }
       },
@@ -1295,34 +1581,48 @@
         "mobile": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
             "shield_booster_i",
-            "shield_booster_ii"
+            "damage_control_system"
           ],
           "utility": [
+            "fuel_optimizer",
             "cargo_expander_iii",
             "cargo_expander_iii",
-            "cargo_expander_ii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         },
         "express_trade": {
           "min_tier": 1,
           "defense": [
-            "shield_booster_i"
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i",
+            "damage_control_system"
           ],
           "utility": [
+            "fuel_optimizer",
             "cargo_expander_iii",
-            "fuel_optimizer"
+            "cargo_expander_ii"
           ]
         }
       },
-      "_note": "Tier-0 trader hulls (Threshold, Prospect, Theoria) are bursar desks (no fit); every T1-T4 mobile trader hull is shielded bulk freight.",
+      "_note": "4C Bursar Desks and 5A Station Refiners/Bursars are zero-module docked Bursar desks; 4A Express Arbitrage, 4B Bulk Trade Haulers, and 5B Mobile Field Workshops fit T1-T5 shields, cargo expanders, and fuel_optimizer.",
       "wing_prefix_specialty": {
         "4A.": "express_trade",
         "4B.": "mobile",
         "4C.": "bursar",
         "5A.": "bursar",
-        "5B.": "bursar"
+        "5B.": "mobile"
       }
     },
     "Intel": {
@@ -1387,36 +1687,48 @@
       },
       "loadouts": {
         "covert_recon": {
+          "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
+            "shield_booster_i",
+            "damage_control_system"
+          ],
           "utility": [
             "phase_cloaking_device",
             "cloaking_device_ii",
             "cloaking_device_i",
-            "ship_scanner_iii",
             "fuel_optimizer",
+            "ship_scanner_iii",
+            "ship_scanner_ii",
             "expanded_fuel_tank"
-          ],
-          "defense": [
-            "quantum_shield_iv",
-            "adaptive_shield_iii",
-            "shield_booster_iv",
-            "shield_booster_iii",
-            "shield_booster_ii"
           ]
         },
         "sensor_survey": {
-          "utility": [
-            "deep_core_survey_scanner",
-            "survey_scanner_ii",
-            "ship_scanner_iii",
-            "fuel_optimizer",
-            "expanded_fuel_tank"
-          ],
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_booster_ii"
+            "shield_booster_ii",
+            "shield_booster_i",
+            "damage_control_system"
+          ],
+          "utility": [
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
+            "survey_scanner_i",
+            "phase_cloaking_device",
+            "cloaking_device_ii",
+            "cloaking_device_i",
+            "fuel_optimizer",
+            "ship_scanner_iii",
+            "ship_scanner_ii",
+            "expanded_fuel_tank"
           ]
         },
         "intel_starter_eco": {
@@ -1429,26 +1741,48 @@
         "intel_recon_t1": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
             "shield_booster_i",
-            "shield_booster_ii"
+            "damage_control_system"
           ],
           "utility": [
+            "phase_cloaking_device",
+            "cloaking_device_ii",
             "cloaking_device_i",
+            "fuel_optimizer",
+            "ship_scanner_iii",
             "ship_scanner_ii",
-            "fuel_optimizer"
+            "expanded_fuel_tank"
           ]
         },
         "intel_survey_t1": {
           "min_tier": 1,
           "defense": [
+            "quantum_shield_iv",
+            "adaptive_shield_iii",
+            "adaptive_shield_ii",
+            "shield_booster_iv",
+            "shield_booster_iii",
+            "shield_booster_ii",
             "shield_booster_i",
-            "shield_booster_ii"
+            "damage_control_system"
           ],
           "utility": [
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
             "survey_scanner_i",
+            "phase_cloaking_device",
+            "cloaking_device_ii",
             "cloaking_device_i",
             "fuel_optimizer",
-            "ship_scanner_ii"
+            "ship_scanner_iii",
+            "ship_scanner_ii",
+            "expanded_fuel_tank"
           ]
         }
       },
@@ -1572,6 +1906,7 @@
       },
       "loadouts": {
         "command_ewar_tac": {
+          "min_tier": 1,
           "weapon": [
             "emp_pulse_iii",
             "neural_disruptor",
@@ -1585,27 +1920,34 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "tracking_computer_iii",
+            "tracking_computer_ii",
             "ecm_jammer",
+            "stasis_webifier_ii",
+            "warp_disruptor",
             "target_painter_ii",
-            "target_painter_i",
             "sensor_dampener",
             "ship_scanner_iii",
             "ship_scanner_ii",
-            "afterburner_iii",
-            "cloaking_device_i",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_logi_rep": {
+          "min_tier": 1,
           "weapon": [
             "flak_cannon_iii",
             "plasma_cannon_iv",
@@ -1617,11 +1959,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "remote_armor_repairer_iii",
@@ -1630,12 +1978,12 @@
             "repair_arm",
             "refueling_pump",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_medical": {
+          "min_tier": 1,
           "weapon": [
             "em_disruptor_i",
             "pulse_laser_iii",
@@ -1644,11 +1992,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "regenerative_armor_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "fleet_hospital",
@@ -1657,12 +2011,12 @@
             "shipboard_sickbay",
             "remote_armor_repairer_ii",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_carrier_screen": {
+          "min_tier": 1,
           "weapon": [
             "flak_cannon_iii",
             "plasma_cannon_iv",
@@ -1674,10 +2028,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
-            "armor_plate_iii"
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
+            "shield_booster_ii",
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "advanced_drone_bay",
@@ -1687,12 +2048,12 @@
             "target_painter_ii",
             "crew_armory",
             "ecm_jammer",
-            "afterburner_iii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         },
         "command_stealth_ewar": {
+          "min_tier": 1,
           "weapon": [
             "emp_pulse_iii",
             "neural_disruptor",
@@ -1706,11 +2067,17 @@
           "defense": [
             "quantum_shield_iv",
             "adaptive_shield_iii",
+            "adaptive_shield_ii",
             "shield_booster_iv",
             "shield_booster_iii",
-            "shield_recharger_ii",
+            "armor_repairer_iii",
+            "hull_reinforcement_iii",
+            "damage_control_system",
             "shield_booster_ii",
-            "armor_plate_iii"
+            "hull_reinforcement_ii",
+            "armor_repairer_ii",
+            "armor_plate_iii",
+            "shield_booster_i"
           ],
           "utility": [
             "phase_cloaking_device",
@@ -1721,11 +2088,10 @@
             "target_painter_ii",
             "ship_scanner_iii",
             "warp_disruptor",
-            "plasma_afterburner",
-            "afterburner_iii",
+            "stasis_webifier_ii",
+            "fuel_optimizer",
             "expanded_fuel_tank"
-          ],
-          "min_tier": 1
+          ]
         }
       }
     }
@@ -1735,7 +2101,8 @@
     "Military",
     "Logistics",
     "Trade",
-    "Intel"
+    "Intel",
+    "Command"
   ],
-  "_suggi_pause_note": "2026-11-26 (Suggi directive): ALL module auto-upgrades paused (all divisions) pending T2-T5 fleet reconfiguration."
+  "_blueprint_note": "2026-11-27 (Trinity, Suggi approved): Full T1-T5 Masterplan blueprint module escalation active across Mining, Military, Logistics, Trade, Intel, and Command. Zero afterburners in any loadout (fuel_optimizer everywhere); singleton utility/defense deduplication enforced in fit_net.py."
 }

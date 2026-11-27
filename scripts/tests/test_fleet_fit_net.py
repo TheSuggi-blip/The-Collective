@@ -448,7 +448,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         live_up = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
         divs = live_up.get("divisions") or {}
         self.assertTrue(live_up.get("enabled"))
-        self.assertEqual(live_up.get("max_auto_tier"), 1)
+        self.assertEqual(live_up.get("max_auto_tier"), 2)
         self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 2000000)
         for dname in ("Mining", "Military", "Logistics", "Trade", "Intel"):
             self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for T1 fleet rollout")
@@ -464,7 +464,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
 
         live_fp = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
         self.assertTrue(live_fp.get("enabled"))
-        self.assertEqual(set(live_fp.get("enabled_divisions") or []), {"Mining", "Military", "Logistics", "Trade", "Intel"})
+        self.assertEqual(set(live_fp.get("enabled_divisions") or []), {"Mining", "Military", "Logistics", "Trade", "Intel", "Command"})
         world = {
             "adj": {"s1": []},
             "stations": {"b1": ("s1", "p1", "b1", True)},
@@ -485,6 +485,32 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         # T0 VSV Intel waits for T1 hull (min_tier=1) so zero modules wasted on disposable starters!
         t0_intel = {"name": "VSV Vespera", "division": "Intel", "system": "s1", "class": "Theoria", "credits": 40000, "modules": []}
         self.assertIsNone(fit_net.plan_ship_fit(t0_intel, world, live_fp))
+
+    def test_singleton_family_dedup_prevents_duplicate_scanners_and_cloaks(self):
+        pol = json.loads((ROOT / "game" / "fit-policy.json").read_text(encoding="ascii"))
+        sold = ("deep_core_survey_scanner", "survey_scanner_ii", "survey_scanner_i",
+                "phase_cloaking_device", "cloaking_device_i", "fuel_optimizer",
+                "ship_scanner_iii", "shield_booster_iii", "damage_control_system")
+        world = {
+            "hulls": {"confluence": {"tier": 2, "weapon": 0, "defense": 2, "utility": 4, "cpu": 40, "power": 65}},
+            "adj": {"s1": []},
+            "stations": {"b1": ("s1", "p1", "b1", True)},
+            "asks": {m: [(1000, "b1", 20)] for m in sold},
+            "mod_cost": {
+                "deep_core_survey_scanner": (6, 8), "survey_scanner_ii": (5, 7), "survey_scanner_i": (3, 4),
+                "phase_cloaking_device": (12, 20), "cloaking_device_i": (5, 10), "fuel_optimizer": (3, 2),
+                "ship_scanner_iii": (7, 10), "shield_booster_iii": (5, 10), "damage_control_system": (4, 5),
+            },
+        }
+        ship = {"name": "VSV Surveyor-Test", "division": "Intel", "system": "s1", "class": "Confluence", "credits": 90000, "modules": []}
+        plan = fit_net.plan_ship_fit(ship, world, pol)
+        self.assertIsNotNone(plan)
+        bought = [m for m, _p in plan["buy_fit"]]
+        self.assertEqual(sum(1 for m in bought if "survey_scanner" in m), 1)
+        self.assertEqual(sum(1 for m in bought if "cloak" in m), 1)
+        self.assertIn("fuel_optimizer", bought)
+        self.assertIn("deep_core_survey_scanner", bought)
+        self.assertIn("phase_cloaking_device", bought)
 
 
 if __name__ == "__main__":

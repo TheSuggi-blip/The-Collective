@@ -473,6 +473,15 @@ class SpecialistMiningToolTests(unittest.TestCase):
         self.assertIn("precision", t_pr)
         self.assertIn("ore", t_pr)
 
+    def test_rad_resources_require_rad_harvester(self):
+        self.assertEqual(mine_net.resource_tool_kind("uranium_ore"), "rad")
+        self.assertEqual(mine_net.resource_tool_kind("thorium_ore"), "rad")
+        self.assertEqual(mine_net.resource_tool_kind("radium_ore"), "rad")
+        self.assertEqual(mine_net.resource_tool_kind("polonium_ore"), "rad")
+        self.assertEqual(mine_net.resource_tool_kind("silver_ore"), "ore")
+        self.assertIn("rad", mine_net.pilot_tools({"modules": [{"type": "rad_harvester_iii"}]}))
+        self.assertNotIn("rad", mine_net.pilot_tools({"modules": [{"type": "mining_laser_iii"}]}))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -271,13 +271,45 @@ def _module_slot_type(mod_id, item_slots=None):
     m = str(mod_id or "").lower()
     if item_slots and m in item_slots:
         return item_slots[m]
-    if any(k in m for k in ("remote_armor_repair", "repair_arm", "hospital", "sickbay", "ecm_jammer", "jammer", "dampener", "target_painter", "drone_bay", "refueling_pump", "maintenance_bay", "crew_armory", "fuel_optimizer", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "scanner", "harvester", "mining_laser", "deep_core_extractor", "tracking_computer", "cargo_expander", "cabin")):
+    if any(k in m for k in ("remote_armor_repair", "repair_arm", "hospital", "sickbay", "ecm_jammer", "jammer", "dampener", "target_painter", "drone_bay", "refueling_pump", "maintenance_bay", "crew_armory", "fuel_optimizer", "cloak", "fuel_tank", "afterburner", "warp_disruptor", "stasis_webifier", "scanner", "harvester", "mining_laser", "deep_core_extractor", "electromagnetic_refinery", "radiation_baffles", "salvage_module", "salvage_array", "tracking_computer", "cargo_expander", "cabin")):
         return "utility"
     if any(k in m for k in ("pulse_laser", "beam_laser", "focused_beam", "ion_blaster", "autocannon", "railgun", "missile", "torpedo", "turret", "cannon", "flak", "em_disruptor", "emp_", "neural_disruptor", "blood_reaver", "phase_disruptor", "system_disabler")):
         return "weapon"
-    if any(k in m for k in ("shield", "armor", "regenerative_armor", "nanite_hull", "hull_plate", "hull_reinforcement", "point_defense")):
+    if any(k in m for k in ("shield", "armor", "regenerative_armor", "nanite_hull", "hull_plate", "hull_reinforcement", "point_defense", "damage_control")):
         return "defense"
     return "utility"
+
+
+def _singleton_family(mod_id):
+    """Return singleton module family name when at most one tier should be fitted per ship, else None."""
+    m = str(mod_id or "").lower()
+    if "cloak" in m:
+        return "cloak"
+    if "survey_scanner" in m:
+        return "survey_scanner"
+    if "ship_scanner" in m:
+        return "ship_scanner"
+    if "fuel_optimizer" in m:
+        return "fuel_optimizer"
+    if "electromagnetic_refinery" in m:
+        return "em_refinery"
+    if "radiation_baffles" in m:
+        return "rad_baffles"
+    if "deep_core_extractor" in m:
+        return "deep_core_extractor"
+    if "salvage_module" in m or "salvage_array" in m:
+        return "salvage"
+    if "warp_disruptor" in m:
+        return "warp_disruptor"
+    if "stasis_webifier" in m:
+        return "stasis_webifier"
+    if "tracking_computer" in m:
+        return "tracking_computer"
+    if "refueling_pump" in m:
+        return "refueling_pump"
+    if "damage_control" in m:
+        return "damage_control"
+    return None
 
 
 def plan_ship_fit(ship_doc, world, policy):
@@ -392,6 +424,7 @@ def plan_ship_fit(ship_doc, world, policy):
         use_pow = sum(mod_cost.get(m, (0, 0))[1] for m in kept_here)
         have_harv_now = any(_is_primary_harvester(m) for m in kept_here)
 
+        used_families = {fam for fam in (_singleton_family(m) for m in kept_here) if fam}
         buy_list = []
         spend = 0
         for st in ("weapon", "defense", "utility"):
@@ -403,6 +436,9 @@ def plan_ship_fit(ship_doc, world, policy):
             for mid in cands:
                 if filled_here >= free_n:
                     break
+                fam = _singleton_family(mid)
+                if fam and fam in used_families:
+                    continue
                 # Reserve at least 1 utility slot on Mining hulls for a primary harvester!
                 if division == "Mining" and st == "utility" and not have_harv_now and not _is_primary_harvester(mid) and (free_n - filled_here) <= 1:
                     continue
@@ -419,6 +455,8 @@ def plan_ship_fit(ship_doc, world, policy):
                     use_cpu += mc
                     use_pow += mp
                     filled_here += 1
+                    if fam:
+                        used_families.add(fam)
                     if _is_primary_harvester(mid):
                         have_harv_now = True
         if not station_unfit and not buy_list:

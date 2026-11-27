@@ -206,6 +206,33 @@ class BursarEngineTests(unittest.TestCase):
             self.assertEqual(ot[0][1], "trader-1")
             self.assertEqual(ot[0][2], "Exchange buy escrow: filled")
             self.assertEqual(ot[0][3], 2000)
+    def test_priority_empty_neutral_kept_while_random_empty_neutral_skipped(self):
+        with tempfile.TemporaryDirectory() as td:
+            db = Path(td) / "store" / "read.db"
+            db.parent.mkdir(parents=True, exist_ok=True)
+            con = sqlite3.connect(db)
+            con.execute("CREATE TABLE systems (id TEXT, empire TEXT, stronghold INTEGER)")
+            con.execute("CREATE TABLE places (system TEXT, poi TEXT, base TEXT, name TEXT)")
+            con.execute("CREATE TABLE books (base TEXT, item TEXT, bid REAL, bid_qty INTEGER, ask REAL, ask_qty INTEGER, t REAL)")
+            con.executemany("INSERT INTO systems VALUES (?,?,?)", [
+                ("ridgecrest", "", 0), ("ghost_sys", "", 0), ("arneb", "", 0),
+            ])
+            con.executemany("INSERT INTO places VALUES (?,?,?,?)", [
+                ("ridgecrest", "rc_poi", "rc_base", "Collective Resort Ridgecrest"),
+                ("ghost_sys", "gh_poi", "gh_base", "Empty Ghost Base"),
+                ("arneb", "ar_poi", "ar_base", "The Obsidian Well"),
+            ])
+            con.execute("INSERT INTO books VALUES ('ar_base','silver_ore',101,1000,0,0,1000)")
+            con.commit()
+            con.close()
+            sts = bursar.load_exchange_stations(
+                td, policed_only=False, include_empty_neutral=False, priority_bases={"rc_base"}
+            )
+            bases = {s["base"] for s in sts}
+            self.assertIn("rc_base", bases)
+            self.assertIn("ar_base", bases)
+            self.assertNotIn("gh_base", bases)
+
 
 if __name__ == "__main__":
     unittest.main()

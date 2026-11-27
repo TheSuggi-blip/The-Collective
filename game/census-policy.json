@@ -16,10 +16,24 @@
     "lhs_1140",
     "zosma",
     "cloverfield",
-    "beid",
-    "antares",
-    "segin"
+    "40_eridani",
+    "gsc_0019",
+    "bd20_2457",
+    "gsc_0010",
+    "winterhold",
+    "crosshaven",
+    "gsc_0034",
+    "diphda",
+    "alpheratz",
+    "thuban",
+    "saiph",
+    "kornephoros",
+    "alzirr",
+    "lilii_borea"
   ],
   "exclude_systems": [],
-  "rest_seconds_when_empty": 45
+  "rest_seconds_when_empty": 45,
+  "unsurveyed_7b_bonus": 6500.0,
+  "unsurveyed_7b_min_rescan_minutes": 15.0,
+  "battlefront_7a_bonus": 1600.0
 }

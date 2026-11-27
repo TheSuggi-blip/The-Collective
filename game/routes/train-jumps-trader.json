@@ -10,7 +10,12 @@
   "skills_below": {
    "piloting": 10,
    "navigation": 6
-  }
+  },
+  "wing_prefix": [
+   "4A.",
+   "4B.",
+   "5B."
+  ]
  },
  "stops": [
   {

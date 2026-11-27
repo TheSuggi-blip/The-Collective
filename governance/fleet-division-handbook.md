@@ -30,8 +30,9 @@ honest GAAP/IFRS accounting under Suggi's six immutable Standing Goals:
 2. **Command the Grand Fleet:** Build, seat, fit, and lead up to 1,000 ships
    (500 active now), uniting all 5 empires' best native hulls by job.
 3. **Build a Sovereign Industrial Empire:** Fortify up to 5 sovereign stations
-   (one per empire region, starting with Collective Resort Ridgecrest with 13
-   active rent-free facilities) and 8 corridor outposts with self-sustaining
+   (one per empire region, starting with Station #1 Collective Resort Ridgecrest (`13` active
+   Resort/Hospitality & Quarters facilities; Dedicated Heavy Industrial Foundry
+   planned as Station #3 `Lanternwick`/`Avior`)) and 8 corridor outposts with self-sustaining
    industrial, fuel, and hospitality lines.
 4. **Manufacturing, Trade & Extraction Powerhouse:** Become #1 in production,
    multi-hub trading/market-making, and resource extraction -- out-compounding
@@ -129,7 +130,7 @@ reads) under `dispatch.py` priority assignment:
   entries in `handover.jsonl` for IFRS 8 Section 5 parity.
 
 ### 3.3 Commerce, Refining & Logistics (`bursar.py`, `craft_net.py`, `haul.py`, `salvage_net.py`)
-- **55 Permanent Desks (`4C` 25 + `5A` 30 on `bursar-network`):** 60-second
+- **55 Permanent Desks (`4C` 25 + `5A` 30 on `bursar-network`, strictly 1 per station):** 60-second
   order-book polling, `<= 250k cr` escrow wholesale bids (excluding bulk
   `iron_ore`, `copper_ore`, `carbon_ore`, `water_ice`, `nitrogen_ice`,
   `steel_plate`), `safe_sell_floor >= 72%`, `same_station_cltv_buys` anti-wash
@@ -160,7 +161,7 @@ reads) under `dispatch.py` priority assignment:
   (`EN/ES/WN/WS`, `quadrant_balance_bonus: 2500`, `target_fresh_hours: 4.0`)
   using atomic 3-leg chains (`census_claims.json`), and split `7A` (frontier
   and 8 rival megahubs: `arneb`, `dheneb`, `lhs_1140`, `zosma`, `cloverfield`,
-  `beid`, `antares`, `segin`) vs `7B` (belts and herds).
+  19 top rival hubs + live `public_battles` warzones) vs `7B` (unsurveyed systems for hidden Deep-Core `survey_system` sweeps + belts and herds).
 
 ## 4. Unified Price-Oracle & Anti-Manipulation Architecture
 
@@ -182,10 +183,10 @@ Every pricing consumer across `/srv/collective/the-collective` (`mine_net.py`,
 
 ## 5. Cross-Division Synergy & Top-10 Rival Synthesis
 
-- **Value Chain:** `7A/7B` (4h Space + 8 Rival Hubs) + `4C/5A` (60s Order Books)
+- **Value Chain:** `7A/7B` (4h Space + 19 Rival Hubs + Deep-Core Survey) + `4C/5A` (60s Order Books)
   -> `3A-3E` (Ore/Gas/Ice) + `2A/2B` (Bio Loot) + `1A-1C` (Apex Packs &
   Deterrence) -> `6A/6C` (Lockbox Consolidation & Own-Cell Fuel Bunkers) ->
-  `5A/5B` (Rent-Free Ridgecrest & Hub Refining) -> `4C/4A/4B` (Retail &
+  `5A/5B` (Zero-Fuel Hub Refining -> Future Foundry Station #3) -> `4C/4A/4B` (Retail &
   Rival Buy-Wall Cash) -> `wallet.py --cash-only` -> Treasury -> Uncapped
   `upgrades.py` (`T1->T5` above 2M floor).
 - **Rival Synthesis:** Combines `[BUSY]`'s lawless concentration (`77%`) &
