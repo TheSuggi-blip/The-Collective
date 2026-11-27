@@ -109,7 +109,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "hull_readiness", "stats_pilot_hour", "stats_pilot_last")),
     ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions")),
     ("Money", ("stats_money_hour", "division_pnl_24h")),
-    ("Markets", ("books", "ladders", "ship_listings", "moves", "market_hour", "contract_candidates")),
+    ("Markets", ("books", "ladders", "fair_prices", "clean_books", "ship_listings", "moves", "market_hour", "contract_candidates")),
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),
@@ -117,7 +117,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("The catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
                      "hull_materials", "skills", "game_releases")),
     ("Supply", ("supply_chains", "supply_status", "stats_supply_hour")),
-    ("Statistics", ("stats_time", "stats_refill", "stats_figures")),
+    ("Statistics", ("stats_time", "stats_refill", "stats_figures", "wing_kpis")),
     ("Written knowledge", ("docs", "doc_versions", "division_playbooks")),
     ("Plans and the door", ("birth_plans",)),
     ("The store itself", ("source", "cursor", "meta")),
@@ -125,7 +125,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
 OTHER = "Other"                # the subject of a table or a call no entry above names
 BOOKKEEPING = ("source", "cursor", "meta")      # the store's own marks: the files read, where a record was read to, its settings
 ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value): subject}
-    "fleet": {"money": "Money", "history": "Money", "forecast": "Money", "levels": "Ships and pilots", "board": "Ships and pilots",
+    "fleet": {"money": "Money", "income": "Money", "history": "Money", "forecast": "Money", "wings": "Statistics", "levels": "Ships and pilots", "board": "Ships and pilots",
               "capacity": "Routes and runs", "standing": "Routes and runs", "tasks": "Routes and runs", "refill": "Statistics",
               "kpi": "Statistics", "contribution": "Statistics", "classes": "Statistics", "time": "Statistics", "supply": "Statistics",
               "xp": "Statistics", "upgrades": "Statistics", "alerts": "Statistics", "watchdog": "Statistics", "rival": "Map and intel", "rivals": "Map and intel", "contracts": "Markets", "shipping": "Markets", "progression": "Our faction", "scorecard": "Statistics", "upgrade_plan": "Ships and pilots"},

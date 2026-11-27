@@ -49,7 +49,7 @@ SECONDS = 110                  # one script
 SEARCH = "/opt/search/venv/bin/python"           # the repository search's own Python (query-collective)
 SEARCH_ENV = {"BRAIN_EMBED_URL": "http://embed:8099/embed",      # the unit's warm embedder, as a member's shell names it
               "HF_HOME": "/opt/search/cache", "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}   # and the model on disk when the embedder is away
-MEMBERS = list(division.MEMBERS) + ["all"]
+MEMBERS = list(division.MEMBERS) + ["Trinity", "all"]
 S, I, B, O, A = "string", "integer", "boolean", "object", "array"
 
 
@@ -117,9 +117,11 @@ def fleet_plan(a):
         return [("game/fleet/watchdog.py", ["show"] + flag(a, "hours"))]
     if view == "wings":
         return [("game/fleet/kpi_engine.py", ["--summary"] + flag(a, "hours"))]
+    if view == "income":
+        return [("game/fleet/accounting.py", ["--income"] + flag(a, "hours"))]
     if view in STATS_VIEWS:                         # the fleet's statistics, computed by the store (stats.py)
         return [("game/fleet/hive.py", ["stats", view] + flag(a, "member") + flag(a, "hours"))]
-    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, watchdog, " + ", ".join(STATS_VIEWS))
+    raise ValueError("view is one of: money, history, levels, capacity, board, standing, tasks, refill, forecast, watchdog, wings, income, " + ", ".join(STATS_VIEWS))
 
 
 def plan_file(a):
@@ -313,10 +315,10 @@ TOOLS = {
                 "another class's, once, shared, docked or in space without work, offline. view=supply: per reserve good held, needed, min "
                 "and max, change an hour, days of supply, the routes and ships that feed it, and gather against buy. view=xp: XP per "
                 "ship-hour per role, skill and route, hours to the next tier. view=upgrades: per ship its tier, Piloting, the next tier's "
-                "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets. view=contracts: bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. view=progression: live 3-horizon strategic progression rungs, milestones & ledgers. view=scorecard: MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. view=rivals: rival faction sedcards & live Outsupply/Outsource/Undercut board. view=shipping: live spacemolt_shipping freight contracts. view=upgrade_plan: empire-specialized T1/T2 parallel batch upgrade sheet.",
-        "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, kpi, contribution, "
+                "hulls, empty slots. view=alerts: the hours outside their control band. view=rival: live benchmark vs #1 [HEXC], unclaimed resource-monopoly outpost sites, zero-fuel docked crafting spreads & hull targets. view=contracts: bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. view=progression: live 3-horizon strategic progression rungs, milestones & ledgers. view=scorecard: MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. view=rivals: rival faction sedcards & live Outsupply/Outsource/Undercut board. view=shipping: live spacemolt_shipping freight contracts. view=upgrade_plan: empire-specialized T1/T2 parallel batch upgrade sheet. view=wings: 17-wing KPI scorecards, hull/module readiness, galaxy freshness, bunker SLA, and ROF. view=income: reconciled IFRS 15/10/8 Income Statement, Realized Core EBIT (Ex-Seeds), and division transfer-priced value-add.",
+        "args": {"view": arg(S, "money (default), history, levels, capacity, board, standing, tasks, refill, forecast, wings, income, kpi, contribution, "
                                 "classes, time, supply, xp, upgrades or alerts",
-                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "rivals", "contracts", "progression", "scorecard", "shipping", "upgrade_plan", "forecast", "wings") + STATS_VIEWS),
+                             ("money", "history", "levels", "capacity", "board", "standing", "tasks", "refill", "rival", "rivals", "contracts", "progression", "scorecard", "shipping", "upgrade_plan", "forecast", "wings", "income") + STATS_VIEWS),
                  "member": arg(S, "for levels, board, standing, forecast, contribution, classes, time, xp and upgrades: a member's name, or all", MEMBERS),
                  "hours": arg(I, "for history, board, standing, tasks and forecast: the window in hours")},
         "plan": fleet_plan},
@@ -413,7 +415,7 @@ TOOLS = {
         "plan": lambda a: [("game/fleet/routemaker.py", (["write", a["id"], "--commit"] if a.get("write") else ["route", a["id"]]))] if a.get("id") else
                           [("game/fleet/routemaker.py", ["show"] + ([a["member"]] if a.get("member") else []) + flag(a, "kind") + flag(a, "top"))]},
     "market": {
-        "text": "The last moves of one item's best bid and best ask at the stations whose order books our ships read: what it sells for, what it costs, how deep, when read.",
+        "text": "Manipulation-proof market_guard fair value (Cash-Weighted Median, LULD TWAP, net-external depth excluding CLTV self-buy walls, spoof risk) plus recent bid/ask history per station with [SPOOF?] anomaly flags.",
         "args": {"item": arg(S, "the item id, e.g. water_ice"), "base": arg(S, "one station's base id"), "last": arg(I, "how many moves, default 20")}, "required": ["item"],
         "plan": lambda a: [("game/fleet/ledger.py", ["prices", a["item"]] + flag(a, "base") + flag(a, "last"))]},
     "stock": {
@@ -564,12 +566,11 @@ TOOLS = {
                 "every entry of the logs requests, queue, admirals, errors and reports, each member's own files (soul, mission, learnings, knowledge). "
                 "view=list: the files, or one file's sections by title (doc: a file, a kind or an owner; grep: the sections "
                 "that hold a word, whole). view=section: one section whole. view=changes: the sections changed since your last turn (or since). "
-                "view=history: every version of one section with when it was first seen, each against the one before. view=division: what each "
-                "Admiral is doing, one short block a division: its mission, its orders block, its plan, its guidebook's sections, its last report, "
-                "the requests open to and from it, its claims in force.",
+                "view=history: every version of one section with when it was first seen, each against the one before. view=division: each division's "
+                "live operational block (sole-operator Trinity architecture, plans, guidebooks, division manuals, open needs/requests).",
         "args": {"view": arg(S, "list (default), section, changes, history or division", ("list", "section", "changes", "history", "division")),
-                 "doc": arg(S, "for list, section and history: a file (governance/rulebook.md, guidebook/mining.md, orders.log), a kind (rulebook, "
-                              "orders, strategy, empire, guidebook, template, rules, metrics, plan, report, log, member) or an owner (Fleet, Unity, Mining, Trade, "
+                 "doc": arg(S, "for list, section and history: a file (governance/rulebook.md, governance/fleet-division-handbook.md, governance/divisions/division-hunters.md), a kind (rulebook, "
+                              "orders, strategy, empire, blueprint, division, guidebook, template, rules, metrics, plan, report, log, member) or an owner (Fleet, Unity, Mining, Trade, "
                               "Logistics, Military, Intel, Command)"),
                  "section": arg(S, "for section and history: the section's id, e.g. F8, D3, zero, class-card/skills"),
                  "grep": arg(S, "for list: only the sections that hold this word, printed whole"),

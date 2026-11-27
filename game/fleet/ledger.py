@@ -510,8 +510,32 @@ def prices(data, item, base, last):
                     rows.append(row)
     except OSError:
         sys.exit("no price history yet: the service `ledger` writes data/market/history.jsonl")
+    fp_val = 0.0
+    try:
+        import market_guard as _mg
+        oracle = _mg.read_price_oracle(data)
+        rec = oracle.get(item) if isinstance(oracle, dict) else None
+        cltv_q = _mg.load_cltv_buy_qty(data)
+        own_qty = sum(q for (b_k, i_k), q in cltv_q.items() if i_k == item and (not base or b_k == base))
+        if isinstance(rec, dict) and float(rec.get("fair_price") or 0) > 0:
+            fp_val = float(rec["fair_price"])
+            sr = rec.get("spoof_risk") or ("THIN" if int(rec.get("total_qty") or 0) < 10 else ("SINGLE_HUB" if int(rec.get("stations") or 0) <= 1 and int(rec.get("total_qty") or 0) < 50 else "LOW"))
+            print("MARKET_GUARD %s | fair=%.2f cr | twap=%.2f | vwm=%.2f | ext_hubs=%s | ext_qty=%s | risk=%s | cltv_self_buy_excl=%d" % (
+                item, fp_val, float(rec.get("twap") or 0), float(rec.get("vwm") or 0),
+                rec.get("stations"), rec.get("total_qty"), sr, own_qty))
+        elif own_qty > 0:
+            print("MARKET_GUARD %s | no external oracle yet | cltv_self_buy_excl=%d" % (item, own_qty))
+    except Exception:
+        pass
     for row in rows[-last:]:
-        print("%s  %-34s bid %6s x %-6s ask %6s x %s" % (row.get("t"), row.get("base"), row.get("bid"), row.get("bid_qty"), row.get("ask"), row.get("ask_qty")))
+        b_raw = row.get("bid")
+        flag = ""
+        try:
+            if fp_val > 0 and b_raw is not None and float(b_raw) > max(fp_val * 2.5, fp_val + 50.0):
+                flag = "  [SPOOF?]"
+        except (TypeError, ValueError):
+            pass
+        print("%s  %-34s bid %6s x %-6s ask %6s x %s%s" % (row.get("t"), row.get("base"), b_raw, row.get("bid_qty"), row.get("ask"), row.get("ask_qty"), flag))
     print("%d move(s) of %s on record%s" % (len(rows), item, (" at " + base) if base else ""))
 
 

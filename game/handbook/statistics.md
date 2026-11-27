@@ -40,6 +40,18 @@ now (stats.py): every figure of every stats view (kpi, contribution, classes, ti
 - What each division enabled for the others: `SELECT subject, value, n FROM stats_figures WHERE view = 'contribution' AND figure = 'enabled_others' ORDER BY value DESC`
 - Every alert that is raised: `SELECT subject, value, text FROM stats_figures WHERE view = 'alerts' AND figure = 'alert' AND n > 0 AND text LIKE 'OUT%'`
 
+## wing_kpis
+
+now: 17-wing KPI scorecards across 1h, 6h and 24h windows (utilization, fuel/h, ROF, health_pct, status, and per-wing KPI breakdown from fleet/kpi_snapshot.json)
+
+- Kind: snapshot
+- Columns: win, wing_id, name, division, pillar, responsibility_center, ships, working, idle, idle_pct, fuel_h, rof, health_pct, status, staged, kpis_json, t, src; one row per win, wing_id
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `wing_kpis`, wing_kpi_files
+- 6h KPI scorecard across all 17 fleet wings: `SELECT wing_id, name, division, ships, working, idle, fuel_h, rof, health_pct, status FROM wing_kpis WHERE win = '6h' ORDER BY wing_id`
+- Wings below target health in the 6h window: `SELECT wing_id, name, health_pct, rof, idle_pct, status FROM wing_kpis WHERE win = '6h' AND health_pct < 80 ORDER BY health_pct ASC`
+- Fuel burn and ROF ranked across divisions in the 6h window: `SELECT division, SUM(ships) AS ships, ROUND(SUM(fuel_h)) AS fuel_h, ROUND(AVG(health_pct), 1) AS avg_hp FROM wing_kpis WHERE win = '6h' GROUP BY division ORDER BY fuel_h DESC`
+
 ## The figures
 
 The views of stats.py (stats.VIEWS_SHOWN), computed by the store into stats_figures and its other tables; each defined in game/metrics.md (`hive.py docs metrics --section <id>`).

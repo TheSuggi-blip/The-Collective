@@ -474,11 +474,13 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
               "intent TEXT, risk_level TEXT, risk_flags TEXT, extracted TEXT, safe_text TEXT", "id"),
              ("game_releases", "version TEXT, sort_key TEXT, pub_date TEXT, summary TEXT, bullets TEXT", "version"),
              ("rival_snapshots", "t INTEGER, tag TEXT, name TEXT, members INTEGER, bases INTEGER, wrecked INTEGER, wealth INTEGER, ship_value INTEGER, storage_value INTEGER, facility_inv INTEGER, ore_mined INTEGER, items_crafted INTEGER, missions INTEGER, damage_dealt INTEGER, kills_pve INTEGER, kills_pvp INTEGER, active_1h INTEGER, active_24h INTEGER, max_tier INTEGER, avg_tier REAL, allies TEXT, base_systems TEXT", "t, tag"),
-             ("ship_listings", "listing_id TEXT, ship_id TEXT, class_id TEXT, ship_name TEXT, category TEXT, tier INTEGER, base TEXT, base_name TEXT, price INTEGER, seller TEXT, listed_at TEXT, t INTEGER", "listing_id"),)
+             ("ship_listings", "listing_id TEXT, ship_id TEXT, class_id TEXT, ship_name TEXT, category TEXT, tier INTEGER, base TEXT, base_name TEXT, price INTEGER, seller TEXT, listed_at TEXT, t INTEGER", "listing_id"),
+             ("fair_prices", "item TEXT, fair_price REAL, twap REAL, vwm REAL, stations INTEGER, total_qty INTEGER, total_cash REAL, spoof_risk TEXT, t INTEGER", "item"),
+             ("wing_kpis", "win TEXT, wing_id TEXT, name TEXT, division TEXT, pillar TEXT, responsibility_center TEXT, ships INTEGER, working INTEGER, idle INTEGER, idle_pct REAL, fuel_h REAL, rof REAL, health_pct REAL, status TEXT, staged INTEGER, kpis_json TEXT, t INTEGER", "win, wing_id"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"))
 
 
 def views():
@@ -559,8 +561,18 @@ EXTRA_VIEWS = (
     "ROUND(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN total * minutes ELSE 0 END) / "
     "NULLIF(SUM(CASE WHEN hour >= (SELECT MAX(hour) FROM stats_money_hour) - 18000 THEN minutes ELSE 0 END), 0)) AS purse_6h "
     "FROM stats_money_hour GROUP BY division;\n"
+    "CREATE VIEW IF NOT EXISTS clean_books AS "
+    "SELECT b.base AS base, b.system AS system, b.item AS item, COALESCE(b.name, i.name) AS name, "
+    "COALESCE(b.category, i.category) AS category, b.bid AS raw_bid, b.bid_qty AS bid_qty, "
+    "b.ask AS ask, b.ask_qty AS ask_qty, fp.fair_price AS fair_price, fp.twap AS twap, fp.vwm AS vwm, "
+    "COALESCE(fp.stations, 0) AS ext_hubs, COALESCE(fp.total_qty, 0) AS ext_bid_qty, "
+    "COALESCE(fp.spoof_risk, 'UNRATED') AS spoof_risk, "
+    "CASE WHEN fp.fair_price > 0 AND b.bid > MAX(fp.fair_price * 2.5, fp.fair_price + 50) THEN 1 ELSE 0 END AS is_spoof_bid, "
+    "CASE WHEN fp.fair_price > 0 AND b.bid > 0 THEN MIN(b.bid, ROUND(fp.fair_price * 1.5, 2)) ELSE b.bid END AS guarded_bid, "
+    "b.t AS t "
+    "FROM books b LEFT JOIN fair_prices fp ON fp.item = b.item LEFT JOIN items i ON i.id = b.item;\n"
 )
-VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates", "division_pnl_24h")
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates", "division_pnl_24h", "clean_books")
 VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
@@ -1200,11 +1212,89 @@ def ship_listing_files(data, root):
     return [("market/ship_listings.json", path, read_ship_listings, True, "")] if path.is_file() else []
 
 
+def read_fair_prices(path, ctx):
+    found = need(load_json(path), dict, "no object")
+    items = found.get("items") if isinstance(found.get("items"), dict) else {}
+    def_t = number(found.get("updated_at")) or mtime_of(path)
+    rows = []
+    for iid, rec in items.items():
+        if not iid or not isinstance(rec, dict):
+            continue
+        fp = number(rec.get("fair_price"))
+        tw = number(rec.get("twap"))
+        vw = number(rec.get("vwm"))
+        st = number(rec.get("stations")) or 0
+        tq = number(rec.get("total_qty")) or 0
+        tc = number(rec.get("total_cash"))
+        if tc is None and vw is not None:
+            tc = round(float(vw) * float(tq), 2)
+        sr = text(rec.get("spoof_risk"))
+        if not sr:
+            sr = "THIN" if tq < 10 else ("SINGLE_HUB" if (st <= 1 and tq < 50) else "LOW")
+        rows.append({
+            "item": text(iid),
+            "fair_price": fp,
+            "twap": tw,
+            "vwm": vw,
+            "stations": int(st),
+            "total_qty": int(tq),
+            "total_cash": tc,
+            "spoof_risk": sr,
+            "t": number(rec.get("t")) or def_t,
+        })
+    return {"fair_prices": rows}
+
+
+def fair_price_files(data, root):
+    path = Path(data) / "fleet" / "price_oracle.json"
+    return [("fleet/price_oracle.json", path, read_fair_prices, True, "")] if path.is_file() else []
+
+
+def read_wing_kpis(path, ctx):
+    found = need(load_json(path), dict, "no object")
+    wins = found.get("windows") if isinstance(found.get("windows"), dict) else {}
+    def_t = number(found.get("updated_at") or found.get("at")) or mtime_of(path)
+    rows = []
+    for wkey, wobj in wins.items():
+        if not isinstance(wobj, dict):
+            continue
+        for wg in (wobj.get("wings") or []):
+            if not isinstance(wg, dict) or not wg.get("id"):
+                continue
+            rows.append({
+                "win": text(wkey),
+                "wing_id": text(wg.get("id")),
+                "name": text(wg.get("name")),
+                "division": text(wg.get("division")),
+                "pillar": text(wg.get("pillar")),
+                "responsibility_center": text(wg.get("responsibility_center")),
+                "ships": number(wg.get("ships")) or 0,
+                "working": number(wg.get("working")) or 0,
+                "idle": number(wg.get("idle")) or 0,
+                "idle_pct": number(wg.get("idle_pct")) or 0.0,
+                "fuel_h": number(wg.get("fuel_h")) or 0.0,
+                "rof": number(wg.get("rof")),
+                "health_pct": number(wg.get("health_pct")) or 0.0,
+                "status": text(wg.get("status")),
+                "staged": 1 if wg.get("staged") else 0,
+                "kpis_json": json.dumps(wg.get("kpis") or [], separators=(",", ":")),
+                "t": def_t,
+            })
+    return {"wing_kpis": rows}
+
+
+def wing_kpi_files(data, root):
+    path = Path(data) / "fleet" / "kpi_snapshot.json"
+    return [("fleet/kpi_snapshot.json", path, read_wing_kpis, True, "")] if path.is_file() else []
+
+
 LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
             ("player_comms", ("player_comms",), player_comms_files, True),
             ("game_releases", ("game_releases",), game_release_files, True),
             ("rival_snapshots", ("rival_snapshots",), rival_history_files, True),
-            ("ship_listings", ("ship_listings",), ship_listing_files, True),)
+            ("ship_listings", ("ship_listings",), ship_listing_files, True),
+            ("fair_prices", ("fair_prices",), fair_price_files, True),
+            ("wing_kpis", ("wing_kpis",), wing_kpi_files, True),)
 FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
@@ -1851,6 +1941,9 @@ DESCRIPTIONS = {               # one line per table and view: what a row is and 
     "contract_candidates": "view: open priority needs with missing items where Station Bursars or Notice Board contracts can source bottlenecks",
     "route_earnings": "view: what each route earned per ship-hour (steady credits) over the last 4, 12 and 24 hours and over all hours kept, the runs behind each "
                       "figure, and the hours since it last flew: ask here what a route earns now; an empty cph_4h means it did not fly, not that it does not pay",
+    "fair_prices": "now: manipulation-proof market_guard oracle per item (Cash-Weighted Median, LULD TWAP, net-external hub count, external bid depth, total cash, and spoof_risk from fleet/price_oracle.json)",
+    "clean_books": "view: live Exchange order books joined with fair_prices, flagging spoof bids (is_spoof_bid=1) and exposing guarded_bid capped at 1.5x fair_price",
+    "wing_kpis": "now: 17-wing KPI scorecards across 1h, 6h and 24h windows (utilization, fuel/h, ROF, health_pct, status, and per-wing KPI breakdown from fleet/kpi_snapshot.json)",
 }
 
 EXAMPLES = {                   # three questions per table and view, as SQL (hive.py schema <table>); the tests run each one
@@ -2105,6 +2198,21 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
         ("24h and 6h Net Purse/h, steady, once and fuel per division", "SELECT * FROM division_pnl_24h ORDER BY purse_24h DESC"),
         ("Divisions with negative 24h steady cashflow vs positive Net Purse/h", "SELECT division, steady_24h, once_24h, purse_24h FROM division_pnl_24h WHERE steady_24h < 0 ORDER BY purse_24h DESC"),
         ("Trailing 6h vs 24h Net Purse/h momentum per division", "SELECT division, purse_6h, purse_24h, fuel_24h FROM division_pnl_24h WHERE division != 'Fleet' ORDER BY purse_6h DESC"),
+    ),
+    "fair_prices": (
+        ("Most liquid manipulation-proof external markets", "SELECT item, fair_price, twap, vwm, stations, total_qty, spoof_risk FROM fair_prices WHERE spoof_risk = 'LOW' ORDER BY total_cash DESC LIMIT 15"),
+        ("Thin or single-hub items flagged for spoof risk", "SELECT item, fair_price, stations, total_qty, spoof_risk FROM fair_prices WHERE spoof_risk != 'LOW' ORDER BY fair_price DESC LIMIT 15"),
+        ("Count of rated items by spoof risk tier", "SELECT spoof_risk, COUNT(*) AS items, ROUND(SUM(total_cash)) AS ext_cash FROM fair_prices GROUP BY spoof_risk ORDER BY items DESC"),
+    ),
+    "clean_books": (
+        ("Active Exchange bids flagged as spoof outliers above fair_price", "SELECT base, item, raw_bid, bid_qty, fair_price, guarded_bid, spoof_risk FROM clean_books WHERE is_spoof_bid = 1 ORDER BY raw_bid DESC LIMIT 15"),
+        ("Clean liquid bids sorted by guarded_bid", "SELECT base, item, guarded_bid, bid_qty, ext_hubs, ext_bid_qty FROM clean_books WHERE is_spoof_bid = 0 AND guarded_bid > 0 AND spoof_risk = 'LOW' ORDER BY guarded_bid DESC LIMIT 15"),
+        ("Spoof bid count vs clean bid count across all scanned stations", "SELECT is_spoof_bid, COUNT(*) AS rows FROM clean_books WHERE raw_bid > 0 GROUP BY is_spoof_bid"),
+    ),
+    "wing_kpis": (
+        ("6h KPI scorecard across all 17 fleet wings", "SELECT wing_id, name, division, ships, working, idle, fuel_h, rof, health_pct, status FROM wing_kpis WHERE win = '6h' ORDER BY wing_id"),
+        ("Wings below target health in the 6h window", "SELECT wing_id, name, health_pct, rof, idle_pct, status FROM wing_kpis WHERE win = '6h' AND health_pct < 80 ORDER BY health_pct ASC"),
+        ("Fuel burn and ROF ranked across divisions in the 6h window", "SELECT division, SUM(ships) AS ships, ROUND(SUM(fuel_h)) AS fuel_h, ROUND(AVG(health_pct), 1) AS avg_hp FROM wing_kpis WHERE win = '6h' GROUP BY division ORDER BY fuel_h DESC"),
     ),
     "fuel_sinks": (("24h ship-hours and net credits across productive work vs jump loops, census and handovers", "SELECT * FROM fuel_sinks ORDER BY ship_hours_24h DESC"),
                    ("Share of fleet ship-hours spent on empty jump loops", "SELECT category, ship_hours_24h, net_credits_24h FROM fuel_sinks WHERE category = 'jump_loops'"),

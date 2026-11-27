@@ -1761,12 +1761,13 @@ def main(argv=None):
     ap.add_argument("--root", default=REPO_DEFAULT)
     ap.add_argument("--hours", type=int, default=24)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--income", action="store_true", help="Print reconciled IFRS 15/10/8 Income Statement.")
     args = ap.parse_args(argv)
     db = Path(args.data) / "store" / "read.db"
     conn = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=2.0) if db.is_file() else None
     try:
         out = {
-            "vault": vault_valuation(conn),
+            "vault": vault_valuation(conn, data_dir=args.data),
             "pnl": compute_pnl(conn, repo_root=args.root, data_dir=args.data, hours=args.hours),
         }
     finally:
@@ -1774,6 +1775,51 @@ def main(argv=None):
             conn.close()
     if args.json:
         print(json.dumps(out, indent=2))
+    elif args.income:
+        v, p = out["vault"], out["pnl"]
+        rb = p.get("revenue_breakdown") or {}
+        ob = p.get("opex_breakdown") or {}
+        st = p.get("station_ops") or {}
+        real_rev = int(p.get("raw_income_h") or 0) + int(p.get("passive_inflows_h") or 0) + int(st.get("station_revenue_h") or 0)
+        matched_dir = int(ob.get("matched_direct_h") or 0)
+        gross_profit = real_rev - matched_dir
+        upkeep_h = int(st.get("npc_rent_h") or 0) + int(st.get("station_labor_opex_h") or 0) + int(st.get("treasury_other_h") or 0)
+        core_ebit = int(p.get("recurring_cash_h") or 0) + int(p.get("treasury_own_h") or 0)
+        paid_fuel = int(ob.get("fuel_h") or 0)
+        rof = ("%.2fx" % (real_rev / float(paid_fuel))) if paid_fuel >= 100 else "n/a"
+        print("IFRS 15/10/8 INCOME STATEMENT (%dh window, span=%.2fh, source=%s)" % (p["hours"], p["span_hours"], p["cash_source"]))
+        print("  Realized Operating Revenue : %+10s cr/h  (Trade %s [Bursar %s, Mobile %s] | Freight %s | Station Ops %s | Passive %s)" % (
+            format(real_rev, ","), format(rb.get("trade_sales_h", 0), ","),
+            format(rb.get("bursar_active_h", 0), ","), format(rb.get("mobile_trade_h", 0), ","),
+            format(rb.get("freight_sales_h", 0), ","), format(st.get("station_revenue_h", 0), ","),
+            format(p.get("passive_inflows_h", 0), ",")))
+        print("  Direct Operating Costs     : %10s cr/h  (Fuel %s | Repair %s | Craft %s | Other COGS %s | Once Reclass %+s)" % (
+            format(-matched_dir, ","), format(paid_fuel, ","), format(ob.get("repair_h", 0), ","),
+            format(ob.get("craft_inputs_h", 0), ","), format(ob.get("other_cogs_h", 0), ","),
+            format(ob.get("reclassified_once_h", 0), ",")))
+        print("  Realized Gross Profit      : %+10s cr/h  | ROF (Rev/Fuel) = %s" % (format(gross_profit, ","), rof))
+        print("  Station Upkeep & Rent      : %+10s cr/h  (NPC Rent %s/h [%d fac] | Own Labor %s/h [%d fac] | Other %+s/h)" % (
+            format(upkeep_h, ","), format(st.get("npc_rent_h", 0), ","), st.get("npc_leased_count", 0),
+            format(st.get("station_labor_opex_h", 0), ","), st.get("station_facilities_active", 0),
+            format(st.get("treasury_other_h", 0), ",")))
+        print("  REALIZED CORE EBIT (IFRS15): %+10s cr/h  (Ex-Seeds, Sold Cash Only)" % format(core_ebit, ","))
+        print("  Inventory Accrual (IAS 2)  : %+10s cr/h  -> Accrual Operating EBIT: %+s cr/h" % (
+            format(p.get("inventory_accrual_h", 0), ","), format(core_ebit + int(p.get("inventory_accrual_h") or 0), ",")))
+        print("  Non-Op & Investing Cash    : Seed Net %+s/h | CapEx Net %+s/h (Wallets %+s, Treasury %+s) | Purse %+s/h" % (
+            format(p.get("seed_net_h", 0), ","), format(p.get("capex_net_h", 0), ","),
+            format(p.get("capex_wallets_h", 0), ","), format(p.get("capex_treasury_h", 0), ","),
+            format(p.get("purse_h", 0), ",")))
+        print("  VAULT (Market-Guard Live)  : Live %s cr | IAS2 NRV %s cr | Liquid %s cr | Sell Escrow %s cr" % (
+            format(v.get("live_market", 0), ","), format(v.get("nrv", 0), ","),
+            format(v.get("liquid", 0), ","), format(v.get("sell_escrow_nrv", 0), ",")))
+        print("  DIVISION TRANSFER-PRICED VALUE-ADD (%dh):" % p["hours"])
+        for dv_name, dv in (p.get("by_division") or {}).items():
+            if dv_name == "Faction":
+                continue
+            print("    %-10s cash=%+9s/h  inv=%+9s/h  tx=%+9s/h  accrual=%+9s/h  fuel=%7s/h  roi=%s" % (
+                dv_name, format(dv.get("recurring_cash_h", 0), ","), format(dv.get("inv_accrual_h", 0), ","),
+                format(dv.get("net_transfer_h", 0), ","), format(dv.get("accrual_op_h", 0), ","),
+                format(dv.get("fuel_cr_h", 0), ","), ("%sx" % dv["fuel_roi"]) if dv.get("fuel_roi") is not None else "n/a"))
     else:
         v, p = out["vault"], out["pnl"]
         print("VAULT | IAS2 NRV %s cr | Catalog %s cr | Instant Bid Depth %s cr | Unbounded Bid %s cr"

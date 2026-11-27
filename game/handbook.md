@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 66 tables and 13 views (45 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 28 tools.
+The store: 68 tables and 14 views (47 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 28 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -36,13 +36,13 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Ships and pilots, `game/handbook/ships-and-pilots.md`: ships, ship_skills, ship_modules, ship_cargo, fleet_positions, hull_readiness, stats_pilot_hour, stats_pilot_last
 - Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
 - Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
-- Markets, `game/handbook/markets.md`: books, ladders, ship_listings, moves, market_hour, contract_candidates
+- Markets, `game/handbook/markets.md`: books, ladders, fair_prices, clean_books, ship_listings, moves, market_hour, contract_candidates
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills, game_releases
 - Supply, `game/handbook/supply.md`: supply_chains, supply_status, stats_supply_hour
-- Statistics, `game/handbook/statistics.md`: stats_time, stats_refill, stats_figures and the figures
+- Statistics, `game/handbook/statistics.md`: stats_time, stats_refill, stats_figures, wing_kpis and the figures
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
@@ -121,6 +121,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | credits, Net Purse/h (steady + paid once), matched Recurring Cash/h, and transfer-priced IAS2 Accrual... | fleet view=money | hive.py fleet |
 | credits hour by hour per division. | fleet view=history | hive.py history |
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
+| reconciled IFRS 15/10/8 Income Statement, Realized Core EBIT (Ex-Seeds), and division transfer-priced... | fleet view=income | accounting.py --income |
 | Draw credits from the shared faction treasury for one or more pilots of your division (rule F12... | fund | wallet.py fund --show |
 | what the fleet bought once by division and kind (modules, hulls, craft inputs, mission goods) and the... | hive verb=spend | hive.py spend [--hours H] |
 
@@ -130,7 +131,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | bottleneck procurement candidates for Station Bursars, rival board supply contracts & contracts.log. | fleet view=contracts | hive.py contracts |
 | live spacemolt_shipping freight contracts. | fleet view=shipping | shipping.py list |
-| The last moves of one item's best bid and best ask at the stations whose order books our ships read... | market item=<item> | ledger.py prices <item> |
+| Manipulation-proof market_guard fair value (Cash-Weighted Median, LULD TWAP, net-external depth... | market item=<item> | ledger.py prices <item> |
 | one item's lowest and highest best bid and best ask per station over a window | hive verb=store args=[price, <item>] | hive.py store price <item> |
 
 ### Map and intel
@@ -182,6 +183,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | what a member's stored goods can be made into by hand today and what that sells for. | catalog ask=can | craftbook.py can |
 | the recipes of a category, or that make or use an item. | catalog ask=recipes | craftbook.py recipes |
 | newest SpaceMolt patch notes and active catalog version. | catalog ask=releases | craftbook.py releases |
+| The game's catalog asked as a question. | catalog ask=profit | craft_net.py --scan |
 
 ### Supply
 
@@ -197,6 +199,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | what comes back per hour between our readings: bids, fields, herds. | fleet view=refill | hive.py refill |
 | MAUTxWSJF weighted triage queue (P0>P1>P2>P3) & live WAR/CASHFLOW/GROWTH posture. | fleet view=scorecard | scorecard.py --who all |
+| 17-wing KPI scorecards, hull/module readiness, galaxy freshness, bunker SLA, and ROF. | fleet view=wings | kpi_engine.py --summary |
 | the fleet as one purse over 1, 6, 24 and 72 hours: throughput, operating expense, steady net, paid... | fleet view=kpi | hive.py stats kpi |
 | per division its Net Purse/h (6h/24h), matched Recurring Cash/h, IAS2 Accrual Value-Add/h, raw steady... | fleet view=contribution | hive.py stats contribution |
 | per role the places of its own class work open now against its ships, and the spill. | fleet view=classes | hive.py stats classes |
@@ -224,7 +227,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | one section whole. | docs view=section section=<section> | hive.py docs --section <section> |
 | the sections changed since your last turn (or since). | docs view=changes | hive.py changes |
 | every version of one section with when it was first seen, each against the one before. | docs view=history section=<section> | hive.py docs --section <section> --history |
-| what each Admiral is doing, one short block a division: its mission, its orders block, its plan, its... | docs view=division | hive.py division all |
+| each division's live operational block (sole-operator Trinity architecture, plans, guidebooks... | docs view=division | hive.py division all |
 | a division's guidebook (division: yours by default, or all): its class card whole, the index of its... | docs view=guide | hive.py guide |
 | the store's handbook, written from the code: how the data flows, where to ask what, and every table... | docs view=handbook | hive.py handbook |
 

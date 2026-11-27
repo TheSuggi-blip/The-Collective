@@ -28,6 +28,30 @@ now: the price ladder of an item at a station, every bid and ask step with its u
 - Units bid at 100 cr or more, per item: `SELECT item, SUM(qty) FROM ladders WHERE side = 'bid' AND price >= 100 GROUP BY item ORDER BY 2 DESC`
 - Items with a ladder per station: `SELECT base, COUNT(DISTINCT item) FROM ladders GROUP BY base`
 
+## fair_prices
+
+now: manipulation-proof market_guard oracle per item (Cash-Weighted Median, LULD TWAP, net-external hub count, external bid depth, total cash, and spoof_risk from fleet/price_oracle.json)
+
+- Kind: snapshot
+- Columns: item, fair_price, twap, vwm, stations, total_qty, total_cash, spoof_risk, t, src; one row per item
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `fair_prices`, fair_price_files
+- Most liquid manipulation-proof external markets: `SELECT item, fair_price, twap, vwm, stations, total_qty, spoof_risk FROM fair_prices WHERE spoof_risk = 'LOW' ORDER BY total_cash DESC LIMIT 15`
+- Thin or single-hub items flagged for spoof risk: `SELECT item, fair_price, stations, total_qty, spoof_risk FROM fair_prices WHERE spoof_risk != 'LOW' ORDER BY fair_price DESC LIMIT 15`
+- Count of rated items by spoof risk tier: `SELECT spoof_risk, COUNT(*) AS items, ROUND(SUM(total_cash)) AS ext_cash FROM fair_prices GROUP BY spoof_risk ORDER BY items DESC`
+
+## clean_books
+
+view: live Exchange order books joined with fair_prices, flagging spoof bids (is_spoof_bid=1) and exposing guarded_bid capped at 1.5x fair_price
+
+- Kind: view over books, fair_prices, items
+- Columns: base, system, item, name, category, raw_bid, bid_qty, ask, ask_qty, fair_price, twap, vwm, ext_hubs, ext_bid_qty, spoof_risk, is_spoof_bid, guarded_bid, t
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- Active Exchange bids flagged as spoof outliers above fair_price: `SELECT base, item, raw_bid, bid_qty, fair_price, guarded_bid, spoof_risk FROM clean_books WHERE is_spoof_bid = 1 ORDER BY raw_bid DESC LIMIT 15`
+- Clean liquid bids sorted by guarded_bid: `SELECT base, item, guarded_bid, bid_qty, ext_hubs, ext_bid_qty FROM clean_books WHERE is_spoof_bid = 0 AND guarded_bid > 0 AND spoof_risk = 'LOW' ORDER BY guarded_bid DESC LIMIT 15`
+- Spoof bid count vs clean bid count across all scanned stations: `SELECT is_spoof_bid, COUNT(*) AS rows FROM clean_books WHERE raw_bid > 0 GROUP BY is_spoof_bid`
+
 ## ship_listings
 
 now: galaxy-wide player and shipyard ship listings across all stations, refreshed every 15 min by ledger.py (market/ship_listings.json)

@@ -1188,6 +1188,14 @@ def compute_fleet_kpis(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, accounting
     }
     if write_signals:
         publish_kpi_signals(data_p, out, now=now_t)
+        try:
+            snap_p = Path(data_p) / "fleet" / "kpi_snapshot.json"
+            snap_p.parent.mkdir(parents=True, exist_ok=True)
+            snap_tmp = snap_p.with_name(f"kpi_snapshot.{os.getpid()}.tmp")
+            snap_tmp.write_text(json.dumps({"updated_at": int(now_t), "windows": out.get("windows") or {}}, separators=(",", ":")), encoding="ascii")
+            os.replace(snap_tmp, snap_p)
+        except OSError:
+            pass
     return out
 
 
@@ -1218,10 +1226,13 @@ def print_summary(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, win="6h"):
         fl.get("bursar_stations_occupied"), fl.get("bursar_stations_target")))
     print("  WINGS (%s):" % win)
     for wg in (w.get("wings") or []):
-        ms = ", ".join("%s=%s" % (m.get("label"), m.get("display")) for m in (wg.get("metrics") or [])[:4])
-        print("    %-28s n=%2s work=%2s upg=%2s idle=%2s [%6s] | %s" % (
-            str(wg.get("wing") or wg.get("id"))[:28], wg.get("ships"), wg.get("working"),
-            wg.get("upgrading_ships"), wg.get("true_idle"), wg.get("status"), ms))
+        ms = ", ".join("%s=%s" % (m.get("k"), m.get("v")) for m in (wg.get("kpis") or [])[:4])
+        lbl = ("%s %s" % (wg.get("id") or "", wg.get("name") or "")).strip()
+        rof_s = ("%.2fx" % float(wg["rof"])) if wg.get("rof") is not None else "n/a"
+        print("    %-30s n=%3s work=%3s idle=%2s fuel=%6s rof=%6s hp=%4.0f%% [%6s] | %s" % (
+            lbl[:30], wg.get("ships"), wg.get("working"), wg.get("idle"),
+            format(int(round(float(wg.get("fuel_h") or 0))), ","), rof_s,
+            float(wg.get("health_pct") or 0.0), wg.get("status"), ms))
 
 
 if __name__ == "__main__":

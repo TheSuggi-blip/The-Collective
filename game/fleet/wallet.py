@@ -467,25 +467,65 @@ def pending(log):
     return rows[-1] if rows and rows[-1].get("state") == "sent" else None
 
 
+def _deposit_confirmed_by_wallet_or_moves(data, leader, credits, sent, row):
+    """Fallback proof when concurrent Treasury CapEx/withdrawals mask the treasury balance delta:
+    returns reason string if fresh fleet.json wallet or moves.jsonl proves `leader` lost `credits`."""
+    was = (row.get("wallets") or {}).get(leader)
+    ship_row = ships(data).get(leader) or {}
+    have = ship_row.get("credits")
+    seen_at = read_at(ship_row)
+    if (isinstance(was, (int, float)) and isinstance(have, (int, float))
+            and (seen_at is None or seen_at > sent) and have <= was - credits * 0.9):
+        return "wallet %s %s -> %s" % (leader, format(int(was), ","), format(int(have), ","))
+    moves_p = Path(data) / "fleet" / "moves.jsonl"
+    if moves_p.is_file():
+        try:
+            with open(moves_p, encoding="utf-8", errors="replace") as fh:
+                for line in fh:
+                    if not line.strip().startswith("{"):
+                        continue
+                    try:
+                        m = json.loads(line)
+                    except ValueError:
+                        continue
+                    if m.get("pilot") != leader:
+                        continue
+                    mat = float(m.get("at") or 0)
+                    mv = float(m.get("moved") or 0)
+                    if (sent - 60) <= mat <= (sent + 600) and abs(mv + float(credits)) <= 2.0:
+                        return "moves.jsonl %s %+d at %d" % (leader, int(mv), int(mat))
+        except OSError:
+            pass
+    return ""
+
+
 def settle(data, row):
     """A deposit a cut pass left `sent`: booked once, with the time it was sent, when the treasury rose by most of it
-    since the read before its call; kept unsure when the treasury does not show it; left `sent` when the treasury does
-    not answer. 'booked', 'unsure' or 'open'."""
+    OR the leader's own wallet / moves.jsonl proves the deposit left the leader (immune to concurrent Treasury CapEx
+    or withdrawals masking the treasury delta). 'booked', 'unsure' or 'open'."""
     leader, credits, before = row.get("from"), int(row.get("credits") or 0), row.get("before")
+    sent = int(row["at"])
     after = treasury_read(leader)
-    when = time.strftime("%H:%M", time.gmtime(row["at"]))
-    if after is None:
-        print("no deposit: the deposit of %s cr sent at %s UTC is not settled: the treasury did not answer; read again at the next pass"
-              % (format(credits, ","), when))
-        return "open"
-    if isinstance(before, (int, float)) and after >= before + credits * 0.9:
-        book_deposit(data, leader, credits, row["at"])
+    when = time.strftime("%H:%M", time.gmtime(sent))
+    if isinstance(before, (int, float)) and after is not None and after >= before + credits * 0.9:
+        book_deposit(data, leader, credits, sent)
         note(data, "deposit", leader, "faction", credits, "booked", "settled at the next pass: the treasury %s -> %s" % (before, after))
         print("booked at the next pass: the deposit of %s cr sent at %s UTC landed (the treasury %s -> %s cr)"
               % (format(credits, ","), when, format(int(before), ","), format(after, ",")))
         return "booked"
+    proof = _deposit_confirmed_by_wallet_or_moves(data, leader, credits, sent, row)
+    if proof:
+        book_deposit(data, leader, credits, sent)
+        note(data, "deposit", leader, "faction", credits, "booked", "settled at the next pass (%s; treasury %s -> %s)" % (proof, before, after))
+        print("booked at the next pass: the deposit of %s cr sent at %s UTC landed (%s; treasury %s -> %s)"
+              % (format(credits, ","), when, proof, before, after))
+        return "booked"
+    if after is None:
+        print("no deposit: the deposit of %s cr sent at %s UTC is not settled: the treasury did not answer; read again at the next pass"
+              % (format(credits, ","), when))
+        return "open"
     note(data, "deposit", leader, "faction", credits, "unsure", "the pass ended before its answer; the treasury %s -> %s" % (before, after))
-    print("HALT: the deposit of %s cr sent at %s UTC is not booked: its pass ended before the answer and the treasury does not show "
+    print("HALT: the deposit of %s cr sent at %s UTC is not booked: its pass ended before the answer and neither the treasury nor the leader wallet shows "
           "it (%s before, %s now). Read `view` target faction: if it landed, book it once (wallet.book_deposit)"
           % (format(credits, ","), when, before, format(after, ",")))
     return "unsure"
@@ -2359,7 +2399,7 @@ def sweep(data, now, dry, cash_only=False):
         print("the pass used %d seconds: the deposit waits for the next pass" % int(time.time() - cash_start))
     else:
         before = treasury_read(leader)
-        note(data, "deposit", leader, "faction", part, "sent", "", before)    # first: a cut pass loses no deposit (settle)
+        note(data, "deposit", leader, "faction", part, "sent", "", before, wallets={leader: have})    # first: a cut pass loses no deposit (settle)
         try:
             ok, text = deposit(leader, part)
         except Exception as error:

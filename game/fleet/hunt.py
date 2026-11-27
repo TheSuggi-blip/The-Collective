@@ -487,8 +487,8 @@ def fight():
         if own_hull < 60 or (own_shield < 15 and prey_hull > 40):
             say(f'hull {own_hull}%, shield {own_shield}%, prey {prey_hull}%: fleeing')
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
-        elif kinds and any(k != 'creature' for k in kinds if k != 'player') or kinds.count('player') > 1:
-            # a pilot or an NPC ship is in this fight: the posture toward them is HOLD
+        elif (kinds and any(k not in ('creature', 'player') for k in kinds)) or any(c[0] != pilot and (not OWN or c[0] not in OWN) for c in cells if c[1] == 'player'):
+            # a non-CLTV pilot or an NPC ship is in this fight: the posture toward them is HOLD (friendly CLTV fleetmates do not trigger self-flee)
             say('not a hunt any more (a ship is in the fight): fleeing | ' + ' / '.join(row for row in t.splitlines() if '\t' in row)[:300])
             raw('stance', {'stance': 'flee'}, group='spacemolt_battle')
             FLED[0] = 'ship'

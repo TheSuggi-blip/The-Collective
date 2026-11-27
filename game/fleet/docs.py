@@ -103,7 +103,9 @@ KINDS = (                      # kind, its files (a glob: a repository path, or 
     ("blueprint", "governance/progression-roadmap.md", "Fleet"),
     ("blueprint", "governance/map.md", "Fleet"),
     ("blueprint", "governance/template-reports.md", "Fleet"),
+    ("blueprint", "governance/fleet-division-handbook.md", "Fleet"),
     ("blueprint", "communications/protocol.md", "Fleet"),
+    ("division", "governance/divisions/*.md", "Fleet"),
     ("guide", "game/routes/guidebook/*/*.md", ""),           # a guidebook's chapters, one section an entry (guidebook.py); before the row below
     ("guidebook", "game/routes/guidebook/*.md", ""),
     ("template", "game/routes/templates/*.json", ""),

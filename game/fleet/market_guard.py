@@ -207,6 +207,7 @@ def compute_book_vwm_map(books_rows, cltv_buy_keys=None, min_bid=2.0, min_qty=5,
             "station_median": round(float(st_med), 2),
             "stations": len(by_st),
             "total_qty": sum(q for _, q in pairs),
+            "total_cash": round(sum(float(p) * float(q) for p, q in pairs), 2),
             "min_bid": round(prices[0], 2),
             "max_bid": round(prices[-1], 2),
         }
@@ -257,12 +258,22 @@ def update_price_oracle(data_dir, vwm_map, now_t=None, luld_pct_per_h=0.25, min_
                             alpha = min(0.60, max(0.10, 0.45 * dt_h))
                             new_twap = (1.0 - alpha) * prev_p + alpha * clamped
                     else:
-                        new_twap = obs_p
+                        # Single-station thin-book bootstrap haircut prevents 1-unit spoofs seeding 100% fair price
+                        if st_n <= 1 and tot_q < 10:
+                            new_twap = obs_p * 0.50
+                        elif st_n <= 1 and tot_q < 25:
+                            new_twap = obs_p * 0.75
+                        else:
+                            new_twap = obs_p
+                    tot_cash = round(float(obs.get("total_cash") or (obs_p * tot_q)), 2)
+                    spoof_risk = "THIN" if tot_q < 10 else ("SINGLE_HUB" if (st_n <= 1 and tot_q < 50) else "LOW")
                     rec = {
                         "twap": round(new_twap, 2),
                         "vwm": round(obs_p, 2),
                         "stations": st_n,
                         "total_qty": tot_q,
+                        "total_cash": tot_cash,
+                        "spoof_risk": spoof_risk,
                         "t": int(now_t),
                     }
                     # Fair price: conservative min of current VWM and LULD-collared TWAP band (1.35x)

@@ -363,7 +363,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
         _kpi_low_bunkers = set()
         try:
             import kpi_engine as _ke_l
-            _lsig = _ke_l.read_kpi_signals(data_dir)
+            _lsig = _ke_l.read_kpi_signals(data)
             if _lsig.get("boost_upkeep_urgency"):
                 _kpi_upk_boost = 150.0
             _kpi_low_bunkers = set(str(x) for x in (_lsig.get("low_bunker_bases") or []))
