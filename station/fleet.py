@@ -187,6 +187,7 @@ ONE_SIDED = False
 # game/fleet/routes.py TREASURY): money that goes from a pilot's wallet into the Collective's own purse, no purchase.
 TREASURY = "Faction treasury: credits deposited"
 TREASURY_FUND = "Treasury fund: credits withdrawn"
+TREASURY_CAPEX = "Treasury CapEx:"
 BURSAR_ESCROW = "Exchange buy escrow"
 BURSAR_ESCROW_FILL = "Exchange buy escrow: filled"
 MOVES_LEAD = 600             # seconds a booking may follow the reading of its wallet change (a script books once the wallet shows it)
@@ -692,6 +693,7 @@ def one_time_until(one, t, place=None):
     out = {"": [0, 0]}
     for row in one:
         if (isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float)) and row[0] <= t and row[2] != TRANSFER
+                and str(row[1]) != "__TREASURY__" and not str(row[2]).startswith(TREASURY_CAPEX)
                 and not str(row[2]).startswith(TREASURY) and not str(row[2]).startswith(TREASURY_FUND)
                 and not str(row[2]).startswith(BURSAR_ESCROW)):
             value = num(row[3])
@@ -1254,8 +1256,15 @@ def window(history, now, seconds, one, gifts=(), seeds=None, presence=(), sides=
                      and isinstance(row[0], (int, float)) and ta[1] < row[0] <= tb[1]
                      and (str(row[2]).startswith(TREASURY) or str(row[2]).startswith(TREASURY_FUND)))
         own = tb[0] - ta[0] - landed                       # the treasury's own flows: its change less our deposits
+        tr_capex = sum(num(row[3]) for row in (one if isinstance(one, list) else [])
+                       if isinstance(row, list) and len(row) == 4 and isinstance(row[0], (int, float))
+                       and ta[1] < row[0] <= tb[1]
+                       and (str(row[1]) == "__TREASURY__" or str(row[2]).startswith(TREASURY_CAPEX)))
+        tr_h = (tb[1] - ta[1]) / 3600
         out["treasury"] = {"start": ta[0], "end": tb[0], "read_from": ta[1], "read_to": tb[1], "deposited": round(landed), "own": round(own)}
-        out["treasury_own_per_hour"] = round(own / ((tb[1] - ta[1]) / 3600))
+        out["treasury_own_per_hour"] = round(own / tr_h)
+        out["treasury_capex_per_hour"] = round(tr_capex / tr_h)
+        out["treasury_ops_per_hour"] = round((own - tr_capex) / tr_h)
         out["purse_per_hour"] = out["total_per_hour"] + out["treasury_own_per_hour"]
     metered = "m" in xa and "m" in xb
     if metered:

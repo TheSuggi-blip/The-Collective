@@ -688,9 +688,51 @@ def _build_income(hours):
 def api_ship(name):
     fn = re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:60]
     try:
-        ship = dict(read_json(FLEET / "ships" / (fn + ".json")))
-    except (OSError, ValueError):
-        return {"error": "no such ship"}
+        _raw_s = read_json(FLEET / "ships" / (fn + ".json"))
+        if not isinstance(_raw_s, dict):
+            raise FileNotFoundError(fn)
+        ship = dict(_raw_s)
+    except (OSError, ValueError, TypeError):
+        _u_p = DATA.parent if DATA.name == "station" else DATA
+        _pf = read_json(_u_p / "pirates" / "fleet.json") or {}
+        _ps = next((x for x in (_pf.get("ships") or []) if isinstance(x, dict) and str(x.get("name") or "") == name), None)
+        if not _ps:
+            return {"error": "no such ship"}
+        _raw_sk = _ps.get("skills") if isinstance(_ps.get("skills"), dict) else {}
+        _sk_fmt = {}
+        for _skk, _skv in _raw_sk.items():
+            if isinstance(_skv, dict):
+                _sk_fmt[str(_skk)] = {"level": int(num(_skv.get("level"))), "xp": int(num(_skv.get("xp")))}
+            else:
+                _sk_fmt[str(_skk)] = {"level": int(num(_skv)), "xp": 0}
+        if "piloting" not in _sk_fmt:
+            _sk_fmt["piloting"] = {"level": int(num(_ps.get("piloting"))), "xp": 0}
+        ship = {
+            "name": text(_ps.get("name"), 80),
+            "is_pirate": True,
+            "division": "Pirates",
+            "admiral": text(_ps.get("pirate_division") or _ps.get("wing"), 60),
+            "pirate_division": text(_ps.get("pirate_division"), 80),
+            "wing": text(_ps.get("wing"), 40),
+            "role": text(_ps.get("role"), 40),
+            "empire": text(_ps.get("empire"), 30),
+            "status": text(_ps.get("status"), 20) or "connected",
+            "system": text(_ps.get("system"), 60),
+            "system_name": text(_ps.get("system_name") or _ps.get("system"), 60),
+            "docked": text(_ps.get("docked"), 80),
+            "class": text(_ps.get("class"), 40),
+            "credits": int(num(_ps.get("credits"))),
+            "hull": int(num(_ps.get("hull"))), "max_hull": int(num(_ps.get("max_hull"))),
+            "shield": int(num(_ps.get("shield"))), "max_shield": int(num(_ps.get("max_shield"))),
+            "fuel": int(num(_ps.get("fuel"))), "max_fuel": int(num(_ps.get("max_fuel"))),
+            "cargo_used": int(num(_ps.get("cargo_used"))), "cargo_capacity": int(num(_ps.get("cargo_capacity"))),
+            "piloting": int(num(_ps.get("piloting"))),
+            "skills": _sk_fmt,
+            "order": text(_ps.get("order"), 120),
+            "activity": _ps.get("activity") or {"kind": "order", "type": text(_ps.get("order"), 120)},
+            "cargo": [],
+            "modules": [],
+        }
     unit_data = DATA.parent if DATA.name == "station" else DATA
     db_path = unit_data / "store" / "read.db"
     ship_name = ship.get("name") or name
@@ -2724,33 +2766,90 @@ def _build_ops():
         }
         fuel_by_place = {s["place"]: s for s in out.get("supply") or [] if s.get("item") == "fuel"}
         based_names = {}
+        _cat_f_map = {}
+        try:
+            _u_c = DATA.parent if DATA.name == "station" else DATA
+            _db_c = _u_c / "store" / "read.db"
+            if _db_c.is_file():
+                _ccon = sqlite3.connect("file:%s?mode=ro" % _db_c, uri=True, timeout=1.5)
+                try:
+                    for _fr2 in _ccon.execute("SELECT id, COALESCE(build_cost,0), COALESCE(labor_cost,0), COALESCE(description,'') FROM facilities"):
+                        _cat_f_map[str(_fr2[0])] = {"build_cost": int(num(_fr2[1])), "labor_cost": int(num(_fr2[2])), "description": str(_fr2[3] or "")}
+                finally:
+                    _ccon.close()
+            _cdir = _u_c / "catalog"
+            if _cdir.is_dir():
+                for _cf in sorted(_cdir.glob("*.json"), reverse=True):
+                    if _cf.stem == "releases":
+                        continue
+                    _cd = read_json(_cf) or {}
+                    _fl = _cd.get("facilities") if isinstance(_cd, dict) else None
+                    _fl_d = _fl if isinstance(_fl, dict) else ({str(x.get("id")): x for x in _fl if isinstance(x, dict) and x.get("id")} if isinstance(_fl, list) else {})
+                    if _fl_d:
+                        for _fk, _fv in _fl_d.items():
+                            if isinstance(_fv, dict):
+                                _base_f = _cat_f_map.get(str(_fk), {})
+                                _merged = dict(_base_f)
+                                _merged.update(_fv)
+                                _cat_f_map[str(_fk)] = _merged
+                        break
+        except Exception:
+            pass
+        _facs_raw = [x for x in (emp_raw.get("facilities") if isinstance(emp_raw.get("facilities"), list) else [])[:300] if isinstance(x, dict)]
+        _hosted_by_base = {}
+        for _fr in _facs_raw:
+            _fbid = text(_fr.get("base"), 80)
+            if _fbid:
+                _hosted_by_base[_fbid] = _hosted_by_base.get(_fbid, 0) + 1
         for b in (emp_raw.get("bases") if isinstance(emp_raw.get("bases"), list) else [])[:100]:
             if isinstance(b, dict) and b.get("system"):
                 bname = text(b.get("name"), 80)
                 sys_id = text(b["system"], 80)
+                bid = text(b.get("base"), 80)
+                bkind = str(b.get("kind") or "").lower()
                 based_names[sys_id] = bname
                 f_sup = fuel_by_place.get(bname)
                 emp_info["buildings"].append({
-                    "system": sys_id, "kind": holding_kind(b.get("kind")), "type": text(b.get("kind"), 40),
+                    "id": "base:" + (bid or sys_id),
+                    "system": sys_id, "kind": holding_kind(bkind), "type": text(bkind, 40),
                     "name": bname, "level": 0, "status": text(b.get("condition") or b.get("status"), 30) or "active",
-                    "at": "our own base", "part": False, "base": text(b.get("base"), 80), "rent": 0,
+                    "at": "our own base", "part": False, "base": bid, "poi": text(b.get("poi"), 80), "rent": 0,
+                    "labor_cost": 0, "book_value": 17000000 if bkind == "station" else 250000,
+                    "services": [text(x, 40) for x in (b.get("services") or [])][:20],
+                    "hosted_count": _hosted_by_base.get(bid, 0),
                     "fuel": f_sup["have"] if f_sup else None,
-                    "purpose": purpose_map.get(str(b.get("kind") or "").lower(), "Faction base"),
+                    "upkeep": [],
+                    "purpose": purpose_map.get(bkind, "Faction base"),
                 })
-        for f in (emp_raw.get("facilities") if isinstance(emp_raw.get("facilities"), list) else [])[:300]:
-            if isinstance(f, dict) and f.get("system"):
+        for f in _facs_raw:
+            if f.get("system"):
                 sys_id = text(f["system"], 80)
                 base_id = text(f.get("base"), 80)
                 is_part = bool(BASE_ID.fullmatch(base_id))
                 at_name = (based_names.get(sys_id) or "our base here") if is_part else base_id.replace("_", " ").title()
                 ftype = text(f.get("type"), 50)
+                _cf = _cat_f_map.get(ftype) or {}
+                _upk = []
+                for _uk in ("maintenance_inputs", "tourism_upkeep"):
+                    _uo = _cf.get(_uk)
+                    if isinstance(_uo, dict):
+                        for _k, _v in _uo.items():
+                            _upk.append({"item": text(_k, 50), "qty": int(num(_v))})
+                    elif isinstance(_uo, list):
+                        for _ur in _uo:
+                            if isinstance(_ur, dict):
+                                _upk.append({"item": text(_ur.get("item_id") or _ur.get("item"), 50), "qty": int(num(_ur.get("quantity") or _ur.get("units")))})
                 emp_info["buildings"].append({
+                    "id": "fac:" + text(f.get("facility_id") or (base_id + "_" + ftype), 80),
                     "system": sys_id, "kind": holding_kind(ftype or f.get("name")), "type": ftype,
                     "name": text(f.get("name") or ftype, 80), "level": int(num(f.get("level"))),
                     "status": text(f.get("status"), 30) or "active", "at": at_name, "part": is_part,
-                    "base": base_id, "rent": int(num(f.get("rent_per_cycle"))),
-                    "fuel": None,
-                    "purpose": purpose_map.get(ftype.lower(), "Faction station facility"),
+                    "base": base_id, "poi": "", "rent": int(num(f.get("rent_per_cycle"))),
+                    "labor_cost": int(num(_cf.get("labor_cost"))),
+                    "book_value": int(num(_cf.get("build_cost"))),
+                    "services": [], "hosted_count": 0,
+                    "fuel": None, "upkeep": _upk[:20],
+                    "purpose": purpose_map.get(ftype.lower(), text(_cf.get("description"), 180) or "Faction station facility"),
                 })
     try:
         s_lines = (REPO / "game" / "map" / "sites.tsv").read_text(encoding="utf-8", errors="replace").splitlines()[:500]

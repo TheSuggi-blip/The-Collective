@@ -1157,31 +1157,83 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .member.total.pirate-total .c { color: #ef4444; }
 .member.total.pirate-total .d { color: #fca5a5; }
 
-/* Compact 2x4 Topbar (2026-11-27): Emblem-only brand + 2x4 division grid so right status NEVER clips */
-.brand { padding: 0 9px; gap: 0; }
+/* Single-Row Compact Topbar (2026-11-27): Emblem-only brand + 1 horizontal division row, ZERO left/right clipping */
+.topbar { height: 56px; align-items: stretch; overflow: hidden; }
+.brand { padding: 0 8px; gap: 0; flex: none; }
 .brand-txt { display: none !important; }
+.purse { gap: 8px; padding: 0 8px; flex: none; }
+.purse .pcol.ent { padding-left: 8px; }
+.purse .v { font-size: 13.5px; line-height: 1.15; }
+.purse .s { font-size: 9.5px; }
+.members { display: flex; align-items: stretch; flex: 0 1 auto; min-width: 0; border-right: 1px solid var(--line); }
 .members-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, auto);
-  grid-template-rows: repeat(2, 1fr);
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: nowrap;
   align-items: stretch;
 }
 .members-grid .member {
-  height: auto;
-  padding: 0 6px;
-  gap: 4px;
+  height: 100%;
+  padding: 0 5px;
+  gap: 3px;
   border-right: 1px solid var(--line);
-  border-bottom: 1px solid rgba(37, 45, 63, 0.55);
+  border-bottom: 0;
+  white-space: nowrap;
 }
-.members-grid .member:nth-child(n+5) { border-bottom: 0; }
-.members-grid .member:nth-child(4n) { border-right: 0; }
-.members-grid .member .face-medallion { width: 18px; height: 18px; border-radius: 4px; }
+.members-grid .member:last-child { border-right: 0; }
+.members-grid .member .face-medallion { width: 19px; height: 19px; border-radius: 4px; flex: none; }
 .members-grid .member .face-medallion svg { width: 12px; height: 12px; }
-.members-grid .member .who .n { font-size: 10.5px; line-height: 1.1; }
-.members-grid .member .c { font-size: 11.5px; min-width: 18px; padding-left: 1px; }
-.member.total { display: flex !important; padding: 0 8px; min-width: 54px; }
-.member.total .c { font-size: 14px; }
+.members-grid .member .who .n { font-size: 10.5px; font-weight: 600; line-height: 1.1; }
+.members-grid .member .c { font-size: 11.5px; font-weight: 700; min-width: 15px; margin-left: 1px; padding-left: 1px; }
+.member.total { display: flex !important; padding: 0 7px; min-width: 48px; flex: none; }
+.member.total .c { font-size: 13.5px; }
 .member.total .d { display: block !important; font-size: 9px; }
-.search { flex: 1 1 140px; min-width: 110px; max-width: 240px; padding: 0 8px; }
-.topbar.tight .search { min-width: 100px; }
-.status { flex: none; padding: 0 10px; }
+.search { flex: 1 1 110px; min-width: 82px; max-width: 210px; padding: 0 7px; margin-left: auto; }
+.search input { padding: 4px 8px; font-size: 11.5px; }
+.topbar.tight .search { min-width: 78px; }
+.status { flex: none; padding: 0 8px; font-size: 10.5px; }
+.status .st-row { gap: 7px; }
+@media (max-width: 1520px) {
+  .members-grid .member { padding: 0 4px; gap: 2px; }
+  .members-grid .member .face-medallion { width: 17px; height: 17px; }
+  .members-grid .member .who .n { font-size: 10px; }
+  .purse .pcol.ent { display: none; }
+}
+@media (max-width: 1320px) {
+  .members-grid .member .who { display: none; }
+  .members-grid .member { padding: 0 5px; gap: 3px; }
+  .search { min-width: 70px; }
+}
+
+/* Clean 1-row clickable Empire Infrastructure Building list */
+.bldg-list { display: flex; flex-direction: column; gap: 4px; margin: 6px 0 14px; }
+.bldg-row {
+  display: grid;
+  grid-template-columns: 18px minmax(120px, 1.4fr) minmax(80px, 0.9fr) auto auto auto 14px;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: rgba(18, 24, 38, 0.78);
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.12s, border-color 0.12s;
+}
+.bldg-row:hover { background: rgba(32, 42, 66, 0.92); border-color: var(--accent); }
+.bldg-row.is-station { border-left: 3px solid var(--good); background: rgba(40, 80, 62, 0.18); }
+.bldg-row.is-outpost { border-left: 3px solid var(--info); }
+.bldg-name { font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bldg-sys { color: var(--dim); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bldg-meta { font: 500 11px/1.2 var(--mono); color: var(--dim); white-space: nowrap; text-align: right; }
+.bldg-chev { color: var(--faint); font: 700 12px/1 var(--mono); text-align: right; }
+
+/* Left fleet Pirate ship rows & System Inspector Pirate card */
+.ship.pirate-ship { border-left: 2px solid rgba(239, 68, 68, 0.55); }
+.ship.pirate-ship:hover, .ship.pirate-ship.on { background: rgba(239, 68, 68, 0.14); border-left-color: #ef4444; }
+.t2badge.pirate-cls { background: rgba(239, 68, 68, 0.22); color: #fca5a5; border-color: rgba(239, 68, 68, 0.45); }
+.icard.pirate-syscard { border-color: rgba(239, 68, 68, 0.48); background: rgba(45, 14, 18, 0.35); }
+.icard.pirate-syscard .ichead b { color: #fca5a5; }

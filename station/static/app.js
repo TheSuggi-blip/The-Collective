@@ -333,7 +333,7 @@ try { localStorage.removeItem('station.sphere'); } catch (e) { /* no storage */ 
 let bounds = null, terrR = 250, homeEmpire = '';   // the galaxy's extent; the radius of the ground under one system; our empire
 const view = { x: 0, y: 0, k: 0.05 };
 let selected = null, hover = null, route = [], tab = 'Selection', pilotCard = null;
-let selShip = null, shipCard = null, shipMark = '', docView = null;
+let selShip = null, shipCard = null, shipMark = '', docView = null, infraBuildingId = null;
 const groupsBy = new Map();
 const battleSystems = new Set();                    // system id -> the larger groups of one foreign faction seen there
 let groupHits = [], infraHits = [];            // foreign tags and our own building/site pills as drawn
@@ -1667,7 +1667,46 @@ function renderPop() {
   const box = $('fleetpop');
   if (!pop) { box.hidden = true; return; }
   if (pop.kind === 'Group') { renderGroupPop(box); return; }
-  const s = sys.get(pop.system), all = fleetGroups(shipsBy.get(pop.system) || []);
+  const s = sys.get(pop.system);
+  if (pop.kind === 'Pirates') {
+    const pShips = pirateShipsBy.get(pop.system) || [];
+    if (!s || !pShips.length) { closePop(); return; }
+    const body = box.querySelector('.popbody'), keep = body ? body.scrollTop : 0;
+    const head = el('div', 'pophead'), title = el('div', 'poptitle'), close = el('button', 'popclose', '\u00d7');
+    head.append(shipSvg('Pirates', PIRATES, 26));
+    title.append(el('b', null, 'Pirate Units (Account #2)'), el('span', null, 'at ' + s.name + ' | ' + pShips.length + ' ship' + (pShips.length === 1 ? '' : 's')));
+    close.type = 'button'; close.title = 'Close (Esc)'; close.addEventListener('click', closePop);
+    head.append(title, close);
+    const stats = el('div', 'popstats');
+    const lowP = (a, b) => pShips.reduce((m, r) => Math.min(m, r[b] > 0 ? Math.round(100 * r[a] / r[b]) : 100), 100);
+    for (const [label, value, bad] of [['Pirates', pShips.length], ['Credits', fmt(pShips.reduce((a, r) => a + (r.credits || 0), 0))],
+      ['Lowest hull', lowP('hull', 'max_hull') + '%', lowP('hull', 'max_hull') < 50], ['Lowest fuel', lowP('fuel', 'max_fuel') + '%', lowP('fuel', 'max_fuel') < 25]]) {
+      const cell = el('div', bad ? 'bad' : null);
+      cell.append(el('div', 'k', label), el('div', 'v', String(value)));
+      stats.append(cell);
+    }
+    const list = el('div', 'popbody');
+    pShips.forEach((r) => {
+      const b = el('button', 'poprow'), who = el('div', 'who'), nm = el('div', 'nm', r.name), bars = el('div', 'bars');
+      b.type = 'button';
+      if (r.class) nm.append(el('span', 't2badge', r.class));
+      who.append(nm, el('div', 'at', (r.order || shipState(r)[1]) + (r.piloting ? ' | Lv ' + r.piloting : '')));
+      bars.append(bar('hull', r.hull, r.max_hull, 0.5), bar('fuel', r.fuel, r.max_fuel, 0.25), bar('cargo', r.cargo_used, r.cargo_capacity));
+      b.append(who, bars, el('div', 'cr', fmt(r.credits || 0)));
+      b.title = 'Open Pirate ship ' + r.name;
+      b.addEventListener('click', () => { closePop(); selectShip(r.name, false); });
+      list.append(b);
+    });
+    const foot = el('div', 'popfoot'), go = el('button', 'poplink', 'Open ' + s.name);
+    go.type = 'button'; go.addEventListener('click', () => { closePop(); select(s.id, false); });
+    foot.append(go, el('span', null, 'Account #2 live'));
+    box.replaceChildren(head, stats, list, foot);
+    box.hidden = false;
+    list.scrollTop = keep;
+    placePop();
+    return;
+  }
+  const all = fleetGroups(shipsBy.get(pop.system) || []);
   const groups = pop.kind === 'All' ? all : all.filter((g) => g.kind === pop.kind);
   if (!s || !groups.length) { closePop(); return; }                // the ships have left
   const ships = groups.flatMap((g) => g.ships), body = box.querySelector('.popbody'), keep = body ? body.scrollTop : 0;
@@ -1863,7 +1902,7 @@ function renderMembers() {                       // the top bar: Credits (Wallet
     eCol.title = 'Consolidated Enterprise Net Worth: ' + fmt(bs.net_worth) + ' cr\n'
       + '- Liquid Cash: ' + fmt(bs.liquid_cash) + ' cr (' + (bs.net_worth ? ((100 * bs.liquid_cash) / bs.net_worth).toFixed(0) : '0') + '%)\n'
       + '- Fleet Hulls & Fitted Modules: ' + fmt(bs.fleet_book) + ' cr\n'
-      + '- Sovereign Outposts & Facilities: ' + fmt(bs.facility_invested) + ' cr\n'
+      + '- Owned Stations & Outposts: ' + fmt(bs.sovereign_bases_book || 0) + ' cr\n' + '- Installed Facilities: ' + fmt(bs.facility_invested) + ' cr\n'
       + '- 24h Realized Cash Pace: ' + (inc24 !== null ? signed(Math.round(inc24 * 24)) + ' cr/day' : '--') + '\nClick to open Metrics.';
   }
   purse.onclick = () => { tab = 'Metrics'; render(); };
@@ -2383,15 +2422,29 @@ function renderRoster() {
             } else {
               subList.forEach((r) => {
                 if (r.roster_status === 'active') {
-                  const row = el('button', 'prow live');
-                  row.type = 'button';
-                  const left = el('span', 'pname');
-                  left.append(el('i', 'pdot live'), el('span', null, r.name));
-                  const right = el('span', 'pmeta', (r.system || 'space') + ' | ' + (r.role || 'corsair'));
-                  row.append(left, right);
-                  row.title = r.name + ' (' + (r.empire || '') + ' ' + (r.role || '') + ') at ' + (r.system || 'unknown') + ' | ' + fmt(r.credits || 0) + ' cr';
-                  row.addEventListener('click', () => { if (r.system) select(r.system, true); });
-                  slist.append(row);
+                  const [pCls, pWhat] = shipState(r);
+                  const b = el('button', 'ship pirate-ship' + (r.name === selShip ? ' on' : ''));
+                  b.type = 'button';
+                  const who = el('div', 'who'), bars = el('div', 'bars'), cr = el('div', 'cr');
+                  const pLv = Number(r.piloting || 0);
+                  cr.append(el('span', pLv >= 10 ? 'ready-lv' : null, 'Lv ' + pLv));
+                  const nm = el('div', 'nm', r.name);
+                  if (r.class) nm.append(el('span', 't2badge pirate-cls', r.class));
+                  const locTxt = (r.system_name || r.system || '?') + ' - ' + (r.order || pWhat);
+                  who.append(nm, el('div', 'at', locTxt));
+                  bars.append(bar('hull', r.hull || 0, r.max_hull || 1, 0.5), bar('fuel', r.fuel || 0, r.max_fuel || 1, 0.25), bar('cargo', r.cargo_used || 0, r.cargo_capacity || 1));
+                  const best = (r.skill && r.skill[1] ? r.skill : r.top_skill) || ['', 0];
+                  cr.append(el('small', null, best[1] ? best[0].replace(/_/g, ' ').replace('asteroid mining', 'mining') + ' ' + best[1] : (r.role || r.class || '')));
+                  b.append(el('i', 'glyph ' + pCls + ' pirate-glyph'), who, bars, cr);
+                  b.title = r.name + ' (' + (r.empire || '') + ' ' + (r.class || '') + ', ' + (r.role || '') + ') | Lv ' + pLv
+                    + ' | hull ' + (r.hull || 0) + '/' + (r.max_hull || 0) + ', fuel ' + (r.fuel || 0) + '/' + (r.max_fuel || 0)
+                    + ', cargo ' + (r.cargo_used || 0) + '/' + (r.cargo_capacity || 0) + ' | ' + fmt(r.credits || 0) + ' cr';
+                  b.addEventListener('click', () => selectShip(r.name, true));
+                  b.addEventListener('dblclick', () => {
+                    selectShip(r.name, true);
+                    if (r.system && sys.has(r.system)) { const o = sys.get(r.system); flyTo(o.x, o.y, Math.max(view.k, 0.28)); }
+                  });
+                  slist.append(b);
                 } else {
                   const row = el('div', 'prow planned');
                   const left = el('span', 'pname');
@@ -2650,12 +2703,19 @@ function renderShip(panel) {
 
 async function selectShip(name, center) {
   selShip = name; shipCard = null; shipMark = ''; pilotCard = null; docView = null; tab = 'Selection';
-  const row = F.ships.find((r) => r.name === name);
+  const pShipsAll = (F && F.pirates && Array.isArray(F.pirates.ships)) ? F.pirates.ships : [];
+  const row = F.ships.find((r) => r.name === name) || pShipsAll.find((r) => r.name === name);
   if (row) {
-    const jd = jobDivision(row), subKey = jd + '::' + shipSubgroup(row)[1];
     let changed = false;
-    if (collapsed.has(jd)) { collapsed.delete(jd); changed = true; }
-    if (!openSubs.has(subKey)) { openSubs.add(subKey); changed = true; }
+    if (row.is_pirate) {
+      const subKey = 'Pirates::' + (row.pirate_division || 'Armada Alpha (29)');
+      if (collapsed.has('Pirates')) { collapsed.delete('Pirates'); changed = true; }
+      if (!openSubs.has(subKey)) { openSubs.add(subKey); changed = true; }
+    } else {
+      const jd = jobDivision(row), subKey = jd + '::' + shipSubgroup(row)[1];
+      if (collapsed.has(jd)) { collapsed.delete(jd); changed = true; }
+      if (!openSubs.has(subKey)) { openSubs.add(subKey); changed = true; }
+    }
     if (changed) saveFolds();
   }
   if (row && sys.has(row.system)) {
@@ -2689,7 +2749,7 @@ async function renderSelection(panel, live) {
   if (!selected) { panel.append(el('p', 'empty', 'Select a star system on the galaxy map or click any ship in the Fleet Outliner.')); return; }
   const s = sys.get(selected);
   const intel = S.intel.systems[s.id];
-  const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), ours = shipsBy.get(s.id) || [], st = stationsBy.get(s.id) || [];
+  const own = holdBy.get(s.id) || [], site = sitesBy.get(s.id), ours = shipsBy.get(s.id) || [], pHere = pirateShipsBy.get(s.id) || [], st = stationsBy.get(s.id) || [];
 
   const hero = el('div', 'sel-hero');
   const heroLeft = el('div');
@@ -2720,7 +2780,14 @@ async function renderSelection(panel, live) {
 
   const kgrid = el('div', 'kpis');
   const ykpi = (k, v, sTxt, c) => { const b = el('div', 'kpi' + (c ? ' ' + c : '')); b.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) b.append(el('div', 's', sTxt)); kgrid.append(b); };
-  ykpi('Our Fleet Here', fmt(ours.length) + ' ships', ours.length ? workingHere + ' active | ' + fmtCompact(wallets) + ' cr wallets' : 'no CLTV ships in system', ours.length ? 'main pos' : '');
+  const pWorkHere = pHere.filter((r) => isWorking(r) || r.status === 'connected').length;
+  const fleetHereVal = ours.length
+    ? (fmt(ours.length) + ' CLTV' + (pHere.length ? ' + ' + fmt(pHere.length) + ' Pir' : ''))
+    : (pHere.length ? fmt(pHere.length) + ' Pirates' : '0 ships');
+  const fleetHereSub = ours.length
+    ? (workingHere + ' active | ' + fmtCompact(wallets) + ' cr' + (pHere.length ? ' | ' + pWorkHere + ' Pirates' : ''))
+    : (pHere.length ? pWorkHere + ' Account #2 Corsair ships active' : 'no CLTV or Pirate ships in system');
+  ykpi('Our Units Here', fleetHereVal, fleetHereSub, ours.length ? 'main pos' : (pHere.length ? 'neg' : ''));
   ykpi('Vault Stock Here', units ? fmtCompact(worth) + ' cr' : '0 cr', units ? fmt(units) + ' units stored' : 'no stored inventory', worth > 0 ? 'pos' : '');
   const fpVal = own.length ? own.length + (own.length === 1 ? ' asset' : ' assets') : (siteRich && siteRich.status !== 'built' ? siteRich.status.toUpperCase() : '0 assets');
   const fpSub = own.length ? 'CLTV sovereign / leased' : (siteRich && siteRich.need_pct != null ? siteRich.need_pct + '% kit ready' : st.length + ' public station(s)');
@@ -2729,7 +2796,8 @@ async function renderSelection(panel, live) {
   panel.append(kgrid);
 
   const subBar = el('div', 'subtabs');
-  for (const [id, lbl] of [['Overview', 'Colony & Stations'], ['Ships', 'Our Ships (' + ours.length + ')'], ['Intel', 'Intel & Traffic']]) {
+  const unitLbl = 'Our Units (' + ours.length + (pHere.length ? ' + ' + pHere.length + ' Pir' : '') + ')';
+  for (const [id, lbl] of [['Overview', 'Colony & Stations'], ['Ships', unitLbl], ['Intel', 'Intel & Traffic']]) {
     const sb = el('button', 'subtab' + (selSub === id ? ' on' : ''), lbl);
     sb.type = 'button';
     sb.addEventListener('click', () => { selSub = id; render(); });
@@ -2738,27 +2806,47 @@ async function renderSelection(panel, live) {
   panel.append(subBar);
 
   if (selSub === 'Ships') {
-    if (!ours.length) {
-      panel.append(el('p', 'empty', 'No Collective ships are currently in ' + s.name + '.'));
+    if (!ours.length && !pHere.length) {
+      panel.append(el('p', 'empty', 'No Collective or Pirate ships are currently in ' + s.name + '.'));
       return;
     }
-    const byDiv = {};
-    ours.forEach((r) => { byDiv[r.division] = (byDiv[r.division] || 0) + 1; });
-    const dchips = el('div', 'chips');
-    for (const [dv, cnt] of Object.entries(byDiv)) dchips.append(el('span', 'pill info', dv + ': ' + cnt));
-    if (ours.length > 25) dchips.append(linkButton('Open floating map card (' + ours.length + ')', () => openPop(s.id, 'All')));
-    panel.append(dchips);
+    if (ours.length) {
+      const byDiv = {};
+      ours.forEach((r) => { byDiv[r.division] = (byDiv[r.division] || 0) + 1; });
+      const dchips = el('div', 'chips');
+      for (const [dv, cnt] of Object.entries(byDiv)) dchips.append(el('span', 'pill info', dv + ': ' + cnt));
+      if (ours.length > 25) dchips.append(linkButton('Open floating map card (' + ours.length + ')', () => openPop(s.id, 'All')));
+      panel.append(dchips);
 
-    const scard = el('div', 'icard');
-    scard.append(fitTable(table(['Ship', 'Div', 'Task', 'Cargo', 'Lv'],
-      ours.slice(0, 40).map((r) => [
-        shipLink(r.name),
-        r.division.slice(0, 3),
-        shipState(r)[1],
-        r.cargo_used + '/' + r.cargo_capacity,
-        r.piloting || '-',
-      ]), [3, 4])));
-    panel.append(scard);
+      const scard = el('div', 'icard');
+      scard.append(fitTable(table(['Ship', 'Div', 'Task', 'Cargo', 'Lv'],
+        ours.slice(0, 40).map((r) => [
+          shipLink(r.name),
+          r.division.slice(0, 3),
+          shipState(r)[1],
+          r.cargo_used + '/' + r.cargo_capacity,
+          r.piloting || '-',
+        ]), [3, 4])));
+      panel.append(scard);
+    }
+    if (pHere.length) {
+      const pcard = el('div', 'icard pirate-syscard');
+      const ph = el('div', 'ichead');
+      ph.append(shipSvg('Pirates', PIRATES, 15), el('b', null, 'Pirate Units in ' + s.name + ' (' + pHere.length + ')'), el('span', 'pill bad', 'ACCOUNT #2'));
+      pcard.append(ph);
+      pcard.append(fitTable(table(['Pirate Ship', 'Role / Hull', 'Task', 'Cargo', 'Lv'],
+        pHere.map((r) => {
+          const bsk = (r.top_skill && r.top_skill[1]) ? (' / ' + r.top_skill[0].replace(/_/g, ' ') + ' ' + r.top_skill[1]) : '';
+          return [
+            shipLink(r.name),
+            (r.role || 'corsair') + (r.class ? ' (' + r.class + ')' : ''),
+            r.order || shipState(r)[1],
+            (r.cargo_used || 0) + '/' + (r.cargo_capacity || 0),
+            'Lv ' + (r.piloting || 0) + bsk,
+          ];
+        }), [3])));
+      panel.append(pcard);
+    }
     return;
   }
 
@@ -4653,7 +4741,11 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5(fsLbl('Mobile Trade -- Express & Bulk Arbitrage (4A/4B, 20)', ['Trade']), mobileTradeOf, 'fs-ind'),
     row5(fsLbl('Core Logistics -- Supply, Fuel & Salvage Contracts (6A/6C, 62)', ['Logistics']), logCoreOf, 'fs-ind'),
     row5(fsLbl('Passenger & Resort Liners (6B, 28)', ['Logistics']), paxLinersOf, 'fs-ind'),
+    row5(fsLbl('Owned Stations & Resorts -- Tourism, Market & Refuel Fees', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0), 'fs-ind'),
     row5(fsLbl('Military & Hunters -- Bounties & Frontier Loot (1A-1C, 2A/2B, 150)', ['Military']), militaryRevOf, 'fs-ind'),
+    ...([a1, a6, a24].some((x) => x && revbOf(x) && Number(revbOf(x).other_unexplained_h || 0) !== 0)
+      ? [row5('Other Unattributed Wallet Adjustments (Non-Trade Reconciling)', (a) => (a && revbOf(a) ? Number(revbOf(a).other_unexplained_h || 0) : 0), 'fs-ind')]
+      : []),
     ...([a1, a6, a24].some((x) => (miningRevOf(x) || 0) + (intelRevOf(x) || 0) !== 0)
       ? [row5(fsLbl('Other Direct Sales (Mining / Intel residual)', ['Mining', 'Intel']), (a) => (a ? (miningRevOf(a) || 0) + (intelRevOf(a) || 0) : null), 'fs-ind')]
       : []),
@@ -4666,8 +4758,11 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Less: Reclassified Mission & CapEx Transit Fuel (Credited Out of Core OpEx)', (a) => (opexOf(a) ? numOr0(opexOf(a), 'reclassified_once_h') : (a ? -numOr0(a, 'once_direct_h') : null)), 'fs-ind'),
     row5('Total Matched Direct Operating Costs (COGS & OpEx)', dirOpExOf, 'fs-sub'),
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
-    { cls: 'fs-sec', sec: 'Corporate Overhead & Realized Operating Income (EBIT)' },
-    row5(fsLbl('Station Facility Rent & Direct Corporate Expenses', ['Command']), (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
+    { cls: 'fs-sec', sec: 'Building Upkeep, Station Operations Overhead & Realized EBIT' },
+    row5(fsLbl('Leased NPC Facility Rent (19 Offices/Desks, Cash Treasury)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
+    row5(fsLbl('Owned Station Facility Maintenance Labor (Cash Treasury)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
+    row5(fsLbl('Other Treasury Operating Net (Tax / Unattributed, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
+    row5('Memo: Owned Station Consumable Upkeep Burn (IAS 2 Non-Cash Inv. Draw)', (a) => (a && a.station_ops ? Number(a.station_ops.station_consumables_h || 0) : 0), 'fs-memo'),
     row5('Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)', realizedEbitOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Other Realized Operating Income' },
     row5('Realized Seed & Mission Rewards (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
@@ -4693,8 +4788,12 @@ function renderFinancialStatements(panel, ops, w, t) {
     const curAssets = Number(bs.liquid_cash || 0) + buyEscrowCash + vaultNrv;
     const hullsVal = Number(bs.fleet_hulls !== undefined ? bs.fleet_hulls : (bs.fleet_book || 0));
     const modsVal = Number(bs.fleet_modules !== undefined ? bs.fleet_modules : 0);
+    const stCount = Number(bs.stations_count || 0);
+    const stBook = Number(bs.stations_book || 0);
+    const opCount = Number(bs.outposts_count || 0);
+    const opBook = Number(bs.outposts_book || 0);
     const facVal = Number(bs.facility_invested || 0);
-    const fixedAssets = Number(bs.hard_assets || (Number(bs.fleet_book || 0) + facVal));
+    const fixedAssets = Number(bs.hard_assets || (Number(bs.fleet_book || 0) + stBook + opBook + facVal));
     const inTransit = Number(bs.treasury_in_transit || 0);
     const trNote = inTransit !== 0
       ? ('Central liquidity & CapEx pool (incl. ' + signed(inTransit) + ' cr in-transit sweeps)')
@@ -4712,7 +4811,9 @@ function renderFinancialStatements(panel, ops, w, t) {
       { cls: 'fs-sec', sec: 'Assets -- Non-Current Productive Hard Assets (Live-Updated Net PP&E, D&A = 0)' },
       { cls: 'fs-ind', cells: ['Fleet Hulls (Dynamic Live Upgrade Book)', fmt(hullsVal), pct(hullsVal), 'Recomputed every 60s from live ships x hull_materials'] },
       { cls: 'fs-ind', cells: ['Fitted Ship Modules (Dynamic Live Fit Book)', fmt(modsVal), pct(modsVal), 'Recomputed every 60s from live ship_modules x catalog value'] },
-      { cls: 'fs-ind', cells: [fsLbl('Space Infrastructure & Facilities (Outposts, Lockboxes & Bunkers)', ['Command']), fmt(facVal), pct(facVal), 'Recomputed live from faction_facilities & empire records'] },
+      { cls: 'fs-ind', cells: [fsLbl('Owned Player Stations (IAS 16 PP&E -- Core + Founding)', ['Command']), fmt(stBook), pct(stBook), fmt(stCount) + ' sovereign station(s) @ 17.0M cr standard book (12M core + 5M fee)'] },
+      { cls: 'fs-ind', cells: [fsLbl('Owned Frontier Outposts (IAS 16 PP&E -- Kit + Founding)', ['Command']), fmt(opBook), pct(opBook), fmt(opCount) + ' frontier outpost(s) @ 250k cr book (150k kit + 100k fee)'] },
+      { cls: 'fs-ind', cells: [fsLbl('Installed Facilities & Station Venues (IAS 16 PP&E)', ['Command']), fmt(facVal), pct(facVal), 'Recomputed live from faction_facilities & empire records'] },
       { cls: 'fs-sub', cells: ['Total Productive Hard Assets (Net PP&E)', fmt(fixedAssets), pct(fixedAssets), 'Capitalized permanent productive base (zero depreciation)'] },
       { cls: 'fs-tot', cells: ['TOTAL ASSETS', fmt(bs.net_worth || 0), '100.0%', 'Consolidated live balance sheet'] },
       { cls: 'fs-sec', sec: 'Liabilities & Collective Equity' },
@@ -4741,10 +4842,11 @@ function renderFinancialStatements(panel, ops, w, t) {
     { cls: 'fs-sec', sec: 'Cash Flows from Operating Activities (CFO == Realized Credits - CapEx)' },
     row5('Realized Core Cash Operations (Sales less Matched OpEx)', (a) => (a ? numOr0(a, 'recurring_cash_h') : null), 'fs-ind'),
     row5('Realized Mission & Seed Cash (Net of Direct Fuel & Inputs)', (a) => (a ? numOr0(a, 'seed_net_h') : null), 'fs-ind'),
-    row5(fsLbl('Station Facility Rent & Direct Corporate Expenses', ['Command']), (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
+    row5(fsLbl('Station & Facility Cash Ops (Rent, Labor & Station Rev., Ex-CapEx)', ['Command']), (a) => (a ? numOr0(a, 'treasury_own_h') : null), 'fs-ind'),
     row5('Net Cash from Operations (CFO / Cash Owner Earnings, Ex-CapEx)', cfoOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Cash Flows from Investing Activities (CFI / One-Time Growth CapEx)' },
-    row5('Capital Expenditures -- Hulls, Modules & Hubs (Gross)', (a) => (a ? numOr0(a, 'capex_gross_h') : null), 'fs-ind'),
+    row5('Capital Expenditures -- Ships, Modules & Station Core (Wallets)', (a) => (a ? numOr0(a, a.capex_wallets_h !== undefined ? 'capex_wallets_h' : 'capex_gross_h') : null), 'fs-ind'),
+    row5(fsLbl('Capital Expenditures -- Station Founding & Facilities (Treasury)', ['Command']), (a) => (a ? numOr0(a, 'capex_treasury_h') : 0), 'fs-ind'),
     row5('Module Fit Salvage & Transit Adjustments', (a) => (a ? numOr0(a, 'capex_fit_direct_h') : null), 'fs-ind'),
     row5('Net Cash Used in Investing Activities (CFI)', (a) => (a ? numOr0(a, 'capex_net_h') : null), 'fs-sub'),
     { cls: 'fs-sec', sec: 'Cash Flows from Financing Activities (CFF)' },
@@ -5638,53 +5740,161 @@ async function renderEmpire(panel, live) {
     panel.append(fitTable(table(['Hull class', 'Design empire', 'Tier', 'Role category', 'Ships'], hullRows, [4])));
   }
 
-  panel.append(el('h3', null, 'Where our buildings stand (' + bySys.size + ' systems)'));
-  if (!bySys.size) {
-    panel.append(el('p', 'empty', 'No bases or buildings recorded yet.'));
-  } else {
-    const cards = el('div', 'icards');
-    const orderedSys = [...bySys.entries()].sort((a, b) => {
-      const aBase = a[1].some((x) => x.kind === 'outpost' || x.kind === 'station') ? 0 : 1;
-      const bBase = b[1].some((x) => x.kind === 'outpost' || x.kind === 'station') ? 0 : 1;
-      return aBase - bBase || b[1].length - a[1].length;
-    });
-    for (const [sid, list] of orderedSys) {
-      const sObj = sys.get(sid) || { name: sid, empire: '' };
-      const hasOwnBase = list.some((x) => x.kind === 'outpost' || x.kind === 'station');
-      const card = el('div', 'icard' + (hasOwnBase ? ' ownbase' : ''));
-      const head = el('div', 'ichead');
-      const goBtn = el('button', 'sysjump', sObj.name || sid);
-      goBtn.type = 'button';
-      goBtn.addEventListener('click', () => { select(sid, true); });
-      const zone = sObj.empire ? sObj.empire + ' space' : 'lawless frontier';
-      const shipsHere = (shipsBy.get(sid) || []).length;
-      const baseIds = new Set(list.map((b) => b.base).filter(Boolean));
-      const stNames = new Set((stationsBy.get(sid) || []).map((t) => t.name));
-      const worthHere = inv ? inv.stations.filter((x) => stNames.has(x.name) || baseIds.has(x.base)).reduce((a, x) => a + (x.worth || 0), 0) : 0;
-      head.append(goBtn, el('span', 'pill ' + (hasOwnBase ? 'good' : ''), hasOwnBase ? 'OUR BASE' : 'NPC STATION'));
-      card.append(head);
-      card.append(el('div', 'icsub', zone + ' | ' + shipsHere + ' ships here' + (worthHere ? ' | ~' + fmt(worthHere) + ' cr stored' : '')));
-      const blist = el('div', 'iblist');
-      for (const b of list) {
-        const ok = stands(b), row = el('div', 'ibldg');
-        const bh = el('div', 'ibhead');
-        bh.append(glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15), el('b', null, b.name));
-        bh.append(el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')));
-        row.append(bh);
-        const details = [];
-        if (b.at && b.at !== 'our own base' && !b.part) details.push('at ' + b.at);
-        if (b.part && b.at) details.push('inside ' + b.at);
-        if (b.purpose) details.push(b.purpose);
-        if (b.fuel !== null && b.fuel !== undefined) details.push('bunker: ' + fmt(b.fuel) + ' / 50,000 fuel');
-        if (b.rent) details.push('rent: ' + fmt(b.rent) + ' cr/cycle');
-        else details.push('0 cr rent');
-        row.append(el('div', 'ibsub', details.join(' | ')));
-        blist.append(row);
+  // Dedicated single-building detail view when a building row is clicked
+  if (infraBuildingId) {
+    const b = bldgs.find((x) => (x.id || (x.system + ':' + x.name)) === infraBuildingId);
+    if (b) {
+      const sObj = sys.get(b.system) || { name: b.system, empire: '' };
+      const ok = stands(b);
+      const topBar = el('div', 'reader-bar');
+      const backBtn = el('button', 'subtab', '<- All Buildings');
+      backBtn.type = 'button';
+      backBtn.addEventListener('click', () => { infraBuildingId = null; render(); });
+      const mapBtn = el('button', 'rf', 'Locate ' + (sObj.name || b.system) + ' on Map');
+      mapBtn.type = 'button';
+      mapBtn.addEventListener('click', () => { select(b.system, true); });
+      topBar.append(backBtn, mapBtn);
+      panel.append(topBar);
+
+      const hero = el('div', 'sel-hero');
+      const hl = el('div');
+      hl.append(el('h2', null, b.name));
+      const hsub = el('div', 'sel-sub');
+      const kindLbl = b.kind === 'station' ? 'SOVEREIGN STATION' : b.kind === 'outpost' ? 'FRONTIER OUTPOST' : 'FACILITY / OFFICE';
+      hsub.append(
+        el('span', 'pill ' + (b.kind === 'station' ? 'good' : b.kind === 'outpost' ? 'info' : ''), kindLbl),
+        el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')),
+        el('span', 'pill', sObj.empire ? (sObj.empire + ' space') : 'lawless frontier')
+      );
+      hl.append(hsub);
+      hero.append(hl, glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 28));
+      panel.append(hero);
+
+      const shipsHere = (shipsBy.get(b.system) || []).length;
+      const stRec = inv ? inv.stations.find((x) => (b.base && x.base === b.base) || x.name === b.name || (b.at && x.name === b.at)) : null;
+      const kgrid = el('div', 'kpis');
+      const bkpi = (k, v, sTxt, c) => { const bx = el('div', 'kpi' + (c ? ' ' + c : '')); bx.append(el('div', 'k', k), el('div', 'v', v)); if (sTxt) bx.append(el('div', 's', sTxt)); kgrid.append(bx); };
+      bkpi('Book Value (PP&E)', b.book_value ? fmtCompact(b.book_value) + ' cr' : '--', b.kind === 'station' ? '12M core + 5M founding fee' : b.kind === 'outpost' ? '150k kit + 100k fee' : 'Facility build cost', b.book_value ? 'pos' : '');
+      const rentDay = Math.round((b.rent || 0) * 86);
+      const laborDay = Math.round((b.labor_cost || 0) * 86);
+      bkpi('Cash Upkeep / Rent', (b.rent || b.labor_cost) ? (fmt((b.rent || 0) + (b.labor_cost || 0)) + ' cr/cyc') : '0 cr/cyc',
+        b.rent ? ('~' + fmtCompact(rentDay) + '/day NPC rent') : (b.labor_cost ? ('~' + fmtCompact(laborDay) + '/day station labor') : 'Zero rent (sovereign ground)'),
+        (b.rent || 0) > 0 ? 'warn' : 'pos');
+      bkpi('Fleet in System', fmt(shipsHere) + ' ships', 'System: ' + (sObj.name || b.system), shipsHere ? 'pos' : '');
+      bkpi('Stored Inventory', stRec ? fmtCompact(stRec.worth || 0) + ' cr' : '0 cr', stRec ? (fmt(stRec.units || 0) + ' units stored at base') : 'No inventory snapshot yet', stRec && stRec.worth > 0 ? 'pos' : '');
+      panel.append(kgrid);
+
+      const infoCard = el('div', 'icard');
+      infoCard.append(el('h4', null, 'Building Profile & Operations'));
+      const frows = [
+        ['Location', sysLink(b.system)],
+        ['Host / Placement', b.at === 'our own base' ? 'Sovereign CLTV Base (0 rent, built-in Faction Storage)' : (b.part ? 'Inside ' + b.at : 'Leased at ' + b.at)],
+        ['Function / Purpose', b.purpose || '--'],
+        ['Base ID', b.base || '--'],
+      ];
+      if (b.poi) frows.push(['POI ID', b.poi]);
+      if (b.level) frows.push(['Facility Tier', 'Level ' + b.level]);
+      if (Array.isArray(b.services) && b.services.length) frows.push(['Active Services', b.services.join(', ')]);
+      infoCard.append(facts(frows));
+      if (b.fuel !== null && b.fuel !== undefined) {
+        infoCard.append(el('div', 'ibsub', 'Fuel Bunker Reserve: ' + fmt(b.fuel) + ' / 50,000 fuel'), pbar(b.fuel, 50000, b.fuel >= 25000 ? 'good' : 'warn'));
       }
-      card.append(blist);
-      cards.append(card);
+      panel.append(infoCard);
+
+      if (Array.isArray(b.upkeep) && b.upkeep.length) {
+        const ucard = el('div', 'icard');
+        ucard.append(el('h4', null, 'Consumable Upkeep Inputs (Per 100-Tick Cycle)'));
+        ucard.append(fitTable(table(['Item', 'Qty / Cycle', 'Qty / Day (86 cyc)'],
+          b.upkeep.map((u) => [u.item.replace(/_/g, ' '), fmt(u.qty), fmt(u.qty * 86)]), [1, 2])));
+        panel.append(ucard);
+      }
+
+      if (b.kind === 'station' || b.kind === 'outpost') {
+        const hosted = bldgs.filter((x) => x.part && ((b.base && x.base === b.base) || x.system === b.system) && x !== b);
+        const hcard = el('div', 'icard');
+        hcard.append(el('h4', null, 'Installed Facilities Inside ' + b.name + ' (' + hosted.length + ')'));
+        if (hosted.length) {
+          const hlist = el('div', 'bldg-list');
+          hosted.forEach((ch) => {
+            const cbtn = el('button', 'bldg-row');
+            cbtn.type = 'button';
+            cbtn.append(
+              glyphSvg(ch.kind || 'office', stands(ch) ? BUILT : RAISING, 15),
+              el('span', 'bldg-name', ch.name),
+              el('span', 'pill ' + (stands(ch) ? 'good' : 'warn'), (ch.status || 'active').replace(/_/g, ' ')),
+              el('span', 'bldg-meta', ch.book_value ? fmtCompact(ch.book_value) + ' cr' : '0 rent'),
+              el('span', 'bldg-chev', '>')
+            );
+            cbtn.addEventListener('click', () => { infraBuildingId = ch.id || (ch.system + ':' + ch.name); render(); });
+            hlist.append(cbtn);
+          });
+          hcard.append(hlist);
+        } else {
+          hcard.append(el('p', 'sub', b.kind === 'station'
+            ? 'Built-in free Faction Storage is active. Phase-1 core services and 12 Resort venues are queued in needs.tsv and supply chains are actively stocking materials.'
+            : 'No additional facilities installed inside this base yet.'));
+        }
+        panel.append(hcard);
+
+        if (b.kind === 'station' && b.system === 'ridgecrest' && ops && ops.resort_supply) {
+          const rs = ops.resort_supply;
+          const rcard = el('div', 'icard');
+          rcard.append(el('h4', null, 'Phase-1 Resort & Build Supply Chain (' + (rs.ok_count || 0) + '/' + (rs.total_count || 0) + ' ready | Target ' + (rs.appeal_target || 47) + ' Appeal)'));
+          rcard.append(fitTable(table(['Supply Chain', 'Stocked', 'Target', 'Status'],
+            (rs.items || []).map((it) => [
+              (it.item || it.chain || '').replace(/_/g, ' '),
+              fmt(it.have || 0),
+              fmt(it.keep || 0),
+              el('span', 'pill ' + (it.state === 'OK' ? 'good' : it.state === 'LOW' ? 'warn' : 'bad'), it.state || 'SHORT'),
+            ]), [1, 2])));
+          panel.append(rcard);
+        }
+      }
+      return;
+    } else {
+      infraBuildingId = null;
     }
-    panel.append(cards);
+  }
+
+  if (bldgs.length) {
+    panel.append(el('h3', null, 'Where our buildings stand (' + bldgs.length + ' buildings in ' + bySys.size + ' systems)'));
+    const kindRank = (k) => (k === 'station' ? 0 : k === 'outpost' ? 1 : 2);
+    const orderedBldgs = [...bldgs].sort((a, b) =>
+      kindRank(a.kind) - kindRank(b.kind)
+      || (a.part ? 1 : 0) - (b.part ? 1 : 0)
+      || String(a.system || '').localeCompare(String(b.system || ''))
+      || String(a.name || '').localeCompare(String(b.name || ''))
+    );
+    const blist = el('div', 'bldg-list');
+    for (const b of orderedBldgs) {
+      const sObj = sys.get(b.system) || { name: b.system };
+      const ok = stands(b);
+      const row = el('button', 'bldg-row' + (b.kind === 'station' ? ' is-station' : b.kind === 'outpost' ? ' is-outpost' : ''));
+      row.type = 'button';
+      const kBadge = b.kind === 'station' ? 'STATION' : b.kind === 'outpost' ? 'OUTPOST' : (b.part ? 'BASE FAC' : 'NPC OFFICE');
+      const kCls = b.kind === 'station' ? 'good' : b.kind === 'outpost' ? 'info' : '';
+      const metaTxt = b.kind === 'station'
+        ? (fmtCompact(b.book_value || 17000000) + ' cr | 0 rent')
+        : b.kind === 'outpost'
+          ? ((b.fuel != null ? fmt(b.fuel) + ' fuel | ' : '') + (b.hosted_count || 0) + ' fac | 0 rent')
+          : (b.rent ? (fmt(b.rent) + ' cr/cyc') : '0 rent');
+      row.append(
+        glyphSvg(b.kind || 'office', ok ? BUILT : RAISING, 15),
+        el('span', 'bldg-name', b.name),
+        el('span', 'bldg-sys', sObj.name || b.system),
+        el('span', 'pill ' + kCls, kBadge),
+        el('span', 'pill ' + (ok ? 'good' : 'warn'), (b.status || 'active').replace(/_/g, ' ')),
+        el('span', 'bldg-meta', metaTxt),
+        el('span', 'bldg-chev', '>')
+      );
+      row.title = 'Click to inspect ' + b.name + ' in ' + (sObj.name || b.system);
+      row.addEventListener('click', () => {
+        infraBuildingId = b.id || (b.system + ':' + b.name);
+        render();
+      });
+      blist.append(row);
+    }
+    panel.append(blist);
   }
 
   const sites = (emp.sites || []).filter((x) => x.status !== 'built' && x.status !== 'dropped');
@@ -7439,8 +7649,12 @@ function init() {
         b.addEventListener('click', () => { results.hidden = true; input.value = ''; go(); });
         results.append(b);
       };
-      F.ships.filter((r) => r.name.toLowerCase().includes(input.value.trim().toLowerCase())).slice(0, 8)
+      const qLow = input.value.trim().toLowerCase();
+      F.ships.filter((r) => r.name.toLowerCase().includes(qLow)).slice(0, 8)
         .forEach((r) => add(r.name, 'our ship', () => selectShip(r.name, true)));
+      ((F && F.pirates && Array.isArray(F.pirates.ships)) ? F.pirates.ships : [])
+        .filter((r) => r.name.toLowerCase().includes(qLow)).slice(0, 8)
+        .forEach((r) => add(r.name, 'pirate ship', () => selectShip(r.name, true)));
       d.systems.forEach((s) => add(s.name, 'system', () => select(s.id, true)));
       d.pilots.forEach((n) => add(n, 'pilot', () => showPilot(n)));
       if (!results.children.length) results.append(el('button', null, 'Nothing found'));

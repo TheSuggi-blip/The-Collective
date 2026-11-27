@@ -581,6 +581,11 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
     fleet_modules = 0
     fleet_book = 0
     facility_invested = 0
+    stations_count = 0
+    outposts_count = 0
+    stations_book = 0
+    outposts_book = 0
+    sovereign_bases_book = 0
     handed_over_24h = 0
     hexc_wealth = 0
 
@@ -715,6 +720,36 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
             fac_sum = int(round(_num(r[0]))) if r else 0
         facility_invested = max(fac_lb, fac_sum)
 
+        # IAS 16 PP&E Capitalization of Owned Sovereign Stations & Frontier Outposts
+        stations_count = 0
+        outposts_count = 0
+        if _has_table(conn, "bases"):
+            for br in conn.execute("SELECT LOWER(COALESCE(kind, '')) FROM bases"):
+                if br[0] == "station":
+                    stations_count += 1
+                elif br[0] == "outpost":
+                    outposts_count += 1
+        if stations_count == 0 and outposts_count == 0 and data_dir:
+            _emp_b = Path(data_dir) / "empire" / "empire.json"
+            if _emp_b.is_file():
+                try:
+                    _eb = json.loads(_emp_b.read_text(encoding="utf-8", errors="replace")).get("bases") or []
+                    for _b in _eb:
+                        if not isinstance(_b, dict):
+                            continue
+                        _bk = str(_b.get("kind") or "").lower()
+                        if _bk == "station":
+                            stations_count += 1
+                        elif _bk == "outpost":
+                            outposts_count += 1
+                except (OSError, ValueError):
+                    pass
+        station_core_val = int(item_val_id.get("station_core") or 12000000)
+        outpost_kit_val = int(item_val_id.get("outpost_kit") or 150000)
+        stations_book = stations_count * (station_core_val + 5000000)
+        outposts_book = outposts_count * (outpost_kit_val + 100000)
+        sovereign_bases_book = stations_book + outposts_book
+
         if _has_table(conn, "stats_figures"):
             r = conn.execute(
                 "SELECT COALESCE(SUM(value), 0) FROM stats_figures WHERE view = 'contribution' AND figure = 'handed_over_worth' AND hours = 24"
@@ -751,12 +786,17 @@ def compute_balance_sheet(conn, fleet_json=None, data_dir=DATA_DEFAULT):
         "fleet_hulls": fleet_hulls,
         "fleet_modules": fleet_modules,
         "fleet_book": fleet_book,
+        "stations_count": stations_count,
+        "outposts_count": outposts_count,
+        "stations_book": stations_book,
+        "outposts_book": outposts_book,
+        "sovereign_bases_book": sovereign_bases_book,
         "facility_invested": facility_invested,
-        "hard_assets": fleet_book + facility_invested,
-        "operating_invested_capital": fleet_book + facility_invested + vault_eff,
-        "net_worth": total_cash_and_escrow + vault_eff + fleet_book + facility_invested,
-        "net_worth_ias2": total_cash_and_escrow + vault_nrv + fleet_book + facility_invested,
-        "net_worth_catalog": total_cash_and_escrow + vault_cat + fleet_book + facility_invested,
+        "hard_assets": fleet_book + sovereign_bases_book + facility_invested,
+        "operating_invested_capital": fleet_book + sovereign_bases_book + facility_invested + vault_eff,
+        "net_worth": total_cash_and_escrow + vault_eff + fleet_book + sovereign_bases_book + facility_invested,
+        "net_worth_ias2": total_cash_and_escrow + vault_nrv + fleet_book + sovereign_bases_book + facility_invested,
+        "net_worth_catalog": total_cash_and_escrow + vault_cat + fleet_book + sovereign_bases_book + facility_invested,
         "handed_over_24h": handed_over_24h,
         "hexc_wealth": hexc_wealth,
     }
@@ -850,6 +890,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     rewards_h = 0.0
     bought_once_h = 0.0
     treasury_own_h = None
+    treasury_capex_h = 0.0
+    treasury_ops_h = None
+    trade_unexp_h = None
     purse_h = None
     div_raw_cash = {}
     div_raw_once = {}
@@ -900,6 +943,13 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         win_minutes = _num(w.get("minutes"), hours * 60.0)
         if w.get("treasury_own_per_hour") is not None:
             treasury_own_h = _num(w.get("treasury_own_per_hour"))
+        if w.get("treasury_capex_per_hour") is not None:
+            treasury_capex_h = _num(w.get("treasury_capex_per_hour"))
+        if w.get("treasury_ops_per_hour") is not None:
+            treasury_ops_h = _num(w.get("treasury_ops_per_hour"))
+        _tdv = (w.get("divisions") or {}).get("Trade") if isinstance(w.get("divisions"), dict) else None
+        if isinstance(_tdv, dict) and _tdv.get("unexplained_per_hour") is not None:
+            trade_unexp_h = max(0.0, _num(_tdv.get("unexplained_per_hour")))
         if w.get("purse_per_hour") is not None:
             purse_h = _num(w.get("purse_per_hour"))
         elif w.get("total_per_hour") is not None:
@@ -1305,6 +1355,114 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     # (raw_costs_h + raw_unexplained_h - repair_opex_h): capping historical over-metered free bunker
     # refills prevents phantom passive_inflows_h plugs while preserving exact zero-plug reconciliation:
     # (raw_income_h + passive_inflows_h) - matched_direct_h == recurring_cash_h.
+    if treasury_capex_h == 0.0 and data_p:
+        _otp_tc = data_p / "fleet" / "onetime.json"
+        if _otp_tc.is_file():
+            try:
+                _cut_tc = now - span_h * 3600.0
+                _tc_rows = json.loads(_otp_tc.read_text(encoding="utf-8", errors="replace"))
+                if isinstance(_tc_rows, list):
+                    _tc_sum = sum(
+                        _num(r[3]) for r in _tc_rows
+                        if isinstance(r, list) and len(r) == 4 and isinstance(r[0], (int, float))
+                        and float(r[0]) >= _cut_tc
+                        and (str(r[1]) == "__TREASURY__" or str(r[2]).startswith("Treasury CapEx:"))
+                    )
+                    if _tc_sum != 0.0:
+                        treasury_capex_h = _tc_sum / span_h
+            except (OSError, ValueError):
+                pass
+    if treasury_own_h is not None and treasury_ops_h is None:
+        treasury_ops_h = treasury_own_h - treasury_capex_h
+
+    # Live Building & Station Operations Schedule (IFRS 15 Revenue + Cash Rent/Labor + IAS 2 Consumable Upkeep)
+    _CYCLES_PER_H = 86.0 / 24.0
+    npc_rent_per_day = 0.0
+    npc_rent_h = 0.0
+    npc_leased_count = 0
+    own_station_labor_h = 0.0
+    own_station_consumables_h = 0.0
+    own_station_fac_count = 0
+    station_tourism_rev_total = 0
+    station_count_live = 0
+    try:
+        _emp_p2 = data_p / "empire" / "empire.json"
+        _emp2 = json.loads(_emp_p2.read_text(encoding="utf-8", errors="replace")) if _emp_p2.is_file() else {}
+        _r_obj = _emp2.get("rent") if isinstance(_emp2, dict) else None
+        if isinstance(_r_obj, dict) and _r_obj.get("per_day") is not None:
+            npc_rent_per_day = max(0.0, _num(_r_obj.get("per_day")))
+            npc_rent_h = -(npc_rent_per_day / 24.0)
+            npc_leased_count = int(_num(_r_obj.get("facilities")))
+        _own_base_ids = {
+            str(b.get("base")) for b in (_emp2.get("bases") or [])
+            if isinstance(b, dict) and b.get("base") and str(b.get("kind") or "").lower() == "station"
+        }
+        station_count_live = sum(
+            1 for b in (_emp2.get("bases") or [])
+            if isinstance(b, dict) and str(b.get("kind") or "").lower() == "station"
+        )
+        _cat_facs = {}
+        _cat_dir = data_p / "catalog"
+        if _cat_dir.is_dir():
+            for _cf in sorted(_cat_dir.glob("*.json"), reverse=True):
+                if _cf.stem == "releases":
+                    continue
+                try:
+                    _cd = json.loads(_cf.read_text(encoding="utf-8", errors="replace"))
+                    _fl = _cd.get("facilities") if isinstance(_cd, dict) else None
+                    if isinstance(_fl, dict):
+                        _cat_facs = _fl
+                    elif isinstance(_fl, list):
+                        _cat_facs = {str(x.get("id")): x for x in _fl if isinstance(x, dict) and x.get("id")}
+                    if _cat_facs:
+                        break
+                except (OSError, ValueError):
+                    pass
+        for _fac in (_emp2.get("facilities") or []):
+            if not isinstance(_fac, dict):
+                continue
+            _fb = str(_fac.get("base") or "")
+            _ft = str(_fac.get("type") or "")
+            _fst = str(_fac.get("status") or "active").lower()
+            if _fb in _own_base_ids and _fst in ("active", "online", "running", "operational"):
+                own_station_fac_count += 1
+                _cfac = _cat_facs.get(_ft) or {}
+                _lab = _num(_cfac.get("labor_cost"))
+                if _lab > 0:
+                    own_station_labor_h -= _lab * _CYCLES_PER_H
+                for _ukey in ("maintenance_inputs", "tourism_upkeep"):
+                    _uobj = _cfac.get(_ukey)
+                    if isinstance(_uobj, dict):
+                        for _iid, _iq in _uobj.items():
+                            _up = _num(max_bid_map.get(_iid) or base_map.get(_iid) or 0)
+                            own_station_consumables_h -= _num(_iq) * _up * _CYCLES_PER_H
+                    elif isinstance(_uobj, list):
+                        for _ur in _uobj:
+                            if isinstance(_ur, dict):
+                                _iid = str(_ur.get("item_id") or _ur.get("item") or "")
+                                _iq = _num(_ur.get("quantity") or _ur.get("units") or 0)
+                                _up = _num(max_bid_map.get(_iid) or base_map.get(_iid) or 0)
+                                own_station_consumables_h -= _iq * _up * _CYCLES_PER_H
+        if conn is not None and _has_table(conn, "leaderboards"):
+            _own_st_names = {
+                str(b.get("name") or "").lower() for b in (_emp2.get("bases") or [])
+                if isinstance(b, dict) and str(b.get("kind") or "").lower() == "station" and b.get("name")
+            }
+            if _own_st_names:
+                for _lr in conn.execute("SELECT name, value FROM leaderboards WHERE grp = 'stations' AND board = 'tourism_revenue'"):
+                    if str(_lr[0] or "").lower() in _own_st_names:
+                        station_tourism_rev_total += int(round(_num(_lr[1])))
+    except (OSError, ValueError):
+        pass
+
+    _tr_ops_val = treasury_ops_h if treasury_ops_h is not None else 0.0
+    _tr_expected_opex = npc_rent_h + own_station_labor_h
+    if station_count_live > 0 and (own_station_fac_count > 0 or station_tourism_rev_total > 0):
+        station_revenue_h = max(0.0, _tr_ops_val - _tr_expected_opex)
+    else:
+        station_revenue_h = 0.0
+    treasury_other_h = _tr_ops_val - station_revenue_h - _tr_expected_opex
+
     passive_inflows_h = max(0.0, raw_unexplained_h)
     gross_direct_h = raw_costs_h + passive_inflows_h
     if repair_opex_h > gross_direct_h:
@@ -1397,7 +1555,9 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "trade_sales_h": trade_i,
         "freight_sales_h": log_i,
         "other_sales_h": mil_i + mine_i + intel_i,
-        "passive_escrow_h": int(round(passive_inflows_h)),
+        "passive_escrow_h": int(round(passive_inflows_h if trade_unexp_h is None else min(passive_inflows_h, trade_unexp_h))),
+        "other_unexplained_h": int(round(0.0 if trade_unexp_h is None else max(0.0, passive_inflows_h - min(passive_inflows_h, trade_unexp_h)))),
+        "station_ops_h": int(round(station_revenue_h)),
         "bursar_active_h": bursar_active_i,
         "mobile_trade_h": mobile_trade_i,
         "logistics_core_h": logistics_core_i,
@@ -1464,10 +1624,26 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "accrual_operating_h": int(round(accrual_operating_h)),
         "seed_rewards_h": int(round(rewards_h)),
         "seed_net_h": int(round(seed_net_h)),
-        "capex_gross_h": int(round(-capex_bought_h)),
-        "capex_net_h": int(round(capex_net_h)),
+        "capex_wallets_h": int(round(-capex_bought_h)),
+        "capex_treasury_h": int(round(treasury_capex_h)),
+        "capex_gross_h": int(round(-capex_bought_h + treasury_capex_h)),
+        "capex_net_h": int(round(capex_net_h + treasury_capex_h)),
         "mission_buy_once_h": int(round(-mission_buy_once_h)),
-        "treasury_own_h": int(round(treasury_own_h)) if treasury_own_h is not None else None,
+        "treasury_own_raw_h": int(round(treasury_own_h)) if treasury_own_h is not None else None,
+        "treasury_own_h": int(round(treasury_ops_h)) if treasury_ops_h is not None else None,
+        "station_ops": {
+            "stations_count": station_count_live,
+            "station_facilities_active": own_station_fac_count,
+            "npc_leased_count": npc_leased_count,
+            "station_revenue_h": int(round(station_revenue_h)),
+            "tourism_rev_total": int(station_tourism_rev_total),
+            "npc_rent_h": int(round(npc_rent_h)),
+            "npc_rent_per_day": int(round(npc_rent_per_day)),
+            "station_labor_opex_h": int(round(own_station_labor_h)),
+            "station_consumables_h": int(round(own_station_consumables_h)),
+            "treasury_other_h": int(round(treasury_other_h)),
+            "treasury_ops_h": int(round(_tr_ops_val)),
+        },
         "buy_escrow_flow_h": int(round(_num(w.get("escrow_moved_per_hour")) if isinstance(w, dict) else 0.0)),
         "purse_h": int(round(purse_h)),
         "repair_cr_h": int(round(repair_opex_h)),
