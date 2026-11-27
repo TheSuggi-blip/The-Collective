@@ -1832,8 +1832,8 @@ def _acquire_serve_lock(data):
 
 
 STATION_BUILD_PRIORITY = (
-    "faction_fuel_bunker",
     "market_terminal",
+    "refueling_dock",
     "notice_board",
     "faction_desk",
     "market_runner",
@@ -1841,7 +1841,7 @@ STATION_BUILD_PRIORITY = (
     "faction_quarters",
     "faction_ship_garage",
     "transit_lounge",
-    "refueling_dock",
+    "fuel_tank_expansion",
     "bunker_fed_reactor",
     "dockside_diner",
     "frontier_cantina",
@@ -2012,7 +2012,8 @@ def serve_station_builds(data, now, dry=False, max_builds=8):
         else:
             print("STATION_BUILD FAIL: %s @ %s via %s | %s" % (
                 fid, bname, builder, str(msg)[:160]), flush=True)
-            if "already" in str(msg).lower() or "limit" in str(msg).lower() or "cap" in str(msg).lower():
+            _low = str(msg).lower()
+            if any(k in _low for k in ("already", "limit", "cap", "doesn't make sense", "cannot", "not allowed", "requires", "invalid")):
                 continue
             failed = 1
             if "rate" in str(msg).lower() or "tick" in str(msg).lower():
