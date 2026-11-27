@@ -42,10 +42,10 @@
   "empty_hold": true
  },
  "measured": {
-  "date": "2026-11-26",
-  "runs": 57,
-  "minutes": 7,
-  "credits_per_run": 70,
-  "cph_per_ship": 220
+  "date": "2026-11-27",
+  "runs": 68,
+  "minutes": 18,
+  "credits_per_run": 100,
+  "cph_per_ship": 270
  }
 }
