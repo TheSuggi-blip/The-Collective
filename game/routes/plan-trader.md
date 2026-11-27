@@ -92,8 +92,8 @@ Kept by Mercury. Routes: 87. Ships: 85.
 | 70 | [strip-starters-trader-alpha](strip-starters-trader-alpha.json) | [Fitting](index-fitting.md) | beyond the border, 11 jumps | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
 | 71 | [strip-starters-trader-experiment](strip-starters-trader-experiment.json) | [Fitting](index-fitting.md) | home space | once per pilot, up to 10 ships, 85 pilots in all, from 3,000 cr | all 85 |
 | 72 | [mission-workshop-production-run-grand](mission-workshop-production-run-grand.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 3 ships, from 3,200 cr, born nebula, while grand_exchange_station asks 3 cr or less for argon_gas | all 85 |
-| 73 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 12 ships, standing work | all 85 |
-| 74 | [haul-network-trade](haul-network-trade.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 30 ships, standing work | all 85 |
+| 73 | [haul-network-trade](haul-network-trade.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 30 ships, standing work | all 85 |
+| 74 | [craft-network](craft-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 12 ships, standing work | all 85 |
 | 75 | [bursar-network](bursar-network.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | up to 55 ships, standing work | all 85 |
 | 76 | [bursar-network-freighter](bursar-network-freighter.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | -- | standing work | all 85 |
 | 77 | [bursar-desk-krynn](bursar-desk-krynn.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | standing work | all 85 |
