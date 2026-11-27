@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-27T20:43:53Z.
+Facts as of 2026-11-27T21:58:56Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-27T20:43:53Z.
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
-| Offices at stations | 36, rent 1,580 cr per cycle (135,880 cr a day) |
+| Offices at stations | 37, rent 1,614 cr per cycle (138,804 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -96,10 +96,11 @@ hold).
 | Faction Ship Garage | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Sunrise Griddle | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Notice Board | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
+| Grand Hotel & Resort | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Zero-G Lounge & Bar | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Frontier Cantina | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
-| Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 87 |
+| Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 104 |
 | Faction Fuel Bunker | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Faction Lockbox | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
@@ -108,7 +109,7 @@ hold).
 | Recruitment Center | 1 | node_beta_industrial_station | `node_beta` | active | 697 |
 | Faction Lockbox | 1 | procyon_colonial_station | `procyon` | active | 69 |
 | Faction Lockbox | 1 | ramens_rest | `last_light` | active | 69 |
-| Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 87 |
+| Recruitment Desk | 1 | the_experiment_research_station | `the_experiment` | active | 104 |
 | Faction Lockbox | 1 | the_experiment_research_station | `the_experiment` | active | 69 |
 | Faction Lockbox | 1 | the_levy_customs_station | `the_levy` | active | 69 |
 | Faction Lockbox | 1 | the_rampart_checkpoint | `the_rampart` | active | 69 |
