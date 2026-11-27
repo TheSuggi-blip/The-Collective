@@ -2042,7 +2042,15 @@ def upgrade_hold_needed(name, data, now):
     if todo is None:
         return None
     key = (name, str(todo.get("id") or ""))
+    is_ready = bool(todo.get("ready_to_switch") or str(todo.get("note") or "").startswith("ready"))
     upd = float(todo.get("updated_at") or 0)
+    if is_ready:
+        # Built T1+ hull is sitting in hangar waiting to board: hold pilot idle (up to 60m) so wallet.py switches it!
+        UPGRADE_HOLD_WAIT[key] = max(UPGRADE_HOLD_WAIT.get(key, now), now if (now - upd) < 3600 else upd)
+        since = UPGRADE_HOLD_WAIT.setdefault(key, now)
+        if (now - since) < 3600:
+            return todo
+        return None
     if upd > 0 and (now - upd) < 900:
         UPGRADE_HOLD_WAIT[key] = max(UPGRADE_HOLD_WAIT.get(key, now), upd)
     since = UPGRADE_HOLD_WAIT.setdefault(key, now)

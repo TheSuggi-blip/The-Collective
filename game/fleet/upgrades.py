@@ -1185,6 +1185,8 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=40, b
             if not _try_hold_upgrade(data_dir, pilot, now, division_mod):
                 _request_pilot_stop(data_dir, pilot)
                 r["note"] = "ready at %s; waiting for pilot free (stop sent)" % base_id
+                r["updated_at"] = int(now)
+                changed = True
                 continue
             actions += 1
             switch_batch.append((r, pilot, hull, sys_id, poi_id, base_id, ship, stored[0]["ship_id"]))
