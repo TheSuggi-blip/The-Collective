@@ -1,5 +1,5 @@
 {
-  "_owner": "All 5 Admirals & Unity",
+  "_owner": "Trinity (Sole Operator)",
   "_doc": "Min-max hull-locked module auto-fitting policy (game/fleet/fit_net.py). Every T1-T5 hull in every division resolves deterministically via detect_by_hull / sentinel_detect_by_hull / flagship_detect_by_hull to its exact matching module loadout, stripping off-role and wrong-resource modules automatically.",
   "enabled": true,
   "policed_only": true,

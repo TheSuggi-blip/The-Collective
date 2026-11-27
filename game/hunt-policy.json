@@ -1,5 +1,5 @@
 {
-  "_owner": "Apophis (Military) & Unity",
+  "_owner": "Trinity (Sole Operator)",
   "_doc": "Policy for dynamic hunt-network (game/fleet/hunt_net.py). Four priority lanes: (1) on-demand Escort/Protection (0 ships held when space is clear), (2) Coordinated Group Packs (3/5/8/10 ships targeting 25% of Military for tough wildlife & lone NPC pirates), (3) Power-Ratio Gated Solo Herd Hunting (auto-scales T0->T5+, F38 keep_herd=2, instant cooldown rotation), (4) Low-burn XP fallback.",
   "enabled": true,
   "claim_ttl_s": 4200,
@@ -55,13 +55,13 @@
     ],
     "min_member_power": 350.0,
     "min_target_hull": 60,
-    "rally_max_jumps": 12,
+    "rally_max_jumps": 10,
     "rally_timeout_s": 180,
     "arrive_timeout_s": 240,
     "fight_ticks": 45,
     "flee_hull_pct": 80,
     "close_dist": 2,
-    "max_jumps": 10,
+    "max_jumps": 8,
     "priority_species": [
       "cloudwhale",
       "crusher_mantis",
@@ -91,10 +91,12 @@
     "command_flagship_min_power": 150.0,
     "max_forming_packs": 14,
     "require_command_leader": false,
-    "max_station_jumps": 10,
+    "max_station_jumps": 7,
     "min_loot_val": 750.0,
     "standing_outpost_squads": true,
-    "min_loot_per_ship": 250.0
+    "min_loot_per_ship": 250.0,
+    "apex_max_jumps": 10,
+    "apex_min_loot_val": 1800.0
   },
   "solo": {
     "enabled": true,
@@ -107,10 +109,12 @@
     "min_bid": 1500,
     "policed_alone_mode": "pirates",
     "lawless_alone_mode": "pirates",
-    "max_station_jumps": 6,
+    "max_station_jumps": 5,
     "min_loot_val": 150.0,
-    "tier_s_max_jumps": 10,
-    "tier_s_min_loot_val": 550.0
+    "tier_s_max_jumps": 8,
+    "tier_s_min_loot_val": 550.0,
+    "apex_max_jumps": 10,
+    "apex_min_loot_val": 1800.0
   },
   "fallback": {
     "enabled": true,
@@ -127,11 +131,14 @@
     "minutes": 45,
     "_note": "Dormant in peacetime (activates ONLY on active war in empire.json or explicit data/fleet/war-posture-on, rule F2)."
   },
-  "lawless_only": true,
+  "lawless_only": false,
   "allow_adaptive_relocate": true,
   "relocate_max_jumps": 45,
   "pirate_battle_avoid_hours": 4.0,
   "allow_command_solo": true,
   "_trinity_500_note": "2026-11-26: Tuned for 500-ship T0/T1 fast-P10 farming: packs min_member_power=350, pirates_enabled=true, sizes [3,5,7,8,10], 2B fast solo sweeps, 2A/1B heavy herds & packs, 1C farming + on-demand escort.",
-  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready."
+  "_pirate_standdown_note": "2026-11-26 Suggi order: ALL pirate hunting & pirate escorts DISABLED fleet-wide (evade-only, wildlife-only) until T2/T3 hulls are ready.",
+  "lawless_bonus": 1.45,
+  "safe_zone_penalty": 0.65,
+  "_trinity_opt_note": "2026-11-27: Soft lawless preference (1.45x lawless / 0.65x safe-zone; avoid safe zones, never forbid) + fuel-optimal tiered 6J/8J/10J solo and 8J/10J apex pack radii."
 }

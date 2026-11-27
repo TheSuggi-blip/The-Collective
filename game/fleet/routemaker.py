@@ -224,10 +224,10 @@ def load_world(data, root, now):
                     open_needs.add(cols[3].strip())
         except OSError:
             pass
-    _rm_cltv, _rm_fair = set(), {}
+    _rm_cltv, _rm_fair = {}, {}
     try:
         import market_guard as _mg_rm
-        _rm_cltv, _ = _mg_rm.load_cltv_buy_orders(data)
+        _rm_cltv = _mg_rm.load_cltv_buy_qty(data)
         _rm_fair = _mg_rm.read_price_oracle(data)
     except Exception:
         pass
@@ -623,16 +623,20 @@ def fetch_ladders(world, data, look=read_ladder, pause=1.1):
 
 def best_bids(world, item):
     """[(bid, depth at that price, base)] for an item, best first (excludes CLTV self-buys & caps spoof spikes)."""
-    cltv_buys = world.get("cltv_buys") or set()
+    cltv_buys = world.get("cltv_buys")
     fair_map = world.get("fair_map") or {}
     frec = fair_map.get(item)
     fp = float(frec.get("fair_price") if isinstance(frec, dict) else (frec or 0.0))
     out = []
     for base, book in world["books"].items():
-        if cltv_buys and (base, item) in cltv_buys:
-            continue
         row = book["items"].get(item)
         if not row or row["bid"] <= 0:
+            continue
+        if isinstance(cltv_buys, dict):
+            _net_bq = max(0, int(row.get("bid_qty") or 0) - int(cltv_buys.get((base, item), 0)))
+            if _net_bq <= 0:
+                continue
+        elif cltv_buys and (base, item) in cltv_buys:
             continue
         bp = float(row["bid"])
         if fp > 0.0 and bp > max(fp * 1.75, fp + 2.0):

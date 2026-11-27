@@ -576,7 +576,7 @@ def set_site(root, data, who, system, status, poi="", note=""):
         return False, "REFUSED: `%s` is no system of the chart (game/map/galaxy.tsv)" % system
     if status not in STATUSES:
         return False, "REFUSED: a site's status is one of %s; `built` is read from the game" % ", ".join(STATUSES)
-    if status != "candidate" and who != "Unity":
+    if status != "candidate" and who not in ("Trinity", "Unity"):
         return False, "REFUSED: the Fleet Admiral chooses or drops a site (rule F33); propose it as a candidate"
     if git(root, "status", "--porcelain", "--", SITES)[1].strip():
         return False, "REFUSED: %s holds a change that is not committed; commit it or take it back first" % SITES
@@ -593,7 +593,7 @@ def set_site(root, data, who, system, status, poi="", note=""):
             out.append(old)
             continue
         cells += [""] * (5 - len(cells))
-        if who != "Unity" and cells[3] and who not in [c.strip() for c in cells[3].split(",")]:
+        if who not in ("Trinity", "Unity") and cells[3] and who not in [c.strip() for c in cells[3].split(",")]:
             return False, "REFUSED: %s stands as another member's line (proposed by %s): ask the Fleet Admiral in requests.log" % (system, cells[3])
         line = "\t".join([system, poi or cells[1] or "-", status, cells[3] or who, clean(note) or cells[4]])
         out.append(line)
@@ -632,7 +632,7 @@ def dismantle_facility(data, pilot, facility_id, dry=False, caller=None, call_fn
     build+upgrade materials into packages in faction storage (cost: 1 cargo_container per package; stops NPC rent
     immediately). Enforces caller auth (Unity/Apollo), pilot dock & manage_facilities role, seat-cap floor guard,
     storage dependency guard, and cargo_container stock check."""
-    if not dry and caller not in ("Unity", "Apollo", "service", None):
+    if not dry and caller not in ("Trinity", "Unity", "Apollo", "service", None):
         print("REFUSED: dismantling faction facilities is Logistics (Apollo) or Fleet Admiral (Unity) only (rule F11/F16)")
         return 1
     state = read_json(Path(data) / "empire" / "empire.json", {}) or {}
@@ -760,7 +760,7 @@ def main():
         return 0 if ok else 1
     if verb == "collect":
         kind, name = division.member()
-        if not (kind == "service" or name == "Unity"):
+        if not (kind == "service" or name in ("Trinity", "Unity")):
             sys.exit("REFUSED: reading the faction through the leader's flagship is the Fleet Admiral's; read the result with `empire.py show`")
         state, notes = collect(data, root, force="--ladder" in args)
         save(data, state)

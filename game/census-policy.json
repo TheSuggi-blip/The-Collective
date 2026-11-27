@@ -1,5 +1,5 @@
 {
-  "_owner": "Oracle (Intel) & Unity (Fleet)",
+  "_owner": "Trinity (Sole Operator)",
   "_doc": "Policy for dynamic whole-map Intelligence AutoNet (game/fleet/census_net.py). Dynamically covers 100% of non-stronghold systems in read.db:systems (auto-discovers new patch systems), equalizes 4 galactic quadrants (EN/ES/WN/WS), and specializes 7A Covert Recon (frontier & rival hubs) vs 7B Deep-Core Surveyors (belts & herds).",
   "enabled": true,
   "allow_strongholds": false,

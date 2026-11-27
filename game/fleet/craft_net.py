@@ -107,10 +107,10 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                 if "t" in _bcols:
                     _q += " WHERE t >= ?"
                     _p = (time.time() - 6.0 * 3600.0,)
-                _c_cltv, _c_fair, _mg_c = set(), {}, None
+                _c_cltv_qty, _c_fair, _mg_c = {}, {}, None
                 try:
                     import market_guard as _mg_c
-                    _c_cltv, _ = _mg_c.load_cltv_buy_orders(data_dir)
+                    _c_cltv_qty = _mg_c.load_cltv_buy_qty(data_dir)
                     _c_fair = _mg_c.read_price_oracle(data_dir)
                 except Exception:
                     _mg_c = None
@@ -118,12 +118,12 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
                     b_s, i_s = str(b_id or ""), str(iid or "")
                     if not b_s or not i_s:
                         continue
-                    # Strictly real EXTERNAL top-of-book bid_qty guarded by market_guard VWM+LULD oracle!
+                    # Strictly net EXTERNAL top-of-book bid_qty (subtract CLTV own qty, never blind external buy-walls!)
                     real_bq = int(bq or 0)
                     raw_bid = float(bid or 0)
-                    is_cltv_self = bool(_c_cltv and (b_s, i_s) in _c_cltv)
-                    eff_bid = 0.0 if is_cltv_self else (_mg_c.guarded_bid_price(i_s, raw_bid, _c_fair, max_mult=1.50) if (_mg_c is not None and _c_fair) else raw_bid)
-                    eff_bq = 0 if is_cltv_self else real_bq
+                    net_bq = max(0, real_bq - int(_c_cltv_qty.get((b_s, i_s), 0)))
+                    eff_bid = 0.0 if net_bq <= 0 else (_mg_c.guarded_bid_price(i_s, raw_bid, _c_fair, max_mult=1.50) if (_mg_c is not None and _c_fair) else raw_bid)
+                    eff_bq = net_bq
                     books_by_base.setdefault(b_s, {})[i_s] = {
                         "bid": eff_bid, "bid_qty": eff_bq, "bid_depth": eff_bq,
                         "ask": float(ask or 0), "ask_qty": int(aq or 0),

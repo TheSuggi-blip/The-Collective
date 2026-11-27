@@ -223,7 +223,7 @@ def pick_envoy_scout(data, member_name, requested="", preferred_pilot="", prefer
     def is_allowed_pilot(pilot):
         if pilot.startswith(("scout-", "VSV ")) and division.owner(pilot, str(data)) == "Oracle":
             return True, ""
-        if member_name == "Unity" and (pilot in flagship_set or division.owner(pilot, str(data)) == "Unity"):
+        if member_name in ("Trinity", "Unity") and (pilot in flagship_set or division.owner(pilot, str(data)) == "Unity"):
             return True, ""
         return False, "diplomatic envoys must be Oracle scout- ships (or Unity flagship when invoked by Unity); got %s" % pilot
 
@@ -358,7 +358,7 @@ def send_diplomatic_dm(data, root, to_handle, message, pilot="", dry_run=False, 
     """Full airlocked send pipeline. Returns (ok, summary_dict_or_error_str)."""
     now = time.time() if now is None else float(now)
     kind, member = division.member()
-    if member not in ("Unity", "Oracle"):
+    if member not in ("Trinity", "Unity", "Oracle"):
         return False, "REFUSED: only Unity (Command) and Oracle (Intel) may send diplomatic DMs (orders F4, O10); got %s/%s" % (kind, member)
 
     ok_text, cleaned, reasons = comms_guard.audit_outbound(message)

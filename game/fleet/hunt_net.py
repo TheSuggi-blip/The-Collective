@@ -1185,10 +1185,13 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     p_name = str(pilot_info.get("name") or "")
     max_j = int(scfg.get("max_jumps") or 6)
     tier_s_j = max(max_j, int(scfg.get("tier_s_max_jumps") or 8))
+    apex_j = max(tier_s_j, int(scfg.get("apex_max_jumps") or tier_s_j))
     if allow_cmd_override:
         max_j = min(max_j, 6)
         tier_s_j = min(tier_s_j, 8)
+        apex_j = min(apex_j, 10)
     tier_s_min = float(scfg.get("tier_s_min_loot_val") or 550.0)
+    apex_min = float(scfg.get("apex_min_loot_val") or 1800.0)
     min_ratio = float(scfg.get("min_power_ratio") or 1.35)
     ideal_lo = float(scfg.get("ideal_ratio_low") or 1.45)
     ideal_hi = float(scfg.get("ideal_ratio_high") or 3.20)
@@ -1209,7 +1212,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
     species_hull = world["species_hull"]
     species_loot = world["species_loot_val"]
 
-    dists = bfs_distances(adj, p_sys, max_hops=tier_s_j) if p_sys else {}
+    dists = bfs_distances(adj, p_sys, max_hops=apex_j) if p_sys else {}
     claimed_counts = {}
     for cp, r in (claims or {}).items():
         if cp != p_name and isinstance(r, dict) and r.get("key"):
@@ -1239,7 +1242,7 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
             continue
         hops = dists.get(sys_id) if p_sys else 0
         _sp_lv_chk = float(species_loot.get(sp) or 0.0)
-        _eff_j = tier_s_j if _sp_lv_chk >= tier_s_min else max_j
+        _eff_j = apex_j if _sp_lv_chk >= apex_min else (tier_s_j if _sp_lv_chk >= tier_s_min else max_j)
         if hops is None or hops > _eff_j:
             continue
 
@@ -1252,8 +1255,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
         min_lv = float(scfg.get("min_loot_val") or 0.0)
         if min_lv > 0 and float(species_loot.get(sp) or 0.0) < min_lv:
             continue
-        _st_rad = int(scfg.get("max_station_jumps") or 6)
-        _eff_st_rad = tier_s_j if _sp_lv_chk >= tier_s_min else _st_rad
+        _st_rad = int(scfg.get("max_station_jumps") or 5)
+        _eff_st_rad = min(apex_j, _st_rad + 3) if _sp_lv_chk >= apex_min else (min(tier_s_j, _st_rad + 2) if _sp_lv_chk >= tier_s_min else _st_rad)
         st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_eff_st_rad, preferred_bases=((world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())))
         if not st_tup or st_tup[0] in pirates:
             continue
@@ -1283,6 +1286,8 @@ def score_solo_herds(pilot_info, ship_power, world, policy, claims, cooldowns, n
                 fit_mult *= 1.20  # Fast Hunters favor quick turnaround wildlife & raiders
         except Exception:
             pass
+        _h_zone_m = float(policy.get("lawless_bonus") or 1.0) if (not is_policed) else float(policy.get("safe_zone_penalty") or 1.0)
+        fit_mult *= _h_zone_m
         kills_avail = max(1, min(int(scfg.get("kills_per_run") or 6), h["count"] - keep_h))
         loot_est = float(species_loot.get(sp) or 0.0) * kills_avail
         fuel_est = 90.0 * (hops + st_hops) * (1.0 + 0.5 * ship_power["tier"])
@@ -1319,7 +1324,9 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if _is_cmd_p else ship_power
     )
     p_sys = str(pilot_info.get("system") or "")
-    max_j = int(pcfg.get("max_jumps") or 12)
+    max_j = int(pcfg.get("max_jumps") or 8)
+    pk_apex_j = max(max_j, int(pcfg.get("apex_max_jumps") or max_j))
+    pk_apex_min = float(pcfg.get("apex_min_loot_val") or 1800.0)
     sizes = tuple(int(s) for s in (pcfg.get("sizes") or [3, 5, 8, 10]))
     wild_ratio = float(pcfg.get("min_power_ratio") or 1.80)
     pir_ratio = float(pcfg.get("pirate_min_power_ratio") or 2.20)
@@ -1337,7 +1344,7 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
     species_hull = world["species_hull"]
     species_loot = world["species_loot_val"]
 
-    dists = bfs_distances(adj, p_sys, max_hops=max_j) if p_sys else {}
+    dists = bfs_distances(adj, p_sys, max_hops=pk_apex_j) if p_sys else {}
     busy_keys = {r.get("key") for r in (claims or {}).values() if r.get("key")}
     cands = []
 
@@ -1356,7 +1363,9 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         if bool(policy.get("lawless_only", False)) and (systems.get(sys_id) or {}).get("empire"):
             continue
         hops = dists.get(sys_id) if p_sys else 0
-        if hops is None or hops > max_j:
+        _pk_lv_pre = float(species_loot.get(sp) or 0.0)
+        _pk_allow_j = pk_apex_j if _pk_lv_pre >= pk_apex_min else max_j
+        if hops is None or hops > _pk_allow_j:
             continue
         prey_hull = float(species_hull.get(sp) or 90.0)
         if prey_hull < min_thull and role != "predator":
@@ -1392,7 +1401,9 @@ def score_pack_targets(pilot_info, ship_power, world, policy, claims, cooldowns,
         loot_v = raw_lv * (1.8 if sp in prio_sp else 1.0) * (1.5 if role == "predator" else 1.0)
         _pk_pref = (world.get("bursar_bases") or set()) | (world.get("lockbox_bases") or set())
         _pk_hub_m = 1.18 if (st_tup[2] in _pk_pref and st_hops <= 2) else (1.10 if (st_tup[2] in _pk_pref and st_hops <= 4) else 1.0)
-        score = (loot_v * (prey_hull / 60.0) * _pk_hub_m) / (1.0 + 0.6 * hops + 0.5 * st_hops)
+        _pk_pol = bool((systems.get(sys_id) or {}).get("empire"))
+        _pk_zone_m = float(policy.get("lawless_bonus") or 1.0) if (not _pk_pol) else float(policy.get("safe_zone_penalty") or 1.0)
+        score = (loot_v * (prey_hull / 60.0) * _pk_hub_m * _pk_zone_m) / (1.0 + 0.6 * hops + 0.5 * st_hops)
         cands.append({
             "key": "pack:" + place_key, "place_key": place_key, "mode": "wildlife",
             "system": sys_id, "poi": poi_id, "species": sp, "role": role,

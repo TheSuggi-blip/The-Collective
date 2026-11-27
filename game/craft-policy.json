@@ -1,5 +1,5 @@
 {
-  "_owner": "Mercury (Trade) & Apollo (Logistics)",
+  "_owner": "Trinity (Sole Operator)",
   "_doc": "Policy for dynamic zero-fuel docked manufacturing (game/fleet/craft_net.py). Strict P5 separation: Trade crafts highest-margin commercial goods and lists/sells via Bursar/Exchange; Logistics crafts industrial building materials and stores into faction/reserve storage (never sells).",
   "enabled": true,
   "demand_file": "game/craft-demand.json",

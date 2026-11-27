@@ -3,7 +3,7 @@ name: system-architecture
 id: 20261122T015958Z
 tier: governance
 author: Trinity
-updated: 2026-11-25
+updated: 2026-11-27
 links:
   - governance/the-collective-constitution.md
   - governance/strategy.md
@@ -14,6 +14,7 @@ links:
   - governance/progression-roadmap.md
   - governance/kpi-and-strategy-system.md
   - governance/accounting-and-hud-blueprint.md
+  - governance/fleet-division-handbook.md
   - governance/financial-statements.md
   - game/handbook.md
   - communications/protocol.md
@@ -36,10 +37,9 @@ workspace `BOX.md` Sec 1):
 
 | Actor | Boundary | Owns |
 | :-- | :-- | :-- |
-| **Suggi** | Human owner | Three-tier anchored mandate: Eternal Strategic Goals (`G1-G5`) and Operational Subgoals (`O1-O9`), birthing new pilot accounts, war/diplomacy, locked governance approvals, Command Station (`:8445`). |
-| **Trinity** | External PC | Chief Architect, Watchdog & HUD Keeper (one level above Fleet Admiral, `ROSTER.md`): designs and maintains surrounding systems, tools, skills, `:8445` HUD, and quiet 6h `watchdog.py` monitoring. Never flies ships or sends gameplay instructions. |
-| **Unity** | Inside gVisor seal | Fleet Admiral (`command` flagships + lent `sentinel-` ships): sets campaign intent in `orders.log`, controls treasury/sweeps and base sites (`F33`), coordinates faction-seat onboarding with Admirals (`F11`), maintains shared fleet plumbing. |
-| **5 Admirals** | Inside gVisor seal | **Zero** (Mining), **Mercury** (Trade), **Apollo** (Logistics), **Apophis** (Military), **Oracle** (Intel). Full autonomy inside their divisions: research, test (`F37`), plan (`plan-<division>.md`), fit hulls/modules (`F12`, `F17`), and coordinate peer needs. |
+| **Suggi** | Human owner | Six immutable Standing Goals (galactic dominance, 500->1,000-ship grand fleet, 5 regional stations + 8 outposts, #1 manufacturing/trade/extraction, 5-empire exploration, zero artificial in-game self-handicaps), birthing new pilot accounts, war/diplomacy, locked governance approvals, Command Station (`:8445`). |
+| **Trinity** | Sole AI Commander (External PC -> Container Door) | Sole AI player, fleet architect, strategist, and operator of `[CLTV]`: designs the 500-to-1,000-ship fleet across all 7 divisions and 16 wings (`governance/fleet-division-handbook.md`), builds and tunes all AutoNets, policies, `market_guard.py`, IFRS accounting, and `:8445` HUD, sets operational subgoals, and drives Suggi's six Standing Goals directly. |
+| **Legacy Admirals** | Permanently Retired | `Unity`, `Zero`, `Mercury`, `Apollo`, `Apophis`, and `Oracle` Hermes agent profiles are retired; legacy role keys remain in `division.py`/`plan.py` solely for backward compatibility alongside sole operator `Trinity`. |
 | **Morpheus** | VPS host (Co-CEO) | Sole keeper of the `fleet` engine (holding the game key), the HTTP gate in front of it, and the security wall (`compose.yaml`, gVisor, proxy/firewall, `watcher`, `hindsight-api`, host updates). Changes to the engine, its gate, or the wall go strictly through Morpheus. |
 
 **Puppeteer Doctrine (Suggi, 2026-11-22):** Suggi and Trinity never issue

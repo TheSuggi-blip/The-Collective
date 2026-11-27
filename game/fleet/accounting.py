@@ -124,13 +124,13 @@ def _load_price_maps(conn, data_dir=None):
     bids_by_item = {}
     if conn is None:
         return base_map, max_bid_map, bids_by_item
-    cltv_buys = set()
+    cltv_buy_qty = {}
     if data_dir:
         try:
             import market_guard as _mg_p
-            cltv_buys, _ = _mg_p.load_cltv_buy_orders(data_dir)
+            cltv_buy_qty = _mg_p.load_cltv_buy_qty(data_dir)
         except Exception:
-            cltv_buys = set()
+            cltv_buy_qty = {}
     if _has_table(conn, "items"):
         for r in conn.execute("SELECT id, COALESCE(base_value, 0) FROM items"):
             if r[0]:
@@ -148,10 +148,8 @@ def _load_price_maps(conn, data_dir=None):
             it = str(r[1] or "")
             if not it:
                 continue
-            if cltv_buys and b_id and (b_id, it) in cltv_buys:
-                continue
             price = _num(r[2])
-            qty = _num(r[3])
+            qty = max(0.0, _num(r[3]) - float(cltv_buy_qty.get((b_id, it), 0)))
             if price > 0 and qty > 0:
                 if it not in max_bid_map or price > max_bid_map[it]:
                     max_bid_map[it] = price

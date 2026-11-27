@@ -879,7 +879,7 @@ def main(argv=None):
         return [found]
 
     if verb in ("show", "check", "templates"):
-        names = named(rest[0]) if rest else ([mine] if mine and who != "Unity" else sorted(DIVISIONS))
+        names = named(rest[0]) if rest else ([mine] if mine and who not in ("Trinity", "Unity") else sorted(DIVISIONS))
         if verb == "templates":                               # reading is free
             return list_templates(root, data, names)
         if verb == "show":
@@ -895,13 +895,13 @@ def main(argv=None):
 
     def allowed(names):
         for name in names:
-            if who != "Unity" and DIVISIONS[name] != who:
+            if who not in ("Trinity", "Unity") and DIVISIONS[name] != who:
                 sys.exit("REFUSED: the plan of the %s division is kept by %s (rule F1): ask in requests.log" % (name, DIVISIONS[name]))
         return names
 
     whole = "--whole-division" in args                        # errors.log ENT-203: another hand's route for every ship, said aloud
     if verb == "apply":
-        names = allowed(named(rest[0]) if rest else ([mine] if who != "Unity" else sorted(DIVISIONS)))
+        names = allowed(named(rest[0]) if rest else ([mine] if who not in ("Trinity", "Unity") else sorted(DIVISIONS)))
         good, lines = apply(root, data, names, who, keeper_gate=True, whole=whole)
         quiet = "--quiet" in args                             # the five-minute job: only what changed or halted
         lines = [line for line in lines if not quiet or line.startswith(("HALT", "REFUSED", "committed")) or ": applied |" in line]

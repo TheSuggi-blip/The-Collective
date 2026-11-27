@@ -758,15 +758,26 @@ def effective_min_left_pct(res, mkt, is_deficit, policy):
 
 
 def adaptive_belt_cap(remaining, max_remaining, policy, min_left_pct=None):
-    """Adaptive crowding cap: <= max_per_belt (default 3), scaled down on low-headroom belts."""
+    """Adaptive crowding cap: <= max_per_belt (default 3), hard-capping thin scarce pockets at 1 and mid-size belts at 2."""
     max_cap = max(1, int(policy.get("max_per_belt") or 3))
     pct = float(policy.get("min_left_pct") or 10.0) if min_left_pct is None else float(min_left_pct)
     floor_u = int(round(max_remaining * pct / 100.0)) if max_remaining > 0 else 0
     headroom = max(0, int(remaining) - floor_u)
     per_ship = max(50, int(policy.get("units_per_ship_run") or 250))
     if headroom <= 0:
+        mega_u = int(policy.get("mega_min_remaining_units") or 0)
+        if mega_u > 0 and int(remaining) >= mega_u and pct <= 0.5:
+            return 1
         return 0
-    return min(max_cap, max(1, headroom // per_ship))
+    cap = min(max_cap, max(1, headroom // per_ship))
+    thin_pct = float(policy.get("thin_scarce_cap_pct") or 0.0)
+    small_u = int(policy.get("small_belt_cap1_below_units") or 0)
+    mid_u = int(policy.get("mid_belt_cap2_below_units") or 0)
+    if (thin_pct > 0.0 and max_remaining > 0 and (float(remaining) * 100.0 / float(max_remaining)) < thin_pct) or (small_u > 0 and int(remaining) < small_u):
+        return 1
+    if mid_u > 0 and int(remaining) < mid_u:
+        return min(2, cap)
+    return cap
 
 
 def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=None, static_counts=None):
@@ -785,9 +796,13 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         _p_wing = ""
     _unreach_belts = _load_unreachable_belts(world.get("data_dir") or DATA, p_name, now_t)
     max_jumps = int(policy.get("max_jumps") or 6)
-    max_st_jumps = int(policy.get("max_station_jumps") or 6)
+    max_st_jumps = int(policy.get("max_station_jumps") or 5)
     scarce_max_j = max(max_jumps, int(policy.get("scarce_max_jumps") or max_jumps))
     scarce_st_j = max(max_st_jumps, int(policy.get("scarce_max_station_jumps") or max_st_jumps))
+    mega_min_bid = float(policy.get("mega_min_bid") or 100.0)
+    mega_max_j = max(scarce_max_j, int(policy.get("mega_max_jumps") or scarce_max_j))
+    mega_st_j = max(scarce_st_j, int(policy.get("mega_max_station_jumps") or scarce_st_j))
+    mega_min_u = int(policy.get("mega_min_remaining_units") or 0)
     min_pct = float(policy.get("min_left_pct") or 10.0)
     policed_only = bool(policy.get("policed_only", True))
     lawless_min_t = int(policy["lawless_min_tier"]) if policy.get("lawless_min_tier") is not None else 0
@@ -810,7 +825,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
     market = world.get("market")
     stations_by_sys = world["stations_by_sys"]
 
-    dists = bfs_distances(adj, p_sys, max_hops=scarce_max_j) if p_sys else {}
+    dists = bfs_distances(adj, p_sys, max_hops=mega_max_j) if p_sys else {}
     claimed_counts = dict(static_counts or {})
     sys_claimed = {}
     for cp, rec in (claims or {}).items():
@@ -847,14 +862,17 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         mkt = market.get(res) if market is not None else None
         eff_min_pct = effective_min_left_pct(res, mkt, is_deficit, policy)
         rem, mx = f["remaining"], f["max_remaining"]
-        if mx > 0 and (rem * 100.0 / mx) < eff_min_pct:
+        _mkt_bid_chk = float(mkt[0] or 0) if mkt else 0.0
+        is_mega = bool(_mkt_bid_chk >= mega_min_bid)
+        is_scarce = bool(_mkt_bid_chk >= float(policy.get("scarce_min_bid") or policy.get("scarce_min_bid_cr") or 60.0))
+        _mega_u_ok = bool(is_mega and mega_min_u > 0 and rem >= mega_min_u)
+        if mx > 0 and (rem * 100.0 / mx) < eff_min_pct and not _mega_u_ok:
             continue
         cap = adaptive_belt_cap(rem, mx, policy, min_left_pct=eff_min_pct)
         if cap <= 0 or claimed_counts.get(belt_key, 0) >= cap:
             continue
-        is_scarce = bool(mkt and float(mkt[0] or 0) >= float(policy.get("scarce_min_bid") or policy.get("scarce_min_bid_cr") or 100.0))
         hops = dists.get(sys_id) if p_sys else 0
-        _allow_j = scarce_max_j if (is_scarce or is_deficit) else max_jumps
+        _allow_j = mega_max_j if is_mega else (scarce_max_j if (is_scarce or is_deficit) else max_jumps)
         if hops is None or hops > _allow_j:
             continue
         _held_chk = int((world.get("held") or {}).get(res, 0))
@@ -889,7 +907,7 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
                 _esc_ok = False
             if not _esc_ok:
                 continue
-        _allow_st_j = scarce_st_j if (is_scarce or is_deficit) else max_st_jumps
+        _allow_st_j = mega_st_j if is_mega else (scarce_st_j if (is_scarce or is_deficit) else max_st_jumps)
         st_hops, st_tup = nearest_station(adj, stations_by_sys, sys_id, max_hops=_allow_st_j)
         if not st_tup:
             continue
@@ -978,8 +996,17 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
             continue
         # Divide directly by round-trip fuel burn + same-system crowding factor so miners spread cleanly across systems!
         _wm = _wing_mine_multiplier(_p_wing, res, tools)
+        _law_b = float(policy.get("lawless_bonus") or 1.0)
+        _safe_p = float(policy.get("safe_zone_penalty") or 1.0)
+        _safe_ex_bid = float(policy.get("safe_zone_scarce_exempt_bid") or 40.0)
+        _rem_pct_chk = (float(rem) * 100.0 / float(mx)) if mx > 0 else 100.0
+        if not is_policed:
+            _zone_m = _law_b
+        else:
+            _scarce_safe_ex = bool(_live_b >= _safe_ex_bid or _rem_pct_chk < 3.0 or is_deficit)
+            _zone_m = 1.0 if _scarce_safe_ex else _safe_p
         _sys_crowd = 1.0 + 0.35 * float(sys_claimed.get(sys_id, 0))
-        score = ((_net_cr * _wm) / (_rt_fuel * _sys_crowd)) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
+        score = ((_net_cr * _wm * _zone_m) / (_rt_fuel * _sys_crowd)) * 100.0 if _net_cr >= 0 else (_net_cr - 10.0 * st_hops)
         if score <= 0.0 and tier != "deficit" and policy.get("block_negative_score", True):
             continue
         cand = {

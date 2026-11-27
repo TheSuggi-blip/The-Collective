@@ -847,7 +847,13 @@ def assign_optimal_arbitrage(books_rows, base_map, lanes, peers, policy, claimed
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin) or bid_p <= unit_cost:
                     continue
-                if cltv_buy_keys and (bb, iid) in cltv_buy_keys:
+                if isinstance(cltv_buy_keys, dict):
+                    _cq = int(cltv_buy_keys.get((bb, iid), 0))
+                    _net_bq = max(0, int(bid_q) - _cq)
+                    if _net_bq < min_bid_qty or (_cq > 0 and _net_bq < 200):
+                        continue
+                    bid_q = _net_bq
+                elif cltv_buy_keys and (bb, iid) in cltv_buy_keys:
                     continue
                 if _fp_i is not None:
                     import market_guard as _mg_a
@@ -1134,7 +1140,13 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
             for bb, bloc, _, _, bid_p, bid_q in bids:
                 if ab == bb or bid_q < min_bid_qty or bid_p < ask_p * (1.0 + min_margin):
                     continue
-                if cltv_buy_keys and (bb, iid) in cltv_buy_keys:
+                if isinstance(cltv_buy_keys, dict):
+                    _cq = int(cltv_buy_keys.get((bb, iid), 0))
+                    _net_bq = max(0, int(bid_q) - _cq)
+                    if _net_bq < min_bid_qty or (_cq > 0 and _net_bq < 200):
+                        continue
+                    bid_q = _net_bq
+                elif cltv_buy_keys and (bb, iid) in cltv_buy_keys:
                     continue
                 if _fp_i is not None:
                     import market_guard as _mg_a
@@ -1282,6 +1294,14 @@ def _load_faction_storage_by_base(data, stor=None):
                 dst = out.setdefault(b_id, {})
                 dst[iid] = max(int(dst.get(iid) or 0), qty)
     return out
+
+
+def _load_cltv_open_buy_qty(data, now_t=None, ttl_s=21600):
+    try:
+        import market_guard as _mg_hq
+        return _mg_hq.load_cltv_buy_qty(data, now_t=now_t, ttl_s=ttl_s)
+    except Exception:
+        return {}
 
 
 def _load_cltv_open_buy_keys(data, now_t=None, ttl_s=21600):
@@ -1605,12 +1625,12 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     allow_bw = bool(policy.get("allow_calm_buywall_dest", True))
     bw_min_bid = float(policy.get("buywall_min_bid") or 50.0)
     bw_min_qty = int(policy.get("buywall_min_qty") or 200)
-    cltv_buys = _load_cltv_open_buy_keys(data, now_t=now_t)
+    cltv_buy_qty = _load_cltv_open_buy_qty(data, now_t=now_t)
     # Anti-lowball reference: never liquidate high-value items (>= 20 cr fair) into a < 70% scam bid!
     fair_by_item = {}
     try:
         import market_guard as _mg_l
-        _vwm_l = _mg_l.compute_book_vwm_map(books_rows, cltv_buy_keys=cltv_buys, now_t=now_t)
+        _vwm_l = _mg_l.compute_book_vwm_map(books_rows, cltv_buy_qty=cltv_buy_qty, now_t=now_t)
         for _k, _v in _vwm_l.items():
             fair_by_item[_k] = float(_v.get("vwm") or 0.0)
     except Exception:
@@ -1629,9 +1649,12 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
         bp = float(r.get("bid") or 0)
         bq = int(r.get("bid_qty") or 0)
         iid = str(r.get("item") or "")
-        # Strictly load REAL EXTERNAL top-of-book bid_qty (never 1-cr bid_depth, NEVER CLTV self-wash-trade!)
-        if not (iid and bp >= 1.0 and bq >= 1) or (b_id, iid) in cltv_buys:
+        # Strictly load REAL EXTERNAL top-of-book bid_qty (subtract CLTV own qty; never blind deep rival buy-walls!)
+        _cq_l = int(cltv_buy_qty.get((b_id, iid), 0))
+        _net_bq_l = max(0, bq - _cq_l)
+        if not (iid and bp >= 1.0 and _net_bq_l >= 1) or (_cq_l > 0 and _net_bq_l < 200):
             continue
+        bq = _net_bq_l
         _fv_l = float(fair_by_item.get(iid) or 0.0)
         if _fv_l >= 20.0 and bp < _fv_l * 0.70:
             continue
@@ -2309,11 +2332,11 @@ def main(argv=None):
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
                 peers = load_available_haulers(DATA, pilot, cur_sys, hold_cap, avail_cash, has_hazmat, policy, active_claimed_pilots(DATA))
-                _cltv_buys_a = _load_cltv_open_buy_keys(DATA)
+                _cltv_buys_a = _load_cltv_open_buy_qty(DATA)
                 _fair_p_a = None
                 try:
                     import market_guard as _mg_h
-                    _vwm_a = _mg_h.compute_book_vwm_map(books_rows, cltv_buy_keys=_cltv_buys_a)
+                    _vwm_a = _mg_h.compute_book_vwm_map(books_rows, cltv_buy_qty=_cltv_buys_a)
                     _fair_p_a = _mg_h.update_price_oracle(DATA, _vwm_a)
                 except Exception:
                     _fair_p_a = None

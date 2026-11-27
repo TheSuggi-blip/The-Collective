@@ -56,6 +56,7 @@ CULTURE_PREFIXES = {"GSV": "sentinel", "ROU": "drone", "EUV": "miner", "MCV": "t
 # drones, in Military's plan; each comes back to the command group at Piloting 20 (the Fleet Admiral's turn reads the
 # levels). The Fleet Admiral may still take any of them by hand. Back: "sentinel": "Unity" and the rows into plan-command.
 MEMBERS = ("Unity", "Zero", "Apollo", "Mercury", "Apophis", "Oracle")
+SOLE_OPERATORS = ("Trinity", "Unity")
 PROFILE = re.compile(r"/profiles/([a-z]+)(?:/|$)")
 ORDER_FRESH = 20 * 60        # an order file not touched for this long is dead (the dispatcher's rule)
 PILOT = re.compile(r"\b(?:%s)-[0-9]+\b" % "|".join(sorted(ROLES)))      # a pilot of ours by name: a role word, a dash, a number
@@ -146,7 +147,7 @@ def want_of(pilot, data=DATA, now=None):
         by = str(json.loads(path.read_text(encoding="utf-8")).get("by") or "")
     except (OSError, ValueError, AttributeError):
         return ""
-    return by if by and (by == "Unity" or by == owner(pilot, data)) else ""
+    return by if by and (by in SOLE_OPERATORS or by == owner(pilot, data)) else ""
 
 
 def hand_hold(pilot, data=DATA, now=None):
@@ -173,7 +174,7 @@ def may(pilot, data=DATA, env=None, now=None):
                            "(release, or %d minutes after its last command)" % (pilot, held, run, ORDER_FRESH // 60))
         return True, "service %s" % name
     own = owner(pilot, data)
-    if name != "Unity" and own != name:
+    if name not in SOLE_OPERATORS and own != name:
         return False, "%s is commanded by %s, not by %s (orders F1): ask in requests.log" % (pilot, own, name)
     what = order_of(pilot, data, now)
     if what and what != "hand " + name and what != str((os.environ if env is None else env).get("FLEET_HOLD") or ""):
@@ -230,7 +231,7 @@ def main():
             ships = json.loads((Path(data) / "fleet" / "fleet.json").read_text(encoding="utf-8")).get("ships") or []
         except (OSError, ValueError):
             ships = []
-        own = sorted(s["name"] for s in ships if isinstance(s, dict) and s.get("name") and (who == "Unity" or owner(s["name"], data) == who))
+        own = sorted(s["name"] for s in ships if isinstance(s, dict) and s.get("name") and (who in SOLE_OPERATORS or owner(s["name"], data) == who))
         print("%s commands %d ship(s)%s" % (who or "nobody", len(own), ":" if own else ""))
         print("\n".join(own))
         return 0
