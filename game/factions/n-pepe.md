@@ -15,7 +15,7 @@ updated: 2026-11-27
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 16.
 
 ## Identity
 
@@ -40,10 +40,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicAuger | Nexus Prime (`nexus_prime`) | not on record | cobble |
+| MimicBarge | Node Alpha (`node_alpha`) | 0 | bonanza |
 | MimicClaw | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicComet | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicFlare | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicFlint | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicHew | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicLode | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicNeb | Nexus Prime (`nexus_prime`) | 0 | worship |
+| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicSeam | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
 
 ## Standing History
 

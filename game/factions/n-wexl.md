@@ -9,13 +9,13 @@ faction: Wexler's Void Safari
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Wexler's Void Safari [WEXL]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 10.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 3.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 132 | Public event stream |
+| Pilots carrying the tag on the public event stream | 130 | Public event stream |
 
 ## Bases
 
@@ -38,9 +38,16 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Wexler E1W-PS | Node Gamma (`node_gamma`) | 0 | cobble |
-| Wexler L93-44 | Node Beta (`node_beta`) | 0 | cobble |
-| Wexler S1E-RM | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler 7UU-CG | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler 8F5-8T | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler A3U-6R | Node Alpha (`node_alpha`) | 0 | cobble |
+| Wexler CE3-2X | Node Beta (`node_beta`) | 0 | cobble |
+| Wexler P8E-E4 | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler R1P-JL | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler XMP-SJ | Node Gamma (`node_gamma`) | 0 | cobble |
+| Wexler XNK-D3 | Synchrony (`synchrony`) | 0 | cobble |
+| Wexler YME-ZK | The Experiment (`the_experiment`) | 0 | cobble |
+| Wexler Z25-QC | The Experiment (`the_experiment`) | 0 | cobble |
 
 ## Standing History
 

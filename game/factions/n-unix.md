@@ -9,12 +9,12 @@ faction: Unix
 standing: neutral
 standing_since: 2026-11-22
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Unix [UNIX]
 
-A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 22 jump(s) away, in Alsephina (`alsephina`).
+A player faction without a base on the public record.
 Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
@@ -30,9 +30,7 @@ Pilots of it in our space in the last 24 hours: 1.
 
 ## Bases
 
-| Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
-|---|---|---|---|---|---|
-| Rivetshell Ranch | outpost | Alsephina (`alsephina`) | lawless | 22 | thriving, wrecked |
+None on the public record.
 
 ## Pilots in Our Space
 

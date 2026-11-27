@@ -26,13 +26,13 @@ Pilots of it in our space in the last 24 hours: 0.
 | Allies | HIVE | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 510 | Public event stream |
+| Pilots carrying the tag on the public event stream | 516 | Public event stream |
 
 ## Bases
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| OLSV Merak Bastion | outpost | Merak (`merak`) | lawless | 12 | thriving |
+| OLSV Merak Bastion | outpost | Merak (`merak`) | lawless | 12 | thriving, wrecked |
 | OLSV Mirfak Sanctum | outpost | Mirfak (`mirfak`) | lawless | 17 | thriving |
 
 ## Pilots in Our Space

@@ -9,7 +9,7 @@ faction: Amalgamated Rogue Raiders Guild
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-26
+updated: 2026-11-27
 ---
 
 # Amalgamated Rogue Raiders Guild [ARRG]
@@ -38,11 +38,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Cormac Dunleavy | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| Dmitri Valkov | Node Alpha (`node_alpha`) | 0 | theoria |
 | Hollis Quade | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| Jonas Pickering | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| Nimbrel | Nexus Prime (`nexus_prime`) | 0 | prospect |
-| Ulvaren | GSC-0027 (`gsc_0027`) | 0 | prospect |
+| Lethwyn | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Pelloquin | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| Tobias Wren | Node Beta (`node_beta`) | 0 | cobble |
 
 ## Standing History
 
