@@ -215,8 +215,19 @@ def compute_station_pnl(data_dir=None, station_filter=""):
         r_inv = {r[0]: int(r[1] or 0) for r in db.execute("SELECT item, units FROM faction_storage WHERE base=?", (r_id,)).fetchall()}
         all_inv = {r[0]: int(r[1] or 0) for r in db.execute("SELECT item, SUM(units) FROM faction_storage GROUP BY item").fetchall()}
         built_types = {r[0] for r in db.execute("SELECT type FROM faction_facilities WHERE base=?", (r_id,)).fetchall()}
+        # Mark superseded ancestors as satisfied once a higher upgrade in the chain is built (e.g. guild_hall_recruiting supersedes desk/center).
+        upg_parent = {
+            str(r[0]): str(r[1])
+            for r in db.execute("SELECT id, upgrades_from FROM facilities WHERE upgrades_from IS NOT NULL AND upgrades_from != ''").fetchall()
+        }
+        satisfied_types = set(built_types)
+        for bt in list(built_types):
+            cur_f = bt
+            while cur_f in upg_parent and upg_parent[cur_f] not in satisfied_types:
+                cur_f = upg_parent[cur_f]
+                satisfied_types.add(cur_f)
         for fid in ("refueling_dock", "recruitment_desk", "recruitment_center", "guild_hall_recruiting", "fuel_tank_expansion"):
-            if fid in built_types and fid != "fuel_tank_expansion":
+            if fid in satisfied_types and fid != "fuel_tank_expansion":
                 continue
             row = db.execute("SELECT name, build_cost, upgrades_from, faction_cap FROM facilities WHERE id=?", (fid,)).fetchone()
             if not row:

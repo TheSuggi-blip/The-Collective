@@ -727,7 +727,7 @@
           ]
         },
         {
-          "enabled": false,
+          "enabled": true,
           "empire": "any",
           "wing_prefix": "6B.",
           "specialty": "passenger_liner",
