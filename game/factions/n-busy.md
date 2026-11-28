@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 1.
+Pilots of it in our space in the last 24 hours: 6.
 
 ## Identity
 
@@ -47,7 +47,12 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 064 | Pherkad (`pherkad`) | 0 | axiomata |
+| Combat Drone 056 | Node Alpha (`node_alpha`) | 0 | axiomata |
+| Combat Drone 126 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 197 | Pherkad (`pherkad`) | 0 | dialectic |
+| Mining Drone 269 | Node Gamma (`node_gamma`) | 0 | threshold |
+| Mining Drone 275 | Node Alpha (`node_alpha`) | 0 | theoria |
+| Mining Drone 288 | Synchrony (`synchrony`) | 0 | shard |
 
 ## Standing History
 
