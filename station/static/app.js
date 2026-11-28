@@ -3274,7 +3274,8 @@ async function renderInventory(panel, live) {
           oh.append(el('span', 'pill ' + (ob.repair_ready ? 'good' : 'warn'), ob.repair_ready ? 'REPAIR READY' : ('REPAIR SHORT (' + ob.repair_gap + ')')));
         }
         if (isRidge) {
-          oh.append(el('span', 'pill ' + (rSup.ready ? 'good' : 'info'), rSup.ready ? 'RESORT STOCKED' : ('RESORT ' + rSup.ok_count + '/' + rSup.total_count + ' | ' + (rSup.appeal_target || 47) + ' APPEAL')));
+          const appTxt = (rSup.live_appeal != null) ? (rSup.live_appeal + '/' + (rSup.appeal_target || 47) + ' APPEAL') : ((rSup.appeal_target || 47) + ' MAX APPEAL');
+          oh.append(el('span', 'pill ' + (rSup.ready ? 'good' : 'info'), (rSup.ready ? 'RESORT STOCKED' : ('RESORT ' + rSup.ok_count + '/' + rSup.total_count)) + ' | ' + appTxt));
         }
         if (ob.raided) oh.append(el('span', 'pill bad', 'PIRATE RAID SHIELD'));
         oc.append(oh);

@@ -2684,11 +2684,24 @@ def _build_ops():
                             "keep": _kp2, "pct": _pct2, "state": _sr["state"], "ships": _sr["ships"],
                         })
                 out["supply"] = _sup_out
+                _rc_live_app = None
+                _rc_live_rk = None
+                if "leaderboards" in tables:
+                    for _lr in conn.execute(
+                        "SELECT rank, name, value FROM leaderboards WHERE board='tourism_appeal' ORDER BY rank ASC LIMIT 25"
+                    ).fetchall():
+                        _lnm = str(_lr["name"] or "").strip().lower()
+                        if _lnm == _rc_base_name.strip().lower() or "ridgecrest" in _lnm or "collective resort" in _lnm:
+                            _rc_live_app = int(round(float(_lr["value"] or 0)))
+                            _rc_live_rk = int(_lr["rank"] or 0)
+                            break
                 out["resort_supply"] = {
                     "name": _rc_base_name,
                     "system": "ridgecrest",
                     "base_id": _rc_base_id,
                     "founded": bool(_rc_base_id),
+                    "live_appeal": _rc_live_app,
+                    "live_rank": _rc_live_rk,
                     "appeal_target": 47,
                     "venues_target": 12,
                     "ready": bool(_rc_items) and all(x["state"] == "OK" for x in _rc_items),

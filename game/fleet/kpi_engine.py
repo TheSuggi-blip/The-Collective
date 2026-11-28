@@ -1438,6 +1438,9 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
     top_tour_name, top_tour_rev = "The Obsidian Well", 0.0
     our_tour_rev = 0.0
     our_appeal = 0
+    our_live_appeal = None
+    our_live_appeal_rank = None
+    top_rival_appeal = 54
     seated_n = 0
     seat_cap = 0
     own_stations = 0
@@ -1507,6 +1510,23 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
                             fi = fmap.get(ft) or {}
                             our_appeal += int(fi.get("dining_points") or 0) + int(fi.get("leisure_points") or 0) + int(fi.get("lodging_points") or 0)
                         break
+            if "leaderboards" in tbls:
+                own_st_names = set()
+                if "bases" in tbls:
+                    for (bn,) in conn.execute("SELECT name FROM bases WHERE kind='station' AND name IS NOT NULL").fetchall():
+                        own_st_names.add(str(bn).strip().lower())
+                for r_rk, r_nm, r_val in conn.execute(
+                    "SELECT rank, name, value FROM leaderboards WHERE board='tourism_appeal' ORDER BY rank ASC LIMIT 25"
+                ).fetchall():
+                    nm_l = str(r_nm or "").strip().lower()
+                    val_i = int(round(float(r_val or 0)))
+                    if nm_l in own_st_names or "collective resort" in nm_l or "ridgecrest" in nm_l:
+                        if our_live_appeal is None or val_i > our_live_appeal:
+                            our_live_appeal = val_i
+                            our_live_appeal_rank = int(r_rk or 0)
+                    else:
+                        if val_i > top_rival_appeal:
+                            top_rival_appeal = val_i
             if "stats_pilot_last" in tbls:
                 for sk, sv in conn.execute("SELECT key, SUM(COALESCE(value, 0)) FROM stats_pilot_last WHERE key IN ('ore_mined', 'items_crafted') GROUP BY key").fetchall():
                     if sk == "ore_mined":
@@ -1542,11 +1562,12 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
             "pct": pct, "score": sc, "status": _status_from_score(sc),
         }
 
-    # Tourism: compare appeal (target +15% over rival benchmark 50 appeal -> 58+ appeal) & station revenue vs top rival
+    # Tourism: compare LIVE leaderboard appeal (not unstocked built cap!) against +15% over live #1 rival appeal!
     tour_rev_ratio = (our_tour_rev / top_tour_rev) if top_tour_rev > 0 else 0.0
-    tour_appeal_tgt = 58
-    tour_pct = round(100.0 * our_appeal / float(tour_appeal_tgt), 1)
-    tour_sc = round(100.0 + 30.0 * math.log(our_appeal / float(tour_appeal_tgt)), 1) if our_appeal >= tour_appeal_tgt else round(min(99.9, tour_pct * 0.85), 1)
+    eff_appeal = int(our_live_appeal) if our_live_appeal is not None else 0
+    tour_appeal_tgt = max(58, int(math.ceil(float(top_rival_appeal) * 1.15)))
+    tour_pct = round(100.0 * eff_appeal / float(tour_appeal_tgt), 1) if tour_appeal_tgt > 0 else 0.0
+    tour_sc = round(100.0 + 30.0 * math.log(eff_appeal / float(tour_appeal_tgt)), 1) if eff_appeal >= tour_appeal_tgt else round(min(99.9, tour_pct), 1)
 
     hulls = (upgrade_gaps or {}).get("hulls") or {}
     mods = (upgrade_gaps or {}).get("modules") or {}
@@ -1571,9 +1592,9 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
         _ratio_goal("SG-MILITARY", "SG2", "Firepower", our_ship_v, top_mil, "[%s]" % top_mil_tag, 2.0),
         {
             "id": "SG-TOURISM", "sg": "SG3", "title": "Tourism Hub", "group": "supremacy",
-            "value": "%d Appeal" % our_appeal,
-            "target": "+15% vs #1",
-            "sub": "#1 rev %s cr" % _fmt_m(top_tour_rev),
+            "value": "%d / %d max" % (eff_appeal, our_appeal) if our_appeal > 0 else "%d Appeal" % eff_appeal,
+            "target": "%d (+15%% vs #1)" % tour_appeal_tgt,
+            "sub": "live%s vs #1 %d | rev %s" % ((" #" + str(our_live_appeal_rank)) if our_live_appeal_rank else "", top_rival_appeal, _fmt_m(top_tour_rev)),
             "pct": tour_pct, "score": tour_sc, "status": _status_from_score(tour_sc),
         },
         _ratio_goal("SG-INDUSTRY", "SG4", "Industry", our_craft, top_cr, "[%s]" % top_cr_tag, 2.0),
