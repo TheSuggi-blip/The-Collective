@@ -55,19 +55,19 @@ class TestDynamicUpgradeGaps(unittest.TestCase):
             con.close()
 
             h = gaps["hulls"]
-            self.assertEqual(h["active_ships"], 4)
-            self.assertEqual(h["staged_ships"], 1)
-            # Possible steps: 1 + 2 + 3 + 1 = 7; filled: 0 + 1 + 2 + 1 = 4; missing = 3 (T1:1, T2:1, T3:1)
-            self.assertEqual(h["possible_steps"], 7)
+            self.assertEqual(h["active_ships"], 5)
+            self.assertEqual(h["staged_ships"], 0)
+            # Possible steps: 1 + 2 + 3 + 1 + 1 (6B Futures enabled) = 8; filled: 4; missing = 4 (T1:2, T2:1, T3:1)
+            self.assertEqual(h["possible_steps"], 8)
             self.assertEqual(h["filled_steps"], 4)
-            self.assertEqual(h["missing_steps"], 3)
-            self.assertEqual(h["ships_missing"], 3)
-            self.assertEqual(h["missing_by_tier"], {"T1": 1, "T2": 1, "T3": 1})
+            self.assertEqual(h["missing_steps"], 4)
+            self.assertEqual(h["ships_missing"], 4)
+            self.assertEqual(h["missing_by_tier"], {"T1": 2, "T2": 1, "T3": 1})
 
             m = gaps["modules"]
             self.assertEqual(m["bursar_exempt_ships"], 1)
-            self.assertEqual(m["staged_ships"], 1)
-            self.assertEqual(m["active_ships"], 3)
+            self.assertEqual(m["staged_ships"], 0)
+            self.assertEqual(m["active_ships"], 4)
             self.assertGreater(m["possible_slots"], 0)
             self.assertEqual(m["filled_slots"], 1)
 
