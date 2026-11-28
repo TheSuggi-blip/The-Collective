@@ -34,7 +34,7 @@ Pilots of it in our space in the last 24 hours: 0.
 |---|---|---|---|---|---|
 | Conjunction Junction | station | Cloverfield (`cloverfield`) | lawless | 19 | thriving |
 | Jim Bob's Backwater Shack | station | Beid (`beid`) | lawless | 20 | thriving |
-| To Luminous Frame | outpost | Alhena (`alhena`) | lawless | 27 | thriving |
+| To Luminous Frame | outpost | Alhena (`alhena`) | lawless | 27 | thriving, wrecked |
 
 ## Pilots in Our Space
 
