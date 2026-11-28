@@ -452,12 +452,12 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 2000000)
         for dname in ("Mining", "Military", "Logistics", "Trade", "Intel"):
             self.assertTrue(divs[dname]["enabled"], f"{dname} must be enabled for T1 fleet rollout")
-        # All Defense cohorts (1A/1B/1C) enabled; ONLY Passenger Liners (6B) stay paused!
+        # All Military cohorts (1A/1B/1C/2A/2B) and Logistics cohorts incl. 6B Passenger Liners enabled (Suggi 2026-11-28)
         for coh in divs["Military"]["cohorts"]:
             self.assertTrue(coh.get("enabled", True))
         for coh in divs["Logistics"]["cohorts"]:
             if str(coh.get("wing_prefix") or "").startswith("6B."):
-                self.assertFalse(coh.get("enabled", True))
+                self.assertTrue(coh.get("enabled", True))
         # Zero prestige-locked hulls anywhere in policy
         all_hulls = {r["hull"] for d in divs.values() for c in (d.get("cohorts") or []) for r in (c.get("ladder") or [])}
         self.assertFalse(all_hulls & {"ledger", "workhorse"})
