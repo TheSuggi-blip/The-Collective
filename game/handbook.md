@@ -37,7 +37,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
 - Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
 - Markets, `game/handbook/markets.md`: books, ladders, fair_prices, clean_books, ship_listings, moves, market_hour, contract_candidates
-- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, met, player_comms, observations
+- Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, tourism_snapshots, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills, game_releases
@@ -46,7 +46,6 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
-- Other, `game/handbook/other.md`: tourism_snapshots
 
 ## How the data flows
 
@@ -153,6 +152,13 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | live 3-horizon strategic progression rungs, milestones & ledgers. | fleet view=progression | hive.py progression |
 | what founding one takes, down to the ore: credits, parts, the facility that makes the part, what we... | base_plan kind=<kind> | hive.py base <kind> |
 | Safely dismantle a faction facility at a station (`spacemolt_facility faction_dismantle`, Unity or... | dismantle pilot=<pilot> facility_id=<facility_id> | empire.py dismantle <pilot> <facility_id> |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=summary | station_pnl.py summary |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=venues | station_pnl.py venues |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=builds | station_pnl.py builds |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=rivals | station_pnl.py rivals |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=all | station_pnl.py all |
+| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=status | station_pnl.py builds |
+| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=run | station_pnl.py build_run |
 | what we hold: the faction with its members and limit, our bases, our offices at other stations and... | hive verb=empire | hive.py empire |
 
 ### Stock and reserve
@@ -268,15 +274,3 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | every table and view of the store with what a row is and its columns; with a table's name its columns... | sql | hive.py schema |
 | one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement, a... | sql query=<query> | hive.py sql <query> |
-
-### Other
-
-| What it answers | MCP | Shell |
-|---|---|---|
-| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=summary | station_pnl.py summary |
-| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=venues | station_pnl.py venues |
-| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=builds | station_pnl.py builds |
-| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=rivals | station_pnl.py rivals |
-| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=all | station_pnl.py all |
-| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=status | station_pnl.py builds |
-| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=run | station_pnl.py build_run |

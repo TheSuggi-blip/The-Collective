@@ -110,7 +110,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions")),
     ("Money", ("stats_money_hour", "division_pnl_24h")),
     ("Markets", ("books", "ladders", "fair_prices", "clean_books", "ship_listings", "moves", "market_hour", "contract_candidates")),
-    ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "met", "player_comms", "observations")),
+    ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "tourism_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),
     ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour", "needs", "need_status")),
@@ -136,7 +136,9 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
     "fill": {"": "Plans and the door"}, "plan": {"": "Plans and the door"}, "command": {"": "Plans and the door"},
     "goal": {"": "Plans and the door"}, "hold": {"": "Plans and the door"}, "stop": {"": "Plans and the door"}, "fund": {"": "Money"}, "errand": {"": "Plans and the door"}, "dismantle": {"": "Our faction"}, "game_docs": {"": "Written knowledge"},
 }
-ASKS["needs"] = {"": "Stock and reserve"}          # the needs register (needs.py): its table, need_status and the tool
+ASKS["needs"] = {"": "Stock and reserve"}
+ASKS["station_pnl"] = {"": "Our faction"}
+ASKS["station_build"] = {"": "Our faction"}          # the needs register (needs.py): its table, need_status and the tool
 VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool `hive` passes them): subject; None: a tool gives
     "gauges": "Ships and pilots", "store": "Routes and runs", "store price": "Markets", "empire": "Our faction",   # the same answer
     "flow": "Stock and reserve", "briefing": "Plans and the door", "handbook": "Written knowledge",               # through its own script

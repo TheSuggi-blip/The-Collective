@@ -215,3 +215,8 @@ in `station/server.py` (strict CSP, zero `innerHTML`, read-only SQLite):
   Role KPI bar** (including Logistics' dynamic `Supply Chains & Fulfillment SLA`
   and Trade's live policed hub coverage).
 
+## 2026-11-28 Addendum: 6A/6B/6C Split & 50%/70%+ Margin KPI
+
+- **Section 5 Logistics Wing Breakout (`accounting.py`, HUD Section 5):** Logistics (`90` ships) reports three separate lines in the Income Statement & Wing Scorecard: `6A. Supply Chain Haulers (44)`, `6B. Passenger & Resort Liners (28) [trips/h]`, and `6C. Fleet Fuel & Salvage (18)`.
+- **Core Operating Margin KPI (`kpi_engine.py`, `/api/ops`):** Raised from `30% / 50%+` to **`50%+` Target (`SOLID`) / `70%+` Elite (`APEX`)** on IFRS 15 Core EBIT Ex-Seeds.
+- **Ridgecrest Tourism Telemetry (`read.db:tourism_snapshots`, `/api/ops`):** Separates live leaderboard Appeal (e.g., `15`, `#4`) from built max capacity (`47`, climbing to `54` with `The Golden Table`) against `+15%` over `#1` rival.

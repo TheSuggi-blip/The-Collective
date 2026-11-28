@@ -53,10 +53,20 @@ Outposts cost only `100k cr` + `outpost_kit`, carry zero maintenance/rent, and p
 
 ---
 
-## 4. Immediate Action Path to Station #1 (`Ridgecrest` Resort & Travel Hub)
+## 4. Live Station #1 (`Collective Resort Ridgecrest`) Operations & Phase-2 Build Plan (2026-11-28)
 
-1. **Finish Fast T1 Rollout (`~8--10h` at `2.0M` Treasury floor):** Unlocks peak `500`-ship T1 cashflow (`+500k--1M+ cr/h`).
-2. **Acquire First `station_core` (Two Parallel Tracks):**
-   - **Track A (Fastest -- Trade Diplomacy / Market Watch):** Monitor exchanges & negotiate via approved diplomacy for `1x station_core` from established industrial factions (e.g., `[BUSY]`/`[CRFT]`/`[IRLC]`; base `12M cr`, typical trade value `~13M--20M cr`) + `5M cr` founding fee + `6.69M cr` for the 15 resort venues (`~25M--32M cr` total!).
-   - **Track B (Sovereign Self-Build):** Accumulate/craft `station_core_foundry` (`38M cr` + mats) and `assemble_station_core` components (`4` `station_reactor_core`, `2` `station_reactor`, `60` `quantum_control_core`, `90` `docking_ring`, `220` `reinforced_frame`, `320` `structural_frame`, `520` `hull_plating`, `340` `reinforced_bulkhead`) once `T2`/`T3` fleet cashflow scales.
-3. **Unlock `6B` Passenger Liners (`transport_net.py`) at T2 (`P10`):** Deploy standalone `game/fleet/transport_net.py` (`Consortium`/`Omnibus` -> `Concordia`) sniping `1.4x--2.0x` remote surge boards and feeding tourists straight into `Ridgecrest` Resort!
+1. **Station #1 Online (`a2cee88abdcb31db229c04315f0ef6e1` in `ridgecrest`):**
+   - **Active Core & Hospitality Stack:** `12` hospitality/resort venues built (`47` max Appeal capacity, `#4` live galaxy Appeal climbing as venues fill), **`Transit Terminal L2`** (`94b7af55d87a489afe350840ec0bb056`, **`60` berths, `+180` tick extension, `0 cr/cycle` rent**) **ONLINE**, **`Refueling Dock`** (`refuel=public`), **`L4 Guild Hall Recruiting`** (`500/500` fleet seated, `0 cr/cycle` rent), and **`Faction Workshop`** (`0 cr/cycle` rent, `0` labor).
+   - **Legacy NPC Rent Pruning:** `Nexus Prime` (`central_nexus`) `recruitment_desk` + `faction_lockbox` dismantled (`0` rent saved `-173 cr/cycle`).
+2. **Automated Phase-2 Build Ladder (`needs.tsv` + `wallet.py:STATION_BUILD_PRIORITY`, `STATION_BUILD_FLOOR = 200,000 cr`):**
+   - **#1 `The Golden Table`** (`700k cr`, L3 Dining `+7` Appeal -> **`54` max = `#1` galaxy** + L3 First-Class `6x` dining multiplier; `100%` construction materials already staged in Ridgecrest storage).
+   - **#2 `Fuel Tank Expansion`** (`500k cr`) -> **#3 `Trade Concourse`** (`500k cr`, auto `market=public`) -> **#4 `Repair Slip`** (`500k cr`, auto `repair=public`).
+   - *Deferred:* `Transit Concourse L3` (`9M cr`, `150` berths) after Phase-2 + T2 fleet scale-up; `The Leviathan Table` (`1.5M`, boss-drop gated) deferred to late game.
+3. **Closed-Loop Supply & On-Site `5A` Kitchen (`craft_net.py`, `haul-policy.json`):**
+   - `5A`/`5B` docked at Ridgecrest hand-craft `14+` resort dishes + `fuel_tank` + `repair_kit` straight into faction storage (`deliver_to="faction"`, `0` rent, `0` jumps); empire-facility specialties (`nebula_stellar_vintage`, `crimson_bloodwine`, `solarian_biotic`, `trade_authenticator`) are hauled by `6A` at `2.5x--3x` (`12--18h` peak) buffers (`hub_upkeep_reorder_pct = 0.78`, up to `4` concurrent haulers) so venues hold `100%` maintenance without 80% penalties.
+   - `6A` closed-loop outpost backhauls (`_pick_outpost_backhaul`) bring valuable outpost gas/ice/rare ore back toward hub stations on return legs.
+4. **Live `6B` Speed-6 VIP Liners & Toll-Aware Jumpgate Network (`passenger_net.py`, `fuelplan.py`):**
+   - `6B` scaled to `28` Speed-6 VIP `Futures` liners (`futures -> consortium -> concordia`) dual-fitted with `first_class_passenger_suite` + `business_passenger_cabin` (`10` VIP/Business berths/liner).
+   - Weighted Dijkstra jumpgate routing (`fuelplan.py` -> `passenger_net.py` & `haul.py`) uses public player jumpgates (`[HEXC] miaplacidus <-> kochab` `200 cr`, `[BUSY] mile_mark <-> tiaki` `100 cr`) ONLY when jumps saved beat `toll_cr` (`500 cr` max cap, broke-pilot guard, explicit toll deduction from fares/arb profits, and 30m circuit breaker).
+5. **Next Territorial Horizon (Stations #2--#5 & Outposts #4--#8):**
+   - Once Phase-2 Ridgecrest builds complete, organic Treasury > `2.0M cr` automatically funds fleet T1+T2 hull/module rollouts (`upgrade-policy.json: max_auto_tier=2`) and then Station #2--#5 `station_core` acquisitions.
