@@ -247,13 +247,32 @@ def plan_gifts(rows, given):
     return out
 
 
+_DONOR_LAST_SEND = {}
+
+
 def send(donor, target, credits):
     """(True, text) when the game took a storage `deposit` of credits from the donor to the target: a pilot's name (a
-    gift) or `faction` (the faction's treasury)."""
+    gift) or `faction` (the faction's treasury). Spaces consecutive sends from the same donor by 1 tick (10.5s) and
+    retries once on action_pending so batch top-ups/funds never collide."""
     import gate
-    status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(donor),
-                               {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": target}}, timeout=90)
-    return status == 200 and '"error"' not in answer[:200], answer[:200]
+    wait_s = float(os.environ.get("WALLET_TICK_WAIT", "10.5"))
+    answer = ""
+    for _try in range(2):
+        prev = _DONOR_LAST_SEND.get(donor)
+        if prev is not None and wait_s > 0:
+            rem = wait_s - (time.monotonic() - prev)
+            if rem > 0:
+                time.sleep(rem)
+        status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(donor),
+                                   {"toolGroup": "spacemolt_storage", "action": "deposit", "params": {"item_id": "credits", "quantity": int(credits), "target": target}}, timeout=90)
+        _DONOR_LAST_SEND[donor] = time.monotonic()
+        if status == 200 and '"error"' not in answer[:200]:
+            return True, answer[:200]
+        if _try == 0 and wait_s > 0 and ("action_pending" in answer[:240] or "already pending" in answer[:240].lower()):
+            time.sleep(wait_s)
+            continue
+        return False, answer[:200]
+    return False, answer[:200]
 
 
 def give(donor, pilot, credits):
