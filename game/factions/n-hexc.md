@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 6.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 6.
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 64 | Public event stream |
+| Pilots carrying the tag on the public event stream | 63 | Public event stream |
 
 ## Bases
 
@@ -50,12 +50,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| HexBot13 | The Experiment (`the_experiment`) | 0 | frankenhauler |
-| HexBot14 | Pherkad (`pherkad`) | 0 | promenade |
+| HexBot4 | Synchrony (`synchrony`) | 0 | ambrosia |
+| HexCraft2 | Pherkad (`pherkad`) | 0 | syndicate |
 | Liora Vessand | Node Alpha (`node_alpha`) | 0 | liquidity_event |
-| Mead-brewer | Synchrony (`synchrony`) | 5 | axiomata |
+| Mead-brewer | Pherkad (`pherkad`) | 5 | axiomata |
 | Olthoi | The Experiment (`the_experiment`) | 0 | cryogenic_survey |
-| Zhou | Node Alpha (`node_alpha`) | 0 | pithead |
 
 ## Standing History
 
