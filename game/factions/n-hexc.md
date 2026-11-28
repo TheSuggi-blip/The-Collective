@@ -9,13 +9,13 @@ faction: Hex Collective
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-27
+updated: 2026-11-28
 ---
 
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 3.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -48,11 +48,7 @@ Pilots of it in our space in the last 24 hours: 3.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| Mead-brewer | Acubens (`acubens`) | 5 | axiomata |
-| SolarMerchant | Pherkad (`pherkad`) | 0 | syndicate |
-| Zhou | The Experiment (`the_experiment`) | 0 | pithead |
+None in the last 24 hours.
 
 ## Standing History
 

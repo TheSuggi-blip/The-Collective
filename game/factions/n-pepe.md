@@ -9,13 +9,13 @@ faction: Pepemos Trading Company
 standing: neutral
 standing_since: 2026-11-16
 threat: unknown
-updated: 2026-11-27
+updated: 2026-11-28
 ---
 
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 12.
+Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 12.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 50 | Public event stream |
+| Pilots carrying the tag on the public event stream | 48 | Public event stream |
 
 ## Bases
 
@@ -38,18 +38,8 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Mimic | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicAuger | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicBarge | Node Alpha (`node_alpha`) | 0 | bonanza |
-| MimicBasalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicClaw | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicCobalt | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicComet | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicDray | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicFlare | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicHerd | Pherkad (`pherkad`) | not on record | cobble |
 | MimicLens | Nexus Prime (`nexus_prime`) | 0 | shard |
-| MimicShale | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History
 

@@ -9,13 +9,13 @@ faction: Busy Being Dead
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-27
+updated: 2026-11-28
 ---
 
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 22.
 
 ## Identity
 
@@ -47,10 +47,28 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 015 | Node Beta (`node_beta`) | 0 | opus_magna |
-| Combat Drone 167 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 186 | Pherkad (`pherkad`) | 0 | dialectic |
-| Mining Drone 118 | Synchrony (`synchrony`) | 0 | floor_price |
+| Cargo Drone 032 | Node Alpha (`node_alpha`) | 0 | floor_price |
+| Cargo Drone 037 | Node Alpha (`node_alpha`) | 0 | floor_price |
+| Cargo Drone 042 | Node Alpha (`node_alpha`) | 0 | floor_price |
+| Cargo Drone 060 | Node Alpha (`node_alpha`) | 0 | theoria |
+| Cargo Drone 061 | Node Alpha (`node_alpha`) | 0 | prospect |
+| Cargo Drone 075 | Node Alpha (`node_alpha`) | 0 | floor_price |
+| Combat Drone 009 | Pherkad (`pherkad`) | 0 | opus_magna |
+| Combat Drone 176 | Hamal (`hamal`) | 0 | dialectic |
+| Mining Drone 021 | The Experiment (`the_experiment`) | 0 | floor_price |
+| Mining Drone 026 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 031 | The Experiment (`the_experiment`) | 0 | floor_price |
+| Mining Drone 033 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 034 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 044 | The Experiment (`the_experiment`) | 0 | floor_price |
+| Mining Drone 059 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 074 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 078 | Synchrony (`synchrony`) | 0 | floor_price |
+| Mining Drone 177 | The Experiment (`the_experiment`) | 0 | floor_price |
+| Mining Drone 190 | The Experiment (`the_experiment`) | 0 | floor_price |
+| Mining Drone 210 | Node Gamma (`node_gamma`) | 0 | theoria |
+| Mining Drone 215 | Node Gamma (`node_gamma`) | 0 | theoria |
+| Mining Drone 247 | Synchrony (`synchrony`) | 0 | cobble |
 
 ## Standing History
 
