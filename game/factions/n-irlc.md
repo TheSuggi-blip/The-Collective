@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Ironlight Combine [IRLC]
 
 A player faction with 8 base(s) in 5 system(s); the nearest to Nexus Prime is 6 jump(s) away, in LHS 1140 (`lhs_1140`).
-Pilots of it in our space in the last 24 hours: 17.
+Pilots of it in our space in the last 24 hours: 22.
 
 ## Identity
 
@@ -49,20 +49,25 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 |---|---|---|---|
 | ILC Chute | Synchrony (`synchrony`) | 0 | junk_convoy |
 | ILC Constellation | Pherkad (`pherkad`) | 0 | concordia |
+| ILC Dragline | Hamal (`hamal`) | 0 | theoria |
+| ILC Druse | Node Alpha (`node_alpha`) | 0 | deep_survey |
 | ILC Flange | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Floe | Node Beta (`node_beta`) | 0 | frost_venture |
 | ILC Gantry | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gasket | Synchrony (`synchrony`) | 0 | syndicate |
 | ILC Gateway | Nexus Prime (`nexus_prime`) | 0 | concordia |
 | ILC Gilt | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Ladle | Synchrony (`synchrony`) | 0 | syndicate |
+| ILC Ladle | Node Beta (`node_beta`) | 0 | syndicate |
 | ILC Mallet | Node Beta (`node_beta`) | 0 | syndicate |
-| ILC Nonstop | Node Alpha (`node_alpha`) | 0 | concordia |
+| ILC Nonstop | Nexus Prime (`nexus_prime`) | 0 | concordia |
+| ILC Penalty | Pherkad (`pherkad`) | 0 | frankenhauler |
 | ILC Ratchet | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Retort | Synchrony (`synchrony`) | 0 | syndicate |
-| ILC Shank | Synchrony (`synchrony`) | 1 | syndicate |
+| ILC Retort | Node Beta (`node_beta`) | 0 | syndicate |
+| ILC Shank | The Experiment (`the_experiment`) | 1 | syndicate |
 | ILC Solder | Synchrony (`synchrony`) | 1 | syndicate |
+| ILC Turnbuckle | The Experiment (`the_experiment`) | 0 | rock_eater |
 | ILC Vagabond | Nexus Prime (`nexus_prime`) | 0 | concordia |
-| ILC Vein | Synchrony (`synchrony`) | 0 | deep_survey |
+| ILC Verdict | Synchrony (`synchrony`) | 0 | frankenhauler |
 | ILC Weir | Synchrony (`synchrony`) | 0 | junk_convoy |
 
 ## Standing History

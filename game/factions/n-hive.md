@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 8.
 
 ## Identity
 
@@ -42,21 +42,14 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0281a1f86c4b6f9bb47a8718 | Node Gamma (`node_gamma`) | 0 | theoria |
-| 1529c444887f2a8857c3bcd5 | Synchrony (`synchrony`) | 0 | theoria |
-| 1db2c542aded106fb4e54a0a | Synchrony (`synchrony`) | 0 | runner |
+| 2d6ffeda232aa324424edb53 | Node Gamma (`node_gamma`) | 0 | runner |
 | 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
-| 4011f46410f19d6243276018 | Node Beta (`node_beta`) | 0 | runner |
-| 68cf653d9ab64d0866a6555c | Node Gamma (`node_gamma`) | 0 | runner |
-| 721dd9c50961cdb453bf284b | Node Alpha (`node_alpha`) | 0 | runner |
-| 75bbbd91a1584939b84b0a01 | Node Gamma (`node_gamma`) | 0 | runner |
-| 907a7ad5fc57ac61d6e57ad4 | Node Gamma (`node_gamma`) | 0 | runner |
-| 91cba4fc8631acb92b8db26f | Node Beta (`node_beta`) | 0 | runner |
-| 9898c4d92e93f981e77715f0 | Node Gamma (`node_gamma`) | 0 | theoria |
-| 9c9765b4fac99eca9d3593cb | Node Beta (`node_beta`) | 0 | runner |
-| eabefb578c1ac30a8ecf90a7 | Node Gamma (`node_gamma`) | 0 | runner |
-| ec43cfe9e4293184f10e08ca | Node Alpha (`node_alpha`) | 0 | runner |
-| f202f17f1c83f02a54492789 | Node Beta (`node_beta`) | 0 | runner |
+| 6a73495396afc7768a08118f | Node Beta (`node_beta`) | 0 | workhorse |
+| b14ccc7a855a258164b5f3c1 | Node Alpha (`node_alpha`) | 0 | runner |
+| ba6ca244f9215d9ee62431df | Node Gamma (`node_gamma`) | 0 | futures |
+| dffe230ab864d7efef98b1fc | Synchrony (`synchrony`) | 0 | workhorse |
+| f8c3f4c38ee48a37ee21926b | Pherkad (`pherkad`) | 0 | workhorse |
+| regohunt01 | The Experiment (`the_experiment`) | 0 | theoria |
 
 ## Standing History
 
