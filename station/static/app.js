@@ -5026,6 +5026,10 @@ function renderFinancialStatements(panel, ops, w, t) {
     { cls: 'fs-sec', sec: 'Consolidation Elimination (IFRS 10.B86 / ASC 810 -- Prevents Double-Counting)' },
     row5('Less: Intersegment Consolidation Elimination (Eliminated vs Vault / Bursar COGS)', elimTxOf, 'fs-ind'),
     row5('Net Impact on Section 1 Consolidated External Revenue', (a) => (a ? 0 : null), 'fs-tot'),
+    { cls: 'fs-sec', sec: 'Logistics & Passenger Tourism Sub-Wings (6A / 6B / 6C -- Realized Net Operating Cash Flow)' },
+    row5(fsLbl('6A. Supply Chain Haulers (44) -- Net Cash Flow', ['Logistics']), (a) => (a && a.logistics_segments && a.logistics_segments['6A'] ? Number(a.logistics_segments['6A'].net_h || 0) : (a ? 0 : null)), 'fs-ind'),
+    row5(fsLbl('6B. Passenger & Resort Liners (28) -- Net Fares Less Fuel' + (() => { const s = (a24 && a24.logistics_segments && a24.logistics_segments['6B']) || (a1 && a1.logistics_segments && a1.logistics_segments['6B']); return (s && Number(s.trips_h || 0) > 0) ? (' [' + s.trips_h + ' trips/h]') : ''; })(), ['Logistics']), (a) => (a && a.logistics_segments && a.logistics_segments['6B'] ? Number(a.logistics_segments['6B'].net_h || 0) : (a ? 0 : null)), 'fs-ind'),
+    row5(fsLbl('6C. Fleet Fuel & Salvage (18) -- Net Cash Flow', ['Logistics']), (a) => (a && a.logistics_segments && a.logistics_segments['6C'] ? Number(a.logistics_segments['6C'].net_h || 0) : (a ? 0 : null)), 'fs-ind'),
   ];
   panel.append(fsTable(['Internal Segment / Sub-Wing Transfer (IAS 2 NRV cr)', '1h (/h)', '6h (/h)', '24h (/h)', '24h Pace (/day)'], sec5Rows, [1, 2, 3, 4]));
   panel.append(el('p', 'sub', 'IFRS 8 / ASC 280 & IFRS 10.B86 compliance: Upstream divisions (Miners 3A-3E and Military) earn full intersegment transfer credit when depositing extracted ore or loot into Faction Lockboxes or Bursars, valued at live IAS 2 NRV. Because Bursars recognize external cash revenue when selling those same goods on the Exchange (Section 1), 100% of internal transfers are eliminated here (= 0 net consolidated revenue impact) to prevent double-counting. Bracketed [u/h] shows live 24h mined extraction rate per sub-wing.'));

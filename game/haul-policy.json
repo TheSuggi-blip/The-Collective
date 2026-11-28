@@ -262,5 +262,13 @@
   },
   "resort_station_system": "ridgecrest",
   "max_arb_book_age_minutes": 15,
-  "arb_thin_max_spend_cr": 12000
+  "arb_thin_max_spend_cr": 12000,
+  "outpost_backhaul_enabled": true,
+  "outpost_backhaul_min_unit_value": 15.0,
+  "outpost_backhaul_max_hops": 10,
+  "outpost_backhaul_hubs": [
+    "node_beta_industrial_station",
+    "the_experiment_research_station",
+    "a2cee88abdcb31db229c04315f0ef6e1"
+  ]
 }

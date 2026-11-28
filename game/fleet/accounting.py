@@ -106,6 +106,22 @@ def _mining_subwing(pilot, repo_root, mw_mod=None):
     return "other"
 
 
+LOGISTICS_SUBWINGS = (
+    ("6A", "6A. Supply Chain Haulers (44)", 44),
+    ("6B", "6B. Passenger & Resort Liners (28)", 28),
+    ("6C", "6C. Fleet Fuel & Salvage (18)", 18),
+    ("other", "Other / Legacy Logistics", 0),
+)
+
+
+def _logistics_subwing(pilot, repo_root, mw_mod=None):
+    w = mw_mod.wing_of(pilot, repo_root) if mw_mod is not None else ""
+    for code, _lbl, _cnt in LOGISTICS_SUBWINGS[:3]:
+        if w.startswith(code + "."):
+            return code
+    return "other"
+
+
 def _load_oracle_fair_map(data_dir):
     """Read-only loader of market_guard VWM+LULD fair price oracle (zero SQLite/disk writes)."""
     if not data_dir:
@@ -1067,6 +1083,12 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     mining_seg_units = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
     mining_seg_tx_units = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
     mining_seg_tx_nrv = {code: 0.0 for code, _l, _n in MINING_SUBWINGS}
+    log_seg_runs = {code: 0 for code, _l, _n in LOGISTICS_SUBWINGS}
+    log_seg_hours = {code: 0.0 for code, _l, _n in LOGISTICS_SUBWINGS}
+    log_seg_rev = {code: 0.0 for code, _l, _n in LOGISTICS_SUBWINGS}
+    log_seg_cost = {code: 0.0 for code, _l, _n in LOGISTICS_SUBWINGS}
+    log_seg_trips = {code: 0.0 for code, _l, _n in LOGISTICS_SUBWINGS}
+    log_seg_layovers = {code: 0.0 for code, _l, _n in LOGISTICS_SUBWINGS}
     if conn is not None and _has_table(conn, "runs"):
         cut_r = now - span_h * 3600.0
         _run_cols = {c[1] for c in conn.execute("PRAGMA table_info(runs)")}
@@ -1112,6 +1134,25 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
                     seg_run_pos["mining"] += cr
                 elif d_r == "Intel":
                     seg_run_pos["intel"] += cr
+            _d_all = _div_of_pilot(pilot, pilot_div)
+            if _d_all == "Logistics" and route not in all_once and kind != "fit_net":
+                _lsw = _logistics_subwing(pilot, repo_root, _mw_acc)
+                if kind == "passenger_net" or "passenger" in route:
+                    _lsw = "6B"
+                log_seg_runs[_lsw] += 1
+                log_seg_hours[_lsw] += mins / 60.0
+                if cr >= 0.0:
+                    log_seg_rev[_lsw] += cr
+                else:
+                    log_seg_cost[_lsw] += cr
+                _raw_lr = r[6]
+                if isinstance(_raw_lr, str) and _raw_lr and _lsw == "6B":
+                    try:
+                        _lrj = json.loads(_raw_lr)
+                        log_seg_trips[_lsw] += _num(_lrj.get("delivered_trips"))
+                        log_seg_layovers[_lsw] += _num(_lrj.get("layovers"))
+                    except ValueError:
+                        pass
             if kind == "mine" or (kind == "mine_net"):
                 _sw = _mining_subwing(pilot, repo_root, _mw_acc)
                 mining_seg_runs[_sw] += 1
@@ -1590,6 +1631,21 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             "tx_units_h": int(round(mining_seg_tx_units[code] / ho_span_h)),
             "tx_nrv_h": int(round(mining_seg_tx_nrv[code] / ho_span_h)),
         }
+    logistics_segments = {}
+    for code, lbl, ships_n in LOGISTICS_SUBWINGS:
+        _r_h = log_seg_rev[code] / span_h
+        _c_h = log_seg_cost[code] / span_h
+        logistics_segments[code] = {
+            "label": lbl,
+            "ships": ships_n,
+            "runs": int(log_seg_runs[code]),
+            "ship_hours": round(log_seg_hours[code], 2),
+            "rev_h": int(round(_r_h)),
+            "cost_h": int(round(_c_h)),
+            "net_h": int(round(_r_h + _c_h)),
+            "trips_h": round(log_seg_trips[code] / span_h, 2),
+            "layovers_h": round(log_seg_layovers[code] / span_h, 2),
+        }
     _mine_tx_i = sum(v["tx_nrv_h"] for v in mining_segments.values())
     _mil_tx_i = int(round((tx_out_div.get("Military", 0.0) + tx_out_div.get("Command", 0.0)) / ho_span_h))
     _log_tx_i = int(round(tx_out_div.get("Logistics", 0.0) / ho_span_h))
@@ -1654,6 +1710,7 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
         "top_inv_builds": top_builds,
         "support_chains": support_out,
         "mining_segments": mining_segments,
+        "logistics_segments": logistics_segments,
         "intersegment_totals": intersegment_totals,
     }
 

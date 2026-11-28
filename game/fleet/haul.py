@@ -1431,6 +1431,96 @@ def _load_reserved_items_exact(data):
             pass
     return reserved
 
+
+OUTPOST_KEEP_ITEMS = frozenset(("fuel", "fuel_cell", "steel_plate", "circuit_board", "hull_patch", "repair_kit"))
+
+
+def _pick_outpost_backhaul(data, pilot, cur_base, base_map, lanes, hold_cap, policy, claimed_keys):
+    """Zero-pickup-jump return cargo when already docked at an Owned Outpost after delivering hub_upkeep.
+    Value-density gated (>= outpost_backhaul_min_unit_value cr/u) so haulers bring back high-value gas, ice,
+    rare ores, and hunting loot to Node Beta / The Experiment / Ridgecrest instead of deadheading empty --
+    and NEVER burn fuel hauling 1-3 cr raw bulk ore long distance."""
+    if not policy.get("outpost_backhaul_enabled", True) or hold_cap < 5:
+        return None
+    if not _pilot_can_withdraw_faction(data, pilot):
+        return None
+    cur_loc = base_map.get(cur_base)
+    if not cur_loc:
+        return None
+    cur_sys = cur_loc[0]
+    min_val = float(policy.get("outpost_backhaul_min_unit_value") or 15.0)
+    max_hops = int(policy.get("outpost_backhaul_max_hops") or 10)
+    hub_ids = [str(b) for b in (policy.get("outpost_backhaul_hubs") or []) if str(b) in base_map and str(b) != cur_base]
+    if not hub_ids:
+        return None
+    dists = bfs_dists(lanes, cur_sys, max_hops)
+    hub_hops = [(dists[base_map[b][0]], b, base_map[b]) for b in hub_ids if base_map[b][0] in dists]
+    if not hub_hops:
+        return None
+    hub_hops.sort(key=lambda x: x[0])
+
+    db = Path(data) / "store" / "read.db"
+    if not db.is_file():
+        return None
+    best = None
+    con = None
+    try:
+        import worldcache as _wc
+        con = _wc.ro_db(db, timeout=3.0)
+        tbls = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+        if "faction_storage" not in tbls:
+            return None
+        fair = {}
+        if "fair_prices" in tbls:
+            for iid, fp in con.execute("SELECT item, COALESCE(fair_price, 0) FROM fair_prices"):
+                fair[str(iid)] = float(fp or 0.0)
+        if not fair and "books" in tbls:
+            for iid, b in con.execute("SELECT item, MAX(COALESCE(bid, 0)) FROM books GROUP BY item"):
+                fair[str(iid)] = float(b or 0.0)
+        rc_id = "a2cee88abdcb31db229c04315f0ef6e1"
+        rc_tgts = ((policy.get("hub_upkeep_targets") or {}).get("station") or {})
+        rc_inv = {}
+        if rc_id in hub_ids:
+            for iid, u in con.execute("SELECT item, COALESCE(units, 0) FROM faction_storage WHERE base=?", (rc_id,)):
+                rc_inv[str(iid)] = int(u or 0)
+        for iid, u in con.execute("SELECT item, COALESCE(units, 0) FROM faction_storage WHERE base=? AND units >= 5", (cur_base,)):
+            s_iid = str(iid or "")
+            qty_avail = int(u or 0)
+            if not s_iid or s_iid in OUTPOST_KEEP_ITEMS or qty_avail < 5:
+                continue
+            unit_v = float(fair.get(s_iid) or 0.0)
+            # Route directly to Ridgecrest if Ridgecrest needs it and is within max_hops, else nearest industrial hub (Node Beta / The Experiment)!
+            chosen_hops, chosen_bid, chosen_loc = hub_hops[0]
+            if rc_id in hub_ids and s_iid in rc_tgts and rc_inv.get(s_iid, 0) < int(rc_tgts.get(s_iid) or 0):
+                for h_d, b_id, b_loc in hub_hops:
+                    if b_id == rc_id:
+                        chosen_hops, chosen_bid, chosen_loc = h_d, b_id, b_loc
+                        unit_v = max(unit_v, min_val * 1.5)
+                        break
+            if unit_v < min_val:
+                continue
+            take_q = min(qty_avail, hold_cap)
+            est_val = take_q * unit_v
+            if est_val < 400.0:
+                continue
+            jk = "backhaul:%s:%s:%s" % (cur_base, chosen_bid, s_iid)
+            if jk in claimed_keys:
+                continue
+            sc = est_val / float(max(1, chosen_hops))
+            if best is None or sc > best[0]:
+                best = (sc, {
+                    "job_key": jk, "item": s_iid, "qty": take_q,
+                    "origin": cur_loc, "dest": chosen_loc,
+                    "delivery_hops": chosen_hops, "est_val": int(round(est_val)),
+                })
+    except Exception:
+        return None
+    finally:
+        if con is not None:
+            con.close()
+    return best[1] if best else None
+
+
 def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None):
     """Pull non-reserved surplus from lawless Owned Outposts & non-Bursar hubs to the nearest policed Trade Hub with a docked Bursar Trader."""
     if hold_cap < 1:
@@ -2284,6 +2374,24 @@ def main(argv=None):
                                 say("hub_upkeep DELIVERED %d %s -> %s" % (live_have, iid, dloc[2]))
                                 notes.append("hub_upkeep %d %s -> %s" % (live_have, iid, dloc[2]))
                                 completed += 1
+                                # Closed-loop Outpost Backhaul: already docked at Outpost with empty hold -> load high-value return cargo (0 pickup jumps)!
+                                if upk.get("hub_kind") == "outpost":
+                                    _bh_cap = max(0, int(hold_cap) - sum(get_cargo().values()))
+                                    _bh = _pick_outpost_backhaul(DATA, pilot, dloc[2], base_map, lanes, _bh_cap, policy, active_claims(DATA))
+                                    if _bh and claim_job(DATA, pilot, _bh["job_key"]):
+                                        raw("withdraw", {"item_id": _bh["item"], "quantity": _bh["qty"], "target": "faction"}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        _bh_have = get_cargo().get(_bh["item"], 0)
+                                        if _bh_have > 0:
+                                            _ok_bh, _ = go_dock(_bh["dest"], refuel=True)
+                                            if _ok_bh:
+                                                _r_bh = raw("deposit", {"item_id": _bh["item"], "quantity": _bh_have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                                time.sleep(TICK)
+                                                if "error" not in _r_bh:
+                                                    say("outpost_backhaul DELIVERED %d %s %s -> %s (%dJ, ~%d cr)" % (_bh_have, _bh["item"], dloc[2], _bh["dest"][2], _bh["delivery_hops"], _bh["est_val"]))
+                                                    notes.append("backhaul %d %s -> %s" % (_bh_have, _bh["item"], _bh["dest"][2]))
+                                                    completed += 1
+                                        release_job(DATA, pilot)
                     else:
                         release_job(DATA, pilot)
 
