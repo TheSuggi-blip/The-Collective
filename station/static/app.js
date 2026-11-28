@@ -5193,33 +5193,88 @@ async function renderMetrics(panel, live) {
   }
   panel.append(flGrid);
 
-  // === SECTION 2B: ETERNAL STANDING-GOAL KPIS (MEASURABLE LATE-GAME & OPEN-ENDED FRONTIERS) ===
+  // === SECTION 2B: ETERNAL STANDING-GOAL KPIS (CLEAN GROUPED TABLE WITH PROGRESS BARS) ===
   const sGoals = (fk && Array.isArray(fk.standing_goals)) ? fk.standing_goals : [];
   if (sGoals.length) {
     panel.append(el('h3', null, 'Eternal Standing-Goal KPIs (' + sGoals.length + ' measurable dominance & compounding frontiers)'));
-    const sgGrid = el('div', 'sg-grid');
+    const sgWrap = el('div', 'mtable sg-wrap');
+    const tbl = el('table', 'sg-table');
+    const thead = el('thead');
+    const htr = el('tr');
+    htr.append(
+      el('th', 'sg-col-goal', 'Standing Goal'),
+      el('th', 'sg-col-bar', 'Progress to Eternal Target'),
+      el('th', 'sg-col-val n', 'Current'),
+      el('th', 'sg-col-st n', 'Status'),
+    );
+    thead.append(htr);
+    tbl.append(thead);
+    const tbody = el('tbody');
     const sgPill = (st) => (st === 'APEX' ? 'apex' : (st === 'OUTPERFORM' ? 'good' : (st === 'SOLID' ? 'solid' : (st === 'WARN' ? 'warn' : 'bad'))));
-    for (const g of sGoals) {
-      const c = el('div', 'sg-card ' + String(g.status || 'ALARM').toLowerCase() + (g.breakout ? ' peak' : ''));
-      const hd = el('div', 'sg-head');
-      hd.append(
-        el('span', 'sg-tag', g.sg || g.id),
-        el('b', 'sg-title', g.title),
-        el('span', 'pill ' + sgPill(g.status), g.status + ' ' + Math.round(Number(g.score || 0))),
-      );
-      const vRow = el('div', 'sg-vrow');
-      vRow.append(
-        el('span', 'sg-val ' + (Number(g.score || 0) >= 120 ? 'apex' : (Number(g.score || 0) >= 100 ? 'pos' : (Number(g.score || 0) >= 80 ? 'solid' : (Number(g.score || 0) >= 60 ? 'warn' : 'neg')))), g.value),
-        el('span', 'sg-tgt', 'Target: ' + g.target),
-      );
-      const trk = el('div', 'wg-bar-trk');
-      const fil = el('div', 'wg-bar-fil ' + (Number(g.score || 0) >= 120 ? 'apex' : (Number(g.score || 0) >= 100 ? 'good' : (Number(g.score || 0) >= 60 ? 'warn' : 'bad'))));
-      fil.style.width = Math.max(2, Math.min(100, Number(g.pct || 0))) + '%';
-      trk.append(fil);
-      c.append(hd, vRow, trk, el('div', 'wg-s', g.sub || ''));
-      sgGrid.append(c);
+    const sgTone = (sc) => (sc >= 120 ? 'apex' : (sc >= 100 ? 'pos' : (sc >= 80 ? 'solid' : (sc >= 60 ? 'warn' : 'neg'))));
+    const sgBarCls = (sc) => (sc >= 120 ? 'apex' : (sc >= 100 ? 'good' : (sc >= 80 ? 'solid' : (sc >= 60 ? 'warn' : 'bad'))));
+    const grpOrder = [
+      ['supremacy', 'Galactic Supremacy (vs #1 Rival)'],
+      ['economics', 'Open-Ended Operating Economics'],
+      ['infrastructure', 'Fleet & Sovereign Infrastructure'],
+    ];
+    const seen = new Set();
+    const groups = [];
+    for (const [gk, glbl] of grpOrder) {
+      const items = sGoals.filter((x) => (x.group || 'other') === gk);
+      if (items.length) {
+        groups.push([glbl, items]);
+        items.forEach((x) => seen.add(x));
+      }
     }
-    panel.append(sgGrid);
+    const rest = sGoals.filter((x) => !seen.has(x));
+    if (rest.length) groups.push(['Other Standing Goals', rest]);
+
+    for (const [glbl, items] of groups) {
+      const gtr = el('tr', 'sg-grp-row');
+      const gtd = el('td', 'sg-grp-cell', glbl);
+      gtd.colSpan = 4;
+      gtr.append(gtd);
+      tbody.append(gtr);
+      for (const g of items) {
+        const sc = Number(g.score || 0);
+        const pct = Math.max(0, Math.min(100, Number(g.pct || 0)));
+        const tr = el('tr', 'sg-row ' + String(g.status || 'ALARM').toLowerCase() + (g.breakout ? ' peak' : ''));
+
+        const tdGoal = el('td', 'sg-col-goal');
+        const topLine = el('div', 'sg-gtop');
+        topLine.append(
+          el('span', 'sg-tag', g.sg || g.id),
+          el('span', 'sg-title', g.title || g.id),
+        );
+        tdGoal.append(topLine);
+        if (g.sub) tdGoal.append(el('div', 'sg-sub', g.sub));
+
+        const tdBar = el('td', 'sg-col-bar');
+        const barMeta = el('div', 'sg-bmeta');
+        barMeta.append(
+          el('span', 'sg-tgt', g.target || '--'),
+          el('span', 'sg-pct', pct < 1 && pct > 0 ? pct.toFixed(1) + '%' : Math.round(pct) + '%'),
+        );
+        const trk = el('div', 'sg-bar-trk');
+        const fil = el('div', 'sg-bar-fil ' + sgBarCls(sc));
+        fil.style.width = (pct > 0 ? Math.max(2, pct) : 0) + '%';
+        trk.append(fil);
+        tdBar.append(barMeta, trk);
+
+        const tdVal = el('td', 'sg-col-val n');
+        tdVal.append(el('span', 'sg-val ' + sgTone(sc), g.value || '--'));
+
+        const tdSt = el('td', 'sg-col-st n');
+        tdSt.append(el('span', 'pill ' + sgPill(g.status), String(g.status || 'ALARM') + ' ' + Math.round(sc)));
+
+        tr.append(tdGoal, tdBar, tdVal, tdSt);
+        tbody.append(tr);
+      }
+    }
+    tbl.append(tbody);
+    sgWrap.append(tbl);
+    panel.append(sgWrap);
   }
 
   // === SECTION 3: 17 SPECIALIZED WING & DIVISION KPI SCORECARDS (ZERO ADMIRALS) ===
