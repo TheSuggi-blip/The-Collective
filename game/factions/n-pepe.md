@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 14.
 
 ## Identity
 
@@ -38,8 +38,20 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
+| MimicBarge | Pherkad (`pherkad`) | 0 | bonanza |
+| MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicClaw | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicCobalt | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicComet | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicDray | Nexus Prime (`nexus_prime`) | 0 | worship |
 | MimicFang | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlake | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicFlare | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicGrain | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicSand | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicSlag | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicWafer | Nexus Prime (`nexus_prime`) | 0 | cobble |
 
 ## Standing History
 
