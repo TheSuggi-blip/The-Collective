@@ -176,15 +176,15 @@ class PlanTests(unittest.TestCase):
 
     def test_the_tools_carry_the_protocols_hints(self):
         hints = {name: self.server.schema(name)["annotations"] for name in self.server.TOOLS}
-        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "dismantle", "errand", "fill", "fund", "goal", "hold", "needs", "plan", "stop"])
-        self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "dismantle", "errand", "fund", "goal", "hold", "stop"])
+        self.assertEqual(sorted(name for name, h in hints.items() if not h["readOnlyHint"]), ["command", "dismantle", "errand", "fill", "fund", "goal", "hold", "liquidate", "needs", "plan", "station_build", "stop"])
+        self.assertEqual(sorted(name for name, h in hints.items() if h["destructiveHint"]), ["command", "dismantle", "errand", "fund", "goal", "hold", "liquidate", "station_build", "stop"])
         self.assertTrue(hints["game_docs"]["readOnlyHint"])
         self.assertFalse(hints["game_docs"]["destructiveHint"])
 
     def test_the_door_is_marked_and_every_script_exists(self):
-        self.assertEqual(sorted(name for name, tool in self.server.TOOLS.items() if tool.get("door")), ["command", "dismantle", "errand", "fund", "goal", "hold", "stop"])
+        self.assertEqual(sorted(name for name, tool in self.server.TOOLS.items() if tool.get("door")), ["command", "dismantle", "errand", "fund", "goal", "hold", "liquidate", "station_build", "stop"])
         samples = {"ship": {"pilot": "p"}, "route": {"id": "r"}, "market": {"item": "i"}, "base_plan": {"kind": "outpost"}, "system": {"id": "s"}, "search": {"question": "q"},
-                   "command": {"pilots": ["p"], "action": "a"}, "goal": {"pilot": "p", "type": "t"}, "hold": {"pilot": "p"}, "stop": {"list": True}, "errand": {"action": "show"}, "fund": {"show": True}, "hive": {"verb": "fleet"}, "catalog": {"name": "x"}}
+                   "command": {"pilots": ["p"], "action": "a"}, "goal": {"pilot": "p", "type": "t"}, "hold": {"pilot": "p"}, "stop": {"list": True}, "errand": {"action": "show"}, "fund": {"show": True}, "hive": {"verb": "fleet"}, "catalog": {"name": "x"}, "station_build": {"action": "status"}}
         for name, tool in self.server.TOOLS.items():
             for script, _argv in tool["plan"](samples.get(name, {})):
                 self.assertTrue((REPO / script).is_file(), "%s: %s" % (name, script))

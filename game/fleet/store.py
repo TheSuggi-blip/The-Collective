@@ -477,11 +477,15 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
              ("ship_listings", "listing_id TEXT, ship_id TEXT, class_id TEXT, ship_name TEXT, category TEXT, tier INTEGER, base TEXT, base_name TEXT, price INTEGER, seller TEXT, listed_at TEXT, t INTEGER", "listing_id"),
              ("fair_prices", "item TEXT, fair_price REAL, twap REAL, vwm REAL, stations INTEGER, total_qty INTEGER, total_cash REAL, spoof_risk TEXT, t INTEGER", "item"),
              ("wing_kpis", "win TEXT, wing_id TEXT, name TEXT, division TEXT, pillar TEXT, responsibility_center TEXT, ships INTEGER, working INTEGER, idle INTEGER, idle_pct REAL, fuel_h REAL, rof REAL, health_pct REAL, status TEXT, staged INTEGER, kpis_json TEXT, t INTEGER", "win, wing_id"),
-             ("tourism_snapshots", "bucket_h INTEGER, station TEXT, system TEXT, board TEXT, rank INTEGER, value INTEGER, t INTEGER", "bucket_h, station, board"),)
+             ("tourism_snapshots", "bucket_h INTEGER, station TEXT, system TEXT, board TEXT, rank INTEGER, value INTEGER, t INTEGER", "bucket_h, station, board"),
+             ("cltv_open_orders", "pilot TEXT, base TEXT, item TEXT, qty INTEGER, t INTEGER", "pilot, base, item"),
+             ("live_claims", "kind TEXT, claim_key TEXT, pilot TEXT, base TEXT, item TEXT, t INTEGER", "kind, claim_key"),
+             ("passenger_boards", "base TEXT, system TEXT, waiting INTEGER, lounge_occ INTEGER, lounge_cap INTEGER, fare_surge REAL, demand_level TEXT, t INTEGER", "base"),
+             ("fleet_anomalies", "code TEXT, severity TEXT, count INTEGER, detail TEXT, t INTEGER", "code"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"), ("tourism_snapshots", "station"), ("tourism_snapshots", "board"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"), ("tourism_snapshots", "station"), ("tourism_snapshots", "board"), ("cltv_open_orders", "base"), ("cltv_open_orders", "item"), ("live_claims", "kind"), ("live_claims", "pilot"), ("fleet_anomalies", "severity"))
 
 
 def views():
@@ -572,8 +576,28 @@ EXTRA_VIEWS = (
     "CASE WHEN fp.fair_price > 0 AND b.bid > 0 THEN MIN(b.bid, ROUND(fp.fair_price * 1.5, 2)) ELSE b.bid END AS guarded_bid, "
     "b.t AS t "
     "FROM books b LEFT JOIN fair_prices fp ON fp.item = b.item LEFT JOIN items i ON i.id = b.item;\n"
+    "CREATE VIEW IF NOT EXISTS vault_cashable AS "
+    "SELECT f.base AS vault_base, f.base_name AS vault_base_name, cb.base AS sell_base, cb.system AS sell_system, "
+    "CASE WHEN f.base = cb.base THEN 1 ELSE 0 END AS same_base, f.item AS item, COALESCE(i.name, cb.name, f.item) AS name, "
+    "COALESCE(i.size, 1) AS item_size, f.units AS vault_qty, "
+    "MAX(0, COALESCE(cb.bid_qty, 0) - COALESCE(oo.cltv_qty, 0)) AS ext_bid_qty, "
+    "MIN(f.units, MAX(0, COALESCE(cb.bid_qty, 0) - COALESCE(oo.cltv_qty, 0))) AS sellable_qty, "
+    "cb.guarded_bid AS guarded_bid, cb.fair_price AS fair_price, cb.spoof_risk AS spoof_risk, "
+    "ROUND(MIN(f.units, MAX(0, COALESCE(cb.bid_qty, 0) - COALESCE(oo.cltv_qty, 0))) * COALESCE(cb.guarded_bid, 0)) AS est_cash, "
+    "ROUND(COALESCE(cb.guarded_bid, 0) / MAX(1, COALESCE(i.size, 1)), 2) AS cr_per_m3 "
+    "FROM faction_storage f "
+    "JOIN clean_books cb ON cb.item = f.item "
+    "LEFT JOIN items i ON i.id = f.item "
+    "LEFT JOIN (SELECT base, item, SUM(qty) AS cltv_qty FROM cltv_open_orders GROUP BY base, item) oo "
+    "ON oo.base = cb.base AND oo.item = cb.item "
+    "LEFT JOIN (SELECT DISTINCT ref FROM needs WHERE status = 'open' AND kind = 'item' AND ref IS NOT NULL) rn "
+    "ON rn.ref = f.item "
+    "WHERE f.units > 0 AND rn.ref IS NULL "
+    "AND f.item NOT IN ('fuel', 'fuel_cell', 'antimatter_containment_cell', 'repair_kit', 'hull_patch', 'water_ice') "
+    "AND cb.is_spoof_bid = 0 AND COALESCE(cb.guarded_bid, 0) >= 5 "
+    "AND MAX(0, COALESCE(cb.bid_qty, 0) - COALESCE(oo.cltv_qty, 0)) > 0;\n"
 )
-VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates", "division_pnl_24h", "clean_books")
+VIEWS = ("inventory", "inventory_by_station", "inventory_faction", "fleet_positions", "our_stations", "route_earnings", "outpost_candidates", "hull_readiness", "fuel_sinks", "contract_candidates", "division_pnl_24h", "clean_books", "vault_cashable")
 VIEWS += supplychains.VIEWS                       # supply_status: each supply chain against what stands at its place (supply.py)
 
 
@@ -669,7 +693,15 @@ def read_fleet(path, ctx):
                      "max_shield": number(ship.get("max_shield")), "fuel": number(ship.get("fuel")), "max_fuel": number(ship.get("max_fuel")),
                      "cargo_used": number(ship.get("cargo_used")), "cargo_capacity": number(ship.get("cargo_capacity")), "credits": number(ship.get("credits")),
                      "flies": division.order_of(name, data, now) or None, "t": when(ship.get("state_at"), read)})
-    return {"ships": rows}
+    anom_rows = []
+    try:
+        import ops_xray
+        now_t = int(now or mtime_of(path) or time.time())
+        for code, sev, cnt, det in ops_xray.compute_anomalies(data, now_t=now_t):
+            anom_rows.append({"code": text(code), "severity": text(sev), "count": int(cnt), "detail": text(det), "t": now_t})
+    except Exception:
+        anom_rows = []
+    return {"ships": rows, "fleet_anomalies": anom_rows}
 
 
 def read_ship(path, ctx):
@@ -1326,14 +1358,130 @@ def wing_kpi_files(data, root):
     return [("fleet/kpi_snapshot.json", path, read_wing_kpis, True, "")] if path.is_file() else []
 
 
+
+
+def read_cltv_open_orders(path, ctx):
+    found = need(load_json(path), dict, "no object")
+    entries = found.get("entries") if isinstance(found.get("entries"), dict) else {}
+    ref_t = number(found.get("updated_at")) or mtime_of(path)
+    rows = []
+    for pilot, bases in entries.items():
+        if not isinstance(bases, dict):
+            continue
+        for base, rec in bases.items():
+            if not isinstance(rec, dict):
+                continue
+            at = number(rec.get("at")) or ref_t
+            if ref_t and at and (ref_t - at) > 21600:
+                continue
+            for item, qty in (rec.get("items") or {}).items():
+                q = int(number(qty) or 0)
+                if q > 0:
+                    rows.append({"pilot": text(pilot), "base": text(base), "item": text(item), "qty": q, "t": int(at or 0)})
+    return {"cltv_open_orders": rows}
+
+
+def cltv_open_order_files(data, root):
+    path = Path(data) / "fleet" / "bursar_buys.json"
+    return [("fleet/bursar_buys.json", path, read_cltv_open_orders, True, "")] if path.is_file() else []
+
+
+def read_live_claims(path, ctx):
+    found = need(load_json(path), dict, "no object")
+    fname = Path(path).name
+    def_t = mtime_of(path)
+    rows = []
+    if fname == "bursar_claims.json":
+        for key, rec in found.items():
+            if not isinstance(rec, dict):
+                continue
+            rows.append({
+                "kind": "bursar",
+                "claim_key": text(key),
+                "pilot": text(rec.get("pilot")),
+                "base": text(rec.get("base") or key),
+                "item": "unwind" if rec.get("unwind") else "",
+                "t": int(number(rec.get("claimed_at")) or def_t or 0),
+            })
+    elif fname == "haul_claims.json":
+        for key, rec in found.items():
+            if not isinstance(rec, dict):
+                continue
+            parts = str(key).split(":")
+            base = parts[-2] if len(parts) >= 3 else ""
+            item = parts[-1].split("#")[0] if len(parts) >= 2 else ""
+            rows.append({
+                "kind": "haul",
+                "claim_key": text(key),
+                "pilot": text(rec.get("pilot")),
+                "base": text(base),
+                "item": text(item),
+                "t": int(number(rec.get("at")) or def_t or 0),
+            })
+    elif fname == "passenger_rep_claims.json":
+        for key, rec in found.items():
+            if not isinstance(rec, dict):
+                continue
+            rows.append({
+                "kind": "passenger_rep",
+                "claim_key": text(key),
+                "pilot": text(rec.get("pilot")),
+                "base": text(key),
+                "item": "",
+                "t": int(number(rec.get("at") or rec.get("exp")) or def_t or 0),
+            })
+    return {"live_claims": rows}
+
+
+def live_claim_files(data, root):
+    out = []
+    for rel in ("fleet/bursar_claims.json", "fleet/haul_claims.json", "fleet/passenger_rep_claims.json"):
+        path = Path(data) / rel
+        if path.is_file():
+            out.append((rel, path, read_live_claims, False, ""))
+    return out
+
+
+def read_passenger_boards(path, ctx):
+    found = need(load_json(path), dict, "no object")
+    boards = found.get("boards") if isinstance(found.get("boards"), dict) else {}
+    def_t = int(number(found.get("updated_at")) or mtime_of(path) or 0)
+    rows = []
+    for base, rec in boards.items():
+        if not isinstance(rec, dict):
+            continue
+        lounge = rec.get("transit_lounge") if isinstance(rec.get("transit_lounge"), dict) else {}
+        waiting = rec.get("waiting") if isinstance(rec.get("waiting"), list) else []
+        rows.append({
+            "base": text(base),
+            "system": text(rec.get("system")),
+            "waiting": len(waiting),
+            "lounge_occ": int(number(lounge.get("occupancy") if lounge else rec.get("lounge_occ")) or 0),
+            "lounge_cap": int(number(lounge.get("capacity") if lounge else rec.get("lounge_cap")) or 0),
+            "fare_surge": float(number(rec.get("fare_surge")) or 1.0),
+            "demand_level": text(rec.get("demand_level") or ""),
+            "t": int(number(rec.get("t")) or def_t),
+        })
+    return {"passenger_boards": rows}
+
+
+def passenger_board_files(data, root):
+    path = Path(data) / "fleet" / "passenger_boards.json"
+    return [("fleet/passenger_boards.json", path, read_passenger_boards, True, "")] if path.is_file() else []
+
+
 LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
             ("player_comms", ("player_comms",), player_comms_files, True),
             ("game_releases", ("game_releases",), game_release_files, True),
             ("rival_snapshots", ("rival_snapshots",), rival_history_files, True),
             ("ship_listings", ("ship_listings",), ship_listing_files, True),
             ("fair_prices", ("fair_prices",), fair_price_files, True),
-            ("wing_kpis", ("wing_kpis",), wing_kpi_files, True),)
-FED = dict([(table, ("fleet", "orders")) for table in ("ships",)] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
+            ("wing_kpis", ("wing_kpis",), wing_kpi_files, True),
+            ("cltv_open_orders", ("cltv_open_orders",), cltv_open_order_files, True),
+            ("live_claims", ("live_claims",), live_claim_files, False),
+            ("passenger_boards", ("passenger_boards",), passenger_board_files, True),
+)
+FED = dict([(table, ("fleet", "orders")) for table in ("ships", "fleet_anomalies")] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
 
 
@@ -1445,7 +1593,7 @@ class Pass:
         if found is None:
             self.problem("fleet/fleet.json", "fleet", None, "missing")
         elif self.changed("fleet/fleet.json", found) or flags_changed or (self.known.get("fleet/fleet.json") or ("",) * 7)[6]:
-            rebuilt = self.load("fleet", ("ships",), "fleet/fleet.json", main, read_fleet, True)
+            rebuilt = self.load("fleet", ("ships", "fleet_anomalies"), "fleet/fleet.json", main, read_fleet, True)
         if flagged and flags_changed:
             self.keep("fleet/flagships.json", "flagships", flagged, int(self.now), 0, "")
         elif not flagged and "fleet/flagships.json" in self.known:
@@ -1983,6 +2131,11 @@ DESCRIPTIONS = {
     "fair_prices": "now: manipulation-proof market_guard oracle per item (Cash-Weighted Median, LULD TWAP, net-external hub count, external bid depth, total cash, and spoof_risk from fleet/price_oracle.json)",
     "clean_books": "view: live Exchange order books joined with fair_prices, flagging spoof bids (is_spoof_bid=1) and exposing guarded_bid capped at 1.5x fair_price",
     "wing_kpis": "now: 17-wing KPI scorecards across 1h, 6h and 24h windows (utilization, fuel/h, ROF, health_pct, status, and per-wing KPI breakdown from fleet/kpi_snapshot.json)",
+    "cltv_open_orders": "now: active Collective Bursar open buy orders mirrored from fleet/bursar_buys.json (pilot, base, item, qty, t) used to subtract self-bids and track order unwind",
+    "live_claims": "now: active fleet coordination claims across Bursar hubs, Hauler lanes, and Passenger reposition claims mirrored from fleet/*_claims.json",
+    "passenger_boards": "now: cached station passenger terminals and fare surge levels mirrored from fleet/passenger_boards.json (base, system, waiting, lounge_occ/cap, fare_surge, demand_level)",
+    "fleet_anomalies": "now: live operational anomaly alarms computed by ops_xray.compute_anomalies() (thin passenger boards, low treasury, excess Bursar buys, unstaffed Tier-1 hubs, service down, log spikes)",
+    "vault_cashable": "view: unreserved faction_storage stock joined with clean_books, item sizes, and cltv_open_orders showing net external buy-wall depth, est_cash, cr_per_m3, and same_base (0-hop) liquidity",
 }
 
 EXAMPLES = {                   # three questions per table and view, as SQL (hive.py schema <table>); the tests run each one
@@ -2262,6 +2415,36 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
     "hull_readiness": (("Pilots ready for Tier 2 hulls by division", "SELECT division, role, COUNT(*) AS ready, MAX(piloting) AS max_piloting FROM hull_readiness GROUP BY division, role ORDER BY ready DESC"),
                        ("Pilots at Piloting >= 10 with >= 200,000 cr on hand", "SELECT pilot, division, hull_class, piloting, credits, docked FROM hull_readiness WHERE credits >= 200000 ORDER BY credits DESC"),
                        ("Pilots at Piloting >= 20 still in starter hulls", "SELECT pilot, division, hull_class, piloting, credits FROM hull_readiness WHERE piloting >= 20 ORDER BY piloting DESC")),
+    "tourism_snapshots": (
+        ("Latest hourly tourism leaderboard rankings by station", "SELECT station, system, board, rank, value FROM tourism_snapshots WHERE bucket_h = (SELECT MAX(bucket_h) FROM tourism_snapshots) ORDER BY board, rank LIMIT 20"),
+        ("Top stations by tourism appeal in snapshots", "SELECT station, system, MAX(value) AS peak_val, MIN(rank) AS best_rank FROM tourism_snapshots GROUP BY station, system ORDER BY peak_val DESC LIMIT 15"),
+        ("Hourly snapshot coverage across tourism boards", "SELECT board, COUNT(DISTINCT bucket_h) AS hours, COUNT(*) AS rows FROM tourism_snapshots GROUP BY board"),
+    ),
+    "cltv_open_orders": (
+        ("Total active Collective buy orders and units by station", "SELECT base, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY base ORDER BY orders DESC LIMIT 15"),
+        ("Active Collective buy orders grouped by pilot", "SELECT pilot, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY pilot ORDER BY orders DESC LIMIT 15"),
+        ("Top items with active Collective open buy orders", "SELECT item, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY item ORDER BY units DESC LIMIT 15"),
+    ),
+    "live_claims": (
+        ("Active claim counts grouped by claim kind", "SELECT kind, COUNT(*) AS claims FROM live_claims GROUP BY kind ORDER BY claims DESC"),
+        ("Bursar hub staffing claims with unwind flag", "SELECT base, pilot, item AS mode, datetime(t, 'unixepoch') AS at FROM live_claims WHERE kind = 'bursar' ORDER BY t DESC LIMIT 20"),
+        ("Active hauler claims by item and base", "SELECT pilot, base, item, claim_key FROM live_claims WHERE kind = 'haul' ORDER BY t DESC LIMIT 20"),
+    ),
+    "passenger_boards": (
+        ("Stations with waiting passengers ranked by fare surge", "SELECT base, system, waiting, fare_surge, demand_level, lounge_occ, lounge_cap FROM passenger_boards WHERE waiting > 0 ORDER BY fare_surge DESC, waiting DESC LIMIT 20"),
+        ("Cached passenger terminal coverage and total waiting count", "SELECT COUNT(*) AS stations, SUM(waiting) AS total_waiting, ROUND(AVG(fare_surge), 2) AS avg_surge FROM passenger_boards"),
+        ("Stations currently surging at >= 1.5x fare multiplier", "SELECT base, system, waiting, fare_surge, demand_level FROM passenger_boards WHERE fare_surge >= 1.5 ORDER BY fare_surge DESC"),
+    ),
+    "fleet_anomalies": (
+        ("All active operational anomalies ordered by severity", "SELECT severity, code, count, detail FROM fleet_anomalies ORDER BY CASE severity WHEN 'CRITICAL' THEN 0 WHEN 'WARN' THEN 1 ELSE 2 END, code"),
+        ("Count of active anomalies by severity level", "SELECT severity, COUNT(*) AS anomalies FROM fleet_anomalies GROUP BY severity"),
+        ("Critical operational anomalies requiring immediate attention", "SELECT code, count, detail FROM fleet_anomalies WHERE severity = 'CRITICAL'"),
+    ),
+    "vault_cashable": (
+        ("Top 0-hop instant cashable faction vault positions at the same station", "SELECT vault_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable WHERE same_base = 1 ORDER BY est_cash DESC LIMIT 15"),
+        ("Top cross-station cashable faction vault positions ranked by value density", "SELECT vault_base, sell_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable ORDER BY est_cash DESC LIMIT 15"),
+        ("Total cashable vault liquidity split by 0-hop same-base vs cross-station", "SELECT same_base, COUNT(*) AS pairs, ROUND(SUM(est_cash)) AS total_est_cash FROM vault_cashable GROUP BY same_base"),
+    ),
 }
 
 

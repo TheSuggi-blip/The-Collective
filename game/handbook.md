@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 69 tables and 14 views (48 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 30 tools.
+The store: 73 tables and 15 views (52 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 32 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -34,15 +34,15 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - How the data flows (below): the game to the members; what is private, what is public
 - Where to ask what (below): a question -> the MCP call and the shell line, by subject
 - Ships and pilots, `game/handbook/ships-and-pilots.md`: ships, ship_skills, ship_modules, ship_cargo, fleet_positions, hull_readiness, stats_pilot_hour, stats_pilot_last
-- Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions
+- Routes and runs, `game/handbook/routes-and-runs.md`: routes, plan_routes, runs, route_hour, route_earnings, fuel_sinks, stats_route_author, missions, live_claims, passenger_boards
 - Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
-- Markets, `game/handbook/markets.md`: books, ladders, fair_prices, clean_books, ship_listings, moves, market_hour, contract_candidates
+- Markets, `game/handbook/markets.md`: books, ladders, fair_prices, clean_books, cltv_open_orders, ship_listings, moves, market_hour, contract_candidates
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, tourism_snapshots, met, player_comms, observations
 - Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
-- Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, stock_hour, needs, need_status
+- Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, vault_cashable, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills, game_releases
 - Supply, `game/handbook/supply.md`: supply_chains, supply_status, stats_supply_hour
-- Statistics, `game/handbook/statistics.md`: stats_time, stats_refill, stats_figures, wing_kpis and the figures
+- Statistics, `game/handbook/statistics.md`: stats_time, stats_refill, stats_figures, wing_kpis, fleet_anomalies and the figures
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
@@ -123,6 +123,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | the hours ahead per division: every route with the ships on it now, what a ship-hour on it measured... | fleet view=forecast | hive.py forecast |
 | reconciled IFRS 15/10/8 Income Statement, Realized Core EBIT (Ex-Seeds), and division transfer-priced... | fleet view=income | accounting.py --income |
 | Draw credits from the shared faction treasury for one or more pilots of your division (rule F12... | fund | wallet.py fund --show |
+| 1-call Ops & Cashflow X-Ray: reconciled IFRS Core EBIT/h, Treasury vs TOPUP/FUND floors, low-cash... | xray | ops_xray.py xray |
 | what the fleet bought once by division and kind (modules, hulls, craft inputs, mission goods) and the... | hive verb=spend | hive.py spend [--hours H] |
 
 ### Markets
@@ -170,6 +171,7 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 | the same per station. | stock view=stations | craftbook.py inventory stations |
 | what we hold beyond the reserve and may sell, best worth at a standing bid first, where it lies and... | stock view=surplus | surplus.py show |
 | what our bases and upgrades take (the open needs of game/needs.tsv, tool needs) against what we hold... | stock view=reserve | surplus.py reserve |
+| Guarded 0-hop Faction Vault Cash-Infusion Liquidation (dry-run by default). Finds unreserved... | liquidate | ops_xray.py liquidate |
 | the open needs, highest priority first, each with covered percent, colour (red under 50, yellow 50 to... | needs action=list | needs.py list |
 | one need whole (id) or every need of a project (project). | needs action=show id=<id> | needs.py show <id> |
 | per item for the whole fleet its gross need, held and net short. | needs action=items | needs.py items |

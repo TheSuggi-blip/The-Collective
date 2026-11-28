@@ -99,3 +99,27 @@ now: the missions on offer at each station our ships read: kind, reward in credi
 - The missions of highest reward: `SELECT base, title, kind, reward FROM missions ORDER BY reward DESC LIMIT 10`
 - Missions per station: `SELECT base, COUNT(*), SUM(reward) FROM missions GROUP BY base`
 - Missions that hand out items: `SELECT base, title, reward_items FROM missions WHERE reward_items IS NOT NULL`
+
+## live_claims
+
+now: active fleet coordination claims across Bursar hubs, Hauler lanes, and Passenger reposition claims mirrored from fleet/*_claims.json
+
+- Kind: snapshot
+- Columns: kind, claim_key, pilot, base, item, t, src; one row per kind, claim_key
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `live_claims`, live_claim_files
+- Active claim counts grouped by claim kind: `SELECT kind, COUNT(*) AS claims FROM live_claims GROUP BY kind ORDER BY claims DESC`
+- Bursar hub staffing claims with unwind flag: `SELECT base, pilot, item AS mode, datetime(t, 'unixepoch') AS at FROM live_claims WHERE kind = 'bursar' ORDER BY t DESC LIMIT 20`
+- Active hauler claims by item and base: `SELECT pilot, base, item, claim_key FROM live_claims WHERE kind = 'haul' ORDER BY t DESC LIMIT 20`
+
+## passenger_boards
+
+now: cached station passenger terminals and fare surge levels mirrored from fleet/passenger_boards.json (base, system, waiting, lounge_occ/cap, fare_surge, demand_level)
+
+- Kind: snapshot
+- Columns: base, system, waiting, lounge_occ, lounge_cap, fare_surge, demand_level, t, src; one row per base
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `passenger_boards`, passenger_board_files
+- Stations with waiting passengers ranked by fare surge: `SELECT base, system, waiting, fare_surge, demand_level, lounge_occ, lounge_cap FROM passenger_boards WHERE waiting > 0 ORDER BY fare_surge DESC, waiting DESC LIMIT 20`
+- Cached passenger terminal coverage and total waiting count: `SELECT COUNT(*) AS stations, SUM(waiting) AS total_waiting, ROUND(AVG(fare_surge), 2) AS avg_surge FROM passenger_boards`
+- Stations currently surging at >= 1.5x fare multiplier: `SELECT base, system, waiting, fare_surge, demand_level FROM passenger_boards WHERE fare_surge >= 1.5 ORDER BY fare_surge DESC`

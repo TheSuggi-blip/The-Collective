@@ -52,6 +52,18 @@ now: 17-wing KPI scorecards across 1h, 6h and 24h windows (utilization, fuel/h, 
 - Wings below target health in the 6h window: `SELECT wing_id, name, health_pct, rof, idle_pct, status FROM wing_kpis WHERE win = '6h' AND health_pct < 80 ORDER BY health_pct ASC`
 - Fuel burn and ROF ranked across divisions in the 6h window: `SELECT division, SUM(ships) AS ships, ROUND(SUM(fuel_h)) AS fuel_h, ROUND(AVG(health_pct), 1) AS avg_hp FROM wing_kpis WHERE win = '6h' GROUP BY division ORDER BY fuel_h DESC`
 
+## fleet_anomalies
+
+now: live operational anomaly alarms computed by ops_xray.compute_anomalies() (thin passenger boards, low treasury, excess Bursar buys, unstaffed Tier-1 hubs, service down, log spikes)
+
+- Kind: snapshot
+- Columns: code, severity, count, detail, t, src; one row per code
+- Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
+- Refreshed: the store's pass (every 60 s): ships from fleet/fleet.json (read again when it or fleet/flagships.json changed), and the order each flies (loaders fleet, orders)
+- All active operational anomalies ordered by severity: `SELECT severity, code, count, detail FROM fleet_anomalies ORDER BY CASE severity WHEN 'CRITICAL' THEN 0 WHEN 'WARN' THEN 1 ELSE 2 END, code`
+- Count of active anomalies by severity level: `SELECT severity, COUNT(*) AS anomalies FROM fleet_anomalies GROUP BY severity`
+- Critical operational anomalies requiring immediate attention: `SELECT code, count, detail FROM fleet_anomalies WHERE severity = 'CRITICAL'`
+
 ## The figures
 
 The views of stats.py (stats.VIEWS_SHOWN), computed by the store into stats_figures and its other tables; each defined in game/metrics.md (`hive.py docs metrics --section <id>`).

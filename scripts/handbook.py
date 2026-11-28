@@ -107,17 +107,17 @@ its read copy (read.db) -> hive.py and the MCP tool `collective` -> the members.
 
 SUBJECTS = (    # (title, the tables and views it holds, in their order); the calls of each subject: ASKS and VERBS
     ("Ships and pilots", ("ships", "ship_skills", "ship_modules", "ship_cargo", "fleet_positions", "hull_readiness", "stats_pilot_hour", "stats_pilot_last")),
-    ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions")),
+    ("Routes and runs", ("routes", "plan_routes", "runs", "route_hour", "route_earnings", "fuel_sinks", "stats_route_author", "missions", "live_claims", "passenger_boards")),
     ("Money", ("stats_money_hour", "division_pnl_24h")),
-    ("Markets", ("books", "ladders", "fair_prices", "clean_books", "ship_listings", "moves", "market_hour", "contract_candidates")),
+    ("Markets", ("books", "ladders", "fair_prices", "clean_books", "cltv_open_orders", "ship_listings", "moves", "market_hour", "contract_candidates")),
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "tourism_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
                      "territory", "sites")),
-    ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "stock_hour", "needs", "need_status")),
+    ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "vault_cashable", "stock_hour", "needs", "need_status")),
     ("The catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
                      "hull_materials", "skills", "game_releases")),
     ("Supply", ("supply_chains", "supply_status", "stats_supply_hour")),
-    ("Statistics", ("stats_time", "stats_refill", "stats_figures", "wing_kpis")),
+    ("Statistics", ("stats_time", "stats_refill", "stats_figures", "wing_kpis", "fleet_anomalies")),
     ("Written knowledge", ("docs", "doc_versions", "division_playbooks")),
     ("Plans and the door", ("birth_plans",)),
     ("The store itself", ("source", "cursor", "meta")),
@@ -138,7 +138,9 @@ ASKS = {        # MCP tool -> {view, action or ask (or '' for every other value)
 }
 ASKS["needs"] = {"": "Stock and reserve"}
 ASKS["station_pnl"] = {"": "Our faction"}
-ASKS["station_build"] = {"": "Our faction"}          # the needs register (needs.py): its table, need_status and the tool
+ASKS["station_build"] = {"": "Our faction"}
+ASKS["xray"] = {"": "Money"}
+ASKS["liquidate"] = {"": "Stock and reserve"}          # the needs register (needs.py): its table, need_status and the tool
 VERBS = {       # hive.py verbs that no tool reaches as hive.py <verb> (the tool `hive` passes them): subject; None: a tool gives
     "gauges": "Ships and pilots", "store": "Routes and runs", "store price": "Markets", "empire": "Our faction",   # the same answer
     "flow": "Stock and reserve", "briefing": "Plans and the door", "handbook": "Written knowledge",               # through its own script

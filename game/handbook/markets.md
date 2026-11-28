@@ -52,6 +52,18 @@ view: live Exchange order books joined with fair_prices, flagging spoof bids (is
 - Clean liquid bids sorted by guarded_bid: `SELECT base, item, guarded_bid, bid_qty, ext_hubs, ext_bid_qty FROM clean_books WHERE is_spoof_bid = 0 AND guarded_bid > 0 AND spoof_risk = 'LOW' ORDER BY guarded_bid DESC LIMIT 15`
 - Spoof bid count vs clean bid count across all scanned stations: `SELECT is_spoof_bid, COUNT(*) AS rows FROM clean_books WHERE raw_bid > 0 GROUP BY is_spoof_bid`
 
+## cltv_open_orders
+
+now: active Collective Bursar open buy orders mirrored from fleet/bursar_buys.json (pilot, base, item, qty, t) used to subtract self-bids and track order unwind
+
+- Kind: snapshot
+- Columns: pilot, base, item, qty, t, src; one row per pilot, base, item
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `cltv_open_orders`, cltv_open_order_files
+- Total active Collective buy orders and units by station: `SELECT base, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY base ORDER BY orders DESC LIMIT 15`
+- Active Collective buy orders grouped by pilot: `SELECT pilot, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY pilot ORDER BY orders DESC LIMIT 15`
+- Top items with active Collective open buy orders: `SELECT item, COUNT(*) AS orders, SUM(qty) AS units FROM cltv_open_orders GROUP BY item ORDER BY units DESC LIMIT 15`
+
 ## ship_listings
 
 now: galaxy-wide player and shipyard ship listings across all stations, refreshed every 15 min by ledger.py (market/ship_listings.json)

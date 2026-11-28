@@ -168,7 +168,9 @@ hourly snapshots of galactic station tourism appeal and cumulative tourism reven
 - Columns: bucket_h, station, system, board, rank, value, t, src; one row per bucket_h, station, board
 - Kept: the last reading of its file, replaced when the file changes; a missing or bad file keeps them (source.note says why)
 - Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `leaderboards`, data/station/leaderboard.json
-- No example is written for it yet (store.EXAMPLES).
+- Latest hourly tourism leaderboard rankings by station: `SELECT station, system, board, rank, value FROM tourism_snapshots WHERE bucket_h = (SELECT MAX(bucket_h) FROM tourism_snapshots) ORDER BY board, rank LIMIT 20`
+- Top stations by tourism appeal in snapshots: `SELECT station, system, MAX(value) AS peak_val, MIN(rank) AS best_rank FROM tourism_snapshots GROUP BY station, system ORDER BY peak_val DESC LIMIT 15`
+- Hourly snapshot coverage across tourism boards: `SELECT board, COUNT(DISTINCT bucket_h) AS hours, COUNT(*) AS rows FROM tourism_snapshots GROUP BY board`
 
 ## met
 

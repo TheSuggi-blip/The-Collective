@@ -40,6 +40,18 @@ view: what the fleet holds per place (a station's base id, or `hold`) and item
 - Where iron_ore lies: `SELECT place, units FROM inventory_by_station WHERE item = 'iron_ore'`
 - The worth of the goods per place: `SELECT v.place, SUM(v.units * i.base_value) FROM inventory_by_station v LEFT JOIN items i ON i.id = v.item GROUP BY v.place ORDER BY 2 DESC`
 
+## vault_cashable
+
+view: unreserved faction_storage stock joined with clean_books, item sizes, and cltv_open_orders showing net external buy-wall depth, est_cash, cr_per_m3, and same_base (0-hop) liquidity
+
+- Kind: view over faction_storage, clean_books, items, cltv_open_orders, needs
+- Columns: vault_base, vault_base_name, sell_base, sell_system, same_base, item, name, item_size, vault_qty, ext_bid_qty, sellable_qty, guarded_bid, fair_price, spoof_risk, est_cash, cr_per_m3
+- Kept: nothing: a view stores no row
+- Refreshed: computed when asked, from its tables
+- Top 0-hop instant cashable faction vault positions at the same station: `SELECT vault_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable WHERE same_base = 1 ORDER BY est_cash DESC LIMIT 15`
+- Top cross-station cashable faction vault positions ranked by value density: `SELECT vault_base, sell_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable ORDER BY est_cash DESC LIMIT 15`
+- Total cashable vault liquidity split by 0-hop same-base vs cross-station: `SELECT same_base, COUNT(*) AS pairs, ROUND(SUM(est_cash)) AS total_est_cash FROM vault_cashable GROUP BY same_base`
+
 ## stock_hour
 
 history: one sample an hour of what each division (Mining, Trade, Logistics, Military, Intel, Command) holds of each item, station storage and holds added (stock/storage.json through holdings), units above 0 only; t = the pass that wrote it; kept 30 days. What flows in per hour: hive.py flow

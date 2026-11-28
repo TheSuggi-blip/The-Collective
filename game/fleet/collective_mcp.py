@@ -298,6 +298,17 @@ def fund_plan(a):
     return [("game/fleet/wallet.py", argv)]
 
 
+def xray_plan(a):
+    return [("game/fleet/ops_xray.py", ["xray"] + flag(a, "hours") + flag(a, "top"))]
+
+
+def liquidate_plan(a):
+    argv = ["liquidate"] + flag(a, "base") + flag(a, "item") + flag(a, "min_cash") + flag(a, "max_jobs") + flag(a, "keep_cr")
+    if a.get("execute"):
+        argv.append("--execute")
+    return [("game/fleet/ops_xray.py", argv)]
+
+
 TOOLS = {
     "fleet": {
         "text": "The fleet in figures. view=money: credits, Net Purse/h (steady + paid once), matched Recurring Cash/h, and transfer-priced IAS2 Accrual Value-Add/h over 1, 6 and 24 hours, per division. "
@@ -595,6 +606,21 @@ TOOLS = {
         "required": ["action"],
         "plan": lambda a: [("game/fleet/station_pnl.py", ["builds"])] if a.get("action") == "status" else
                           [("game/fleet/station_pnl.py", ["build_run"] + (["--dry"] if a.get("dry") else []))]},
+    "xray": {
+        "text": "1-call Ops & Cashflow X-Ray: reconciled IFRS Core EBIT/h, Treasury vs TOPUP/FUND floors, low-cash ship count, Bursar Tier-1 coverage & buy-order unwind, hauler lane claims, 6B passenger boards, top 0-hop cashable vault positions, and live operational anomaly alarms.",
+        "args": {"hours": arg(I, "income statement window in hours (default 1)"),
+                 "top": arg(I, "max 0-hop cashable vault jobs to display (default 10)")},
+        "plan": xray_plan},
+    "liquidate": {
+        "text": "Guarded 0-hop Faction Vault Cash-Infusion Liquidation (dry-run by default). Finds unreserved, market_guard-verified faction storage positions with a docked Officer and size-aware chunking; pass execute=true to withdraw, sell into live external buy-walls, and auto-deposit proceeds > keep_cr into Faction Treasury.",
+        "door": True,
+        "args": {"base": arg(S, "optional exact base_id filter"),
+                 "item": arg(S, "optional exact item_id filter"),
+                 "min_cash": arg(I, "minimum estimated cash per job in credits (default 5000)"),
+                 "max_jobs": arg(I, "maximum liquidation jobs to plan/execute (default 6)"),
+                 "keep_cr": arg(I, "wallet float kept on Officer before Treasury deposit (default 18000)"),
+                 "execute": arg(B, "false (default): dry-run plan only; true: execute live withdraw/sell/deposit")},
+        "plan": liquidate_plan},
     "hive": {
         "text": "Any verb of game/fleet/hive.py by name, with its arguments as a list: the way to a figure added after this tool list was loaded. verb=help prints "
                 "what exists now.",
@@ -617,7 +643,7 @@ TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbo
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
 WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund", "errand", "dismantle")  # every other tool only reads
-WRITES += ("needs", "station_build")                              # needs.py writes the member's own division's needs (action add, set, done, drop)
+WRITES += ("needs", "station_build", "liquidate")                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 
 def schema(name):
