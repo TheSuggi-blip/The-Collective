@@ -595,11 +595,12 @@ class WalletFluidityUpgradeTests(FundTests):
         self.assertEqual(rc, 0)
         # miner-1 (50k) & miner-2 (40k) are seated -> direct deposit to faction!
         # miner-3 (35k) is unseated -> gifted to Prime Directive -> Prime Directive deposits 35k!
-        self.assertEqual(sorted(dep_calls), [("Prime Directive", 35000), ("miner-1", 50000), ("miner-2", 40000)])
-        self.assertEqual(give_calls, [("miner-3", "Prime Directive", 35000)])
+        e1, e2, e3 = 80000 - w.KEEP_WORK, 70000 - w.KEEP_WORK, 65000 - w.KEEP_WORK
+        self.assertEqual(sorted(dep_calls), [("Prime Directive", e3), ("miner-1", e1), ("miner-2", e2)])
+        self.assertEqual(give_calls, [("miner-3", "Prime Directive", e3)])
         once = json.loads((self.data / "fleet" / "onetime.json").read_text())
         dep_rows = sorted((r[1], r[3]) for r in once if r[2] == w.DEPOSIT_TITLE)
-        self.assertEqual(dep_rows, [("Prime Directive", -35000), ("miner-1", -50000), ("miner-2", -40000)])
+        self.assertEqual(dep_rows, [("Prime Directive", -e3), ("miner-1", -e1), ("miner-2", -e2)])
         # Second pass immediately: miner-1/miner-2 on cooldown via recent_direct_deposits even if wallet refilled
         bals["miner-1"] = 90000
         write_fl()
@@ -689,7 +690,7 @@ class WalletFluidityUpgradeTests(FundTests):
         self.assertEqual(rc2, 0)
         row2 = [r for r in w.funds(str(self.data)) if r["pilot"] == "drone-5"][0]
         self.assertEqual(row2["state"], "open")
-        self.assertEqual(row2["credits"], 60000)  # miner-4 (60k) hit in_battle; miner-3 (40k) landed -> 60k left
+        self.assertEqual(row2["credits"], 90000 - w.KEEP_WORK)  # miner-4 excess hit in_battle; miner-3 remainder landed
 
     def test_auto_queue_officers_and_upgraded_storage_tiers(self):
         w, now = self.wallet, time.time()
