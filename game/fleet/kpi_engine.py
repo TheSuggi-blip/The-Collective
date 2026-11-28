@@ -1513,12 +1513,20 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
                         our_ore = max(our_ore, float(sv or 0.0))
                     elif sk == "items_crafted":
                         our_craft = max(our_craft, float(sv or 0.0))
+            if our_craft <= 0.0 and "runs" in tbls:
+                import re as _re_cr
+                _cr_tot = 0
+                for (_rs,) in conn.execute("SELECT row FROM runs WHERE kind IN ('craft_net','bursar') AND row LIKE '%crafted %'").fetchall():
+                    for _m in _re_cr.finditer(r"crafted (\d+)x ", _rs or ""):
+                        _cr_tot += int(_m.group(1))
+                our_craft = max(our_craft, float(_cr_tot))
         except Exception:
             pass
 
     w1 = ((windows or {}).get("1h") or {}).get("fleet") or {}
     w6 = ((windows or {}).get("6h") or {}).get("fleet") or {}
-    fl_ref = w1 if w1.get("realized_rev_h") else w6
+    # Use smooth 6h institutional window for Eternal Standing Goals (falls back to 1h only if 6h unavailable)
+    fl_ref = w6 if (w6.get("realized_rev_h") is not None and float(w6.get("span_hours") or 0) >= 1.0) else w1
     tot_ships = int(fl_ref.get("total_ships") or len((fleet_doc or {}).get("ships") or []) or 500)
 
     def _ratio_goal(gid, sg, title, cur_v, rival_v, rival_lbl, factor, unit_fn=_fmt_m):
@@ -1574,7 +1582,7 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
             "id": "SG-EBIT", "sg": "SG1/SG4", "title": "Core Operating Profit (Dynamic EBIT)", "group": "economics",
             "value": "%s%s cr/h" % ("+" if ebit_h >= 0 else "", format(int(round(ebit_h)), ",")),
             "target": "par +%s cr/h (open-ended)" % format(int(round(ebit_par)), ","),
-            "sub": "1h IFRS 15 Ex-Seeds | %.2fx cap | HWM %s" % (
+            "sub": "6h IFRS 15 Ex-Seeds | %.2fx cap | HWM %s" % (
                 float(fl_ref.get("fleet_cap_mult") or 1.0),
                 ("+%s" % format(int(round(fl_ref["core_ebit_hwm_h"])), ",")) if fl_ref.get("core_ebit_hwm_h") else "calibrating",
             ),

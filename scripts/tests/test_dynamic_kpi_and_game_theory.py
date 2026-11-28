@@ -205,5 +205,59 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
         self.assertTrue({"SG-WEALTH", "SG-MILITARY", "SG-TOURISM", "SG-EBIT", "SG-MARGIN", "SG-TCA", "SG-SEATING", "SG-HULLS", "SG-MODULES"} <= ids)
 
 
+
+    def test_treasury_capital_sweep_excluded_from_treasury_ops_and_wallet_costs(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("station_fleet_mod", Path("station/fleet.py"))
+        sf = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(sf)
+        # Simulate a 1-hour window where Treasury gains +1,758,102 from reserve sweep (Treasury capital)
+        # while operating wallets earn +100,000 and spend -40,000 -> treasury_ops_per_hour MUST be ~0, NOT +1.76M!
+        t0, t1 = 1000000, 1003600
+        one = [[t0 + 600, "__TREASURY__", "Treasury capital: reserve fleet cash sweep (98 pilots)", 1758102]]
+        # one_time_until() must NOT treat Treasury capital as wallet reward/purchase
+        bk = getattr(sf, "one_time_until")(one, t1)
+        self.assertEqual(bk[""], [0, 0])
+        # Build minimal 2-sample history for window()
+        a = [t0, 1000000, 1, 500000, 0, 0, 0, {"Trade": [1000000, 1, 500000, 0, 0, 0]}, {"t": [2000000, t0], "m": [0, 0, 0, 0, 0], "s": 100000, "ds": {"Trade": 100000}}]
+        b = [t1, 1060000, 1, 600000, 0, 0, 0, {"Trade": [1060000, 1, 600000, 0, 0, 0]}, {"t": [3758102, t1], "m": [100, 20000, 0, 0, 100], "s": 140000, "ds": {"Trade": 140000}}]
+        res = sf.window([a, b], t1, 3600, one)
+        self.assertEqual(res["treasury_capital_per_hour"], 1758102)
+        self.assertEqual(res["treasury_capex_per_hour"], 0)
+        self.assertEqual(res["treasury_ops_per_hour"], 0)
+        self.assertEqual(res["income_per_hour"], 100000)
+        self.assertEqual(res["costs_per_hour"], 40000)
+
+    def test_mine_net_excludes_owned_station_without_refueling_dock(self):
+        import mine_net
+        with tempfile.TemporaryDirectory() as tmp:
+            d = Path(tmp)
+            (d / "empire").mkdir(parents=True)
+            (d / "store").mkdir(parents=True)
+            (d / "empire" / "empire.json").write_text(json.dumps({
+                "bases": [
+                    {"base": "st_rc", "name": "Ridgecrest", "system": "ridgecrest", "kind": "station"},
+                    {"base": "op_atria", "name": "Atria", "system": "atria", "kind": "outpost"},
+                ],
+                "facilities": [
+                    {"base": "st_rc", "type": "grand_hotel_resort", "status": "active"},
+                    {"base": "op_atria", "type": "faction_fuel_bunker", "status": "active"},
+                ],
+            }), encoding="ascii")
+            pol = {"deposit_stations": ["ridgecrest:poi_rc:st_rc", "atria:poi_at:op_atria", "sol:poi_sol:sol_central"]}
+            w = mine_net.load_graph_and_world(str(d), ".", pol, now_t=1e12)
+            # Ridgecrest (no refuel facility) MUST be excluded; Atria (bunker) & Sol (NPC) kept!
+            self.assertNotIn("ridgecrest", w["stations_by_sys"])
+            self.assertIn("atria", w["stations_by_sys"])
+            self.assertIn("sol", w["stations_by_sys"])
+            # Once refueling_dock activates on Ridgecrest, it auto-unlocks!
+            (d / "empire" / "empire.json").write_text(json.dumps({
+                "bases": [{"base": "st_rc", "name": "Ridgecrest", "system": "ridgecrest", "kind": "station"}],
+                "facilities": [{"base": "st_rc", "type": "refueling_dock", "status": "active"}],
+            }), encoding="ascii")
+            w2 = mine_net.load_graph_and_world(str(d), ".", pol, now_t=1e12)
+            self.assertIn("ridgecrest", w2["stations_by_sys"])
+
+
 if __name__ == "__main__":
     unittest.main()

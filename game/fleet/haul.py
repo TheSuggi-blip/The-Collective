@@ -2252,16 +2252,34 @@ def main(argv=None):
                             notes.append("hub_upkeep bunker +%d fuel -> %s" % (moved_f, dloc[2]))
                             completed += 1
                         else:
-                            r_dep = raw("deposit", {"item_id": iid, "quantity": have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                            # If delivering fuel_cell to a station lacking a refueling dock (e.g. Ridgecrest pre-dock),
+                            # top off our own tank first from cargo so the hauler never strands itself on the return leg!
+                            if iid == "fuel_cell" and upk.get("hub_kind") == "station":
+                                _st_d = get_state()
+                                _sh_d = _st_d.get("ship") if isinstance(_st_d.get("ship"), dict) else {}
+                                _cf = int(_sh_d.get("fuel") if _sh_d.get("fuel") is not None else (_st_d.get("fuel") or 0))
+                                _mf = int(_sh_d.get("max_fuel") or _st_d.get("max_fuel") or 95)
+                                _avail_fc = get_cargo().get("fuel_cell", 0)
+                                _need_fc = min(max(0, _avail_fc - 1), max(0, _mf - _cf) // 20)
+                                if _need_fc > 0 and _cf < _mf - 25:
+                                    raw("refuel", {"item_id": "fuel_cell", "quantity": _need_fc}, group="spacemolt")
+                                    time.sleep(TICK)
+                            # Always deposit LIVE cargo quantity (fuel_cell may have been partially burnt mid-flight!)
+                            live_have = get_cargo().get(iid, 0)
+                            if live_have <= 0:
+                                say("hub_upkeep EMPTY_ON_ARRIVAL %s -> %s" % (iid, dloc[2]))
+                                release_job(DATA, pilot)
+                                continue
+                            r_dep = raw("deposit", {"item_id": iid, "quantity": live_have, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
                             time.sleep(TICK)
                             if "error" in r_dep:
                                 _dep_err = str(r_dep.get("error") or "")[:90]
-                                say("hub_upkeep DEPOSIT_ERR %d %s -> %s: %s" % (have, iid, dloc[2], _dep_err))
+                                say("hub_upkeep DEPOSIT_ERR %d %s -> %s: %s" % (live_have, iid, dloc[2], _dep_err))
                                 notes.append("hub_upkeep dep_err %s: %s" % (iid, _dep_err[:50]))
                                 release_job(DATA, pilot)
                             else:
-                                say("hub_upkeep DELIVERED %d %s -> %s" % (have, iid, dloc[2]))
-                                notes.append("hub_upkeep %d %s -> %s" % (have, iid, dloc[2]))
+                                say("hub_upkeep DELIVERED %d %s -> %s" % (live_have, iid, dloc[2]))
+                                notes.append("hub_upkeep %d %s -> %s" % (live_have, iid, dloc[2]))
                                 completed += 1
                     else:
                         release_job(DATA, pilot)

@@ -477,12 +477,39 @@ def _load_graph_and_world_uncached(data_dir, repo_root, policy, now_t):
                     rec[1] = abs_cap - h_u
                 market_world = market
 
+    # Never maroon miners at an owned station/outpost that lacks a refueling facility (e.g. Ridgecrest pre-refueling_dock)!
+    _no_refuel_own_bases = set()
+    _emp_m = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    if isinstance(_emp_m, dict) and isinstance(_emp_m.get("bases"), list):
+        _REFUEL_TYPES = {
+            "refueling_dock", "fuel_depot", "faction_fuel_bunker",
+            "faction_large_fuel_bunker", "faction_capital_fuel_bunker", "fuel_tank_expansion",
+        }
+        _own_refuel = set()
+        for _ff in (_emp_m.get("facilities") or []):
+            if isinstance(_ff, dict) and str(_ff.get("status") or "active").lower() == "active":
+                if str(_ff.get("type") or "").lower() in _REFUEL_TYPES and _ff.get("base"):
+                    _own_refuel.add(str(_ff["base"]))
+        for _ob in (_emp_m.get("bases") or []):
+            if isinstance(_ob, dict) and _ob.get("base"):
+                _obid = str(_ob["base"])
+                if _obid not in _own_refuel:
+                    _no_refuel_own_bases.add(_obid)
+
     allow = [str(x) for x in (policy.get("deposit_stations") or []) if str(x).count(":") == 2]
     if allow:
         stations_by_sys = {}
         for spec in allow:
             sys_id, poi_id, base_id = spec.split(":")
+            if base_id in _no_refuel_own_bases:
+                continue
             stations_by_sys.setdefault(sys_id, []).append((sys_id, poi_id, base_id))
+    elif _no_refuel_own_bases:
+        stations_by_sys = {
+            s: [t for t in lst if t[2] not in _no_refuel_own_bases]
+            for s, lst in stations_by_sys.items()
+        }
+        stations_by_sys = {s: lst for s, lst in stations_by_sys.items() if lst}
 
     # The needs' raw shortfalls come from need_status (_needs above): game/needs.tsv holds refs and units of whole
     # targets (id, project, division, kind, ref, ...), not raw goods short, and its old reading here never matched.

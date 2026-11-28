@@ -2493,6 +2493,17 @@ def _build_ops():
                 _hpol = read_json(REPO / "game" / "haul-policy.json") or {}
                 _btgts = _hpol.get("hub_bunker_fuel_targets") or {"outpost": 50000, "station": 50000}
                 _utgts = _hpol.get("hub_upkeep_targets") or {}
+                _emp_cond_by_base, _emp_alert_bases = {}, set()
+                try:
+                    _emp_raw = json.loads((DATA / "empire" / "empire.json").read_text(encoding="utf-8", errors="replace"))
+                    for _eb in (_emp_raw.get("bases") or []):
+                        if isinstance(_eb, dict) and _eb.get("base"):
+                            _emp_cond_by_base[str(_eb["base"])] = str(_eb.get("condition") or "")
+                    for _ea in (_emp_raw.get("base_alerts") or []):
+                        if isinstance(_ea, dict) and _ea.get("base"):
+                            _emp_alert_bases.add(str(_ea["base"]))
+                except Exception:
+                    pass
                 _raided_ops = set()
                 if "public_battles" in tables:
                     _rcut = time.time() - 7200.0
@@ -2577,7 +2588,8 @@ def _build_ops():
                             "bunker_pct": round(min(100.0, 100.0 * _bfuel / max(1, _btgt)), 1),
                             "surge_tier": _tier, "target_haulers": _tgt_h,
                             "active_haulers": len(_act_h), "hauler_names": _act_h[:8],
-                            "raided": _bsys in _raided_ops,
+                            "raided": bool((_emp_cond_by_base.get(_bid) or "").lower() in ("damaged", "wrecked", "raided") or (_bid in _emp_alert_bases)),
+                            "pirate_activity_2h": _bsys in _raided_ops,
                             "repair_ready": _rep_ready, "repair_gap": ", ".join(_rep_parts),
                             "upkeep": _upk_rows,
                         })
