@@ -501,8 +501,8 @@ class SpecialistMiningToolTests(unittest.TestCase):
             "held": {"iron_ore": 350000, "aluminum_ore": 5000},
             "item_vals": {"iron_ore": 5.0, "aluminum_ore": 76.0},
             "market": {
-                "iron_ore": (5.0, "b0", 3, 100000, 100000),
-                "aluminum_ore": (76.0, "b0", 4, 200000, 200000),
+                "iron_ore": (5.0, 100000, 3, 100000, 100000),
+                "aluminum_ore": (76.0, 200000, 4, 200000, 200000),
             },
             "stations_by_sys": {"s0": [("s0", "p0", "b0")]},
             "lockbox_bases": {"b0"},
