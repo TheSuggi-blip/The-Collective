@@ -19,11 +19,12 @@ import time
 import concurrent.futures
 from collections import deque
 from pathlib import Path
-import fuelplan
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(Path(__file__).resolve().parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import fuelplan
 
 PASSENGER_HULL_BERTHS = {
     "technically_legal": {"economy": 1, "business": 0, "first": 0},

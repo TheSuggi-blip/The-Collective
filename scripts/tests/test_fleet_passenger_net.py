@@ -108,3 +108,19 @@ class PassengerNetTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+def test_passenger_net_isolated_mode_imports_cleanly():
+    """Regression gate (R5/R6): standalone python3 -I -B must not fail on local sibling imports."""
+    import subprocess
+    script = Path(__file__).resolve().parents[2] / "game" / "fleet" / "passenger_net.py"
+    if not script.exists():
+        script = Path(__file__).resolve().parents[1] / "game" / "fleet" / "passenger_net.py"
+    if not script.exists():
+        script = Path(__file__).resolve().parents[1] / "fleet" / "passenger_net.py"
+    assert script.exists(), f"Could not locate passenger_net.py from {__file__}"
+    res = subprocess.run(
+        [sys.executable, "-I", "-B", str(script), "--help"],
+        capture_output=True, text=True, timeout=15,
+    )
+    assert res.returncode == 0, f"Isolated -I launch failed: rc={res.returncode} stderr={res.stderr}"
+    assert "ModuleNotFoundError" not in res.stderr
