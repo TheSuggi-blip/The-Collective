@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-28T07:49:16Z.
+Facts as of 2026-11-28T09:46:26Z.
 
 ## 1. The Faction
 
@@ -50,7 +50,7 @@ of its own limit.
 | CLTV Outpost Atria | outpost | `atria` | thriving | -- |
 | CLTV Outpost Felis | outpost | `felis` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
-| Collective Resort Ridgecrest | station | `ridgecrest` | operational | refuel |
+| Collective Resort Ridgecrest | station | `ridgecrest` | struggling | refuel |
 
 Systems we hold something in:
 
