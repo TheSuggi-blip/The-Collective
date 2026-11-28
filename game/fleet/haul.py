@@ -430,6 +430,8 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 _max_upk_slots = 6
             elif _station_core and have_here < int(round(tgt * 0.50)):
                 _max_upk_slots = 3
+            elif hub_kind == "station" and have_here < int(round(tgt * 0.40)):
+                _max_upk_slots = 2
             else:
                 _max_upk_slots = 1
             jkey = ""
@@ -448,7 +450,8 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 _base_u = 5.2 if iid == "fuel_cell" else 4.5
                 urgency = _base_u * (1.0 - 0.5 * (float(have_here) / float(tgt)))
             elif hub_kind == "station":
-                urgency = 1.6 * (1.0 - (float(have_here) / float(tgt)))
+                _ratio = float(have_here) / float(tgt)
+                urgency = (3.4 if _ratio < 0.50 else 1.8) * (1.0 - 0.5 * _ratio)
             else:
                 urgency = (1.0 - (float(have_here) / float(tgt))) * (3.0 if iid == "fuel_cell" else 1.0)
             demands.append((iid, deficit, urgency, jkey, False, max_pick))

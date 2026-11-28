@@ -1472,9 +1472,16 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
         print("REFUSED: credits must be positive")
         return 1
     rows = funds(data)
-    if any(r.get("pilot") == pilot and r.get("state") in ("open", "withdrawn", "unsure") for r in rows):
-        print("REFUSED: %s has a fund open already" % pilot)
-        return 1
+    _existing = [r for r in rows if r.get("pilot") == pilot and r.get("state") in ("open", "withdrawn", "unsure")]
+    if _existing:
+        if all(r.get("kind") == "topup" and r.get("state") == "open" for r in _existing):
+            for _er in _existing:
+                _er["state"] = "ended"
+                _er["ended_at"] = int(now)
+                _er["note"] = "superseded by explicit fund (%s)" % str(why or "")[:60]
+        else:
+            print("REFUSED: %s has a fund open already" % pilot)
+            return 1
     if pilot not in ships(data):
         print("REFUSED: %s holds no wallet reading in the fleet file" % pilot)
         return 1
@@ -1910,6 +1917,7 @@ STATION_BUILD_PRIORITY = (
     "recruitment_center",
     "guild_hall_recruiting",
     "refueling_dock",
+    "transit_terminal",
     "fuel_tank_expansion",
 )
 
