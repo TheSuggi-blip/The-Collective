@@ -186,7 +186,7 @@ Kept by Zero. Routes: 171. Ships: 130.
 | 164 | [mine-bharani-ember-field](mine-bharani-ember-field.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
 | 165 | [mine-ogma-belt](mine-ogma-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
 | 166 | [mine-sidelong-nebula](mine-sidelong-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
-| 167 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 2 ships, standing work | all 130 |
+| 167 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 3 ships, standing work | all 130 |
 | 168 | [mine-volatile-pocket](mine-volatile-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
 | 169 | [home-sol-central](home-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 6 ships, empty hold, born solarian, standing work | all 130 |
 | 170 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
