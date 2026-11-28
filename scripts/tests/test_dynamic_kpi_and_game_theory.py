@@ -55,9 +55,9 @@ class TestDynamicKPIAndGameTheory(unittest.TestCase):
         self.assertEqual(kpi_engine._ratchet_hwm_high(130.0, 90.0), 130.0)
 
     def test_core_operating_margin_tiers(self):
-        self.assertEqual(kpi_engine._core_margin_tier(54.2), "ELITE")
-        self.assertEqual(kpi_engine._core_margin_tier(30.0), "TARGET")
-        self.assertEqual(kpi_engine._core_margin_tier(12.5), "BELOW")
+        self.assertEqual(kpi_engine._core_margin_tier(74.2), "ELITE")
+        self.assertEqual(kpi_engine._core_margin_tier(50.0), "TARGET")
+        self.assertEqual(kpi_engine._core_margin_tier(32.5), "BELOW")
         self.assertEqual(kpi_engine._core_margin_tier(-8.0), "NEG")
         self.assertEqual(kpi_engine._core_margin_tier(None), "WARMUP")
 

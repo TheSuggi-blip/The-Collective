@@ -238,15 +238,17 @@ def _status_from_score(score, staged=False):
 
 
 def _core_margin_tier(margin_pct):
+    """50%+ normal target, 70%+ elite/bonus (Suggi 2026-11-28)."""
     if margin_pct is None:
         return "WARMUP"
-    if margin_pct >= 50.0:
+    if margin_pct >= 70.0:
         return "ELITE"
-    if margin_pct >= 30.0:
+    if margin_pct >= 50.0:
         return "TARGET"
     if margin_pct >= 0.0:
         return "BELOW"
     return "NEG"
+
 
 
 def _compute_scouting_freshness(data_dir, repo_root, now):
@@ -1281,7 +1283,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
     ebit_sc, ebit_br = _score_open_ended(max(0.0, core_ebit_h), core_ebit_par_h, warn_ratio=0.35, hwm=hwm_ebit)
     if core_ebit_h < 0:
         ebit_sc, ebit_br = 0.0, False
-    margin_sc, margin_br = _score_open_ended(max(0.0, core_margin_pct), 30.0, warn_ratio=0.33, hwm=hwm_margin) if core_margin_pct is not None else (None, False)
+    margin_sc, margin_br = _score_open_ended(max(0.0, core_margin_pct), 50.0, warn_ratio=0.40, hwm=hwm_margin) if core_margin_pct is not None else (None, False)
     if core_margin_pct is not None and core_margin_pct < 0:
         margin_sc, margin_br = 0.0, False
     if hwm_updates is not None:
@@ -1611,7 +1613,7 @@ def compute_standing_goals(conn, fleet_doc, windows, upgrade_gaps, freshness, in
         {
             "id": "SG-MARGIN", "sg": "SG4", "title": "Op Margin", "group": "economics",
             "value": ("%.1f%%" % float(margin_pct)) if margin_pct is not None else "--",
-            "target": "30% / 50%+",
+            "target": "50% / 70%+",
             "sub": "ROF %sx" % (fl_ref.get("rev_per_fuel") or "--"),
             "pct": round(max(0.0, 100.0 * float(margin_pct or 0.0) / 50.0), 1),
             "score": round(margin_sc, 1), "status": _status_from_score(margin_sc),

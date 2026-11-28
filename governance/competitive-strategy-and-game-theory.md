@@ -15,7 +15,7 @@ with illiquid commodities, or hit static "100% green" vanity scorecards. We
 compete in an open, multi-faction adversarial economy against top-10 blocs
 (`[BUSY]`, `[IRLC]`, `[HEXC]`, `[HIVE]`, `[ENDL]`, `[NOIR]`, `[STLR]`,
 `[WEXL]`) to compound **Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)**,
-**Core Operating Margin (target >= 30%, elite >= 50%)**, **Enterprise Net
+**Core Operating Margin (target >= 50%, elite >= 70%)**, **Enterprise Net
 Worth**, **fleet tier (`T0 -> T5`)**, and **sovereign territory (5 stations, 8
 outposts)**.
 
@@ -130,7 +130,7 @@ Open player exchanges invite three classic predatory attacks:
    Bursars posted across Empire NPC exchanges and calm lawless trading hubs
    captures bid-ask spread and converts fleet inventory at **0 cr/h flight
    fuel** -- the single cleanest lever for pushing Core Operating Margin above
-   `30%` and toward `50%+`.
+   `50%` and toward `70%+`.
 
 ---
 
@@ -148,10 +148,10 @@ The Collective solves both structurally in `kpi_engine.py`:
    Revenue`):**
    - `< 0%` = `NEGATIVE` (burning cash -- halt non-essential opex, surge
      liquidation & fuel cuts).
-   - `0% - 29.9%` = `BELOW 30%` (profitable but fragile -- tighten low-ROF
+   - `0% - 49.9%` = `BELOW 50%` (profitable but fragile -- tighten low-ROF
      wings, expand 0-fuel Bursar conversion and sovereign refueling).
-   - `30.0% - 49.9%` = `TARGET 30%+` (healthy industrial compounding).
-   - `>= 50.0%` = `ELITE 50%+` (dominant fortress economics).
+   - `50.0% - 69.9%` = `TARGET 50%+` (healthy industrial compounding).
+   - `>= 70.0%` = `ELITE 70%+` (dominant fortress economics).
 2. **Dynamic Tier-Capacity Par (`cap_mult`):** Every wing's par target scales
    automatically with live ship count and average realized hull tier
    (`1.0 + 0.55 * avg_tier`), moving the bar upward every time hulls advance
@@ -219,7 +219,7 @@ The Collective measures 13 concrete, hard-to-achieve late-game Standing Goals:
   Fitting (`T1 -> T5`), `5` Regional Sovereign Stations + `8` Corridor Outposts,
   and Galactic Omniscience (`<= 10m` galaxy / `<= 5m` rival hub freshness).
 - **Open-Ended Compounding Economics:** Dynamic tier-scaled **Core Operating
-  Profit (IFRS 15 EBIT, Ex-Seeds)**, **Core Operating Margin (`30%+` Target /
-  `50%+` Elite)**, and **Trade & Procurement Execution Edge (TCA)** -- all
+  Profit (IFRS 15 EBIT, Ex-Seeds)**, **Core Operating Margin (`50%+` Target /
+  `70%+` Elite)**, and **Trade & Procurement Execution Edge (TCA)** -- all
   unbounded above par with persistent HWM ratcheting.
 

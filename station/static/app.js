@@ -5166,13 +5166,13 @@ async function renderMetrics(panel, live) {
     const rofTxt = fl.rev_per_fuel !== null && fl.rev_per_fuel !== undefined ? fl.rev_per_fuel.toFixed(2) + 'x ROF' : '--';
     const hasMargin = fl.core_margin_pct !== null && fl.core_margin_pct !== undefined;
     const mVal = hasMargin ? Number(fl.core_margin_pct) : null;
-    const mTag = !hasMargin ? 'WARMUP' : (mVal >= 50 ? 'ELITE 50%+' : (mVal >= 30 ? 'TARGET 30%+' : (mVal >= 0 ? 'BELOW 30%' : 'NEGATIVE')));
+    const mTag = !hasMargin ? 'WARMUP' : (mVal >= 70 ? 'ELITE 70%+' : (mVal >= 50 ? 'TARGET 50%+' : (mVal >= 0 ? 'BELOW 50%' : 'NEGATIVE')));
     const mCls = !hasMargin ? 'warn' : (mVal >= 50 ? 'apex' : (mVal >= 30 ? 'pos' : (mVal >= 0 ? 'warn' : 'neg')));
     mkCard(
       flGrid,
       'Core Operating Margin (IFRS 15 EBIT / Realized Revenue)',
       hasMargin ? (mVal.toFixed(1) + '%  [' + mTag + ']') : '--',
-      'Rev +' + fmt(Math.round(fl.realized_rev_h || 0)) + ' cr/h | ' + rofTxt + ' | Fuel ' + fmt(Math.round(fl.paid_fuel_h || 0)) + ' cr/h | 30%+ target (50%+ elite)',
+      'Rev +' + fmt(Math.round(fl.realized_rev_h || 0)) + ' cr/h | ' + rofTxt + ' | Fuel ' + fmt(Math.round(fl.paid_fuel_h || 0)) + ' cr/h | 50%+ target (70%+ elite)',
       mCls,
       hasMargin ? Math.max(0, Math.min(100, (mVal / 50.0) * 100.0)) : null
     );
