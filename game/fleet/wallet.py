@@ -1905,40 +1905,12 @@ def _acquire_serve_lock(data):
 
 
 STATION_BUILD_PRIORITY = (
-    "refueling_dock",
     "hiring_board",
     "recruitment_desk",
     "recruitment_center",
     "guild_hall_recruiting",
+    "refueling_dock",
     "fuel_tank_expansion",
-    "market_terminal",
-    "notice_board",
-    "faction_desk",
-    "market_runner",
-    "company_store",
-    "faction_quarters",
-    "faction_ship_garage",
-    "transit_lounge",
-    "fuel_tank_expansion",
-    "bunker_fed_reactor",
-    "dockside_diner",
-    "frontier_cantina",
-    "rec_lounge",
-    "slice_deck",
-    "sunrise_griddle",
-    "the_tide_line",
-    "grazer_grill",
-    "stellar_bistro",
-    "the_far_table",
-    "zero_g_lounge_bar",
-    "orbital_spa_resort_deck",
-    "grand_hotel_resort",
-    "faction_workshop",
-    "trade_exchange",
-    "point_defense_battery",
-    "station_defense_turret",
-    "automated_repair_dock",
-    "shield_projector",
 )
 
 STATION_PUBLIC_SERVICES = {
@@ -2059,6 +2031,8 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         done_cache = {}
     done_cache = {k: v for k, v in done_cache.items() if isinstance(v, (int, float)) and (now - float(v)) < 900.0}
 
+    rec_chain = {"hiring_board", "recruitment_desk", "recruitment_center", "guild_hall_recruiting"}
+    rec_bases_pending = {b for b, f in ordered if f in rec_chain}
     prio_bases_pending = {b for b, f in ordered if f in prio_idx and f != "fuel_tank_expansion"}
     done_n = 0
     failed = 0
@@ -2069,6 +2043,8 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         ckey = "%s:%s" % (base_id, fid)
         if ckey in done_cache:
             continue
+        if base_id in rec_bases_pending and fid not in rec_chain:
+            continue  # Suggi #1 priority: 500-seat Guild Hall MUST build BEFORE refueling_dock or anything else!
         if base_id in prio_bases_pending and fid not in prio_idx:
             continue  # reserve local steel/boards/cash for refueling_dock and recruitment chain first
         fee = int(fac_fee.get(fid, 0))
