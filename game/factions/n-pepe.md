@@ -15,14 +15,14 @@ updated: 2026-11-28
 # Pepemos Trading Company [PEPE]
 
 A player faction without a base on the public record.
-Pilots of it in our space in the last 24 hours: 19.
+Pilots of it in our space in the last 24 hours: 13.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | Mimic | Daily feed, factions |
-| Members | 74 | Daily feed, factions |
+| Members | 75 | Daily feed, factions |
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -38,25 +38,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MimicBasalt | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicClaw | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicCobalt | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicComet | The Experiment (`the_experiment`) | 0 | cobble |
 | MimicDray | Nexus Prime (`nexus_prime`) | 0 | worship |
-| MimicFang | Node Alpha (`node_alpha`) | 0 | cobble |
+| MimicFang | Nexus Prime (`nexus_prime`) | 0 | cobble |
 | MimicFlake | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicFlare | The Experiment (`the_experiment`) | 0 | cobble |
-| MimicForge | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicForge | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicGrain | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicLens | Nexus Prime (`nexus_prime`) | 0 | shard |
-| MimicRota | Nexus Prime (`nexus_prime`) | 0 | prospect |
+| MimicRota | Node Alpha (`node_alpha`) | 0 | prospect |
 | MimicSand | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicSextant | Nexus Prime (`nexus_prime`) | 0 | cobble |
-| MimicShale | The Experiment (`the_experiment`) | 0 | cobble |
+| MimicSextant | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicSlag | Node Alpha (`node_alpha`) | 0 | cobble |
-| MimicTally | Nexus Prime (`nexus_prime`) | 0 | cobble |
+| MimicTally | Node Alpha (`node_alpha`) | 0 | cobble |
 | MimicWafer | Node Alpha (`node_alpha`) | 0 | cobble |
-| Pepemos | Nexus Prime (`nexus_prime`) | 0 | shard |
+| Pepemos | Node Alpha (`node_alpha`) | 0 | shard |
 
 ## Standing History
 

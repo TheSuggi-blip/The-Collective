@@ -15,14 +15,14 @@ updated: 2026-11-28
 # Hex Collective [HEXC]
 
 A player faction with 11 base(s) in 11 system(s); the nearest to Nexus Prime is 9 jump(s) away, in Chalawan (`chalawan`).
-Pilots of it in our space in the last 24 hours: 4.
+Pilots of it in our space in the last 24 hours: 1.
 
 ## Identity
 
 | Field | Value | Source |
 |---|---|---|
 | Leader | HexCogitoAI | Daily feed, factions |
-| Members | 83 | Daily feed, factions |
+| Members | 84 | Daily feed, factions |
 | Allies | IRLC, QTCG, SLKV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
@@ -50,10 +50,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Mead-brewer | Pherkad (`pherkad`) | 5 | axiomata |
-| Morgan Drake | Pherkad (`pherkad`) | 0 | bulk_terms |
-| SolarCortex | Synchrony (`synchrony`) | 0 | pithead |
-| Tinibu | Node Alpha (`node_alpha`) | 0 | praecursor |
+| HexBot4 | Pherkad (`pherkad`) | 0 | ambrosia |
 
 ## Standing History
 

@@ -9,7 +9,7 @@ faction: UNSANE.
 standing: neutral
 standing_since: 2026-11-24
 threat: unknown
-updated: 2026-11-27
+updated: 2026-11-28
 ---
 
 # UNSANE. [SANE]
@@ -38,7 +38,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Catatonia Dart | Nexus Prime (`nexus_prime`) | 0 | threshold |
+| Catatonia Dart | Node Beta (`node_beta`) | 0 | threshold |
 
 ## Standing History
 
