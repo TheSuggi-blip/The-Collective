@@ -14,7 +14,7 @@ updated: 2026-11-28
 
 # Holographic Alliance [HOLA]
 
-A player faction without a base on the public record.
+A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 12 jump(s) away, in Maplevale (`maplevale`).
 Pilots of it in our space in the last 24 hours: 2.
 
 ## Identity
@@ -30,7 +30,9 @@ Pilots of it in our space in the last 24 hours: 2.
 
 ## Bases
 
-None on the public record.
+| Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
+|---|---|---|---|---|---|
+| Clearwater | station | Maplevale (`maplevale`) | lawless | 12 | thriving |
 
 ## Pilots in Our Space
 
@@ -38,7 +40,7 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Jenny | Acubens (`acubens`) | 0 | threshold |
+| Jenny | Nexus Prime (`nexus_prime`) | 0 | threshold |
 | Mirna | Node Gamma (`node_gamma`) | 0 | futures |
 
 ## Standing History

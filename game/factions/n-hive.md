@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 13.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Hive Antares | station | Antares (`antares`) | lawless | 5 | thriving |
+| Hive Antares | station | Antares (`antares`) | lawless | 5 | operational |
 | Hive Sulafat | station | Sulafat (`sulafat`) | lawless | 19 | thriving |
 | Hive Segin | station | Segin (`segin`) | lawless | 21 | thriving |
 
@@ -42,18 +42,18 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0ef3b4dcf0fd269e9d9d3e88 | Node Alpha (`node_alpha`) | 0 | theoria |
-| 1529c444887f2a8857c3bcd5 | Node Gamma (`node_gamma`) | 0 | theoria |
-| 15d19b56cf753aee3a9bca4e | Node Alpha (`node_alpha`) | 0 | runner |
-| 16d6873a069d1726d6bccaf5 | Hamal (`hamal`) | 0 | workhorse |
-| 26f81fc41d338a40fdce8d5e | Node Gamma (`node_gamma`) | 0 | runner |
-| 3c0f0d6a314aab433731b717 | Hamal (`hamal`) | 0 | workhorse |
-| 45c4e15fbfa2ff552f1bc0e9 | Hamal (`hamal`) | 0 | workhorse |
-| 841d796c5af478d71c4485d6 | Node Gamma (`node_gamma`) | 0 | runner |
-| a2018b529e00cded2f4e12a2 | Hamal (`hamal`) | 0 | workhorse |
-| a278e28e139d2e06c6c4d62a | Hamal (`hamal`) | 0 | workhorse |
-| a2b005c64a75e5188f89b67b | Node Gamma (`node_gamma`) | 0 | runner |
-| b7c76b18032c717a4a84f157 | Hamal (`hamal`) | 0 | workhorse |
+| 0a5266cdbbc00fe268e0948a | Nexus Prime (`nexus_prime`) | 0 | runner |
+| 1529c444887f2a8857c3bcd5 | The Experiment (`the_experiment`) | 0 | theoria |
+| 2267cbe57559ef5efdb2c70e | Synchrony (`synchrony`) | 0 | runner |
+| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
+| 553c423820b3e6ea5f477c90 | The Experiment (`the_experiment`) | 0 | runner |
+| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
+| 6cffb3f9980678abb0ae8250 | Node Alpha (`node_alpha`) | 0 | congregation |
+| 75bbbd91a1584939b84b0a01 | The Experiment (`the_experiment`) | 0 | runner |
+| a1ef91887c35ff0652f38f4d | Node Gamma (`node_gamma`) | 0 | congregation |
+| b9eca5b6501443e6d0541e69 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| dffe230ab864d7efef98b1fc | Hamal (`hamal`) | 0 | workhorse |
+| f563eb3a0940786a61a24d35 | Hamal (`hamal`) | 0 | workhorse |
 | regohunt01 | Node Gamma (`node_gamma`) | 0 | theoria |
 
 ## Standing History
