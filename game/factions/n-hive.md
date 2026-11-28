@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 21.
 
 ## Identity
 
@@ -42,13 +42,26 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 1db2c542aded106fb4e54a0a | Node Gamma (`node_gamma`) | 0 | runner |
-| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
-| a2018b529e00cded2f4e12a2 | Hamal (`hamal`) | 0 | workhorse |
-| a2b005c64a75e5188f89b67b | Node Beta (`node_beta`) | 0 | runner |
-| a61127ef25917281a2f5af9d | Acubens (`acubens`) | 0 | workhorse |
-| c36d96dba034b8d254f60b2a | Node Beta (`node_beta`) | 0 | runner |
-| d6dd920cb9af326e71c06f73 | Node Alpha (`node_alpha`) | 0 | runner |
+| 0281a1f86c4b6f9bb47a8718 | Node Gamma (`node_gamma`) | 0 | theoria |
+| 0ef3b4dcf0fd269e9d9d3e88 | Synchrony (`synchrony`) | 0 | theoria |
+| 10c1432ce43efedb9c7f9632 | Pherkad (`pherkad`) | 0 | runner |
+| 13170464db5eef0043ae9f5e | Node Beta (`node_beta`) | 0 | workhorse |
+| 1529c444887f2a8857c3bcd5 | Synchrony (`synchrony`) | 0 | theoria |
+| 1db2c542aded106fb4e54a0a | Node Beta (`node_beta`) | 0 | runner |
+| 26f81fc41d338a40fdce8d5e | The Experiment (`the_experiment`) | 0 | runner |
+| 4011f46410f19d6243276018 | Node Beta (`node_beta`) | 0 | runner |
+| 4369ebe51c415d3d0756ceba | Nexus Prime (`nexus_prime`) | 0 | futures |
+| 4937375bd771390f2e173ca0 | Node Beta (`node_beta`) | 0 | shell_company |
+| 6a73495396afc7768a08118f | The Experiment (`the_experiment`) | 0 | workhorse |
+| 820203467a484fae8d55d5f7 | The Experiment (`the_experiment`) | 0 | runner |
+| 9898c4d92e93f981e77715f0 | Node Gamma (`node_gamma`) | 0 | theoria |
+| ac55ba07be5a48456875b4ff | Node Gamma (`node_gamma`) | 0 | workhorse |
+| b1175909078c49082d98be1b | Node Beta (`node_beta`) | 0 | runner |
+| c413294b4b6a11879da15614 | Hamal (`hamal`) | 0 | workhorse |
+| dd23b0ca1cc14350d2b0b023 | Node Beta (`node_beta`) | 0 | workhorse |
+| ddac9c7dba6b0465e059d88b | Hamal (`hamal`) | 0 | workhorse |
+| eabefb578c1ac30a8ecf90a7 | Node Beta (`node_beta`) | 0 | runner |
+| fe19de71467052c40784bf24 | Node Beta (`node_beta`) | 0 | runner |
 | regodock01 | Node Beta (`node_beta`) | 0 | runner |
 
 ## Standing History
