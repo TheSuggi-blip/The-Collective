@@ -128,7 +128,8 @@ DEPOSIT_FIRST = 100000         # the leader holding this much above KEEP_SHIP de
 DEPOSIT_BY = 110               # seconds into the cash sweep phase after which the deposit waits for the next pass
 DEPOSIT_TITLE = "Faction treasury: credits deposited (the Collective keeps them)"     # begins with routes.TREASURY
 SENT_KEEP = 60 * 60            # a gift left `sent` whose receiver has no reading after its call is kept unsure after this long
-FUND_FLOOR = 500000            # what the treasury keeps after a fund (the Fleet Admiral's line)
+FUND_FLOOR = 500000            # what the treasury keeps after a CapEx fund (hulls/facilities)
+TOPUP_FLOOR = 100000           # what the treasury keeps after OpEx working-capital top-ups (never starve haulers/miners!)
 FUND_HOURS = 6                 # a funded pilot keeps its fund this long from the gift (the buy), then the sweep may take it
 FUND_WAIT = 24                 # hours an open fund waits for a docked leader before it ends by itself
 FUND_READ = 12                 # seconds between a withdrawal's call and the treasury's read after it (about one tick)
@@ -1170,7 +1171,7 @@ def serve_topups(data, leader, now, dry):
         before = treasury_read(actor)
         take, total = [], 0
         for r in todo:
-            if before is not None and before - (total + int(r["credits"])) >= FUND_FLOOR:
+            if before is not None and before - (total + int(r["credits"])) >= TOPUP_FLOOR:
                 take.append(r)
                 total += int(r["credits"])
         if take:
@@ -1201,7 +1202,7 @@ def serve_topups(data, leader, now, dry):
             write_funds(data, rows)
             print("TOP-UP withdrawn: %s cr from the treasury by %s for %d pilots (the treasury %s -> %s)" % (format(total, ","), actor, len(take), before, after))
         else:
-            print("TOP-UP waits: %d pilots, the treasury reads %s, it keeps %s" % (len(todo), before, format(FUND_FLOOR, ",")))
+            print("TOP-UP waits: %d pilots, the treasury reads %s, it keeps %s" % (len(todo), before, format(TOPUP_FLOOR, ",")))
     elif todo:
         print("TOP-UP waits: %d pilots: the leader %s is not docked (the game withdraws docked only)" % (len(todo), leader))
     failed = 0

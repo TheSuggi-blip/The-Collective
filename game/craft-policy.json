@@ -7,7 +7,7 @@
   "idle_watch_minutes": 1.5,
   "max_runs_per_cycle": 40,
   "max_fee_per_run_cr": 1500,
-  "min_wallet_keep_cr": 15000,
+  "min_wallet_keep_cr": 5000,
   "allow_buy_inputs_docked": true,
   "max_buy_spend_per_cycle_cr": 60000,
   "trade": {

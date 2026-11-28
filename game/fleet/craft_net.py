@@ -524,10 +524,10 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy, skip
 
 def _heartbeat(order_path, every=60):
     stop_ev = threading.Event()
-    def beat():
+    def beat(_utime=os.utime):
         while not stop_ev.wait(every):
             try:
-                os.utime(order_path)
+                _utime(order_path)
             except OSError:
                 return
     threading.Thread(target=beat, daemon=True).start()
@@ -638,8 +638,18 @@ def has_craft_job(pilot, ship_doc, data_dir=DATA, repo_root=REPO, policy_path=No
         for iid, fq in _faction_items_at_base(stor_all, base_id).items():
             stored[iid] = int(stored.get(iid) or 0) + int(fq)
     credits = int(ship_doc.get("credits") or 0)
-    job = pick_craft_job(div, base_id, stored, credits, world, pol)
+    _wing = ""
+    try:
+        import manifest_wings as _mw
+        _wing = str(_mw.wing_of(pilot) or "")
+    except Exception:
+        _wing = ""
+    if _wing.startswith("5A.") and base_id not in _owned_stations(data_dir):
+        return False
+    job = pick_craft_job(div, base_id, stored, credits, world, pol, wing=_wing)
     if not job:
+        return False
+    if _wing.startswith("5A.") and job.get("mode") != "station_faction":
         return False
     if ("%s:%s" % (pilot, job.get("recipe") or "")) in cd:
         return False

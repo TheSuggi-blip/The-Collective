@@ -1177,13 +1177,13 @@ def _heartbeat(order_path, every=60):
     except OSError:
         orig_ino = None
 
-    def beat():
+    def beat(_stat=os.stat, _utime=os.utime):
         while not stop_ev.wait(every):
             try:
-                st = os.stat(order_path)
+                st = _stat(order_path)
                 if orig_ino is not None and st.st_ino != orig_ino:
                     return
-                os.utime(order_path)
+                _utime(order_path)
             except OSError:
                 return
 

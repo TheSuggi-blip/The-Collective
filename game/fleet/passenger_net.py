@@ -202,6 +202,7 @@ def load_graph(data_dir):
     adj = {}
     base_to_sys = {}
     sys_to_base = {}
+    base_to_poi = {}
     name_to_sys = {}
     strongholds = set()
     refuel_ready = set()
@@ -233,6 +234,12 @@ def load_graph(data_dir):
             except sqlite3.Error:
                 pass
         try:
+            for b_id, p_id in con.execute("SELECT base, poi FROM places WHERE base IS NOT NULL AND poi IS NOT NULL").fetchall():
+                if b_id and p_id:
+                    base_to_poi[str(b_id)] = str(p_id)
+        except sqlite3.Error:
+            pass
+        try:
             for (b_id,) in con.execute("SELECT DISTINCT base FROM faction_facilities WHERE type='refueling_dock' AND COALESCE(status,'active')='active'").fetchall():
                 if b_id:
                     refuel_ready.add(str(b_id))
@@ -244,6 +251,7 @@ def load_graph(data_dir):
         "adj": adj,
         "base_to_sys": base_to_sys,
         "sys_to_base": sys_to_base,
+        "base_to_poi": base_to_poi,
         "name_to_sys": name_to_sys,
         "strongholds": strongholds,
         "refuel_ready": refuel_ready,
@@ -444,7 +452,12 @@ def _raw(gate_mod, pilot, action, params=None, group="spacemolt", timeout=45):
     if st == 200 and isinstance(txt, str) and "{" in txt:
         try:
             j = json.loads(txt[txt.find("{"):])
+            if isinstance(j, dict) and (j.get("error") or j.get("isError") or j.get("success") is False):
+                err_msg = str(j.get("error") or j.get("message") or j.get("result") or txt)
+                return False, {}, err_msg
             sc = j.get("structuredContent") if isinstance(j, dict) else {}
+            if isinstance(sc, dict) and sc.get("error"):
+                return False, sc, str(sc.get("error"))
             return True, sc if isinstance(sc, dict) else {}, str(j.get("result") or "")
         except ValueError:
             return True, {}, txt
@@ -521,11 +534,12 @@ def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, gr
                 docked_base = ""
                 time.sleep(10.2)
         idx = 1
+        resyncs = 0
         while idx < len(path):
             nxt = path[idx]
             if _stop_requested(data_dir, pilot):
                 return False, cur_sys, docked_base, "stopped"
-            ok_j, _, msg_j = _raw(gate_mod, pilot, "jump", {"id": nxt}, timeout=120)
+            ok_j, sc_j, msg_j = _raw(gate_mod, pilot, "jump", {"id": nxt}, timeout=120)
             if not ok_j:
                 low_m = msg_j.lower()
                 if (cur_sys, nxt) in gates and ("gate_refused" in low_m or "gate_toll" in low_m or "gate" in low_m):
@@ -537,8 +551,46 @@ def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, gr
                         path = alt_path
                         idx = 1
                         continue
+                if resyncs < 2 and ("not connected" in low_m or "already in" in low_m or "must undock" in low_m or "docked" in low_m):
+                    resyncs += 1
+                    ok_gs, sc_gs, _ = _raw(gate_mod, pilot, "get_status", {}, timeout=25)
+                    if ok_gs and isinstance(sc_gs, dict):
+                        loc_gs = sc_gs.get("location") or {}
+                        real_sys = str(loc_gs.get("system_id") or "")
+                        real_base = str(loc_gs.get("base_id") or loc_gs.get("docked_at_base") or "")
+                        if real_sys:
+                            cur_sys = real_sys
+                        docked_base = real_base
+                        if docked_base:
+                            ok_u2, _, _ = _raw(gate_mod, pilot, "undock", {}, timeout=35)
+                            if ok_u2:
+                                docked_base = ""
+                                time.sleep(10.2)
+                        if cur_sys == dest_sys:
+                            break
+                        re_path, _, _ = fuelplan.weighted_shortest_path(graph["adj"], cur_sys, dest_sys, gates=gates, avoid=avoid, max_hops=max_h + 6, cr_per_jump=cpj, max_toll=max_t, pilot_credits=pilot_credits)
+                        if re_path and len(re_path) > 1:
+                            path = re_path
+                            idx = 1
+                            continue
                 return False, cur_sys, docked_base, "jump_fail:" + msg_j[:60]
-            cur_sys = nxt
+            arrived = ""
+            if isinstance(sc_j, dict):
+                det = sc_j.get("details") if isinstance(sc_j.get("details"), dict) else {}
+                loc_j = sc_j.get("location") if isinstance(sc_j.get("location"), dict) else {}
+                arrived = str(det.get("system_id") or loc_j.get("system_id") or "")
+            if arrived and arrived != nxt and resyncs < 2:
+                resyncs += 1
+                cur_sys = arrived
+                if cur_sys == dest_sys:
+                    break
+                re_path, _, _ = fuelplan.weighted_shortest_path(graph["adj"], cur_sys, dest_sys, gates=gates, avoid=avoid, max_hops=max_h + 6, cr_per_jump=cpj, max_toll=max_t, pilot_credits=pilot_credits)
+                if re_path and len(re_path) > 1:
+                    path = re_path
+                    idx = 1
+                    time.sleep(10.2)
+                    continue
+            cur_sys = arrived or nxt
             idx += 1
             time.sleep(10.2)
     if docked_base != dest_base:
@@ -546,7 +598,8 @@ def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, gr
             _raw(gate_mod, pilot, "undock", {}, timeout=35)
             docked_base = ""
             time.sleep(10.2)
-        ok_t, _, msg_t = _raw(gate_mod, pilot, "travel", {"id": dest_base}, timeout=120)
+        travel_target = (graph.get("base_to_poi") or {}).get(dest_base, dest_base)
+        ok_t, _, msg_t = _raw(gate_mod, pilot, "travel", {"id": travel_target}, timeout=120)
         if not ok_t:
             return False, cur_sys, docked_base, "travel_fail:" + msg_t[:60]
         time.sleep(10.2)

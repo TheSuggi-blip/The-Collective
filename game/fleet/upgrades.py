@@ -547,7 +547,7 @@ def queue_add(data_dir, who, hull_id, station, max_price, count=5, role=None, em
             "division": c["division"],
             "by": str(who),
             "hull": hull_clean,
-            "station": ":".join(parts),
+            "station": "%s:%s:%s" % (parts[0], _resolve_station_poi(data_dir, parts[0], parts[1], parts[2]), parts[2]),
             "max_price": max_price,
             "provide_materials": bool(provide_materials),
             "state": "queued",
@@ -727,9 +727,31 @@ def _read_live_fuel_loc(gate_mod, pilot, ship=None):
     return cur_sys, cur_fuel, max_fuel, busy
 
 
+def _resolve_station_poi(data_dir, sys_id, poi_id, base_id):
+    """Resolve true POI ID for base_id from read.db:places so base_id-as-poi_id never loops prepare-at-station."""
+    if not data_dir or not base_id:
+        return poi_id
+    db_p = Path(data_dir) / "store" / "read.db"
+    if not db_p.is_file():
+        return poi_id
+    try:
+        import sqlite3 as _sq
+        con = _sq.connect("file:%s?mode=ro&immutable=1" % db_p, uri=True, timeout=2)
+        try:
+            row = con.execute("SELECT poi FROM places WHERE base=? AND (?='' OR system=?) AND poi IS NOT NULL LIMIT 1", (str(base_id), str(sys_id or ""), str(sys_id or ""))).fetchone()
+            if row and row[0]:
+                return str(row[0])
+        finally:
+            con.close()
+    except Exception:
+        pass
+    return poi_id
+
+
 def _gate_dock(gate_mod, pilot, sys_id, poi_id, base_id, timeout=65, data_dir=None, ship=None):
     """Dock pilot at sys_id:poi_id:base_id with automatic multi-hop public refuel staging when
     the destination exceeds current single-tank jump range (prevents long-range upgrade deadlocks)."""
+    poi_id = _resolve_station_poi(data_dir, sys_id, poi_id, base_id)
     t_end = time.time() + max(25.0, float(timeout))
     cur_sys, cur_fuel, max_fuel, busy = _read_live_fuel_loc(gate_mod, pilot, ship=ship)
     if busy:

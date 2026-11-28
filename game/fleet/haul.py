@@ -1267,13 +1267,13 @@ def _heartbeat(order_path, every=60):
     except OSError:
         orig_ino = None
 
-    def beat():
+    def beat(_stat=os.stat, _utime=os.utime):
         while not stop_ev.wait(every):
             try:
-                st = os.stat(order_path)
+                st = _stat(order_path)
                 if orig_ino is not None and st.st_ino != orig_ino:
                     return
-                os.utime(order_path)
+                _utime(order_path)
             except OSError:
                 return
 
@@ -2300,7 +2300,7 @@ def main(argv=None):
             elif lane == "hub_upkeep":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                upk = _pick_hub_upkeep(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
+                upk = _pick_hub_upkeep(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
                 if upk and claim_job(DATA, pilot, upk["job_key"]):
                     iid, oloc, dloc, qty = upk["item"], upk["origin"], upk["dest"], upk["qty"]
                     say("hub_upkeep (%s) %d %s: %s -> %s (%dj+%dj)" % (
@@ -2680,7 +2680,7 @@ def main(argv=None):
             elif lane == "liquidate_surplus":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                liq = _pick_surplus_liquidation(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
+                liq = _pick_surplus_liquidation(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
                 if liq and claim_job(DATA, pilot, liq["job_key"]):
                     iid, oloc, dloc, qty = liq["item"], liq["origin"], liq["dest"], liq["qty"]
                     say("liquidate %d %s: %s -> %s @ ~%d cr" % (qty, iid, oloc[2], dloc[2], liq["est_bid"]))
@@ -2728,7 +2728,7 @@ def main(argv=None):
             elif lane == "consolidate_to_trader":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                cons = _pick_consolidate_to_trader(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
+                cons = _pick_consolidate_to_trader(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
                 if cons and claim_job(DATA, pilot, cons["job_key"]):
                     iid, oloc, dloc, qty = cons["item"], cons["origin"], cons["dest"], cons["qty"]
                     say("consolidate %d %s: %s -> %s (bursar %s, ~%d cr)" % (qty, iid, oloc[2], dloc[2], cons.get("bursar_pilot") or "?", cons["est_val"]))
@@ -2772,7 +2772,7 @@ def main(argv=None):
             elif lane == "backhaul_mission":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                bhm = _pick_backhaul_delivery(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
+                bhm = _pick_backhaul_delivery(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
                 if bhm and claim_job(DATA, pilot, bhm["job_key"]):
                     iid, qty = bhm["item"], bhm["qty"]
                     bloc, dloc = bhm["buy_loc"], bhm["dest_loc"]

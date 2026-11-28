@@ -119,5 +119,59 @@ class PassengerNetTests(unittest.TestCase):
         self.assertNotIn("ModuleNotFoundError", res.stderr)
 
 
+
+    def test_raw_error_envelope_and_fly_resync_recovers_from_hop_desync(self):
+        import json
+        class _FakeGate:
+            def __init__(self):
+                self.calls = []
+                self.cur = "gold_run"
+                self.first_jump_failed = False
+
+            def q(self, x):
+                return x
+
+            def call(self, method, path, payload=None, timeout=30):
+                act = (payload or {}).get("action")
+                prm = (payload or {}).get("params") or {}
+                self.calls.append((act, prm))
+                if act == "jump":
+                    tgt = prm.get("id")
+                    if not self.first_jump_failed and tgt == "market_prime":
+                        self.first_jump_failed = True
+                        return 200, json.dumps({"error": "Gold Run is not connected to keel"})
+                    self.cur = tgt
+                    return 200, json.dumps({"structuredContent": {"details": {"system_id": tgt}, "location": {"system_id": tgt}}})
+                if act == "get_status":
+                    return 200, json.dumps({"structuredContent": {"location": {"system_id": self.cur, "base_id": ""}}})
+                if act in ("travel", "dock", "undock", "refuel"):
+                    return 200, json.dumps({"structuredContent": {"ok": True}})
+                return 200, json.dumps({"structuredContent": {}})
+
+        fg = _FakeGate()
+        ok_err, _, _ = pn._raw(fg, "LSV Test", "jump", {"id": "market_prime"})
+        self.assertFalse(ok_err)
+        fg.first_jump_failed = False
+        orig_sleep = pn.time.sleep
+        pn.time.sleep = lambda _s: None
+        try:
+            graph = {
+                "adj": {"gold_run": ["market_prime"], "market_prime": ["gold_run", "haven"], "haven": ["market_prime"]},
+                "strongholds": set(),
+                "refuel_ready": set(),
+                "gates": {},
+                "base_to_poi": {"grand_exchange_station": "grand_exchange"},
+            }
+            ok, final_sys, final_base, why = pn._fly_and_dock(
+                fg, "LSV Test", "gold_run", "", "haven", "grand_exchange_station", graph, {}, "/tmp/no-data"
+            )
+        finally:
+            pn.time.sleep = orig_sleep
+        self.assertTrue(ok, why)
+        self.assertEqual(final_sys, "haven")
+        self.assertEqual(final_base, "grand_exchange_station")
+        self.assertIn(("travel", {"id": "grand_exchange"}), fg.calls)
+
+
 if __name__ == "__main__":
     unittest.main()

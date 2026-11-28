@@ -363,5 +363,21 @@ class UpgradeQueueTests(unittest.TestCase):
             self.assertEqual(goals[-1], "the_anvil")
 
 
+
+class TestResolveStationPoi(unittest.TestCase):
+    def test_resolve_station_poi_fixes_base_id_mismatch(self):
+        import sqlite3, tempfile
+        with tempfile.TemporaryDirectory() as td:
+            st = Path(td) / "store"
+            st.mkdir(parents=True, exist_ok=True)
+            con = sqlite3.connect(st / "read.db")
+            con.execute("CREATE TABLE places (system TEXT, poi TEXT, base TEXT)")
+            con.execute("INSERT INTO places VALUES ('haven', 'grand_exchange', 'grand_exchange_station')")
+            con.commit()
+            con.close()
+            fixed = upgrades._resolve_station_poi(td, "haven", "grand_exchange_station", "grand_exchange_station")
+            self.assertEqual(fixed, "grand_exchange")
+
+
 if __name__ == "__main__":
     unittest.main()

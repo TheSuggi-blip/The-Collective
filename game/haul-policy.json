@@ -6,7 +6,7 @@
   "min_cr_per_jump": 80,
   "min_total_profit": 400,
   "max_collateral": 25000,
-  "fuel_reserve_cr": 6000,
+  "fuel_reserve_cr": 3000,
   "max_book_age_minutes": 30,
   "max_buy_spend_cr": 25000,
   "min_margin_pct": 0.15,

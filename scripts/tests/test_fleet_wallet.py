@@ -411,7 +411,7 @@ class TreasuryTopupTests(FundTests):
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         self.assertEqual(self.calls, [])                                                          # not docked
         self.put(docked=True)
-        self.treasury[0] = w.FUND_FLOOR + 11000
+        self.treasury[0] = w.TOPUP_FLOOR + 11000
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 10900))     # what the floor allows
 

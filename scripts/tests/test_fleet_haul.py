@@ -135,5 +135,24 @@ class HaulEngineTests(unittest.TestCase):
             self.assertIn(job["item"], ("iron_ore", "foil_scale"))
             self.assertEqual(job["dest"][2], "node_beta_industrial_station")
 
+
+class TestHaulPickerCallSignatures(unittest.TestCase):
+    def test_all_internal_picker_calls_match_signatures(self):
+        import ast, inspect
+        src = (ROOT / "game" / "fleet" / "haul.py").read_text(encoding="ascii")
+        tree = ast.parse(src)
+        checked = 0
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id.startswith("_pick_"):
+                fn = getattr(haul, node.func.id, None)
+                self.assertIsNotNone(fn, "Missing picker %s" % node.func.id)
+                sig = inspect.signature(fn)
+                pos = [None] * len(node.args)
+                kws = {kw.arg: None for kw in node.keywords if kw.arg}
+                sig.bind(*pos, **kws)
+                checked += 1
+        self.assertGreaterEqual(checked, 4)
+
+
 if __name__ == "__main__":
     unittest.main()

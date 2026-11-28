@@ -8,6 +8,7 @@
  "standing": true,
  "requires": {
   "wing_prefix": [
+   "5A.",
    "5B."
   ]
  }
