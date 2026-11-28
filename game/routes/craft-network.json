@@ -11,5 +11,14 @@
    "5A.",
    "5B."
   ]
+ },
+ "measured": {
+  "date": "2026-11-28",
+  "runs": 10,
+  "minutes": 2,
+  "credits_per_run": 0,
+  "cph_per_ship": 130,
+  "hours": 12,
+  "last_run": "2026-11-28T10:26:47Z"
  }
 }
