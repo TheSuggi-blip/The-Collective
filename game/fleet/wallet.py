@@ -1893,6 +1893,11 @@ def _acquire_serve_lock(data):
 
 STATION_BUILD_PRIORITY = (
     "refueling_dock",
+    "hiring_board",
+    "recruitment_desk",
+    "recruitment_center",
+    "guild_hall_recruiting",
+    "fuel_tank_expansion",
     "market_terminal",
     "notice_board",
     "faction_desk",
@@ -1965,13 +1970,30 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         }
         if not st_bases:
             return 0
-        # Already built facility types per sovereign station
+        # Already built facility types & active facility_ids per sovereign station (for faction_upgrade chains!)
         built = {}
+        fac_id_by_base_type = {}
         for b, ft in con.execute("SELECT base, type FROM faction_facilities WHERE base IS NOT NULL").fetchall():
             built.setdefault(str(b), set()).add(str(ft or ""))
         for f in (emp.get("facilities") or []):
             if isinstance(f, dict) and f.get("base") and f.get("type"):
-                built.setdefault(str(f["base"]), set()).add(str(f["type"]))
+                _fb, _ft = str(f["base"]), str(f["type"])
+                built.setdefault(_fb, set()).add(_ft)
+                if f.get("facility_id") and str(f.get("status") or "active").lower() == "active":
+                    fac_id_by_base_type[(_fb, _ft)] = str(f["facility_id"])
+        # Load upgrades_from from newest game catalog so upgrade chains (e.g. hiring_board -> guild_hall_recruiting) use faction_upgrade!
+        upgrades_from_map = {}
+        try:
+            _cat_files = sorted((Path(data) / "catalog").glob("0.*.json"))
+            if _cat_files:
+                _cat_d = dispatch.read_json(_cat_files[-1], {}) or {}
+                _cfacs = _cat_d.get("facilities") or {}
+                _fiter = _cfacs.values() if isinstance(_cfacs, dict) else (_cfacs if isinstance(_cfacs, list) else [])
+                for _cf in _fiter:
+                    if isinstance(_cf, dict) and _cf.get("id") and _cf.get("upgrades_from"):
+                        upgrades_from_map[str(_cf["id"])] = str(_cf["upgrades_from"])
+        except Exception:
+            pass
 
         # Open P1 facility needs at owned sovereign stations
         open_needs = []
@@ -2052,6 +2074,8 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
             continue
         bname = st_bases.get(base_id, base_id)
         builder = None
+        if upgrades_from_map.get(fid) and not fac_id_by_base_type.get((base_id, upgrades_from_map[fid])):
+            continue
         if dry:
             builder = docked_offs[0][1]
             print("would station_build: %s @ %s via %s (fee=%s cr, avail_tr=%s)" % (
@@ -2071,7 +2095,14 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         if not builder:
             continue
 
-        ok, msg = errand_raw(builder, "spacemolt_facility", "faction_build", {"facility_type": fid})
+        _upg_parent = upgrades_from_map.get(fid)
+        if _upg_parent:
+            _parent_fid = fac_id_by_base_type.get((base_id, _upg_parent))
+            if not _parent_fid:
+                continue  # wait for prerequisite tier to finish construction first
+            ok, msg = errand_raw(builder, "spacemolt_facility", "faction_upgrade", {"facility_id": _parent_fid, "facility_type": fid})
+        else:
+            ok, msg = errand_raw(builder, "spacemolt_facility", "faction_build", {"facility_type": fid})
         if ok:
             print("STATION_BUILD OK: %s @ %s via %s (fee=%s cr) | %s" % (
                 fid, bname, builder, format(fee, ","), str(msg)[:120]), flush=True)

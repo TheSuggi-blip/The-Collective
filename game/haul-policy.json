@@ -51,8 +51,8 @@
     },
     "station": {
       "fuel_cell": 2400,
-      "steel_plate": 3000,
-      "circuit_board": 1200,
+      "steel_plate": 9000,
+      "circuit_board": 2000,
       "flex_polymer": 1225,
       "copper_wiring": 150,
       "hull_patch": 40,
@@ -115,7 +115,10 @@
       "superfluid_martini": 12,
       "noble_gas_spritz": 12,
       "frostmoth_frappe": 12,
-      "radiant_tonic": 12
+      "radiant_tonic": 12,
+      "titanium_alloy": 900,
+      "ceramite_plating": 1600,
+      "fuel_tank": 850
     }
   },
   "hub_upkeep_max_unit_price": {
@@ -184,11 +187,14 @@
     "superfluid_martini": 450,
     "noble_gas_spritz": 550,
     "frostmoth_frappe": 550,
-    "radiant_tonic": 550
+    "radiant_tonic": 550,
+    "titanium_alloy": 1050,
+    "ceramite_plating": 1250,
+    "fuel_tank": 680
   },
   "hub_bunker_fuel_targets": {
     "outpost": 50000,
-    "station": 50000
+    "station": 55000
   },
   "consolidate_min_units": 10,
   "consolidate_min_value_cr": 300,

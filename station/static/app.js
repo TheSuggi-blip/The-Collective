@@ -5196,16 +5196,16 @@ async function renderMetrics(panel, live) {
   // === SECTION 2B: ETERNAL STANDING-GOAL KPIS (CLEAN GROUPED TABLE WITH PROGRESS BARS) ===
   const sGoals = (fk && Array.isArray(fk.standing_goals)) ? fk.standing_goals : [];
   if (sGoals.length) {
-    panel.append(el('h3', null, 'Eternal Standing-Goal KPIs (' + sGoals.length + ' measurable dominance & compounding frontiers)'));
+    panel.append(el('h3', null, 'Eternal Standing Goals (' + sGoals.length + ')'));
     const sgWrap = el('div', 'mtable sg-wrap');
     const tbl = el('table', 'sg-table');
     const thead = el('thead');
     const htr = el('tr');
     htr.append(
-      el('th', 'sg-col-goal', 'Standing Goal'),
-      el('th', 'sg-col-bar', 'Progress to Eternal Target'),
-      el('th', 'sg-col-val n', 'Current'),
-      el('th', 'sg-col-st n', 'Status'),
+      el('th', 'sg-col-goal', 'Goal'),
+      el('th', 'sg-col-bar', 'Progress'),
+      el('th', 'sg-col-val n', 'Now'),
+      el('th', 'sg-col-st n', 'Rank'),
     );
     thead.append(htr);
     tbl.append(thead);
@@ -5214,9 +5214,9 @@ async function renderMetrics(panel, live) {
     const sgTone = (sc) => (sc >= 120 ? 'apex' : (sc >= 100 ? 'pos' : (sc >= 80 ? 'solid' : (sc >= 60 ? 'warn' : 'neg'))));
     const sgBarCls = (sc) => (sc >= 120 ? 'apex' : (sc >= 100 ? 'good' : (sc >= 80 ? 'solid' : (sc >= 60 ? 'warn' : 'bad'))));
     const grpOrder = [
-      ['supremacy', 'Galactic Supremacy (vs #1 Rival)'],
-      ['economics', 'Open-Ended Operating Economics'],
-      ['infrastructure', 'Fleet & Sovereign Infrastructure'],
+      ['supremacy', 'Supremacy (2x Rival)'],
+      ['economics', 'Economics'],
+      ['infrastructure', 'Fleet & Empire'],
     ];
     const seen = new Set();
     const groups = [];
