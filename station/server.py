@@ -2541,7 +2541,9 @@ def _build_ops():
                             _fr = float(_bfuel) / float(_btgt)
                             _tier = "READY TO BUILD" if _bfuel >= 2000 else "BUILDING REFUEL DOCK"
                             _tgt_h = 0 if _bfuel >= 2000 else 6
+                            _max_h = 6
                         else:
+                            _max_h = 5
                             _btgt = _actual_cap if _actual_cap > 0 else int(_btgts.get(_bkind) or 50000)
                             _fr = float(_bfuel) / float(max(1, _btgt))
                             if _fr < 0.20:
@@ -2586,7 +2588,7 @@ def _build_ops():
                             "bunker_mode": _bmode,
                             "bunker_fuel": _bfuel, "bunker_target": _btgt,
                             "bunker_pct": round(min(100.0, 100.0 * _bfuel / max(1, _btgt)), 1),
-                            "surge_tier": _tier, "target_haulers": _tgt_h,
+                            "surge_tier": _tier, "target_haulers": _tgt_h, "max_haulers": _max_h,
                             "active_haulers": len(_act_h), "hauler_names": _act_h[:8],
                             "raided": bool((_emp_cond_by_base.get(_bid) or "").lower() in ("damaged", "wrecked", "raided") or (_bid in _emp_alert_bases)),
                             "pirate_activity_2h": _bsys in _raided_ops,

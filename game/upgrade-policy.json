@@ -1,7 +1,7 @@
 {
   "_owner": "Trinity (Sole Operator)",
-  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-27, 0.735.1 catalog, Suggi approved). max_auto_tier=2 (T1 rolls out continuously and T2 unlocks automatically as each pilot crosses Piloting 10; cash treasury_floor_cr=2,000,000 is the only limit, zero concurrency throttle). ALL wings enabled EXCEPT 6B Passenger Liners (28 LSV held until Passenger AutoNet); 3D Gas and 3E Ice skip broken T4 Refinery hulls (T1->T2->T3->T5).",
-  "enabled": true,
+  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-28, paused per Suggi until Ridgecrest 525-seat recruitment chain reaches 500 faction seating cap, then re-enable enabled=true with max_auto_tier=2 and treasury_floor_cr=2000000).",
+  "enabled": false,
   "max_auto_tier": 2,
   "treasury_floor_cr": 2000000,
   "max_spend_24h_cr": 0,

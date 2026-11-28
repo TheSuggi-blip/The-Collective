@@ -3264,10 +3264,11 @@ async function renderInventory(panel, live) {
         const oc = el('div', 'icard ' + (ob.bunker_pct >= 80 ? 'ownbase' : 'sitecard'));
         const oh = el('div', 'ichead');
         const tierCls = (ob.surge_tier === 'FULL' || ob.surge_tier === 'READY TO BUILD') ? 'good' : (ob.surge_tier === 'TOP-OFF' || ob.surge_tier === 'STEADY' || ob.surge_tier === 'BUILDING REFUEL DOCK' ? 'info' : (ob.surge_tier === 'LOW' ? 'warn' : 'bad'));
+        const maxH = ob.max_haulers || (ob.bunker_mode === 'build_refuel_dock' ? 6 : 5);
         oh.append(
           el('b', null, fmtBaseLabel(ob)),
           el('span', 'pill', ob.system),
-          el('span', 'pill ' + tierCls, ob.surge_tier + ' (' + ob.active_haulers + '/' + ob.target_haulers + ' haulers)'),
+          el('span', 'pill ' + tierCls, ob.surge_tier + ' (' + ob.active_haulers + '/' + maxH + ' haulers)'),
         );
         if (ob.repair_ready !== undefined) {
           oh.append(el('span', 'pill ' + (ob.repair_ready ? 'good' : 'warn'), ob.repair_ready ? 'REPAIR READY' : ('REPAIR SHORT (' + ob.repair_gap + ')')));
@@ -3284,8 +3285,8 @@ async function renderInventory(panel, live) {
         );
         oc.append(fbar);
         const hsub = ob.hauler_names && ob.hauler_names.length
-          ? 'Active haulers: ' + ob.hauler_names.join(', ')
-          : (ob.raided ? 'Haulers paused (2h pirate raid shield active)' : (ob.target_haulers > 0 ? 'Awaiting nearby haulers (surge target: ' + ob.target_haulers + ')' : 'Bunker full (>=96%)'));
+          ? 'Active haulers (dynamic need ' + ob.target_haulers + '/' + maxH + '): ' + ob.hauler_names.join(', ')
+          : (ob.raided ? 'Haulers paused (2h pirate raid shield active)' : (ob.target_haulers > 0 ? 'Awaiting nearby haulers (dynamic need ' + ob.target_haulers + '/' + maxH + ')' : 'Bunker full (>=96%, dynamic need 0/' + maxH + ')'));
         oc.append(el('div', 'rmeta-sub', hsub));
 
         // Merge upkeep targets + any additional resort items (deduplicated) with progress bars!

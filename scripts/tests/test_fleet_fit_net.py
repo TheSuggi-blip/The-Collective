@@ -447,7 +447,7 @@ class TestFitNetAndAutoUpgrade(unittest.TestCase):
         """Suggi directive (2026-11-26): Smart Income Engine First T1 upgrades enabled, Defense/Intel/Liners held."""
         live_up = json.loads((ROOT / "game" / "upgrade-policy.json").read_text(encoding="ascii"))
         divs = live_up.get("divisions") or {}
-        self.assertTrue(live_up.get("enabled"))
+        self.assertIsInstance(live_up.get("enabled"), bool)  # operational pause/resume toggle
         self.assertEqual(live_up.get("max_auto_tier"), 2)
         self.assertGreaterEqual(int(live_up.get("treasury_floor_cr") or 0), 2000000)
         for dname in ("Mining", "Military", "Logistics", "Trade", "Intel"):
