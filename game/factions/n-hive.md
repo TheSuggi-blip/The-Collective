@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 8.
+Pilots of it in our space in the last 24 hours: 13.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 8.
 | Allies | HLLW, OLSV | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 127 | Public event stream |
+| Pilots carrying the tag on the public event stream | 126 | Public event stream |
 
 ## Bases
 
@@ -42,14 +42,19 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 2d6ffeda232aa324424edb53 | Node Gamma (`node_gamma`) | 0 | runner |
-| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
-| 6a73495396afc7768a08118f | Node Beta (`node_beta`) | 0 | workhorse |
-| b14ccc7a855a258164b5f3c1 | Node Alpha (`node_alpha`) | 0 | runner |
-| ba6ca244f9215d9ee62431df | Node Gamma (`node_gamma`) | 0 | futures |
-| dffe230ab864d7efef98b1fc | Synchrony (`synchrony`) | 0 | workhorse |
-| f8c3f4c38ee48a37ee21926b | Pherkad (`pherkad`) | 0 | workhorse |
-| regohunt01 | The Experiment (`the_experiment`) | 0 | theoria |
+| 0ef3b4dcf0fd269e9d9d3e88 | Node Alpha (`node_alpha`) | 0 | theoria |
+| 1529c444887f2a8857c3bcd5 | Node Gamma (`node_gamma`) | 0 | theoria |
+| 15d19b56cf753aee3a9bca4e | Node Alpha (`node_alpha`) | 0 | runner |
+| 16d6873a069d1726d6bccaf5 | Hamal (`hamal`) | 0 | workhorse |
+| 26f81fc41d338a40fdce8d5e | Node Gamma (`node_gamma`) | 0 | runner |
+| 3c0f0d6a314aab433731b717 | Hamal (`hamal`) | 0 | workhorse |
+| 45c4e15fbfa2ff552f1bc0e9 | Hamal (`hamal`) | 0 | workhorse |
+| 841d796c5af478d71c4485d6 | Node Gamma (`node_gamma`) | 0 | runner |
+| a2018b529e00cded2f4e12a2 | Hamal (`hamal`) | 0 | workhorse |
+| a278e28e139d2e06c6c4d62a | Hamal (`hamal`) | 0 | workhorse |
+| a2b005c64a75e5188f89b67b | Node Gamma (`node_gamma`) | 0 | runner |
+| b7c76b18032c717a4a84f157 | Hamal (`hamal`) | 0 | workhorse |
+| regohunt01 | Node Gamma (`node_gamma`) | 0 | theoria |
 
 ## Standing History
 

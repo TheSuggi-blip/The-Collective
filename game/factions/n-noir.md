@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 4.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 79 | Public event stream |
+| Pilots carrying the tag on the public event stream | 88 | Public event stream |
 
 ## Bases
 
@@ -38,10 +38,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Arbiter59 | Synchrony (`synchrony`) | 0 | syndicate |
-| Arbuckle | Node Alpha (`node_alpha`) | 0 | syndicate |
-| Cook | Synchrony (`synchrony`) | 0 | futures |
-| Speke | Node Alpha (`node_alpha`) | 0 | futures |
+| Arbiter71 | Synchrony (`synchrony`) | 0 | syndicate |
+| Arbiter79 | Node Alpha (`node_alpha`) | 0 | syndicate |
+| Cook | The Experiment (`the_experiment`) | 0 | futures |
+| Speke | Nexus Prime (`nexus_prime`) | 0 | futures |
 
 ## Standing History
 
