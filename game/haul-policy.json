@@ -23,7 +23,6 @@
   ],
   "home_bases": [
     "node_beta_industrial_station",
-    "central_nexus",
     "the_experiment_research_station"
   ],
   "note": "2026-11-25 (Trinity, Suggi directive): restored slippage-hardened arbitrage (20m fresh book, 15k cap, 0.8x bid-depth cap, sell-order fallback) + liquidate_surplus lane alongside active_freight, internal_supply, and public_freight so haul-network never stalls 100% idle on docked watch while converting warehouse surplus into liquid cash.",

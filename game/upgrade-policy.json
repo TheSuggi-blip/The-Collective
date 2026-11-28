@@ -1,7 +1,7 @@
 {
   "_owner": "Trinity (Sole Operator)",
-  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-28, paused per Suggi until Ridgecrest 525-seat recruitment chain reaches 500 faction seating cap, then re-enable enabled=true with max_auto_tier=2 and treasury_floor_cr=2000000).",
-  "enabled": false,
+  "_doc": "500-ship manifest-wing-locked T1-T5 hull upgrade policy (2026-11-28: re-enabled after Ridgecrest L4 guild_hall_recruiting active at 525-seat cap and active fleet seated; max_auto_tier=2, treasury_floor_cr=2000000 preserves Refueling Dock priority build).",
+  "enabled": true,
   "max_auto_tier": 2,
   "treasury_floor_cr": 2000000,
   "max_spend_24h_cr": 0,
