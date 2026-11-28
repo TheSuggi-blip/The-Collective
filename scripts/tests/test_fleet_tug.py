@@ -176,3 +176,70 @@ class DryStationTests(unittest.TestCase):
         with redirect_stdout(io.StringIO()):
             tug.run_pass(str(self.data), now=3000)
         self.assertIn("distress_signal", self.calls)
+
+    def test_settle_self_rescues_via_market_fuel_cell(self):
+        import io, os
+        from contextlib import redirect_stdout
+        (self.data / "market").mkdir(parents=True, exist_ok=True)
+        (self.data / "market" / "d_base.json").write_text(self.json.dumps({
+            "base": "d_base", "system": "d",
+            "items": [{"item_id": "fuel_cell", "best_sell": 100, "best_sell_qty": 20}]
+        }))
+        (self.data / "fleet" / "ships" / "drone-1.json").write_text(
+            self.json.dumps(dict(ship(fuel=1, docked="d_base"), credits=5000))
+        )
+        (self.data / "fleet" / "tug.json").write_text(self.json.dumps({"drone-1": {"at": 0, "fuel": 1, "system": "d"}}))
+        calls_detail = []
+        def smart_raw(pilot, action, params):
+            calls_detail.append((action, dict(params)))
+            if action == "refuel" and not params:
+                return 500, '{"error":"API call failed: no_fuel_source: station sells no fuel"}'
+            return 200, '{"result":{"ok":true}}'
+        tug.raw = smart_raw
+        old_tw = os.environ.get("TUG_TICK_WAIT")
+        os.environ["TUG_TICK_WAIT"] = "0"
+        try:
+            out = io.StringIO()
+            with redirect_stdout(out):
+                tug.run_pass(str(self.data), now=1000)
+        finally:
+            if old_tw is None:
+                os.environ.pop("TUG_TICK_WAIT", None)
+            else:
+                os.environ["TUG_TICK_WAIT"] = old_tw
+        self.assertIn(("buy", {"id": "fuel_cell", "quantity": 2}), calls_detail)
+        self.assertIn(("refuel", {"id": "fuel_cell", "quantity": 2}), calls_detail)
+        self.assertIn("self-rescued", out.getvalue())
+        self.assertEqual(tug.load_dry(str(self.data)), {})
+
+    def test_dry_docked_ship_self_rescues_and_clears_tug_dry(self):
+        import io, os
+        from contextlib import redirect_stdout
+        (self.data / "market").mkdir(parents=True, exist_ok=True)
+        (self.data / "market" / "d_base.json").write_text(self.json.dumps({
+            "base": "d_base", "system": "d",
+            "items": [{"item_id": "fuel_cell", "best_sell": 1700, "best_sell_qty": 50}]
+        }))
+        (self.data / "fleet" / "ships" / "drone-1.json").write_text(
+            self.json.dumps(dict(ship(fuel=0, docked="d_base"), credits=6000))
+        )
+        tug.save_dry(str(self.data), {"drone-1": {"at": 900, "system": "d", "fuel": 0}})
+        calls_detail = []
+        def ok_raw(pilot, action, params):
+            calls_detail.append((action, dict(params)))
+            return 200, '{"result":{"ok":true}}'
+        tug.raw = ok_raw
+        old_tw = os.environ.get("TUG_TICK_WAIT")
+        os.environ["TUG_TICK_WAIT"] = "0"
+        try:
+            out = io.StringIO()
+            with redirect_stdout(out):
+                tug.run_pass(str(self.data), now=1000)
+        finally:
+            if old_tw is None:
+                os.environ.pop("TUG_TICK_WAIT", None)
+            else:
+                os.environ["TUG_TICK_WAIT"] = old_tw
+        self.assertIn(("buy", {"id": "fuel_cell", "quantity": 1}), calls_detail)
+        self.assertIn(("refuel", {"id": "fuel_cell", "quantity": 1}), calls_detail)
+        self.assertEqual(tug.load_dry(str(self.data)), {})

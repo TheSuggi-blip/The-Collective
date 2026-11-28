@@ -150,7 +150,7 @@ P2P_MIN_SLICE = 10000          # minimum donor excess slice worth transferring i
 STORAGE_FACILITY_TYPES = frozenset(("faction_lockbox", "faction_warehouse", "faction_depot", "faction_stronghold"))
 LOCKBOX_OFFICERS_PER_BASE = 4  # target seated Officers stationed/docked at each active Faction Storage base
 MIN_OFFICERS_PER_DIVISION = 4  # minimum seated Officers per division (all 6 divisions covered for cross-division banking & ops)
-MAX_AUTO_OFFICERS = 180         # global cap on total auto-promoted Officers + leader
+MAX_AUTO_OFFICERS = 500         # global cap on total auto-promoted Officers + leader (Suggi 2026-11-28: full fleet Officer access)
 # The treasury tops up a pilot no ship of its division or of the command group can give to (requests ENT-380, ENT-384,
 # ENT-385, ENT-386, ENT-389: the newborns of 2026-11-22 were born with 100 to 250 cr while the sweep keeps every working
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
@@ -159,7 +159,7 @@ TREASURY_UNDER = LOW           # a stranded pilot under rule F7's line is topped
 TREASURY_LINE = 6000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
 TREASURY_DAY = 8000000         # at most this much from the treasury for top-ups in 24 hours (500-ship fleet w/ 50 active scouts)
 TREASURY_EVERY = 3600          # a pilot is topped up from the treasury at most once per hour (prevents 5 cr scout stalls!)
-TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
+TREASURY_BUDGET = 160          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
 TOPUP_WHY = "top-up from the treasury: no donor in the division (rule F7)"
 TOPUP_TITLE = "Treasury fund: credits withdrawn from the faction treasury for top-ups"  # never begins with routes.TREASURY
 
@@ -1270,7 +1270,10 @@ def serve_topups(data, leader, now, dry):
         print("TOP-UP waits: %d pilots: the leader %s is not docked (the game withdraws docked only)" % (len(todo), leader))
     failed = 0
     wallets_now = {name: int(row.get("credits") or 0) for name, row in ships(data).items()}
-    for r in [r for r in rows if r.get("kind") == "topup" and r.get("state") == "withdrawn"]:
+    named_tu = dispatch.flagships(data)
+    withdrawn_tu = [r for r in rows if r.get("kind") == "topup" and r.get("state") == "withdrawn"]
+    withdrawn_tu.sort(key=lambda r: (0 if dispatch.role_of(r.get("pilot") or "", named_tu) == "scout" else 1, wallets_now.get(r.get("pilot"), 0)))
+    for r in withdrawn_tu:
         if time.time() - start > TREASURY_BUDGET:
             break
         actor = str(r.get("withdrawer") or leader)
@@ -1581,7 +1584,7 @@ def add_fund(data, pilot, credits, why, hours, now, who="Unity"):
 
 
 ERRAND_WAIT = 24                 # hours an open leader errand waits before expiring by itself
-ERRAND_BATCH = 30                # max open errands executed in a single docked pass (promotes full officer slate cleanly)
+ERRAND_BATCH = 15                # max open errands executed in a single docked pass (tick-paced 10.5s -> ~2.5m per pass)
 ERRAND_ACTIONS = {
     "promote": "spacemolt_faction_admin",
     "post_mission": "spacemolt_faction_admin",
@@ -1732,25 +1735,48 @@ def format_errands(data):
     return "\n".join(lines)
 
 
+_ERRAND_LAST_SEND = {}
+
+
 def errand_raw(pilot, group, action, params):
-    """Send one validated leader-only faction call through the gate; (ok, text)."""
+    """Send one validated leader-only faction call through the gate; (ok, text).
+    Spaces consecutive mutations from the same leader by 1 tick (10.5s) and retries once on action_pending/429."""
     import gate                                 # as every other caller in this file: no module-level import (2026-11-24 02:13 UTC NameError)
-    status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
-                               {"toolGroup": group, "action": action, "params": params}, timeout=60)
-    try:
-        body = json.loads(answer)
-    except ValueError:
-        return False, "HTTP %s %s" % (status, str(answer)[:160])
-    if status not in (200, 201) or body.get("error"):
-        return False, str(body.get("error") or ("HTTP %s" % status))[:220]
-    res = body.get("result")
-    if isinstance(res, dict) and res.get("error"):
-        return False, str(res.get("error"))[:220]
-    sc = body.get("structuredContent") if isinstance(body.get("structuredContent"), dict) else {}
-    if sc.get("error"):
-        return False, str(sc.get("error"))[:220]
-    txt = res if isinstance(res, str) else json.dumps(res if res is not None else sc, separators=(",", ":"))
-    return True, str(txt)[:220]
+    wait_s = float(os.environ.get("WALLET_ERRAND_WAIT", "10.5"))
+    last_err = ""
+    for _try in range(2):
+        prev = _ERRAND_LAST_SEND.get(pilot, 0.0)
+        if wait_s > 0 and prev > 0:
+            rem = wait_s - (time.time() - prev)
+            if rem > 0:
+                time.sleep(rem)
+        _ERRAND_LAST_SEND[pilot] = time.time()
+        status, answer = gate.call("post", "/accounts/%s/raw" % gate.q(pilot),
+                                   {"toolGroup": group, "action": action, "params": params}, timeout=60)
+        try:
+            body = json.loads(answer)
+        except ValueError:
+            last_err = "HTTP %s %s" % (status, str(answer)[:160])
+            if status == 429 and _try == 0 and wait_s > 0:
+                time.sleep(wait_s)
+                continue
+            return False, last_err
+        err_msg = str(body.get("error") or "")
+        if not err_msg and isinstance(body.get("result"), dict):
+            err_msg = str(body["result"].get("error") or "")
+        sc = body.get("structuredContent") if isinstance(body.get("structuredContent"), dict) else {}
+        if not err_msg and sc.get("error"):
+            err_msg = str(sc.get("error") or "")
+        if status not in (200, 201) or err_msg:
+            low_e = (err_msg + " " + str(answer)).lower()
+            if _try == 0 and wait_s > 0 and (status == 429 or "action_pending" in low_e or "already pending" in low_e or "rate_limit" in low_e):
+                time.sleep(wait_s)
+                continue
+            return False, (err_msg or ("HTTP %s" % status))[:220]
+        res = body.get("result")
+        txt = res if isinstance(res, str) else json.dumps(res if res is not None else sc, separators=(",", ":"))
+        return True, str(txt)[:220]
+    return False, last_err[:220]
 
 
 def auto_queue_officers(data, now, dry=False):
@@ -1876,6 +1902,23 @@ def auto_queue_officers(data, now, dry=False):
         pull_cands.sort()
         for _prio, p in pull_cands[:room]:
             to_queue.append((p, "auto-officer: hauler/trader Faction Lockbox withdrawal access"))
+            officers.add(p)
+            room -= 1
+
+    # Priority 5 (Suggi 2026-11-28): promote all remaining seated connected Members to Officer up to MAX_AUTO_OFFICERS
+    if room > 0:
+        rest_cands = []
+        for p, role in seated.items():
+            if role != "member" or p in officers:
+                continue
+            s = fleet.get(p) or {}
+            if s.get("status", "connected") != "connected":
+                continue
+            is_docked = 0 if str(s.get("docked") or "") else 1
+            rest_cands.append((is_docked, p))
+        rest_cands.sort()
+        for _dk, p in rest_cands[:room]:
+            to_queue.append((p, "auto-officer: full-fleet Officer treasury, storage & facility access"))
             officers.add(p)
             room -= 1
 
@@ -2533,6 +2576,11 @@ def treasury_text(data):
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(line_buffering=True)
+        except Exception:
+            pass
     args = list(sys.argv[1:] if argv is None else argv)
     if any(a in ("-h", "--help") for a in args):
         sys.exit(__doc__)

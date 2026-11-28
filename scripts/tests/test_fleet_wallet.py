@@ -789,3 +789,26 @@ class WalletFluidityUpgradeTests(FundTests):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_auto_queue_officers_promotes_all_members_up_to_500(self):
+        w, now = self.wallet, time.time()
+        self.assertEqual(w.MAX_AUTO_OFFICERS, 500)
+        (self.data / "fleet" / "flagships.json").write_text(json.dumps({
+            "Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"},
+        }), encoding="ascii")
+        (self.data / "empire").mkdir(exist_ok=True)
+        members = [{"pilot": "Prime Directive", "role": "leader"}]
+        ship_rows = [{"name": "Prime Directive", "division": "Command", "credits": 50000, "docked": ""}]
+        for i in range(1, 9):
+            p = "miner-%d" % i
+            members.append({"pilot": p, "role": "member"})
+            ship_rows.append({"name": p, "division": "Mining", "credits": 6000, "docked": "base_a" if i % 2 == 0 else ""})
+        (self.data / "empire" / "empire.json").write_text(json.dumps({
+            "faction": {"id": "fac-1", "leader": "Prime Directive", "treasury": 2000000},
+            "members": members, "facilities": [],
+        }), encoding="ascii")
+        (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ship_rows}), encoding="ascii")
+        self.assertEqual(w.auto_queue_officers(str(self.data), now, dry=False), 0)
+        queued = [r["params"]["player_id"] for r in w.errands(str(self.data)) if r.get("action") == "promote"]
+        self.assertEqual(len(queued), 8)
+        self.assertEqual(set(queued), {"miner-%d" % i for i in range(1, 9)})

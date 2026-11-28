@@ -394,7 +394,7 @@ def stalled_reason(rid, route, pilot_name, rows, now):
         return None
     last = mine[-1]
     ended = run_end(last)
-    _eff_stall_rest = 90 if route.get("kind") in ("bursar", "haul", "craft_net", "mine_net", "hunt_net") else STALL_REST
+    _eff_stall_rest = 90 if route.get("kind") in ("bursar", "haul", "craft_net", "mine_net", "hunt_net", "census", "census_net", "passenger_net", "salvage_net", "pirate_net", "fit_net") else STALL_REST
     if ended is None or now - ended >= _eff_stall_rest:
         return None
     notes = [str(n) for n in (last.get("notes") or [])]

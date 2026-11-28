@@ -5,7 +5,7 @@
   "allow_strongholds": false,
   "target_fresh_hours": 0.5,
   "min_rescan_minutes": 10.0,
-  "claim_ttl_s": 600,
+  "claim_ttl_s": 300,
   "chain_legs": 25,
   "chain_jumps": 3,
   "quadrant_balance_bonus": 2500.0,

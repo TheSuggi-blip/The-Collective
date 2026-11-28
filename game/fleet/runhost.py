@@ -63,6 +63,7 @@ TAKE_BACK = 60               # a job that waited this long in the inbox is the d
 MAX_RUNS = 600               # runs in flight at most
 MAX_RSS_MB = 3200            # above this the host drains and starts fresh (500 ships + 8 GiB runner container)
 MAX_RETIRING = 3             # retiring worker generations allowed in flight during drain-free handover
+MAX_RETIRING_AGE = 900       # hard ceiling (15m) before a retiring worker is SIGTERM/SIGKILL'd
 TOTAL_RSS_MB = 5800          # cap total RSS across active + retiring workers before pausing new handovers (8 GiB runner container)
 DEBOUNCE = 5.0               # seconds watched files stay quiet before requesting a single handover
 SCRIPT = re.compile(r"^[a-z][a-z0-9_]*\.py$")
@@ -749,6 +750,8 @@ def _run_parent(args, say):
     script_changed_at = 0.0
     debounce = max(0.0, float(os.environ.get("FLEET_HOST_DEBOUNCE") or DEBOUNCE))
     max_retiring = int(os.environ.get("FLEET_HOST_MAX_RETIRING") or MAX_RETIRING)
+    max_retiring_age = float(os.environ.get("FLEET_HOST_MAX_RETIRING_AGE") or MAX_RETIRING_AGE)
+    retiring_grace = float(os.environ.get("FLEET_HOST_RETIRING_GRACE") or 15.0)
     total_rss_cap = int(os.environ.get("FLEET_HOST_TOTAL_MB") or TOTAL_RSS_MB)
     cmd = [sys.executable, "-I", "-B", script, "--worker", "--fleet", args.fleet, "--data", args.data]
 
@@ -760,15 +763,43 @@ def _run_parent(args, say):
     say("host supervisor started (drain-free handover enabled, active worker pid %d)" % active.pid)
     try:
         while not leaving:
+            now_ts = time.time()
             still = []
-            for proc in retiring:
+            for entry in retiring:
+                proc = entry["proc"]
                 if proc.poll() is not None:
                     try:
                         (home / ("retiring.%d.json" % proc.pid)).unlink()
                     except OSError:
                         pass
+                    continue
+                if max_retiring_age > 0 and (now_ts - entry["retired_at"]) >= max_retiring_age:
+                    if not entry["term_at"]:
+                        try:
+                            proc.terminate()
+                        except OSError:
+                            pass
+                        entry["term_at"] = now_ts
+                        say("retiring worker %d exceeded %.0fs hard TTL -- sending SIGTERM" % (proc.pid, max_retiring_age))
+                        still.append(entry)
+                    elif (now_ts - entry["term_at"]) >= retiring_grace:
+                        try:
+                            proc.kill()
+                        except OSError:
+                            pass
+                        try:
+                            proc.wait(timeout=5)
+                        except Exception:
+                            pass
+                        try:
+                            (home / ("retiring.%d.json" % proc.pid)).unlink()
+                        except OSError:
+                            pass
+                        say("retiring worker %d ignored SIGTERM -- sent SIGKILL and unlinked retiring file" % proc.pid)
+                    else:
+                        still.append(entry)
                 else:
-                    still.append(proc)
+                    still.append(entry)
             retiring = still
 
             if active.poll() is not None:
@@ -803,7 +834,7 @@ def _run_parent(args, say):
                     reason = "runhost.py changed on disk"
 
             if reason:
-                total_rss = sum(_proc_rss_mb(p.pid) for p in [active] + retiring)
+                total_rss = sum(_proc_rss_mb(p.pid) for p in [active] + [e["proc"] for e in retiring])
                 if len(retiring) < max_retiring and (not total_rss_cap or total_rss < total_rss_cap):
                     for f in (ho_path, home / "drain"):
                         try:
@@ -816,13 +847,13 @@ def _run_parent(args, say):
                         except OSError:
                             pass
                     old_pid = active.pid
-                    retiring.append(active)
+                    retiring.append({"proc": active, "retired_at": time.time(), "term_at": 0.0})
                     active = spawn_worker()
                     say("drain-free handover (%s): worker %d retiring (%d retiring total), new worker %d accepting immediately" % (
                         reason, old_pid, len(retiring), active.pid))
             time.sleep(min(0.5, float(os.environ.get("FLEET_HOST_EVERY") or EVERY)))
     finally:
-        procs = [p for p in [active] + retiring if p is not None and p.poll() is None]
+        procs = [p for p in [active] + [e["proc"] for e in retiring] if p is not None and p.poll() is None]
         for p in procs:
             try:
                 p.terminate()

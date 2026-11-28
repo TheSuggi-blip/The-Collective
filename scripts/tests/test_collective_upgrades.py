@@ -162,19 +162,21 @@ class SupplyBunkerFuelTests(unittest.TestCase):
 
 
 class WalletRoleCapTests(unittest.TestCase):
-    def test_role_aware_sweep_caps_traders_keep_50k_workers_keep_30k(self):
+    def test_role_aware_sweep_caps_traders_keep_50k_workers_keep_6k(self):
         wallet = load("wallet_upg_test", FLEET / "wallet.py")
         fleet = {
             "Prime Directive": {"credits": 40000, "status": "connected"},
             "trader-1": {"credits": 58000, "status": "connected"},   # under 60k -> NOT swept
             "trader-2": {"credits": 75000, "status": "connected"},   # >= 60k -> sweeps 25k (keeps 50k)
-            "miner-1": {"credits": 39999, "status": "connected"},    # under 40k -> NOT swept
-            "miner-2": {"credits": 52000, "status": "connected"},    # >= 40k -> sweeps 22k (keeps 30k)
-            "drone-1": {"credits": 45000, "status": "connected"},    # >= 40k -> sweeps 15k (keeps 30k)
+            "hauler-1": {"credits": 14999, "status": "connected"},   # under 15k -> NOT swept
+            "hauler-2": {"credits": 22000, "status": "connected"},   # >= 15k -> sweeps 12k (keeps 10k)
+            "miner-1": {"credits": 9999, "status": "connected"},     # under 10k -> NOT swept
+            "miner-2": {"credits": 52000, "status": "connected"},    # >= 10k -> sweeps 46k (keeps 6k)
+            "drone-1": {"credits": 45000, "status": "connected"},    # >= 10k -> sweeps 39k (keeps 6k)
         }
         named = {"Prime Directive": {"role": "command"}}
         plan = wallet.plan_sweep(fleet, "Prime Directive", set(), named)
-        self.assertEqual(plan, [("trader-2", 25000), ("miner-2", 22000), ("drone-1", 15000)])
+        self.assertEqual(plan, [("miner-2", 46000), ("drone-1", 39000), ("trader-2", 25000), ("hauler-2", 12000)])
 
 
 class StorePublicFeedsAndStationOpsTests(unittest.TestCase):

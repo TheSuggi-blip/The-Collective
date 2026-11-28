@@ -688,12 +688,19 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
     done = set()
     cur_sys = None
     legs = 0
+    consec_fail = 0
     try:
         while legs < max_legs and (legs == 0 or (deadline - time.time()) > 120.0):
             _sdoc = _load_pilot_ship(data, pilot)
-            if not dry_run and isinstance(_sdoc, dict) and _sdoc.get("fuel") is not None and _sdoc.get("credits") is not None:
-                if int(_sdoc.get("fuel") or 0) <= 5 and int(_sdoc.get("credits") or 0) < 200:
-                    print("RESULT %s: census_net: stranded/broke (fuel=%s, cr=%s); waiting for wallet/tug rescue" % (pilot, _sdoc.get("fuel"), _sdoc.get("credits")), flush=True)
+            if not dry_run and isinstance(_sdoc, dict) and _sdoc.get("fuel") is not None:
+                _fnow = int(_sdoc.get("fuel") or 0)
+                _cnow = int(_sdoc.get("credits") or 0) if _sdoc.get("credits") is not None else 999999
+                _dk = str(_sdoc.get("docked") or _sdoc.get("docked_at") or "").strip()
+                if _fnow <= 5 and _cnow < 200:
+                    print("RESULT %s: census_net: stranded/broke (fuel=%s, cr=%s); waiting for wallet/tug rescue" % (pilot, _fnow, _cnow), flush=True)
+                    break
+                if _fnow <= 2 and not _dk:
+                    print("RESULT %s: census_net: stranded dry in space (fuel=%s, sys=%s); releasing for tug rescue" % (pilot, _fnow, _sdoc.get("system")), flush=True)
                     break
             hop_lim = (chain_j * 2) if legs == 0 else chain_j
             pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=hop_lim, dry=dry_run)
@@ -756,6 +763,8 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
                 release_claim(data, pilot, target_sys)
                 break
 
+            _sc_path = data / "scouting" / ("%s.json" % target_sys)
+            _mt_before = _sc_path.stat().st_mtime if _sc_path.exists() else 0.0
             rc_main = _rh.run_in_thread(
                 FLEET / "census.py",
                 [pilot, target_sys, "--stay", "--keep-flying", "--route", str(route_id), "--no-order"],
@@ -764,10 +773,19 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
             ) or 0
             release_claim(data, pilot, target_sys)
             done.add(target_sys)
-            cur_sys = str(_load_pilot_ship(data, pilot).get("system") or target_sys)
+            _post_ship = _load_pilot_ship(data, pilot)
+            cur_sys = str(_post_ship.get("system") or target_sys)
+            _mt_after = _sc_path.stat().st_mtime if _sc_path.exists() else 0.0
             legs += 1
             if rc_main != 0:
                 break
+            if _mt_after <= _mt_before and cur_sys != target_sys:
+                consec_fail += 1
+                if consec_fail >= 2:
+                    print("RESULT %s: census_net: %d consecutive unreached legs (last=%s, fuel=%s); releasing early" % (pilot, consec_fail, target_sys, _post_ship.get("fuel")), flush=True)
+                    break
+            else:
+                consec_fail = 0
         return 0
     finally:
         if not dry_run:

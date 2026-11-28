@@ -39,6 +39,9 @@ BELOW = 25                     # a tank under this is looked at
 DOCK_WAY = 2                   # fuel kept for the way from the arrival point to the dock
 LIMIT = 3                      # tows called in one pass
 WAIT = 15                      # minutes a tow may take before it is given up
+DRY_DOCK_FUEL = 5              # docked ships at/under this fuel on dry stations attempt fuel_cell self-rescue
+CELL_CHEAP_MAX = 400           # buy 2 fuel cells when ask <= this; otherwise buy 1
+CELL_MAX_ASK = 3500            # max single fuel_cell / premium_fuel_cell ask price for emergency self-rescue
 REPO = Path(__file__).resolve().parents[2] / "game"
 
 
@@ -84,7 +87,89 @@ def settle(row, ship, now, wait=WAIT):
 
 def refused_no_fuel(answer):
     """True when a `refuel` answer says the station sells no fuel and the hold carries no cells."""
-    return "no_fuel_source" in str(answer or "")
+    s = str(answer or "")
+    return "no_fuel_source" in s or "station_fuel_empty" in s
+
+
+def _market_fuel_ask(data, base_id):
+    """Return (item_id, ask_price) for the cheapest affordable fuel cell sold at `base_id`, or None."""
+    if not base_id:
+        return None
+    best = None
+    want = ("fuel_cell", "premium_fuel_cell")
+    mpath = Path(data) / "market" / ("%s.json" % base_id)
+    try:
+        doc = json.loads(mpath.read_text(encoding="utf-8"))
+        for row in (doc.get("items") or []) if isinstance(doc, dict) else []:
+            if not isinstance(row, dict):
+                continue
+            iid = str(row.get("item_id") or "")
+            if iid not in want:
+                continue
+            ask = row.get("best_sell")
+            qty = row.get("best_sell_qty") or row.get("sell_quantity") or 0
+            if isinstance(ask, (int, float)) and 0 < ask <= CELL_MAX_ASK and (qty is None or qty > 0):
+                cand = (int(ask), 0 if iid == "fuel_cell" else 1, iid)
+                if best is None or cand < best:
+                    best = cand
+    except (OSError, ValueError):
+        pass
+    if best is not None:
+        return best[2], best[0]
+    db_path = Path(data) / "store" / "read.db"
+    if db_path.is_file():
+        con = None
+        try:
+            import sqlite3
+            con = sqlite3.connect("file:%s?mode=ro&immutable=1" % db_path, uri=True, timeout=2.0)
+            rows = con.execute(
+                "SELECT item, ask FROM books WHERE base=? AND item IN ('fuel_cell','premium_fuel_cell') "
+                "AND ask > 0 AND ask <= ? AND COALESCE(ask_qty, 1) > 0 ORDER BY ask ASC LIMIT 1",
+                (base_id, CELL_MAX_ASK),
+            ).fetchall()
+            if rows:
+                return str(rows[0][0]), int(rows[0][1])
+        except Exception:
+            pass
+        finally:
+            if con is not None:
+                try:
+                    con.close()
+                except Exception:
+                    pass
+    return None
+
+
+def _try_market_fuel_cell(pilot, ship, data, tick_wait=None):
+    """Attempt dry-station self-rescue by buying 1-2 fuel_cell from local market and burning them.
+    Returns (True, detail) on success, else (False, reason)."""
+    base_id = str(ship.get("docked") or ship.get("docked_at") or "").strip()
+    if not base_id:
+        return False, "not docked"
+    found = _market_fuel_ask(data, base_id)
+    if not found:
+        return False, "no fuel_cell on market at %s" % base_id
+    cell_id, ask = found
+    credits = ship.get("credits")
+    if not isinstance(credits, (int, float)):
+        return False, "unknown wallet"
+    qty = 2 if (cell_id == "fuel_cell" and ask <= CELL_CHEAP_MAX and credits >= ask * 2 + 50) else (
+        1 if credits >= ask + 50 else 0
+    )
+    if qty <= 0:
+        return False, "credits %d < ask %d (+50 buffer) for %s" % (int(credits), ask, cell_id)
+    wait_s = float(os.environ.get("TUG_TICK_WAIT", "10.5")) if tick_wait is None else float(tick_wait)
+    st_b, out_b = raw(pilot, "buy", {"id": cell_id, "quantity": qty})
+    say("%s buy %dx %s (@%d cr): %s %s" % (pilot, qty, cell_id, ask, st_b, out_b))
+    if st_b != 200 or '"error"' in str(out_b)[:200]:
+        return False, "buy %s failed: %s" % (cell_id, str(out_b)[:120])
+    if wait_s > 0:
+        time.sleep(wait_s)
+    st_r, out_r = raw(pilot, "refuel", {"id": cell_id, "quantity": qty})
+    say("%s refuel %dx %s: %s %s" % (pilot, qty, cell_id, st_r, out_r))
+    if st_r != 200 or '"error"' in str(out_r)[:200]:
+        return False, "refuel %s failed: %s" % (cell_id, str(out_r)[:120])
+    return True, "self-rescued via %dx %s (%d cr each)" % (qty, cell_id, ask)
 
 
 def dry_hold(row, ship, now=None):
@@ -202,11 +287,16 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
             result = "towed and refuelled"
             if refused_no_fuel(out):
                 here = fleet.get(pilot, {})
-                dry_rows[pilot] = {"at": now, "system": here.get("system") or row.get("system"),
-                              "fuel": here.get("fuel") if isinstance(here.get("fuel"), (int, float)) else row.get("fuel")}
-                result = "towed, but the station sells no fuel: refuel refused"
-                print("HALT: tug %s: docked in %s at a station that sells no fuel; no tow is called for it there again: "
-                      "a hand brings fuel cells (buy, refuel) or a pump ship" % (pilot, dry_rows[pilot]["system"]), flush=True)
+                ok_cell, msg_cell = _try_market_fuel_cell(pilot, here, data)
+                if ok_cell:
+                    dry_rows.pop(pilot, None)
+                    result = "towed and %s" % msg_cell
+                else:
+                    dry_rows[pilot] = {"at": now, "system": here.get("system") or row.get("system"),
+                                  "fuel": here.get("fuel") if isinstance(here.get("fuel"), (int, float)) else row.get("fuel")}
+                    result = "towed, but the station sells no fuel: refuel refused"
+                    print("HALT: tug %s: docked in %s at a station that sells no fuel (%s); no tow is called for it there again: "
+                          "a hand brings fuel cells (buy, refuel) or a pump ship" % (pilot, dry_rows[pilot]["system"], msg_cell), flush=True)
         say(gate.release(pilot))
         print("RESULT tug %s: %s; called with fuel %s at %s" % (pilot, result, row.get("fuel"), row.get("system")),
               flush=True)
@@ -219,6 +309,34 @@ def run_pass(data, now=None, dry=False, below=BELOW, limit=LIMIT, wait=WAIT, onl
             continue
         if pilot in dry_rows and not dry_hold(dry_rows[pilot], ship, now=now):
             dry_rows.pop(pilot, None)                               # fuelled or moved since: the tug may serve it again
+        docked_base = str(ship.get("docked") or ship.get("docked_at") or "").strip()
+        ship_fuel = ship.get("fuel")
+        if (docked_base and isinstance(ship_fuel, (int, float)) and ship_fuel <= DRY_DOCK_FUEL
+                and ship.get("status", "connected") == "connected"
+                and (pilot in dry_rows or ship.get("system") not in stations)):
+            order_cur = division.order_of(pilot, data, now)
+            if not order_cur or order_cur == mark:
+                found_ask = _market_fuel_ask(data, docked_base)
+                cr_now = ship.get("credits")
+                if found_ask and isinstance(cr_now, (int, float)) and cr_now >= found_ask[1] + 50:
+                    if dry:
+                        say("%s: would self-rescue via %s (@%d cr) at %s (dry run)" % (pilot, found_ask[0], found_ask[1], docked_base))
+                        limit -= 1
+                        continue
+                    ok_m, _why_m = division.may(pilot, data)
+                    if ok_m:
+                        import gate
+                        gate.take(pilot)
+                        try:
+                            ok_cell, msg_cell = _try_market_fuel_cell(pilot, ship, data)
+                            if ok_cell:
+                                dry_rows.pop(pilot, None)
+                                done += 1
+                                print("RESULT tug %s: %s at %s" % (pilot, msg_cell, ship.get("system")), flush=True)
+                        finally:
+                            say(gate.release(pilot))
+                        limit -= 1
+                        continue
         why = stranded(ship, division.order_of(pilot, data, now), lanes, stations, below, mark)
         if not why:
             continue

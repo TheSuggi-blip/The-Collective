@@ -455,5 +455,66 @@ class DrainFreeHandoverTests(Shelf):
         self.assertEqual(host.changed(now=11.1), "debounce_helper.py")  # 0.6s quiet -> single handover
         self.assertEqual(host.changed(now=12.0), "")      # no duplicate trigger
 
+    def test_retiring_worker_hard_ttl_kills_hung_generation(self):
+        helper = self.fleet / "helper_ttl.py"
+        helper.write_text("VALUE = 1\n", encoding="ascii")
+        self.runner(
+            "hang_mod.py",
+            "import helper_ttl, time\n"
+            "print('started', helper_ttl.VALUE, flush=True)\n"
+            "time.sleep(60)\n",
+        )
+        env = dict(os.environ)
+        for key in ("HERMES_SESSION_PROFILE", "HERMES_HOME", "HERMES_SCRATCH_DIR", "TMPDIR"):
+            env.pop(key, None)
+        env["FLEET_MEMBER"] = "runhost"
+        env["FLEET_HOST_EVERY"] = "0.05"
+        env["FLEET_HOST_DEBOUNCE"] = "0.1"
+        env["FLEET_HOST_MAX_RETIRING_AGE"] = "0.6"
+        env["FLEET_HOST_RETIRING_GRACE"] = "0.3"
+        proc = subprocess.Popen(
+            [sys.executable, "-I", "-B", str(FLEET / "runhost.py"),
+             "--fleet", str(self.fleet), "--data", str(self.data)],
+            env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+        )
+        def cleanup():
+            if proc.poll() is None:
+                proc.kill()
+                proc.wait()
+            if proc.stdout:
+                proc.stdout.close()
+        self.addCleanup(cleanup)
+
+        limit = time.time() + 10
+        pid1 = None
+        while time.time() < limit:
+            st = self.runhost.read_json(self.home / "state.json", {})
+            if st.get("accepting") and st.get("pid"):
+                pid1 = st["pid"]
+                break
+            time.sleep(0.05)
+        self.assertIsNotNone(pid1)
+        self.submit("miner-1", "hang_mod.py")
+        limit = time.time() + 10
+        while time.time() < limit and not (self.log("miner-1").exists() and "started 1" in self.log("miner-1").read_text()):
+            time.sleep(0.05)
+        time.sleep(0.25)
+        helper.write_text("VALUE = 2\n", encoding="ascii")
+        limit = time.time() + 10
+        pid2 = None
+        while time.time() < limit:
+            st = self.runhost.read_json(self.home / "state.json", {})
+            if st.get("accepting") and st.get("pid") and st["pid"] != pid1:
+                pid2 = st["pid"]
+                break
+            time.sleep(0.05)
+        self.assertIsNotNone(pid2)
+        limit = time.time() + 10
+        while time.time() < limit and (self.home / ("retiring.%d.json" % pid1)).exists():
+            time.sleep(0.05)
+        self.assertFalse((self.home / ("retiring.%d.json" % pid1)).exists())
+        proc.terminate()
+        self.assertEqual(proc.wait(timeout=12), 0)
+
 if __name__ == "__main__":
     unittest.main()
