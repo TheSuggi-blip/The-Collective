@@ -632,13 +632,8 @@ def read_system(sid):
     wildlife = {'system': sid, 'read_at': now(), 'pois': {}}
     pois = [p for p in system.get('pois') or [] if isinstance(p, dict)]
     say(f'{system.get("name")}: {len(pois)} places: ' + ', '.join(f'{p.get("id")} ({p.get("type")})' for p in pois)[:400])
-    _pol_lvl = system.get('police_level')
-    _is_lawless = (int(_pol_lvl) <= 0) if isinstance(_pol_lvl, (int, float)) else (not str(system.get('empire') or '').strip())
     for p in pois:
         if p.get('type') not in FIELDS:
-            continue
-        if _is_lawless and not CLOAK:
-            say(f'skipping lawless field {sid}:{p["id"]} (no cloaking_device fitted -- scout survival guard)')
             continue
         if not goal('go-to-poi', {'targetPoiId': p['id']}):
             continue
