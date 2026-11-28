@@ -15,7 +15,7 @@ updated: 2026-11-28
 # The Prime [PRME]
 
 A player faction with 1 base(s) in 1 system(s); the nearest to Nexus Prime is 10 jump(s) away, in Hatysa (`hatysa`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 5.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 38 | Public event stream |
+| Pilots carrying the tag on the public event stream | 39 | Public event stream |
 
 ## Bases
 
@@ -40,8 +40,11 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| MLM-34815 | Hamal (`hamal`) | 0 | bonanza_king |
+| MLM-27603 | Acubens (`acubens`) | 0 | threshold |
+| MLM-39101 | The Experiment (`the_experiment`) | 0 | threshold |
+| MLM-56217 | Hamal (`hamal`) | 0 | bonanza_king |
 | MLM-61659 | Synchrony (`synchrony`) | 0 | bonanza_king |
+| MLM-98780 | Acubens (`acubens`) | 0 | bonanza_king |
 
 ## Standing History
 
