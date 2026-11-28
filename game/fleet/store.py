@@ -476,11 +476,12 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
              ("rival_snapshots", "t INTEGER, tag TEXT, name TEXT, members INTEGER, bases INTEGER, wrecked INTEGER, wealth INTEGER, ship_value INTEGER, storage_value INTEGER, facility_inv INTEGER, ore_mined INTEGER, items_crafted INTEGER, missions INTEGER, damage_dealt INTEGER, kills_pve INTEGER, kills_pvp INTEGER, active_1h INTEGER, active_24h INTEGER, max_tier INTEGER, avg_tier REAL, allies TEXT, base_systems TEXT", "t, tag"),
              ("ship_listings", "listing_id TEXT, ship_id TEXT, class_id TEXT, ship_name TEXT, category TEXT, tier INTEGER, base TEXT, base_name TEXT, price INTEGER, seller TEXT, listed_at TEXT, t INTEGER", "listing_id"),
              ("fair_prices", "item TEXT, fair_price REAL, twap REAL, vwm REAL, stations INTEGER, total_qty INTEGER, total_cash REAL, spoof_risk TEXT, t INTEGER", "item"),
-             ("wing_kpis", "win TEXT, wing_id TEXT, name TEXT, division TEXT, pillar TEXT, responsibility_center TEXT, ships INTEGER, working INTEGER, idle INTEGER, idle_pct REAL, fuel_h REAL, rof REAL, health_pct REAL, status TEXT, staged INTEGER, kpis_json TEXT, t INTEGER", "win, wing_id"),)
+             ("wing_kpis", "win TEXT, wing_id TEXT, name TEXT, division TEXT, pillar TEXT, responsibility_center TEXT, ships INTEGER, working INTEGER, idle INTEGER, idle_pct REAL, fuel_h REAL, rof REAL, health_pct REAL, status TEXT, staged INTEGER, kpis_json TEXT, t INTEGER", "win, wing_id"),
+             ("tourism_snapshots", "bucket_h INTEGER, station TEXT, system TEXT, board TEXT, rank INTEGER, value INTEGER, t INTEGER", "bucket_h, station, board"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"), ("tourism_snapshots", "station"), ("tourism_snapshots", "board"))
 
 
 def views():
@@ -974,7 +975,44 @@ def read_leaderboards(path, ctx):
                              "name": text(row.get("name") or row.get("username")),
                              "tag": text(row.get("tag") or row.get("empire") or row.get("system_name")),
                              "value": number(row.get("value")), "t": read})
-    return {"leaderboards": rows}
+    hist_path = Path(path).parent / "tourism_history.jsonl"
+    bucket_h = int(read // 3600) if read else 0
+    hist_map = {}
+    if hist_path.exists():
+        try:
+            for ln in hist_path.read_text(encoding="utf-8", errors="replace").splitlines():
+                ln = ln.strip()
+                if not ln:
+                    continue
+                obj = json.loads(ln)
+                if isinstance(obj, dict) and obj.get("station") and obj.get("board"):
+                    k = (int(obj.get("bucket_h") or 0), str(obj["station"]), str(obj["board"]))
+                    hist_map[k] = obj
+        except (OSError, ValueError):
+            pass
+    added = []
+    if bucket_h > 0:
+        for r in rows:
+            if r["grp"] == "stations" and r["board"] in ("tourism_revenue", "tourism_appeal") and r["name"]:
+                k = (bucket_h, r["name"], r["board"])
+                rec = {"bucket_h": bucket_h, "station": r["name"], "system": r["tag"],
+                       "board": r["board"], "rank": r["rank"], "value": r["value"], "t": int(read)}
+                if k not in hist_map:
+                    hist_map[k] = rec
+                    added.append(rec)
+    if added:
+        try:
+            cutoff_h = bucket_h - 30 * 24
+            kept = [v for v in hist_map.values() if int(v.get("bucket_h") or 0) >= cutoff_h]
+            kept.sort(key=lambda x: (int(x.get("bucket_h") or 0), str(x.get("board") or ""), int(x.get("rank") or 999)))
+            tmp_h = str(hist_path) + ".tmp"
+            Path(tmp_h).write_text("\n".join(json.dumps(x, separators=(",", ":")) for x in kept) + "\n", encoding="utf-8")
+            os.replace(tmp_h, hist_path)
+            hist_map = {(int(x["bucket_h"]), str(x["station"]), str(x["board"])): x for x in kept}
+        except OSError:
+            pass
+    ts_rows = list(hist_map.values())
+    return {"leaderboards": rows, "tourism_snapshots": ts_rows}
 
 
 def read_empire(path, ctx):
@@ -1058,7 +1096,7 @@ LOADERS = (    # loader, the tables it fills, its files, whole (one file holds a
     ("stations", ("stations",), data_file("station/stations.json", read_stations), True),
     ("factions", ("factions",), data_file("station/feed.json", read_factions), True),
     ("battles", ("public_battles",), data_file("station/battles.json", read_battles), True),
-    ("leaderboards", ("leaderboards",), data_file("station/leaderboard.json", read_leaderboards), True),
+    ("leaderboards", ("leaderboards", "tourism_snapshots"), data_file("station/leaderboard.json", read_leaderboards), True),
     ("empire", ("faction", "faction_members", "bases", "faction_facilities", "faction_storage", "territory", "sites"),
      data_file("empire/empire.json", read_empire, "missing: our empire's collector has not written it yet"), True),
     ("routes", ("routes",), repo_files("routes", read_route, skip=("plan.json",)), False),

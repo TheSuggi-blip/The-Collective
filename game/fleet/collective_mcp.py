@@ -582,6 +582,19 @@ TOOLS = {
                           (need(a, "section") if a.get("view") in ("section", "history") else None) or
                           [("game/fleet/hive.py", ["docs"] + ([str(a["doc"])] if a.get("doc") else []) + flag(a, "section") + flag(a, "grep")
                             + (["--history"] if a.get("view") == "history" else []))]},
+    "station_pnl": {
+        "text": "CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build readiness/missing mats, and Top-25 rival tourism cr/h from tourism_snapshots.",
+        "args": {"view": arg(S, "summary, venues, builds, rivals, or all (default)", ("summary", "venues", "builds", "rivals", "all")),
+                 "station": arg(S, "optional station name/system filter")},
+        "plan": lambda a: [("game/fleet/station_pnl.py", [str(a.get("view") or "all")] + flag(a, "station"))]},
+    "station_build": {
+        "text": "Fleet Admiral Door: inspect station build readiness (action=status) or execute wallet.serve_station_builds() immediately (action=run; pass dry=true to preview).",
+        "door": True,
+        "args": {"action": arg(S, "status or run", ("status", "run")),
+                 "dry": arg(B, "true to preview build_run without spending credits")},
+        "required": ["action"],
+        "plan": lambda a: [("game/fleet/station_pnl.py", ["builds"])] if a.get("action") == "status" else
+                          [("game/fleet/station_pnl.py", ["build_run"] + (["--dry"] if a.get("dry") else []))]},
     "hive": {
         "text": "Any verb of game/fleet/hive.py by name, with its arguments as a list: the way to a figure added after this tool list was loaded. verb=help prints "
                 "what exists now.",
@@ -604,7 +617,7 @@ TOOLS["docs"]["plan"] = (lambda plan: lambda a: [("game/fleet/hive.py", ["handbo
                          if a.get("view") == "handbook" else plan(a))(TOOLS["docs"]["plan"])
 
 WRITES = ("fill", "plan", "command", "goal", "hold", "stop", "fund", "errand", "dismantle")  # every other tool only reads
-WRITES += ("needs",)                              # needs.py writes the member's own division's needs (action add, set, done, drop)
+WRITES += ("needs", "station_build")                              # needs.py writes the member's own division's needs (action add, set, done, drop)
 
 
 def schema(name):

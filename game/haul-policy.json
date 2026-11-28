@@ -116,7 +116,7 @@
       "noble_gas_spritz": 12,
       "frostmoth_frappe": 12,
       "radiant_tonic": 12,
-      "titanium_alloy": 900,
+      "titanium_alloy": 850,
       "ceramite_plating": 1600,
       "fuel_tank": 850
     }
@@ -188,7 +188,7 @@
     "noble_gas_spritz": 550,
     "frostmoth_frappe": 550,
     "radiant_tonic": 550,
-    "titanium_alloy": 1050,
+    "titanium_alloy": 1200,
     "ceramite_plating": 1250,
     "fuel_tank": 680
   },

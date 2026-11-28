@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 87.
+folder; never edited by hand. Scripts listed: 88.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -102,6 +102,7 @@ folder; never edited by hand. Scripts listed: 87.
 | `spend.py` | What the fleet bought once, by division and by kind (modules, hulls, craft inputs, mission goods), from the record of money paid once. | By hand |
 | `sqlcheck.py` | Every literal SQL query of the fleet's scripts, prepared against the store's own schema: a column or a table the store does not have is named before a runner reads an empty world from it. | By hand |
 | `stash.py` | Store what a docked pilot carries in its own storage at that station, so that its hold is free for the next route. | By hand |
+| `station_pnl.py` | Fleet Admiral Station P&L, Venue Unit-Economics, Build Readiness, and Rival Tourism Benchmark. | By hand |
 | `stats.py` | The fleet's statistics, computed by the store into tables of its own: the fleet as one purse, what each division gives the whole, class capacity, where the ship-hours go, the reserve's days of supply, refill and regrowth, XP per ship-hour, the next upgrade of each ship, gather against buy, and control-chart alerts. | By hand |
 | `stop_pilot.py` | Stop one or more in-flight ships of your division cleanly without touching global fleet/STOP. | By hand |
 | `store.py` | Keeps the fleet's history and its current state in one SQLite file: the runs, the price moves and the census readings with their sums by hour and by day, the members' own observations, and beside them what the fleet's own files say now. | Service |
@@ -1171,6 +1172,17 @@ Run by hand.
 
 ```
 stash.py <pilot> [<pilot> ...] [--dry-run]
+```
+
+### `station_pnl.py`
+
+Fleet Admiral Station P&L, Venue Unit-Economics, Build Readiness, and Rival Tourism
+Benchmark.
+
+Run by hand.
+
+```
+game/fleet/station_pnl.py [summary|venues|builds|rivals|all|build_run] [--station NAME] [--dry] [--json]
 ```
 
 ### `stats.py`

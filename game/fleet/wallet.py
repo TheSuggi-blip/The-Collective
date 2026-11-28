@@ -1948,7 +1948,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
     treasury = int(fac_info.get("treasury") or 0)
     up_pol = dispatch.read_json(Path(__file__).resolve().parents[2] / "game" / "upgrade-policy.json", {}) or {}
     floor_cr = int(up_pol.get("treasury_floor_cr") or 2000000)
-    if treasury <= floor_cr:
+    if treasury <= FUND_FLOOR:
         return 0
 
     officers = set()
@@ -2046,6 +2046,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         done_cache = {}
     done_cache = {k: v for k, v in done_cache.items() if isinstance(v, (int, float)) and (now - float(v)) < 900.0}
 
+    prio_bases_pending = {b for b, f in ordered if f in prio_idx and f != "fuel_tank_expansion"}
     done_n = 0
     failed = 0
     avail_tr = treasury
@@ -2055,8 +2056,11 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         ckey = "%s:%s" % (base_id, fid)
         if ckey in done_cache:
             continue
+        if base_id in prio_bases_pending and fid not in prio_idx:
+            continue  # reserve local steel/boards/cash for refueling_dock and recruitment chain first
         fee = int(fac_fee.get(fid, 0))
-        if fee <= 0 or (avail_tr - fee) < floor_cr:
+        eff_floor = FUND_FLOOR if fid in prio_idx else floor_cr
+        if fee <= 0 or (avail_tr - fee) < eff_floor:
             continue
         mats = fac_mats.get(fid) or []
         st_stock = stock_by_base.get(base_id) or {}
