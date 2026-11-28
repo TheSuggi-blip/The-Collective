@@ -171,5 +171,35 @@ class TestCraftNet(unittest.TestCase):
             self.assertNotIn("assemble_reinforced_frame", w["reserve_items"])
 
 
+
+    def test_owned_station_resort_faction_craft_priority(self):
+        world = {
+            "owned_stations": ["rc_station"],
+            "recipes": {
+                "blend_grazer_milkshake": {
+                    "id": "blend_grazer_milkshake",
+                    "facility_only": False,
+                    "inputs": [("grazer_milk", 2), ("honeyglobe", 1), ("crystal_melt", 1)],
+                    "outputs": [("grazer_milkshake", 2)],
+                }
+            },
+            "demand": {
+                "enabled": True,
+                "station_craft_targets": {"grazer_milkshake": {"cap": 100, "priority": 1}},
+            },
+            "books_by_base": {},
+            "global_bid": {},
+            "item_vals": {},
+            "stock_by_item": {},
+            "reserve_items": set(),
+        }
+        stored = {"grazer_milk": 10, "honeyglobe": 10, "crystal_melt": 10, "grazer_milkshake": 0}
+        job = craft_net.pick_craft_job("Trade", "rc_station", stored, 20000, world, {"enabled": True, "max_runs_per_cycle": 20}, wing="5A.")
+        self.assertIsNotNone(job)
+        self.assertEqual(job["makes"], "grazer_milkshake")
+        self.assertEqual(job["mode"], "station_faction")
+        self.assertEqual(job["deliver_to"], "faction")
+        self.assertEqual(job["runs"], 5)
+
 if __name__ == "__main__":
     unittest.main()

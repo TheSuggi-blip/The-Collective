@@ -236,5 +236,103 @@
     "cinder_sylph",
     "bell_jelly",
     "crusher_mantis"
-  ]
+  ],
+  "station_craft_targets": {
+    "grazer_milkshake": {
+      "cap": 100,
+      "priority": 1
+    },
+    "ranchers_breakfast": {
+      "cap": 100,
+      "priority": 1
+    },
+    "nitro_cold_brew": {
+      "cap": 100,
+      "priority": 1
+    },
+    "glintfin_sashimi": {
+      "cap": 100,
+      "priority": 1
+    },
+    "pilot_whale_chowder": {
+      "cap": 80,
+      "priority": 1
+    },
+    "whale_blubber_confit": {
+      "cap": 80,
+      "priority": 1
+    },
+    "space_pizza": {
+      "cap": 100,
+      "priority": 1
+    },
+    "belt_grazer_wellington": {
+      "cap": 120,
+      "priority": 2
+    },
+    "steamed_rivetshell": {
+      "cap": 100,
+      "priority": 2
+    },
+    "vat_protein_loaf": {
+      "cap": 100,
+      "priority": 2
+    },
+    "cobalt_ink_risotto": {
+      "cap": 80,
+      "priority": 2
+    },
+    "cobalt_squid_noodles": {
+      "cap": 100,
+      "priority": 2
+    },
+    "rimeblue_board": {
+      "cap": 80,
+      "priority": 2
+    },
+    "verdigris_kefir": {
+      "cap": 100,
+      "priority": 2
+    },
+    "frostmoth_frappe": {
+      "cap": 100,
+      "priority": 2
+    },
+    "algae_wafer": {
+      "cap": 220,
+      "priority": 2
+    },
+    "frontier_hash": {
+      "cap": 120,
+      "priority": 2
+    },
+    "sustagel_bowl": {
+      "cap": 120,
+      "priority": 2
+    },
+    "gloomshine": {
+      "cap": 320,
+      "priority": 2
+    },
+    "station_seltzer": {
+      "cap": 320,
+      "priority": 2
+    },
+    "protein_rations": {
+      "cap": 360,
+      "priority": 2
+    },
+    "purified_water": {
+      "cap": 900,
+      "priority": 2
+    },
+    "fuel_tank": {
+      "cap": 850,
+      "priority": 1
+    },
+    "repair_kit": {
+      "cap": 460,
+      "priority": 1
+    }
+  }
 }

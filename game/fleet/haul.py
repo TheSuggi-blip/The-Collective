@@ -150,6 +150,20 @@ def _bfs_hops(lanes, src, dst):
     return None
 
 
+def _route_cost(lanes, src, dst, gates=None, cr_per_jump=120.0, max_toll=500, pilot_credits=None):
+    """Toll-aware (hops, toll_cr) using fuelplan.weighted_shortest_path when gates are supplied."""
+    if not src or not dst:
+        return None, 0
+    if src == dst:
+        return 0, 0
+    if gates:
+        _, hops, toll = fuelplan.weighted_shortest_path(
+            lanes, src, dst, gates=gates, cr_per_jump=cr_per_jump, max_toll=max_toll, pilot_credits=pilot_credits
+        )
+        return hops, int(toll or 0)
+    return _bfs_hops(lanes, src, dst), 0
+
+
 def load_base_map(data):
     """{base_id: (system, poi, base_id, empire)} from read.db places+systems."""
     import worldcache as _wc
@@ -430,7 +444,9 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 _max_upk_slots = 6
             elif _station_core and have_here < int(round(tgt * 0.50)):
                 _max_upk_slots = 3
-            elif hub_kind == "station" and have_here < int(round(tgt * 0.40)):
+            elif hub_kind == "station" and have_here < int(round(tgt * 0.50)):
+                _max_upk_slots = 4
+            elif hub_kind == "station" and have_here < int(round(tgt * 0.75)):
                 _max_upk_slots = 2
             else:
                 _max_upk_slots = 1
@@ -489,8 +505,10 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     oloc = base_map[sb_id]
                     if policy.get("policed_only", True) and not oloc[3]:
                         continue
-                    p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
-                    d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
+                    _hg = fuelplan.load_gates(data, max_toll=int(policy.get("max_gate_toll_cr") or 500)) if policy.get("use_jumpgates", True) else {}
+                    _hcpj = float(policy.get("gate_cr_per_jump") or 120.0)
+                    p_hops, _ = _route_cost(lanes, cur_sys, oloc[0], gates=_hg, cr_per_jump=_hcpj, pilot_credits=avail_cash) if cur_sys and lanes else (0, 0)
+                    d_hops, _ = _route_cost(lanes, oloc[0], dloc[0], gates=_hg, cr_per_jump=_hcpj, pilot_credits=avail_cash) if lanes else (1, 0)
                     if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                         continue
                     qty = min(deficit, sq, int(hold_cap))
@@ -512,8 +530,10 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     for ask_p, ask_q, oloc in sorted(asks_by_item.get(iid) or [], key=lambda x: x[0]):
                         if ask_p > cap_p:
                             break
-                        p_hops = _bfs_hops(lanes, cur_sys, oloc[0]) if cur_sys and lanes else 0
-                        d_hops = _bfs_hops(lanes, oloc[0], dloc[0]) if lanes else 1
+                        _hg2 = fuelplan.load_gates(data, max_toll=int(policy.get("max_gate_toll_cr") or 500)) if policy.get("use_jumpgates", True) else {}
+                        _hcpj2 = float(policy.get("gate_cr_per_jump") or 120.0)
+                        p_hops, _ = _route_cost(lanes, cur_sys, oloc[0], gates=_hg2, cr_per_jump=_hcpj2, pilot_credits=avail_cash) if cur_sys and lanes else (0, 0)
+                        d_hops, _ = _route_cost(lanes, oloc[0], dloc[0], gates=_hg2, cr_per_jump=_hcpj2, pilot_credits=avail_cash) if lanes else (1, 0)
                         if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                             continue
                         qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
@@ -1142,7 +1162,7 @@ def pick_freight_contract(entries, cur_sys, base_map, lanes, policy, avail_cash,
     return best[1] if best else None
 
 
-def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None, fair_prices=None, cltv_buy_keys=None):
+def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None, fair_prices=None, cltv_buy_keys=None, data_dir=None):
     """Pure selector: returns best safe fresh cross-station arbitrage job dict or None."""
     now_t = time.time() if now_t is None else now_t
     policed = bool(policy.get("policed_only", True))
@@ -1201,8 +1221,11 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
                 jkey = "arb-bid:%s:%s" % (bb, iid)
                 if jkey in claimed_keys:
                     continue
-                p_hops = _bfs_hops(lanes, cur_sys, aloc[0]) if cur_sys and lanes else 0
-                d_hops = _bfs_hops(lanes, aloc[0], bloc[0]) if lanes else 1
+                _ag = fuelplan.load_gates(data_dir, max_toll=int(policy.get("max_gate_toll_cr") or 500)) if (data_dir and policy.get("use_jumpgates", True)) else {}
+                _acpj = float(policy.get("gate_cr_per_jump") or 120.0)
+                p_hops, _p_toll = _route_cost(lanes, cur_sys, aloc[0], gates=_ag, cr_per_jump=_acpj, pilot_credits=avail_cash) if cur_sys and lanes else (0, 0)
+                d_hops, _d_toll = _route_cost(lanes, aloc[0], bloc[0], gates=_ag, cr_per_jump=_acpj, pilot_credits=avail_cash) if lanes else (1, 0)
+                _arb_toll = int(_p_toll or 0) + int(_d_toll or 0)
                 if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
                     continue
                 unit_cost = ask_p * 1.05
@@ -1213,7 +1236,7 @@ def pick_arbitrage_job(books_rows, base_map, lanes, cur_sys, hold_cap, avail_cas
                 if qty < 1:
                     continue
                 tot_hops = max(1, p_hops + d_hops)
-                est_profit = qty * (bid_p - unit_cost) - tot_hops * 45.0
+                est_profit = qty * (bid_p - unit_cost) - tot_hops * 45.0 - _arb_toll
                 if est_profit < min_tot or (est_profit / tot_hops) < min_cpj:
                     continue
                 score = est_profit / tot_hops
@@ -2277,7 +2300,7 @@ def main(argv=None):
             elif lane == "hub_upkeep":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                upk = _pick_hub_upkeep(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
+                upk = _pick_hub_upkeep(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
                 if upk and claim_job(DATA, pilot, upk["job_key"]):
                     iid, oloc, dloc, qty = upk["item"], upk["origin"], upk["dest"], upk["qty"]
                     say("hub_upkeep (%s) %d %s: %s -> %s (%dj+%dj)" % (
@@ -2657,7 +2680,7 @@ def main(argv=None):
             elif lane == "liquidate_surplus":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                liq = _pick_surplus_liquidation(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
+                liq = _pick_surplus_liquidation(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
                 if liq and claim_job(DATA, pilot, liq["job_key"]):
                     iid, oloc, dloc, qty = liq["item"], liq["origin"], liq["dest"], liq["qty"]
                     say("liquidate %d %s: %s -> %s @ ~%d cr" % (qty, iid, oloc[2], dloc[2], liq["est_bid"]))
@@ -2705,7 +2728,7 @@ def main(argv=None):
             elif lane == "consolidate_to_trader":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                cons = _pick_consolidate_to_trader(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds)
+                cons = _pick_consolidate_to_trader(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
                 if cons and claim_job(DATA, pilot, cons["job_key"]):
                     iid, oloc, dloc, qty = cons["item"], cons["origin"], cons["dest"], cons["qty"]
                     say("consolidate %d %s: %s -> %s (bursar %s, ~%d cr)" % (qty, iid, oloc[2], dloc[2], cons.get("bursar_pilot") or "?", cons["est_val"]))
@@ -2749,7 +2772,7 @@ def main(argv=None):
             elif lane == "backhaul_mission":
                 books_rows = _load_books(DATA)
                 claimed = active_claimed_keys(DATA)
-                bhm = _pick_backhaul_delivery(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds)
+                bhm = _pick_backhaul_delivery(DATA, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed, exclude_bases=strongholds, data_dir=DATA)
                 if bhm and claim_job(DATA, pilot, bhm["job_key"]):
                     iid, qty = bhm["item"], bhm["qty"]
                     bloc, dloc = bhm["buy_loc"], bhm["dest_loc"]

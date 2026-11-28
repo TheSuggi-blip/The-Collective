@@ -199,7 +199,7 @@ def _load_craft_world_uncached(data_dir, repo_root, policy):
     return {
         "recipes": recipes, "books_by_base": books_by_base, "global_bid": global_bid,
         "item_vals": item_vals, "need_crafts": need_crafts, "need_craft_caps": need_craft_caps,
-        "stock_by_item": stock_by_item, "demand": demand, "reserve_items": reserve_items,
+        "stock_by_item": stock_by_item, "demand": demand, "reserve_items": reserve_items, "owned_stations": sorted(_owned_stations(data_dir)),
     }
 
 
@@ -277,6 +277,53 @@ def pick_craft_job(division, base_id, stored_items, credits, world, policy, skip
     is_log = (str(division) == "Logistics")
     if not (is_trade or is_log or _is_workshop):
         return None
+    # Owned sovereign station in-house workshop crafting (e.g. Ridgecrest faction_workshop, 0 rent, 0 labor, deliver_to=faction!):
+    _owned_st = set(world.get("owned_stations") or ())
+    _st_targets = (world.get("demand") or {}).get("station_craft_targets") or {}
+    if base_id in _owned_st and _st_targets and (is_trade or is_log or _is_workshop):
+        _stored_loc = {str(k): int(v or 0) for k, v in (stored_items or {}).items() if int(v or 0) > 0}
+        _best_st = None
+        _max_r = max(1, int(policy.get("max_runs_per_cycle") or 20))
+        for _rec in (world.get("recipes") or {}).values():
+            if _rec.get("id") in _skip or _rec.get("facility_only") or not _rec.get("inputs") or not _rec.get("outputs"):
+                continue
+            _out_i, _out_q = _rec["outputs"][0]
+            _tcfg = _st_targets.get(_out_i)
+            if not isinstance(_tcfg, dict):
+                continue
+            _cap = int(_tcfg.get("cap") or 0)
+            _have_out = int(_stored_loc.get(_out_i, 0))
+            if _cap <= 0 or _have_out >= _cap:
+                continue
+            _max_p = _max_r
+            _ok = True
+            for _in_i, _req_q in _rec["inputs"]:
+                if _stored_loc.get(_in_i, 0) < _req_q:
+                    _ok = False
+                    break
+                _max_p = min(_max_p, _stored_loc.get(_in_i, 0) // _req_q)
+            if not _ok or _max_p <= 0:
+                continue
+            _need_runs = max(1, (_cap - _have_out + max(1, _out_q) - 1) // max(1, _out_q))
+            _runs = max(1, min(_max_p, _need_runs, _max_r))
+            _prio = int(_tcfg.get("priority") or 2)
+            _def_ratio = float(_cap - _have_out) / float(max(1, _cap))
+            _sc = (3.0 - min(2.0, float(_prio - 1))) * 100.0 + _def_ratio * 100.0 + float(_runs * _out_q) * 0.1
+            _cand_st = {
+                "recipe": _rec["id"],
+                "makes": _out_i,
+                "runs": _runs,
+                "per_run": _out_q,
+                "mode": "station_faction",
+                "deliver_to": "faction",
+                "buys": [],
+                "buy_cost": 0,
+                "score": round(_sc, 2),
+            }
+            if _best_st is None or _cand_st["score"] > _best_st["score"]:
+                _best_st = _cand_st
+        if _best_st is not None:
+            return _best_st
     if _is_workshop and (policy.get("logistics") or {}).get("enabled", True):
         # 5B Mobile Field Workshops: try adaptive industrial/station-supply crafting FIRST!
         ind_job = pick_craft_job("Logistics", base_id, stored_items, credits, world, policy, skip_recipes=_skip, wing="")
@@ -510,9 +557,21 @@ def _stamp_craft_cooldown(key, seconds, data_dir=DATA):
         write_json(p, cd)
 
 
-def _active_lockboxes(data_dir):
+def _owned_stations(data_dir):
     emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
     out = set()
+    if isinstance(emp, dict):
+        for b in (emp.get("bases") or []):
+            if isinstance(b, dict) and str(b.get("kind") or b.get("type") or "").lower() == "station":
+                bid = str(b.get("base") or b.get("id") or "")
+                if bid:
+                    out.add(bid)
+    return out
+
+
+def _active_lockboxes(data_dir):
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    out = set(_owned_stations(data_dir))
     if isinstance(emp, dict):
         for f in (emp.get("facilities") or []):
             if isinstance(f, dict) and str(f.get("type") or "") == "faction_lockbox" and str(f.get("status") or "active") == "active":
@@ -791,7 +850,8 @@ def main(argv=None):
             cand = pick_craft_job(div, base_id, stored, before, world, policy, skip_recipes=_skip_r, wing=_wing_s)
             if not cand:
                 break
-            _test_c = {"recipe_id": cand["recipe"], "quantity": int(cand["runs"] * cand["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+            _del_t = str(cand.get("deliver_to") or "storage")
+            _test_c = {"recipe_id": cand["recipe"], "quantity": int(cand["runs"] * cand["per_run"]), "deliver_to": _del_t, "preset": "workshop"}
             _q_chk = raw("craft", dict(_test_c, dry_run=True), group="spacemolt")
             _q_err = str(_q_chk.get("error") or (_body(_q_chk).get("error") if isinstance(_body(_q_chk), dict) else "") or "")
             if _q_err and ("cannot_craft" in _q_err.lower() or "skill" in _q_err.lower() or "facility" in _q_err.lower()):
@@ -813,11 +873,12 @@ def main(argv=None):
             return 0
 
         print("%s %s craft_net: starting %dx %s (%s) at %s" % (utc_now(), pilot, int(job["runs"] * job["per_run"]), job["makes"], job["mode"], base_id), flush=True)
-        asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": "storage", "preset": "workshop"}
+        _job_del = str(job.get("deliver_to") or "storage")
+        asked_c = {"recipe_id": job["recipe"], "quantity": int(job["runs"] * job["per_run"]), "deliver_to": _job_del, "preset": "workshop"}
         max_fee_tot = float(policy.get("max_fee_per_run_cr") or 1500) * max(1, int(job["runs"]))
 
         # 0a. Pull any needed inputs from shared Faction Lockbox -> personal workshop storage before crafting!
-        if use_fac and fac_stored:
+        if use_fac and fac_stored and _job_del != "faction":
             _rec_obj = (world.get("recipes") or {}).get(job["recipe"]) or {}
             _pull_cap = max(10, int(ship_doc.get("cargo_capacity") or 50) - 5)
             for _in_i, _req_q in (_rec_obj.get("inputs") or []):
@@ -926,13 +987,14 @@ def main(argv=None):
             if buy_spent > 0:
                 gate.book_onetime(pilot, "craft_net industrial stock %s" % job["makes"], -int(buy_spent), data=str(DATA))
                 onetime_booked[0] -= int(buy_spent)
-            raw("withdraw", {"item_id": job["makes"], "quantity": made_qty, "target": "self"}, group="spacemolt_storage")
-            time.sleep(TICK)
-            r_d = raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
-            time.sleep(TICK)
-            if "error" in r_d:
-                raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+            if _job_del != "faction":
+                raw("withdraw", {"item_id": job["makes"], "quantity": made_qty, "target": "self"}, group="spacemolt_storage")
                 time.sleep(TICK)
+                r_d = raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                time.sleep(TICK)
+                if "error" in r_d:
+                    raw("deposit", {"item_id": job["makes"], "quantity": made_qty, "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                    time.sleep(TICK)
         return 0
     finally:
         hb.set()

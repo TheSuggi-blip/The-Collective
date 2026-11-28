@@ -410,7 +410,7 @@ def plan_ship_fit(ship_doc, world, policy):
             for mid in util_cands
         )
         station_unfit = list(base_unfit)
-        if spec_unfit_cands and (has_match_harv or harv_avail_here):
+        if spec_unfit_cands and (division != "Mining" or has_match_harv or harv_avail_here):
             station_unfit.extend(spec_unfit_cands)
         elif heal_expander and harv_avail_here and max(0, int(hspec.get("utility", 0)) - used_base.get("utility", 0)) <= 0:
             station_unfit.append(heal_expander)

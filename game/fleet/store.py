@@ -1900,7 +1900,8 @@ def reserve_flow(conn, items=None, windows=(4, 12, 24)):
     return out
 
 
-DESCRIPTIONS = {               # one line per table and view: what a row is and where it comes from (schema(), hive.py schema)
+DESCRIPTIONS = {
+    "tourism_snapshots": "hourly snapshots of galactic station tourism appeal and cumulative tourism revenue leaderboards",               # one line per table and view: what a row is and where it comes from (schema(), hive.py schema)
     "cursor": "history bookkeeping: where each record (routes/runs.jsonl, market/history.jsonl, wildlife/history.jsonl, observations/<division>.jsonl) "
               "was read to, by byte",
     "meta": "the store's settings: the sealed hour (day) of each raw table, the snapshot schema's version and its tables",

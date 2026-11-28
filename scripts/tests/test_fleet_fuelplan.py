@@ -163,5 +163,45 @@ class HuntWritesTheNotesTests(unittest.TestCase):
         self.assertFalse(fuelplan.can_reach_with_refuels(desert, "d0", "d14", {}, ship=ab_ship))
 
 
+
+    def test_weighted_jumpgate_toll_and_circuit_breaker(self):
+        import tempfile, json
+        # Long normal loop (7 hops: a->b->c->d->e->f->g->h) vs 200cr jumpgate (a->h = 1 hop + 200cr)
+        lanes = {
+            "a": ["b"], "b": ["a", "c"], "c": ["b", "d"], "d": ["c", "e"],
+            "e": ["d", "f"], "f": ["e", "g"], "g": ["f", "h"], "h": ["g"],
+        }
+        gates = {("a", "h"): 200, ("h", "a"): 200}
+        # Saves 6 jumps (720cr) for 200cr toll -> MUST take gate!
+        path, hops, toll = fuelplan.weighted_shortest_path(lanes, "a", "h", gates=gates, cr_per_jump=120.0, pilot_credits=2000)
+        self.assertEqual(path, ["a", "h"])
+        self.assertEqual(hops, 1)
+        self.assertEqual(toll, 200)
+        # Broke pilot (400cr < 200 + 500 reserve) -> MUST NOT take gate!
+        path_b, hops_b, toll_b = fuelplan.weighted_shortest_path(lanes, "a", "h", gates=gates, cr_per_jump=120.0, pilot_credits=400)
+        self.assertEqual(hops_b, 7)
+        self.assertEqual(toll_b, 0)
+        # Toll > max_toll (500) -> MUST NOT take gate!
+        path_hi, hops_hi, toll_hi = fuelplan.weighted_shortest_path(lanes, "a", "h", gates={("a", "h"): 2000}, cr_per_jump=120.0, max_toll=500)
+        self.assertEqual(hops_hi, 7)
+        self.assertEqual(toll_hi, 0)
+        # Short detour (a->b->c = 2 hops = 240cr) vs 200cr gate (a->c = 1 hop + 200 = 320cr) -> MUST NOT pay toll!
+        path_s, hops_s, toll_s = fuelplan.weighted_shortest_path(lanes, "a", "c", gates={("a", "c"): 200}, cr_per_jump=120.0, pilot_credits=5000)
+        self.assertEqual(path_s, ["a", "b", "c"])
+        self.assertEqual(toll_s, 0)
+        # Circuit breaker: record_gate_block removes gate from load_gates until TTL expires!
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "station").mkdir(parents=True)
+            (d / "station" / "map.json").write_text(json.dumps({"gates": [{"from": "miaplacidus", "to": "kochab", "online": True}]}))
+            g1 = fuelplan.load_gates(d, now=1000)
+            self.assertEqual(g1.get(("miaplacidus", "kochab")), 200)
+            fuelplan.record_gate_block(d, "miaplacidus", "kochab", reason="gate_refused", ttl_s=1800, now=1000)
+            g2 = fuelplan.load_gates(d, now=1500)
+            self.assertNotIn(("miaplacidus", "kochab"), g2)
+            fuelplan.update_gate_toll(d, "miaplacidus", "kochab", 150, ok=True, now=2000)
+            g3 = fuelplan.load_gates(d, now=2001)
+            self.assertEqual(g3.get(("miaplacidus", "kochab")), 150)
+
 if __name__ == "__main__":
     unittest.main()

@@ -57,5 +57,8 @@
     "the_anvil_arsenal",
     "the_crucible_garrison",
     "the_rampart_checkpoint"
-  ]
+  ],
+  "use_jumpgates": true,
+  "max_gate_toll_cr": 500,
+  "gate_cr_per_jump": 140.0
 }

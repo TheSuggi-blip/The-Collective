@@ -16,8 +16,10 @@ import json
 import sqlite3
 import sys
 import time
+import concurrent.futures
 from collections import deque
 from pathlib import Path
+import fuelplan
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(Path(__file__).resolve().parent) not in sys.path:
@@ -74,6 +76,9 @@ DEFAULT_POLICY = {
     "min_fuel_pct_before_jump": 25.0,
     "max_reposition_hops": 14,
     "rest_seconds_when_empty": 20,
+    "use_jumpgates": True,
+    "max_gate_toll_cr": 500,
+    "gate_cr_per_jump": 140.0,
 }
 
 
@@ -196,20 +201,27 @@ def load_graph(data_dir):
     adj = {}
     base_to_sys = {}
     sys_to_base = {}
+    name_to_sys = {}
     strongholds = set()
     refuel_ready = set()
+    gates = fuelplan.load_gates(data_dir)
     db_p = Path(data_dir) / "store" / "read.db"
     if not db_p.is_file():
-        return {"adj": adj, "base_to_sys": base_to_sys, "sys_to_base": sys_to_base, "strongholds": strongholds, "refuel_ready": refuel_ready}
+        return {"adj": adj, "base_to_sys": base_to_sys, "sys_to_base": sys_to_base, "name_to_sys": name_to_sys, "strongholds": strongholds, "refuel_ready": refuel_ready, "gates": gates}
     con = sqlite3.connect("file:%s?mode=ro&immutable=1" % db_p, uri=True, timeout=5)
     try:
         for a, b in con.execute("SELECT a, b FROM lanes").fetchall():
             if a and b:
                 adj.setdefault(str(a), []).append(str(b))
                 adj.setdefault(str(b), []).append(str(a))
-        for sid, sh in con.execute("SELECT id, stronghold FROM systems").fetchall():
-            if sid and sh:
-                strongholds.add(str(sid))
+        for sid, sname, sh in con.execute("SELECT id, name, stronghold FROM systems").fetchall():
+            if sid:
+                ss = str(sid)
+                if sname:
+                    name_to_sys[str(sname).strip().lower()] = ss
+                name_to_sys[ss.lower()] = ss
+                if sh:
+                    strongholds.add(ss)
         for tbl in ("bases", "places"):
             try:
                 for b_id, s_id in con.execute("SELECT base, system FROM %s WHERE base IS NOT NULL AND system IS NOT NULL" % tbl).fetchall():
@@ -231,9 +243,31 @@ def load_graph(data_dir):
         "adj": adj,
         "base_to_sys": base_to_sys,
         "sys_to_base": sys_to_base,
+        "name_to_sys": name_to_sys,
         "strongholds": strongholds,
         "refuel_ready": refuel_ready,
+        "gates": gates,
     }
+
+
+def _resolve_dest_sys(pax, graph):
+    dbase = str((pax or {}).get("destination") or "").strip()
+    b2s = (graph or {}).get("base_to_sys") or {}
+    adj = (graph or {}).get("adj") or {}
+    n2s = (graph or {}).get("name_to_sys") or {}
+    if dbase and dbase in b2s:
+        return str(b2s[dbase])
+    raw_s = str((pax or {}).get("destination_system") or "").strip()
+    if raw_s in adj:
+        return raw_s
+    if raw_s:
+        mapped = n2s.get(raw_s.lower()) or n2s.get(raw_s.lower().replace(" ", "_"))
+        if mapped:
+            return mapped
+        slug = raw_s.lower().replace(" ", "_").replace("-", "_")
+        if slug in adj:
+            return slug
+    return ""
 
 
 def bfs_path(adj, src, dst, avoid=None, max_hops=24):
@@ -280,17 +314,19 @@ def bfs_dists(adj, src, avoid=None, max_hops=24):
     return d
 
 
-def score_station_board(origin_base, origin_sys, board, berths, graph, policy, avoid=None):
+def score_station_board(origin_base, origin_sys, board, berths, graph, policy, avoid=None, pilot_credits=None):
     """Score all candidate destination groups from a station's waiting + transit_lounge list."""
     adj = graph["adj"]
-    b2s = graph["base_to_sys"]
+    gates = (graph.get("gates") or {}) if policy.get("use_jumpgates", True) else {}
     home_base = str(policy.get("home_base") or "")
     max_hops = int(policy.get("max_hops") or 16)
     min_fpj = float(policy.get("min_fare_per_jump") or 220.0)
     rc_bonus = float(policy.get("ridgecrest_dest_bonus") or 2.0)
     first_b = float(policy.get("first_class_bonus") or 1.35)
     bus_b = float(policy.get("business_class_bonus") or 1.15)
-    dists = bfs_dists(adj, origin_sys, avoid=avoid, max_hops=max_hops)
+    max_toll = int(policy.get("max_gate_toll_cr") or 500)
+    cpj = float(policy.get("gate_cr_per_jump") or 140.0)
+    wdists = fuelplan.weighted_dists(adj, origin_sys, gates=gates, avoid=avoid, max_hops=max_hops, cr_per_jump=cpj, max_toll=max_toll, pilot_credits=pilot_credits)
 
     all_pax = list((board or {}).get("waiting") or [])
     lounge = (board or {}).get("transit_lounge")
@@ -301,24 +337,30 @@ def score_station_board(origin_base, origin_sys, board, berths, graph, policy, a
     for p in all_pax:
         if not isinstance(p, dict):
             continue
-        dbase = str(p.get("destination") or "")
-        dsys = str(p.get("destination_system") or b2s.get(dbase) or "")
+        dbase = str(p.get("destination") or "").strip()
         if not dbase or dbase == origin_base:
             continue
-        if not dsys and dbase in b2s:
-            dsys = b2s[dbase]
+        dsys = _resolve_dest_sys(p, graph)
+        if not dsys:
+            continue
         by_dest.setdefault(dbase, {"dest_sys": dsys, "pax": []})["pax"].append(p)
 
     cands = []
     for dbase, info in by_dest.items():
         dsys = info["dest_sys"]
-        hops = dists.get(dsys)
-        if hops is None or hops <= 0 or hops > max_hops:
+        wrow = wdists.get(dsys)
+        if wrow is None:
+            continue
+        hops, toll_cr, _cost = wrow
+        if hops <= 0 or hops > max_hops:
             continue
         seated, fare, rem_b = simulate_seat_allocation(info["pax"], berths)
         if not seated or fare <= 0:
             continue
-        fpj = float(fare) / float(max(1, hops))
+        net_fare = max(0, int(fare) - int(toll_cr))
+        if net_fare <= 0:
+            continue
+        fpj = float(net_fare) / float(max(1, hops))
         if fpj < min_fpj and dbase != home_base:
             continue
         classes = {str(x.get("class") or "economy").lower() for x in seated}
@@ -334,7 +376,9 @@ def score_station_board(origin_base, origin_sys, board, berths, graph, policy, a
             "dest_base": dbase,
             "dest_sys": dsys,
             "hops": hops,
-            "fare": fare,
+            "toll_cr": int(toll_cr),
+            "fare": net_fare,
+            "gross_fare": int(fare),
             "fpj": round(fpj, 1),
             "count": len(seated),
             "score": round(score, 1),
@@ -354,28 +398,34 @@ def choose_reposition_hub(cur_sys, boards_cache, berths, graph, policy, claimed_
     max_rep = int(policy.get("max_reposition_hops") or 14)
     rc_orig_b = float(policy.get("ridgecrest_origin_bonus") or 1.6)
     claimed = claimed_hubs or set()
-    dists = bfs_dists(adj, cur_sys, avoid=avoid, max_hops=max_rep)
+    gates = (graph.get("gates") or {}) if policy.get("use_jumpgates", True) else {}
+    max_toll = int(policy.get("max_gate_toll_cr") or 500)
+    cpj = float(policy.get("gate_cr_per_jump") or 140.0)
+    wdists = fuelplan.weighted_dists(adj, cur_sys, gates=gates, avoid=avoid, max_hops=max_rep, cr_per_jump=cpj, max_toll=max_toll)
 
     best = None
     for bid, bdata in (boards_cache or {}).items():
         if not isinstance(bdata, dict):
             continue
         sys_id = str(bdata.get("system") or b2s.get(bid) or "")
-        if not sys_id or sys_id not in dists:
+        if not sys_id or sys_id not in wdists:
             continue
         if bid in claimed and bid != home_base:
             continue
-        hops = dists[sys_id]
+        hops, rep_toll, _rcost = wdists[sys_id]
         if hops > max_rep:
             continue
         cands = score_station_board(bid, sys_id, bdata, berths, graph, policy, avoid=avoid)
         if not cands:
             continue
-        top_fare = sum(c["fare"] for c in cands[:2])
+        top_fare = max(0, sum(c["fare"] for c in cands[:2]) - int(rep_toll))
+        if top_fare <= 0:
+            continue
         mult = rc_orig_b if bid == home_base else 1.0
         sc = (float(top_fare) * mult) / (float(hops) + 1.5)
         if best is None or sc > best["score"]:
-            best = {"base": bid, "system": sys_id, "hops": hops, "score": sc, "est_fare": top_fare}
+            best = {"base": bid, "system": sys_id, "hops": hops, "toll_cr": int(rep_toll), "score": sc, "est_fare": top_fare}
+    dists = {s: row[0] for s, row in wdists.items()}
     if best:
         return best
     if home_base and home_sys in dists and cur_sys != home_sys:
@@ -417,10 +467,10 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     if hb and hb not in scan_list:
         scan_list.insert(0, hb)
     boards = {}
-    for bid in scan_list:
-        ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"id": bid}, timeout=12)
+    def _poll_one(bid):
+        ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"id": bid}, timeout=10)
         if ok and isinstance(sc, dict):
-            boards[bid] = {
+            return bid, {
                 "system": b2s.get(bid, ""),
                 "waiting": sc.get("waiting") or [],
                 "transit_lounge": sc.get("transit_lounge"),
@@ -428,6 +478,17 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
                 "demand_level": sc.get("demand_level"),
                 "t": int(now),
             }
+        return bid, None
+    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
+        futs = [ex.submit(_poll_one, bid) for bid in scan_list]
+        done, _ = concurrent.futures.wait(futs, timeout=22)
+        for f in done:
+            try:
+                bid, bobj = f.result()
+                if bobj is not None:
+                    boards[bid] = bobj
+            except Exception:
+                pass
     try:
         cache_p.parent.mkdir(parents=True, exist_ok=True)
         lock_p = cache_p.with_suffix(".lock")
@@ -439,10 +500,14 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     return boards
 
 
-def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, graph, policy, data_dir):
-    """Navigate cleanly along shortest lane path, refuel safely, and dock at dest_base."""
+def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, graph, policy, data_dir, pilot_credits=None):
+    """Navigate cleanly along toll-aware shortest path (with gate circuit-breaker), refuel safely, and dock."""
     avoid = set(graph["strongholds"]) if policy.get("avoid_pirate_strongholds", True) else set()
-    path = bfs_path(graph["adj"], cur_sys, dest_sys, avoid=avoid, max_hops=int(policy.get("max_hops") or 16) + 4)
+    gates = (graph.get("gates") or {}) if policy.get("use_jumpgates", True) else {}
+    max_h = int(policy.get("max_hops") or 16) + 4
+    max_t = int(policy.get("max_gate_toll_cr") or 500)
+    cpj = float(policy.get("gate_cr_per_jump") or 140.0)
+    path, _, _ = fuelplan.weighted_shortest_path(graph["adj"], cur_sys, dest_sys, gates=gates, avoid=avoid, max_hops=max_h, cr_per_jump=cpj, max_toll=max_t, pilot_credits=pilot_credits)
     if not path:
         return False, cur_sys, docked_base, "no_route"
     home_base = str(policy.get("home_base") or "")
@@ -454,13 +519,26 @@ def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, gr
             if ok_u:
                 docked_base = ""
                 time.sleep(10.2)
-        for nxt in path[1:]:
+        idx = 1
+        while idx < len(path):
+            nxt = path[idx]
             if _stop_requested(data_dir, pilot):
                 return False, cur_sys, docked_base, "stopped"
             ok_j, _, msg_j = _raw(gate_mod, pilot, "jump", {"id": nxt}, timeout=120)
             if not ok_j:
+                low_m = msg_j.lower()
+                if (cur_sys, nxt) in gates and ("gate_refused" in low_m or "gate_toll" in low_m or "gate" in low_m):
+                    fuelplan.record_gate_block(data_dir, cur_sys, nxt, reason=low_m[:40])
+                    gates.pop((cur_sys, nxt), None)
+                    gates.pop((nxt, cur_sys), None)
+                    alt_path, _, _ = fuelplan.weighted_shortest_path(graph["adj"], cur_sys, dest_sys, gates=gates, avoid=avoid, max_hops=max_h + 6, cr_per_jump=cpj, max_toll=max_t, pilot_credits=pilot_credits)
+                    if alt_path and len(alt_path) > 1:
+                        path = alt_path
+                        idx = 1
+                        continue
                 return False, cur_sys, docked_base, "jump_fail:" + msg_j[:60]
             cur_sys = nxt
+            idx += 1
             time.sleep(10.2)
     if docked_base != dest_base:
         if docked_base:
@@ -544,7 +622,7 @@ def run_pilot(pilot, minutes=40, route_id="passenger-network", policy_path=None,
             best_d = None
             for pax in aboard:
                 db = str(pax.get("destination") or "")
-                ds = str(pax.get("destination_system") or graph["base_to_sys"].get(db) or "")
+                ds = _resolve_dest_sys(pax, graph)
                 h = dists.get(ds, 999)
                 if db and ds and (best_d is None or h < best_d[0]):
                     best_d = (h, db, ds)

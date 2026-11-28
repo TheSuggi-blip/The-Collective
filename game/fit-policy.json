@@ -1535,6 +1535,15 @@
         "6B.": "passenger",
         "6C. Combat Salvage": "salvage_tender",
         "6C. Fleet Fuel": "fuel_tanker"
+      },
+      "off_role_by_specialty": {
+        "passenger": [
+          "ship_scanner_i",
+          "ship_scanner_ii",
+          "cargo_expander_i",
+          "cargo_expander_ii",
+          "cargo_expander_iii"
+        ]
       }
     },
     "Trade": {

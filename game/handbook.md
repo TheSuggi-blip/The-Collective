@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 68 tables and 14 views (47 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 28 tools.
+The store: 69 tables and 14 views (48 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 30 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -46,6 +46,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Written knowledge, `game/handbook/written-knowledge.md`: docs, doc_versions, division_playbooks and the kinds
 - Plans and the door, `game/handbook/plans-and-the-door.md`: birth_plans
 - The store itself, `game/handbook/the-store-itself.md`: source, cursor, meta
+- Other, `game/handbook/other.md`: tourism_snapshots
 
 ## How the data flows
 
@@ -267,3 +268,15 @@ per question, from the tools' own texts (collective_mcp.TOOLS) and hive.py's usa
 |---|---|---|
 | every table and view of the store with what a row is and its columns; with a table's name its columns... | sql | hive.py schema |
 | one SELECT or WITH statement on the store's read copy (store.py query: read only, one statement, a... | sql query=<query> | hive.py sql <query> |
+
+### Other
+
+| What it answers | MCP | Shell |
+|---|---|---|
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=summary | station_pnl.py summary |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=venues | station_pnl.py venues |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=builds | station_pnl.py builds |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=rivals | station_pnl.py rivals |
+| CFO-grade unit economics for owned stations (Ridgecrest, etc.), per-venue Appeal ROI, build... | station_pnl view=all | station_pnl.py all |
+| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=status | station_pnl.py builds |
+| Fleet Admiral Door: inspect station build readiness (action=status) or execute... | station_build action=run | station_pnl.py build_run |

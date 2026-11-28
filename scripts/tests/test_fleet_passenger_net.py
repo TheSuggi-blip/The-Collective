@@ -71,5 +71,40 @@ class PassengerNetTests(unittest.TestCase):
         self.assertTrue(pn.has_passenger_work("LSV Albatross", {"class": "Futures", "modules": []}, policy_path=pol_p))
 
 
+
+    def test_display_name_dest_system_and_gate_toll_deduction(self):
+        graph = {
+            "adj": {
+                "ridgecrest": ["cervantes"],
+                "cervantes": ["ridgecrest", "miaplacidus", "n1"],
+                "miaplacidus": ["cervantes"],
+                "n1": ["cervantes", "n2"], "n2": ["n1", "n3"], "n3": ["n2", "n4"],
+                "n4": ["n3", "n5"], "n5": ["n4", "kochab"],
+                "kochab": ["n5", "starfall"], "starfall": ["kochab"],
+            },
+            "base_to_sys": {
+                "rc_base": "ridgecrest",
+                "starfall_salvage_station": "starfall",
+            },
+            "sys_to_base": {"ridgecrest": "rc_base", "starfall": "starfall_salvage_station"},
+            "name_to_sys": {"starfall": "starfall", "ridgecrest": "ridgecrest"},
+            "strongholds": set(),
+            "refuel_ready": {"rc_base"},
+            "gates": {("miaplacidus", "kochab"): 200, ("kochab", "miaplacidus"): 200},
+        }
+        # Live API returns display name ("Starfall") in destination_system!
+        board = {
+            "waiting": [
+                {"destination": "starfall_salvage_station", "destination_system": "Starfall", "class": "business", "estimated_fare": 3200},
+            ]
+        }
+        berths = pn.ship_berths("futures", ["first_class_passenger_suite"])
+        pol = dict(pn.DEFAULT_POLICY, home_base="rc_base", use_jumpgates=True, max_gate_toll_cr=500, gate_cr_per_jump=140.0)
+        cands = pn.score_station_board("rc_base", "ridgecrest", board, berths, graph, pol, pilot_credits=5000)
+        self.assertEqual(len(cands), 1)
+        self.assertEqual(cands[0]["hops"], 4)
+        self.assertEqual(cands[0]["toll_cr"], 200)
+        self.assertEqual(cands[0]["fare"], 3000)  # 3200 gross - 200 gate toll!
+
 if __name__ == "__main__":
     unittest.main()

@@ -15,7 +15,9 @@ The command line prints the way and whether a tank holds it; it sends no call.""
 from collections import deque
 import json
 import re
+import heapq
 import sys
+import time
 from pathlib import Path
 
 PER_JUMP, SPARE = 1.5, 15        # legacy baseline (2-arg fuel_short compatibility)
@@ -394,6 +396,251 @@ def refuelled_short(fuel, max_fuel):
         return False
     return fuel < LOW_SHARE * max_fuel
 
+
+
+# Verified default tolls for active public player jumpgates (updated dynamically in gate_tolls.json).
+DEFAULT_GATE_TOLLS = {
+    ("kochab", "miaplacidus"): 200,
+    ("mile_mark", "tiaki"): 100,
+}
+DEFAULT_MAX_GATE_TOLL = 500
+DEFAULT_CR_PER_JUMP = 120.0
+
+
+def _gate_key(a, b):
+    sa, sb = str(a or "").strip(), str(b or "").strip()
+    return "%s|%s" % (sa, sb) if sa <= sb else "%s|%s" % (sb, sa)
+
+
+def load_gates(data, max_toll=DEFAULT_MAX_GATE_TOLL, now=None):
+    """Return {(u, v): toll_cr, (v, u): toll_cr} for online, non-blocked jumpgates with toll <= max_toll.
+
+    Reads live online jumpgates from data/station/map.json and verified tolls / circuit-breaker
+    blocks from data/fleet/gate_tolls.json. Unknown gates without a verified toll are excluded
+    until observed, preventing toll-hike traps.
+    """
+    out = {}
+    if not data:
+        return out
+    dpath = Path(data)
+    now_t = time.time() if now is None else float(now)
+    cap = int(max_toll) if max_toll is not None else DEFAULT_MAX_GATE_TOLL
+    if cap < 0:
+        return out
+
+    tolls_cache = {}
+    tp = dpath / "fleet" / "gate_tolls.json"
+    if tp.is_file():
+        try:
+            raw = json.loads(tp.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                tolls_cache = raw
+        except (OSError, ValueError):
+            pass
+
+    online_pairs = []
+    mp = dpath / "station" / "map.json"
+    if mp.is_file():
+        try:
+            mj = json.loads(mp.read_text(encoding="utf-8"))
+            for g in (mj.get("gates") or []):
+                if not isinstance(g, dict) or not g.get("online", True):
+                    continue
+                fa = str(g.get("from") or g.get("from_system") or "").strip()
+                tb = str(g.get("to") or g.get("to_system") or "").strip()
+                if fa and tb and fa != tb:
+                    online_pairs.append((fa, tb))
+        except (OSError, ValueError):
+            pass
+    if not online_pairs and tolls_cache:
+        for k, rec in tolls_cache.items():
+            if "|" in str(k) and isinstance(rec, dict) and rec.get("ok", True):
+                fa, tb = str(k).split("|", 1)
+                if fa and tb:
+                    online_pairs.append((fa, tb))
+
+    for fa, tb in online_pairs:
+        gk = _gate_key(fa, tb)
+        rec = tolls_cache.get(gk) if isinstance(tolls_cache.get(gk), dict) else None
+        if rec is not None:
+            if float(rec.get("blocked_until") or 0) > now_t:
+                continue
+            if not rec.get("ok", True):
+                continue
+            if rec.get("toll") is None:
+                continue
+            toll = int(rec.get("toll") or 0)
+        else:
+            pair = (fa, tb) if fa <= tb else (tb, fa)
+            if pair not in DEFAULT_GATE_TOLLS:
+                continue
+            toll = int(DEFAULT_GATE_TOLLS[pair])
+        if 0 <= toll <= cap:
+            out[(fa, tb)] = toll
+            out[(tb, fa)] = toll
+    return out
+
+
+def record_gate_block(data, a, b, reason="gate_refused", ttl_s=1800, now=None):
+    """Circuit-breaker: blacklist a jumpgate edge for `ttl_s` seconds after gate_refused/gate_toll."""
+    if not data or not a or not b:
+        return
+    tp = Path(data) / "fleet" / "gate_tolls.json"
+    now_t = int(time.time() if now is None else now)
+    cache = {}
+    if tp.is_file():
+        try:
+            raw = json.loads(tp.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                cache = raw
+        except (OSError, ValueError):
+            pass
+    gk = _gate_key(a, b)
+    rec = dict(cache.get(gk) or {})
+    rec["ok"] = False
+    rec["blocked_until"] = now_t + max(60, int(ttl_s))
+    rec["reason"] = str(reason or "blocked")[:80]
+    rec["updated_at"] = now_t
+    cache[gk] = rec
+    try:
+        tp.parent.mkdir(parents=True, exist_ok=True)
+        tmp = tp.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n", encoding="ascii")
+        tmp.replace(tp)
+    except OSError:
+        pass
+
+
+def update_gate_toll(data, a, b, toll_cr, ok=True, now=None):
+    """Persist a live-verified jumpgate toll observed from spacemolt/find_route."""
+    if not data or not a or not b:
+        return
+    tp = Path(data) / "fleet" / "gate_tolls.json"
+    now_t = int(time.time() if now is None else now)
+    cache = {}
+    if tp.is_file():
+        try:
+            raw = json.loads(tp.read_text(encoding="utf-8"))
+            if isinstance(raw, dict):
+                cache = raw
+        except (OSError, ValueError):
+            pass
+    gk = _gate_key(a, b)
+    cache[gk] = {
+        "toll": max(0, int(toll_cr)),
+        "ok": bool(ok),
+        "blocked_until": 0 if ok else (now_t + 1800),
+        "updated_at": now_t,
+    }
+    try:
+        tp.parent.mkdir(parents=True, exist_ok=True)
+        tmp = tp.with_suffix(".json.tmp")
+        tmp.write_text(json.dumps(cache, indent=1, sort_keys=True) + "\n", encoding="ascii")
+        tmp.replace(tp)
+    except OSError:
+        pass
+
+
+def weighted_dists(lanes, src, gates=None, avoid=(), max_hops=24, cr_per_jump=DEFAULT_CR_PER_JUMP, max_toll=DEFAULT_MAX_GATE_TOLL, pilot_credits=None):
+    """Toll-aware Dijkstra distances from `src`.
+
+    Returns {system_id: (hops, toll_cr, total_cost_cr)} where each normal lane costs `cr_per_jump`
+    and each jumpgate edge costs `cr_per_jump + toll_cr`. A jumpgate is taken ONLY when its
+    fuel + time savings strictly exceed the toll AND the pilot can afford toll + 500 cr reserve.
+    """
+    if not src:
+        return {}
+    skip = set(avoid or ()) - {src}
+    cpj = max(1.0, float(cr_per_jump or DEFAULT_CR_PER_JUMP))
+    cap = int(max_toll) if max_toll is not None else DEFAULT_MAX_GATE_TOLL
+    g_adj = {}
+    for (u, v), toll in (gates or {}).items():
+        if toll is not None and 0 <= int(toll) <= cap:
+            g_adj.setdefault(u, []).append((v, int(toll)))
+    best = {src: (0.0, 0, 0)}
+    pq = [(0.0, 0, 0, src)]
+    while pq:
+        cost, hops, toll_sum, u = heapq.heappop(pq)
+        cur_b = best.get(u)
+        if cur_b is not None and (cost, hops, toll_sum) > cur_b:
+            continue
+        if hops >= max_hops:
+            continue
+        for v in (lanes.get(u) or ()):
+            if v in skip:
+                continue
+            nc, nh, nt = cost + cpj, hops + 1, toll_sum
+            prev = best.get(v)
+            if prev is None or (nc, nh, nt) < prev:
+                best[v] = (nc, nh, nt)
+                heapq.heappush(pq, (nc, nh, nt, v))
+        for v, gtoll in (g_adj.get(u) or ()):
+            if v in skip:
+                continue
+            nt = toll_sum + gtoll
+            if pilot_credits is not None and float(pilot_credits) < float(nt + 500):
+                continue
+            nc, nh = cost + cpj + float(gtoll), hops + 1
+            prev = best.get(v)
+            if prev is None or (nc, nh, nt) < prev:
+                best[v] = (nc, nh, nt)
+                heapq.heappush(pq, (nc, nh, nt, v))
+    return {s: (h, t, round(c, 1)) for s, (c, h, t) in best.items()}
+
+
+def weighted_shortest_path(lanes, src, dst, gates=None, avoid=(), max_hops=30, cr_per_jump=DEFAULT_CR_PER_JUMP, max_toll=DEFAULT_MAX_GATE_TOLL, pilot_credits=None):
+    """Toll-aware shortest path [src, ..., dst] returning (path, hops, toll_cr) or (None, None, 0)."""
+    if not src or not dst:
+        return None, None, 0
+    if src == dst:
+        return [src], 0, 0
+    skip = set(avoid or ()) - {src, dst}
+    cpj = max(1.0, float(cr_per_jump or DEFAULT_CR_PER_JUMP))
+    cap = int(max_toll) if max_toll is not None else DEFAULT_MAX_GATE_TOLL
+    g_adj = {}
+    for (u, v), toll in (gates or {}).items():
+        if toll is not None and 0 <= int(toll) <= cap:
+            g_adj.setdefault(u, []).append((v, int(toll)))
+    best = {src: (0.0, 0, 0)}
+    parent = {src: None}
+    pq = [(0.0, 0, 0, src)]
+    while pq:
+        cost, hops, toll_sum, u = heapq.heappop(pq)
+        if u == dst:
+            path = []
+            cur = dst
+            while cur is not None:
+                path.append(cur)
+                cur = parent.get(cur)
+            path.reverse()
+            return path, hops, toll_sum
+        cur_b = best.get(u)
+        if cur_b is not None and (cost, hops, toll_sum) > cur_b:
+            continue
+        if hops >= max_hops:
+            continue
+        for v in (lanes.get(u) or ()):
+            if v in skip:
+                continue
+            nc, nh, nt = cost + cpj, hops + 1, toll_sum
+            prev = best.get(v)
+            if prev is None or (nc, nh, nt) < prev:
+                best[v] = (nc, nh, nt)
+                parent[v] = u
+                heapq.heappush(pq, (nc, nh, nt, v))
+        for v, gtoll in (g_adj.get(u) or ()):
+            if v in skip:
+                continue
+            nt = toll_sum + gtoll
+            if pilot_credits is not None and float(pilot_credits) < float(nt + 500):
+                continue
+            nc, nh = cost + cpj + float(gtoll), hops + 1
+            prev = best.get(v)
+            if prev is None or (nc, nh, nt) < prev:
+                best[v] = (nc, nh, nt)
+                parent[v] = u
+                heapq.heappush(pq, (nc, nh, nt, v))
+    return None, None, 0
 
 def main():
     args = sys.argv[1:]

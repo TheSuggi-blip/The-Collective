@@ -1918,13 +1918,20 @@ STATION_BUILD_PRIORITY = (
     "guild_hall_recruiting",
     "refueling_dock",
     "transit_terminal",
+    "the_golden_table",
     "fuel_tank_expansion",
+    "trade_concourse",
+    "repair_slip",
 )
+
+STATION_BUILD_FLOOR = 200000
 
 STATION_PUBLIC_SERVICES = {
     "market_terminal": "market",
+    "trade_concourse": "market",
     "trade_exchange": "market",
     "refueling_dock": "refuel",
+    "repair_slip": "repair",
     "automated_repair_dock": "repair",
 }
 
@@ -1941,7 +1948,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
     treasury = int(fac_info.get("treasury") or 0)
     up_pol = dispatch.read_json(Path(__file__).resolve().parents[2] / "game" / "upgrade-policy.json", {}) or {}
     floor_cr = int(up_pol.get("treasury_floor_cr") or 2000000)
-    if treasury <= FUND_FLOOR:
+    if treasury <= STATION_BUILD_FLOOR:
         return 0
 
     officers = set()
@@ -2041,7 +2048,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
 
     rec_chain = {"hiring_board", "recruitment_desk", "recruitment_center", "guild_hall_recruiting"}
     rec_bases_pending = {b for b, f in ordered if f in rec_chain}
-    prio_bases_pending = {b for b, f in ordered if f in prio_idx and f != "fuel_tank_expansion"}
+    prio_bases_pending = {b for b, f in ordered if f in prio_idx and f not in ("fuel_tank_expansion", "trade_concourse", "repair_slip")}
     done_n = 0
     failed = 0
     avail_tr = treasury
@@ -2056,7 +2063,7 @@ def serve_station_builds(data, now, dry=False, max_builds=12):
         if base_id in prio_bases_pending and fid not in prio_idx:
             continue  # reserve local steel/boards/cash for refueling_dock and recruitment chain first
         fee = int(fac_fee.get(fid, 0))
-        eff_floor = FUND_FLOOR if fid in prio_idx else floor_cr
+        eff_floor = STATION_BUILD_FLOOR if fid in prio_idx else floor_cr
         if fee <= 0 or (avail_tr - fee) < eff_floor:
             continue
         mats = fac_mats.get(fid) or []
