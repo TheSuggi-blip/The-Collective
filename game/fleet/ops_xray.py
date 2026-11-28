@@ -11,6 +11,7 @@ Stdlib only. 7-bit ASCII only.
 """
 import argparse
 import json
+import re
 import sqlite3
 import sys
 import time
@@ -171,9 +172,14 @@ def plan_zero_hop_liquidation(data_dir, base_filter="", item_filter="", min_cash
     docked_offs = {}
     if con is not None:
         try:
+            cols = {c[1] for c in con.execute("PRAGMA table_info(ships)").fetchall()}
+            order_sql = (
+                "ORDER BY CASE WHEN flies IS NULL OR flies = '' THEN 0 ELSE 1 END, (cargo_capacity - cargo_used) DESC"
+                if "flies" in cols else "ORDER BY (cargo_capacity - cargo_used) DESC"
+            )
             for r in con.execute(
                 "SELECT pilot, role, base, cargo_used, cargo_capacity, credits FROM ships "
-                "WHERE docked = 1 AND base IS NOT NULL ORDER BY (cargo_capacity - cargo_used) DESC"
+                "WHERE docked = 1 AND base IS NOT NULL " + order_sql
             ).fetchall():
                 if haul._pilot_can_withdraw_faction(data, r["pilot"]):
                     docked_offs.setdefault(str(r["base"]), []).append(dict(r))
@@ -377,6 +383,7 @@ def run_liquidate(data_dir, base_filter="", item_filter="", min_cash=5000, max_j
 
     tot_realized = 0
     tot_deposited = 0
+    deadline = time.monotonic() + 70.0
     by_pilot = {}
     for j in jobs:
         by_pilot.setdefault((j["pilot"], j["base"]), []).append(j)
@@ -399,11 +406,22 @@ def run_liquidate(data_dir, base_filter="", item_filter="", min_cash=5000, max_j
             rem = int(j["qty"])
             sz = int(j["item_size"])
             while rem > 0 and free >= sz:
+                if time.monotonic() >= deadline:
+                    lines.append("  STOP %s: reached 70s MCP safety deadline (%d %s left); depositing proceeds now" % (pilot, rem, j["item"]))
+                    break
                 chunk = min(rem, free // sz)
                 ok_w, _, err_w = _call_raw(pilot, "spacemolt_storage", "withdraw", {"item_id": j["item"], "quantity": chunk, "target": "faction"})
                 if not ok_w:
-                    lines.append("  ERR %s withdraw %dx %s: %s" % (pilot, chunk, j["item"], err_w[:80]))
-                    break
+                    m_avail = re.search(r"only has\s+(\d+)", err_w or "", re.I)
+                    if m_avail and int(m_avail.group(1)) > 0:
+                        avail = min(chunk - 1, int(m_avail.group(1)))
+                        if avail > 0:
+                            chunk = avail
+                            rem = min(rem, avail)
+                            ok_w, _, err_w = _call_raw(pilot, "spacemolt_storage", "withdraw", {"item_id": j["item"], "quantity": chunk, "target": "faction"})
+                    if not ok_w:
+                        lines.append("  ERR %s withdraw %dx %s: %s" % (pilot, chunk, j["item"], err_w[:80]))
+                        break
                 time.sleep(10.5)
                 ok_s, _, err_s = _call_raw(pilot, "spacemolt", "sell", {"id": j["item"], "quantity": chunk, "auto_list": False})
                 time.sleep(10.5)
