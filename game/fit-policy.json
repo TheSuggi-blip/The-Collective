@@ -1456,6 +1456,7 @@
         },
         "passenger": {
           "utility": [
+            "first_class_passenger_suite",
             "business_passenger_cabin",
             "economy_passenger_cabin",
             "fuel_optimizer"

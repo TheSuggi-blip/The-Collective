@@ -735,7 +735,7 @@
           "assign_priority": 30,
           "ladder": [
             {
-              "hull": "loose_change",
+              "hull": "futures",
               "tier": 1,
               "min_piloting": 0,
               "max_price": 34000
@@ -751,12 +751,6 @@
               "tier": 3,
               "min_piloting": 20,
               "max_price": 1100000
-            },
-            {
-              "hull": "comet",
-              "tier": 4,
-              "min_piloting": 30,
-              "max_price": 5200000
             }
           ]
         }
