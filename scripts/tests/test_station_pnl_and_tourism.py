@@ -85,5 +85,39 @@ class TestTourismSnapshotsAndStationPnl(unittest.TestCase):
             self.assertIn("+350,000 cr/h", txt)
 
 
+
+    def test_auto_queue_seats_prunes_retired_pilots_and_queues_active(self):
+        import wallet
+        with tempfile.TemporaryDirectory() as td:
+            d = Path(td)
+            (d / "fleet").mkdir()
+            (d / "empire").mkdir()
+            (d / "empire" / "empire.json").write_text(json.dumps({
+                "faction": {"id": "f1", "member_count": 275, "members_limit": 325},
+                "members": [{"username": "Prime Directive", "role": "leader"}],
+            }), encoding="ascii")
+            (d / "fleet" / "fleet.json").write_text(json.dumps({
+                "ships": [
+                    {"name": "Prime Directive", "credits": 50000, "status": "connected"},
+                    {"name": "MCV Genoa", "credits": 20000, "status": "connected"},
+                    {"name": "ROU Kestrel", "credits": 15000, "status": "connected"},
+                ]
+            }), encoding="ascii")
+            # 3 dead retired pilots clogging seats.json
+            (d / "fleet" / "seats.json").write_text(json.dumps([
+                {"pilot": "miner-4", "state": "open", "at": 100},
+                {"pilot": "miner-110", "state": "open", "at": 100},
+                {"pilot": "miner-99", "state": "open", "at": 100},
+            ]), encoding="ascii")
+            added = wallet.auto_queue_seats(str(d), now=200, dry=False)
+            self.assertGreaterEqual(added, 2)
+            rows = json.loads((d / "fleet" / "seats.json").read_text(encoding="ascii"))
+            states = {r["pilot"]: r["state"] for r in rows}
+            self.assertEqual(states["miner-4"], "retired")
+            self.assertEqual(states["miner-110"], "retired")
+            self.assertEqual(states["MCV Genoa"], "open")
+            self.assertEqual(states["ROU Kestrel"], "open")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1354,16 +1354,27 @@ def release_sweep(data, pilot):
 
 
 def auto_queue_seats(data, now, dry=False):
-    """Automatically queue unseated fleet ships up to open faction cap (Rule F11) so open seats
-    never wait 6 hours for Unity's AI turn. Uses pick_unseated() benefit ranking."""
+    """Automatically prune retired open seat rows and queue active unseated fleet ships up to
+    open faction cap (Rule F11) so retired Reserve pilots never deadlock live seating."""
     emp = dispatch.read_json(Path(data) / "empire" / "empire.json", {}) or {}
     fac = (emp.get("faction") or {}) if isinstance(emp, dict) else {}
     ml = int(fac.get("members_limit") or 0)
     mc = int(fac.get("member_count") or 0)
+    fleet = ships(data)
+    rows = seat_rows(data)
+    pruned = 0
+    if fleet:
+        for r in rows:
+            if r.get("state") == "open" and str(r.get("pilot") or "") not in fleet:
+                r["state"] = "retired"
+                r["note"] = "pilot not in active fleet"
+                pruned += 1
+        if pruned and not dry:
+            write_seats(data, rows)
+            print("SEATS pruned: %d retired pilot row(s) archived from seats.json" % pruned)
     if ml <= 0 or mc >= ml:
         return 0
-    rows = seat_rows(data)
-    open_now = sum(1 for r in rows if r.get("state") == "open")
+    open_now = sum(1 for r in rows if r.get("state") == "open" and (not fleet or str(r.get("pilot") or "") in fleet))
     need = max(0, (ml - mc) - open_now)
     if need <= 0:
         return 0
@@ -1379,14 +1390,14 @@ def auto_queue_seats(data, now, dry=False):
 
 def serve_seats(data, leader, now, dry):
     """Invite and join up to SEAT_BATCH idle queued pilots when both the leader and each target pilot stand free."""
+    fleet = ships(data)
     rows = seat_rows(data)
-    todo = [r for r in rows if r.get("state") == "open"]
+    todo = [r for r in rows if r.get("state") == "open" and (not fleet or str(r.get("pilot") or "") in fleet)]
     if not todo:
         return 0
     if dry:
         print("would seat: %d pilots waiting in seats.json" % len(todo))
         return 0
-    fleet = ships(data)
     inviter = ""
     for cand in withdrawers(data, leader):
         if not fighting(fleet.get(cand) or {}):
@@ -1430,7 +1441,9 @@ def serve_seats(data, leader, now, dry):
                     r.update(state="joined", joined_at=int(time.time()))
                     joined += 1
                 elif "in_battle" in comb:
-                    break
+                    if "in_battle" in txt_a.lower():
+                        break
+                    continue
                 else:
                     r["note"] = txt_b[:160]
             finally:
