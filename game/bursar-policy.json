@@ -113,6 +113,12 @@
     "max_fair_mult": 1.35,
     "target_stock_per_item": 24,
     "priority_items": [
+      "flex_polymer",
+      "copper_wiring",
+      "steel_plate",
+      "power_cell",
+      "coolant",
+      "catalytic_scrubber_cartridge",
       "ranchers_breakfast",
       "nitro_cold_brew",
       "glintfin_sashimi",

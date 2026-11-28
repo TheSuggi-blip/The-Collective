@@ -1698,6 +1698,13 @@ def main(argv=None):
                             else:
                                 raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
                                 time.sleep(TICK)
+                        try:
+                            _rr_p = DATA / "fleet" / "resort_restock.jsonl"
+                            _rr_p.parent.mkdir(parents=True, exist_ok=True)
+                            with open(_rr_p, "a", encoding="utf-8") as _rrf:
+                                _rrf.write(json.dumps({"t": int(time.time()), "pilot": pilot, "base": str(base_id), "item": str(iid), "qty": int(qty), "unit_cr": int(ap_cr), "spend_cr": int(qty) * int(ap_cr) if ok_rb else 0, "ok": bool(ok_rb)}, separators=(",", ":")) + "\n")
+                        except OSError:
+                            pass
                         say("resort_buy_ask %d %s @ %d cr%s" % (qty, iid, ap_cr, "" if ok_rb else " ERR"))
                         acted += 1
                     elif kind_a == "buy_create":

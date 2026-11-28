@@ -989,6 +989,7 @@ button.member:hover .face-medallion { border-color: var(--c, var(--accent)); box
 .div-tag.mining { color: #d9a857; }
 .div-tag.intel { color: #b18ae0; }
 .div-tag.command { color: #e3e6ee; }
+.div-tag.resort { color: #f59e0b; }
 
 /* Integrated Clickable Diplomacy Outreach Roster & Docs-style Faction Chat Thread Reader */
 .diplo-roster-table tbody tr.diplo-clickable { cursor: pointer; transition: background 120ms ease; }

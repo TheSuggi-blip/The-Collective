@@ -136,6 +136,26 @@ def compute_anomalies(data_dir, now_t=None):
         if ad_cnt >= 5:
             anoms.append(("recent_access_denied", "WARN", ad_cnt, "%d recent runner logs mention access_denied" % ad_cnt))
 
+    # 7. Ridgecrest critical station infrastructure upkeep zero check (Refueling Dock / Shield)
+    _con_rc = _open_ro_db(data)
+    if _con_rc is not None:
+        try:
+            _rc_rows = {
+                str(r["item"]): int(r["units"] or 0)
+                for r in _con_rc.execute(
+                    "SELECT item, units FROM faction_storage WHERE base = ? AND item IN ('flex_polymer','steel_plate','copper_wiring','fuel')",
+                    ("a2cee88abdcb31db229c04315f0ef6e1",),
+                ).fetchall()
+            }
+            _miss_infra = [it for it in ("flex_polymer", "steel_plate", "copper_wiring") if _rc_rows.get(it, 0) <= 0]
+            if _miss_infra:
+                anoms.append(("resort_infra_upkeep_zero", "CRITICAL", len(_miss_infra),
+                              "Ridgecrest missing Refueling Dock upkeep: " + ",".join(_miss_infra) + " (fuel=" + str(_rc_rows.get("fuel", 0)) + ")"))
+        except sqlite3.Error:
+            pass
+        finally:
+            _con_rc.close()
+
     return anoms
 
 
@@ -341,6 +361,55 @@ def run_xray(data_dir, hours=1, top_n=10):
             active_rep,
         )
     )
+
+    # 3b. Resort 8A (Appeal, Exact 24h Station Rev, Refuel Dock Upkeep, 24h Resort Restock Spend)
+    try:
+        import station_pnl as _spnl
+        _sp = _spnl.compute_station_pnl(data_dir=str(data))
+        _rc_st = next((x for x in (_sp.get("stations") or []) if "ridgecrest" in str(x.get("system") or x.get("name") or "").lower() or "a2cee88" in str(x.get("base") or x.get("id") or "")), None)
+        _live_app = int((_rc_st or {}).get("live_appeal") or (_rc_st or {}).get("appeal_live") or 0)
+        _built_app = int((_rc_st or {}).get("built_appeal") or (_rc_st or {}).get("appeal_built") or 47)
+        _app_rank = (_rc_st or {}).get("live_appeal_rank") or (_rc_st or {}).get("appeal_rank") or (_rc_st or {}).get("rank")
+        _fr = _sp.get("forensic_revenue") or {}
+        _r24 = _fr.get("24h") or _fr.get(24) or {}
+        _rr_spend = 0
+        _rr_buys = 0
+        _rr_p = data / "fleet" / "resort_restock.jsonl"
+        if _rr_p.is_file():
+            _cut24 = now_t - 86400.0
+            for _ln in _rr_p.read_text(encoding="utf-8", errors="replace").splitlines():
+                if not _ln.strip():
+                    continue
+                try:
+                    _rec = json.loads(_ln)
+                    if float(_rec.get("t") or 0) >= _cut24 and _rec.get("ok"):
+                        _rr_spend += int(_rec.get("spend_cr") or 0)
+                        _rr_buys += 1
+                except (ValueError, TypeError):
+                    continue
+        _rc_pol = _read_json(REPO / "game" / "bursar-policy.json", {}).get("resort_restock") or {}
+        _rc_cap = int(_rc_pol.get("max_spend_per_pass_cr") or 12000)
+        _con_r = _open_ro_db(data)
+        _rc_inv = {}
+        if _con_r is not None:
+            try:
+                for _r in _con_r.execute("SELECT item, units FROM faction_storage WHERE base = ? AND item IN ('fuel','flex_polymer','steel_plate','copper_wiring')", ("a2cee88abdcb31db229c04315f0ef6e1",)).fetchall():
+                    _rc_inv[str(_r["item"])] = int(_r["units"] or 0)
+            finally:
+                _con_r.close()
+        _rk_s = ("#%s" % _app_rank) if _app_rank else "#?"
+        out.append(
+            "  Resort 8A     : Appeal %d/%d (%s) | 24h Rev +%s/h (Tour +%s/h [%dv], Refuel +%s/h [%d ext]) | Fuel %d | FlexPoly %d | Restock24h %s cr (%d buys, cap %dk/pass)" % (
+                _live_app, _built_app, _rk_s,
+                format(int(_r24.get("gross_rev_h") or _r24.get("gross_h") or 0), ","),
+                format(int(_r24.get("tourism_h") or 0), ","), int(_r24.get("visits") or _r24.get("tourism_visits") or 0),
+                format(int(_r24.get("refuel_h") or 0), ","), int(_r24.get("ext_payers") or _r24.get("refuel_count") or 0),
+                int(_rc_inv.get("fuel") or 0), int(_rc_inv.get("flex_polymer") or 0),
+                format(_rr_spend, ","), _rr_buys, _rc_cap // 1000,
+            )
+        )
+    except Exception as _re:
+        out.append("  Resort 8A     : unavailable (%s)" % str(_re)[:80])
 
     # 4. Top 0-hop instant cashable vault jobs
     jobs = plan_zero_hop_liquidation(data, min_cash=2500, max_jobs=top_n, now_t=now_t)

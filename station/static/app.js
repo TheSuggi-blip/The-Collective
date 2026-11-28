@@ -4819,7 +4819,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     ...([a1, a6, a24].some((x) => x && revbOf(x) && Number(revbOf(x).other_unexplained_h || 0) !== 0)
       ? [row5('Other Unattributed Wallet Adjustments (Non-Trade Reconciling)', (a) => (a && revbOf(a) ? Number(revbOf(a).other_unexplained_h || 0) : 0), 'fs-ind')]
       : []),
-    row5(fsLbl('Owned Stations & Resorts -- Tourism, Market & Refuel Fees', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0), 'fs-ind'),
+    row5(fsLbl('Owned Stations & Resorts -- Tourism, Market & Refuel Fees', ['Resort']), (a) => (a && a.station_ops ? Number(a.station_ops.station_revenue_h || 0) : 0), 'fs-ind'),
     row5('Total Realized Operating Revenue & Exchange Inflows', realizedRevOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Matched Direct Operating Costs (Zero-Plug OpEx Breakdown)' },
     row5('Fuel Burn (Paid Station Refuels -- Excludes Free Bunkers)', fuelSumOf, 'fs-ind'),
@@ -4831,7 +4831,7 @@ function renderFinancialStatements(panel, ops, w, t) {
     row5('Realized Gross Profit (Sold Revenue less Direct OpEx)', realizedGrossOf, 'fs-sub'),
     { cls: 'fs-sec', sec: 'Building & Station Upkeep Costs (Rent, Maintenance & Overhead)' },
     row5(fsLbl('NPC Building & Office Rent Upkeep (' + ((a24 && a24.station_ops && a24.station_ops.npc_leased_count) || (a6 && a6.station_ops && a6.station_ops.npc_leased_count) || 0) + ' Leased Facilities, Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.npc_rent_h || 0) : null), 'fs-ind'),
-    row5(fsLbl('Owned Station Facility Maintenance Labor Upkeep (Cash)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
+    row5(fsLbl('Owned Station Facility Maintenance Labor Upkeep (Cash)', ['Resort']), (a) => (a && a.station_ops ? Number(a.station_ops.station_labor_opex_h || 0) : 0), 'fs-ind'),
     row5('Total Cash Building & Station Upkeep Costs', (a) => (a && a.station_ops ? (Number(a.station_ops.npc_rent_h || 0) + Number(a.station_ops.station_labor_opex_h || 0)) : null), 'fs-sub'),
     row5(fsLbl('Other Treasury Operating Net (Tax / Unrecorded Deposits, Ex-CapEx)', ['Command']), (a) => (a && a.station_ops ? Number(a.station_ops.treasury_other_h || 0) : (a ? numOr0(a, 'treasury_own_h') : null)), 'fs-ind'),
     row5('Realized Core Operating Profit (IFRS 15 EBIT, Ex-Seeds)', realizedEbitOf, 'fs-sub'),
