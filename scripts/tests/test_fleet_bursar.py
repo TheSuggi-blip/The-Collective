@@ -234,5 +234,57 @@ class BursarEngineTests(unittest.TestCase):
             self.assertNotIn("gh_base", bases)
 
 
+
+
+class TestBursarTreasuryFloor(unittest.TestCase):
+    def test_buy_treasury_floor_gate(self):
+        book = {"titanium_ore": {"best_buy": 40, "best_buy_qty": 100, "best_sell": 60, "best_sell_qty": 100}}
+        pol = {
+            "min_cash_keep": 20000,
+            "sell": {"enabled": False},
+            "buy": {
+                "enabled": True,
+                "min_treasury_cr": 500000,
+                "max_escrow_per_station": 100000,
+                "max_orders_per_station": 4,
+                "max_units_per_order": 100,
+                "max_unit_price_ratio": 0.90,
+                "outbid_cr": 1,
+                "use_needs_tsv": True,
+                "extra_items": [],
+            },
+        }
+        acts_low = bursar.plan_bursar_actions(
+            book, {}, [], {"titanium_ore": 100}, set(), {"titanium_ore": 40}, 80000, pol, treasury_cr=97000
+        )
+        self.assertFalse(any(a[0].startswith("buy_") for a in acts_low))
+        acts_ok = bursar.plan_bursar_actions(
+            book, {}, [], {"titanium_ore": 100}, set(), {"titanium_ore": 40}, 80000, pol, treasury_cr=600000
+        )
+        self.assertTrue(any(a[0] == "buy_create" for a in acts_ok))
+
+    def test_unwind_excess_runs_below_treasury_floor(self):
+        book = {"nebula_stellar_vintage": {"best_buy": 400, "best_buy_qty": 200, "best_sell": 500, "best_sell_qty": 100}}
+        own = [{"order_id": "ord-1", "item_id": "nebula_stellar_vintage", "side": "buy", "remaining": 200, "price_each": 400}]
+        pol = {
+            "min_cash_keep": 20000,
+            "sell": {"enabled": False},
+            "buy": {
+                "enabled": True,
+                "unwind_excess": True,
+                "min_treasury_cr": 500000,
+                "max_escrow_per_station": 50000,
+                "max_orders_per_station": 4,
+                "max_units_per_order": 60,
+                "use_needs_tsv": True,
+                "extra_items": [],
+            },
+        }
+        acts = bursar.plan_bursar_actions(
+            book, {}, own, {}, set(), {"nebula_stellar_vintage": 400}, 50000, pol, treasury_cr=97000
+        )
+        self.assertEqual(acts, [("buy_cancel", "nebula_stellar_vintage", "ord-1")])
+
+
 if __name__ == "__main__":
     unittest.main()

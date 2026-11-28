@@ -968,7 +968,24 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             break
     return picks
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None, fair_price_map=None):
+def _treasury_credits(data):
+    """Read live faction treasury credits from empire.json (or None if unavailable)."""
+    emp = read_json(Path(data) / "empire" / "empire.json", {})
+    if isinstance(emp, dict):
+        for k in ("credits", "treasury"):
+            v = emp.get(k)
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                return int(v)
+        fac = emp.get("faction")
+        if isinstance(fac, dict):
+            for k in ("credits", "treasury"):
+                v = fac.get(k)
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    return int(v)
+    return None
+
+
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None, fair_price_map=None, treasury_cr=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -1087,6 +1104,8 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 if o.get("order_id"):
                     actions.append(("buy_cancel", iid, o["order_id"]))
 
+    _min_tr = int(buy_cfg.get("min_treasury_cr") or 0)
+    _tr_ok = not (_min_tr > 0 and treasury_cr is not None and int(treasury_cr) < _min_tr)
     if buy_cfg.get("enabled", True):
         raw_cap = buy_cfg.get("max_escrow_per_station")
         max_escrow = int(raw_cap) if raw_cap is not None else 0
@@ -1115,7 +1134,7 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                     own_buy[iid] = []
                     cancelled_buy_iids.add(iid)
         used_buy_ords = 0
-        for iid, need_qty in sorted(want_items.items(), key=lambda kv: (-int(kv[1]), kv[0])):
+        for iid, need_qty in (sorted(want_items.items(), key=lambda kv: (-int(kv[1]), kv[0])) if _tr_ok else []):
             if used_buy_ords >= max_buy_ords or cash_avail <= 0:
                 break
             if iid in cancelled_buy_iids:
@@ -1481,6 +1500,10 @@ def main(argv=None):
                         pass
                 orders_resp = body(raw("view_orders", {}, group="spacemolt_market")).get("orders") or []
                 cr = get_credits()
+                try:
+                    policy = load_policy(policy_path)
+                except Exception:
+                    pass
                 eff_pol = policy
                 try:
                     import upgrades as _upg
@@ -1510,7 +1533,7 @@ def main(argv=None):
                     _fair_map_live = _mg_live.load_fair_price_map(DATA)
                 except Exception:
                     pass
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys, fair_price_map=_fair_map_live)
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys, fair_price_map=_fair_map_live, treasury_cr=_treasury_credits(DATA))
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break

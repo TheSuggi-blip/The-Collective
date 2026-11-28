@@ -14,12 +14,12 @@
   "lanes": [
     "active_freight",
     "hub_upkeep",
-    "internal_supply",
     "liquidate_surplus",
-    "public_freight",
-    "arbitrage",
     "consolidate_to_trader",
-    "backhaul_mission"
+    "public_freight",
+    "internal_supply",
+    "backhaul_mission",
+    "arbitrage"
   ],
   "home_bases": [
     "node_beta_industrial_station",
@@ -271,16 +271,19 @@
     "6B.": [
       "active_freight",
       "hub_upkeep",
-      "internal_supply",
-      "public_freight",
+      "liquidate_surplus",
       "consolidate_to_trader",
+      "public_freight",
+      "internal_supply",
       "backhaul_mission"
     ],
     "6C. Fleet Fuel": [
       "hub_upkeep",
       "active_freight",
-      "internal_supply",
+      "liquidate_surplus",
+      "consolidate_to_trader",
       "public_freight",
+      "internal_supply",
       "backhaul_mission"
     ],
     "6C. Combat Salvage": [

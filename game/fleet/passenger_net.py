@@ -498,49 +498,53 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     ttl = float(policy.get("board_cache_ttl_s") or 90.0)
     now = time.time()
     cached = read_json(cache_p, {})
-    if isinstance(cached, dict) and (now - float(cached.get("updated_at") or 0)) < ttl and cached.get("boards"):
+    if isinstance(cached, dict) and (now - float(cached.get("updated_at") or 0)) < ttl and len(cached.get("boards") or {}) >= 10:
         return cached["boards"]
-    b2s = graph["base_to_sys"]
-    scan_list = list(policy.get("scan_stations") or [])
-    hb = str(policy.get("home_base") or "")
-    if hb and hb not in scan_list:
-        scan_list.insert(0, hb)
-    boards = {}
-    if isinstance(cached, dict) and isinstance(cached.get("boards"), dict):
-        for k, v in cached["boards"].items():
-            if isinstance(v, dict) and (now - float(v.get("t") or 0)) < 600.0:
-                boards[k] = v
-    def _poll_one(bid):
-        ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"base_id": bid}, timeout=10)
-        if ok and isinstance(sc, dict):
-            return bid, {
-                "system": b2s.get(bid, ""),
-                "waiting": sc.get("waiting") or [],
-                "transit_lounge": sc.get("transit_lounge"),
-                "fare_surge": sc.get("fare_surge"),
-                "demand_level": sc.get("demand_level"),
-                "t": int(now),
-            }
-        return bid, None
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
-        futs = [ex.submit(_poll_one, bid) for bid in scan_list]
-        done, _ = concurrent.futures.wait(futs, timeout=35)
-        for f in done:
-            try:
-                bid, bobj = f.result()
-                if bobj is not None:
-                    boards[bid] = bobj
-            except Exception:
-                pass
-    try:
-        cache_p.parent.mkdir(parents=True, exist_ok=True)
-        lock_p = cache_p.with_suffix(".lock")
-        with open(lock_p, "a+") as lf:
-            fcntl.flock(lf, fcntl.LOCK_EX)
+    cache_p.parent.mkdir(parents=True, exist_ok=True)
+    lock_p = cache_p.with_suffix(".lock")
+    with open(lock_p, "a+") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        now = time.time()
+        cached = read_json(cache_p, {})
+        if isinstance(cached, dict) and (now - float(cached.get("updated_at") or 0)) < ttl and len(cached.get("boards") or {}) >= 10:
+            return cached["boards"]
+        b2s = graph["base_to_sys"]
+        scan_list = list(policy.get("scan_stations") or [])
+        hb = str(policy.get("home_base") or "")
+        if hb and hb not in scan_list:
+            scan_list.insert(0, hb)
+        boards = {}
+        if isinstance(cached, dict) and isinstance(cached.get("boards"), dict):
+            for k, v in cached["boards"].items():
+                if isinstance(v, dict) and (now - float(v.get("t") or 0)) < 600.0:
+                    boards[k] = v
+        def _poll_one(bid):
+            ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"id": bid}, timeout=10)
+            if ok and isinstance(sc, dict):
+                return bid, {
+                    "system": b2s.get(bid, ""),
+                    "waiting": sc.get("waiting") or [],
+                    "transit_lounge": sc.get("transit_lounge"),
+                    "fare_surge": sc.get("fare_surge"),
+                    "demand_level": sc.get("demand_level"),
+                    "t": int(now),
+                }
+            return bid, None
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
+            futs = [ex.submit(_poll_one, bid) for bid in scan_list]
+            done, _ = concurrent.futures.wait(futs, timeout=35)
+            for f in done:
+                try:
+                    bid, bobj = f.result()
+                    if bobj is not None:
+                        boards[bid] = bobj
+                except Exception:
+                    pass
+        try:
             cache_p.write_text(json.dumps({"updated_at": int(now), "boards": boards}) + "\n", encoding="ascii")
-    except OSError:
-        pass
-    return boards
+        except OSError:
+            pass
+        return boards
 
 
 def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, graph, policy, data_dir, pilot_credits=None):
