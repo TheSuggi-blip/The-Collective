@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 22.
+Pilots of it in our space in the last 24 hours: 15.
 
 ## Identity
 
@@ -47,28 +47,21 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Cargo Drone 032 | Node Alpha (`node_alpha`) | 0 | floor_price |
-| Cargo Drone 037 | Node Alpha (`node_alpha`) | 0 | floor_price |
-| Cargo Drone 042 | Node Alpha (`node_alpha`) | 0 | floor_price |
-| Cargo Drone 060 | Node Alpha (`node_alpha`) | 0 | theoria |
-| Cargo Drone 061 | Node Alpha (`node_alpha`) | 0 | prospect |
-| Cargo Drone 075 | Node Alpha (`node_alpha`) | 0 | floor_price |
-| Combat Drone 009 | Pherkad (`pherkad`) | 0 | opus_magna |
+| Combat Drone 020 | Pherkad (`pherkad`) | 3 | opus_magna |
+| Combat Drone 148 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 153 | Node Alpha (`node_alpha`) | 0 | dialectic |
 | Combat Drone 176 | Hamal (`hamal`) | 0 | dialectic |
-| Mining Drone 021 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 026 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 031 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 033 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 034 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 044 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 059 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 074 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 078 | Synchrony (`synchrony`) | 0 | floor_price |
-| Mining Drone 177 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 190 | The Experiment (`the_experiment`) | 0 | floor_price |
-| Mining Drone 210 | Node Gamma (`node_gamma`) | 0 | theoria |
-| Mining Drone 215 | Node Gamma (`node_gamma`) | 0 | theoria |
-| Mining Drone 247 | Synchrony (`synchrony`) | 0 | cobble |
+| Mining Drone 204 | Synchrony (`synchrony`) | 0 | threshold |
+| Mining Drone 209 | Node Alpha (`node_alpha`) | 0 | threshold |
+| Mining Drone 214 | The Experiment (`the_experiment`) | 0 | threshold |
+| Mining Drone 223 | Pherkad (`pherkad`) | 0 | shard |
+| Mining Drone 228 | Synchrony (`synchrony`) | 0 | shard |
+| Mining Drone 236 | Synchrony (`synchrony`) | 0 | prospect |
+| Mining Drone 238 | Synchrony (`synchrony`) | 0 | shard |
+| Mining Drone 247 | Node Beta (`node_beta`) | 0 | cobble |
+| Mining Drone 249 | Synchrony (`synchrony`) | 0 | threshold |
+| Mining Drone 268 | Synchrony (`synchrony`) | 0 | shard |
+| Mining Drone 271 | Synchrony (`synchrony`) | 0 | prospect |
 
 ## Standing History
 
