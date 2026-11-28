@@ -518,7 +518,7 @@ class SpecialistMiningToolTests(unittest.TestCase):
             "bulk_deficit_min_bid": 20.0, "deficit_skip_overstock_units": 100000,
             "deficit_skip_overstock_max_bid": 12.0,
         }
-        pinfo = {"pilot": "EUV Anvil Ridge", "system": "s0", "tools": {"ore"}, "tier": 1, "wing": "3B. Ore -- Bulk"}
+        pinfo = {"name": "EUV Anvil Ridge", "system": "s0", "modules": ["mining_laser_i"], "tier": 1, "wing": "3B. Ore -- Bulk"}
         cands = mine_net.score_belt_candidates(pinfo, world, pol, {}, {}, now_t=1000.0)
         self.assertTrue(cands, "3B should find aluminum_ore candidate")
         self.assertEqual(cands[0]["resource"], "aluminum_ore")
