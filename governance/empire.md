@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-27T21:58:56Z.
+Facts as of 2026-11-28T00:28:26Z.
 
 ## 1. The Faction
 
@@ -33,7 +33,7 @@ Facts as of 2026-11-27T21:58:56Z.
 | Ships of the fleet in it | 275 of 500 |
 | Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
-| Offices at stations | 37, rent 1,614 cr per cycle (138,804 cr a day) |
+| Offices at stations | 38, rent 1,614 cr per cycle (138,804 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -50,7 +50,7 @@ of its own limit.
 | CLTV Outpost Atria | outpost | `atria` | thriving | -- |
 | CLTV Outpost Felis | outpost | `felis` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
-| Collective Resort Ridgecrest | station | `ridgecrest` | operational | -- |
+| Collective Resort Ridgecrest | station | `ridgecrest` | struggling | -- |
 
 Systems we hold something in:
 
@@ -86,6 +86,7 @@ hold).
 | Orbital Spa & Resort Deck | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Rec Lounge | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | The Far Table | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
+| Shield Projector | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Stellar Bistro | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Quarters | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Workshop | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
