@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-28T01:47:42Z.
+Facts as of 2026-11-28T02:46:20Z.
 
 ## 1. The Faction
 
@@ -29,8 +29,8 @@ Facts as of 2026-11-28T01:47:42Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 275 of a limit of 300 |
-| Ships of the fleet in it | 275 of 500 |
+| Members | 280 of a limit of 325 |
+| Ships of the fleet in it | 280 of 500 |
 | Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
 | Offices at stations | 39, rent 1,614 cr per cycle (138,804 cr a day) |
@@ -86,7 +86,6 @@ hold).
 | Orbital Spa & Resort Deck | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Rec Lounge | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | The Far Table | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
-| Recruitment Desk | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Shield Projector | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Stellar Bistro | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Quarters | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
@@ -99,6 +98,7 @@ hold).
 | Sunrise Griddle | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Notice Board | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Grand Hotel & Resort | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
+| Recruitment Center | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Zero-G Lounge & Bar | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Frontier Cantina | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
