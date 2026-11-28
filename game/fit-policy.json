@@ -1731,12 +1731,12 @@
             "damage_control_system"
           ],
           "utility": [
-            "deep_core_survey_scanner",
-            "survey_scanner_ii",
-            "survey_scanner_i",
             "phase_cloaking_device",
             "cloaking_device_ii",
             "cloaking_device_i",
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
+            "survey_scanner_i",
             "fuel_optimizer",
             "ship_scanner_iii",
             "ship_scanner_ii",
@@ -1747,6 +1747,7 @@
           "min_tier": 0,
           "defense": [],
           "utility": [
+            "cloaking_device_i",
             "fuel_optimizer"
           ]
         },
@@ -1785,12 +1786,12 @@
             "damage_control_system"
           ],
           "utility": [
-            "deep_core_survey_scanner",
-            "survey_scanner_ii",
-            "survey_scanner_i",
             "phase_cloaking_device",
             "cloaking_device_ii",
             "cloaking_device_i",
+            "deep_core_survey_scanner",
+            "survey_scanner_ii",
+            "survey_scanner_i",
             "fuel_optimizer",
             "ship_scanner_iii",
             "ship_scanner_ii",

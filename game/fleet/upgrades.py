@@ -1161,6 +1161,10 @@ def serve_upgrades(data_dir=DATA_DEFAULT, now=None, dry=False, max_actions=500, 
                     r["updated_at"] = int(now)
                 row_changed = True
                 return
+            if not ok_b and best_listed is None and price > int(r["max_price"]):
+                r["updated_at"], r["note"] = int(now), "browse_ships deferred; retrying next pass (quote %s > max %s)" % (_fmt_num(price), _fmt_num(r["max_price"]))
+                row_changed = True
+                return
             if price > int(r["max_price"]):
                 r["state"], r["updated_at"], r["note"] = "failed", int(now), "quote %s > max %s" % (_fmt_num(price), _fmt_num(r["max_price"]))
                 row_changed = True

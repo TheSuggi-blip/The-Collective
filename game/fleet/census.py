@@ -619,7 +619,7 @@ def read_system(sid):
         return False, 0, 0, None
     if CLOAK:
         try:
-            raw('cloak')
+            raw('cloak', {'enable': True})
         except Exception:
             pass
     survey = raw('survey_system') if SCANNER else None          # before get_system: a place it reveals is read too
@@ -632,8 +632,13 @@ def read_system(sid):
     wildlife = {'system': sid, 'read_at': now(), 'pois': {}}
     pois = [p for p in system.get('pois') or [] if isinstance(p, dict)]
     say(f'{system.get("name")}: {len(pois)} places: ' + ', '.join(f'{p.get("id")} ({p.get("type")})' for p in pois)[:400])
+    _pol_lvl = system.get('police_level')
+    _is_lawless = (int(_pol_lvl) <= 0) if isinstance(_pol_lvl, (int, float)) else (not str(system.get('empire') or '').strip())
     for p in pois:
         if p.get('type') not in FIELDS:
+            continue
+        if _is_lawless and not CLOAK:
+            say(f'skipping lawless field {sid}:{p["id"]} (no cloaking_device fitted -- scout survival guard)')
             continue
         if not goal('go-to-poi', {'targetPoiId': p['id']}):
             continue
@@ -656,6 +661,10 @@ def read_system(sid):
             + (' (' + ', '.join(f'{x.get("name")} {x.get("tier") or "?"} hull {x.get("hull")}' for x in pirates)[:200] + ')' if pirates else ''))
         if p_cnt > 0:
             say(f'pirates spotted at {sid}:{p["id"]} ({p_cnt}) -- bailing out of system immediately (scout safety)')
+            try:
+                raw('retreat', {}, group='spacemolt_battle')
+            except Exception:
+                pass
             break
     _keep_fly_mode = '--keep-flying' in sys.argv
     for p in pois:
