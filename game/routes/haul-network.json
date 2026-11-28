@@ -9,12 +9,12 @@
  "standing": true,
  "measured": {
   "date": "2026-11-28",
-  "runs": 4067,
-  "minutes": 6,
-  "credits_per_run": 30,
-  "cph_per_ship": 150,
+  "runs": 4077,
+  "minutes": 7,
+  "credits_per_run": 0,
+  "cph_per_ship": 0,
   "hours": 12,
-  "last_run": "2026-11-28T10:41:34Z"
+  "last_run": "2026-11-28T12:41:13Z"
  },
  "requires": {
   "skills_below": {
