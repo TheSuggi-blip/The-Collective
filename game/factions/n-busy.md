@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 15.
+Pilots of it in our space in the last 24 hours: 4.
 
 ## Identity
 
@@ -47,21 +47,10 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 020 | Pherkad (`pherkad`) | 3 | opus_magna |
-| Combat Drone 148 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 153 | Node Alpha (`node_alpha`) | 0 | dialectic |
-| Combat Drone 176 | Hamal (`hamal`) | 0 | dialectic |
-| Mining Drone 204 | Synchrony (`synchrony`) | 0 | threshold |
-| Mining Drone 209 | Node Alpha (`node_alpha`) | 0 | threshold |
-| Mining Drone 214 | The Experiment (`the_experiment`) | 0 | threshold |
-| Mining Drone 223 | Pherkad (`pherkad`) | 0 | shard |
-| Mining Drone 228 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 236 | Synchrony (`synchrony`) | 0 | prospect |
-| Mining Drone 238 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 247 | Node Beta (`node_beta`) | 0 | cobble |
-| Mining Drone 249 | Synchrony (`synchrony`) | 0 | threshold |
-| Mining Drone 268 | Synchrony (`synchrony`) | 0 | shard |
-| Mining Drone 271 | Synchrony (`synchrony`) | 0 | prospect |
+| Combat Drone 127 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 129 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 181 | Node Beta (`node_beta`) | 0 | dialectic |
+| Mining Drone 118 | Node Beta (`node_beta`) | 0 | floor_price |
 
 ## Standing History
 
