@@ -226,7 +226,7 @@ def compute_station_pnl(data_dir=None, station_filter=""):
             while cur_f in upg_parent and upg_parent[cur_f] not in satisfied_types:
                 cur_f = upg_parent[cur_f]
                 satisfied_types.add(cur_f)
-        for fid in ("refueling_dock", "recruitment_desk", "recruitment_center", "guild_hall_recruiting", "fuel_tank_expansion"):
+        for fid in ("refueling_dock", "recruitment_desk", "recruitment_center", "guild_hall_recruiting", "transit_terminal", "fuel_tank_expansion"):
             if fid in satisfied_types and fid != "fuel_tank_expansion":
                 continue
             row = db.execute("SELECT name, build_cost, upgrades_from, faction_cap FROM facilities WHERE id=?", (fid,)).fetchone()
