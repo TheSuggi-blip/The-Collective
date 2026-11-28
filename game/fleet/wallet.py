@@ -110,8 +110,8 @@ MIN_GIFT = 1000                # a share smaller than this is not worth a call: 
 SWEEP_ENABLED = True    # on since 2026-11-17 20:20 UTC, after its dry run on live data
 SWEEP_AT = 60000               # a trader/command ship holding this much gives what it holds above KEEP_SHIP
 KEEP_SHIP = 50000              # what a trader or command ship keeps (buys cargo/fittings)
-SWEEP_WORK = 40000             # a non-trading working ship holding this much gives what it holds above KEEP_WORK
-KEEP_WORK = 30000              # what a miner/hauler/scout/drone/sentinel keeps (>= top-up donor KEEP)
+SWEEP_WORK = 28000             # a non-trading working ship holding this much gives what it holds above KEEP_WORK
+KEEP_WORK = 18000              # what a miner/hauler/scout/drone/sentinel keeps (above LOW=10k, frees Treasury liquidity)
 FULL_PURSE_ROLES = frozenset(("trader", "command"))
 MIN_DEPOSIT = 20000            # the leader deposits once it holds this much above KEEP_SHIP
 MIN_DIRECT_DEPOSIT = 10000     # minimum excess for a seated member to deposit directly into the faction treasury

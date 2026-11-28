@@ -524,7 +524,10 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                             "pickup_hops": p_hops, "delivery_hops": d_hops,
                         })
 
-            if chosen is None and max_spend >= 200:
+            _tr_floor = float(policy.get("hub_upkeep_buy_treasury_floor") or 0)
+            _tr_now = ((emp_data.get("faction") or {}).get("treasury")) if isinstance(emp_data, dict) else None
+            _buy_allowed = (iid == "fuel_cell") or (_tr_floor <= 0) or (not isinstance(_tr_now, (int, float))) or (float(_tr_now) >= _tr_floor)
+            if chosen is None and max_spend >= 200 and _buy_allowed:
                 cap_p = float(max_prices.get(iid) or 0)
                 if cap_p > 0:
                     for ask_p, ask_q, oloc in sorted(asks_by_item.get(iid) or [], key=lambda x: x[0]):

@@ -468,6 +468,31 @@ def _stop_requested(data_dir, pilot):
     return (Path(data_dir) / "fleet" / "host" / "stop" / pilot).exists() or (Path(data_dir) / "fleet" / "STOP").exists()
 
 
+def _denied_bases(data_dir, now_t=None):
+    now_t = time.time() if now_t is None else float(now_t)
+    doc = read_json(Path(data_dir) / "fleet" / "passenger_denied_bases.json", {})
+    if not isinstance(doc, dict):
+        return set()
+    return {str(k) for k, exp in doc.items() if float(exp or 0) > now_t}
+
+
+def _record_denied_base(data_dir, base_id, ttl_s=86400):
+    if not base_id:
+        return
+    p = Path(data_dir) / "fleet" / "passenger_denied_bases.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    now_t = time.time()
+    doc = read_json(p, {})
+    if not isinstance(doc, dict):
+        doc = {}
+    doc = {str(k): v for k, v in doc.items() if float(v or 0) > now_t}
+    doc[str(base_id)] = int(now_t + ttl_s)
+    try:
+        p.write_text(json.dumps(doc, sort_keys=True) + "\n", encoding="ascii")
+    except OSError:
+        pass
+
+
 def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     cache_p = Path(data_dir) / "fleet" / "passenger_boards.json"
     ttl = float(policy.get("board_cache_ttl_s") or 90.0)
@@ -481,8 +506,12 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     if hb and hb not in scan_list:
         scan_list.insert(0, hb)
     boards = {}
+    if isinstance(cached, dict) and isinstance(cached.get("boards"), dict):
+        for k, v in cached["boards"].items():
+            if isinstance(v, dict) and (now - float(v.get("t") or 0)) < 600.0:
+                boards[k] = v
     def _poll_one(bid):
-        ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"id": bid}, timeout=10)
+        ok, sc, _ = _raw(gate_mod, pilot, "list_station_passengers", {"base_id": bid}, timeout=10)
         if ok and isinstance(sc, dict):
             return bid, {
                 "system": b2s.get(bid, ""),
@@ -493,9 +522,9 @@ def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
                 "t": int(now),
             }
         return bid, None
-    with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as ex:
         futs = [ex.submit(_poll_one, bid) for bid in scan_list]
-        done, _ = concurrent.futures.wait(futs, timeout=22)
+        done, _ = concurrent.futures.wait(futs, timeout=35)
         for f in done:
             try:
                 bid, bobj = f.result()
@@ -605,6 +634,9 @@ def _fly_and_dock(gate_mod, pilot, cur_sys, docked_base, dest_sys, dest_base, gr
         time.sleep(10.2)
         ok_d, _, msg_d = _raw(gate_mod, pilot, "dock", {}, timeout=45)
         if not ok_d and "already docked" not in msg_d.lower():
+            low_d = msg_d.lower()
+            if "access denied" in low_d or "access_denied" in low_d or "forbidden" in low_d:
+                _record_denied_base(data_dir, dest_base)
             return False, cur_sys, docked_base, "dock_fail:" + msg_d[:60]
         docked_base = dest_base
         time.sleep(10.2)
@@ -716,7 +748,8 @@ def run_pilot(pilot, minutes=40, route_id="passenger-network", policy_path=None,
         if not docked_base:
             break
         ok_b, sc_b, _ = _raw(gate, pilot, "list_station_passengers", {}, timeout=20)
-        cands = score_station_board(docked_base, cur_sys, sc_b if ok_b else {}, berths, graph, pol, avoid=graph["strongholds"])
+        _denied_b = _denied_bases(data_dir)
+        cands = [c for c in score_station_board(docked_base, cur_sys, sc_b if ok_b else {}, berths, graph, pol, avoid=graph["strongholds"]) if c.get("dest_base") not in _denied_b]
         if cands:
             primary = cands[0]
             ok_ld, _, _ = _raw(gate, pilot, "load_passenger", {"id": primary["dest_base"]}, timeout=25)
