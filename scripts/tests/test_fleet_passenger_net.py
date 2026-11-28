@@ -186,6 +186,25 @@ class TestPassengerPolicyResolution(unittest.TestCase):
         finally:
             os.chdir(old_cwd)
 
+    def test_choose_reposition_hub_excludes_claimed(self):
+        graph = {
+            "adj": {"ridgecrest": ["node_beta", "sol"], "node_beta": ["ridgecrest"], "sol": ["ridgecrest"]},
+            "base_to_sys": {"rc": "ridgecrest", "nb": "node_beta", "sol_b": "sol"},
+            "name_to_sys": {},
+            "gates": {},
+        }
+        boards = {
+            "nb": {"system": "node_beta", "waiting": [{"class": "business", "destination": "rc", "destination_system": "ridgecrest", "estimated_fare": 2000}]},
+            "sol_b": {"system": "sol", "waiting": [{"class": "business", "destination": "rc", "destination_system": "ridgecrest", "estimated_fare": 1500}]},
+        }
+        pol = {"home_base": "rc", "home_system": "ridgecrest", "max_hops": 10, "min_fare_per_jump": 100}
+        berths = {"economy": 0, "business": 1, "first": 0}
+        r1 = pn.choose_reposition_hub("ridgecrest", boards, berths, graph, pol)
+        self.assertEqual(r1["base"], "nb")
+        r2 = pn.choose_reposition_hub("ridgecrest", boards, berths, graph, pol, claimed_hubs={"nb"})
+        self.assertEqual(r2["base"], "sol_b")
+
+
 
 if __name__ == "__main__":
     unittest.main()

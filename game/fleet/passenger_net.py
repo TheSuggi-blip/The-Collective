@@ -502,6 +502,34 @@ def _record_denied_base(data_dir, base_id, ttl_s=86400):
         pass
 
 
+def _claim_reposition_hub(data_dir, pilot, cur_sys, boards, berths, graph, policy, avoid=None, ttl_s=600):
+    """Atomically pick & claim a distinct reposition hub (max 1 inbound liner per non-home hub) to prevent 18-ship conga lines."""
+    cp = Path(data_dir) / "fleet" / "passenger_rep_claims.json"
+    cp.parent.mkdir(parents=True, exist_ok=True)
+    lp = cp.with_suffix(".lock")
+    now_t = time.time()
+    try:
+        with open(lp, "a+") as lf:
+            fcntl.flock(lf, fcntl.LOCK_EX)
+            doc = read_json(cp, {})
+            if not isinstance(doc, dict):
+                doc = {}
+            doc = {
+                str(k): v for k, v in doc.items()
+                if isinstance(v, dict) and float(v.get("exp") or 0) > now_t and str(v.get("pilot") or "") != str(pilot)
+            }
+            claimed_bases = set(doc.keys())
+            rep = choose_reposition_hub(cur_sys, boards, berths, graph, policy, claimed_hubs=claimed_bases, avoid=avoid)
+            if rep and rep.get("base"):
+                hb = str(policy.get("home_base") or "")
+                if rep["base"] != hb:
+                    doc[str(rep["base"])] = {"pilot": str(pilot), "exp": int(now_t + ttl_s)}
+            cp.write_text(json.dumps(doc, sort_keys=True) + "\n", encoding="ascii")
+            return rep
+    except OSError:
+        return choose_reposition_hub(cur_sys, boards, berths, graph, policy, avoid=avoid)
+
+
 def _refresh_boards_cache(gate_mod, pilot, data_dir, graph, policy):
     cache_p = Path(data_dir) / "fleet" / "passenger_boards.json"
     ttl = float(policy.get("board_cache_ttl_s") or 90.0)
@@ -779,7 +807,7 @@ def run_pilot(pilot, minutes=40, route_id="passenger-network", policy_path=None,
             continue
 
         boards = _refresh_boards_cache(gate, pilot, data_dir, graph, pol)
-        rep = choose_reposition_hub(cur_sys, boards, berths, graph, pol, avoid=graph["strongholds"])
+        rep = _claim_reposition_hub(data_dir, pilot, cur_sys, boards, berths, graph, pol, avoid=graph["strongholds"])
         if rep and rep["base"] != docked_base and time.time() + 180 < deadline:
             ok_f, cur_sys, docked_base, why = _fly_and_dock(gate, pilot, cur_sys, docked_base, rep["system"], rep["base"], graph, pol, data_dir)
             if not ok_f:
