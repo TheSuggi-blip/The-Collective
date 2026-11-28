@@ -98,7 +98,7 @@ function stampCet(text) {                          // convert UTC ISO/file stamp
 const pct = (a, b) => (b > 0 ? Math.max(0, Math.min(100, Math.round(100 * a / b))) : 0);
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const LAWLESS = '#59607a';
-const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Unassigned: '#7c869b',
+const DIV = { Command: '#e3e6ee', Mining: '#d9a857', Trade: '#5fbfad', Logistics: '#6fa8dc', Military: '#d9766f', Intel: '#b18ae0', Resort: '#f59e0b', Unassigned: '#7c869b',
   'Fleet & Defense': '#d9766f', Hunters: '#e08e5a', Miners: '#d9a857', 'Traders & Bursars': '#5fbfad', 'Crafters & Refiners': '#7ec48c', Pirates: '#ef4444' };
 const JOB_DIVS = [
   { key: 'Fleet & Defense', short: 'Def', top: 'Defense', shape: 'Guard', subs: ['Task Force Prime (10)', 'Task Force Alpha (8)', 'Task Force Beta (8)', 'Grand Battle Line', 'Outpost Sentinels & Support'] },
@@ -5289,7 +5289,7 @@ async function renderMetrics(panel, live) {
     wHead.append(el('h3', null, 'Division & wing KPI scorecards (' + winLbl + ', ' + fWin.wings.length + ' specialized units = ' + fmt(standingShips) + ' ships)'));
     panel.append(wHead);
 
-    const pillars = ['All', 'Combat', 'Mining', 'Trade', 'Manufacturing', 'Logistics', 'Intel'];
+    const pillars = ['All', 'Combat', 'Mining', 'Trade', 'Manufacturing', 'Logistics', 'Intel', 'Resort'];
     const pBar = el('div', 'wg-bar');
     for (const pil of pillars) {
       const cnt = pil === 'All' ? fWin.wings.length : fWin.wings.filter((x) => x.pillar === pil).length;
@@ -5320,7 +5320,7 @@ async function renderMetrics(panel, live) {
       const nm = el('b', 'wg-name', wg.id + '  ' + wg.name);
       nm.style.color = DIV[wg.division] || DIV.Unassigned;
       const capTxt = wg.cap_mult ? (' | ' + Number(wg.cap_mult).toFixed(2) + 'x cap') : '';
-      titleBox.append(nm, el('span', 'wg-rc', wg.responsibility_center + ' | ' + fmt(wg.working) + '/' + fmt(wg.ships) + ' working' + capTxt));
+      titleBox.append(nm, el('span', 'wg-rc', wg.ships > 0 ? (wg.responsibility_center + ' | ' + fmt(wg.working) + '/' + fmt(wg.ships) + ' working' + capTxt) : (wg.responsibility_center + ' | Station Hub')));
       const badge = el('span', 'pill ' + stCls(wg.status), wg.staged ? 'STAGED' : (wg.status + ' ' + Math.round(wg.health_pct || 0)));
       hd.append(titleBox, badge);
       card.append(hd);

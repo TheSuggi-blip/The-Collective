@@ -233,13 +233,21 @@ def load_graph(data_dir):
                 name_to_sys[ss.lower()] = ss
                 if sh:
                     strongholds.add(ss)
+        bad_sys = set()
+        try:
+            for (ss,) in con.execute("SELECT DISTINCT system FROM stations WHERE COALESCE(wrecked, 0) = 1 OR (kind = 'outpost' AND COALESCE(tag, '') != 'CLTV')").fetchall():
+                if ss:
+                    bad_sys.add(str(ss))
+        except sqlite3.Error:
+            pass
         for tbl in ("bases", "places"):
             try:
                 for b_id, s_id in con.execute("SELECT base, system FROM %s WHERE base IS NOT NULL AND system IS NOT NULL" % tbl).fetchall():
                     bs, ss = str(b_id), str(s_id)
                     if bs and ss:
                         base_to_sys[bs] = ss
-                        sys_to_base.setdefault(ss, bs)
+                        if tbl == "bases" or ss not in bad_sys:
+                            sys_to_base.setdefault(ss, bs)
             except sqlite3.Error:
                 pass
         try:
@@ -736,7 +744,11 @@ def run_pilot(pilot, minutes=40, route_id="passenger-network", policy_path=None,
             ok_f, cur_sys, docked_base, why = _fly_and_dock(gate, pilot, cur_sys, "", cur_sys, local_b, graph, pol, data_dir)
             if not ok_f:
                 notes.append(why)
-        else:
+                if home_base and home_sys and cur_sys != home_sys:
+                    ok_h, cur_sys, docked_base, why_h = _fly_and_dock(gate, pilot, cur_sys, "", home_sys, home_base, graph, pol, data_dir)
+                    if not ok_h:
+                        notes.append(why_h)
+        elif home_base and home_sys:
             ok_f, cur_sys, docked_base, why = _fly_and_dock(gate, pilot, cur_sys, "", home_sys, home_base, graph, pol, data_dir)
             if not ok_f:
                 notes.append(why)

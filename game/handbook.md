@@ -22,7 +22,7 @@ Read it in parts: `hive.py handbook [<topic>]` (MCP: the tool docs, view=handboo
 contents and how the data flows; a table's name, a subject or a word gives its sections. The store holds every file
 as kind `handbook` of the table docs, one row a section, every version in doc_versions.
 
-The store: 73 tables and 15 views (52 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 32 tools.
+The store: 74 tables and 15 views (53 snapshot, 9 history, 9 statistics, 3 bookkeeping); the MCP tool `collective`: 32 tools.
 Kinds: snapshot = what a file says now (replaced when the file changes; it also carries `src`, the file its row came
 from; dropped and loaded again when its definition changes); history = rows kept over time (raw rows for days, sums
 as each table's Kept line says); statistics = computed by stats.py when due; view = a query over tables, computed when
@@ -38,7 +38,7 @@ the store's own marks. Columns come from a fresh empty schema; every example run
 - Money, `game/handbook/money.md`: stats_money_hour, division_pnl_24h
 - Markets, `game/handbook/markets.md`: books, ladders, fair_prices, clean_books, cltv_open_orders, ship_listings, moves, market_hour, contract_candidates
 - Map and intel, `game/handbook/map-and-intel.md`: systems, lanes, places, fields, herds, readings, reading_day, stations, outpost_candidates, factions, public_battles, leaderboards, rival_snapshots, tourism_snapshots, met, player_comms, observations
-- Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites
+- Our faction, `game/handbook/our-faction.md`: faction, faction_members, bases, our_stations, faction_facilities, faction_storage, inventory_faction, territory, sites, station_revenue_log
 - Stock and reserve, `game/handbook/stock-and-reserve.md`: holdings, inventory, inventory_by_station, vault_cashable, stock_hour, needs, need_status
 - The catalog, `game/handbook/the-catalog.md`: items, recipes, recipe_inputs, recipe_outputs, recipe_facilities, facilities, facility_materials, hulls, hull_materials, skills, game_releases
 - Supply, `game/handbook/supply.md`: supply_chains, supply_status, stats_supply_hour

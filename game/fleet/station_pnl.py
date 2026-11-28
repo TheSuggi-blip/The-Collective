@@ -47,7 +47,49 @@ def _load_catalog_facilities(data_dir):
     return {}
 
 
+def _exact_action_log_revenue(data_dir, npc_rent_h, own_labor_h):
+    sr_p = Path(data_dir) / "empire" / "station_revenue.jsonl"
+    if not sr_p.is_file():
+        return {}
+    now = time.time()
+    rows = []
+    try:
+        for ln in sr_p.read_text(encoding="utf-8", errors="replace").splitlines():
+            if ln.strip():
+                try:
+                    rows.append(json.loads(ln))
+                except ValueError:
+                    pass
+    except OSError:
+        return {}
+    if not rows:
+        return {}
+    out = {}
+    for hrs in (1, 3, 6, 24):
+        cut = now - hrs * 3600.0
+        tour = sum(int(r.get("amount") or 0) for r in rows if float(r.get("t") or 0) >= cut and r.get("event_type") == "faction.tourism_revenue")
+        ref = sum(int(r.get("amount") or 0) for r in rows if float(r.get("t") or 0) >= cut and r.get("event_type") == "faction.station_revenue")
+        vis = sum(1 for r in rows if float(r.get("t") or 0) >= cut and r.get("event_type") == "faction.tourism_revenue")
+        payers = len({str(r.get("payer") or "") for r in rows if float(r.get("t") or 0) >= cut and r.get("event_type") == "faction.station_revenue" and r.get("payer")})
+        gross_h = (tour + ref) / float(hrs)
+        net_h = gross_h - abs(npc_rent_h) - abs(own_labor_h)
+        out[f"{hrs}h"] = {
+            "span_h": float(hrs),
+            "gross_rev_h": round(gross_h),
+            "net_ops_h": round(net_h),
+            "tourism_h": round(tour / float(hrs)),
+            "refuel_h": round(ref / float(hrs)),
+            "visits": vis,
+            "ext_payers": payers,
+            "source": "action_log",
+        }
+    return out
+
+
 def _forensic_station_revenue(data_dir, npc_rent_h, own_labor_h):
+    exact = _exact_action_log_revenue(data_dir, npc_rent_h, own_labor_h)
+    if exact:
+        return exact
     h_p = Path(data_dir) / "fleet" / "history.json"
     ot_p = Path(data_dir) / "fleet" / "onetime.json"
     if not h_p.exists():
@@ -307,7 +349,13 @@ def format_report(res, view="all"):
     if view in ("summary", "all"):
         lines.append("\n[1] OWNED STATION UNIT ECONOMICS")
         for w, v in res.get("forensic_revenue", {}).items():
-            lines.append(f"  Forensic Treasury Station Rev ({w}, span={v['span_h']}h): gross=+{v['gross_rev_h']:,} cr/h | net_ops={v['net_ops_h']:+,} cr/h")
+            if v.get("source") == "action_log":
+                lines.append(
+                    f"  Exact Action-Log Station Rev ({w}): gross=+{v['gross_rev_h']:,} cr/h "
+                    f"(Tourism +{v.get('tourism_h',0):,}/h [{v.get('visits',0)} visits] | Refuels +{v.get('refuel_h',0):,}/h [{v.get('ext_payers',0)} ext pilots])"
+                )
+            else:
+                lines.append(f"  Forensic Treasury Station Rev ({w}, span={v['span_h']}h): gross=+{v['gross_rev_h']:,} cr/h | net_ops={v['net_ops_h']:+,} cr/h")
         for s in res.get("stations", []):
             g1 = (res.get("forensic_revenue", {}).get("1h") or res.get("forensic_revenue", {}).get("6h") or {}).get("gross_rev_h", 0)
             net_now = g1 - s["live_total_econ_cost_h"]

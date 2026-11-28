@@ -2772,6 +2772,11 @@ def main(argv=None):
                                         time.sleep(TICK)
                                         if "error" not in _r_tr:
                                             say("treasury_deposit +%d cr from faction liquidation" % _dep_cr)
+                                            try:
+                                                import wallet as _w_dep
+                                                _w_dep.book_direct_deposit(DATA, pilot, _dep_cr)
+                                            except Exception:
+                                                pass
                                 except Exception:
                                     pass
                         if rem > 0:

@@ -1014,7 +1014,32 @@ def _treasury_credits(data):
     return None
 
 
-def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None, fair_price_map=None, treasury_cr=None):
+
+def _load_resort_shortfalls(data_dir, policy):
+    """Return ordered [(item_id, shortfall_units)] for starved Ridgecrest hospitality venue consumables."""
+    rc = policy.get("resort_restock") if isinstance(policy, dict) else None
+    if not isinstance(rc, dict) or not rc.get("enabled", False):
+        return []
+    rbase = str(rc.get("base") or "a2cee88abdcb31db229c04315f0ef6e1")
+    target = max(1, int(rc.get("target_stock_per_item") or 24))
+    pitems = [str(x) for x in (rc.get("priority_items") or []) if x]
+    if not pitems:
+        return []
+    have = {}
+    emp = read_json(Path(data_dir) / "empire" / "empire.json", {})
+    if isinstance(emp, dict):
+        for r in (emp.get("faction_storage") or []):
+            if isinstance(r, dict) and str(r.get("base") or "") == rbase and r.get("item"):
+                have[str(r["item"])] = max(have.get(str(r["item"]), 0), int(r.get("units") or 0))
+    out = []
+    for iid in pitems:
+        short = target - int(have.get(iid) or 0)
+        if short > 0:
+            out.append((iid, short))
+    return out
+
+
+def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, live_market_vals, credits, policy, fleet_open_buys=None, order_first_seen=None, now_t=None, same_station_cltv_buys=None, fair_price_map=None, treasury_cr=None, resort_shortfalls=None):
     actions = []
     sell_cfg = policy.get("sell") or {}
     buy_cfg = policy.get("buy") or {}
@@ -1149,6 +1174,12 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
         for extra in buy_cfg.get("extra_items") or []:
             if isinstance(extra, str) and extra not in want_items and extra not in excl_buy:
                 want_items[extra] = max_units
+        _rc_cfg = policy.get("resort_restock") if isinstance(policy, dict) and isinstance(policy.get("resort_restock"), dict) else {}
+        _rc_items = dict(resort_shortfalls or [])
+        if _rc_cfg.get("enabled", False) and _rc_items:
+            for _ri, _rq in _rc_items.items():
+                if _ri not in excl_buy:
+                    want_items[_ri] = max(int(want_items.get(_ri) or 0), int(_rq))
         f_open = fleet_open_buys if isinstance(fleet_open_buys, dict) else {}
         cancelled_buy_iids = set()
         if buy_cfg.get("unwind_excess", True):
@@ -1211,6 +1242,47 @@ def plan_bursar_actions(book, stored_items, own_orders, open_needs, reserved, li
                 cash_avail -= more * price
             if mine or more > 0:
                 used_buy_ords += 1
+    # ROI-ordered Ridgecrest Hospitality Restock carve-out (hard-capped, active once Treasury >= resort_restock.min_treasury_cr)
+    _rc_cfg = policy.get("resort_restock") if isinstance(policy, dict) and isinstance(policy.get("resort_restock"), dict) else {}
+    if _rc_cfg.get("enabled", False) and resort_shortfalls:
+        _rc_min_tr = int(_rc_cfg.get("min_treasury_cr") or 120000)
+        _rc_tr_ok = not (_rc_min_tr > 0 and treasury_cr is not None and int(treasury_cr) < _rc_min_tr)
+        if _rc_tr_ok:
+            _rc_cap_cr = min(int(_rc_cfg.get("max_spend_per_pass_cr") or 12000), max(0, int(credits or 0) - min_keep))
+            _rc_max_p = int(_rc_cfg.get("max_unit_price_cr") or 450)
+            _rc_mult = float(_rc_cfg.get("max_fair_mult") or 1.35)
+            _f_open_rc = fleet_open_buys if isinstance(fleet_open_buys, dict) else {}
+            import market_guard as _mg_rc
+            for iid, short_q in resort_shortfalls:
+                if _rc_cap_cr < 50:
+                    break
+                row = (book or {}).get(iid)
+                if not isinstance(row, dict):
+                    continue
+                ask = float(row.get("best_sell") or 0)
+                ask_q = int(row.get("best_sell_qty") or 0)
+                bid = float(row.get("best_buy") or 0)
+                gal_bid = float((live_market_vals or {}).get(iid) or 0)
+                ceil_rc = _mg_rc.safe_buy_ceiling(iid, bid, ask, gal_bid, max_ratio=0.95, max_fair_mult=_rc_mult)
+                p_lim = min(_rc_max_p, ceil_rc) if ceil_rc > 0 else _rc_max_p
+                rem_q = max(0, int(short_q) - int(_f_open_rc.get(iid) or 0))
+                if rem_q <= 0:
+                    continue
+                if ask > 0 and ask_q > 0 and int(ask) <= p_lim:
+                    bq = min(rem_q, ask_q, int(_rc_cap_cr // max(1, int(ask))))
+                    if bq > 0:
+                        actions.append(("resort_buy_ask", iid, bq, int(ask)))
+                        _rc_cap_cr -= bq * int(ask)
+                        continue
+                if not _tr_ok and (not same_station_cltv_buys or iid not in same_station_cltv_buys) and not (own_buy.get(iid) or []):
+                    bpr = min(p_lim, int(bid) + 1 if bid > 0 else max(15, int(p_lim * 0.75)))
+                    if ask > 1 and bpr >= int(ask):
+                        bpr = int(ask) - 1
+                    if bpr >= 5:
+                        bq = min(rem_q, int(_rc_cap_cr // bpr))
+                        if bq > 0:
+                            actions.append(("buy_create", iid, bq, bpr))
+                            _rc_cap_cr -= bq * bpr
     return actions
 
 
@@ -1562,7 +1634,8 @@ def main(argv=None):
                     _fair_map_live = _mg_live.load_fair_price_map(DATA)
                 except Exception:
                     pass
-                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys, fair_price_map=_fair_map_live, treasury_cr=_treasury_credits(DATA))
+                _rc_shortfalls = _load_resort_shortfalls(DATA, eff_pol)
+                acts = plan_bursar_actions(book, stored, orders_resp, open_needs, reserved, catalog_vals, cr, eff_pol, fleet_open_buys=fleet_open_buys, order_first_seen=_order_fs, same_station_cltv_buys=_same_st_buys, fair_price_map=_fair_map_live, treasury_cr=_treasury_credits(DATA), resort_shortfalls=_rc_shortfalls)
                 for act in acts:
                     if stop_requested() or time.time() >= until:
                         break
@@ -1611,6 +1684,21 @@ def main(argv=None):
                             if old_pr > 0 and old_rem > 0:
                                 _book_escrow(DATA, pilot, "released", old_pr * old_rem)
                         say("buy_cancel %s %s%s" % (iid, oid[:8], " ERR" if "error" in d else ""))
+                        acted += 1
+                    elif kind_a == "resort_buy_ask":
+                        _, iid, qty, ap_cr = act
+                        d = raw("buy", {"id": iid, "quantity": int(qty)}, group="spacemolt")
+                        time.sleep(TICK)
+                        ok_rb = "error" not in d
+                        if ok_rb:
+                            _rc_base = str((eff_pol.get("resort_restock") or {}).get("base") or "a2cee88abdcb31db229c04315f0ef6e1")
+                            if str(base_id) == _rc_base:
+                                raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "faction", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                            else:
+                                raw("deposit", {"item_id": iid, "quantity": int(qty), "target": "self", "source": "cargo"}, group="spacemolt_storage")
+                                time.sleep(TICK)
+                        say("resort_buy_ask %d %s @ %d cr%s" % (qty, iid, ap_cr, "" if ok_rb else " ERR"))
                         acted += 1
                     elif kind_a == "buy_create":
                         _, iid, qty, np = act

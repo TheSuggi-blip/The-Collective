@@ -444,6 +444,11 @@ def run_liquidate(data_dir, base_filter="", item_filter="", min_cash=5000, max_j
             time.sleep(10.5)
             if ok_d:
                 tot_deposited += dep
+                try:
+                    import wallet as _w_dep
+                    _w_dep.book_direct_deposit(data_dir, pilot, dep)
+                except Exception:
+                    pass
             lines.append("  TREASURY %s deposited +%s cr (ok=%s%s)" % (pilot, format(dep, ","), ok_d, (" " + err_d[:60]) if err_d else ""))
     lines.append("TOTAL REALIZED: +%s cr | DEPOSITED TO TREASURY: +%s cr" % (format(tot_realized, ","), format(tot_deposited, ",")))
     return "\n".join(lines)

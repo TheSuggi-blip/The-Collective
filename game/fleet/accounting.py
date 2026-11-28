@@ -1499,7 +1499,38 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
     _npc_rent_i = int(round(npc_rent_h))
     _st_lab_i = int(round(own_station_labor_h))
     _tr_exp_i = _npc_rent_i + _st_lab_i
-    if station_count_live > 0 and (own_station_fac_count > 0 or station_tourism_rev_total > 0):
+    _exact_tour_cr = 0
+    _exact_ref_cr = 0
+    _exact_visits = 0
+    _exact_refuels = 0
+    _sr_jsonl = data_p / "empire" / "station_revenue.jsonl"
+    _has_exact_sr = _sr_jsonl.is_file()
+    if _has_exact_sr:
+        _sr_cut = now - span_h * 3600.0
+        try:
+            for _ln in _sr_jsonl.read_text(encoding="utf-8", errors="replace").splitlines():
+                if not _ln.strip():
+                    continue
+                try:
+                    _r = json.loads(_ln)
+                except ValueError:
+                    continue
+                _rt = _num(_r.get("t"))
+                if _rt < _sr_cut or _rt > now + 300.0:
+                    continue
+                _amt = int(_num(_r.get("amount")))
+                _et = str(_r.get("event_type") or "")
+                if _et == "faction.tourism_revenue":
+                    _exact_tour_cr += _amt
+                    _exact_visits += 1
+                elif _et == "faction.station_revenue":
+                    _exact_ref_cr += _amt
+                    _exact_refuels += 1
+        except OSError:
+            _has_exact_sr = False
+    if _has_exact_sr:
+        station_revenue_h = float(_exact_tour_cr + _exact_ref_cr) / max(0.25, float(span_h))
+    elif station_count_live > 0 and (own_station_fac_count > 0 or station_tourism_rev_total > 0):
         station_revenue_h = float(max(0, _tr_ops_i - _tr_exp_i))
     else:
         station_revenue_h = 0.0
@@ -1693,6 +1724,11 @@ def compute_pnl(conn, repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, fleet_json=
             "station_facilities_active": own_station_fac_count,
             "npc_leased_count": npc_leased_count,
             "station_revenue_h": int(round(station_revenue_h)),
+            "station_revenue_exact": bool(_has_exact_sr),
+            "tourism_revenue_h": int(round(_exact_tour_cr / max(0.25, float(span_h)))) if _has_exact_sr else 0,
+            "refuel_revenue_h": int(round(_exact_ref_cr / max(0.25, float(span_h)))) if _has_exact_sr else 0,
+            "tourism_visits": int(_exact_visits),
+            "ext_refuels": int(_exact_refuels),
             "tourism_rev_total": int(station_tourism_rev_total),
             "npc_rent_h": int(round(npc_rent_h)),
             "npc_rent_per_day": int(round(npc_rent_per_day)),

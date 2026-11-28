@@ -56,7 +56,7 @@ class WalletTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.data = Path(self.temp.name)
         (self.data / "fleet").mkdir()
-        self.put({"miner-1": 2500, "miner-2": 9000, "miner-3": 80000, "miner-4": 35000, "trader-1": 5000, "trader-2": 31000, "Prime Directive": 90000})
+        self.put({"miner-1": 2500, "miner-2": 3500, "miner-3": 80000, "miner-4": 35000, "trader-1": 5000, "trader-2": 31000, "Prime Directive": 90000})
         (self.data / "fleet" / "flagships.json").write_text(json.dumps({"Prime Directive": {"admiral": "Unity", "division": "Command", "role": "command"}}))
         (self.data / "fleet" / "onetime.json").write_text(json.dumps([[1, "miner-3", "First Hunt", 1000]]))
         self.wallet = load("wallet")
@@ -67,7 +67,7 @@ class WalletTests(unittest.TestCase):
     def test_each_low_wallet_is_topped_up_by_the_richest_of_its_division_and_never_twice(self):
         rows = self.wallet.wallets(str(self.data))
         gifts = self.wallet.plan_gifts(rows, {})
-        self.assertEqual(gifts, [("miner-3", "miner-1", 17500), ("Prime Directive", "trader-1", 15000), ("miner-3", "miner-2", 11000)])  # lowest first; trader-2 would go under 30,000
+        self.assertEqual(gifts, [("miner-3", "miner-1", 3500), ("miner-3", "miner-2", 2500), ("Prime Directive", "trader-1", 15000)])  # lowest first; trader-2 would go under 30,000
         sent = []
         self.wallet.give = lambda donor, pilot, credits: (sent.append((donor, pilot, credits)) or True, "ok")
         os.environ["HERMES_SESSION_PROFILE"] = "unity"
@@ -76,7 +76,7 @@ class WalletTests(unittest.TestCase):
         self.assertEqual(sent, gifts)
         rows = json.loads((self.data / "fleet" / "onetime.json").read_text())
         tops = [r[1:] for r in rows if r[2] == "Wallet top-up"]
-        self.assertEqual(tops[:2], [["miner-3", "Wallet top-up", -17500], ["miner-1", "Wallet top-up", 17500]])
+        self.assertEqual(tops[:2], [["miner-3", "Wallet top-up", -3500], ["miner-1", "Wallet top-up", 3500]])
         self.assertEqual(sum(r[3] for r in rows if r[2] == "Wallet top-up"), 0)               # the fleet's money does not move
         sent.clear()
         self.wallet.main(["topup", "--data", str(self.data)])                                  # the wallets still read low: no second gift
@@ -120,12 +120,12 @@ class WalletTests(unittest.TestCase):
         os.environ["HERMES_SESSION_PROFILE"] = "unity"
         self.addCleanup(os.environ.pop, "HERMES_SESSION_PROFILE", None)
         self.assertEqual(self.wallet.main(["topup", "--data", str(self.data)]), 1)             # one gift failed: the pass says so and goes on
-        self.assertEqual(calls, ["miner-1", "trader-1", "miner-2"])
+        self.assertEqual(calls, ["miner-1", "miner-2", "trader-1"])
         gifts = [json.loads(line) for line in (self.data / "fleet" / "gifts.jsonl").read_text().splitlines()]
-        self.assertEqual([(g["from"], g["to"], g["credits"]) for g in gifts if g["credits"]], [("miner-3", "miner-1", 17500), ("miner-3", "miner-2", 11000)])
-        self.assertEqual([(g["to"], g["credits"], g["unsure"]) for g in gifts if "unsure" in g], [("trader-1", 0, 15000)])
+        self.assertEqual([(g["from"], g["to"], g["credits"]) for g in gifts if g["credits"]], [("miner-3", "miner-1", 3500), ("Prime Directive", "trader-1", 15000)])
+        self.assertEqual([(g["to"], g["credits"], g["unsure"]) for g in gifts if "unsure" in g], [("miner-2", 0, 2500)])
         rows = json.loads((self.data / "fleet" / "onetime.json").read_text())
-        self.assertEqual([r[3] for r in rows if r[2] == "Wallet top-up"], [-17500, 17500, -11000, 11000])
+        self.assertEqual([r[3] for r in rows if r[2] == "Wallet top-up"], [-3500, 3500, -15000, 15000])
         calls.clear()
         self.wallet.main(["topup", "--data", str(self.data)])                                  # all three on cooldown: none is given twice
         self.assertEqual(calls, [])
@@ -138,7 +138,7 @@ class WalletTests(unittest.TestCase):
         self.wallet.give = late
         self.wallet.main(["topup", "--data", str(self.data)])
         gifts = [json.loads(line) for line in (self.data / "fleet" / "gifts.jsonl").read_text().splitlines()]
-        self.assertEqual([(g["to"], g["credits"]) for g in gifts], [("miner-1", 17500), ("trader-1", 15000)])     # the wallet showed each: booked
+        self.assertEqual([(g["to"], g["credits"]) for g in gifts], [("miner-1", 3500), ("trader-1", 15000)])     # the wallet showed each: booked
         self.put({"miner-1": 2500, "miner-3": 80000})
         (self.data / "fleet" / "gifts.jsonl").write_text("")
         self.wallet.give, self.wallet.BUDGET = give, -1                                         # the pass's seconds are used up: the gift waits for the next pass
@@ -257,7 +257,7 @@ class FundTests(unittest.TestCase):
         ships = [{"name": "Prime Directive", "credits": 61648, "docked": True}, {"name": "drone-4", "credits": 20000},
                  {"name": "drone-9", "credits": 20000}]
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
-        self.assertEqual(w.add_fund(str(self.data), "drone-4", 50000, "hull one", 6, now), 0)
+        self.assertEqual(w.add_fund(str(self.data), "drone-4", 25000, "hull one", 6, now), 0)
         self.assertEqual(w.add_fund(str(self.data), "drone-9", 60000, "hull two", 6, now), 0)
         real_give = w.give
 
@@ -271,17 +271,17 @@ class FundTests(unittest.TestCase):
         w.give = real_give
         w.serve_funds(str(self.data), "Prime Directive", now, False)
         gives = [c for c in self.calls if c[0] == "give"]
-        self.assertEqual(gives, [("give", "Prime Directive", "drone-4", 50000), ("give", "Prime Directive", "drone-9", 60000)])
+        self.assertEqual(gives, [("give", "Prime Directive", "drone-4", 25000), ("give", "Prime Directive", "drone-9", 60000)])
         self.assertEqual(sorted(r["state"] for r in w.funds(str(self.data))), ["given", "given"])
 
     def test_a_gift_booked_before_its_row_was_written_is_not_sent_again(self):
         w, now = self.wallet, time.time()
         self.put(docked=True)
-        w.add_fund(str(self.data), "drone-4", 50000, "hull", 6, now)
+        w.add_fund(str(self.data), "drone-4", 25000, "hull", 6, now)
         rows = w.funds(str(self.data))
         rows[0].update(state="withdrawn", withdrawn_at=int(now) - 30, withdrawer="Prime Directive")
         w.write_funds(str(self.data), rows)
-        w.book(str(self.data), [("Prime Directive", "drone-4", 50000)], now - 10)   # given, then the process died
+        w.book(str(self.data), [("Prime Directive", "drone-4", 25000)], now - 10)   # given, then the process died
         w.serve_funds(str(self.data), "Prime Directive", now, False)
         self.assertEqual([c for c in self.calls if c[0] == "give"], [])
         self.assertEqual(w.funds(str(self.data))[0]["state"], "given")
@@ -310,8 +310,8 @@ class FundTests(unittest.TestCase):
         held = {"drone-4": 400000}
         rows = [("drone-4", 110000, "Apophis"), ("drone-9", 900000, "Apophis")]          # the hull bought: 110,000 left
         self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [])               # neither receiver nor donor
-        rows = [("drone-4", 5000, "Apophis"), ("drone-9", 900000, "Apophis")]
-        self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [("drone-9", "drone-4", w.TARGET - 5000)])
+        rows = [("drone-4", 2500, "Apophis"), ("drone-9", 900000, "Apophis")]
+        self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [("drone-9", "drone-4", w.TARGET - 2500)])
         rows = [("drone-4", 410000, "Apophis"), ("drone-9", 2000, "Apophis")]             # unspent: its fund is no gift
         self.assertEqual(w.plan_gifts(w.topup_view(rows, held, {}), {}), [])
         rows = [("drone-4", 2000, "Apophis"), ("drone-9", 900000, "Apophis")]             # no fund: as before
@@ -368,7 +368,7 @@ class TreasuryTopupTests(FundTests):
 
     def put(self, docked, drone=20000):
         ships = [{"name": "Prime Directive", "credits": 30500, "docked": docked}, {"name": "drone-4", "credits": drone},
-                 {"name": "drone-60", "credits": 100}, {"name": "drone-61", "credits": 250}, {"name": "drone-62", "credits": 7000}]
+                 {"name": "drone-60", "credits": 100}, {"name": "drone-61", "credits": 250}, {"name": "drone-62", "credits": 3500}]
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
 
     def topup(self):
@@ -382,15 +382,15 @@ class TreasuryTopupTests(FundTests):
         w.refresh = lambda pilot: None
         self.topup()                                                                              # no donor: rows, no call
         rows = [r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]
-        self.assertEqual(sorted((r["pilot"], r["credits"]) for r in rows), [("drone-60", 10900), ("drone-61", 10750), ("drone-62", 4000)])   # rule F7's line
+        self.assertEqual(sorted((r["pilot"], r["credits"]) for r in rows), [("drone-60", 5900), ("drone-61", 5750), ("drone-62", 2500)])   # rule F7's line
         self.assertEqual(self.calls, [])
         self.topup()                                                                              # never a second row a pilot
         self.assertEqual(len([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]), 3)
         self.put(docked=True)
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         withdrawals = [c for c in self.calls if c[0] == "withdraw"]
-        self.assertEqual(withdrawals[-1], ("withdraw", "Prime Directive", 25650))                # one withdrawal for all three
-        self.assertEqual(sorted(c[2:] for c in self.calls if c[0] == "give"), [("drone-60", 10900), ("drone-61", 10750), ("drone-62", 4000)])
+        self.assertEqual(withdrawals[-1], ("withdraw", "Prime Directive", 14150))                # one withdrawal for all three
+        self.assertEqual(sorted(c[2:] for c in self.calls if c[0] == "give"), [("drone-60", 5900), ("drone-61", 5750), ("drone-62", 2500)])
         self.assertEqual({r["state"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"}, {"given"})
         self.assertEqual(w.funded(str(self.data), time.time()), {})                               # a top-up is no fund the sweep keeps
         self.assertEqual(w.withdrawn(str(self.data)), 0)
@@ -400,7 +400,7 @@ class TreasuryTopupTests(FundTests):
         w.TREASURY_TOPUP = False
         self.topup()
         self.assertEqual([r for r in w.funds(str(self.data)) if r.get("kind") == "topup"], [])  # switched off: nothing
-        w.TREASURY_TOPUP, w.TREASURY_DAY = True, 11000
+        w.TREASURY_TOPUP, w.TREASURY_DAY = True, 7000
         self.topup()
         self.assertEqual([r["pilot"] for r in w.funds(str(self.data)) if r.get("kind") == "topup"], ["drone-60"])   # 10,900 fits, 10,750 more does not
 
@@ -411,9 +411,9 @@ class TreasuryTopupTests(FundTests):
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
         self.assertEqual(self.calls, [])                                                          # not docked
         self.put(docked=True)
-        self.treasury[0] = w.TOPUP_FLOOR + 11000
+        self.treasury[0] = w.TOPUP_FLOOR + 7000
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
-        self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 10900))     # what the floor allows
+        self.assertEqual([c for c in self.calls if c[0] == "withdraw"][-1], ("withdraw", "Prime Directive", 5900))     # what the floor allows
 
     def withdrawn_rows(self, *pilots):
         rows = [{"pilot": p, "credits": c, "why": "t", "at": int(time.time()) - 600, "hours": 0, "state": "withdrawn",
@@ -427,10 +427,10 @@ class TreasuryTopupTests(FundTests):
         w = self.wallet
         w.TREASURY_TOPUP = True
         w.refresh = lambda pilot: None
-        ships = [{"name": "Prime Directive", "credits": 30500 + 21650, "docked": False}, {"name": "drone-4", "credits": 20000},
+        ships = [{"name": "Prime Directive", "credits": 30500 + 11650, "docked": False}, {"name": "drone-4", "credits": 20000},
                  {"name": "drone-60", "credits": 100}, {"name": "drone-61", "credits": 250}, {"name": "drone-70", "credits": 100}]
         (self.data / "fleet" / "fleet.json").write_text(json.dumps({"ships": ships}))
-        self.withdrawn_rows(("drone-60", 10900), ("drone-61", 10750))
+        self.withdrawn_rows(("drone-60", 5900), ("drone-61", 5750))
         self.topup()
         self.assertEqual([c for c in self.calls if c[0] == "give"], [])                          # the leader keeps what it owes
         rows = [r for r in w.funds(str(self.data)) if r.get("kind") == "topup"]
@@ -440,9 +440,9 @@ class TreasuryTopupTests(FundTests):
     def test_a_withdrawn_top_up_whose_pilot_was_topped_since_ends_and_goes_back_with_the_deposit(self):
         w, now = self.wallet, time.time()
         self.put(docked=False, drone=20000)
-        self.withdrawn_rows(("drone-4", 10900), ("drone-60", 10900))
+        self.withdrawn_rows(("drone-4", 5900), ("drone-60", 5900))
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)
-        self.assertEqual([c[2:] for c in self.calls if c[0] == "give"], [("drone-60", 10900)])   # drone-4 holds 20,000 now
+        self.assertEqual([c[2:] for c in self.calls if c[0] == "give"], [("drone-60", 5900)])   # drone-4 holds 20,000 now
         states = {r["pilot"]: r["state"] for r in w.funds(str(self.data))}
         self.assertEqual(states, {"drone-4": "ended", "drone-60": "given"})
         self.assertEqual(w.withdrawn(str(self.data)), 0)                                          # the leader deposits it again
@@ -450,7 +450,7 @@ class TreasuryTopupTests(FundTests):
     def test_a_gift_the_leader_cannot_pay_ends_its_row_and_the_pilot_is_asked_again(self):
         w, now = self.wallet, time.time()
         self.put(docked=False)
-        self.withdrawn_rows(("drone-60", 10900))
+        self.withdrawn_rows(("drone-60", 5900))
         w.give = lambda donor, pilot, credits: (False, '{"error":"API call failed: insufficient_funds: You only have 861 credits."}')
         self.assertEqual(w.serve_topups(str(self.data), "Prime Directive", now, False), 0)       # no HALT every pass
         row = w.funds(str(self.data))[0]

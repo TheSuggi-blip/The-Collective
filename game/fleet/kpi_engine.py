@@ -45,6 +45,7 @@ WING_SPECS = (
     ("6C",    "Fuel & Salvage Tenders",      "Logistics",     "Logistics",     ("6C.",),              "Bunkers & Salvage SLA"),
     ("7A",    "Covert Recon",                "Intel",         "Intel",         ("7A.",),              "Rival & Frontier Intel"),
     ("7B",    "Deep-Core Surveyors",         "Intel",         "Intel",         ("7B.",),              "Galaxy Resource Intel"),
+    ("8A",    "Collective Resort Hub",       "Resort",        "Resort",        (),                    "Resort & Tourism Center"),
 )
 WING_BY_ID = {w[0]: w for w in WING_SPECS}
 BURSAR_WING_IDS = frozenset({"4C", "5A"})
@@ -137,7 +138,7 @@ HWM_BREAKOUT_MARGIN = 1.02
 WING_BASE_SHIPS = {
     "1A-1C": 48, "2A-2B": 62, "3A": 38, "3B": 22, "3C": 18, "3D": 40, "3E": 30,
     "4A": 25, "4B": 25, "4C": 38, "5A": 22, "5B": 15, "6A": 30, "6B": 12, "6C": 30,
-    "7A": 20, "7B": 25,
+    "7A": 20, "7B": 25, "8A": 1,
 }
 
 
@@ -1219,6 +1220,59 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
                 {"k": "Idle Rate", "v": "%.1f%%" % idle_pct, "sub": idle_sub, "score": round(s_idle)},
             ]
 
+        elif wid == "8A":
+            staged = False
+            rc_app_live = 0
+            rc_app_rank = 0
+            rc_app_built = 47
+            rc_venues_tot = 12
+            rc_tour_h = float(((acc_win or {}).get("station_ops") or {}).get("tourism_revenue_h") or 0.0)
+            rc_ref_h = float(((acc_win or {}).get("station_ops") or {}).get("refuel_revenue_h") or 0.0)
+            rc_rev_h = rc_tour_h + rc_ref_h
+            rc_ext_24h = 0
+            rc_surge = None
+            if conn is not None:
+                try:
+                    row_a = conn.execute("SELECT rank, value FROM leaderboards WHERE grp='stations' AND board='tourism_appeal' AND LOWER(name) LIKE '%ridgecrest%' LIMIT 1").fetchone()
+                    if row_a:
+                        rc_app_rank, rc_app_live = int(row_a[0] or 0), int(row_a[1] or 0)
+                except Exception:
+                    pass
+                try:
+                    rc_ext_24h = int(conn.execute("SELECT COUNT(*) FROM station_revenue_log WHERE event_type='faction.station_revenue' AND t >= ?", (int(now - 86400),)).fetchone()[0] or 0)
+                    if rc_rev_h <= 0:
+                        _r24 = conn.execute("SELECT COALESCE(SUM(amount), 0) FROM station_revenue_log WHERE t >= ?", (int(now - 86400),)).fetchone()[0] or 0
+                        rc_rev_h = float(_r24) / 24.0
+                except Exception:
+                    pass
+                try:
+                    row_pb = conn.execute("SELECT fare_surge, waiting FROM passenger_boards WHERE system='ridgecrest' LIMIT 1").fetchone()
+                    if row_pb and row_pb[0] is not None:
+                        rc_surge = float(row_pb[0])
+                except Exception:
+                    pass
+                try:
+                    _frows = conn.execute("SELECT type FROM faction_facilities WHERE base='a2cee88abdcb31db229c04315f0ef6e1'").fetchall()
+                    _hosp_types = {"dockside_diner","frontier_cantina","rec_lounge","slice_deck","sunrise_griddle","the_tide_line","grazer_grill","stellar_bistro","the_far_table","zero_g_lounge_bar","orbital_spa_resort_deck","grand_hotel_resort","the_golden_table","the_leviathan_table"}
+                    _found_h = [str(r[0]) for r in _frows if str(r[0]) in _hosp_types]
+                    if _found_h:
+                        rc_venues_tot = len(_found_h)
+                except Exception:
+                    pass
+            rc_stock_pct = round(100.0 * rc_app_live / max(1, rc_app_built), 1) if rc_app_built else 0.0
+            s_app = _score_band(float(rc_app_live), good=38.0, warn=20.0)
+            s_rev, br_rev = _score_open_ended(rc_rev_h, 50000.0, warn_ratio=0.25, hwm=_hwm_get(wid, "rev_h"))
+            s_ext = _score_band(float(rc_ext_24h), good=40.0, warn=15.0)
+            s_srg = _score_band(2.6 - rc_surge, good=1.9, warn=1.2) if rc_surge is not None else 70.0
+            _hwm_mark(wid, "rev_h", rc_rev_h)
+            scores = [(s_app, 0.40), (s_rev, 0.30), (s_ext, 0.20), (s_srg, 0.10)]
+            kpis = [
+                {"k": "Live Appeal", "v": "%d / %d" % (rc_app_live, rc_app_built), "sub": ("#%d galaxy | %.0f%% stocked" % (rc_app_rank, rc_stock_pct)) if rc_app_rank else ("%.0f%% stocked" % rc_stock_pct), "score": round(s_app)},
+                {"k": "Exact Resort Rev/h", "v": "%s/h" % format(int(round(rc_rev_h)), ","), "sub": "Tour %s + Ref %s" % (format(int(round(rc_tour_h)), ","), format(int(round(rc_ref_h)), ",")), "score": round(s_rev), "breakout": br_rev},
+                {"k": "Ext. Liners (24h)", "v": "%d visits" % rc_ext_24h, "sub": "%d hospitality venues" % rc_venues_tot, "score": round(s_ext)},
+                {"k": "Trip-Gen / Surge", "v": ("%.1fx surge" % rc_surge) if rc_surge is not None else "--", "sub": "0.6x = 2.0x MAX regen", "score": round(s_srg)},
+            ]
+
         w_tot = sum(wt for _sc, wt in scores) or 1.0
         health_pct = round(sum((sc or 0.0) * wt for sc, wt in scores) / w_tot, 1) if not staged else round(s_idle, 1)
         status = _status_from_score(health_pct, staged=staged)
@@ -1246,7 +1300,7 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         })
 
     div_rollup = []
-    for dv in ("Mining", "Military", "Trade", "Logistics", "Intel"):
+    for dv in ("Mining", "Military", "Trade", "Logistics", "Intel", "Resort"):
         wlist = [w for w in wings_out if w["division"] == dv]
         d_tot = sum(w["ships"] for w in wlist)
         d_wrk = sum(w["working"] for w in wlist)
@@ -1255,9 +1309,19 @@ def _compute_window_wing_kpis(conn, ships_list, pilot_wing, pilot_div, acc_win, 
         d_fuel = float(da.get("fuel_cr_h") or sum(w["fuel_h"] for w in wlist))
         d_acc = float(da.get("accrual_op_h") or 0.0)
         d_rec = float(da.get("recurring_cash_h") or 0.0)
+        if dv == "Resort":
+            _so = (acc_win or {}).get("station_ops") or {}
+            d_rec = float(_so.get("station_revenue_h") or 0.0) + float(_so.get("station_labor_opex_h") or 0.0)
+            d_acc = d_rec
         d_roi = da.get("fuel_roi")
         active_w = [w for w in wlist if not w["staged"]]
-        d_health = round(sum(w["health_pct"] * w["ships"] for w in active_w) / max(1, sum(w["ships"] for w in active_w)), 1)
+        _w_ships = sum(w["ships"] for w in active_w)
+        if _w_ships > 0:
+            d_health = round(sum(w["health_pct"] * w["ships"] for w in active_w) / _w_ships, 1)
+        elif active_w:
+            d_health = round(sum(w["health_pct"] for w in active_w) / len(active_w), 1)
+        else:
+            d_health = 0.0
         div_rollup.append({
             "division": dv,
             "ships": d_tot,

@@ -111,3 +111,15 @@ places our faction watches or plans for (empire/empire.json)
 - The sites we watch: `SELECT system, poi, status, note FROM sites`
 - Sites per status: `SELECT status, COUNT(*) FROM sites GROUP BY status`
 - Stations in the systems of our sites: `SELECT si.system, si.poi, st.name, st.tag FROM sites si JOIN stations st ON st.system = si.system`
+
+## station_revenue_log
+
+history: exact SpaceMolt action-log station payouts (faction.tourism_revenue & faction.station_revenue refuels) mirrored from empire/station_revenue.jsonl
+
+- Kind: snapshot
+- Columns: id, event_type, t, created_at, base, amount, payer, citizen, reason, summary, src; one row per id
+- Kept: while its file stands: a file's rows are replaced when it changes and go when it goes
+- Refreshed: the store's pass (every 60 s), when a file changed (size or mtime): loader `station_revenue_log`, station_revenue_log_files
+- Exact 24h station revenue split by tourism vs external refuels: `SELECT event_type, COUNT(*) AS events, SUM(amount) AS total_cr FROM station_revenue_log WHERE t >= strftime('%s','now') - 86400 GROUP BY event_type`
+- Top external pilots paying refuel fees at Collective stations: `SELECT payer, COUNT(*) AS visits, SUM(amount) AS total_cr FROM station_revenue_log WHERE event_type = 'faction.station_revenue' GROUP BY payer ORDER BY total_cr DESC LIMIT 15`
+- Recent tourism amenity payouts at Collective Resort Ridgecrest: `SELECT created_at, citizen, reason, amount FROM station_revenue_log WHERE event_type = 'faction.tourism_revenue' ORDER BY t DESC LIMIT 15`

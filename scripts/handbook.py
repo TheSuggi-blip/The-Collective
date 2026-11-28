@@ -112,7 +112,7 @@ SUBJECTS = (    # (title, the tables and views it holds, in their order); the ca
     ("Markets", ("books", "ladders", "fair_prices", "clean_books", "cltv_open_orders", "ship_listings", "moves", "market_hour", "contract_candidates")),
     ("Map and intel", ("systems", "lanes", "places", "fields", "herds", "readings", "reading_day", "stations", "outpost_candidates", "factions", "public_battles", "leaderboards", "rival_snapshots", "tourism_snapshots", "met", "player_comms", "observations")),
     ("Our faction", ("faction", "faction_members", "bases", "our_stations", "faction_facilities", "faction_storage", "inventory_faction",
-                     "territory", "sites")),
+                     "territory", "sites", "station_revenue_log")),
     ("Stock and reserve", ("holdings", "inventory", "inventory_by_station", "vault_cashable", "stock_hour", "needs", "need_status")),
     ("The catalog", ("items", "recipes", "recipe_inputs", "recipe_outputs", "recipe_facilities", "facilities", "facility_materials", "hulls",
                      "hull_materials", "skills", "game_releases")),

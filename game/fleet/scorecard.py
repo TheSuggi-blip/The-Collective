@@ -37,7 +37,7 @@ import progression
 DATA_DEFAULT = "/srv/collective/data"
 REPO_DEFAULT = "/srv/collective/the-collective"
 
-DIVISIONS = ("Command", "Mining", "Trade", "Logistics", "Military", "Intel")
+DIVISIONS = ("Command", "Mining", "Trade", "Logistics", "Military", "Intel", "Resort")
 DIV_HULL_CATEGORIES = {
     "Mining": {"industrial"},
     "Trade": {"commercial", "industrial"},
@@ -73,6 +73,7 @@ DIV_TO_ADMIRAL = {
     "Logistics": "Apollo",
     "Military": "Apophis",
     "Intel": "Oracle",
+    "Resort": "Trinity",
 }
 DIV_KEY_LOWER = {d: d.lower() for d in DIVISIONS}
 
@@ -121,6 +122,8 @@ RESPONSIBILITY_CENTERS = {
                   "focus": "Supply Chains at Keep, HaulNet Arb+Shipping, Industrial Crafting, O4 5-Empire Regional Hubs"},
     "Intel": {"type": "Recon Cost Center", "short": "Cost Ctr",
               "focus": "<3h Market/Place Freshness & Ship Listings (feeds Bursar/Haul/Upgrades), 0 Losses, Diplomacy SLA"},
+    "Resort": {"type": "Hospitality & Tourism Center", "short": "Resort Hub",
+               "focus": "Collective Resort Ridgecrest: 47 Built Appeal Stocked >=85%, Exact Tourism Rev/h, External Liner Traffic, 2.0x Trip-Gen"},
 }
 
 DIVISION_WEIGHTS = {
@@ -140,6 +143,7 @@ TRIAGE_SPECS = {
     "FLEET_IDLE": ("P0", "P1", 92, 76, 1),
     "DIPLO_PENDING": ("P0", "P0", 90, 88, 1),
     "OPEN_REQUESTS": ("P0", "P1", 88, 76, 1),
+    "RESORT_APPEAL_STARVED": ("P1", "P2", 78, 55, 1),
     "SUPPLY_CHAINS": ("P0", "P1", 88, 76, 2),
     "PRODUCTIVE_EFFICIENCY": ("P1", "P1", 84, 72, 1),
     "SURPLUS_BACKLOG": ("P1", "P1", 82, 76, 1),
@@ -2058,14 +2062,14 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                 "direction": "IMPROVING" if (wd_deltas["t2_delta"] or 0) > 0 else "FLAT",
                 "action": f"Parallel batch-upgrade P10+ {div} pilots to empire-specialized T2 hulls & measure in flight (`hive.py upgrades`, F17/F37)",
             })
-        elif hull_sev == "WARN" and elig_p10 == 0:
+        elif hull_sev == "WARN" and elig_p10 == 0 and tot > 0:
             triggers.append({
                 "severity": "WARN", "code": "DIV_SKILL_TO_T2", "metric": "Piloting Gate to T2",
                 "actual": hull_label, "target": ">=80% toward P10 (T2 unlock)",
                 "direction": "FLAT",
                 "action": "Prioritize paying cargo/craft routes that level Piloting toward P10 without empty jump burn (O2/P1)",
             })
-        if mod_sev != "OK":
+        if mod_sev != "OK" and tot > 0:
             triggers.append({
                 "severity": mod_sev, "code": "DIV_MODULE_FIT", "metric": "Module Slots Missing",
                 "actual": f"{div_empty_slots} empty slots ({slot_pct:.1f}% fit), {div_missing_t2_mod} ships missing T2+, {md['off_role_ships']} off-role",
@@ -2244,6 +2248,43 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
                     "action": "Answer cross-division capital/seating/F10 requests; remind Admirals to decide division routing autonomously (F16)",
                 })
 
+        if div == "Resort":
+            _r_app_live, _r_app_rank, _r_built, _r_rev24, _r_ext24 = 0, 0, 0, 0, 0
+            try:
+                _r_conn = sqlite3.connect("file:%s?mode=ro" % (Path(data_dir) / "store" / "read.db"), uri=True, timeout=2.0)
+                try:
+                    _has_b = _r_conn.execute("SELECT COUNT(*) FROM bases WHERE kind='station'").fetchone()[0]
+                    if _has_b:
+                        _r_built = 47
+                        _ra = _r_conn.execute("SELECT rank, value FROM leaderboards WHERE grp='stations' AND board='tourism_appeal' AND LOWER(name) LIKE '%ridgecrest%' LIMIT 1").fetchone()
+                        if _ra:
+                            _r_app_rank, _r_app_live = int(_ra[0] or 0), int(_ra[1] or 0)
+                        try:
+                            _r_rev24 = int(_r_conn.execute("SELECT COALESCE(SUM(amount), 0) FROM station_revenue_log WHERE t >= strftime('%s','now') - 86400").fetchone()[0] or 0)
+                            _r_ext24 = int(_r_conn.execute("SELECT COUNT(*) FROM station_revenue_log WHERE event_type='faction.station_revenue' AND t >= strftime('%s','now') - 86400").fetchone()[0] or 0)
+                        except sqlite3.Error:
+                            pass
+                finally:
+                    _r_conn.close()
+            except Exception:
+                pass
+            _r_pct = round(100.0 * _r_app_live / max(1, _r_built), 1) if _r_built else 100.0
+            _r_status = "OK" if (_r_built == 0 or _r_app_live >= 35) else ("WARN" if _r_app_live >= 20 else "ALARM")
+            role_kpi = {
+                "name": "Resort Live Appeal & Exact Tourism",
+                "value": f"Appeal {_r_app_live}/{_r_built} (#{_r_app_rank or '-'}) | 24h Rev {_fmt_cr(_r_rev24)} ({_r_ext24} ext visits)" if _r_built else "No owned resort station",
+                "pct": _r_pct,
+                "status": _r_status,
+                "cashflow_24h": round(_r_rev24 / 24.0, 1),
+            }
+            if _r_built > 0 and _r_status != "OK":
+                triggers.append({
+                    "severity": _r_status, "code": "RESORT_APPEAL_STARVED", "metric": "Ridgecrest Resort Appeal Starved",
+                    "actual": f"Appeal {_r_app_live}/{_r_built} ({_r_pct:.0f}% stocked) | 24h exact rev {_fmt_cr(_r_rev24)}",
+                    "target": ">=35/47 live Appeal (>=75% venue stock)", "direction": "FLAT",
+                    "action": "Keep bursar-policy.json resort_restock enabled and haul specialty food/drinks into Ridgecrest Faction Storage to capture whale tourist payouts",
+                })
+
         if pb_sev != "OK":
             triggers.append({
                 "severity": pb_sev, "code": "PLAYBOOK_CAP", "metric": "Playbook Chapter Cap",
@@ -2269,6 +2310,7 @@ def compute_scorecard(repo_root=REPO_DEFAULT, data_dir=DATA_DEFAULT, now=None, r
             "CASH_CONVERSION_LAG": 0.85,
             "TRADE_NET": 0.9 if d_net24 <= 0 else 0.4,
             "SURPLUS_BACKLOG": min(1.0, surplus_worth / 1000000.0),
+            "RESORT_APPEAL_STARVED": max(0.0, (80.0 - _num(role_kpi.get("pct"))) / 80.0),
             "SUPPLY_CHAINS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),
             "MILITARY_PERF": 1.0 if (div == "Military" and int(_num(contrib_24h.get(("Military", "ships_lost")))) > 0) else 0.5,
             "INTEL_FRESHNESS": max(0.0, (TARGET_COMPLETION_PCT - _num(role_kpi.get("pct"))) / TARGET_COMPLETION_PCT),

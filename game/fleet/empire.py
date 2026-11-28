@@ -319,6 +319,104 @@ def member_pages(pilot, see, first, pause):
     return out, "the member list holds %d of %s after %d pages: the rest was not read" % (len(out), num(first.get("member_count")), PAGES)
 
 
+
+def collect_station_revenue(data, pilot, see, faction_id):
+    """Incrementally poll spacemolt_social.get_action_log for exact faction.tourism_revenue & faction.station_revenue."""
+    if not (pilot and faction_id):
+        return {}
+    from datetime import datetime
+    data_p = Path(data)
+    out_p = data_p / "empire" / "station_revenue.jsonl"
+    st_p = data_p / "empire" / "station_revenue.state.json"
+    out_p.parent.mkdir(parents=True, exist_ok=True)
+    state = read_json(st_p, {})
+    if not isinstance(state, dict):
+        state = {}
+    cursors = state.get("cursors") if isinstance(state.get("cursors"), dict) else {}
+    existing_ids = set()
+    if out_p.is_file():
+        try:
+            for ln in out_p.read_text(encoding="utf-8", errors="replace").splitlines():
+                if not ln.strip():
+                    continue
+                try:
+                    r = json.loads(ln)
+                    if r.get("id") is not None:
+                        existing_ids.add(int(r["id"]))
+                except (ValueError, TypeError):
+                    continue
+        except OSError:
+            pass
+    new_rows = []
+    for et in ("faction.tourism_revenue", "faction.station_revenue"):
+        cur_id = int(cursors.get(et) or 0)
+        if cur_id > 0:
+            params = {"faction_id": faction_id, "event_type": et, "since_id": cur_id, "page_size": 100}
+            resp, _why = see(pilot, "spacemolt_social", "get_action_log", params)
+            pages = [resp] if isinstance(resp, dict) else []
+        else:
+            pages = []
+            for pg in range(1, 6):
+                resp, _why = see(pilot, "spacemolt_social", "get_action_log",
+                                 {"faction_id": faction_id, "event_type": et, "page": pg, "page_size": 100})
+                if not isinstance(resp, dict):
+                    break
+                pages.append(resp)
+                if not resp.get("has_more"):
+                    break
+        max_id = cur_id
+        for resp in pages:
+            for e in (resp.get("entries") or []):
+                if not isinstance(e, dict) or e.get("id") is None:
+                    continue
+                eid = int(e["id"])
+                if eid > max_id:
+                    max_id = eid
+                if eid in existing_ids:
+                    continue
+                existing_ids.add(eid)
+                d = e.get("data") if isinstance(e.get("data"), dict) else {}
+                ca = str(e.get("created_at") or "")
+                try:
+                    ts = int(datetime.fromisoformat(ca.replace("Z", "+00:00")).timestamp()) if ca else int(time.time())
+                except ValueError:
+                    ts = int(time.time())
+                new_rows.append({
+                    "id": eid,
+                    "event_type": et,
+                    "t": ts,
+                    "created_at": ca,
+                    "base": str(d.get("base_id") or ""),
+                    "amount": int(d.get("amount") or 0),
+                    "payer": ascii_text(d.get("payer") or "", 60),
+                    "citizen": ascii_text(d.get("citizen") or "", 60),
+                    "reason": ascii_text(d.get("reason") or ("layover" if "layover" in str(e.get("summary") or "").lower() else "tourism"), 32),
+                    "summary": ascii_text(e.get("summary") or "", 180),
+                })
+            ns = resp.get("next_since_id")
+            if isinstance(ns, int) and ns > max_id:
+                max_id = ns
+        if max_id > cur_id:
+            cursors[et] = max_id
+    if new_rows:
+        new_rows.sort(key=lambda r: (r["t"], r["id"]))
+        try:
+            with open(out_p, "a", encoding="utf-8") as fh:
+                for r in new_rows:
+                    fh.write(json.dumps(r, separators=(",", ":")) + "\n")
+        except OSError:
+            pass
+    try:
+        state["cursors"] = cursors
+        state["updated_at"] = int(time.time())
+        tmp = st_p.with_name(st_p.name + ".tmp")
+        tmp.write_text(json.dumps(state, separators=(",", ":")), encoding="utf-8")
+        os.replace(tmp, st_p)
+    except OSError:
+        pass
+    return {"new_events": len(new_rows), "cursors": cursors}
+
+
 def collect(data, root, see=look, force=False, pause=0.5, now=None):
     """One reading of the empire; (the state, the lines to print). The state is what <data>/empire/empire.json holds."""
     old = read_json(Path(data) / "empire" / "empire.json", {})
@@ -404,7 +502,12 @@ def collect(data, root, see=look, force=False, pause=0.5, now=None):
                            "wars": [ascii_text(x, 30) for x in feed.get("wars") or []]},
              "fleet": {"ships": len(ships), "in_faction": len({m["pilot"] for m in members} & {s["name"] for s in ships})},
              "ladder": rungs, "ladder_of": version, "notes": notes}
-    state["base_alerts"] = __import__("basewatch").stamped(state, old, public, state["written_at"])     # Q75 (3), ENT-112: since when
+    try:
+        if pilot and faction.get("id"):
+            collect_station_revenue(data, pilot, see, faction.get("id"))
+    except Exception:
+        pass
+        state["base_alerts"] = __import__("basewatch").stamped(state, old, public, state["written_at"])     # Q75 (3), ENT-112: since when
     return state, notes
 
 

@@ -481,11 +481,12 @@ SNAPSHOT += (("birth_plans", "cohort_id TEXT, plan_scope TEXT, wave INTEGER, wav
              ("cltv_open_orders", "pilot TEXT, base TEXT, item TEXT, qty INTEGER, t INTEGER", "pilot, base, item"),
              ("live_claims", "kind TEXT, claim_key TEXT, pilot TEXT, base TEXT, item TEXT, t INTEGER", "kind, claim_key"),
              ("passenger_boards", "base TEXT, system TEXT, waiting INTEGER, lounge_occ INTEGER, lounge_cap INTEGER, fare_surge REAL, demand_level TEXT, t INTEGER", "base"),
-             ("fleet_anomalies", "code TEXT, severity TEXT, count INTEGER, detail TEXT, t INTEGER", "code"),)
+             ("fleet_anomalies", "code TEXT, severity TEXT, count INTEGER, detail TEXT, t INTEGER", "code"),
+             ("station_revenue_log", "id INTEGER, event_type TEXT, t INTEGER, created_at TEXT, base TEXT, amount INTEGER, payer TEXT, citizen TEXT, reason TEXT, summary TEXT", "id"),)
 COLUMNS = {name: [part.split()[0] for part in columns.split(", ")] for name, columns, _key in SNAPSHOT}
 LOOKUPS = (("ships", "system"), ("holdings", "item"), ("books", "item"), ("ladders", "item"), ("recipe_inputs", "item"),
            ("recipe_outputs", "item"), ("facility_materials", "item"), ("fields", "resource"), ("herds", "creature"), ("lanes", "a"),
-           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"), ("tourism_snapshots", "station"), ("tourism_snapshots", "board"), ("cltv_open_orders", "base"), ("cltv_open_orders", "item"), ("live_claims", "kind"), ("live_claims", "pilot"), ("fleet_anomalies", "severity"))
+           ("stations", "system"), ("missions", "base"), ("public_battles", "system"), ("leaderboards", "board"), ("rival_snapshots", "tag"), ("ship_listings", "class_id"), ("ship_listings", "base"), ("fair_prices", "spoof_risk"), ("wing_kpis", "division"), ("tourism_snapshots", "station"), ("tourism_snapshots", "board"), ("cltv_open_orders", "base"), ("cltv_open_orders", "item"), ("live_claims", "kind"), ("live_claims", "pilot"), ("fleet_anomalies", "severity"), ("station_revenue_log", "event_type"), ("station_revenue_log", "t"))
 
 
 def views():
@@ -1465,6 +1466,37 @@ def read_passenger_boards(path, ctx):
     return {"passenger_boards": rows}
 
 
+def read_station_revenue_log(path, ctx):
+    rows = []
+    for ln in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+        if not ln.strip():
+            continue
+        try:
+            r = json.loads(ln)
+        except ValueError:
+            continue
+        if not isinstance(r, dict) or r.get("id") is None:
+            continue
+        rows.append({
+            "id": int(number(r.get("id")) or 0),
+            "event_type": text(r.get("event_type")),
+            "t": int(number(r.get("t")) or 0),
+            "created_at": text(r.get("created_at")),
+            "base": text(r.get("base")),
+            "amount": int(number(r.get("amount")) or 0),
+            "payer": text(r.get("payer")),
+            "citizen": text(r.get("citizen")),
+            "reason": text(r.get("reason")),
+            "summary": text(r.get("summary")),
+        })
+    return {"station_revenue_log": rows}
+
+
+def station_revenue_log_files(data, root):
+    path = Path(data) / "empire" / "station_revenue.jsonl"
+    return [("empire/station_revenue.jsonl", path, read_station_revenue_log, True, "")] if path.is_file() else []
+
+
 def passenger_board_files(data, root):
     path = Path(data) / "fleet" / "passenger_boards.json"
     return [("fleet/passenger_boards.json", path, read_passenger_boards, True, "")] if path.is_file() else []
@@ -1480,6 +1512,7 @@ LOADERS += (("birth_plans", ("birth_plans",), birth_plan_files, False),
             ("cltv_open_orders", ("cltv_open_orders",), cltv_open_order_files, True),
             ("live_claims", ("live_claims",), live_claim_files, False),
             ("passenger_boards", ("passenger_boards",), passenger_board_files, True),
+            ("station_revenue_log", ("station_revenue_log",), station_revenue_log_files, True),
 )
 FED = dict([(table, ("fleet", "orders")) for table in ("ships", "fleet_anomalies")] + [(table, (loader,)) for loader, tables, _f, _w in LOADERS for table in tables])
 BAD = (OSError, ValueError, TypeError, KeyError, AttributeError, IndexError, RecursionError)
@@ -2136,6 +2169,7 @@ DESCRIPTIONS = {
     "passenger_boards": "now: cached station passenger terminals and fare surge levels mirrored from fleet/passenger_boards.json (base, system, waiting, lounge_occ/cap, fare_surge, demand_level)",
     "fleet_anomalies": "now: live operational anomaly alarms computed by ops_xray.compute_anomalies() (thin passenger boards, low treasury, excess Bursar buys, unstaffed Tier-1 hubs, service down, log spikes)",
     "vault_cashable": "view: unreserved faction_storage stock joined with clean_books, item sizes, and cltv_open_orders showing net external buy-wall depth, est_cash, cr_per_m3, and same_base (0-hop) liquidity",
+    "station_revenue_log": "history: exact SpaceMolt action-log station payouts (faction.tourism_revenue & faction.station_revenue refuels) mirrored from empire/station_revenue.jsonl",
 }
 
 EXAMPLES = {                   # three questions per table and view, as SQL (hive.py schema <table>); the tests run each one
@@ -2444,6 +2478,11 @@ EXAMPLES = {                   # three questions per table and view, as SQL (hiv
         ("Top 0-hop instant cashable faction vault positions at the same station", "SELECT vault_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable WHERE same_base = 1 ORDER BY est_cash DESC LIMIT 15"),
         ("Top cross-station cashable faction vault positions ranked by value density", "SELECT vault_base, sell_base, item, sellable_qty, item_size, guarded_bid, est_cash, cr_per_m3 FROM vault_cashable ORDER BY est_cash DESC LIMIT 15"),
         ("Total cashable vault liquidity split by 0-hop same-base vs cross-station", "SELECT same_base, COUNT(*) AS pairs, ROUND(SUM(est_cash)) AS total_est_cash FROM vault_cashable GROUP BY same_base"),
+    ),
+    "station_revenue_log": (
+        ("Exact 24h station revenue split by tourism vs external refuels", "SELECT event_type, COUNT(*) AS events, SUM(amount) AS total_cr FROM station_revenue_log WHERE t >= strftime('%s','now') - 86400 GROUP BY event_type"),
+        ("Top external pilots paying refuel fees at Collective stations", "SELECT payer, COUNT(*) AS visits, SUM(amount) AS total_cr FROM station_revenue_log WHERE event_type = 'faction.station_revenue' GROUP BY payer ORDER BY total_cr DESC LIMIT 15"),
+        ("Recent tourism amenity payouts at Collective Resort Ridgecrest", "SELECT created_at, citizen, reason, amount FROM station_revenue_log WHERE event_type = 'faction.tourism_revenue' ORDER BY t DESC LIMIT 15"),
     ),
 }
 

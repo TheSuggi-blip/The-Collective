@@ -96,8 +96,10 @@ import dispatch                                   # noqa: E402  flagships, roles
 import division                                   # noqa: E402  who asks, which roles are whose
 
 FLOOR = 3000                   # rule F7: every pilot keeps this
-LOW = 10000                    # a wallet under this is topped up
-TARGET = 20000                 # ... to this
+LOW = 4000                     # worker wallet under this is topped up (tight floor -> fills Treasury fast, zero ping-pong with KEEP_WORK=6k)
+TARGET = 6000                  # ... to this (workers)
+LOW_TRADER = 10000             # trader/command wallet under this is topped up
+TARGET_TRADER = 20000          # ... to this (traders/command keep buying capital)
 KEEP = 30000                   # a donor never goes under this
 COOLDOWN = 30 * 60             # one gift per pilot in this many seconds
 WAIT = 45                      # seconds until the fleet file shows a gift the gate did not answer for (15 were too few: 2026-11-16, a gift that landed was booked unsure)
@@ -110,13 +112,16 @@ MIN_GIFT = 1000                # a share smaller than this is not worth a call: 
 SWEEP_ENABLED = True    # on since 2026-11-17 20:20 UTC, after its dry run on live data
 SWEEP_AT = 60000               # a trader/command ship holding this much gives what it holds above KEEP_SHIP
 KEEP_SHIP = 50000              # what a trader or command ship keeps (buys cargo/fittings)
-SWEEP_WORK = 28000             # a non-trading working ship holding this much gives what it holds above KEEP_WORK
-KEEP_WORK = 18000              # what a miner/hauler/scout/drone/sentinel keeps (above LOW=10k, frees Treasury liquidity)
+SWEEP_HAUL = 15000             # a hauler/liner holding this much gives what it holds above KEEP_HAUL
+KEEP_HAUL = 10000              # multi-hop fuel cushion for haulers & passenger liners
+SWEEP_WORK = 10000             # a non-trading working ship (miner/drone/sentinel/scout) holding this much sweeps to KEEP_WORK
+KEEP_WORK = 6000               # tight working floor (Suggi 2026-11-28) to maximize Faction Treasury fill speed
 FULL_PURSE_ROLES = frozenset(("trader", "command"))
+HAULER_ROLES = frozenset(("hauler",))
 MIN_DEPOSIT = 20000            # the leader deposits once it holds this much above KEEP_SHIP
-MIN_DIRECT_DEPOSIT = 10000     # minimum excess for a seated member to deposit directly into the faction treasury
+MIN_DIRECT_DEPOSIT = 3000      # minimum excess for a seated member to deposit directly into the faction treasury
 PER_PASS = 20                  # unseated gifts a sweep tries in parallel (distinct donors = independent 10s ticks)
-DIRECT_DEPOSIT_PER_PASS = 20   # seated members depositing directly to target=faction in parallel (1 hop, proven 2026-11-24)
+DIRECT_DEPOSIT_PER_PASS = 40   # seated members depositing directly to target=faction in parallel (1 hop, proven 2026-11-24)
 SWEEP_WORKERS = 8              # concurrent threads for distinct-pilot gifts, direct deposits, and P2P funding
 LEADER = "Prime Directive"     # the faction's leader when empire.json names none
 SKIP_PILOTS = set()            # pilots that never give in a sweep (one that holds credits for a buy the code does not know)
@@ -151,7 +156,7 @@ MAX_AUTO_OFFICERS = 180         # global cap on total auto-promoted Officers + l
 # ship at its line). The figures are the Fleet Admiral's (rule F7).
 TREASURY_TOPUP = True          # on since 2026-11-23 after its dry run on live data (Unity's turn of 02:30 CET)
 TREASURY_UNDER = LOW           # a stranded pilot under rule F7's line is topped up ... (5,000 until 2026-11-23 08:50 CET: the
-TREASURY_LINE = 11000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
+TREASURY_LINE = 6000          # ... to this, from the treasury; the pilots between 5,000 and 10,000 HALTed every pass, Unity)
 TREASURY_DAY = 8000000         # at most this much from the treasury for top-ups in 24 hours (500-ship fleet w/ 50 active scouts)
 TREASURY_EVERY = 3600          # a pilot is topped up from the treasury at most once per hour (prevents 5 cr scout stalls!)
 TREASURY_BUDGET = 100          # seconds of a sweep pass the top-ups' gifts may take; the rest waits for the next pass
@@ -198,7 +203,8 @@ def topup_view(rows, held, owes):
     for name, credits, owner in rows:
         kept = held.get(name, 0) + owes.get(name, 0)
         free = credits - kept
-        out.append((name, free if free >= LOW or not kept else min(credits, LOW), owner))
+        _lo, _ = low_target_for(name)
+        out.append((name, free if free >= _lo or not kept else min(credits, _lo), owner))
     return out
 
 
@@ -210,9 +216,10 @@ def plan_gifts(rows, given):
     purse = {name: credits for name, credits, _owner in rows}
     out = []
     for name, credits, owner in sorted(rows, key=lambda r: r[1]):
-        if credits >= LOW or name in given:
+        _lo, _tgt = low_target_for(name)
+        if credits >= _lo or name in given:
             continue
-        need = TARGET - credits
+        need = _tgt - credits
         whole = None
         for group in (owner, "Unity"):
             donors = sorted(((purse[n], n) for n, _c, o in rows if o == group and n != name and purse[n] - need >= KEEP), reverse=True)
@@ -659,12 +666,49 @@ def answer_shows(text, pilot, was, credits):
     return int(have.group(1)) <= was - credits * 0.9
 
 
-def keep_for(name, named=None):
-    """(keep, sweep_at) by role: traders and command keep KEEP_SHIP (sweep at SWEEP_AT); other working roles keep KEEP_WORK
-    (sweep at SWEEP_WORK), keeping every ship at or above top-up donor KEEP while freeing excess cash for the treasury."""
+def low_target_for(name, named=None):
+    """(low, target) by role: traders/command keep (LOW_TRADER, TARGET_TRADER); workers keep (LOW, TARGET) so sweep never ping-pongs."""
     if dispatch.role_of(name, named or {}) in FULL_PURSE_ROLES:
+        return LOW_TRADER, TARGET_TRADER
+    return LOW, TARGET
+
+
+def keep_for(name, named=None):
+    """(keep, sweep_at) by role: traders/command keep KEEP_SHIP (50k/60k); haulers keep KEEP_HAUL (10k/15k);
+    other working roles (miner/drone/sentinel/scout) keep KEEP_WORK (6k/10k) to fill Treasury rapidly."""
+    rl = dispatch.role_of(name, named or {})
+    if rl in FULL_PURSE_ROLES:
         return KEEP_SHIP, SWEEP_AT
+    if rl in HAULER_ROLES:
+        return KEEP_HAUL, SWEEP_HAUL
     return KEEP_WORK, SWEEP_WORK
+
+
+def book_direct_deposit(data, pilot, amount_cr, now=None):
+    """Record a direct pilot->Faction Treasury credit deposit into fleet/onetime.json so IFRS P&L never mistakes it for Station Ops."""
+    amt = int(abs(int(amount_cr or 0)))
+    if amt <= 0:
+        return
+    import fcntl
+    p = Path(data) / "fleet" / "onetime.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    lp = p.with_suffix(".lock")
+    ts = int(time.time() if now is None else now)
+    try:
+        with open(lp, "a+") as lf:
+            fcntl.flock(lf, fcntl.LOCK_EX)
+            try:
+                rows = json.loads(p.read_text(encoding="utf-8")) if p.is_file() else []
+                if not isinstance(rows, list):
+                    rows = []
+            except (OSError, ValueError):
+                rows = []
+            rows.append([ts, str(pilot), DEPOSIT_TITLE, -amt])
+            tmp = p.with_name(p.name + ".tmp")
+            tmp.write_text(json.dumps(rows, separators=(",", ":")), encoding="utf-8")
+            os.replace(tmp, p)
+    except OSError:
+        pass
 
 
 def plan_direct_deposits(fleet, leader, skip, seated, named=None):
