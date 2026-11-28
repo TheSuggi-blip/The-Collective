@@ -1453,8 +1453,11 @@ def _pick_outpost_backhaul(data, pilot, cur_base, base_map, lanes, hold_cap, pol
     hub_ids = [str(b) for b in (policy.get("outpost_backhaul_hubs") or []) if str(b) in base_map and str(b) != cur_base]
     if not hub_ids:
         return None
-    dists = bfs_dists(lanes, cur_sys, max_hops)
-    hub_hops = [(dists[base_map[b][0]], b, base_map[b]) for b in hub_ids if base_map[b][0] in dists]
+    hub_hops = []
+    for b in hub_ids:
+        _hd = _bfs_hops(lanes, cur_sys, base_map[b][0])
+        if _hd is not None and 0 < _hd <= max_hops:
+            hub_hops.append((int(_hd), b, base_map[b]))
     if not hub_hops:
         return None
     hub_hops.sort(key=lambda x: x[0])
