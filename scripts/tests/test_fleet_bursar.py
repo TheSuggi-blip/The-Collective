@@ -286,5 +286,21 @@ class TestBursarTreasuryFloor(unittest.TestCase):
         self.assertEqual(acts, [("buy_cancel", "nebula_stellar_vintage", "ord-1")])
 
 
+
+
+class TestBursarItemSizes(unittest.TestCase):
+    def test_faction_pull_respects_item_size(self):
+        picks = bursar._select_faction_surplus_to_pull(
+            {"lead_ore": 1000},
+            {"lead_ore": {"best_buy": 120, "best_buy_qty": 1000, "best_sell": 130}},
+            set(),
+            540,
+            max_kinds=4,
+            catalog_vals={"lead_ore": 120},
+            item_sizes={"lead_ore": 2},
+        )
+        self.assertEqual(picks, [("lead_ore", 270)])
+
+
 if __name__ == "__main__":
     unittest.main()

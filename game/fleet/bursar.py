@@ -930,7 +930,32 @@ def _central_depot_floors(repo_root, base_id):
     return {}
 
 
-def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4, catalog_vals=None, depot_floors=None):
+_BURSAR_ITEM_SIZES = {}
+
+
+def _bursar_item_sizes(data):
+    key = str(data or "")
+    now_t = time.time()
+    rec = _BURSAR_ITEM_SIZES.get(key)
+    if rec and (now_t - rec[0]) < 600.0:
+        return rec[1]
+    out = {}
+    try:
+        import sqlite3 as _sq_bs
+        dbp = Path(data) / "store" / "read.db"
+        if dbp.is_file():
+            con = _sq_bs.connect("file:%s?mode=ro&immutable=1" % dbp, uri=True, timeout=2.0)
+            for iid, sz in con.execute("SELECT id, size FROM items WHERE size > 1").fetchall():
+                if iid and int(sz or 1) > 1:
+                    out[str(iid)] = int(sz)
+            con.close()
+    except Exception:
+        pass
+    _BURSAR_ITEM_SIZES[key] = (now_t, out)
+    return out
+
+
+def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_kinds=4, catalog_vals=None, depot_floors=None, item_sizes=None):
     """Pure planner: select non-reserved marketable faction lockbox items at this hub to pull for immediate Bursar selling/crafting."""
     if not fac_items or free_hold < 1:
         return []
@@ -955,15 +980,19 @@ def _select_faction_surplus_to_pull(fac_items, book, reserved, free_hold, max_ki
             if not ((bid >= sfloor and (bq >= 1 or "best_buy_qty" not in row)) or ask >= sfloor):
                 continue
         uval = bid if bid > 0 else ask * 0.7
-        cands.append((uval * min(qty, free_hold), iid, min(qty, free_hold)))
+        _sz = max(1, int((item_sizes or {}).get(iid, 1)))
+        _max_u = min(qty, int(free_hold) // _sz)
+        if _max_u < 1:
+            continue
+        cands.append((uval * _max_u, iid, _max_u, _sz))
     cands.sort(reverse=True)
     picks = []
     rem = int(free_hold)
-    for _, iid, tq in cands[:max_kinds]:
-        take = min(tq, rem)
+    for _, iid, tq, _sz in cands[:max_kinds]:
+        take = min(tq, rem // _sz)
         if take >= 1:
             picks.append((iid, take))
-            rem -= take
+            rem -= take * _sz
         if rem < 1:
             break
     return picks
@@ -1445,7 +1474,7 @@ def main(argv=None):
                         _, sd_b = _call_json("GET", "/accounts/%s" % p_enc, timeout=20)
                         sh_b = ((sd_b.get("state") or {}).get("ship") or {}) if isinstance(sd_b, dict) else {}
                         free_h = max(0, int(sh_b.get("cargo_capacity") or 80) - int(sh_b.get("cargo_used") or 0))
-                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8, catalog_vals=catalog_vals, depot_floors=_central_depot_floors(REPO, base_id))
+                        picks = _select_faction_surplus_to_pull(fac_here, book, reserved, free_h, max_kinds=8, catalog_vals=catalog_vals, depot_floors=_central_depot_floors(REPO, base_id), item_sizes=_bursar_item_sizes(DATA))
                         for p_iid, p_q in picks:
                             rw = raw("withdraw", {"item_id": p_iid, "quantity": p_q, "target": "faction"}, group="spacemolt_storage")
                             time.sleep(TICK)

@@ -154,5 +154,14 @@ class TestHaulPickerCallSignatures(unittest.TestCase):
         self.assertGreaterEqual(checked, 4)
 
 
+
+
+class TestHaulItemSizes(unittest.TestCase):
+    def test_item_size_halves_liquidation_qty(self):
+        self.assertEqual(haul._cap_units(286, "lead_ore", {"lead_ore": 2}), 143)
+        self.assertEqual(haul._cap_units(110, "plasma_gas", {"plasma_gas": 2}), 55)
+        self.assertEqual(haul._cap_units(110, "hydrogen_gas", {"lead_ore": 2}), 110)
+
+
 if __name__ == "__main__":
     unittest.main()

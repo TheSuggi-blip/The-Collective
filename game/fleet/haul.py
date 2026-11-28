@@ -286,12 +286,44 @@ def _hub_upkeep_keep_floor(policy, hub_kind, item_id):
     return max(0, int(tgts.get(item_id) or 0))
 
 
+_ITEM_SIZES_CACHE = {}
+
+
+def _load_item_sizes(data):
+    """Cached map {item_id: int(size)} for all items with size > 1 from read.db (prevents cargo_full on withdraw!)."""
+    key = str(data or "")
+    now_t = time.time()
+    rec = _ITEM_SIZES_CACHE.get(key)
+    if rec and (now_t - rec[0]) < 600.0:
+        return rec[1]
+    out = {}
+    try:
+        import sqlite3 as _sq_sz
+        dbp = Path(data) / "store" / "read.db"
+        if dbp.is_file():
+            con = _sq_sz.connect("file:%s?mode=ro&immutable=1" % dbp, uri=True, timeout=2.0)
+            for iid, sz in con.execute("SELECT id, size FROM items WHERE size > 1").fetchall():
+                if iid and int(sz or 1) > 1:
+                    out[str(iid)] = int(sz)
+            con.close()
+    except Exception:
+        pass
+    _ITEM_SIZES_CACHE[key] = (now_t, out)
+    return out
+
+
+def _cap_units(hold_cap, item_id, item_sizes):
+    sz = max(1, int((item_sizes or {}).get(str(item_id), 1)))
+    return max(0, int(hold_cap) // sz)
+
+
 def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, avail_cash, policy, claimed_keys, now_t=None, exclude_bases=None):
     """Reorder-point (s, S) automated upkeep resupply for ALL CLTV Owned Outposts & Stations.
     Prefers zero-cash internal transfers from empire Faction/pilot warehouses; falls back to cheap
     policed Exchange purchases when internal stock is absent (e.g. fuel_cell, hull_patch)."""
     if hold_cap < 1:
         return None
+    _sz_map = _load_item_sizes(data)
     now_t = time.time() if now_t is None else float(now_t)
     owned_hubs = load_cltv_owned_hubs(data)
     if not owned_hubs:
@@ -511,7 +543,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                     d_hops, _ = _route_cost(lanes, oloc[0], dloc[0], gates=_hg, cr_per_jump=_hcpj, pilot_credits=avail_cash) if lanes else (1, 0)
                     if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                         continue
-                    qty = min(deficit, sq, int(hold_cap))
+                    qty = min(deficit, sq, _cap_units(hold_cap, iid, _sz_map))
                     if qty < min_lot:
                         continue
                     sc = (urgency * 1000.0 + qty * 2.0) / max(1.0, float(p_hops + d_hops))
@@ -539,7 +571,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                         d_hops, _ = _route_cost(lanes, oloc[0], dloc[0], gates=_hg2, cr_per_jump=_hcpj2, pilot_credits=avail_cash) if lanes else (1, 0)
                         if p_hops is None or d_hops is None or p_hops > eff_max_pick or d_hops > max_del:
                             continue
-                        qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
+                        qty = min(deficit, ask_q, _cap_units(hold_cap, iid, _sz_map), int(max_spend // (ask_p * 1.02)))
                         if qty < min_lot:
                             continue
                         sc = (urgency * 850.0 + qty * 1.5) / max(1.0, float(p_hops + d_hops))
@@ -584,7 +616,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                 if self_at_dp >= min_lot:
                     p_hops_dp = _bfs_hops(lanes, cur_sys, dloc_dp[0]) if cur_sys and lanes else 0
                     if p_hops_dp is not None and p_hops_dp <= max_pick:
-                        fq = min(deficit, self_at_dp, int(hold_cap))
+                        fq = min(deficit, self_at_dp, _cap_units(hold_cap, iid, _sz_map))
                         sc_f = (urg_dp * 950.0 + fq * 2.0) / max(1.0, 1.0 + 0.5 * float(p_hops_dp))
                         cand_f = (sc_f, {
                             "job_key": jk_dp, "mode": "transfer", "source_target": "self",
@@ -612,7 +644,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                         d_hops = _bfs_hops(lanes, oloc[0], dloc_dp[0]) if lanes else 1
                         if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
                             continue
-                        qty = min(deficit, sq, int(hold_cap))
+                        qty = min(deficit, sq, _cap_units(hold_cap, iid, _sz_map))
                         if qty < min_lot:
                             continue
                         sc = (urg_dp * 900.0 + qty * 1.5) / max(1.0, float(p_hops + d_hops))
@@ -634,7 +666,7 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
                             d_hops = _bfs_hops(lanes, oloc[0], dloc_dp[0]) if lanes else 1
                             if p_hops is None or d_hops is None or p_hops > max_pick or d_hops > max_del:
                                 continue
-                            qty = min(deficit, ask_q, int(hold_cap), int(max_spend // (ask_p * 1.02)))
+                            qty = min(deficit, ask_q, _cap_units(hold_cap, iid, _sz_map), int(max_spend // (ask_p * 1.02)))
                             if qty < min_lot:
                                 continue
                             sc = (urg_dp * 750.0 + qty * 1.2) / max(1.0, float(p_hops + d_hops))
@@ -1554,6 +1586,7 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
     """Pull non-reserved surplus from lawless Owned Outposts & non-Bursar hubs to the nearest policed Trade Hub with a docked Bursar Trader."""
     if hold_cap < 1:
         return None
+    _sz_map = _load_item_sizes(data)
     now_t = time.time() if now_t is None else float(now_t)
     can_fac = _pilot_can_withdraw_faction(data, pilot)
     max_pick = int(policy.get("max_jumps_pickup") or 16)
@@ -1642,14 +1675,16 @@ def _pick_consolidate_to_trader(data, pilot, books_rows, base_map, lanes, cur_sy
                 lb = local_bids.get((db, iid))
                 if lb:
                     uval, lb_q = lb
-                    take_q = min(q, int(hold_cap), int(lb_q))
-                    max_slots = min(6, max(1, min(q, int(lb_q)) // max(1, int(hold_cap))))
+                    _eff_c = _cap_units(hold_cap, iid, _sz_map)
+                    take_q = min(q, _eff_c, int(lb_q))
+                    max_slots = min(6, max(1, min(q, int(lb_q)) // max(1, _eff_c)))
                     val_weight = 1.0
                 elif is_owned_outpost and fair_u >= 8.0 and d_hops <= 12:
                     # Outposts have no Market Terminal: move high-value non-reserved ore/gas to nearest Bursar hub for sell-order listing!
                     uval = fair_u
-                    take_q = min(q, int(hold_cap))
-                    max_slots = min(4, max(1, q // max(1, int(hold_cap))))
+                    _eff_c = _cap_units(hold_cap, iid, _sz_map)
+                    take_q = min(q, _eff_c)
+                    max_slots = min(4, max(1, q // max(1, _eff_c)))
                     val_weight = 0.70
                 else:
                     continue
@@ -1681,6 +1716,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
     home_bases = [b for b in (policy.get("home_bases") or []) if b in base_map]
     if not home_bases or hold_cap < 1:
         return None
+    _sz_map = _load_item_sizes(data)
     db = Path(data) / "store" / "read.db"
     if not db.is_file():
         return None
@@ -1737,7 +1773,8 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
                 q -= _hub_upkeep_keep_floor(policy, owned_hubs[b_id].get("kind") or "outpost", iid)
             if q < 10 or iid not in open_needs:
                 continue
-            max_slots = min(4, max(1, q // max(1, int(hold_cap))))
+            _eff_s = max(1, _cap_units(hold_cap, iid, _sz_map))
+            max_slots = min(4, max(1, q // _eff_s))
             jkey = None
             for slot_i in range(max_slots):
                 cand_k = ("supply:%s:%s:%s" % (src_target, b_id, iid)) if slot_i == 0 else ("supply:%s:%s:%s#%d" % (src_target, b_id, iid, slot_i))
@@ -1758,7 +1795,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
                     dloc, d_hops = hl, h
             if dloc is None:
                 continue
-            take_q = min(q, int(hold_cap))
+            take_q = min(q, _cap_units(hold_cap, iid, _sz_map))
             score = take_q / max(1.0, float(p_hops + d_hops))
             if best is None or score > best[0]:
                 best = (score, {"job_key": jkey, "item": iid, "qty": take_q, "source_target": src_target, "origin": oloc, "dest": dloc})
@@ -1766,7 +1803,7 @@ def _pick_internal_supply(data, pilot, base_map, lanes, cur_sys, hold_cap, polic
 
 
 
-def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None):
+def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap, policy, claimed_keys, now_t=None, exclude_bases=None, item_sizes=None):
     """Carry pilot's own non-reserved stored items to the best reachable policed live bid to convert surplus to cash."""
     if hold_cap < 1:
         return None
@@ -1778,6 +1815,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
     min_rev = float(policy.get("liquidate_min_revenue_cr") or 300)
 
     reserved = _load_reserved_items_exact(data)
+    _sz_map = item_sizes if isinstance(item_sizes, dict) else _load_item_sizes(data)
 
     stor = read_json(Path(data) / "stock" / "storage.json", {})
     sources = []
@@ -1881,7 +1919,8 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                 d_hops = _bfs_hops(lanes, oloc[0], sloc[0]) if lanes else (0 if oloc[0] == sloc[0] else 1)
                 if d_hops is None or d_hops > max_del:
                     continue
-                take_q = min(q, int(hold_cap), int(bid_q))
+                _eff_cap = _cap_units(hold_cap, iid, _sz_map)
+                take_q = min(q, _eff_cap, int(bid_q))
                 if take_q < 1:
                     continue
                 tot_hops = max(1, p_hops + d_hops)
@@ -1892,7 +1931,7 @@ def _pick_surplus_liquidation(data, pilot, books_rows, base_map, lanes, cur_sys,
                     continue
                 if est_rev < eff_min_rev:
                     continue
-                max_slots = min(int(policy.get('liquidate_max_slots') or 8), max(1, min(q, int(bid_q)) // max(1, int(hold_cap))))
+                max_slots = min(int(policy.get('liquidate_max_slots') or 8), max(1, min(q, int(bid_q)) // max(1, _eff_cap)))
                 jkey = None
                 for slot_i in range(max_slots):
                     cand_k = ("liq:%s:%s:%s:%s" % (src_target, b_id, sb, iid)) if slot_i == 0 else ("liq:%s:%s:%s:%s#%d" % (src_target, b_id, sb, iid, slot_i))
@@ -2692,9 +2731,15 @@ def main(argv=None):
                         release_job(DATA, pilot)
                         continue
                     _src_t = liq.get("source_target") or "self"
-                    raw("withdraw", {"item_id": iid, "quantity": qty, "target": _src_t}, group="spacemolt_storage")
+                    _sz_i = max(1, int(_load_item_sizes(DATA).get(iid, 1)))
+                    _wd_q = min(int(qty), max(1, int(hold_cap) // _sz_i))
+                    _rw_l = raw("withdraw", {"item_id": iid, "quantity": _wd_q, "target": _src_t}, group="spacemolt_storage")
                     time.sleep(TICK)
                     have = get_cargo().get(iid, 0)
+                    if have <= 0 and "cargo_full" in str(_rw_l.get("error") or "").lower() and _wd_q > 1:
+                        raw("withdraw", {"item_id": iid, "quantity": max(1, _wd_q // 2), "target": _src_t}, group="spacemolt_storage")
+                        time.sleep(TICK)
+                        have = get_cargo().get(iid, 0)
                     if have <= 0:
                         release_job(DATA, pilot)
                         continue
@@ -2718,6 +2763,17 @@ def main(argv=None):
                         rem = get_cargo().get(iid, 0)
                         if rem < have:
                             notes.append("liquidated %d %s @ %s" % (have - rem, iid, dloc[2]))
+                            if _src_t == "faction":
+                                try:
+                                    _cr_now = get_credits()
+                                    if _cr_now >= 23000:
+                                        _dep_cr = int(_cr_now - 18000)
+                                        _r_tr = raw("deposit", {"target": "faction", "item_id": "credits", "quantity": _dep_cr}, group="spacemolt_storage")
+                                        time.sleep(TICK)
+                                        if "error" not in _r_tr:
+                                            say("treasury_deposit +%d cr from faction liquidation" % _dep_cr)
+                                except Exception:
+                                    pass
                         if rem > 0:
                             bp = docked_bursar_at(DATA, dloc[2])
                             if bp and bp != pilot and "error" not in raw("send_gift", {"recipient": bp, "item_id": iid, "quantity": rem}, group="spacemolt_social"):
