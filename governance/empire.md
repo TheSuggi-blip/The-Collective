@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-28T04:47:36Z.
+Facts as of 2026-11-28T05:46:45Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-28T04:47:36Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 499 of a limit of 500 |
-| Ships of the fleet in it | 499 of 500 |
+| Members | 500 of a limit of 500 |
+| Ships of the fleet in it | 500 of 500 |
 | Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
-| Offices at stations | 38, rent 1,441 cr per cycle (123,926 cr a day) |
+| Offices at stations | 37, rent 1,441 cr per cycle (123,926 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -60,7 +60,6 @@ Systems we hold something in:
 | `felis` | outpost | CLTV Outpost Felis |
 | `gsc_0044` | outpost | CLTV Outpost GSC-0044 |
 | `ridgecrest` | station | Collective Resort Ridgecrest |
-| `nexus_prime` | office | at central_nexus |
 | `node_beta` | office | at node_beta_industrial_station |
 | `procyon` | office | at procyon_colonial_station |
 | `last_light` | office | at ramens_rest |
@@ -101,7 +100,6 @@ hold).
 | Grand Hotel & Resort | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Zero-G Lounge & Bar | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Frontier Cantina | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
-| Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
 | Faction Fuel Bunker | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Faction Lockbox | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
