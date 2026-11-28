@@ -221,8 +221,8 @@ def plan_gifts(rows, given):
             continue
         need = _tgt - credits
         whole = None
-        for group in (owner, "Unity"):
-            donors = sorted(((purse[n], n) for n, _c, o in rows if o == group and n != name and purse[n] - need >= KEEP), reverse=True)
+        for group in (owner, "Unity", "*"):
+            donors = sorted(((purse[n], n) for n, _c, o in rows if (group == "*" or o == group) and n != name and purse[n] - need >= KEEP), reverse=True)
             if donors:
                 whole = donors[0][1]
                 break
@@ -231,8 +231,8 @@ def plan_gifts(rows, given):
             purse[name] += need
             out.append((whole, name, need))
             continue
-        for group in (owner, "Unity"):
-            for _have, donor in sorted(((purse[n], n) for n, _c, o in rows if o == group and n != name), reverse=True):
+        for group in (owner, "Unity", "*"):
+            for _have, donor in sorted(((purse[n], n) for n, _c, o in rows if (group == "*" or o == group) and n != name), reverse=True):
                 part = min(need, purse[donor] - KEEP)
                 if part < MIN_GIFT:
                     break                                       # richest first: the rest can spare less

@@ -166,17 +166,34 @@ def _load_census_world(data_dir, policy, now_t=None):
                         if sa and sb:
                             adj.setdefault(sa, set()).add(sb)
                             adj.setdefault(sb, set()).add(sa)
+                _dry_sys = set()
+                try:
+                    _tdp = Path(data_dir) / "fleet" / "tug_dry.json"
+                    if _tdp.is_file():
+                        _td = json.loads(_tdp.read_text(encoding="utf-8"))
+                        if isinstance(_td, dict):
+                            for _rec in _td.values():
+                                if isinstance(_rec, dict) and _rec.get("system"):
+                                    _dry_sys.add(str(_rec["system"]))
+                except (OSError, ValueError):
+                    pass
+                _wrecked_sys = set()
+                if "stations" in tbls:
+                    for s, svcs, wrk, cond, emp, tag in con.execute(
+                        "SELECT system, COALESCE(services,''), COALESCE(wrecked,0), LOWER(COALESCE(condition,'')), COALESCE(empire,''), COALESCE(tag,'') FROM stations WHERE system IS NOT NULL"
+                    ).fetchall():
+                        if not s:
+                            continue
+                        if int(wrk or 0) != 0:
+                            _wrecked_sys.add(str(s))
+                            continue
+                        if str(s) in _dry_sys and not emp:
+                            continue
+                        if emp or str(tag or "").upper() == "CLTV" or ("refuel" in str(svcs).lower() and cond == "thriving"):
+                            refuel_sys.add(str(s))
                 if "places" in tbls:
                     for s, b in con.execute("SELECT system, base FROM places WHERE base IS NOT NULL AND base != ''").fetchall():
-                        if s and b and "_" in str(b):
-                            refuel_sys.add(str(s))
-                if "bases" in tbls:
-                    for (s,) in con.execute("SELECT DISTINCT system FROM bases WHERE system IS NOT NULL AND system != ''").fetchall():
-                        if s:
-                            refuel_sys.add(str(s))
-                if "stations" in tbls:
-                    for s, svcs in con.execute("SELECT system, COALESCE(services,'') FROM stations WHERE system IS NOT NULL").fetchall():
-                        if s and "refuel" in str(svcs).lower():
+                        if s and b and "_" in str(b) and str(s) not in _wrecked_sys:
                             refuel_sys.add(str(s))
                 if "fields" in tbls:
                     for s, mt in con.execute("SELECT system, MAX(COALESCE(t, 0)) FROM fields GROUP BY system").fetchall():
@@ -673,10 +690,15 @@ def run_pilot(pilot, minutes=35, policy_path=None, route_id="census-network", da
     legs = 0
     try:
         while legs < max_legs and (legs == 0 or (deadline - time.time()) > 120.0):
-            hop_lim = None if legs == 0 else chain_j
+            _sdoc = _load_pilot_ship(data, pilot)
+            if not dry_run and isinstance(_sdoc, dict) and _sdoc.get("fuel") is not None and _sdoc.get("credits") is not None:
+                if int(_sdoc.get("fuel") or 0) <= 5 and int(_sdoc.get("credits") or 0) < 200:
+                    print("RESULT %s: census_net: stranded/broke (fuel=%s, cr=%s); waiting for wallet/tug rescue" % (pilot, _sdoc.get("fuel"), _sdoc.get("credits")), flush=True)
+                    break
+            hop_lim = (chain_j * 2) if legs == 0 else chain_j
             pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=hop_lim, dry=dry_run)
-            if not pick and legs > 0:
-                pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=chain_j * 3, dry=dry_run)
+            if not pick:
+                pick = pick_and_claim_target(data, pilot, pol, cur_sys=cur_sys, done=done, max_hops=None if legs == 0 else chain_j * 3, dry=dry_run)
             if not pick:
                 if legs == 0:
                     print("RESULT %s: census_net: all reachable systems fresh (0 due)" % pilot, flush=True)

@@ -197,8 +197,9 @@ def row_of(number, cells, seen):
     for key in ("added", "changed"):
         if not STAMP.match(row[key]) or epoch(row[key]) is None:
             errors.append("%s `%s`: a UTC time YYYY-MM-DDTHH:MMZ" % (key, row[key]))
-        if row[key + "_by"] not in division.MEMBERS:
-            errors.append("%s_by `%s`: a member (%s)" % (key, row[key + "_by"], ", ".join(division.MEMBERS)))
+        _valid_authors = tuple(division.MEMBERS) + tuple(x for x in getattr(division, "SOLE_OPERATORS", ()) if x not in division.MEMBERS)
+        if row[key + "_by"] not in _valid_authors:
+            errors.append("%s_by `%s`: a member (%s)" % (key, row[key + "_by"], ", ".join(_valid_authors)))
     row["line"], row["errors"] = number, errors
     return row
 

@@ -149,13 +149,17 @@ def free_from_battle():
 
 def goal(kind, options):
     d = {}
-    for _ in range(3):
+    for _attempt in range(4):
         status, d = call(f'/accounts/{P}/goal', {'type': kind, 'options': options})
         if status == 200 and d.get('success'):
             return True
-        if 'in_battle' in str(d.get('message') or d.get('error') or '').lower().replace(' ', '_'):
+        _err = str(d.get('message') or d.get('error') or '').lower()
+        if 'in_battle' in _err.replace(' ', '_'):
             free_from_battle()                                               # then the next try
-        time.sleep(15)
+        elif 'already pending' in _err or 'already being processed' in _err:
+            time.sleep(11.0)
+            continue
+        time.sleep(12.0)
     say(f'goal {kind} failed: {str(d.get("message") or d.get("error"))[:120]}')
     return False
 
@@ -396,7 +400,9 @@ def refuel_at(stop):
     after = fuel()
     if after is not None and before is not None and after <= before:
         raw('dock')                                     # the goal ended at the station undocked (seen 2026-11-22)
+        time.sleep(10.5)
         raw('refuel')
+        time.sleep(10.5)
         after = fuel()
     say(f'fuel stop at {sid} ({base}): fuel {before} -> {after}')
     try:
@@ -480,15 +486,35 @@ def fuel_stations_fast(data):
             import sqlite3
             con = sqlite3.connect('file:%s?mode=ro&immutable=1' % db, uri=True, timeout=2.0)
             out = {}
+            _dry_sys = set()
+            try:
+                _tdp = Path(data) / 'fleet' / 'tug_dry.json'
+                if _tdp.is_file():
+                    _td = json.loads(_tdp.read_text(encoding='utf-8'))
+                    if isinstance(_td, dict):
+                        for _rec in _td.values():
+                            if isinstance(_rec, dict) and _rec.get('system'):
+                                _dry_sys.add(str(_rec['system']))
+            except (OSError, ValueError):
+                pass
             rows = con.execute("""
-                SELECT p.system, p.poi, p.base, COALESCE(st.services, '')
+                SELECT p.system, p.poi, p.base, COALESCE(st.services, ''),
+                       COALESCE(st.wrecked, 0), LOWER(COALESCE(st.condition, '')),
+                       COALESCE(st.empire, ''), COALESCE(st.tag, '')
                 FROM places p
                 LEFT JOIN stations st ON st.system = p.system AND st.name = p.name
                 WHERE p.kind = 'station' AND p.base IS NOT NULL AND p.base != ''
             """).fetchall()
-            for sid, poi, base, svcs in rows:
+            for sid, poi, base, svcs, wrecked, cond, emp, tag in rows:
+                if int(wrecked or 0) != 0:
+                    continue
+                if str(sid) in _dry_sys and not emp:
+                    continue
                 s_l = str(svcs or '').lower()
-                if ('refuel' in s_l) or ('_' in str(base)):
+                is_npc = ('_' in str(base)) and bool(emp)
+                is_cltv = str(tag or '').upper() == 'CLTV'
+                is_healthy_player = (not is_npc) and ('refuel' in s_l) and cond == 'thriving'
+                if is_npc or is_cltv or is_healthy_player:
                     out.setdefault(str(sid), (str(poi), str(base)))
             try:
                 import fuelplan as _fp_dep
