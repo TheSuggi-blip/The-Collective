@@ -9,12 +9,12 @@
  "standing": true,
  "far_ok": true,
  "measured": {
-  "date": "2026-11-27",
-  "runs": 3994,
+  "date": "2026-11-28",
+  "runs": 8577,
   "minutes": 2,
-  "credits_per_run": -60,
-  "cph_per_ship": -1210,
+  "credits_per_run": -40,
+  "cph_per_ship": -830,
   "hours": 12,
-  "last_run": "2026-11-27T21:55:26Z"
+  "last_run": "2026-11-28T03:41:46Z"
  }
 }

@@ -31,10 +31,10 @@
   "The Expeditionary Mandate"
  ],
  "measured": {
-  "date": "2026-11-27",
-  "runs": 49,
-  "minutes": 45,
-  "credits_per_run": 5670,
-  "cph_per_ship": 9990
+  "date": "2026-11-28",
+  "runs": 99,
+  "minutes": 42,
+  "credits_per_run": 7020,
+  "cph_per_ship": 12030
  }
 }
