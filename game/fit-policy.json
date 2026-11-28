@@ -63,8 +63,8 @@
     "armor_plate_ii": 2500,
     "armor_plate_iii": 3500,
     "survey_scanner_ii": 22000,
-    "economy_passenger_cabin": 5000,
-    "business_passenger_cabin": 10000,
+    "economy_passenger_cabin": 12000,
+    "business_passenger_cabin": 24000,
     "expanded_fuel_tank": 3000,
     "afterburner_ii": 4000,
     "remote_armor_repairer_ii": 7500,
@@ -153,7 +153,8 @@
     "adaptive_shield_ii": 28000,
     "heavy_pulse_laser": 30000,
     "void_torpedo_launcher": 65000,
-    "plasma_cannon_i": 3000
+    "plasma_cannon_i": 3000,
+    "first_class_passenger_suite": 48000
   },
   "specialties": {
     "Mining": {
@@ -2106,5 +2107,9 @@
     "Intel",
     "Command"
   ],
-  "_blueprint_note": "2026-11-27 (Trinity, Suggi approved): Full T1-T5 Masterplan blueprint module escalation active across Mining, Military, Logistics, Trade, Intel, and Command. Zero afterburners in any loadout (fuel_optimizer everywhere); singleton utility/defense deduplication enforced in fit_net.py."
+  "_blueprint_note": "2026-11-27 (Trinity, Suggi approved): Full T1-T5 Masterplan blueprint module escalation active across Mining, Military, Logistics, Trade, Intel, and Command. Zero afterburners in any loadout (fuel_optimizer everywhere); singleton utility/defense deduplication enforced in fit_net.py.",
+  "passenger_max_jumps": 22,
+  "trusted_neutral_bases": [
+    "784309214f105860a16a0c100a70eb14"
+  ]
 }

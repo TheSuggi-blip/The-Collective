@@ -1,0 +1,75 @@
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "game" / "fleet"))
+import passenger_net as pn
+
+
+class PassengerNetTests(unittest.TestCase):
+    def test_berth_math_for_futures_with_vip_and_business_cabins(self):
+        b = pn.ship_berths("futures", ["first_class_passenger_suite", "business_passenger_cabin"])
+        self.assertEqual(b, {"economy": 0, "business": 7, "first": 3})
+        self.assertEqual(pn.total_berths(b), 10)
+        self.assertEqual(pn.total_berths(pn.ship_berths("cobble", [])), 0)
+
+    def test_seat_allocation_prioritizes_first_class_and_downgrades_overflow(self):
+        berths = {"first": 1, "business": 1, "economy": 0}
+        pax = [
+            {"name": "Eco1", "class": "economy", "estimated_fare": 1000},
+            {"name": "First1", "class": "first", "estimated_fare": 11000},
+            {"name": "Eco2", "class": "economy", "estimated_fare": 900},
+        ]
+        seated, fare, rem = pn.simulate_seat_allocation(pax, berths)
+        self.assertEqual([p["name"] for p in seated], ["First1", "Eco1"])
+        self.assertEqual(fare, 12000)
+        self.assertEqual(rem, {"first": 0, "business": 0, "economy": 0})
+
+    def test_ridgecrest_inbound_and_vip_bonus_rank_first(self):
+        graph = {
+            "adj": {"sol": ["s1", "s2"], "s1": ["sol", "ridgecrest"], "ridgecrest": ["s1"], "s2": ["sol", "other"], "other": ["s2"]},
+            "base_to_sys": {"rc_base": "ridgecrest", "other_base": "other"},
+            "sys_to_base": {"ridgecrest": "rc_base", "other": "other_base"},
+            "strongholds": set(),
+            "refuel_ready": {"rc_base"},
+        }
+        pol = dict(pn.DEFAULT_POLICY, home_base="rc_base", home_system="ridgecrest")
+        board = {
+            "waiting": [
+                {"name": "P1", "class": "first", "destination": "rc_base", "destination_system": "ridgecrest", "estimated_fare": 9000},
+                {"name": "P2", "class": "first", "destination": "other_base", "destination_system": "other", "estimated_fare": 9000},
+            ]
+        }
+        berths = pn.ship_berths("futures", ["first_class_passenger_suite", "business_passenger_cabin"])
+        cands = pn.score_station_board("sol_base", "sol", board, berths, graph, pol)
+        self.assertEqual(len(cands), 2)
+        self.assertEqual(cands[0]["dest_base"], "rc_base")
+        self.assertGreater(cands[0]["score"], cands[1]["score"])
+
+    def test_reposition_prefers_ridgecrest_high_value_board(self):
+        graph = {
+            "adj": {"sol": ["s1", "s2"], "s1": ["sol", "ridgecrest"], "ridgecrest": ["s1"], "s2": ["sol", "haven"], "haven": ["s2"]},
+            "base_to_sys": {"rc_base": "ridgecrest", "hav_base": "haven", "sol_base": "sol"},
+            "sys_to_base": {},
+            "strongholds": set(),
+            "refuel_ready": {"rc_base"},
+        }
+        pol = dict(pn.DEFAULT_POLICY, home_base="rc_base", home_system="ridgecrest")
+        boards = {
+            "rc_base": {"system": "ridgecrest", "waiting": [{"class": "first", "destination": "sol_base", "destination_system": "sol", "estimated_fare": 11000}]},
+            "hav_base": {"system": "haven", "waiting": [{"class": "economy", "destination": "sol_base", "destination_system": "sol", "estimated_fare": 1800}]},
+        }
+        berths = pn.ship_berths("futures", ["first_class_passenger_suite"])
+        rep = pn.choose_reposition_hub("sol", boards, berths, graph, pol)
+        self.assertIsNotNone(rep)
+        self.assertEqual(rep["base"], "rc_base")
+
+    def test_has_passenger_work_blocks_unfitted_cobble_and_allows_futures(self):
+        pol_p = ROOT / "game" / "passenger-policy.json"
+        self.assertFalse(pn.has_passenger_work("LSV Albatross", {"class": "Cobble", "modules": []}, policy_path=pol_p))
+        self.assertTrue(pn.has_passenger_work("LSV Albatross", {"class": "Futures", "modules": []}, policy_path=pol_p))
+
+
+if __name__ == "__main__":
+    unittest.main()

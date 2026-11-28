@@ -12,7 +12,7 @@ A route is a task one pilot carries out by itself; its file is `game/routes/<id>
 (`BLUEPRINT.md`). The figures are what our own runs measured. Home space first, then by
 kind and name. Up: [master-index.md](master-index.md).
 
-Routes: 673.
+Routes: 674.
 
 | Route | Kind | Zone | What it is | Open to | Runs | Minutes per run | Credits per run | Credits per ship-hour | Measured |
 |---|---|---|---|---|---|---|---|---|---|
@@ -689,3 +689,4 @@ Routes: 673.
 | [mine-wolf-1061-frozen-drift-nexus](mine-wolf-1061-frozen-drift-nexus.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift: water_ice, nitrogen_ice, deuterium_ice, methane_ice; stored at Central Nexus | up to 1 ships, needs ice_harvester_i, empty hold, while central_nexus bids 25 cr for water_ice, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-wolf-1061-vent](mine-wolf-1061-vent.json) | mine | beyond the border, 4 jumps | Wolf 1061 Frozen Drift with a Nitrogen Vent: water and the rare ices, stored at Synchrony | up to 1 ships, needs nitrogen_vent, empty hold, while synchrony_hub bids 25 cr for water_ice, standing work | TBD | TBD | TBD | TBD | -- |
 | [mine-network](mine-network.json) | mine_net | -- | Dynamic Smart Mining network: auto-rotates across unsaturated belts (>=15% floor), prioritizing reserve deficits and tool match | up to 130 ships, standing work | 1541 | 25 | 70 | 150 | 2026-11-28 |
+| [passenger-network](passenger-network.json) | passenger_net | -- | Passenger AutoNet -- 6B Ridgecrest VIP Hub-and-Spoke Liners | up to 28 ships, standing work, on | TBD | TBD | TBD | TBD | -- |

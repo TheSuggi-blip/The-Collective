@@ -21,18 +21,18 @@ file grows with the whole fleet. How a route is written, and what is automatic:
 | [Paying Routes](index-paying-routes.md) | Work that repeats and whose runs of the last 12 hours measured above zero. | 0 | 0 | 0 | -- |
 | [Tests](index-tests.md) | Work that repeats and has no measured figure: new, or no readable run in the last 12 hours. One ship until its first RESULT line is read. | 134 | 58 | 76 | not measured yet |
 | [Fitting](index-fitting.md) | A module bought and fitted: the tool a kind of work needs. | 40 | 17 | 23 | strip-mining-laser-krynn: 1,170 cr per ship-hour |
-| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 673 | 127 | 534 | mission-old-charts-sol: 8,790 cr per ship-hour |
+| [Standing Work, Reading and Waiting](index-standing-work.md) | Standing work (it trains a skill or gathers into storage and is not judged on its pay), the census and the park route: they keep every ship busy and the picture fresh. | 674 | 127 | 534 | mission-old-charts-sol: 8,790 cr per ship-hour |
 | [Measured at a Loss](index-measured-at-a-loss.md) | Work that repeats and whose runs of the last 12 hours measured zero or below. | 0 | 0 | 0 | -- |
 | [Off](index-off.md) | Written down, not flown. | 84 | 24 | 58 | mission-market-participation-nova-terra: 12,000 cr per ship-hour |
-| All | | 1029 | 249 | 766 | |
+| All | | 1030 | 249 | 766 | |
 
 ## Routes by Zone and Kind
 
-| Zone | Routes | bursar | census | census_net | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | pirate_net | salvage_net | Farthest system, jumps from home |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| home space | 249 | 0 | 1 | 0 | 212 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 0 | 0 | 3 |
-| beyond the border | 766 | 0 | 25 | 0 | 280 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 0 | 0 | 29 |
-| not on the chart | 14 | 2 | 0 | 1 | 0 | 1 | 2 | 0 | 3 | 0 | 2 | 0 | 1 | 1 | 1 | -- |
+| Zone | Routes | bursar | census | census_net | circuit | craft_net | fit_net | guard | haul | hunt | hunt_net | mine | mine_net | passenger_net | pirate_net | salvage_net | Farthest system, jumps from home |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| home space | 249 | 0 | 1 | 0 | 212 | 0 | 0 | 1 | 0 | 20 | 0 | 15 | 0 | 0 | 0 | 0 | 3 |
+| beyond the border | 766 | 0 | 25 | 0 | 280 | 0 | 0 | 7 | 0 | 312 | 0 | 142 | 0 | 0 | 0 | 0 | 29 |
+| not on the chart | 15 | 2 | 0 | 1 | 0 | 1 | 2 | 0 | 3 | 0 | 2 | 0 | 1 | 1 | 1 | 1 | -- |
 
 ## Plans by Role
 

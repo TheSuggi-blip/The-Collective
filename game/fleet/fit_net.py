@@ -387,16 +387,17 @@ def plan_ship_fit(ship_doc, world, policy):
     judge_caps = cap_cpu > 0 and cap_pow > 0
 
     policed_only = bool(policy.get("policed_only", True))
-    max_jumps = int(policy.get("max_jumps") or 6)
+    max_jumps = int((policy.get("passenger_max_jumps") or 22) if specialty == "passenger" else (policy.get("max_jumps") or 6))
     dists = _bfs(world.get("adj") or {}, cur_sys, max_jumps)
     stations = world.get("stations") or {}
     asks = world.get("asks") or {}
 
     # Score candidate safe stations within max_jumps
+    trusted_bases = {str(x) for x in (policy.get("trusted_neutral_bases") or []) if x}
     best = None
     for b_id, loc in stations.items():
         sys_id, poi_id, base_id, is_pol = loc
-        if policed_only and not is_pol:
+        if policed_only and not is_pol and not (specialty == "passenger" and b_id in trusted_bases):
             continue
         hops = dists.get(sys_id)
         if hops is None:
@@ -462,7 +463,10 @@ def plan_ship_fit(ship_doc, world, policy):
         if not station_unfit and not buy_list:
             continue
         # Score: more upgrades + unfits, fewer jumps, lower cost
-        score = len(buy_list) * 100 + len(station_unfit) * 80 - hops * 25 - (spend / 5000.0)
+        if specialty == "passenger":
+            score = len(buy_list) * 100 + len(station_unfit) * 80 - hops * 5 - (spend / 500.0)
+        else:
+            score = len(buy_list) * 100 + len(station_unfit) * 80 - hops * 25 - (spend / 5000.0)
         cand = {
             "station": "%s:%s:%s" % (sys_id, poi_id, base_id),
             "base": base_id,

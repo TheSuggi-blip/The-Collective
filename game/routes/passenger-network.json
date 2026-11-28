@@ -1,0 +1,14 @@
+{
+  "id": "passenger-network",
+  "title": "Passenger AutoNet -- 6B Ridgecrest VIP Hub-and-Spoke Liners",
+  "kind": "passenger_net",
+  "policy": "game/passenger-policy.json",
+  "standing": true,
+  "max_ships": 28,
+  "minutes": 40,
+  "requires": {
+    "wing_prefix": "6B. Passenger"
+  },
+  "status": "on",
+  "notes": "Standing AutoNet route for 6B Passenger & Resort Liners (Futures -> Consortium -> Concordia). Only berth-equipped 6B ships qualify; unfitted starter Cobbles automatically fall through to haul-network."
+}

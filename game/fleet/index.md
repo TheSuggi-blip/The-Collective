@@ -8,7 +8,7 @@ author: Unity
 # index.md -- The Fleet's Scripts
 
 Built by `python3 -B scripts/fleet-index.py` from the docstring of every script in this
-folder; never edited by hand. Scripts listed: 88.
+folder; never edited by hand. Scripts listed: 89.
 
 - Run a script from the repository root: `python3 -I -B game/fleet/<script> <arguments>`,
   the arguments as listed under "How to Call Each".
@@ -79,6 +79,7 @@ folder; never edited by hand. Scripts listed: 88.
 | `mobile.py` | Where a moving station stands now, for a route stop that names the system it stood in when written. | By hand |
 | `needs.py` | The fleet's needs register: what each division needs for its upgrades and for the empire, one row a need in game/needs.tsv, written by this script alone; the open needs are the reserve's targets, covered by stock in priority order. | By hand |
 | `observe.py` | A member writes down what it saw in the game (a scan far away, a price at a station we read no book of, a fight with a species) as one checked line of its division's own record; the store makes the lines one SQL table, `observations`. | By hand |
+| `passenger_net.py` | WHAT: Ridgecrest-anchored Hub-and-Spoke Passenger Liner AutoNet (`6B. | By hand |
 | `passive_sense.py` | Zero-fuel opportunistic market & herd freshness updates when any fleet ship docks or works. | By hand |
 | `pirate_net.py` | 3-Phase Autonomous Corsair Proxy AutoNet & Naming Generator (Duskmere/TOI-700). | By hand |
 | `plan.py` | Each division's plan file: every ship with the routes it flies, in their order; the dispatcher sends the ships by it. | By hand |
@@ -859,6 +860,23 @@ observe.py kinds [--division <name>|all]                                        
 --data <dir>   the unit's data folder (default /srv/collective/data)
 --at           2026-11-16T22:10:05Z, 2026-11-16 22:10 (UTC)
 --subject      the rows whose subject holds the text (any case)
+```
+
+### `passenger_net.py`
+
+WHAT: Ridgecrest-anchored Hub-and-Spoke Passenger Liner AutoNet (`6B. Passenger & Resort
+Liners`). HOW : Runs one bounded session (`--minutes 40`) for a berth-equipped 6B liner
+(`Futures`, `Loose Change`, `Consortium`, `Concordia`, `Premiere`, etc., or any ship
+with a fitted passenger cabin). Uses free zero-tick remote `list_station_passengers`
+polling (90s shared cache across all 28 liners) to maximize VIP/First-Class fares
+(`6x`), speed bonuses (`+50%`), Ridgecrest inbound resort tourism spend (`100%` venue
+revenue into Treasury), and Ridgecrest Transit Lounge layovers (`+25%` free tourism
+revenue with zero upkeep footfall).
+
+Run by hand.
+
+```
+game/fleet/passenger_net.py --pilot "<name>" [--minutes 40] [--dry]
 ```
 
 ### `passive_sense.py`
