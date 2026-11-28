@@ -95,7 +95,16 @@ def read_json(path, default=None):
 
 
 def read_policy(policy_path=None):
-    p = Path(policy_path) if policy_path else (ROOT / "passenger-policy.json")
+    if policy_path:
+        p = Path(policy_path)
+        if not p.is_absolute() and not p.is_file():
+            cand = ROOT.parent / p
+            if cand.is_file():
+                p = cand
+            elif (ROOT / p.name).is_file():
+                p = ROOT / p.name
+    else:
+        p = ROOT / "passenger-policy.json"
     raw = read_json(p, {})
     pol = dict(DEFAULT_POLICY)
     if isinstance(raw, dict):

@@ -173,5 +173,19 @@ class PassengerNetTests(unittest.TestCase):
         self.assertIn(("travel", {"id": "grand_exchange"}), fg.calls)
 
 
+
+
+class TestPassengerPolicyResolution(unittest.TestCase):
+    def test_read_policy_relative_path_from_other_cwd(self):
+        import os
+        old_cwd = os.getcwd()
+        try:
+            os.chdir("/tmp")
+            pol = pn.read_policy("game/passenger-policy.json")
+            self.assertGreaterEqual(len(pol.get("scan_stations") or []), 20)
+        finally:
+            os.chdir(old_cwd)
+
+
 if __name__ == "__main__":
     unittest.main()
