@@ -6,6 +6,7 @@
 # Tab-separated; `#` starts a comment. kind: facility (a facility id, units = how many) | hull (a ship class id) |
 # item (an item id, units on hand). priority 1 high to 3. status open | done | dropped (closed rows leave after 14 days).
 id	project	division	kind	ref	units	priority	place	due	status	note	added	added_by	changed	changed_by
+ridgecrest-guild-hall	Ridgecrest Recruitment 525	command	facility	guild_hall_recruiting	1	1	a2cee88abdcb31db229c04315f0ef6e1		open	L4 Guild Hall Recruiting at Ridgecrest (8M cr, 400 office -> 525 total seats, 0 rent)	2026-11-28T01:13Z	Unity	2026-11-28T01:13Z	Unity
 ridgecrest-hiring-board	Ridgecrest Recruitment 525	command	facility	hiring_board	1	1	a2cee88abdcb31db229c04315f0ef6e1		open	L1 Hiring Board at Ridgecrest (75k cr, 0 rent/power/LS)	2026-11-28T01:13Z	Unity	2026-11-28T01:13Z	Unity
 ridgecrest-recruitment-center	Ridgecrest Recruitment 525	command	facility	recruitment_center	1	1	a2cee88abdcb31db229c04315f0ef6e1		open	L3 Recruitment Center at Ridgecrest (2M cr, 0 rent; cap 300 -> 325)	2026-11-28T01:13Z	Unity	2026-11-28T01:13Z	Unity
 ridgecrest-recruitment-desk	Ridgecrest Recruitment 525	command	facility	recruitment_desk	1	1	a2cee88abdcb31db229c04315f0ef6e1		open	L2 Recruitment Desk at Ridgecrest (300k cr, 0 rent; cap 275 -> 300)	2026-11-28T01:13Z	Unity	2026-11-28T01:13Z	Unity
