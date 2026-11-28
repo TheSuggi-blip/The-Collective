@@ -452,7 +452,7 @@ def claim_station(data, repo_root, pilot, pilot_info, policy, explicit_station=N
                 hops = 0 if hops is None else hops
                 score = 0.0
                 if b_id in unwind:
-                    score += 200000.0
+                    score += 300000.0
                 if needs_officer:
                     # Stay put if already serving as this Lockbox's Officer (zero musical chairs); else move to nearest unstaffed Lockbox!
                     # Must strictly beat non-lockbox cur_base+used==0 (~173k max) while staying below active unwind (~200k+).
