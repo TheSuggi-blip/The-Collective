@@ -70,7 +70,7 @@ import division                                   # noqa: E402  who may run a co
 
 GATE = "http://172.30.0.32:7580"
 OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-VIEWS = {("spacemolt_faction", "info"), ("spacemolt_faction", "tax_estimate"), ("spacemolt_faction", "garages"),
+VIEWS = {("spacemolt_faction", "info"), ("spacemolt_faction", "tax_estimate"), ("spacemolt_social", "get_action_log"), ("spacemolt_faction", "garages"),
          ("spacemolt_facility", "faction_owned"), ("spacemolt_facility", "types"),
          ("spacemolt_storage", "view")}            # the only calls this script sends: each reads (a storage view passes while the ship flies)
 BASE_ID = re.compile(r"[0-9a-f]{32}")             # the game's id of a base of a player faction (an outpost); an empire's station has a word id
