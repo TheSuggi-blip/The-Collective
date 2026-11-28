@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Hive Swarm [HIVE]
 
 A player faction with 3 base(s) in 3 system(s); the nearest to Nexus Prime is 5 jump(s) away, in Antares (`antares`).
-Pilots of it in our space in the last 24 hours: 13.
+Pilots of it in our space in the last 24 hours: 11.
 
 ## Identity
 
@@ -32,7 +32,7 @@ Pilots of it in our space in the last 24 hours: 13.
 
 | Base | Kind | System | Space | Jumps from Nexus Prime | Condition |
 |---|---|---|---|---|---|
-| Hive Antares | station | Antares (`antares`) | lawless | 5 | operational |
+| Hive Antares | station | Antares (`antares`) | lawless | 5 | thriving |
 | Hive Sulafat | station | Sulafat (`sulafat`) | lawless | 19 | thriving |
 | Hive Segin | station | Segin (`segin`) | lawless | 21 | thriving |
 
@@ -42,19 +42,17 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| 0a5266cdbbc00fe268e0948a | Nexus Prime (`nexus_prime`) | 0 | runner |
-| 1529c444887f2a8857c3bcd5 | The Experiment (`the_experiment`) | 0 | theoria |
-| 2267cbe57559ef5efdb2c70e | Synchrony (`synchrony`) | 0 | runner |
-| 323b4ce2bdad4743015d68fa | Hamal (`hamal`) | 0 | workhorse |
-| 553c423820b3e6ea5f477c90 | The Experiment (`the_experiment`) | 0 | runner |
-| 6ce9fcc5d675364f5a7de638 | Hamal (`hamal`) | 0 | workhorse |
-| 6cffb3f9980678abb0ae8250 | Node Alpha (`node_alpha`) | 0 | congregation |
-| 75bbbd91a1584939b84b0a01 | The Experiment (`the_experiment`) | 0 | runner |
-| a1ef91887c35ff0652f38f4d | Node Gamma (`node_gamma`) | 0 | congregation |
-| b9eca5b6501443e6d0541e69 | Nexus Prime (`nexus_prime`) | 0 | runner |
-| dffe230ab864d7efef98b1fc | Hamal (`hamal`) | 0 | workhorse |
-| f563eb3a0940786a61a24d35 | Hamal (`hamal`) | 0 | workhorse |
-| regohunt01 | Node Gamma (`node_gamma`) | 0 | theoria |
+| 2e98b18ea82db578f6bc9f6f | Node Alpha (`node_alpha`) | 0 | workhorse |
+| 4d6f9471e894434c818786d4 | Pherkad (`pherkad`) | 0 | workhorse |
+| 636c1957c2349e4e27ec7db0 | Nexus Prime (`nexus_prime`) | 0 | runner |
+| 67194c43c43f74e1b9267ed5 | Synchrony (`synchrony`) | 0 | runner |
+| 6df1320cdf9860614dbd3855 | Synchrony (`synchrony`) | 0 | futures |
+| c63bd4b0d5884bd1bd46657f | Synchrony (`synchrony`) | 0 | runner |
+| cb9f390ad124b910d6bb336c | Synchrony (`synchrony`) | 0 | gas_tanker |
+| e3a724a14758022cda8c123e | Node Beta (`node_beta`) | 0 | gas_tanker |
+| e6c3e73d1caa6b21d5bd3dee | Node Alpha (`node_alpha`) | 0 | workhorse |
+| ed54a64a82f3c4f9990829ad | Pherkad (`pherkad`) | 0 | gas_tanker |
+| hiver | Node Gamma (`node_gamma`) | 0 | workhorse |
 
 ## Standing History
 

@@ -15,7 +15,7 @@ updated: 2026-11-28
 # Busy Being Dead [BUSY]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 14 jump(s) away, in 40 Eridani (`40_eridani`).
-Pilots of it in our space in the last 24 hours: 11.
+Pilots of it in our space in the last 24 hours: 35.
 
 ## Identity
 
@@ -47,17 +47,38 @@ Pilots carrying this tag whose last known system is one of ours (public event st
 
 | Pilot | System | Player ships destroyed | Ship when one of ours met it |
 |---|---|---|---|
-| Combat Drone 017 | Node Beta (`node_beta`) | 0 | opus_magna |
-| Combat Drone 050 | Acubens (`acubens`) | 0 | axiomata |
-| Combat Drone 117 | Synchrony (`synchrony`) | 0 | dialectic |
-| Combat Drone 119 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 126 | Pherkad (`pherkad`) | 0 | dialectic |
-| Combat Drone 178 | Hamal (`hamal`) | 0 | dialectic |
-| Mining Drone 132 | Node Beta (`node_beta`) | 0 | floor_price |
-| Mining Drone 157 | Node Beta (`node_beta`) | 0 | floor_price |
-| Mining Drone 249 | Node Gamma (`node_gamma`) | 0 | threshold |
-| Mining Drone 282 | Synchrony (`synchrony`) | 0 | cobble |
-| Mining Drone 292 | Node Beta (`node_beta`) | 0 | cobble |
+| Combat Drone 007 | Synchrony (`synchrony`) | 2 | opus_magna |
+| Combat Drone 047 | The Experiment (`the_experiment`) | 0 | axiomata |
+| Combat Drone 077 | Node Beta (`node_beta`) | 0 | dialectic |
+| Combat Drone 147 | Synchrony (`synchrony`) | 0 | dialectic |
+| Combat Drone 171 | Pherkad (`pherkad`) | 0 | dialectic |
+| Combat Drone 178 | Pherkad (`pherkad`) | 0 | dialectic |
+| Mining Drone 023 | Synchrony (`synchrony`) | 0 | shard |
+| Mining Drone 028 | Node Gamma (`node_gamma`) | 0 | shard |
+| Mining Drone 030 | Node Beta (`node_beta`) | 0 | floor_price |
+| Mining Drone 035 | Node Beta (`node_beta`) | 0 | theoria |
+| Mining Drone 038 | Node Gamma (`node_gamma`) | 0 | shard |
+| Mining Drone 043 | Node Beta (`node_beta`) | 0 | shard |
+| Mining Drone 053 | Acubens (`acubens`) | 0 | shard |
+| Mining Drone 067 | Synchrony (`synchrony`) | 0 | cobble |
+| Mining Drone 075 | Acubens (`acubens`) | 0 | theoria |
+| Mining Drone 079 | Hamal (`hamal`) | 0 | threshold |
+| Mining Drone 085 | Hamal (`hamal`) | 0 | theoria |
+| Mining Drone 093 | Acubens (`acubens`) | 0 | shard |
+| Mining Drone 097 | Hamal (`hamal`) | 0 | cobble |
+| Mining Drone 104 | Acubens (`acubens`) | 0 | threshold |
+| Mining Drone 115 | Synchrony (`synchrony`) | 0 | theoria |
+| Mining Drone 125 | Node Alpha (`node_alpha`) | 0 | theoria |
+| Mining Drone 137 | Synchrony (`synchrony`) | 0 | cobble |
+| Mining Drone 143 | Pherkad (`pherkad`) | 0 | shard |
+| Mining Drone 167 | Pherkad (`pherkad`) | 0 | cobble |
+| Mining Drone 168 | Synchrony (`synchrony`) | 0 | shard |
+| Mining Drone 171 | Synchrony (`synchrony`) | 0 | prospect |
+| Mining Drone 172 | Pherkad (`pherkad`) | 0 | cobble |
+| Mining Drone 192 | Pherkad (`pherkad`) | 0 | cobble |
+| Mining Drone 194 | Pherkad (`pherkad`) | 0 | threshold |
+
+And 5 more.
 
 ## Standing History
 
