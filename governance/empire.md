@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-28T06:49:00Z.
+Facts as of 2026-11-28T07:49:16Z.
 
 ## 1. The Faction
 
@@ -50,7 +50,7 @@ of its own limit.
 | CLTV Outpost Atria | outpost | `atria` | thriving | -- |
 | CLTV Outpost Felis | outpost | `felis` | thriving | -- |
 | CLTV Outpost GSC-0044 | outpost | `gsc_0044` | thriving | -- |
-| Collective Resort Ridgecrest | station | `ridgecrest` | struggling | refuel |
+| Collective Resort Ridgecrest | station | `ridgecrest` | operational | refuel |
 
 Systems we hold something in:
 
@@ -91,7 +91,7 @@ hold).
 | Refueling Dock | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Workshop | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Dockside Diner | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
-| Transit Lounge | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
+| Transit Terminal | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | The Tide-Line | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Slice Deck | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Ship Garage | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
