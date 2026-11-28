@@ -483,5 +483,47 @@ class SpecialistMiningToolTests(unittest.TestCase):
         self.assertNotIn("rad", mine_net.pilot_tools({"modules": [{"type": "mining_laser_iii"}]}))
 
 
+
+
+    def test_3b_bulk_ignores_cheap_iron_deficit_for_high_value_bulk_ores(self):
+        """3B Bulk wing must ignore <20 cr iron_ore deficits and pick aluminum/titanium_ore instead."""
+        world = {
+            "adj": {"s0": ["s1", "s2"], "s1": ["s0"], "s2": ["s0"]},
+            "systems": {
+                "s0": {"empire": "", "stronghold": False},
+                "s1": {"empire": "", "stronghold": False},
+                "s2": {"empire": "", "stronghold": False},
+            },
+            "pirates": set(),
+            "shortages": {"iron_ore": 50000},
+            "full_items": set(),
+            "craft_demand": {},
+            "held": {"iron_ore": 350000, "aluminum_ore": 5000},
+            "item_vals": {"iron_ore": 5.0, "aluminum_ore": 76.0},
+            "market": {
+                "iron_ore": (5.0, "b0", 3, 100000, 100000),
+                "aluminum_ore": (76.0, "b0", 4, 200000, 200000),
+            },
+            "stations_by_sys": {"s0": [("s0", "p0", "b0")]},
+            "lockbox_bases": {"b0"},
+            "owned_outpost_bases": set(),
+            "fields": [
+                {"system": "s1", "poi": "p_iron", "resource": "iron_ore", "remaining": 90000, "max_remaining": 100000, "richness": 50, "t": 1},
+                {"system": "s2", "poi": "p_alum", "resource": "aluminum_ore", "remaining": 20000, "max_remaining": 40000, "richness": 45, "t": 1},
+            ],
+        }
+        pol = {
+            "min_left_pct": 5.0, "max_jumps": 7, "max_station_jumps": 6,
+            "prioritize_needs": True, "market_tier": True, "policed_only": False,
+            "bulk_deficit_min_bid": 20.0, "deficit_skip_overstock_units": 100000,
+            "deficit_skip_overstock_max_bid": 12.0,
+        }
+        pinfo = {"pilot": "EUV Anvil Ridge", "system": "s0", "tools": {"ore"}, "tier": 1, "wing": "3B. Ore -- Bulk"}
+        cands = mine_net.score_belt_candidates(pinfo, world, pol, {}, {}, now_t=1000.0)
+        self.assertTrue(cands, "3B should find aluminum_ore candidate")
+        self.assertEqual(cands[0]["resource"], "aluminum_ore")
+        self.assertNotEqual(cands[0]["tier"], "deficit")
+
+
 if __name__ == "__main__":
     unittest.main()

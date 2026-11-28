@@ -404,17 +404,9 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             if tgt <= 0:
                 continue
             have_here = int(cur_inv.get(iid) or 0)
-            if have_here >= int(round(tgt * reorder_pct)):
-                continue
-            deficit = max(1, tgt - have_here)
-            # Outpost wreck-repair readiness guard (UNCHANGED): full self-repair bill is 180 steel_plate + 45 circuit_board.
-            _below_repair_bill = (
-                hub_kind == "outpost"
-                and ((iid == "steel_plate" and have_here < 180) or (iid == "circuit_board" and have_here < 45))
-            )
             # Sovereign Station Refueling Dock Foundation Gate (vertical integration / capital sequencing):
-            # While an owned station lacks an active refueling_dock (`hub_id not in has_bunker_bases`),
-            # PAUSE non-core luxury hospitality consumables and SURGE fuel_cell (2,000 build bill) & steel_plate (800)!
+            # Evaluate BEFORE reorder_pct so a station at e.g. 1,894/2,400 fuel_cell (above 75% reorder_pct
+            # but still below the 2,000 refueling_dock build bill!) ALWAYS surges fuel_cell & steel_plate!
             _station_needs_refuel = (hub_kind == "station" and hub_id not in has_bunker_bases)
             _station_core = (
                 hub_kind == "station"
@@ -425,6 +417,14 @@ def _pick_hub_upkeep(data, pilot, books_rows, base_map, lanes, cur_sys, hold_cap
             _refuel_bill_short = (
                 _station_needs_refuel
                 and ((iid == "fuel_cell" and have_here < 2100) or (iid == "steel_plate" and have_here < 850))
+            )
+            if have_here >= int(round(tgt * reorder_pct)) and not _refuel_bill_short:
+                continue
+            deficit = max(1, tgt - have_here)
+            # Outpost wreck-repair readiness guard (UNCHANGED): full self-repair bill is 180 steel_plate + 45 circuit_board.
+            _below_repair_bill = (
+                hub_kind == "outpost"
+                and ((iid == "steel_plate" and have_here < 180) or (iid == "circuit_board" and have_here < 45))
             )
             if _refuel_bill_short:
                 _max_upk_slots = 6

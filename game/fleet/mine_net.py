@@ -126,9 +126,10 @@ PRECISION_ORE_RESOURCES = frozenset({
     "platinum_ore", "gold_ore", "silver_ore", "silicon_ore", "lithium_ore", "sol_alloy_ore",
 })
 BULK_ORE_RESOURCES = frozenset({
-    "iron_ore", "titanium_ore", "aluminum_ore", "nickel_ore", "vanadium_ore",
-    "tungsten_ore", "carbon_ore", "lead_ore", "copper_ore",
+    "titanium_ore", "aluminum_ore", "nickel_ore", "lead_ore", "silicon_ore",
+    "vanadium_ore", "tungsten_ore",
 })
+CHEAP_STARTER_ORES = frozenset({"iron_ore", "copper_ore", "carbon_ore"})
 DEEP_CORE_RAD_RESOURCES = RAD_RESOURCES | frozenset({
     "darksteel_ore", "null_matter", "plasma_residue", "dark_matter_residue",
     "seam_glass", "energy_crystal", "phase_crystal", "quantum_fragments", "fury_crystal",
@@ -159,7 +160,9 @@ def _wing_mine_multiplier(wing, res, tools):
     if w.startswith("3B."):
         if r in BULK_ORE_RESOURCES:
             return 3.0
-        return 0.70 if rk == "ore" else 0.25
+        if r in CHEAP_STARTER_ORES:
+            return 0.20
+        return 0.85 if rk == "ore" else 0.25
     return 1.0
 
 
@@ -904,11 +907,19 @@ def score_belt_candidates(pilot_info, world, policy, claims, cooldowns, now_t=No
         mkt = market.get(res) if market is not None else None
         _mkt_bid_chk = float(mkt[0] or 0) if mkt else 0.0
         _prec_wing = (_p_wing.startswith("3A.") or _p_wing.startswith("3C."))
+        _bulk_wing = _p_wing.startswith("3B.")
         _prec_min_def = float(policy.get("precision_deficit_min_bid") or 20.0)
+        _bulk_min_def = float(policy.get("bulk_deficit_min_bid") or 0.0)
+        _def_ov_u = int(policy.get("deficit_skip_overstock_units") or 0)
+        _def_ov_b = float(policy.get("deficit_skip_overstock_max_bid") or 12.0)
+        _held_def_chk = int((world.get("held") or {}).get(res, 0))
+        _overstocked_cheap = bool(_def_ov_u > 0 and _held_def_chk >= _def_ov_u and _mkt_bid_chk < _def_ov_b)
         is_deficit = bool(
             policy.get("prioritize_needs", True)
             and res in shortages
+            and not _overstocked_cheap
             and (not _prec_wing or _mkt_bid_chk >= _prec_min_def)
+            and (not _bulk_wing or _bulk_min_def <= 0.0 or _mkt_bid_chk >= _bulk_min_def)
         )
         eff_min_pct = effective_min_left_pct(res, mkt, is_deficit, policy)
         rem, mx = f["remaining"], f["max_remaining"]

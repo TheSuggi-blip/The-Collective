@@ -18,8 +18,8 @@
   "exclude_pois": [],
   "exclude_resources": [],
   "pirate_avoid_hours": 6.0,
-  "max_jumps": 6,
-  "max_station_jumps": 5,
+  "max_jumps": 7,
+  "max_station_jumps": 6,
   "prioritize_needs": true,
   "skip_full_reserves": true,
   "allow_xp_fallback": true,
@@ -90,5 +90,9 @@
   "mega_max_jumps": 10,
   "mega_max_station_jumps": 8,
   "_trinity_opt_note": "2026-11-27: Soft lawless preference (1.35x lawless / 0.75x safe-zone except >=40 cr or <3% scarce), tiered 6J/8J/10J fuel-optimal range, adaptive 1/2/3 belt caps, 5%/0.2%/15u depletion floors.",
-  "precision_deficit_min_bid": 20.0
+  "precision_deficit_min_bid": 20.0,
+  "bulk_deficit_min_bid": 20.0,
+  "deficit_skip_overstock_units": 100000,
+  "deficit_skip_overstock_max_bid": 12.0,
+  "_3b_bulk_opt_note": "2026-11-28 (Trinity, Suggi approved): Pivoted 3B Ore Bulk off 1 cr overstocked iron/copper/carbon_ore (376k+ held; rivals dump @ 1-5 cr) onto titanium/silicon/nickel/lead/aluminum_ore via bulk_deficit_min_bid=20, overstock guard (>=100k & <12 cr), 7J/6J standard reach, 8J/7J scarce, 10J/8J mega, 5% standard / 0.2% scarce floor."
 }
