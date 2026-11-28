@@ -38,14 +38,5 @@
  "max_ships": 4,
  "requires": {
   "empty_hold": true
- },
- "measured": {
-  "date": "2026-11-27",
-  "runs": 22,
-  "minutes": 19,
-  "credits_per_run": -510,
-  "cph_per_ship": -1820,
-  "hours": 12,
-  "last_run": "2026-11-27T08:34:14Z"
  }
 }
