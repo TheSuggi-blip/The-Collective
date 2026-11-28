@@ -9,13 +9,13 @@ faction: End of Line
 standing: neutral
 standing_since: 2026-11-15
 threat: unknown
-updated: 2026-11-27
+updated: 2026-11-28
 ---
 
 # End of Line [ENDL]
 
 A player faction with 8 base(s) in 8 system(s); the nearest to Nexus Prime is 8 jump(s) away, in GSC-0040 (`gsc_0040`).
-Pilots of it in our space in the last 24 hours: 2.
+Pilots of it in our space in the last 24 hours: 0.
 
 ## Identity
 
@@ -26,7 +26,7 @@ Pilots of it in our space in the last 24 hours: 2.
 | Allies | none | Daily feed, factions |
 | Enemies | none | Daily feed, factions |
 | At war with | none | Daily feed, factions |
-| Pilots carrying the tag on the public event stream | 93 | Public event stream |
+| Pilots carrying the tag on the public event stream | 95 | Public event stream |
 
 ## Bases
 
@@ -45,10 +45,7 @@ Pilots of it in our space in the last 24 hours: 2.
 
 Pilots carrying this tag whose last known system is one of ours (public event stream, last 24 hours).
 
-| Pilot | System | Player ships destroyed | Ship when one of ours met it |
-|---|---|---|---|
-| SantaClaus | The Experiment (`the_experiment`) | 0 | archimedes |
-| WALL-E | Synchrony (`synchrony`) | 1 | last_drop |
+None in the last 24 hours.
 
 ## Standing History
 
