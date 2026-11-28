@@ -16,7 +16,7 @@ means to do next. What a route earns now is not written here, because it changes
 hour: ask the tool `route` or `routes`, or the database (`hive.py sql`), which carry each
 figure with its age. Up: [master-index.md](master-index.md).
 
-Kept by Zero. Routes: 170. Ships: 130.
+Kept by Zero. Routes: 171. Ships: 130.
 
 | # | Route | Group | Zone | Open to | Ships planned |
 |---|---|---|---|---|---|
@@ -98,98 +98,99 @@ Kept by Zero. Routes: 170. Ships: 130.
 | 76 | [mission-first-hunt-iron-reach](mission-first-hunt-iron-reach.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 21 jumps | once per pilot, up to 1 ships | all 130 |
 | 77 | [mission-the-document-the](mission-the-document-the.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 20 jumps | once per pilot, up to 3 ships | all 130 |
 | 78 | [mission-the-swing-vote-first](mission-the-swing-vote-first.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 18 jumps | once per pilot, up to 3 ships | all 130 |
-| 79 | [give-miner-stores-crescent-moon](give-miner-stores-crescent-moon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | all 130 |
-| 80 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | all 130 |
-| 81 | [give-miner-stores-hex-star](give-miner-stores-hex-star.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at b495c6003fc83e18f6d8cecbe6929133, standing work | all 130 |
-| 82 | [give-miner-stores-first-step](give-miner-stores-first-step.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at first_step_memorial_station, standing work | all 130 |
-| 83 | [give-miner-stores-ironlight-crossroads](give-miner-stores-ironlight-crossroads.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at 784309214f105860a16a0c100a70eb14, standing work | all 130 |
-| 84 | [gather-gsc-0049-belt](gather-gsc-0049-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 85 | [gather-keid-belt](gather-keid-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 86 | [gather-amberfall-belt](gather-amberfall-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 87 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Off](index-off.md) | home space | up to 2 ships, standing work, off | all 130 |
-| 88 | [mine-pherkad-rift](mine-pherkad-rift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
-| 89 | [gather-node-gamma-nitrogen-ice](gather-node-gamma-nitrogen-ice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, needs ice_harvester_i, empty hold, standing work | all 130 |
-| 90 | [gather-schedar-belt](gather-schedar-belt.json) | [Off](index-off.md) | beyond the border, 2 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 91 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Off](index-off.md) | home space | up to 3 ships, empty hold, standing work, off | all 130 |
-| 92 | [gather-okab-belt](gather-okab-belt.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 93 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 94 | [gather-garnet-dim-lattice](gather-garnet-dim-lattice.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 95 | [gather-okab-low-charge-glint](gather-okab-low-charge-glint.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 96 | [gather-cedarhold-dim-lattice](gather-cedarhold-dim-lattice.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 97 | [gather-atlas-belt](gather-atlas-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 98 | [gather-thornhaven-dimming-pocket](gather-thornhaven-dimming-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 99 | [gather-gsc-0031-belt](gather-gsc-0031-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 100 | [gather-intercrus-alloy-remnants](gather-intercrus-alloy-remnants.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 101 | [gather-gsc-0012-flicker-fray](gather-gsc-0012-flicker-fray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 102 | [gather-botein-belt](gather-botein-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 103 | [gather-botein-raysheet-nebula](gather-botein-raysheet-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 104 | [gather-botein-lampglint-rock](gather-botein-lampglint-rock.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 105 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, empty hold, standing work | all 130 |
-| 106 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 3 ships, empty hold, born nebula, standing work | all 130 |
-| 107 | [gather-bunda-belt-platinum](gather-bunda-belt-platinum.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 108 | [gather-electra-echo-train](gather-electra-echo-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 13 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
-| 109 | [gather-furud-belt-carbon](gather-furud-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, empty hold, born solarian, standing work | all 130 |
-| 110 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Off](index-off.md) | home space | up to 3 ships, standing work, off | all 130 |
-| 111 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
-| 112 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
-| 113 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 114 | [gather-markab-alloy-seam-train](gather-markab-alloy-seam-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, born solarian, standing work | all 130 |
-| 115 | [gather-nihal-containment-fracture-train](gather-nihal-containment-fracture-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
-| 116 | [mine-acubens](mine-acubens.json) | [Off](index-off.md) | home space | up to 3 ships, standing work, off | all 130 |
-| 117 | [mine-bellatrix](mine-bellatrix.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, standing work | all 130 |
-| 118 | [mine-grumium-belt](mine-grumium-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, standing work | all 130 |
-| 119 | [mine-hd-20794-belt](mine-hd-20794-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
-| 120 | [mine-stillwater-belt](mine-stillwater-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
-| 121 | [mine-veil-nebula](mine-veil-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
-| 122 | [gather-achernar-belt](gather-achernar-belt.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
-| 123 | [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | [Off](index-off.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
-| 124 | [gather-edasich-stormward-silicon](gather-edasich-stormward-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 25 jumps | up to 2 ships, empty hold, born nebula, standing work | all 130 |
-| 125 | [gather-emberglow-elder-silicon](gather-emberglow-elder-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, empty hold, born voidborn, standing work | all 130 |
-| 126 | [gather-errai-belt-silver](gather-errai-belt-silver.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 127 | [gather-errai-quantum-fragments](gather-errai-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 128 | [gather-garnet-belt](gather-garnet-belt.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 129 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 130 | [gather-gliese-876-belt-carbon](gather-gliese-876-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 131 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 132 | [gather-gsc-0007-dark-beacon-silicon](gather-gsc-0007-dark-beacon-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 27 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
-| 133 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | [Off](index-off.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 134 | [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | [Off](index-off.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 135 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 136 | [gather-harborlight-leavings-train](gather-harborlight-leavings-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
-| 137 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 2 ships, empty hold, standing work, off | all 130 |
-| 138 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
-| 139 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 140 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 141 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, empty hold, standing work | all 130 |
-| 142 | [gather-mekbuda-shardflash-silicon](gather-mekbuda-shardflash-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
-| 143 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
-| 144 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 12 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 145 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 146 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 147 | [gather-yildun-neverworld-carbon](gather-yildun-neverworld-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
-| 148 | [mine-almach-stray-facets](mine-almach-stray-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 24 jumps | up to 3 ships, empty hold, standing work | all 130 |
-| 149 | [mine-pioneer-fields](mine-pioneer-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, standing work | all 130 |
-| 150 | [mine-82-eridani-belt](mine-82-eridani-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
-| 151 | [mine-theta-proxima-belt](mine-theta-proxima-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 1 ships, standing work | all 130 |
-| 152 | [mine-markab-belt](mine-markab-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 1 ships, standing work | all 130 |
-| 153 | [mine-deep-range-mineral-fields](mine-deep-range-mineral-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
-| 154 | [mine-azmidi-belt](mine-azmidi-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
-| 155 | [mine-gliese-436-belt](mine-gliese-436-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
-| 156 | [mine-pollux-outer-belt](mine-pollux-outer-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
-| 157 | [mine-guildless-facets](mine-guildless-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
-| 158 | [mine-saiph-major-belt](mine-saiph-major-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
-| 159 | [mine-markeb-quantum-eddy](mine-markeb-quantum-eddy.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
-| 160 | [mine-horizon-phase-drift](mine-horizon-phase-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
-| 161 | [mine-the-old-seam](mine-the-old-seam.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
-| 162 | [mine-furud-legacy-drift](mine-furud-legacy-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 3 ships, standing work | all 130 |
-| 163 | [mine-bharani-ember-field](mine-bharani-ember-field.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
-| 164 | [mine-ogma-belt](mine-ogma-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
-| 165 | [mine-sidelong-nebula](mine-sidelong-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
-| 166 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
-| 167 | [mine-volatile-pocket](mine-volatile-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
-| 168 | [home-sol-central](home-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 6 ships, empty hold, born solarian, standing work | all 130 |
-| 169 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
-| 170 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
+| 79 | [mission-first-hunt-iron-reach-rigel](mission-first-hunt-iron-reach-rigel.json) | [Once per Pilot](index-once-per-pilot.md) | beyond the border, 19 jumps | once per pilot, up to 1 ships, empty hold | all 130 |
+| 80 | [give-miner-stores-crescent-moon](give-miner-stores-crescent-moon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ec315132a710a7d0fbc68cca05073154, standing work | all 130 |
+| 81 | [give-miner-stores-ramens-rest](give-miner-stores-ramens-rest.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 2 ships, with 50 carbon_ore or silicon_ore or nickel_ore or quantum_fragments or iron_ore or copper_ore or gold_ore or platinum_ore stored at ramens_rest, standing work | all 130 |
+| 82 | [give-miner-stores-hex-star](give-miner-stores-hex-star.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at b495c6003fc83e18f6d8cecbe6929133, standing work | all 130 |
+| 83 | [give-miner-stores-first-step](give-miner-stores-first-step.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at first_step_memorial_station, standing work | all 130 |
+| 84 | [give-miner-stores-ironlight-crossroads](give-miner-stores-ironlight-crossroads.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 2 ships, with 50 iron_ore or copper_ore stored at 784309214f105860a16a0c100a70eb14, standing work | all 130 |
+| 85 | [gather-gsc-0049-belt](gather-gsc-0049-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 86 | [gather-keid-belt](gather-keid-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 87 | [gather-amberfall-belt](gather-amberfall-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 88 | [gather-gsc-0027-spacetime-seep](gather-gsc-0027-spacetime-seep.json) | [Off](index-off.md) | home space | up to 2 ships, standing work, off | all 130 |
+| 89 | [mine-pherkad-rift](mine-pherkad-rift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
+| 90 | [gather-node-gamma-nitrogen-ice](gather-node-gamma-nitrogen-ice.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, needs ice_harvester_i, empty hold, standing work | all 130 |
+| 91 | [gather-schedar-belt](gather-schedar-belt.json) | [Off](index-off.md) | beyond the border, 2 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 92 | [gather-hamal-crystal-bloom](gather-hamal-crystal-bloom.json) | [Off](index-off.md) | home space | up to 3 ships, empty hold, standing work, off | all 130 |
+| 93 | [gather-okab-belt](gather-okab-belt.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 94 | [gather-gj-3470-dewfall-fray](gather-gj-3470-dewfall-fray.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 95 | [gather-garnet-dim-lattice](gather-garnet-dim-lattice.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 96 | [gather-okab-low-charge-glint](gather-okab-low-charge-glint.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 97 | [gather-cedarhold-dim-lattice](gather-cedarhold-dim-lattice.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 98 | [gather-atlas-belt](gather-atlas-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 99 | [gather-thornhaven-dimming-pocket](gather-thornhaven-dimming-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 100 | [gather-gsc-0031-belt](gather-gsc-0031-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 101 | [gather-intercrus-alloy-remnants](gather-intercrus-alloy-remnants.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 102 | [gather-gsc-0012-flicker-fray](gather-gsc-0012-flicker-fray.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 103 | [gather-botein-belt](gather-botein-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 104 | [gather-botein-raysheet-nebula](gather-botein-raysheet-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 105 | [gather-botein-lampglint-rock](gather-botein-lampglint-rock.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 106 | [gather-acubens-belt-carbon](gather-acubens-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, empty hold, standing work | all 130 |
+| 107 | [gather-alrakis-commerce-vein-train](gather-alrakis-commerce-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 20 jumps | up to 3 ships, empty hold, born nebula, standing work | all 130 |
+| 108 | [gather-bunda-belt-platinum](gather-bunda-belt-platinum.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 109 | [gather-electra-echo-train](gather-electra-echo-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 13 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
+| 110 | [gather-furud-belt-carbon](gather-furud-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 1 ships, empty hold, born solarian, standing work | all 130 |
+| 111 | [gather-gsc-0027-prism-scatter](gather-gsc-0027-prism-scatter.json) | [Off](index-off.md) | home space | up to 3 ships, standing work, off | all 130 |
+| 112 | [gather-khambalia-crystal-market-train](gather-khambalia-crystal-market-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
+| 113 | [gather-lacaille-deep-vein-train](gather-lacaille-deep-vein-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
+| 114 | [gather-last-light-mineral-carbon](gather-last-light-mineral-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 115 | [gather-markab-alloy-seam-train](gather-markab-alloy-seam-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, empty hold, born solarian, standing work | all 130 |
+| 116 | [gather-nihal-containment-fracture-train](gather-nihal-containment-fracture-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
+| 117 | [mine-acubens](mine-acubens.json) | [Off](index-off.md) | home space | up to 3 ships, standing work, off | all 130 |
+| 118 | [mine-bellatrix](mine-bellatrix.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 1 ships, standing work | all 130 |
+| 119 | [mine-grumium-belt](mine-grumium-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 9 jumps | up to 1 ships, standing work | all 130 |
+| 120 | [mine-hd-20794-belt](mine-hd-20794-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
+| 121 | [mine-stillwater-belt](mine-stillwater-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
+| 122 | [mine-veil-nebula](mine-veil-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
+| 123 | [gather-achernar-belt](gather-achernar-belt.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
+| 124 | [gather-acrux-belt-faction](gather-acrux-belt-faction.json) | [Off](index-off.md) | beyond the border, 7 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
+| 125 | [gather-edasich-stormward-silicon](gather-edasich-stormward-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 25 jumps | up to 2 ships, empty hold, born nebula, standing work | all 130 |
+| 126 | [gather-emberglow-elder-silicon](gather-emberglow-elder-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, empty hold, born voidborn, standing work | all 130 |
+| 127 | [gather-errai-belt-silver](gather-errai-belt-silver.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 128 | [gather-errai-quantum-fragments](gather-errai-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 129 | [gather-garnet-belt](gather-garnet-belt.json) | [Off](index-off.md) | beyond the border, 5 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 130 | [gather-glasslight-shoal-silicon](gather-glasslight-shoal-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 131 | [gather-gliese-876-belt-carbon](gather-gliese-876-belt-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 132 | [gather-goldcrest-gold](gather-goldcrest-gold.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 7 jumps | up to 2 ships, empty hold, standing work | all 130 |
+| 133 | [gather-gsc-0007-dark-beacon-silicon](gather-gsc-0007-dark-beacon-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 27 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
+| 134 | [gather-gsc-0044-belt-faction](gather-gsc-0044-belt-faction.json) | [Off](index-off.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 135 | [gather-gsc-0044-forgotten-tailings-faction](gather-gsc-0044-forgotten-tailings-faction.json) | [Off](index-off.md) | beyond the border, 6 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 136 | [gather-gsc-0049-reef-nickel](gather-gsc-0049-reef-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 5 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 137 | [gather-harborlight-leavings-train](gather-harborlight-leavings-train.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 3 ships, empty hold, born solarian, standing work | all 130 |
+| 138 | [gather-ironhollow-echo-ejecta](gather-ironhollow-echo-ejecta.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 2 ships, empty hold, standing work, off | all 130 |
+| 139 | [gather-ironhollow-fading-signal](gather-ironhollow-fading-signal.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 3 ships, empty hold, standing work, off | all 130 |
+| 140 | [gather-izar-quantum-fragments](gather-izar-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 141 | [gather-jadecove-nickel](gather-jadecove-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 142 | [gather-jishui-plainrock-carbon](gather-jishui-plainrock-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 11 jumps | up to 2 ships, empty hold, standing work | all 130 |
+| 143 | [gather-mekbuda-shardflash-silicon](gather-mekbuda-shardflash-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 29 jumps | up to 1 ships, empty hold, born nebula, standing work | all 130 |
+| 144 | [gather-ruchbah-broken-glass-veil](gather-ruchbah-broken-glass-veil.json) | [Off](index-off.md) | beyond the border, 4 jumps | up to 1 ships, empty hold, standing work, off | all 130 |
+| 145 | [gather-subra-floodlight-flats-silicon](gather-subra-floodlight-flats-silicon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 12 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 146 | [gather-tiaki-worldsend-nickel](gather-tiaki-worldsend-nickel.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 147 | [gather-tidewater-quantum-fragments](gather-tidewater-quantum-fragments.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 148 | [gather-yildun-neverworld-carbon](gather-yildun-neverworld-carbon.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 15 jumps | up to 1 ships, empty hold, standing work | all 130 |
+| 149 | [mine-almach-stray-facets](mine-almach-stray-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 24 jumps | up to 3 ships, empty hold, standing work | all 130 |
+| 150 | [mine-pioneer-fields](mine-pioneer-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 18 jumps | up to 1 ships, standing work | all 130 |
+| 151 | [mine-82-eridani-belt](mine-82-eridani-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
+| 152 | [mine-theta-proxima-belt](mine-theta-proxima-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 1 ships, standing work | all 130 |
+| 153 | [mine-markab-belt](mine-markab-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 16 jumps | up to 1 ships, standing work | all 130 |
+| 154 | [mine-deep-range-mineral-fields](mine-deep-range-mineral-fields.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
+| 155 | [mine-azmidi-belt](mine-azmidi-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
+| 156 | [mine-gliese-436-belt](mine-gliese-436-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
+| 157 | [mine-pollux-outer-belt](mine-pollux-outer-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
+| 158 | [mine-guildless-facets](mine-guildless-facets.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 23 jumps | up to 1 ships, standing work | all 130 |
+| 159 | [mine-saiph-major-belt](mine-saiph-major-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 1 ships, standing work | all 130 |
+| 160 | [mine-markeb-quantum-eddy](mine-markeb-quantum-eddy.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
+| 161 | [mine-horizon-phase-drift](mine-horizon-phase-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
+| 162 | [mine-the-old-seam](mine-the-old-seam.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 1 ships, standing work | all 130 |
+| 163 | [mine-furud-legacy-drift](mine-furud-legacy-drift.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 8 jumps | up to 3 ships, standing work | all 130 |
+| 164 | [mine-bharani-ember-field](mine-bharani-ember-field.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 19 jumps | up to 3 ships, standing work | all 130 |
+| 165 | [mine-ogma-belt](mine-ogma-belt.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
+| 166 | [mine-sidelong-nebula](mine-sidelong-nebula.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 3 ships, standing work | all 130 |
+| 167 | [mine-caph-disk](mine-caph-disk.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 22 jumps | up to 1 ships, standing work | all 130 |
+| 168 | [mine-volatile-pocket](mine-volatile-pocket.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 21 jumps | up to 3 ships, standing work | all 130 |
+| 169 | [home-sol-central](home-sol-central.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | beyond the border, 10 jumps | up to 6 ships, empty hold, born solarian, standing work | all 130 |
+| 170 | [train-jumps-miner](train-jumps-miner.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | up to 20 ships, from 5,000 cr, under navigation 6, piloting 10, standing work | all 130 |
+| 171 | [park](park.json) | [Standing Work, Reading and Waiting](index-standing-work.md) | home space | the park route | all 130 |
 
 Planned:
 
