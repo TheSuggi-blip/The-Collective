@@ -20,7 +20,7 @@ they store, the members by name and the treasury's balance. They are live
 data of the unit (the tools `hive` with `verb=empire`, `stock`, `ship`;
 `game/fleet/empire.py show`).
 
-Facts as of 2026-11-28T03:46:06Z.
+Facts as of 2026-11-28T04:47:36Z.
 
 ## 1. The Faction
 
@@ -29,11 +29,11 @@ Facts as of 2026-11-28T03:46:06Z.
 | Name and tag | The Collective [CLTV] |
 | Founded | 2026-11-15 |
 | Leader | the Fleet Admiral's flagship |
-| Members | 328 of a limit of 525 |
-| Ships of the fleet in it | 328 of 500 |
+| Members | 499 of a limit of 500 |
+| Ships of the fleet in it | 499 of 500 |
 | Stations of our own | 1 of 5 a faction may hold |
 | Outposts | 3 of 8 |
-| Offices at stations | 39, rent 1,614 cr per cycle (138,804 cr a day) |
+| Offices at stations | 38, rent 1,441 cr per cycle (123,926 cr a day) |
 | Shared ships in garages | 0 |
 | At war | no |
 | Allies | none |
@@ -102,7 +102,6 @@ hold).
 | Zero-G Lounge & Bar | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Frontier Cantina | 1 | a2cee88abdcb31db229c04315f0ef6e1 | `ridgecrest` | active | 0 |
 | Faction Lockbox | 1 | central_nexus | `nexus_prime` | active | 69 |
-| Recruitment Desk | 1 | central_nexus | `nexus_prime` | active | 104 |
 | Faction Fuel Bunker | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Faction Lockbox | 1 | f6a4892fcde19d504f93398b4eec9269 | `felis` | active | 0 |
 | Outpost Frame Assembler | 1 | node_beta_industrial_station | `node_beta` | active | 209 |
